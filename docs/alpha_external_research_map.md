@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-06-30.
+Last refreshed: 2026-07-02.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -48,6 +48,38 @@ Controls:
 - keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2510.05533>
+
+### Hedge-Fund LLM Forecasting Reviews Are Robustness Checklists
+
+The April 2026 hedge-fund-oriented LLM forecasting review reinforces the same
+local boundary from a practitioner angle: LLMs can help extract sentiment,
+events, report context, transcripts, and agent research traces, but the common
+failure modes are horizon leakage, fragile sentiment labels, illiquidity
+premia, weak predictability, and evaluation metrics that do not survive costs.
+For Ginger, this means an LLM score is not useful until its source set,
+horizon, liquidity, cost, and displaced-candidate comparator are logged next to
+the prediction.
+
+Implementable fields:
+
+- `llm_forecast_review_protocol_id`
+- `llm_forecast_source_mix_bucket`
+- `llm_prediction_horizon_lock`
+- `llm_liquidity_premium_risk_bucket`
+- `llm_temporal_leakage_audit_passed`
+- `llm_eval_metric_family`
+- `llm_after_cost_comparator_delta`
+- `llm_robustness_failure_reason`
+
+Controls:
+
+- lock the prediction horizon before any LLM forecast row is scored;
+- report liquidity, spread, and tradability alongside model accuracy;
+- benchmark against simple momentum, sector, and accepted-helper comparators;
+- treat agentic LLM traces as research provenance unless a deterministic
+  helper converts them into PIT rows and passes Gate 1-4.
+
+Source: <https://arxiv.org/abs/2605.05211>
 
 ### Complex ML Return Predictors Need Recency Placebos
 
@@ -322,6 +354,42 @@ Implementable fields:
 
 Source: <https://arxiv.org/abs/2605.23962>
 
+### Time-Series Foundation Models Are Priors, Not Alpha Engines
+
+The late-June 2026 TSFM benchmark is directly useful because it is conservative:
+pretrained models such as Moirai, TimesFM, Chronos, and TimeGPT can improve
+rankings or lower development cost, but gains over a random-walk benchmark were
+small and sparse on liquid U.S. equities. A related 2026 Chronos study found
+multivariate inputs help when series are genuinely related, while noisy
+cross-market mixing can degrade forecasts. Ginger should therefore treat TSFMs
+as feature-construction priors and missing-data / low-sample helpers, not as
+standalone candidate sources.
+
+Implementable fields:
+
+- `tsfm_model_family`
+- `tsfm_pretraining_prior_id`
+- `rolling_origin_protocol_id`
+- `random_walk_placebo_delta`
+- `local_supervised_baseline_delta`
+- `related_series_context_set`
+- `noisy_context_degradation_flag`
+- `tsfm_after_cost_replacement_value`
+
+Controls:
+
+- require random-walk, local supervised, momentum, and volatility-scaled
+  baselines on the same decision dates;
+- separate forecast-loss improvement from after-cost replacement value;
+- only mix related series with a predeclared relation graph or economic link;
+- use TSFM outputs first as read-only state, imputation, or context fields
+  until a shared helper beats accepted comparators.
+
+Sources:
+
+- <https://arxiv.org/abs/2606.27100>
+- <https://arxiv.org/abs/2605.21504>
+
 ### Continuous Style Allocation Beats Discrete Regime Rules
 
 A May 2026 growth-versus-defensive allocation paper is most useful as a risk
@@ -385,6 +453,46 @@ Controls:
   an entry or allocation change.
 
 Source: <https://arxiv.org/abs/2510.14986>
+
+### Regime-HMM/RL Evidence Requires Lagged, Costed Envelopes
+
+A May 2026 HMM/RL allocation study is useful because it evaluates regime
+allocation with a 30% out-of-sample split and a one-day execution lag. The
+local translation is not to add an RL allocator. It is to make any regime
+capacity rule declare the latent-state model, lag, cost, and benchmark before
+testing. A separate 2026 global-equity DRL study reinforces the guardrail:
+even with transaction costs, turnover penalties, diversification constraints,
+LSTM/Transformer encoders, and walk-forward folds, excess returns were not
+statistically robust across all markets. Regime/RL should therefore be a
+capacity and stress-envelope surface unless a fixed policy clears Ginger's
+Gate 1-4.
+
+Implementable fields:
+
+- `regime_model_family`
+- `hmm_state_probability_vector`
+- `regime_policy_execution_lag_days`
+- `regime_policy_cost_model_version`
+- `regime_policy_walk_forward_fold_id`
+- `regime_policy_benchmark_set`
+- `rl_policy_turnover_penalty_bucket`
+- `rl_policy_cross_market_robustness_bucket`
+- `regime_policy_incremental_replacement_value`
+
+Controls:
+
+- freeze the regime classifier and action map before replay;
+- require at least a one-session decision lag unless production truly acts
+  before the next open;
+- compare against static SPY/QQQ, static sector/style, and accepted allocator
+  benchmarks after turnover and slippage;
+- treat market-specific wins without cross-window robustness as diagnostics,
+  not activation evidence.
+
+Sources:
+
+- <https://arxiv.org/abs/2605.27848>
+- <https://arxiv.org/abs/2605.17307>
 
 ### Graphs, Correlations, And Market Structure
 
@@ -1981,19 +2089,54 @@ Controls:
 
 Source: <https://arxiv.org/abs/2512.19484>
 
+### SEC And Earnings-Call Target Stance Needs Metric-Level Labels
+
+Recent SEC filing and earnings-call stance work argues for sentence-level
+labels tied to explicit financial targets such as debt, EPS, and sales. That
+maps better to Ginger than broad sentiment because each label can carry a
+target metric, evidence span, filing/call timestamp, and stance direction. The
+field should start as context and event-quality attribution; it becomes alpha
+only if a shared helper can replay the same target-stance rows and beat
+accepted SEC/event comparators after costs.
+
+Implementable fields:
+
+- `financial_target_stance_schema_version`
+- `target_metric_family`
+- `target_metric_value_context`
+- `target_stance_direction`
+- `target_stance_confidence_bucket`
+- `target_stance_source_type`
+- `target_stance_evidence_span_hash`
+- `target_stance_llm_prompt_version`
+- `target_stance_replacement_value_bucket`
+
+Controls:
+
+- label the target metric separately from generic positive/negative tone;
+- require accepted filing/call timestamps and evidence spans;
+- validate numeric context with deterministic extraction before scoring;
+- benchmark target-stance rows against accepted SEC financial-report and
+  structured-event comparators.
+
+Source: <https://arxiv.org/abs/2510.23464>
+
 ### Options Surface As Risk And Execution Context
 
 Recent options research still maps better to risk/execution context than to
 daily equity alpha. A 2025 SPXW put-writing study emphasizes regime-aware
 position sizing and drawdown control, while 2026 volatility-surface and
 synthetic American-option work reinforces that skew/term-structure fitting is
-model- and market-specific. The synthetic-options result is especially useful
-as a stress-test pattern: scheduled event distance and same-sector coupling can
-dominate generalization error in option surfaces. For Ginger, options rows
-should first become timestamped risk, crowding, event-distance, and
-execution-envelope fields. They should not be accepted as fixed-window equity
-alpha until historical chain coverage, stale-chain controls, and fill costs are
-replayable.
+model- and market-specific. Older option-volume imbalance evidence is still
+useful because it points to participant class and high-IV contract slices as
+the place where equity-return information may live. The synthetic-options
+result is especially useful as a stress-test pattern: scheduled event distance
+and same-sector coupling can dominate generalization error in option surfaces.
+For Ginger, options rows should first become timestamped risk, crowding,
+event-distance, participant/IV-slice, and execution-envelope fields. They
+should not be accepted as fixed-window equity alpha until historical chain
+coverage, stale-chain controls, participant/source provenance, and fill costs
+are replayable.
 
 Implementable fields:
 
@@ -2005,6 +2148,9 @@ Implementable fields:
 - `options_chain_stale_flag`
 - `options_event_distance_bucket`
 - `same_sector_option_coupling_bucket`
+- `option_volume_imbalance_bucket`
+- `option_participant_class_bucket`
+- `high_iv_option_flow_bucket`
 - `option_signal_costed_replacement_value`
 - `options_tail_risk_context_bucket`
 
@@ -2013,6 +2159,8 @@ Controls:
 - store quote timestamp, expiration, strike/moneyness, bid/ask/mid, open
   interest, and stale-chain status before any signal use;
 - start with risk sizing, tail context, and execution-envelope diagnostics;
+- do not use put/call or volume-imbalance rows without source/participant
+  provenance, IV bucket, stale-chain status, and fill-cost controls;
 - require fixed-window or forward ledger coverage with publication/fill-cost
   controls before candidate-pool use;
 - compare options-assisted rows against accepted non-options comparators after
@@ -2023,6 +2171,7 @@ Sources:
 - <https://arxiv.org/abs/2508.16598>
 - <https://arxiv.org/abs/2603.27501>
 - <https://arxiv.org/abs/2605.13998>
+- <https://arxiv.org/abs/2201.09319>
 
 ### 13F Is Delayed Ownership And Crowding Context
 
