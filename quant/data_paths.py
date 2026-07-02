@@ -228,6 +228,22 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/sec_ftd_finra/state.json",
         "sec_ftd_finra_paper_state.json",
     ),
+    "moomoo_capital_flow_day_rows": (
+        "non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+        "moomoo_capital_flow_day_rows.jsonl",
+    ),
+    "moomoo_capital_flow_day_manifest": (
+        "non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "moomoo_capital_flow_day_manifest.json",
+    ),
+    "moomoo_capital_flow_paper_snapshots": (
+        "paper_sleeves/moomoo_capital_flow/snapshots.jsonl",
+        "moomoo_capital_flow_paper_snapshots.jsonl",
+    ),
+    "moomoo_capital_flow_paper_state": (
+        "paper_sleeves/moomoo_capital_flow/state.json",
+        "moomoo_capital_flow_paper_state.json",
+    ),
     "post_earnings_underpriced_drift_paper_snapshots": (
         "paper_sleeves/post_earnings_underpriced_drift/snapshots.jsonl",
         "post_earnings_underpriced_drift_paper_snapshots.jsonl",
