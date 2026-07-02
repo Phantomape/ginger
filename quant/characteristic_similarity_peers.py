@@ -100,7 +100,22 @@ class AnalystCoverageIndex:
     ) -> tuple["AnalystCoverageIndex", dict[str, Any]]:
         ticker_set = {str(t).upper() for t in tickers}
         rows_by_ticker: dict[str, list[dict[str, Any]]] = {}
-        paths = sorted(Path(root).glob("exp-*/estimate_revision_ledger*.jsonl"))
+        # Scan both the per-experiment ledgers (data/experiments/exp-*/) and the
+        # live daily ledger (data/non_ohlcv/), regardless of which one `root`
+        # points at. The prior code only globbed exp-*/ under data/experiments,
+        # so it silently missed the current data/non_ohlcv ledger entirely.
+        root = Path(root)
+        data_dir = root
+        while data_dir.name and data_dir.name != "data" and data_dir.parent != data_dir:
+            data_dir = data_dir.parent
+        bases = [root]
+        if data_dir.name == "data":
+            bases = [data_dir / "experiments", data_dir / "non_ohlcv"]
+        found: set[Path] = set()
+        for base in bases:
+            found.update(base.glob("exp-*/estimate_revision_ledger*.jsonl"))
+            found.update(base.glob("estimate_revision_ledger*.jsonl"))
+        paths = sorted(found)
         row_count = 0
         usable_count = 0
         for path in paths:
@@ -118,7 +133,8 @@ class AnalystCoverageIndex:
                         continue
                     ticker = str(raw.get("ticker") or "").upper()
                     asof = _date10(
-                        raw.get("asof_date")
+                        raw.get("as_of_date")
+                        or raw.get("asof_date")
                         or raw.get("date")
                         or raw.get("known_at")
                         or raw.get("generated_at")
@@ -133,6 +149,16 @@ class AnalystCoverageIndex:
                     rows_by_ticker.setdefault(ticker, []).append(
                         {"ticker": ticker, "asof_date": asof, "analyst_coverage_count": count}
                     )
+        # Honest status: distinguish "no rows matched at all" (path/field bug or
+        # no data) from "rows matched but the ledger schema carries no analyst
+        # coverage field" (the current reality -- the revision ledger has
+        # eps/revenue estimates but no analyst-count column).
+        if usable_count:
+            status = "ok"
+        elif row_count:
+            status = "no_coverage_field_in_source"
+        else:
+            status = "empty"
         audit = {
             "source": "estimate_revision_ledger_jsonl",
             "max_asof": str(max_asof)[:10],
@@ -140,7 +166,7 @@ class AnalystCoverageIndex:
             "row_count": row_count,
             "usable_coverage_rows": usable_count,
             "covered_ticker_count": len(rows_by_ticker),
-            "status": "ok" if usable_count else "empty",
+            "status": status,
         }
         return cls(rows_by_ticker), audit
 
