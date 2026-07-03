@@ -179,6 +179,50 @@ IPO/并购/分拆这类最大的主题传导事件有免费、精确、无传闻
 仍是替换价值 vs accepted comparator。不要一次全接；每层接完先跑一轮
 observed-only 回放看事件密度和方向，再决定下一层。
 
+### 二阶传导观察面（2026-07-02 追加，exp-20260702-020 accepted_measurement_repair）
+
+Owner 的 Meta→Nebius 直觉（一阶新闻冲击传导到二阶暴露名单）现在有了可判定
+的观察面：`quant/news_event_exposure_observer.py` 把结构化新闻事件账本
+（双极性、全部 8 类关系）join 到 entity_exposure_map，给每个一阶 ticker 的
+SIC 同业（cap 15）+ 主题篮子成员记二阶观察行（次开盘入场、5d/10d close
+SPY-excess 结算）。回放 exp-20260630-006 的 5 个月结构化事件后：
+**5,703 行 / 353 事件 / 187 个暴露 ticker，3,513 行已结算**，append-only
+幂等，`data/non_ohlcv/news_event_exposure_observations/`。
+
+判定纪律：artifact 里的极性统计是描述性 context，**不是 verdict**——原始
+描述值显示正/负事件的二阶 10d SPY-excess 都是正的（+160/+181bp），说明
+未做基线控制前全是 2026H1 科技 beta。daily 刷新 = 重跑 CLI；run.py 接线暂缓。
+
+**预登记读取已完成（exp-20260702-021，observed_only 正向 lead，未晋级）**：
+基线控制后，二阶暴露的 10d SPY-excess delta 按一阶事件极性**反向分离**——
+负面事件的 peer（中位 +42.5bp）跑赢正面事件的 peer（-7.1bp），pooled
+separation **-49.6bp**，两个半段一致（h1 -71.1 / h2 -74.2bp），n=1105/727，
+集中度干净（top 一阶 ticker MU 仅 11.6%）。反向方向在 ticket 里是先于看数
+预登记的合法方向（"either direction"）。经济故事候选：**主题内轮动**
+（单一名字利空→资金流向替代品；利好→资金集中到赢家、抽干 peer）。
+**已知混杂候选（未排除）**：负面事件日常伴随主题整体下跌，peer 同日回调、
+次开盘入场吃到的可能只是相关名字的短期反转。
+**边界**：仅 2026-01..06 五个月 replay 行，无 canonical 窗口覆盖（新闻档案
+起点限制）；两半段一致性弱于三窗口标准。**同人群饱和规则自此生效**：禁止
+对这 3.5k closed 行再按 relation/theme/horizon/magnitude 切片。
+
+**反转混杂 kill test 已完成（exp-20260703-005，propagation_survives）**：
+treatment 行冻结自 exp-021 负面侧，对照 = 同 ticker、距任何事件关联 ≥10
+个交易日、前日 setup return ±100bp 匹配的干净日。结果：treatment 的 setup
+中位仅 -46.9bp（回调前提存在但轻微），匹配对照后**残差中位 +188.8bp**
+（h1 +357.5 / h2 +157.3，690 匹配行，正向占比 55.5%）——残差比原 delta
+（+42.5bp）更大，因为普通回调日在这批名字上是**动量延续**（对照 delta 为
+负），而叠加 peer 负面事件的回调日反而反弹。反转故事被否定，传导解释增强。
+诚实警示：+188bp 的量级大得可疑（h1 仅 114 行、右尾重 mean +381.7），
+预登记规则判 survives，但量级本身待 forward 行检验，禁止对 matching 带宽 /
+排除窗 / 残差阈值做任何翻案式重调。
+
+**下一步（更新后）**：daily 接线已由并发 agent 完成（exp-20260702-028 事件
+流 + observer 均入 run.py），current 事件的二阶行将自动累积。等非 replay
+closed 行成规模（建议 ≥200 条负面侧）后做出样本验证读取；通过则走
+shared-paper-first full-stack（默认 off 的"合格负面一阶事件→theme peer
+10 日 tilt"paper sleeve，带 execution envelope）。
+
 ## 三、其余三个候选方向（按原优先级保留）
 
 ### 1. Kova SEC13F active-flow → 补历史 PIT 覆盖，跑全栈 Gate 1-4

@@ -1,0 +1,137 @@
+{
+  "experiment_id": "exp-20260702-020",
+  "timestamp": "2026-07-02T16:42:12.852651+00:00",
+  "owner": "daniel-agent",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_news_event_second_order_exposure_ledger",
+  "accepted": true,
+  "hypothesis": "Qualified structured news events on first-order tickers can be joined to the entity_exposure_map to record second-order SIC-peer / theme-peer observation rows with next-open 5d/10d SPY-excess settlement, replayable over the 2026-01..06 archive and forward-accumulating for current events.",
+  "alpha_hypothesis": "Later, separately predeclared read: do second-order exposure names drift with (or against) first-order event polarity after the overnight repricing (Meta->Nebius style propagation)?",
+  "change_type": "identity_or_measurement_repair",
+  "implementation_mode": "shared_module_plus_append_only_ledger",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "trial_family": "news_event_second_order_exposure_observer",
+  "trial_variant_id": "exp-20260702-020",
+  "single_causal_variable": "news_event_second_order_exposure_observation_ledger_v1",
+  "changed_variable": "new_non_ohlcv_surface_news_event_exposure_observations",
+  "causal_components": [
+    "first_order_ticker_sic_peer_join",
+    "theme_overlay_membership_join",
+    "max_15_sic_peers_deterministic",
+    "next_open_entry_5d_10d_close_spy_excess",
+    "append_only_event_ticker_dedup",
+    "polarity_and_relation_recorded_not_predeclared"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260630-005",
+    "exp-20260630-006",
+    "exp-20260702-009",
+    "exp-20260702-017"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_second_order_exposure_observation_rows",
+  "new_evidence_axis": "first join of the structured news event ledger to the entity_exposure_map relation graph; prior news observations were first-order-only",
+  "audit": {
+    "rows": 5703,
+    "duplicate_keys": 0,
+    "closed_rows": 3513,
+    "pending_rows": 2190,
+    "event_ids": 353,
+    "first_order_tickers": 25,
+    "exposure_tickers": 187,
+    "event_date_span": [
+      "2026-01-22",
+      "2026-07-01"
+    ],
+    "relation_type_counts": {
+      "sic_peer": 4267,
+      "theme_peer": 1436
+    },
+    "event_polarity_counts": {
+      "negative": 2451,
+      "positive": 3252
+    },
+    "top_first_order_ticker": "MU",
+    "top_first_order_share": 0.114,
+    "descriptive_polarity_split_NOT_A_VERDICT": {
+      "positive": {
+        "closed_rows": 1925,
+        "median_excess_10d_bp": 159.6,
+        "positive_share": 0.566
+      },
+      "negative": {
+        "closed_rows": 1588,
+        "median_excess_10d_bp": 181.2,
+        "positive_share": 0.57
+      }
+    }
+  },
+  "gate1": {
+    "note": "measurement repair; canonical baseline unchanged"
+  },
+  "gate2": {
+    "required_artifacts_present": true
+  },
+  "gate3": {
+    "note": "no signal filtering changed; observation rows only"
+  },
+  "gate4": {
+    "mode": "measurement_repair_ledger_audit",
+    "passed": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Append-only observation ledger + CLI; NOT wired into run.py yet (deferred to avoid contending with active claims). Daily refresh = rerun the CLI; settlement is idempotent."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The exp-20260630-006 replay already carried five months of qualified structured events, so second-order rows materialized immediately; settlement coverage is bounded by hot-warehouse per-ticker gaps (2026-04-24..05-21) and recent events still inside the 10d horizon.",
+    "forbidden_near_neighbor_retry": "Do not read polarity separation off this artifact as a verdict, and do not re-slice by relation type, theme, or horizon outside a predeclared read. The read experiment must predeclare cohort, minimum closed rows per cell, baseline control, and sign rule before looking.",
+    "new_evidence_required": "More closed rows per (polarity x relation_type) cell — target >= 50 per cell — then one predeclared attribution read reusing the exp-20260702-017 baseline framework."
+  },
+  "related_files": [
+    "data/experiments/exp-20260630-006/daily_news_structured_event_rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json"
+  ],
+  "changed_files": [
+    "quant/news_event_exposure_observer.py",
+    "quant/test_news_event_exposure_observer.py",
+    "quant/experiments/exp_20260702_020_news_event_exposure_observer.py",
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+    "data/experiments/exp-20260702-020/exp_20260702_020_news_event_exposure_observer.json",
+    "experiments/logs/exp-20260702-020.json",
+    "experiments/cards/exp-20260702-020.md",
+    "experiments/manifests/exp-20260702-020.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\news_event_exposure_observer.py --replay-file data\\experiments\\exp-20260630-006\\daily_news_structured_event_rows.jsonl",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_news_event_exposure_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_020_news_event_exposure_observer.py"
+  ],
+  "allowed_write_scope": [
+    "quant/news_event_exposure_observer.py",
+    "quant/test_news_event_exposure_observer.py",
+    "quant/experiments/exp_20260702_020_news_event_exposure_observer.py",
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+    "data/experiments/exp-20260702-020/exp_20260702_020_news_event_exposure_observer.json",
+    "experiments/logs/exp-20260702-020.json",
+    "experiments/cards/exp-20260702-020.md",
+    "experiments/manifests/exp-20260702-020.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true
+}

@@ -1,0 +1,338 @@
+{
+  "acceptance_rule": "Observed-only lead only if median event-minus-baseline 10d SPY-excess delta has the SAME sign in all three canonical windows and pooled |delta| >= 25bp with >= 30 deduped rows per window; otherwise close observed_only no-edge. No production behavior changes either way.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+    "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+    "data/experiments/exp-20260702-017/propagation_rows.jsonl",
+    "experiments/logs/exp-20260702-017.json",
+    "experiments/cards/exp-20260702-017.md",
+    "experiments/manifests/exp-20260702-017.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-017.md",
+  "causal_components": [
+    "fresh_nonamendment_s1_f1_only",
+    "private_unresolved_primary_only",
+    "blank_check_excluded",
+    "theme_peer_edges_only",
+    "next_open_entry",
+    "10d_close_exit_5d_secondary",
+    "spy_excess_metric",
+    "unique_ticker_entrydate_dedup",
+    "unconditional_same_window_baseline_control"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "none_read_only",
+  "claimed_at": "2026-07-02T15:55:55+00:00",
+  "completed_at": "2026-07-02T15:58:06+00:00",
+  "created_at": "2026-07-02T15:55:23+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-017",
+  "experiment_uid": "expuid-704b48d52a674100",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T15:55:23+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "ipo_theme_propagation"
+  },
+  "hypothesis": "Fresh private-entity S-1/F-1 IPO registrations propagate 10d SPY-excess impact to theme-peer listed tickers versus the peers' unconditional same-window baseline, with consistent sign across all three canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "ipo_theme_peer_propagation_10d_spy_excess_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-009",
+    "exp-20260630-017",
+    "exp-20260622-006",
+    "exp-20260618-016"
+  ],
+  "new_evidence_type": "new_data_source_event_relation_join",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "a",
+        "across",
+        "after",
+        "all",
+        "at",
+        "attention",
+        "attribution",
+        "baseline",
+        "be",
+        "behavior",
+        "blank",
+        "by",
+        "canonical",
+        "change",
+        "check",
+        "competitive",
+        "consistent",
+        "corporate",
+        "could",
+        "date",
+        "differ",
+        "direction",
+        "edge",
+        "entered",
+        "entities",
+        "entity",
+        "event",
+        "events",
+        "excess",
+        "exp",
+        "exposure",
+        "f",
+        "filed",
+        "fixes",
+        "forward",
+        "fresh",
+        "from",
+        "impact",
+        "ipo",
+        "is",
+        "listed",
+        "map",
+        "mapped",
+        "measurable",
+        "negative",
+        "no",
+        "non",
+        "not",
+        "on",
+        "only",
+        "or",
+        "overlay",
+        "peer",
+        "positive",
+        "predeclared",
+        "price",
+        "primary",
+        "private",
+        "propagate",
+        "propagation",
+        "read",
+        "registrations",
+        "reports",
+        "returns",
+        "s",
+        "same",
+        "show",
+        "sign",
+        "spy",
+        "strategy",
+        "stream",
+        "supply",
+        "that",
+        "theme",
+        "three",
+        "ticker",
+        "tickers",
+        "to",
+        "unconditional",
+        "unresolved",
+        "warehouse",
+        "window",
+        "windows",
+        "x"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.473,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "peer_earnings_reaction_transfer_candidate_pool",
+        "reopen_condition": "If revisited, use forward rows or a materially sharper free peer relation such as industry-level similarity, customer/supplier links, or observed historical earnings-reaction co-movement.",
+        "score": 0.459,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item101_positive_reaction_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially sharper contract-quality field such as agreement value, counterparty/source quality, or revenue visibility extracted with evidence spans.",
+        "score": 0.4547,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item502_positive_reaction_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially sharper leadership-quality field such as CEO/CFO appointment versus resignation, succession clarity, founder transition, or evidence-bound text classification.",
+        "score": 0.4547,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_offering_price_absorption_candidate_pool",
+        "reopen_condition": "If this fixed offering-absorption bundle fails, do not retry by sweeping offering form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT financing economics such as offering amount normalized by market cap, use-of-proceeds, debt vs equity classification, A",
+        "score": 0.4546,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "First relation surface keyed on NON-TRADABLE primary entities (private IPO registrants) joined to listed peers via versioned theme overlay; both the corporate-event stream (exp-20260702-008) and the entity exposure map (exp-20260702-009) are new surfaces with zero prior trials",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "First relation surface keyed on NON-TRADABLE primary entities (private IPO registrants) joined to listed peers via versioned theme overlay; both the corporate-event stream (exp-20260702-008) and the entity exposure map (exp-20260702-009) are new surfaces with zero prior trials",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "First relation surface keyed on NON-TRADABLE primary entities (private IPO registrants) joined to listed peers via versioned theme overlay; both the corporate-event stream (exp-20260702-008) and the entity exposure map (exp-20260702-009) are new surfaces with zero prior trials",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "daniel-agent",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "peer moves already priced by next open",
+      "theme edges dominated by biotech beta",
+      "per-window N too thin outside biotech",
+      "sign flips across windows"
+    ],
+    "confidence_reason": "new relation axis with dense rows, but relation-alpha base rate is low and characteristic-similarity peers just failed",
+    "recorded_at": "2026-07-02T15:58:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_no_ipo_theme_peer_propagation_edge",
+    "artifact": "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+    "log": "experiments/logs/exp-20260702-017.json",
+    "runner": "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+    "gate4": {
+      "mode": "observed_only_attribution",
+      "passed": false,
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "sign_not_consistent"
+      ]
+    },
+    "summary": "The event-conditioned 10d SPY-excess of theme peers did not separate from the same tickers' unconditional baseline with a stable sign across the three canonical windows, so fresh private IPO registration flow, as mapped by theme overlay v1, is not a tradable propagation signal on its own."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-017.json",
+  "single_causal_variable": "ipo_theme_peer_propagation_10d_spy_excess_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260702-017.json",
+  "trial_family": "ipo_theme_peer_propagation_attribution",
+  "trial_variant_id": "exp-20260702-017",
+  "alpha_hypothesis": "If a stable sign exists, a later shared-paper-first full-stack experiment can turn theme-peer propagation into a default-off candidate source or de-allocation context.",
+  "implementation_mode": "read_only_diagnostic",
+  "new_evidence_axis": "first relation surface keyed on non-tradable primary entities (private IPO registrants) joined to listed theme peers",
+  "decision": "observed_only_no_ipo_theme_peer_propagation_edge",
+  "artifact": "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+  "log": "experiments/logs/exp-20260702-017.json",
+  "gate1": {
+    "note": "read-only; canonical baseline unchanged"
+  },
+  "gate2": {
+    "fields": [
+      "filed_date",
+      "theme",
+      "ticker",
+      "Open/Close warehouse bars"
+    ],
+    "note": "all inputs PIT: filing date from EDGAR index, bars from warehouse"
+  },
+  "gate3": {
+    "note": "no filters changed; diagnostic only"
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "sign_not_consistent"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only attribution; nothing wired into any order path"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The event-conditioned 10d SPY-excess of theme peers did not separate from the same tickers' unconditional baseline with a stable sign across the three canonical windows, so fresh private IPO registration flow, as mapped by theme overlay v1, is not a tradable propagation signal on its own.",
+    "forbidden_near_neighbor_retry": "Do not re-slice this same event population by theme subset, keyword tweak, horizon, entry lag, density cut, or SIC-peer edges to manufacture a lead. A valid retry needs a new event class (425 merger side), amendment/withdrawal trajectory, priced-deal terms (S-1/A pricing range), or closed forward rows under a shared helper.",
+    "new_evidence_required": "Either a stable sign here (then shared-paper-first full stack), or richer event provenance: pricing-range amendments, deal size vs theme float, first-trade dates."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+    "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+    "data/experiments/exp-20260702-017/propagation_rows.jsonl",
+    "experiments/logs/exp-20260702-017.json",
+    "experiments/cards/exp-20260702-017.md",
+    "experiments/manifests/exp-20260702-017.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T15:58:06+00:00"
+}

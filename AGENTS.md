@@ -83,7 +83,14 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    出现 §2.3 意义上会真正产出新行的新源 / 新 gate shape 时，才允许重开。反复每日重开同一 park
    面复述 "wait for more closed rows / not mature yet" 与 scan 源、forward 归因、measurement
    plumbing 同属饱和重复，只是换了一身"readiness audit"的外衣。
-4. 优先选择高赚钱潜力、高可验证性、低复杂度、可生产执行的候选。
+   **观察者例行物化治程（硬规则）**：一个已被接受的 default-off observer / forward ledger，其
+   "新一天行的例行 delta 物化"（当日行 append、context materialization、outcome refresh 等，
+   不检验任何新假设）在累计消耗 ≥3 个实验 ID 后，**不得再为同一 observer 的例行日更 reserve
+   新实验 ID**。下一个合法动作是一次性的 measurement repair：把该 append 接入 run.py 日常管道
+   / 调度任务，让例行行自动落盘；此后日更在管道内完成，不占实验 ID、不记 log。§2.3 的豁免
+   覆盖的是**首次构建**会产出新行的面，不是每天手工重跑同一物化脚本——后者是穿着实验外衣的
+   cron 工作，行虽然真实新增，但没有可归因假设。真正的故障恢复（orphan temp、上游格式变更、
+   发布异常）仍按 measurement repair 占 ID，不受本条限制。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 
 ---
