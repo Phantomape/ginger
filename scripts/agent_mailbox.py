@@ -203,6 +203,132 @@ def list_channels(*, root=MAILBOX_ROOT):
     return sorted(p.name for p in root.iterdir() if p.is_dir())
 
 
+# ---------------------------------------------------------------------------
+# Dispatch: one-sided trigger that STARTS the peer agent (codex) and opens the
+# conversation, so a mailbox exchange no longer requires both agents to already
+# be alive. The dispatcher speaks first; the spawned peer listens first.
+# ---------------------------------------------------------------------------
+
+# The npm wrapper (codex.CMD) is broken on this machine (missing the win32-x64
+# platform package), so discovery tests real binaries and falls back to the
+# desktop app's bundled CLIs.
+CODEX_CANDIDATES = [
+    "codex",
+    r"C:\Users\Administrator\.codex\plugins\.plugin-appserver\codex.exe",
+    r"C:\Users\Administrator\.codex\.sandbox-bin\codex.exe",
+]
+
+
+def find_codex_exe(explicit: str | None = None) -> str | None:
+    """Return the first codex binary that answers ``--version`` with rc 0."""
+    import shutil
+    import subprocess
+
+    candidates = [explicit] if explicit else []
+    which = shutil.which("codex")
+    if which:
+        candidates.append(which)
+    candidates.extend(CODEX_CANDIDATES)
+    seen = set()
+    for cand in candidates:
+        if not cand or cand in seen:
+            continue
+        seen.add(cand)
+        try:
+            out = subprocess.run(
+                [cand, "--version"], capture_output=True, text=True, timeout=60
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if out.returncode == 0:
+            return cand
+    return None
+
+
+def _bootstrap_prompt(*, channel: str, me: str, peer: str, rounds: int,
+                      python_exe: str, repo_root: Path) -> str:
+    attachments = f"data/agent_mailbox/{channel}/attachments"
+    mailbox = "scripts/agent_mailbox.py"
+    return (
+        f"You are agent \"{peer}\" in a file-mailbox conversation with agent "
+        f"\"{me}\" inside the repo at {repo_root}. The protocol is documented "
+        f"in docs/agent_mailbox.md. You LISTEN FIRST.\n\n"
+        f"Loop (at most {rounds} of your turns):\n"
+        f"1. Receive: run\n"
+        f"   {python_exe} {mailbox} recv --channel {channel} --me {peer} --timeout 300\n"
+        f"   Exit code 2 means timeout: just re-run the same command. The first\n"
+        f"   message you receive is your task brief from {me}.\n"
+        f"2. Do what the message asks. You have network access; when the task\n"
+        f"   is research, verify claims online and cite concrete source URLs.\n"
+        f"3. Reply: for anything longer than a few lines, write the full body\n"
+        f"   to a new file under {attachments}/ (create the directory if\n"
+        f"   needed) and send a SHORT pointer message instead, e.g.\n"
+        f"   {python_exe} {mailbox} send --channel {channel} --me {peer} "
+        f"--text \"reply in {attachments}/round1.md\"\n"
+        f"   Avoid shell-quoting pitfalls: keep --text short, plain, no nested "
+        f"quotes.\n"
+        f"4. Then go back to step 1 and wait for {me}'s next message.\n"
+        f"5. Stop when you send or receive a message containing the token DONE,"
+        f" or when you have used your {rounds} turns.\n\n"
+        f"Hard rules: do not modify tracked repo files; write only under "
+        f"data/agent_mailbox/{channel}/; do not run git commit; do not reserve "
+        f"experiment ids. Your final message must contain DONE."
+    )
+
+
+def dispatch_peer(channel: str, me: str, task: str, *,
+                  peer: str = "codex",
+                  rounds: int = 3,
+                  codex_exe: str | None = None,
+                  sandbox: str = "danger-full-access",
+                  model: str | None = None,
+                  root=MAILBOX_ROOT,
+                  repo_root: Path = REPO_ROOT) -> dict:
+    """Send the opener and spawn the peer agent in the background.
+
+    Returns {seq, pid, exe, log}. The caller then simply alternates
+    ``recv``/``send`` as the speaks-first side of the normal turn recipe.
+    """
+    import subprocess
+
+    exe = find_codex_exe(codex_exe)
+    if exe is None:
+        raise RuntimeError(
+            "no working codex binary found (tried PATH and known fallbacks); "
+            "pass --codex-exe explicitly"
+        )
+    seq = send_message(channel, me, task, root=root)
+
+    cdir = _channel_dir(channel, root)
+    (cdir / "attachments").mkdir(parents=True, exist_ok=True)
+    prompt = _bootstrap_prompt(
+        channel=channel, me=me, peer=peer, rounds=rounds,
+        python_exe="python", repo_root=repo_root,
+    )
+    log_path = cdir / f".{peer}-exec.log"
+    log_f = open(log_path, "a", encoding="utf-8")  # noqa: SIM115 - handed to child
+    cmd = [exe, "exec", "--sandbox", sandbox]
+    if model:
+        cmd += ["--model", model]
+    cmd.append(prompt)
+    creationflags = 0
+    if os.name == "nt":
+        creationflags = (
+            subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore[attr-defined]
+            | subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
+        )
+    proc = subprocess.Popen(
+        cmd,
+        cwd=str(repo_root),
+        stdin=subprocess.DEVNULL,
+        stdout=log_f,
+        stderr=subprocess.STDOUT,
+        creationflags=creationflags,
+    )
+    (cdir / f".{peer}-exec.pid").write_text(str(proc.pid))
+    return {"seq": seq, "pid": proc.pid, "exe": exe, "log": str(log_path)}
+
+
 def _cmd_send(a):
     seq = send_message(a.channel, a.me, a.text, root=a.root)
     print(f"[sent channel={a.channel} seq={seq} from={a.me}]")
@@ -227,6 +353,20 @@ def _cmd_transcript(a):
 def _cmd_list(a):
     for name in list_channels(root=a.root):
         print(name)
+
+
+def _cmd_dispatch(a):
+    info = dispatch_peer(
+        a.channel, a.me, a.task,
+        peer=a.peer, rounds=a.rounds, codex_exe=a.codex_exe,
+        sandbox=a.sandbox, model=a.model, root=a.root,
+    )
+    print(f"[dispatched channel={a.channel} opener_seq={info['seq']} "
+          f"peer={a.peer} pid={info['pid']}]")
+    print(f"[exe={info['exe']}]")
+    print(f"[log={info['log']}]")
+    print(f"next: python scripts/agent_mailbox.py recv --channel {a.channel} "
+          f"--me {a.me} --peer {a.peer}", file=sys.stderr)
 
 
 def _cmd_verify(a):
@@ -284,6 +424,26 @@ def main(argv=None):
                                       "references in a channel (existence only).")
     v.add_argument("--channel", required=True)
     v.set_defaults(func=_cmd_verify)
+
+    d = sub.add_parser(
+        "dispatch",
+        help="Send the opener AND spawn the peer agent (codex exec) in the "
+             "background so a conversation can start one-sided.",
+    )
+    d.add_argument("--channel", required=True)
+    d.add_argument("--me", required=True, help="Your agent name (speaks first).")
+    d.add_argument("--task", required=True, help="Opener/task brief text.")
+    d.add_argument("--peer", default="codex", help="Spawned agent's name.")
+    d.add_argument("--rounds", type=int, default=3,
+                   help="Max peer turns before it must stop (default 3).")
+    d.add_argument("--codex-exe", default=None,
+                   help="Explicit codex binary; otherwise auto-discovered.")
+    d.add_argument("--sandbox", default="danger-full-access",
+                   choices=["read-only", "workspace-write", "danger-full-access"],
+                   help="codex exec sandbox mode (network research needs "
+                        "danger-full-access on this machine).")
+    d.add_argument("--model", default=None, help="Optional codex model override.")
+    d.set_defaults(func=_cmd_dispatch)
 
     a = ap.parse_args(argv)
     a.func(a)
