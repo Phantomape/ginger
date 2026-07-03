@@ -404,9 +404,188 @@ def _persist_daily_structured_news_observation(today):
             observation_rows,
             target_rows,
         )
+        snapshot["second_order_exposure_observer"] = (
+            _persist_news_event_exposure_observer()
+        )
         return snapshot
     except Exception as e:
         log.warning(f"Structured-news observation snapshot unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_news_event_exposure_observer():
+    """Refresh read-only second-order exposure rows for structured news events."""
+    try:
+        from news_event_exposure_observer import run as run_exposure_observer
+
+        manifest = run_exposure_observer()
+        log.info(
+            "Structured-news second-order exposures: rows=%s closed=%s appended=%s pending=%s",
+            manifest.get("rows"),
+            manifest.get("closed_rows"),
+            manifest.get("appended_this_run"),
+            manifest.get("pending_rows"),
+        )
+        return manifest
+    except Exception as e:
+        log.warning(f"Structured-news second-order exposure observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _daily_tag_to_date(today):
+    if hasattr(today, "year") and hasattr(today, "month") and hasattr(today, "day"):
+        return today
+    text = str(today)
+    for fmt in ("%Y%m%d", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"unsupported daily date tag: {today!r}")
+
+
+def _persist_sec_corporate_event_stream(today):
+    """Refresh read-only SEC S-1/F-1/425 event rows for current daily runs."""
+    try:
+        from sec_corporate_event_stream import ingest_range
+        from sec_ticker_map import load_company_ticker_map
+
+        end = _daily_tag_to_date(today)
+        start = end.replace(month=((end.month - 1) // 3) * 3 + 1, day=1)
+        summary = ingest_range(
+            start,
+            end,
+            ticker_map=load_company_ticker_map(),
+            sleep_seconds=0.0,
+            today=end,
+        )
+        result = dict(summary)
+        result.update(
+            {
+                "status": "ok",
+                "strategy_behavior_changed": False,
+                "trade_enabled": False,
+            }
+        )
+        log.info(
+            "SEC corporate-event stream: appended=%s fetched=%s quarters=%s",
+            result.get("rows_appended"),
+            result.get("quarters_fetched"),
+            result.get("quarters_considered"),
+        )
+        return result
+    except Exception as e:
+        log.warning(f"SEC corporate-event stream unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_entity_theme_news_observer(today):
+    """Refresh read-only entity/theme news rows for current daily runs."""
+    try:
+        from entity_theme_news_observer import persist_entity_theme_news_observer
+
+        summary = persist_entity_theme_news_observer(today)
+        log.info(
+            "Entity/theme news observer: sources=%s raw=%s unique=%s errors=%s",
+            summary.get("source_count"),
+            summary.get("raw_item_count"),
+            summary.get("unique_item_count"),
+            summary.get("source_error_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Entity/theme news observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_entity_theme_news_outcomes(today):
+    """Refresh read-only entity/theme news forward outcome rows."""
+    try:
+        from entity_theme_news_observer import persist_entity_theme_news_outcome_ledger
+
+        summary = persist_entity_theme_news_outcome_ledger(today)
+        log.info(
+            "Entity/theme news outcomes: files=%s rows=%s settled=%s unsettled=%s",
+            summary.get("daily_item_file_count"),
+            summary.get("candidate_outcome_row_count"),
+            summary.get("settled_count"),
+            summary.get("unsettled_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Entity/theme news outcomes unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_prediction_market_event_observer(today):
+    """Refresh read-only prediction-market event rows for current daily runs."""
+    try:
+        from prediction_market_event_observer import (
+            persist_prediction_market_event_observer,
+        )
+
+        summary = persist_prediction_market_event_observer(today)
+        log.info(
+            "Prediction-market event observer: sources=%s raw=%s unique=%s errors=%s",
+            summary.get("source_count"),
+            summary.get("raw_item_count"),
+            summary.get("unique_item_count"),
+            summary.get("source_error_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Prediction-market event observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_prediction_market_event_outcomes(today):
+    """Refresh read-only prediction-market event forward outcome rows."""
+    try:
+        from prediction_market_event_observer import (
+            persist_prediction_market_event_outcome_ledger,
+        )
+
+        summary = persist_prediction_market_event_outcome_ledger(today)
+        log.info(
+            "Prediction-market event outcomes: files=%s rows=%s settled=%s unsettled=%s",
+            summary.get("daily_item_file_count"),
+            summary.get("candidate_outcome_row_count"),
+            summary.get("settled_count"),
+            summary.get("unsettled_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Prediction-market event outcomes unavailable: {e}")
         return {
             "status": "unavailable",
             "error": str(e),
@@ -669,8 +848,8 @@ def _persist_estimate_revision_ledger_step(today_iso):
             as_of=today_iso,
             data_dir="data",
             output_dir="data/non_ohlcv",
-            # Current-day quant_signals are written later in the pipeline.
-            # Keep run.py's daily artifact free of stale same-day matches.
+            # Current-day quant_signals are written later in the pipeline; a
+            # match-enabled refresh runs after Step 7 persists that artifact.
             match_daily_signals=False,
         )
         log.info(
@@ -699,6 +878,70 @@ def _persist_estimate_revision_ledger_step(today_iso):
                 "scope": "default_off_forward_estimate_revision_data_ledger_failed",
             },
         }
+
+
+def _refresh_estimate_revision_ledger_after_quant_signals(
+    today_iso,
+    non_ohlcv_snapshot,
+    *,
+    quant_signals_saved,
+):
+    """Refresh the estimate-revision ledger once same-day quant_signals exist."""
+    if not quant_signals_saved:
+        return {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "quant_signals_save_failed",
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_data_ledger_skipped",
+            },
+        }
+
+    try:
+        summary = persist_estimate_revision_ledger(
+            as_of=today_iso,
+            data_dir="data",
+            output_dir="data/non_ohlcv",
+            match_daily_signals=True,
+        )
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_ledger"] = summary
+        log.info(
+            "Estimate revision ledger refreshed after quant_signals: matches=%s selected=%s records=%s",
+            summary.get("matched_candidate_rows"),
+            summary.get("matched_selected_signal_rows"),
+            summary.get("daily_signal_match_record_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Post-quant estimate revision ledger refresh unavailable: {e}")
+        summary = {
+            "status": "failed_post_quant_signal_refresh",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_data_ledger_failed",
+            },
+        }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_ledger"] = summary
+        return summary
 
 
 def _build_daily_non_ohlcv_snapshot(
@@ -1435,6 +1678,10 @@ def main():
         empty_sec_ftd_finra_paper_sleeve_snapshot,
         prep_and_build_sec_ftd_finra_paper_sleeve_snapshot,
     )
+    from moomoo_capital_flow_paper_sleeve import (
+        empty_moomoo_capital_flow_paper_sleeve_snapshot,
+        prep_and_build_moomoo_capital_flow_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_shadow_snapshot,
@@ -2059,6 +2306,7 @@ def main():
             "QQQ": qqq_ohlcv,
         },
         vix_ohlcv=vix_ohlcv,
+        universe_ohlcv_by_ticker=ohlcv_dict,
     )
     log.info(
         "Market-state context: spy20=%s qqq20=%s qqq-spy20=%s vix=%s vix10d=%s",
@@ -2468,6 +2716,11 @@ def main():
         # Prompt is out — now drain deferred broad/alt-data accumulation that the
         # operator handoff did not need.
         _persist_daily_structured_news_observation(today)
+        _persist_sec_corporate_event_stream(today)
+        _persist_entity_theme_news_observer(today)
+        _persist_entity_theme_news_outcomes(today)
+        _persist_prediction_market_event_observer(today)
+        _persist_prediction_market_event_outcomes(today)
         _run_deferred_after_prompt()
 
     try:
@@ -3196,6 +3449,25 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    moomoo_capital_flow_paper_sleeve = _sleeve(
+        lambda: prep_and_build_moomoo_capital_flow_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_dict=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            same_day_core_tickers={
+                str(signal.get("ticker") or "").upper()
+                for signal in signals
+                if signal.get("ticker")
+            },
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_moomoo_capital_flow_paper_sleeve_snapshot,
+        "Moomoo capital-flow",
+        "moomoo_capital_flow_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     accepted_helper_source_priority_allocator_paper_sleeve = _sleeve(
         lambda: build_accepted_helper_source_priority_allocator_snapshot(
             as_of=today_iso,
@@ -3431,7 +3703,7 @@ def main():
     print("\n" + report)
     save_report(report)
 
-    _save_json_best_effort({
+    quant_signals_payload = {
         "generated_at":   datetime.now().isoformat(),
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
@@ -3492,6 +3764,7 @@ def main():
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
+        "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
@@ -3504,7 +3777,25 @@ def main():
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
         "features":       features_dict,
-    }, str(daily_artifact_path("quant_signals", today)), "quant signals")
+    }
+    quant_signals_path = str(daily_artifact_path("quant_signals", today))
+    quant_signals_saved = _save_json_best_effort(
+        quant_signals_payload,
+        quant_signals_path,
+        "quant signals",
+    )
+    estimate_revision_summary = _refresh_estimate_revision_ledger_after_quant_signals(
+        today_iso,
+        non_ohlcv_snapshot,
+        quant_signals_saved=quant_signals_saved,
+    )
+    if quant_signals_saved:
+        quant_signals_payload["non_ohlcv_snapshot"] = non_ohlcv_snapshot
+        _save_json_best_effort(
+            quant_signals_payload,
+            quant_signals_path,
+            "quant signals post-estimate-revision refresh",
+        )
 
     _run_expectation_residual_leadership_attribution_observer()
 
@@ -3515,6 +3806,11 @@ def main():
     else:
         trade_items = _collect_trade_news(today, universe, pilot_universe)
         _persist_daily_structured_news_observation(today)
+        _persist_sec_corporate_event_stream(today)
+        _persist_entity_theme_news_observer(today)
+        _persist_entity_theme_news_outcomes(today)
+        _persist_prediction_market_event_observer(today)
+        _persist_prediction_market_event_outcomes(today)
 
     # ── Step 9: LLM prompt ────────────────────────────────────────────────────
     _print_section("STEP 9 — LLM prompt")

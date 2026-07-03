@@ -91,6 +91,16 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    覆盖的是**首次构建**会产出新行的面，不是每天手工重跑同一物化脚本——后者是穿着实验外衣的
    cron 工作，行虽然真实新增，但没有可归因假设。真正的故障恢复（orphan temp、上游格式变更、
    发布异常）仍按 measurement repair 占 ID，不受本条限制。
+   **观察者首建 ID 预算（硬规则）**：一个新的 default-off observer / forward ledger，从源面构建
+   到"行能自动成熟"的全部首建 plumbing——采集面 + daily wiring + outcome/settlement ledger +
+   settlement daily wiring——默认打包为**不超过 2 个实验 ID**（采集面+日更接入一个；结算合同+
+   结算日更一个）。在该 observer 产出第一批已结算 forward 行之前，同一 observer 超出预算的纯
+   plumbing 拆分不得再 reserve 新 ID，应并入现有实验完成（反例：2026-07-03 prediction-market
+   observer 首日消耗 5 个 ID——surface / daily wiring / relevance gate / outcome ledger /
+   outcome wiring——而首个快照 0 行已结算）。§2.5 shared-paper-first 的精神同样适用于 observer：
+   首建就应同时覆盖采集与结算两端，而不是把一个面拆成 4-5 个连续 `accepted_measurement_repair`。
+   例外：真正的数据质量故障修复（污染快照、上游格式变更、语义相关性闸门缺陷）仍可单独按
+   measurement repair 占 ID，不计入本预算。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 
 ---
