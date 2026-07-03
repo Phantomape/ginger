@@ -32,11 +32,22 @@
 
 ## 决议优先级
 
-- **P1 — DoD 合同授予冲击（candidate_pool_full_stack）**：war.gov RSS
-  pubDate PIT，发行人匹配 PLTR/RTX/GE/GEV/CAT/DE/MSFT/AMZN/GOOG，
-  materiality = 合同额/市值 或相对自身 trailing 授予基线的 z-score，
-  次开盘进 10 日收盘出。真正新数据源，novelty 干净；与 space_catalyst
-  协同。这是下一个全栈实验的第一候选。
+- **P1 — DoD 合同授予冲击：已 DEMOTED → PARK（2026-07-03 第二轮
+  mailbox 验证，频道 `dod-contracts-density-20260703`，未消耗实验 ID）**。
+  三条实证依据（codex 在线核实）：
+  (a) 39 天分层抽样显示 top-1/day 结构性 RTX 垄断（外推 RTX 82/46/131
+  行 per window，PLTR/GE/GEV/GOOG 抽样为 0）——单票集中度守卫（≤50%
+  positive share / HHI ≤0.35）**按构造必挂**；
+  (b) 唯一可信的从业者研究（TenderAlpha/HKU 白皮书）把效应定位在
+  合同额/市值 top 5% 桶（即小盘），megacap-only 先验为负；
+  (c) war.gov feed 可证不完整：PLTR 2025-10-15 $442.9M 陆军订单
+  （USAspending W9128Z26FA001）连 11-12 补发页都没有；且 2025-10-01..
+  11-12 存在停摆空洞。50% 行是 modification/option。
+  **reopen 条件**：多机构捆绑面（war.gov + army.mil/ACC + GSA OneGov
+  发布 + 可选 NASA/DOE）的新密度爬取显示每窗口 ≥20 个映射事件且覆盖
+  ≥4 个不同 ticker。GSA OneGov 协议线（AWS 2025-08 / Gemini 2025-08 /
+  MSFT 2025-09）是其中最有趣的单线——真实市场相关、PIT 日期干净、
+  非国防名字——但月频 1-3 条只够 forward observer，不够三窗口回放。
 - **P2 — CISA KEV 入场风险闸（entry_filter / risk allocation）**：映射
   KEV 加入后 N 日内对 MSFT/AAPL/GOOG/META 的买入延迟/降权。可三窗口
   回放（dateAdded PIT）。诚实前提：仓库 entry-veto 基准率差 +
@@ -47,12 +58,17 @@
   等有承载面再说。
 - 未进入本轮：USPTO 专利质量冲击、FDA/ClinicalTrials 目录账本
   （codex round1 备选，未二次验证，留作 P1/P2 耗尽后的下一批探针）。
-- 另一条独立于本扫描的已登记轴：FINRA 非 ATS 批发商内部化周度面
-  `OTC_W_SMBL`（exp-20260703-016 reflection 预登记，基础设施全复用）。
+- **下一个实验槽位（P1 demote 后顶上）**：FINRA 非 ATS 批发商内部化
+  周度面 `OTC_W_SMBL`（exp-20260703-016 reflection 预登记的合法兄弟轴，
+  基础设施全复用，零新工程；NVDA 单周批发商内部化 3.75 亿股 ≈ ATS 的
+  7 倍，是零售订单流代理）。其后为 P2 CISA KEV 入场风险闸。
 
 ## 止损条件
 
-- P1：若 RSS 文章体的发行人解析在三窗口内映射不到 ≥20 笔可结算目标交易，
-  停在 observed-only，不做阈值挖矿；不得用 USAspending 回填绕过 PIT。
+- P1：**已按上述密度/先验/完整性证据 park**（止损条件在消耗实验 ID 之前
+  就被第二轮 mailbox 验证触发——这正是该协议的目的）。重开只认多机构
+  捆绑面的新密度爬取，不认同一 war.gov 面上的阈值/映射表微调。
 - P2：若被延迟的入场在回放中本来就不存在或不亏损，记 rejected 不重调
   N 日窗口；KEV 只有 4 个可映射发行人，禁止为凑样本扩展到弱映射产品线。
+- OTC_W_SMBL：沿用 exp-20260703-016 的冻结守卫与对照 bar，不因 ATS 版
+  被拒而放松任何阈值；若同样"正但不增量"，两条 venue 分解线一起冻结。
