@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-06-30.
+Last refreshed: 2026-07-02.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -713,7 +713,13 @@ rows produced an observed-only 2026-forward lead but lack canonical-window
 coverage; bearish options put-demand did not underperform consistently;
 intraday advisory shadow actions did not show stable h1/h3 edge; the first
 exit-oracle artifact was incomplete; close-confirmed static stops failed Gate
-4; breakout-without-2x-volume and 13D governance candidate-pool retries stayed
+4; but the repaired full-denominator oracle rows produced one positive
+observed-only lead: high account-risk trades (`actual_risk_pct >= 2%`) had
+larger avoidable oracle regret than the lower-risk complement in all three
+canonical windows. That is not an accepted exit rule because oracle best exits
+use future prices; it only justifies a separately predeclared shared lifecycle
+policy using fields known before exit. Breakout-without-2x-volume and 13D
+governance candidate-pool retries stayed
 rejected. The next compliant alpha should come from materially more closed
 forward replacement rows, historical PIT coverage for a now-forward-only
 surface, or a genuinely new economic data source such as borrow economics,
@@ -723,6 +729,73 @@ not spend another run on adjacent OHLCV precursor thresholds, positive-news
 keyword lists, options moneyness/skew buckets, Form 4/Form 144 response curves,
 close-confirmed stop retunes, intraday advisory reslices, or daily maturity
 audits that only confirm unchanged reopen counts.
+
+The July 1 maintenance batch did not add an accepted alpha, but it tightened
+several operating boundaries. `exp-20260701-001` confirmed that rebuilding the
+fixed-entry full-trade exit-oracle ledger was a duplicate of the June 30 repair;
+future exit work must start from a new shared pre-exit lifecycle rule or new
+settled shadow-exit rows, not another denominator materialization. Kova SEC13F
+sponsorship attribution (`exp-20260701-002`) remained observed-only/rejected:
+the score has broad row coverage, but no stable 10-day replacement edge, so
+13F stays delayed ownership/crowding context unless non-quarterly flow,
+campaign outcomes, or materially more settled rows appear. `exp-20260701-003`
+accepted a measurement repair by recovering the missing 2026-06-30 daily
+`clean_trade_news` final artifact from a valid atomic temp and restoring
+structured event observation rows; those rows are forward evidence to mature,
+not a reason to slice relation labels today. `exp-20260701-004` repaired a
+paper-state parity defect in `alpha_score_market_regime`: same-signal-day
+reruns now subtract already-pending entries for the same `as_of`, and the daily
+report renders the persisted pending queue, so state and operator output cannot
+silently diverge. `exp-20260701-005` was only a duplicate reservation closure.
+`exp-20260701-006` accepted a narrow estimate-revision measurement repair after
+the hot warehouse advanced to 2026-06-30: the five 2026-06-29 matched candidate
+rows now have h1 replacement outcomes, but only one row is non-flat and h3/h5/h10
+remain pending, so estimate-revision alpha is still not allocation-ready and
+must not be sliced by thresholds, direction, top-N, hold, notional, or response
+shape.
+
+The practical queue is unchanged but sharper: first collect closed
+forward-replacement rows for accepted/default-off and structured-news surfaces;
+second, if exit alpha is revisited, test one production-visible lifecycle rule
+through shared code and Gate 1-4; third, treat paper ledgers and reports as
+stateful systems that need idempotency and pending-queue parity, not as loose
+daily snapshots. Do not reserve new experiments for duplicate record repair,
+same-day rerun explanations, Kova/13F sponsorship reslices, or news relation
+condition cuts until the underlying row counts and horizons have actually
+matured.
+
+The July 2 batch adds data surfaces but does not promote a new tradable rule.
+Most accepted records were measurement repairs: SEC FTD publication refresh,
+current SEC semantic forward-readiness, estimate-revision candidate recovery,
+Form 4 sale-overhang context, options forward-observation deltas, structured
+daily/intraday news deltas, the SEC corporate-event stream, and the first
+entity-exposure map. The one promising new alpha direction is not a raw SEC
+event source. `exp-20260702-011` found a positive observed-only propagation
+lead when SEC corporate events are mapped to exposed listed peers, but
+`exp-20260702-012` rejected the first top-1/day deployable candidate source.
+Treat SEC event exposure as a relation surface that still needs a fixed
+ex-ante selection policy, PIT SIC-as-of-filing repair, daily default-off
+snapshot wiring, and fresh settled replacement rows. Do not retune the same
+event classes, theme overlay, SIC caps, liquidity gates, hold/cooldown, or
+notional on the observed rows.
+
+The same day closed several tempting retries. High actual-risk entry caps
+failed the >10% EV materiality hurdle because high-risk rows were often winners
+or too sparse; do not retune adjacent risk caps on the same fixed-entry rows.
+Space Catalyst defense-budget events remain good versus broad ETFs but failed
+same-theme opportunity cost, so do not promote semantic-bucket Space rows
+without same-theme replacement evidence. Institutional 13F active flow stayed
+window-fragile even when using actual structured-ZIP `FILING_DATE` availability;
+13F remains delayed ownership/crowding context until non-quarterly flow,
+campaign outcomes, borrow/loan cross-evidence, or materially more closed
+10-day rows arrive. IPO and 425 merger theme-peer propagation both failed
+stable sign tests; valid retries need richer deal economics such as pricing
+range, consideration mix, bidder/target role, deal size versus peer float,
+amendment/withdrawal/termination trajectory, or fresh forward rows under a
+shared helper. Moomoo `get_capital_flow` is a real data-source lead because the
+SDK/OpenD returned dated daily rows for sample names in mid_weak, late_strong,
+and recent_observe, but old_thin was empty; the next step is archive
+materialization and PIT usable-date mapping, not a main-flow threshold sweep.
 
 ## Detail Sources
 
@@ -1655,11 +1728,53 @@ production-visible field:
 - close-confirmed static stop, trailing stop, target trim, time stop, hold-day,
   or response-curve retries on the same fixed-entry exit rows. After
   `exp-20260630-011` and `exp-20260630-012`, a valid exit retry needs full-row
-  oracle cohort evidence plus a shared production/backtest lifecycle policy;
+  oracle cohort evidence plus a shared production/backtest lifecycle policy.
+  `exp-20260630-018` supplies only an observed-only high-account-risk cohort
+  lead; do not retune the 2% risk threshold, stop distance, target multiple,
+  hold length, or response curve on those oracle rows. Reopen only with one
+  shared pre-exit lifecycle rule, or with materially more settled forward
+  shadow-exit replacement-value rows;
 - intraday advisory shadow-action allocation or exit retries that only reslice
   the current settled snapshots by action type, horizon, LLM wording, or
   confidence. `exp-20260630-014` found no stable h1/h3 edge; reopen only with
   materially more closed rows or a new timestamped decision-quality field;
+- SEC corporate-event exposure propagation retries that only change form set,
+  event-class priority, relation priority, theme overlay, SIC peer cap,
+  liquidity gates, top-N, hold, cooldown, notional, or response shape on the
+  `exp-20260702-011`/`012` rows. The observed-only exposure map lead did not
+  survive as a fixed top-1/day candidate source. Reopen only with a shared
+  daily/backtest helper using one fixed ex-ante source-ranking rule, PIT
+  SIC-as-of-filing repair, materially richer entity/economic relation data, or
+  fresh settled replacement rows under the unchanged map;
+- high-actual-risk entry risk-cap or early-risk response-curve retries that
+  sweep the 2% actual-risk cap, stop distance, target multiple, hold length,
+  early-weakness combo, notional, or adjacent risk buckets on the same fixed
+  entry rows. `exp-20260702-010` failed materiality because high-risk entries
+  were often winners or too sparse. Reopen only with a new pre-entry
+  risk-quality signal or materially more settled entry-time risk outcomes;
+- institutional 13F active-flow candidate pools that only change active-manager
+  definitions, holder/value/share flow deltas, actual filing-date offsets,
+  top-N, hold, cooldown, notional, or allocator rank. `exp-20260702-015`
+  failed Gate 4 even after actual structured-ZIP `FILING_DATE` controls.
+  Reopen only with materially more closed 10-day forward rows, non-quarterly
+  flow provenance, campaign outcome evidence, populated borrow/loan
+  cross-evidence, or a shared helper/daily snapshot surface that adds new
+  out-of-sample rows;
+- IPO or 425 merger theme-peer propagation attribution retries that only
+  re-slice the same private-issuer or merger rows by theme subset, keyword,
+  horizon, entry lag, density, SIC peers, ticker-status, top-N, hold, cooldown,
+  notional, or response shape. `exp-20260702-017` and `exp-20260702-018` found
+  no stable 10-day SPY-excess separation versus same-ticker baselines. Reopen
+  only with richer deal economics, such as S-1/A pricing range, priced deal
+  size, cash/stock consideration, bidder/target role, amendment/withdrawal or
+  termination trajectory, or new forward rows under a shared helper;
+- Moomoo capital-flow alpha retries that use only one-day current snapshots,
+  `get_capital_distribution`, main-flow thresholds, bucket response curves,
+  top-N, hold, cooldown, or notional. `exp-20260702-016` is a positive
+  data-source lead for `get_capital_flow` DAY history, not an accepted alpha.
+  Reopen after a versioned archive exists for the target universe with
+  next-session usable-trade-date mapping, explicit old_thin/source-activation
+  coverage, and a shared default-off helper/daily snapshot;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

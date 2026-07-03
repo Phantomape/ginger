@@ -1,0 +1,215 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+    "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+    "experiments/cards/exp-20260701-004.md",
+    "experiments/manifests/exp-20260701-004.json",
+    "experiments/tickets/exp-20260701-004.json",
+    "experiments/logs/exp-20260701-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260701-004.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "idempotent same-day pending admission + report renders true pending queue",
+  "claimed_at": null,
+  "completed_at": null,
+  "created_at": "2026-07-01T07:02:47+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260701-004",
+  "experiment_uid": "expuid-e72f4f4703be42c0",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260701-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-01T07:02:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "alpha_score_sleeve_same_day_idempotency_and_pending_report"
+  },
+  "hypothesis": "Same-signal-day re-runs of the alpha_score_market_regime paper sleeve accumulate multiple pending entries beyond daily_entry_slots, and the daily report renders new-candidates-this-run instead of the actual pending queue, so state.json pending and the report disagree (CAT appears in state pending but not in the 6/30 report).",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "idempotent same-day pending admission + report renders true pending queue"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "score": 0.6356,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "score": 0.616,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "compression_breakout_tail_state_candidate_pool",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "tail_state_winner_continuation_candidate_pool",
+        "score": 0.6085,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "accumulate",
+        "actual",
+        "admission",
+        "alpha",
+        "appears",
+        "beyond",
+        "but",
+        "candidates",
+        "cat",
+        "daily",
+        "disagree",
+        "entries",
+        "entry",
+        "idempotency",
+        "idempotent",
+        "in",
+        "instead",
+        "json",
+        "market",
+        "multiple",
+        "new",
+        "not",
+        "of",
+        "pending",
+        "queue",
+        "re",
+        "regime",
+        "renders",
+        "report",
+        "run",
+        "runs",
+        "same",
+        "score",
+        "signal",
+        "sleeve",
+        "slots",
+        "so",
+        "state",
+        "this",
+        "true"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.6356,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.616,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "compression_breakout_tail_state_candidate_pool",
+        "reopen_condition": "A retry needs forward replacement-value rows or a materially different PIT flow/catalyst field; not another OHLCV tail-state threshold sweep.",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+        "reopen_condition": null,
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "tail_state_winner_continuation_candidate_pool",
+        "reopen_condition": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator.",
+        "score": 0.6085,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 8
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": null,
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260701-004.json",
+  "single_causal_variable": "idempotent same-day pending admission + report renders true pending queue",
+  "status": "proposed",
+  "ticket_file": "experiments/tickets/exp-20260701-004.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260701-004"
+}

@@ -1,0 +1,67 @@
+{
+ "after_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "before_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "causal_components": [],
+ "change_summary": "Idempotent same-signal-day pending admission (subtract pending_for_asof from daily_entry_slots) in alpha_score_market_regime_paper_sleeve.py + report_generator.py now renders an explicit Pending queue block so state.json pending and the daily report cannot disagree. Root cause: 6/30 signal processed twice (03:43Z, 05:06Z); run1 captured CAT rank1 into pending, run2 granted a fresh daily slot to GEV. Paper-only, trade_enabled=False, no live order path touched.",
+ "change_type": "identity_or_measurement_repair",
+ "changed_variable": "idempotent same-day pending admission + report renders true pending queue",
+ "component": "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py, data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json, experiments/cards/exp-20260701-004.md, experiments/manifests/exp-20260701-004.json, experiments/tickets/exp-20260701-004.json, experiments/logs/exp-20260701-004.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+ "date_range": {},
+ "decision": "observed_only",
+ "delta_metrics": {},
+ "experiment_id": "exp-20260701-004",
+ "hypothesis": "Same-signal-day re-runs of the alpha_score_market_regime paper sleeve accumulate multiple pending entries beyond daily_entry_slots, and the daily report renders new-candidates-this-run instead of the actual pending queue, so state.json pending and the report disagree (CAT appears in state pending but not in the 6/30 report).",
+ "llm_metrics": {
+  "used_llm": false
+ },
+ "market_regime_summary": {},
+ "mechanism_family": "identity_or_measurement_repair",
+ "multiple_testing_risk_bucket": "minimal",
+ "nearby_prior_experiments": [],
+ "new_evidence_type": "not_declared",
+ "next_retry_requires": [],
+ "notes": "Repro: state pending=CAT+GEV vs report shows GEV only. Data-timing/backfill hypothesis DISPROVEN (identical universe+scores across both runs; CAT is a legit rank-1). New test: test_same_signal_day_rerun_is_idempotent_and_does_not_double_admit. 6 sleeve tests + 24 report-touching tests pass.",
+ "parameters": {
+  "locked_variables": [
+   "idempotent same-day pending admission + report renders true pending queue"
+  ],
+  "single_causal_variable": "idempotent same-day pending admission + report renders true pending queue"
+ },
+ "post_run_reflection": {
+  "why_result_happened": "The sleeve's capacity math (min(room, daily_entry_slots)) was stateless w.r.t. the same signal day, so a second same-day run granted a fresh daily slot to the next-ranked candidate after the top pick was already captured into pending; the report rendered the new-this-run candidate shortlist rather than the persisted pending queue, so a captured buy (CAT) vanished from the operator report while staying in state.json.",
+  "realized_failure_mode": "none_repair_landed_idempotent_admission_and_pending_report_render_with_test",
+  "forbidden_near_neighbor_retry": "Do not re-tune daily_entry_slots, max_active_positions, top-decile threshold, or add a second dedup path; the fix is the pending_for_asof subtraction + pending-queue render. Do not hand-edit live paper state to remove the stale GEV pending (races the auto-committer).",
+  "new_evidence_required": "Only reopen if a real double-admit recurs after the guard (would indicate created_asof missing on entries) or if another paper sleeve shows the same report-vs-state divergence (same fix pattern applies)."
+ },
+ "prior_trial_count": 0,
+ "rejection_reason": null,
+ "related_files": [
+  "data/experiments/exp-20260701-004/before.json",
+  "data/experiments/exp-20260701-004/after.json"
+ ],
+ "secondary_windows": [],
+ "status": "observed_only",
+ "timestamp": "2026-07-01T07:10:21+00:00",
+ "trial_family": "identity_or_measurement_repair",
+ "trial_variant_id": "exp-20260701-004"
+}

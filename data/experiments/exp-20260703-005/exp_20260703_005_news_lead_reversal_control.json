@@ -1,0 +1,130 @@
+{
+  "experiment_id": "exp-20260703-005",
+  "timestamp": "2026-07-03T03:16:37.467836+00:00",
+  "owner": "daniel-agent",
+  "lane": "alpha_search",
+  "status": "observed_only",
+  "decision": "observed_only_exp021_lead_survives_reversal_control",
+  "accepted": false,
+  "hypothesis": "The exp-20260702-021 negative-event-peer excess is short-term reversal in disguise and will be reproduced by matched no-event control days with similar prior-session setup returns.",
+  "alpha_hypothesis": "If the lead survives the control, the propagation component justifies forward accumulation and an eventual shared-paper full-stack tilt; if not, the surface parks.",
+  "change_type": "observed_only_attribution",
+  "implementation_mode": "read_only_diagnostic",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "trial_family": "news_event_second_order_exposure_attribution",
+  "trial_variant_id": "exp-20260703-005",
+  "single_causal_variable": "news_second_order_negative_lead_reversal_control_v1",
+  "changed_variable": "none_read_only",
+  "causal_components": [
+    "treatment_rows_frozen_from_exp021",
+    "no_event_10session_exclusion_control_days",
+    "setup_return_100bp_match_quintile_fallback",
+    "per_row_residual_vs_matched_control_median",
+    "20bp_residual_rule",
+    "two_half_span_consistency",
+    "300_matched_rows_floor"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260702-021",
+    "exp-20260702-020",
+    "exp-20260630-017"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "new_matched_no_event_control_population",
+  "new_evidence_axis": "matched no-event control-day population; treatment frozen from exp-021, so the test can only kill or validate the lead",
+  "audit": {
+    "treatment_rows": 727,
+    "matched_rows": 690,
+    "dropped_no_data": 0,
+    "dropped_few_matches": 37,
+    "quintile_fallback_rows": 431,
+    "treatment_setup_return_median_bp": -46.9,
+    "residual": {
+      "rows": 690,
+      "median_bp": 188.8,
+      "mean_bp": 381.7,
+      "positive_share": 0.555
+    },
+    "residual_h1": {
+      "rows": 114,
+      "median_bp": 357.5,
+      "mean_bp": 270.9,
+      "positive_share": 0.605
+    },
+    "residual_h2": {
+      "rows": 576,
+      "median_bp": 157.3,
+      "mean_bp": 403.7,
+      "positive_share": 0.545
+    },
+    "half_signs_consistent": true,
+    "rows_threshold_ok": true,
+    "verdict": "propagation_survives",
+    "verdict_rule": "reversal_explained iff median residual < 20.0bp or half-span sign flip; propagation_survives iff >= 20.0bp same-sign halves and >= 300 matched rows; else inconclusive_weakened"
+  },
+  "gate1": {
+    "note": "read-only; canonical baseline unchanged"
+  },
+  "gate2": {
+    "fields": [
+      "excess_10d",
+      "entry_date",
+      "warehouse bars"
+    ],
+    "note": "all inputs PIT; controls from same warehouse span"
+  },
+  "gate3": {
+    "note": "no filters changed; diagnostic only"
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": true,
+    "failed_reasons": [
+      "propagation_survives"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only control study; nothing wired anywhere"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "After matching on prior-session setup return against clean no-event days, a residual excess remains with consistent sign in both half-spans, so the exp-021 lead is not explained by plain short-term reversal.",
+    "forbidden_near_neighbor_retry": "Do not retune the matching bandwidth, exclusion window, residual threshold, or setup-return definition to flip this verdict; the same-population saturation rule from exp-021 still applies to the treatment rows. The next evidence is forward accumulation of current-event rows via the daily observer wiring, or nothing.",
+    "new_evidence_required": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition."
+  },
+  "related_files": [
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260703_005_news_lead_reversal_control.py",
+    "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+    "experiments/logs/exp-20260703-005.json",
+    "experiments/cards/exp-20260703-005.md",
+    "experiments/manifests/exp-20260703-005.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_005_news_lead_reversal_control.py"
+  ],
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_005_news_lead_reversal_control.py",
+    "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+    "experiments/logs/exp-20260703-005.json",
+    "experiments/cards/exp-20260703-005.md",
+    "experiments/manifests/exp-20260703-005.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true
+}

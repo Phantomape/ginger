@@ -1,0 +1,1153 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.py",
+    "data/experiments/exp-20260630-020/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.json",
+    "experiments/cards/exp-20260630-020.md",
+    "experiments/manifests/exp-20260630-020.json",
+    "experiments/tickets/exp-20260630-020.json",
+    "experiments/logs/exp-20260630-020.json",
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-020.md",
+  "causal_components": [
+    "shared early-relative-weakness helper",
+    "production-known actual_risk_pct >= 2%",
+    "fixed day-3 negative return and SPY-relative weakness trigger",
+    "next-session open full exit",
+    "no entry ranking sizing target stop or candidate-pool change"
+  ],
+  "change_type": "exit_policy_shared_gate",
+  "changed_variable": "high_actual_risk_early_relative_weakness_exit_v1",
+  "claimed_at": "2026-06-30T21:07:48+00:00",
+  "completed_at": "2026-06-30T21:15:57+00:00",
+  "created_at": "2026-06-30T21:06:23+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260630-020",
+  "experiment_uid": "expuid-c6bcf03b58b948d8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-020",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T21:06:23+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "high_actual_risk_early_relative_weakness_exit"
+  },
+  "hypothesis": "High account-risk positions that also fail the existing day-3 SPY-relative weakness check may be the actionable subset behind the exp-20260630-018 oracle-regret lead; exiting only that subset next open could reduce avoidable loss without the broad winner collateral that killed bare early-weakness exits.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "high_actual_risk_early_relative_weakness_exit_v1"
+  ],
+  "mechanism_family": "exit_policy_oracle_diagnostic",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-018",
+    "exp-20260513-112",
+    "exp-20260630-012",
+    "exp-20260630-011"
+  ],
+  "new_evidence_type": "full_trade_oracle_denominator_account_risk_cohort",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "account",
+        "actionable",
+        "actual",
+        "also",
+        "avoidable",
+        "bare",
+        "be",
+        "behind",
+        "check",
+        "collateral",
+        "could",
+        "diagnostic",
+        "early",
+        "existing",
+        "exit",
+        "exiting",
+        "exits",
+        "exp",
+        "fail",
+        "high",
+        "killed",
+        "lead",
+        "loss",
+        "may",
+        "only",
+        "oracle",
+        "policy",
+        "positions",
+        "reduce",
+        "regret",
+        "relative",
+        "risk",
+        "spy",
+        "subset",
+        "that",
+        "weakness",
+        "winner",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "spy_relative_leader_winner_capture",
+        "reopen_condition": null,
+        "score": 0.48,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.4779,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "sector_relative_risk_adjusted_momentum",
+        "reopen_condition": "Forward replacement-value rows or an orthogonal free-data quality field; do not simply retune sector residual/volatility thresholds.",
+        "score": 0.4678,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "financials_sector_leader_winner_capture",
+        "reopen_condition": null,
+        "score": 0.4595,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "rs20_entry_state_shared_sizing",
+        "reopen_condition": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+        "score": 0.4593,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_subset",
+      "no_changed_trades",
+      "winner_collateral",
+      "old_thin_regression",
+      "not_incremental_vs_rejected_early_weakness"
+    ],
+    "confidence_reason": "exp-20260630-018 newly showed a broad production-known actual_risk_pct>=2pct cohort with higher oracle regret across all windows, while exp-20260513-112 rejected the ungated early-weakness rule; the mechanism is plausible only if high account risk isolates the actionable subset, with high risk of too few changed exits or old_thin fragility.",
+    "recorded_at": "2026-06-30T21:05:50+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "experiment_id": "exp-20260630-020",
+    "timestamp": "2026-06-30T21:15:57+00:00",
+    "owner": "alpha-explore",
+    "lane": "alpha_search",
+    "status": "rejected",
+    "decision": "rejected_high_actual_risk_early_relative_weakness_exit",
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "hypothesis": "High account-risk positions that also fail the existing day-3 SPY-relative weakness check may be the actionable subset behind the exp-20260630-018 oracle-regret lead; exiting only that subset next open could reduce avoidable loss without the broad winner collateral that killed bare early-weakness exits.",
+    "alpha_hypothesis": "High account-risk positions that also fail the existing day-3 SPY-relative weakness check may be the actionable subset behind the exp-20260630-018 oracle-regret lead; exiting only that subset next open could reduce avoidable loss without the broad winner collateral that killed bare early-weakness exits.",
+    "change_type": "exit_policy_shared_gate",
+    "implementation_mode": "shared_helper_historical_replay",
+    "mechanism_family": "exit_policy_oracle_diagnostic",
+    "trial_family": "high_account_risk_early_relative_weakness_exit",
+    "trial_variant_id": "actual_risk_ge_2pct_day3_rs_weak_full_exit_v1",
+    "changed_variable": "high_actual_risk_early_relative_weakness_exit_v1",
+    "single_causal_variable": "high_actual_risk_early_relative_weakness_exit_v1",
+    "new_evidence_type": "full_trade_oracle_denominator_account_risk_cohort",
+    "nearby_prior_experiments": [
+      "exp-20260630-018",
+      "exp-20260513-112",
+      "exp-20260630-012",
+      "exp-20260630-011"
+    ],
+    "multiple_testing_risk_bucket": "moderate",
+    "causal_components": [
+      "shared early-relative-weakness helper",
+      "production-known actual_risk_pct >= 2%",
+      "fixed day-3 negative return and SPY-relative weakness trigger",
+      "next-session open full exit",
+      "no entry ranking sizing target stop or candidate-pool change"
+    ],
+    "prediction": {
+      "confidence_reason": "exp-20260630-018 newly showed a broad production-known actual_risk_pct>=2pct cohort with higher oracle regret across all windows, while exp-20260513-112 rejected the ungated early-weakness rule; the mechanism is plausible only if high account risk isolates the actionable subset, with high risk of too few changed exits or old_thin fragility.",
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "main_failure_modes": [
+        "thin_subset",
+        "no_changed_trades",
+        "winner_collateral",
+        "old_thin_regression",
+        "not_incremental_vs_rejected_early_weakness"
+      ],
+      "recorded_at": "2026-06-30T21:05:50+00:00",
+      "success_probability": 0.24
+    },
+    "calibration": {
+      "actual_decision": "rejected_high_actual_risk_early_relative_weakness_exit",
+      "actual_success": 0,
+      "predicted_success_probability": 0.24,
+      "brier_score": 0.0576,
+      "predicted_failure_modes": [
+        "thin_subset",
+        "no_changed_trades",
+        "winner_collateral",
+        "old_thin_regression",
+        "not_incremental_vs_rejected_early_weakness"
+      ],
+      "realized_failure_modes": [
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "predicted_failure_mode_hit": false,
+      "actual_ev_delta": 0.0192,
+      "actual_pnl_delta": 695.17
+    },
+    "parameters": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "before_config": {
+        "REGIME_AWARE_EXIT": true,
+        "REPLAY_PARTIAL_REDUCES": true
+      },
+      "after_config": {
+        "REGIME_AWARE_EXIT": true,
+        "REPLAY_PARTIAL_REDUCES": true,
+        "EARLY_RELATIVE_WEAKNESS_EXIT_ENABLED": true,
+        "EARLY_RELATIVE_WEAKNESS_HOLDING_ROWS": 3,
+        "EARLY_RELATIVE_WEAKNESS_MIN_RS_VS_SPY": -0.03,
+        "EARLY_RELATIVE_WEAKNESS_REQUIRE_NEGATIVE_RETURN": true,
+        "EARLY_RELATIVE_WEAKNESS_REDUCE_PCT": 100,
+        "EARLY_RELATIVE_WEAKNESS_MIN_ACTUAL_RISK_PCT": 0.02
+      },
+      "high_actual_risk_threshold": 0.02,
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+        }
+      },
+      "max_drawdown_worse_guardrail": 0.005,
+      "acceptance_rule": "Aggregate EV and PnL positive, at least two EV-improved windows, no EV-regressed windows, survival >= 5%, max drawdown drift <= 0.5pp, and at least one executed high-risk early-weakness exit."
+    },
+    "pre_run_questions": {
+      "1_alpha_hypothesis": "Exit policy: high actual-risk positions may be the subset where early relative weakness identifies avoidable regret.",
+      "2_history_check": {
+        "novelty_gate": "experiment.py new passed without override.",
+        "exp-20260630-018": "Observed-only oracle diagnostic accepted a lead: actual_risk_pct >= 2% had higher exit regret across all windows.",
+        "exp-20260513-112": "Bare day-3 early relative-weakness full exit rejected; this test adds the new production-known account-risk cohort.",
+        "exp-20260630-012": "Close-confirmed static stop rejected.",
+        "exp-20260630-011": "Full trade-level oracle denominator materialized the risk/regret evidence and froze adjacent stop/target retunes."
+      },
+      "3_single_policy_bundle": "high_actual_risk_early_relative_weakness_exit_v1",
+      "4_success_failure_standard": "docs/backtesting.md Gate 1-4 on the three fixed windows.",
+      "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_020_high_actual_risk_early_relative_weakness_exit.py"
+    },
+    "gate1": {
+      "baseline_loaded": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "before_metrics": {
+        "late_strong": {
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "total_return_pct": 1.1707,
+          "sharpe_daily": 4.41,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "worst_trade_pct": -0.039653,
+          "max_consecutive_losses": 2,
+          "tail_loss_share": 0.5146,
+          "spy_buy_hold_return_pct": 0.0541,
+          "qqq_buy_hold_return_pct": 0.058
+        },
+        "mid_weak": {
+          "expected_value_score": 2.1331,
+          "total_pnl": 77845.53,
+          "total_return_pct": 0.7785,
+          "sharpe_daily": 2.74,
+          "max_drawdown_pct": 0.1118,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 52,
+          "signals_survived": 41,
+          "survival_rate": 0.7885,
+          "worst_trade_pct": -0.089651,
+          "max_consecutive_losses": 6,
+          "tail_loss_share": 0.5493,
+          "spy_buy_hold_return_pct": 0.2544,
+          "qqq_buy_hold_return_pct": 0.3351
+        },
+        "old_thin": {
+          "expected_value_score": 0.644,
+          "total_pnl": 42933.82,
+          "total_return_pct": 0.4293,
+          "sharpe_daily": 1.5,
+          "max_drawdown_pct": 0.095,
+          "win_rate": 0.4348,
+          "trade_count": 23,
+          "signals_generated": 62,
+          "signals_survived": 56,
+          "survival_rate": 0.9032,
+          "worst_trade_pct": -0.092804,
+          "max_consecutive_losses": 4,
+          "tail_loss_share": 0.5948,
+          "spy_buy_hold_return_pct": -0.0672,
+          "qqq_buy_hold_return_pct": -0.0749
+        }
+      },
+      "baseline_aggregate": {
+        "expected_value_score_sum": 7.9399,
+        "total_pnl_sum": 237852.27,
+        "trade_count_sum": 62,
+        "signals_generated_sum": 165,
+        "signals_survived_sum": 138,
+        "max_drawdown_pct_worst": 0.1118,
+        "survival_rate_min": 0.7885
+      }
+    },
+    "gate2": {
+      "open_positions": {
+        "path": "operator_inputs/open_positions.json",
+        "checked_rows": 11,
+        "required_fields": [
+          "entry_date",
+          "target_price"
+        ],
+        "missing_required_fields": [],
+        "passed": true
+      },
+      "runtime_fields": [
+        "entry_date",
+        "target_price",
+        "avg_cost / entry_price",
+        "actual_risk_pct",
+        "ticker OHLCV through trigger close",
+        "SPY OHLCV through trigger close"
+      ],
+      "passed": true
+    },
+    "gate3": {
+      "new_entry_filter_added": false,
+      "signals_generated_delta": 0.0,
+      "signals_survived_delta": 0.0,
+      "minimum_after_survival_rate": 0.7885,
+      "passed": true
+    },
+    "gate4": {
+      "passed": false,
+      "failed_reasons": [
+        "fewer_than_two_ev_improved_windows"
+      ],
+      "improved_windows": [
+        "old_thin"
+      ],
+      "regressed_windows": [],
+      "max_drawdown_worse": 0.0,
+      "drawdown_guardrail_passed": true,
+      "high_risk_early_weakness_events": {
+        "scheduled_event_count": 1,
+        "executed_event_count": 1,
+        "by_window": {
+          "late_strong": {
+            "scheduled": 0,
+            "executed": 0
+          },
+          "mid_weak": {
+            "scheduled": 0,
+            "executed": 0
+          },
+          "old_thin": {
+            "scheduled": 1,
+            "executed": 1
+          }
+        },
+        "by_ticker": {
+          "DDOG": 1
+        },
+        "sample_events": [
+          {
+            "ticker": "DDOG",
+            "action": "EXIT",
+            "decision_mode": "code_early_relative_weakness_exit",
+            "fill_timing": "next_session_open",
+            "triggered_rule": "EARLY_RELATIVE_WEAKNESS",
+            "exit_reason": "early_relative_weakness_exit",
+            "holding_rows": 3,
+            "days_since_entry": 2,
+            "entry_date": "2024-10-11",
+            "entry_price": 129.95,
+            "trigger_close": 126.88,
+            "spy_entry_open": 565.9085,
+            "spy_trigger_close": 569.5729,
+            "ticker_return_pct": -0.023624,
+            "spy_return_pct": 0.006475,
+            "rs_vs_spy": -0.0301,
+            "min_rs_vs_spy": -0.03,
+            "require_negative_return": true,
+            "actual_risk_pct": 0.024526,
+            "min_actual_risk_pct": 0.02,
+            "reduce_pct": 100,
+            "shares_before": 403,
+            "shares_to_sell": 403,
+            "reason": "day-3 early weakness: return -2.4%, RS vs SPY -3.0%",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "trigger_date": "2024-10-15",
+            "scheduled_fill_date": "2024-10-16",
+            "status": "executed",
+            "raw_open": 126.43,
+            "exit_price": 126.3036,
+            "shares_sold": 403,
+            "remaining_shares": 0,
+            "realized_pnl": -1647.65
+          }
+        ]
+      }
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.039653,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146,
+        "spy_buy_hold_return_pct": 0.0541,
+        "qqq_buy_hold_return_pct": 0.058
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1331,
+        "total_pnl": 77845.53,
+        "total_return_pct": 0.7785,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1118,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "worst_trade_pct": -0.089651,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493,
+        "spy_buy_hold_return_pct": 0.2544,
+        "qqq_buy_hold_return_pct": 0.3351
+      },
+      "old_thin": {
+        "expected_value_score": 0.644,
+        "total_pnl": 42933.82,
+        "total_return_pct": 0.4293,
+        "sharpe_daily": 1.5,
+        "max_drawdown_pct": 0.095,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "worst_trade_pct": -0.092804,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5948,
+        "spy_buy_hold_return_pct": -0.0672,
+        "qqq_buy_hold_return_pct": -0.0749
+      }
+    },
+    "after_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.039653,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146,
+        "spy_buy_hold_return_pct": 0.0541,
+        "qqq_buy_hold_return_pct": 0.058
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1331,
+        "total_pnl": 77845.53,
+        "total_return_pct": 0.7785,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1118,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "worst_trade_pct": -0.089651,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493,
+        "spy_buy_hold_return_pct": 0.2544,
+        "qqq_buy_hold_return_pct": 0.3351
+      },
+      "old_thin": {
+        "expected_value_score": 0.6632,
+        "total_pnl": 43628.99,
+        "total_return_pct": 0.4363,
+        "sharpe_daily": 1.52,
+        "max_drawdown_pct": 0.095,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "worst_trade_pct": -0.092804,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.6175,
+        "spy_buy_hold_return_pct": -0.0672,
+        "qqq_buy_hold_return_pct": -0.0749
+      }
+    },
+    "delta_metrics": {
+      "by_window": {
+        "late_strong": {
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0,
+          "expected_value_score": 0.0,
+          "worst_trade_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "signals_generated": 0.0,
+          "sharpe_daily": 0.0,
+          "spy_buy_hold_return_pct": 0.0,
+          "trade_count": 0.0,
+          "qqq_buy_hold_return_pct": 0.0,
+          "total_pnl": 0.0,
+          "win_rate": 0.0,
+          "signals_survived": 0.0,
+          "total_return_pct": 0.0,
+          "max_consecutive_losses": 0.0
+        },
+        "mid_weak": {
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0,
+          "expected_value_score": 0.0,
+          "worst_trade_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "signals_generated": 0.0,
+          "sharpe_daily": 0.0,
+          "spy_buy_hold_return_pct": 0.0,
+          "trade_count": 0.0,
+          "qqq_buy_hold_return_pct": 0.0,
+          "total_pnl": 0.0,
+          "win_rate": 0.0,
+          "signals_survived": 0.0,
+          "total_return_pct": 0.0,
+          "max_consecutive_losses": 0.0
+        },
+        "old_thin": {
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0227,
+          "expected_value_score": 0.0192,
+          "worst_trade_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "signals_generated": 0.0,
+          "sharpe_daily": 0.02,
+          "spy_buy_hold_return_pct": 0.0,
+          "trade_count": 0.0,
+          "qqq_buy_hold_return_pct": 0.0,
+          "total_pnl": 695.17,
+          "win_rate": 0.0,
+          "signals_survived": 0.0,
+          "total_return_pct": 0.007,
+          "max_consecutive_losses": 0.0
+        }
+      },
+      "aggregate_before": {
+        "expected_value_score_sum": 7.9399,
+        "total_pnl_sum": 237852.27,
+        "trade_count_sum": 62,
+        "signals_generated_sum": 165,
+        "signals_survived_sum": 138,
+        "max_drawdown_pct_worst": 0.1118,
+        "survival_rate_min": 0.7885
+      },
+      "aggregate_after": {
+        "expected_value_score_sum": 7.9591,
+        "total_pnl_sum": 238547.44,
+        "trade_count_sum": 62,
+        "signals_generated_sum": 165,
+        "signals_survived_sum": 138,
+        "max_drawdown_pct_worst": 0.1118,
+        "survival_rate_min": 0.7885
+      },
+      "aggregate_delta": {
+        "expected_value_score_sum": 0.0192,
+        "signals_survived_sum": 0.0,
+        "survival_rate_min": 0.0,
+        "total_pnl_sum": 695.17,
+        "trade_count_sum": 0.0,
+        "signals_generated_sum": 0.0,
+        "max_drawdown_pct_worst": 0.0
+      },
+      "changed_trades": {
+        "changed_trade_count": 17,
+        "changed_trade_count_by_window": {
+          "late_strong": 0,
+          "mid_weak": 0,
+          "old_thin": 17
+        },
+        "changed_exit_reason_pairs": {
+          "None->None": 8,
+          "stop->stop": 5,
+          "target->target": 4
+        },
+        "changed_pnl_delta_sum": 92.68,
+        "sample_changed_trades": [
+          {
+            "trade_key": "AMZN:2024-11-04:198.3700",
+            "change_type": "added_or_removed_trade",
+            "before_present": false,
+            "after_present": true,
+            "ticker": "AMZN"
+          },
+          {
+            "trade_key": "AMZN:2024-11-04:198.4100",
+            "change_type": "added_or_removed_trade",
+            "before_present": true,
+            "after_present": false,
+            "ticker": "AMZN"
+          },
+          {
+            "trade_key": "APP:2024-11-08:249.2100",
+            "ticker": "APP",
+            "strategy": "trend_long",
+            "entry_date": "2024-11-08",
+            "before_exit_date": "2024-11-19",
+            "after_exit_date": "2024-11-19",
+            "before_exit_reason": "target",
+            "after_exit_reason": "target",
+            "before_pnl": 14956.27,
+            "after_pnl": 15025.2,
+            "pnl_delta": 68.93,
+            "before_exit_price": 319.25,
+            "after_exit_price": 319.25
+          },
+          {
+            "trade_key": "BKNG:2024-11-01:186.2300",
+            "change_type": "added_or_removed_trade",
+            "before_present": false,
+            "after_present": true,
+            "ticker": "BKNG"
+          },
+          {
+            "trade_key": "BKNG:2024-11-01:186.2400",
+            "change_type": "added_or_removed_trade",
+            "before_present": true,
+            "after_present": false,
+            "ticker": "BKNG"
+          },
+          {
+            "trade_key": "DDOG:2024-10-11:129.95",
+            "change_type": "added_or_removed_trade",
+            "before_present": false,
+            "after_present": true,
+            "ticker": "DDOG"
+          },
+          {
+            "trade_key": "DDOG:2024-10-11:129.9500",
+            "change_type": "added_or_removed_trade",
+            "before_present": true,
+            "after_present": false,
+            "ticker": "DDOG"
+          },
+          {
+            "trade_key": "GLD:2025-01-31:259.2100",
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "entry_date": "2025-01-31",
+            "before_exit_date": "2025-03-18",
+            "after_exit_date": "2025-03-18",
+            "before_exit_reason": "target",
+            "after_exit_reason": "target",
+            "before_pnl": 5753.83,
+            "after_pnl": 5773.4,
+            "pnl_delta": 19.57,
+            "before_exit_price": 279.76,
+            "after_exit_price": 279.76
+          },
+          {
+            "trade_key": "GS:2025-01-16:597.8200",
+            "change_type": "added_or_removed_trade",
+            "before_present": false,
+            "after_present": true,
+            "ticker": "GS"
+          },
+          {
+            "trade_key": "GS:2025-01-16:598.0000",
+            "change_type": "added_or_removed_trade",
+            "before_present": true,
+            "after_present": false,
+            "ticker": "GS"
+          },
+          {
+            "trade_key": "JPM:2025-01-16:247.7500",
+            "ticker": "JPM",
+            "strategy": "breakout_long",
+            "entry_date": "2025-01-16",
+            "before_exit_date": "2025-02-06",
+            "after_exit_date": "2025-02-06",
+            "before_exit_reason": "target",
+            "after_exit_reason": "target",
+            "before_pnl": 6990.25,
+            "after_pnl": 7027.53,
+            "pnl_delta": 37.28,
+            "before_exit_price": 267.33,
+            "after_exit_price": 267.33
+          },
+          {
+            "trade_key": "MCD:2025-02-11:298.8400",
+            "ticker": "MCD",
+            "strategy": "trend_long",
+            "entry_date": "2025-02-11",
+            "before_exit_date": "2025-02-19",
+            "after_exit_date": "2025-02-19",
+            "before_exit_reason": "stop",
+            "after_exit_reason": "stop",
+            "before_pnl": -2701.84,
+            "after_pnl": -2718.36,
+            "pnl_delta": -16.52,
+            "before_exit_price": 291.6,
+            "after_exit_price": 291.6
+          },
+          {
+            "trade_key": "NFLX:2024-10-21:76.6100",
+            "ticker": "NFLX",
+            "strategy": "trend_long",
+            "entry_date": "2024-10-21",
+            "before_exit_date": "2024-11-19",
+            "after_exit_date": "2024-11-19",
+            "before_exit_reason": "target",
+            "after_exit_reason": "target",
+            "before_pnl": 5737.69,
+            "after_pnl": 5763.31,
+            "pnl_delta": 25.62,
+            "before_exit_price": 85.45,
+            "after_exit_price": 85.45
+          },
+          {
+            "trade_key": "NFLX:2025-01-23:95.8300",
+            "ticker": "NFLX",
+            "strategy": "trend_long",
+            "entry_date": "2025-01-23",
+            "before_exit_date": "2025-03-06",
+            "after_exit_date": "2025-03-06",
+            "before_exit_reason": "stop",
+            "after_exit_reason": "stop",
+            "before_pnl": -3816.51,
+            "after_pnl": -3833.42,
+            "pnl_delta": -16.91,
+            "before_exit_price": 90.51,
+            "after_exit_price": 90.51
+          },
+          {
+            "trade_key": "SLV:2025-03-14:30.9300",
+            "ticker": "SLV",
+            "strategy": "trend_long",
+            "entry_date": "2025-03-14",
+            "before_exit_date": "2025-03-21",
+            "after_exit_date": "2025-03-21",
+            "before_exit_reason": "stop",
+            "after_exit_reason": "stop",
+            "before_pnl": -1130.96,
+            "after_pnl": -1136.83,
+            "pnl_delta": -5.87,
+            "before_exit_price": 29.86,
+            "after_exit_price": 29.86
+          },
+          {
+            "trade_key": "V:2024-11-26:311.5000",
+            "ticker": "V",
+            "strategy": "trend_long",
+            "entry_date": "2024-11-26",
+            "before_exit_date": "2025-01-10",
+            "after_exit_date": "2025-01-10",
+            "before_exit_reason": "stop",
+            "after_exit_reason": "stop",
+            "before_pnl": -1503.72,
+            "after_pnl": -1512.95,
+            "pnl_delta": -9.23,
+            "before_exit_price": 303.34,
+            "after_exit_price": 303.34
+          },
+          {
+            "trade_key": "V:2025-03-03:360.4800",
+            "ticker": "V",
+            "strategy": "trend_long",
+            "entry_date": "2025-03-03",
+            "before_exit_date": "2025-03-04",
+            "after_exit_date": "2025-03-04",
+            "before_exit_reason": "stop",
+            "after_exit_reason": "stop",
+            "before_pnl": -2242.29,
+            "after_pnl": -2252.48,
+            "pnl_delta": -10.19,
+            "before_exit_price": 351.52,
+            "after_exit_price": 351.52
+          }
+        ]
+      }
+    },
+    "changed_trades_by_window": {
+      "late_strong": [],
+      "mid_weak": [],
+      "old_thin": [
+        {
+          "trade_key": "AMZN:2024-11-04:198.3700",
+          "change_type": "added_or_removed_trade",
+          "before_present": false,
+          "after_present": true,
+          "ticker": "AMZN"
+        },
+        {
+          "trade_key": "AMZN:2024-11-04:198.4100",
+          "change_type": "added_or_removed_trade",
+          "before_present": true,
+          "after_present": false,
+          "ticker": "AMZN"
+        },
+        {
+          "trade_key": "APP:2024-11-08:249.2100",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "entry_date": "2024-11-08",
+          "before_exit_date": "2024-11-19",
+          "after_exit_date": "2024-11-19",
+          "before_exit_reason": "target",
+          "after_exit_reason": "target",
+          "before_pnl": 14956.27,
+          "after_pnl": 15025.2,
+          "pnl_delta": 68.93,
+          "before_exit_price": 319.25,
+          "after_exit_price": 319.25
+        },
+        {
+          "trade_key": "BKNG:2024-11-01:186.2300",
+          "change_type": "added_or_removed_trade",
+          "before_present": false,
+          "after_present": true,
+          "ticker": "BKNG"
+        },
+        {
+          "trade_key": "BKNG:2024-11-01:186.2400",
+          "change_type": "added_or_removed_trade",
+          "before_present": true,
+          "after_present": false,
+          "ticker": "BKNG"
+        },
+        {
+          "trade_key": "DDOG:2024-10-11:129.95",
+          "change_type": "added_or_removed_trade",
+          "before_present": false,
+          "after_present": true,
+          "ticker": "DDOG"
+        },
+        {
+          "trade_key": "DDOG:2024-10-11:129.9500",
+          "change_type": "added_or_removed_trade",
+          "before_present": true,
+          "after_present": false,
+          "ticker": "DDOG"
+        },
+        {
+          "trade_key": "GLD:2025-01-31:259.2100",
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "entry_date": "2025-01-31",
+          "before_exit_date": "2025-03-18",
+          "after_exit_date": "2025-03-18",
+          "before_exit_reason": "target",
+          "after_exit_reason": "target",
+          "before_pnl": 5753.83,
+          "after_pnl": 5773.4,
+          "pnl_delta": 19.57,
+          "before_exit_price": 279.76,
+          "after_exit_price": 279.76
+        },
+        {
+          "trade_key": "GS:2025-01-16:597.8200",
+          "change_type": "added_or_removed_trade",
+          "before_present": false,
+          "after_present": true,
+          "ticker": "GS"
+        },
+        {
+          "trade_key": "GS:2025-01-16:598.0000",
+          "change_type": "added_or_removed_trade",
+          "before_present": true,
+          "after_present": false,
+          "ticker": "GS"
+        },
+        {
+          "trade_key": "JPM:2025-01-16:247.7500",
+          "ticker": "JPM",
+          "strategy": "breakout_long",
+          "entry_date": "2025-01-16",
+          "before_exit_date": "2025-02-06",
+          "after_exit_date": "2025-02-06",
+          "before_exit_reason": "target",
+          "after_exit_reason": "target",
+          "before_pnl": 6990.25,
+          "after_pnl": 7027.53,
+          "pnl_delta": 37.28,
+          "before_exit_price": 267.33,
+          "after_exit_price": 267.33
+        },
+        {
+          "trade_key": "MCD:2025-02-11:298.8400",
+          "ticker": "MCD",
+          "strategy": "trend_long",
+          "entry_date": "2025-02-11",
+          "before_exit_date": "2025-02-19",
+          "after_exit_date": "2025-02-19",
+          "before_exit_reason": "stop",
+          "after_exit_reason": "stop",
+          "before_pnl": -2701.84,
+          "after_pnl": -2718.36,
+          "pnl_delta": -16.52,
+          "before_exit_price": 291.6,
+          "after_exit_price": 291.6
+        },
+        {
+          "trade_key": "NFLX:2024-10-21:76.6100",
+          "ticker": "NFLX",
+          "strategy": "trend_long",
+          "entry_date": "2024-10-21",
+          "before_exit_date": "2024-11-19",
+          "after_exit_date": "2024-11-19",
+          "before_exit_reason": "target",
+          "after_exit_reason": "target",
+          "before_pnl": 5737.69,
+          "after_pnl": 5763.31,
+          "pnl_delta": 25.62,
+          "before_exit_price": 85.45,
+          "after_exit_price": 85.45
+        },
+        {
+          "trade_key": "NFLX:2025-01-23:95.8300",
+          "ticker": "NFLX",
+          "strategy": "trend_long",
+          "entry_date": "2025-01-23",
+          "before_exit_date": "2025-03-06",
+          "after_exit_date": "2025-03-06",
+          "before_exit_reason": "stop",
+          "after_exit_reason": "stop",
+          "before_pnl": -3816.51,
+          "after_pnl": -3833.42,
+          "pnl_delta": -16.91,
+          "before_exit_price": 90.51,
+          "after_exit_price": 90.51
+        },
+        {
+          "trade_key": "SLV:2025-03-14:30.9300",
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "entry_date": "2025-03-14",
+          "before_exit_date": "2025-03-21",
+          "after_exit_date": "2025-03-21",
+          "before_exit_reason": "stop",
+          "after_exit_reason": "stop",
+          "before_pnl": -1130.96,
+          "after_pnl": -1136.83,
+          "pnl_delta": -5.87,
+          "before_exit_price": 29.86,
+          "after_exit_price": 29.86
+        },
+        {
+          "trade_key": "V:2024-11-26:311.5000",
+          "ticker": "V",
+          "strategy": "trend_long",
+          "entry_date": "2024-11-26",
+          "before_exit_date": "2025-01-10",
+          "after_exit_date": "2025-01-10",
+          "before_exit_reason": "stop",
+          "after_exit_reason": "stop",
+          "before_pnl": -1503.72,
+          "after_pnl": -1512.95,
+          "pnl_delta": -9.23,
+          "before_exit_price": 303.34,
+          "after_exit_price": 303.34
+        },
+        {
+          "trade_key": "V:2025-03-03:360.4800",
+          "ticker": "V",
+          "strategy": "trend_long",
+          "entry_date": "2025-03-03",
+          "before_exit_date": "2025-03-04",
+          "after_exit_date": "2025-03-04",
+          "before_exit_reason": "stop",
+          "after_exit_reason": "stop",
+          "before_pnl": -2242.29,
+          "after_pnl": -2252.48,
+          "pnl_delta": -10.19,
+          "before_exit_price": 351.52,
+          "after_exit_price": 351.52
+        }
+      ]
+    },
+    "expected_value_score_delta": 0.0192,
+    "total_pnl_delta": 695.17,
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "production_impact": {
+      "shared_helper_extended": true,
+      "default_strategy_behavior_changed": false,
+      "run_adapter_changed": false,
+      "backtester_adapter_changed": true,
+      "live_orders_changed": false,
+      "trade_enabled": false,
+      "live_ready": false,
+      "activation_envelope": {
+        "intended_notional": "same as current core position sizing if ever promoted",
+        "capital_cap": "same as current core strategy if ever promoted",
+        "liquidity_slippage_model": "next-session open market sell with existing backtester slippage model",
+        "portfolio_displacement": "same entries and slots; only earlier exit can free capital",
+        "order_semantics": "day-3 close decision, next-session market sell for full position when actual_risk_pct >= 2%, ticker return < 0, and ticker return minus SPY return <= -3pp",
+        "failure_handling": "if OHLCV, entry_date, SPY, or actual_risk_pct is missing, the helper skips or rejects the action and leaves the position untouched",
+        "kill_switch": "do not promote if any canonical window EV regresses or drawdown worsens over 0.5pp"
+      },
+      "parity_note": "Shared helper and backtester adapter are present, but run.py does not emit this default-off action; live readiness would require explicit daily adapter wiring after a positive Gate 4."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The high-risk gate did not overcome the broad early-weakness exit weakness.",
+      "forbidden_near_neighbor_retry": "Do not retune early-weakness holding rows, SPY threshold, stop distance, target trims, or response curves on the same fixed-entry rows.",
+      "new_evidence_required": "A legal retry needs materially more settled forward shadow-exit rows, a new pre-exit signal, or a different non-saturated data source."
+    },
+    "rejection_reason": "fewer_than_two_ev_improved_windows",
+    "next_retry_requires": [
+      "settled forward shadow-exit rows for the high-risk lifecycle",
+      "a new pre-exit signal beyond actual_risk_pct and SPY-relative weakness",
+      "daily run.py adapter wiring only after positive Gate 4 evidence"
+    ],
+    "before_after_strategy_behavior_changed": true,
+    "related_files": [
+      "quant/experiments/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.py",
+      "data/experiments/exp-20260630-020/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.json",
+      "experiments/logs/exp-20260630-020.json",
+      "experiments/cards/exp-20260630-020.md",
+      "experiments/manifests/exp-20260630-020.json",
+      "experiments/tickets/exp-20260630-020.json",
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "quant/production_parity.py",
+      "quant/backtester.py",
+      "quant/test_production_parity.py"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_020_high_actual_risk_early_relative_weakness_exit.py",
+      ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260630_020_high_actual_risk_early_relative_weakness_exit.py",
+      ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_production_parity.py -q",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "anti_js": {
+      "used_javascript": false,
+      "evidence": "Python runner only; no node/js tooling invoked."
+    },
+    "lean_quality_passed": true,
+    "artifact": "data/experiments/exp-20260630-020/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.json",
+    "log": "experiments/logs/exp-20260630-020.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-020.json",
+  "single_causal_variable": "high_actual_risk_early_relative_weakness_exit_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260630-020.json",
+  "trial_family": "high_account_risk_early_relative_weakness_exit",
+  "trial_variant_id": "actual_risk_ge_2pct_day3_rs_weak_full_exit_v1",
+  "implementation_mode": "shared_helper_historical_replay",
+  "decision": "rejected_high_actual_risk_early_relative_weakness_exit",
+  "artifact": "data/experiments/exp-20260630-020/exp_20260630_020_high_actual_risk_early_relative_weakness_exit.json",
+  "log": "experiments/logs/exp-20260630-020.json",
+  "accepted_alpha": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-30T21:15:57+00:00"
+}

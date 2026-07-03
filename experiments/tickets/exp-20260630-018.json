@@ -1,0 +1,391 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260630_018_high_account_risk_exit_oracle_regret.py",
+    "data/experiments/exp-20260630-018/exp_20260630_018_high_account_risk_exit_oracle_regret.json",
+    "experiments/cards/exp-20260630-018.md",
+    "experiments/manifests/exp-20260630-018.json",
+    "experiments/tickets/exp-20260630-018.json",
+    "experiments/logs/exp-20260630-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-018.md",
+  "causal_components": [
+    "full fixed-entry oracle rows",
+    "production-known actual_risk_pct cohort",
+    "complement comparison",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_exit_oracle_cohort_attribution",
+  "changed_variable": "high_actual_risk_exit_oracle_regret_cohort_v1",
+  "claimed_at": "2026-06-30T19:08:10+00:00",
+  "completed_at": "2026-06-30T19:12:06+00:00",
+  "created_at": "2026-06-30T19:08:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260630-018",
+  "experiment_uid": "expuid-11603365e9c64191",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T19:08:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "high_account_risk_exit_oracle_regret"
+  },
+  "hypothesis": "Full fixed-entry exit-oracle denominator rows may show that high account-risk positions (actual_risk_pct >= 2.0% at entry) consistently leave larger avoidable exit regret than lower-risk positions across all canonical windows, making a future shared high-risk exit lifecycle policy worth testing.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "high_actual_risk_exit_oracle_regret_cohort_v1"
+  ],
+  "mechanism_family": "exit_policy_oracle_diagnostic",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-011",
+    "exp-20260630-012",
+    "exp-20260623-020",
+    "exp-20260429-032"
+  ],
+  "new_evidence_type": "full_trade_oracle_denominator_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "account",
+        "across",
+        "actual",
+        "all",
+        "at",
+        "avoidable",
+        "canonical",
+        "cohort",
+        "consistently",
+        "denominator",
+        "diagnostic",
+        "entry",
+        "exit",
+        "full",
+        "future",
+        "high",
+        "larger",
+        "leave",
+        "lifecycle",
+        "lower",
+        "making",
+        "may",
+        "oracle",
+        "pct",
+        "policy",
+        "positions",
+        "regret",
+        "risk",
+        "rows",
+        "show",
+        "testing",
+        "than",
+        "that",
+        "windows",
+        "worth"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_full_trade_rows",
+        "reopen_condition": "A valid exit-policy alpha retry now needs a shared production/backtest exit helper using only pre-exit fields, or prospective shadow exit advisory rows with settled replacement value. Oracle exit dates/prices remain future-only labels.",
+        "score": 0.0649,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_regret_cluster_attribution",
+        "reopen_condition": "A valid exit-lifecycle retry needs closed forward paper rows from a shared default-off advisory helper, PIT intratrade path features available before exit, or a live-realistic slot-reuse and winner-collateral envelope measured before promotion.",
+        "score": 0.0615,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "fixed_entry_exit_oracle_gap_attribution",
+        "reopen_condition": "A valid exit-policy retry needs full trade-level fixed-entry oracle rows with production-visible pre-exit features, or prospective shadow exit-advisory rows with settled replacement value; then implement a shared exit helper and run Gate 1-4.",
+        "score": 0.041,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_actual_risk_intensity",
+        "reopen_condition": "A valid promotion path needs a shared default-off daily ledger or ablation that records risk-intensity rank before execution, then enough forward closed rows to prove that any incremental ranking/sizing rule improves EV without worse drawdown.",
+        "score": 0.039,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_exit_outcome_attribution",
+        "reopen_condition": "Closed forward observations with selected/sliced status, pre-execution risk-intensity rank, realized PnL, exit outcome, and replacement value before any sizing/ranking promotion.",
+        "score": 0.0381,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New full trade-level fixed-entry oracle denominator rows from exp-20260630-011; this tests an entry-known risk cohort, not stop distance/target/hold-day response retuning.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New full trade-level fixed-entry oracle denominator rows from exp-20260630-011; this tests an entry-known risk cohort, not stop distance/target/hold-day response retuning.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New full trade-level fixed-entry oracle denominator rows from exp-20260630-011; this tests an entry-known risk cohort, not stop distance/target/hold-day response retuning.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "window_separation_not_stable",
+      "cohort_not_actionable_without_future_data",
+      "sample_too_small",
+      "concentration_failed",
+      "oracle_label_not_policy"
+    ],
+    "confidence_reason": "The complete exp-20260630-011 denominator fixes the prior oracle sampling defect, and account risk is production-known at entry; however exit oracle labels are diagnostic only and prior static stop/target/hold response retries have failed.",
+    "recorded_at": "2026-06-30T19:07:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_high_account_risk_exit_oracle_regret_lead_not_promoted",
+    "artifact": "data/experiments/exp-20260630-018/exp_20260630_018_high_account_risk_exit_oracle_regret.json",
+    "log": "experiments/logs/exp-20260630-018.json",
+    "gate4": {
+      "observed_only": true,
+      "passed": true,
+      "decision": "observed_only_positive_high_account_risk_exit_oracle_regret_lead_not_promoted",
+      "failed_reasons": [],
+      "cohort_readiness_passed": true,
+      "binding_note": "A pass is an observed-only lead, not accepted alpha. Any strategy-affecting exit lifecycle needs a separate shared policy and Gate 1-4 before/after run.",
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "survival_rate_delta": 0.0
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.25,
+      "actual_success": 1,
+      "brier_score": 0.5625,
+      "predicted_failure_modes": [
+        "window_separation_not_stable",
+        "cohort_not_actionable_without_future_data",
+        "sample_too_small",
+        "concentration_failed",
+        "oracle_label_not_policy"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_mode_hit": false,
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "surprise_note": "The diagnostic cohort passed despite low prior; the surprise is limited because this is still oracle-label evidence, not a policy."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-018.json",
+  "single_causal_variable": "high_actual_risk_exit_oracle_regret_cohort_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260630-018.json",
+  "trial_family": "high_account_risk_exit_oracle_regret",
+  "trial_variant_id": "actual_risk_ge_2pct_full_denominator_v1",
+  "implementation_mode": "observed_only_exit_oracle_attribution",
+  "new_evidence_axis": "Full trade-level fixed-entry oracle denominator rows from exp-20260630-011, applied to an entry-known account-risk cohort.",
+  "decision": "observed_only_positive_high_account_risk_exit_oracle_regret_lead_not_promoted",
+  "artifact": "data/experiments/exp-20260630-018/exp_20260630_018_high_account_risk_exit_oracle_regret.json",
+  "log": "experiments/logs/exp-20260630-018.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "entry_date",
+      "actual_risk_pct",
+      "actual_pnl",
+      "oracle_pnl",
+      "regret_vs_oracle",
+      "target_price_not_used"
+    ],
+    "entry_date_present": true,
+    "target_price_relevance": "Not used. This is diagnostic cohort attribution, not a target exit rule.",
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "cohort_rows": 31,
+    "complement_rows": 29,
+    "note": "No executable filter or exit was added; cohort survival is denominator coverage only.",
+    "passed": true
+  },
+  "gate4": {
+    "observed_only": true,
+    "passed": true,
+    "decision": "observed_only_positive_high_account_risk_exit_oracle_regret_lead_not_promoted",
+    "failed_reasons": [],
+    "cohort_readiness_passed": true,
+    "binding_note": "A pass is an observed-only lead, not accepted alpha. Any strategy-affecting exit lifecycle needs a separate shared policy and Gate 1-4 before/after run.",
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "llm_prompt_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "replay_only": false,
+    "uses_llm": false,
+    "parity_note": "Read-only diagnostic over existing artifacts; no adapter behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "High actual-risk trades form a broad, cross-window cohort with larger oracle regret than the lower-risk complement in every canonical window. The result is only a diagnostic lead because the oracle best-exit label uses future intratrade prices; a live rule would still need a shared pre-exit lifecycle policy.",
+    "forbidden_near_neighbor_retry": "Do not retune actual_risk_pct thresholds, stop distance, target trims, target multiples, trailing stops, hold days, or response curves on these oracle rows. The only legal next alpha step is a separately predeclared shared production/backtest lifecycle rule using fields known before exit, or materially more settled forward shadow-exit rows.",
+    "new_evidence_required": "A shared exit lifecycle helper that uses only pre-exit account-risk and path-state fields, plus Gate 1-4 before/after evidence; or prospective shadow exit-advisory rows with settled replacement value."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260630_018_high_account_risk_exit_oracle_regret.py",
+    "data/experiments/exp-20260630-018/exp_20260630_018_high_account_risk_exit_oracle_regret.json",
+    "experiments/logs/exp-20260630-018.json",
+    "experiments/cards/exp-20260630-018.md",
+    "experiments/manifests/exp-20260630-018.json",
+    "experiments/tickets/exp-20260630-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260630_018_high_account_risk_exit_oracle_regret.py",
+    "data/experiments/exp-20260630-011/exp_20260630_011_fixed_entry_exit_oracle_full_trade_rows.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260630-018/exp_20260630_018_high_account_risk_exit_oracle_regret.json",
+    "experiments/logs/exp-20260630-018.json",
+    "experiments/cards/exp-20260630-018.md",
+    "experiments/manifests/exp-20260630-018.json",
+    "experiments/tickets/exp-20260630-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260630_018_high_account_risk_exit_oracle_regret.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260630_018_high_account_risk_exit_oracle_regret.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "accepted": false,
+  "accepted_alpha": false,
+  "observed_only_lead": true,
+  "lean_quality_passed": true,
+  "updated_at": "2026-06-30T19:12:06+00:00"
+}

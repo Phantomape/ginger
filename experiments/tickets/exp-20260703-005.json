@@ -1,0 +1,329 @@
+{
+  "acceptance_rule": "reversal_explained iff median residual < 20bp or half-span sign flip; propagation_survives iff median residual >= 20bp, same sign both halves, >= 300 matched rows; else inconclusive_weakened. Observed-only either way.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_005_news_lead_reversal_control.py",
+    "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+    "experiments/logs/exp-20260703-005.json",
+    "experiments/cards/exp-20260703-005.md",
+    "experiments/manifests/exp-20260703-005.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-005.md",
+  "causal_components": [
+    "treatment_rows_frozen_from_exp021",
+    "no_event_10session_exclusion_control_days",
+    "setup_return_100bp_match_quintile_fallback",
+    "per_row_residual_vs_matched_control_median",
+    "20bp_residual_rule",
+    "two_half_span_consistency",
+    "300_matched_rows_floor"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "none_read_only",
+  "claimed_at": "2026-07-03T03:14:53+00:00",
+  "completed_at": "2026-07-03T03:16:39+00:00",
+  "created_at": "2026-07-03T03:14:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-005",
+  "experiment_uid": "expuid-a8932617f3794ccc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T03:14:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_lead_reversal_control"
+  },
+  "hypothesis": "The exp-20260702-021 negative-event-peer excess is short-term reversal in disguise and will be reproduced by matched no-event control days with similar prior-session setup returns.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "news_second_order_negative_lead_reversal_control_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-021",
+    "exp-20260702-020",
+    "exp-20260630-017"
+  ],
+  "new_evidence_type": "new_matched_no_event_control_population",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "100bp",
+        "20bp",
+        "5bp",
+        "adversarial",
+        "alpha",
+        "any",
+        "as",
+        "attribution",
+        "be",
+        "both",
+        "closed",
+        "control",
+        "daily",
+        "deduped",
+        "delta",
+        "disconfirmation",
+        "disguise",
+        "drop",
+        "effect",
+        "else",
+        "event",
+        "evidence",
+        "exp",
+        "explained",
+        "exposure",
+        "fallback",
+        "flip",
+        "from",
+        "frozen",
+        "half",
+        "halves",
+        "if",
+        "iff",
+        "in",
+        "inconclusive",
+        "inverted",
+        "lead",
+        "linkage",
+        "llm",
+        "matched",
+        "matches",
+        "may",
+        "median",
+        "minus",
+        "negative",
+        "new",
+        "news",
+        "no",
+        "of",
+        "on",
+        "only",
+        "or",
+        "order",
+        "peer",
+        "per",
+        "polarity",
+        "population",
+        "predeclared",
+        "prior",
+        "propagation",
+        "quintile",
+        "read",
+        "residual",
+        "return",
+        "reversal",
+        "row",
+        "rows",
+        "same",
+        "scoring",
+        "second",
+        "session",
+        "sessions",
+        "setup",
+        "short",
+        "sign",
+        "span",
+        "survives",
+        "term",
+        "ticker",
+        "treatment",
+        "verdict",
+        "weakened",
+        "within"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "ipo_theme_peer_propagation_attribution",
+        "reopen_condition": "Either a stable sign here (then shared-paper-first full stack), or richer event provenance: pricing-range amendments, deal size vs theme float, first-trade dates.",
+        "score": 0.4779,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "short_horizon_reversal_attribution",
+        "reopen_condition": "Do not promote 5d-continuation as a distinct edge: not shown incremental over core 20d momentum (ret20 residual t=1.00). The long-only top-quintile momentum tilt itself (t=2.82, 3/3 windows) is real but overlaps the core momentum entry. A genuinely useful follow-up is a direct replacement-value test versus the actual same-day core candidates (not a ret20 proxy): does the top-quintile name beat the",
+        "score": 0.4767,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_425_merger_theme_peer_propagation_attribution",
+        "reopen_condition": "A valid retry needs richer deal economics such as cash/stock consideration, bidder/target role, deal size versus peer float, post-announcement amendment/termination trajectory, or fresh forward rows under a shared helper.",
+        "score": 0.4727,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.4682,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "intraday_structured_relation_quality_short_horizon_read",
+        "reopen_condition": "Reopen only after materially more timestamped intraday structured observer rows have closed h1/h3 outcomes, or after a true intraday bar execution surface allows same-day post-capture execution that this daily warehouse read cannot test.",
+        "score": 0.4682,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "This is a DISCONFIRMATION control on the live exp-20260702-021 lead, not a new peer-shock candidate pool: the treatment population is frozen from exp-021 and the machine-checkable new axis is the matched no-event control-day population (never constructed before in this repo); the test can only kill or validate an existing lead, it cannot manufacture one",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "This is a DISCONFIRMATION control on the live exp-20260702-021 lead, not a new peer-shock candidate pool: the treatment population is frozen from exp-021 and the machine-checkable new axis is the matched no-event control-day population (never constructed before in this repo); the test can only kill or validate an existing lead, it cannot manufacture one",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "This is a DISCONFIRMATION control on the live exp-20260702-021 lead, not a new peer-shock candidate pool: the treatment population is frozen from exp-021 and the machine-checkable new axis is the matched no-event control-day population (never constructed before in this repo); the test can only kill or validate an existing lead, it cannot manufacture one",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "daniel-agent",
+  "prediction": {
+    "success_probability": 0.4,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "treatment setup returns are not actually dips",
+      "too few clean no-event control days per ticker",
+      "matching too coarse"
+    ],
+    "confidence_reason": "designed 50/50: either outcome is decision-relevant before forward/full-stack investment",
+    "recorded_at": "2026-07-03T03:16:39+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_exp021_lead_survives_reversal_control",
+    "artifact": "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+    "log": "experiments/logs/exp-20260703-005.json",
+    "runner": "quant/experiments/exp_20260703_005_news_lead_reversal_control.py",
+    "gate4": {
+      "mode": "observed_only_attribution",
+      "passed": false,
+      "observed_only_lead": true,
+      "failed_reasons": [
+        "propagation_survives"
+      ]
+    },
+    "summary": "After matching on prior-session setup return against clean no-event days, a residual excess remains with consistent sign in both half-spans, so the exp-021 lead is not explained by plain short-term reversal."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-005.json",
+  "single_causal_variable": "news_second_order_negative_lead_reversal_control_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260703-005.json",
+  "trial_family": "news_event_second_order_exposure_attribution",
+  "trial_variant_id": "exp-20260703-005",
+  "alpha_hypothesis": "If the lead survives the control, the propagation component justifies forward accumulation and an eventual shared-paper full-stack tilt; if not, the surface parks.",
+  "implementation_mode": "read_only_diagnostic",
+  "new_evidence_axis": "matched no-event control-day population; treatment frozen from exp-021, so the test can only kill or validate the lead",
+  "decision": "observed_only_exp021_lead_survives_reversal_control",
+  "artifact": "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+  "log": "experiments/logs/exp-20260703-005.json",
+  "gate1": {
+    "note": "read-only; canonical baseline unchanged"
+  },
+  "gate2": {
+    "fields": [
+      "excess_10d",
+      "entry_date",
+      "warehouse bars"
+    ],
+    "note": "all inputs PIT; controls from same warehouse span"
+  },
+  "gate3": {
+    "note": "no filters changed; diagnostic only"
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": true,
+    "failed_reasons": [
+      "propagation_survives"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only control study; nothing wired anywhere"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "After matching on prior-session setup return against clean no-event days, a residual excess remains with consistent sign in both half-spans, so the exp-021 lead is not explained by plain short-term reversal.",
+    "forbidden_near_neighbor_retry": "Do not retune the matching bandwidth, exclusion window, residual threshold, or setup-return definition to flip this verdict; the same-population saturation rule from exp-021 still applies to the treatment rows. The next evidence is forward accumulation of current-event rows via the daily observer wiring, or nothing.",
+    "new_evidence_required": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition."
+  },
+  "related_files": [
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260703_005_news_lead_reversal_control.py",
+    "data/experiments/exp-20260703-005/exp_20260703_005_news_lead_reversal_control.json",
+    "experiments/logs/exp-20260703-005.json",
+    "experiments/cards/exp-20260703-005.md",
+    "experiments/manifests/exp-20260703-005.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T03:16:39+00:00"
+}

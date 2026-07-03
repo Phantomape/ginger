@@ -1,0 +1,157 @@
+{
+  "experiment_id": "exp-20260702-021",
+  "timestamp": "2026-07-02T17:00:40.528456+00:00",
+  "owner": "daniel-agent",
+  "lane": "alpha_search",
+  "status": "observed_only",
+  "decision": "observed_only_positive_news_second_order_polarity_lead_not_promoted",
+  "accepted": false,
+  "hypothesis": "Baseline-controlled second-order exposure deltas separate by first-order news event polarity across the 2026-01..06 span with >= 25bp separation and half-span direction consistency.",
+  "alpha_hypothesis": "If a stable polarity separation exists, a later shared-paper experiment can express it as a default-off tilt on exposure names in the 10 sessions after qualified first-order events.",
+  "change_type": "observed_only_attribution",
+  "implementation_mode": "read_only_diagnostic",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "trial_family": "news_event_second_order_exposure_attribution",
+  "trial_variant_id": "exp-20260702-021",
+  "single_causal_variable": "news_second_order_polarity_propagation_10d_baseline_controlled_v1",
+  "changed_variable": "none_read_only",
+  "causal_components": [
+    "closed_rows_only",
+    "pooled_by_polarity_no_relation_slicing",
+    "same_ticker_unconditional_baseline_median",
+    "unique_ticker_entrydate_polarity_dedup",
+    "25bp_separation_rule",
+    "two_half_span_consistency",
+    "either_direction_predeclared"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-017",
+    "exp-20260630-005",
+    "exp-20260630-017"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "first_read_of_new_second_order_exposure_ledger",
+  "new_evidence_axis": "first attribution read of the exp-20260702-020 second-order exposure ledger; no prior probe on this population",
+  "audit": {
+    "ledger_rows": 5703,
+    "closed_rows": 3513,
+    "deduped_rows": 1832,
+    "skipped_no_baseline": 0,
+    "baseline_tickers": 135,
+    "pooled": {
+      "positive": {
+        "rows": 1105,
+        "median_delta_bp": -7.1,
+        "mean_delta_bp": 89.5,
+        "positive_share": 0.494
+      },
+      "negative": {
+        "rows": 727,
+        "median_delta_bp": 42.5,
+        "mean_delta_bp": 232.6,
+        "positive_share": 0.523
+      }
+    },
+    "half_spans": {
+      "positive_h1": {
+        "rows": 224,
+        "median_delta_bp": -132.9,
+        "mean_delta_bp": -152.0,
+        "positive_share": 0.415
+      },
+      "positive_h2": {
+        "rows": 881,
+        "median_delta_bp": 20.3,
+        "mean_delta_bp": 151.0,
+        "positive_share": 0.514
+      },
+      "negative_h1": {
+        "rows": 133,
+        "median_delta_bp": -61.8,
+        "mean_delta_bp": 44.6,
+        "positive_share": 0.474
+      },
+      "negative_h2": {
+        "rows": 594,
+        "median_delta_bp": 94.5,
+        "mean_delta_bp": 274.7,
+        "positive_share": 0.534
+      }
+    },
+    "pooled_separation_bp": -49.6,
+    "h1_separation_bp": -71.1,
+    "h2_separation_bp": -74.2,
+    "rows_threshold_ok": true,
+    "separation_threshold_ok": true,
+    "direction_consistent_across_halves": true,
+    "observed_only_lead": true,
+    "lead_direction": "inverted_neg_over_pos",
+    "top_first_order_ticker": "MU",
+    "top_first_order_share": 0.116,
+    "verdict_rule": "lead iff |pos-neg median delta| >= 25.0bp, same direction in both half-spans, >= 500 rows per polarity"
+  },
+  "gate1": {
+    "note": "read-only; canonical baseline unchanged"
+  },
+  "gate2": {
+    "fields": [
+      "excess_10d",
+      "event_polarity",
+      "entry_date",
+      "warehouse bars"
+    ],
+    "note": "all inputs PIT; ledger settled from warehouse"
+  },
+  "gate3": {
+    "note": "no filters changed; diagnostic only"
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only attribution; nothing wired into any order path"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Baseline-controlled second-order deltas separated by event polarity with a consistent direction in both half-spans; this is an observed-only lead, not a promoted helper.",
+    "forbidden_near_neighbor_retry": "This population is now under the same-population saturation rule: do not re-slice these 3.5k closed rows by relation type, theme, horizon, magnitude flag, first-order ticker, or half-span to manufacture a lead. Reopen condition: materially more closed rows from CURRENT (non-replay) events accumulated by the daily observer, or an intraday timestamped entry (same-day execution) surface that tests the faster horizon this read cannot see.",
+    "new_evidence_required": "Forward accumulation of current-event second-order rows, or intraday-entry settlement semantics; not another cut of the replay rows."
+  },
+  "related_files": [
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_021_news_second_order_read.py",
+    "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json",
+    "experiments/logs/exp-20260702-021.json",
+    "experiments/cards/exp-20260702-021.md",
+    "experiments/manifests/exp-20260702-021.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_021_news_second_order_read.py"
+  ],
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_021_news_second_order_read.py",
+    "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json",
+    "experiments/logs/exp-20260702-021.json",
+    "experiments/cards/exp-20260702-021.md",
+    "experiments/manifests/exp-20260702-021.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true
+}

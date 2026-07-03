@@ -1,0 +1,86 @@
+{
+  "experiment_id": "exp-20260702-017",
+  "timestamp": "2026-07-02T15:58:04.297945+00:00",
+  "owner": "daniel-agent",
+  "lane": "alpha_search",
+  "status": "observed_only",
+  "decision": "observed_only_no_ipo_theme_peer_propagation_edge",
+  "accepted": false,
+  "hypothesis": "Fresh private-entity S-1/F-1 IPO registrations propagate 10d SPY-excess impact to theme-peer listed tickers versus the peers' unconditional same-window baseline, with consistent sign across all three canonical windows.",
+  "alpha_hypothesis": "If a stable sign exists, a later shared-paper-first full-stack experiment can turn theme-peer propagation into a default-off candidate source or de-allocation context.",
+  "change_type": "observed_only_attribution",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "trial_family": "ipo_theme_peer_propagation_attribution",
+  "trial_variant_id": "exp-20260702-017",
+  "single_causal_variable": "ipo_theme_peer_propagation_10d_spy_excess_v1",
+  "changed_variable": "none_read_only",
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-009",
+    "exp-20260630-017",
+    "exp-20260622-006",
+    "exp-20260618-016"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "new_data_source_event_relation_join",
+  "new_evidence_axis": "first relation surface keyed on non-tradable primary entities (private IPO registrants) joined to listed theme peers",
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "sign_not_consistent"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only attribution; nothing wired into any order path"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The event-conditioned 10d SPY-excess of theme peers did not separate from the same tickers' unconditional baseline with a stable sign across the three canonical windows, so fresh private IPO registration flow, as mapped by theme overlay v1, is not a tradable propagation signal on its own.",
+    "forbidden_near_neighbor_retry": "Do not re-slice this same event population by theme subset, keyword tweak, horizon, entry lag, density cut, or SIC-peer edges to manufacture a lead. A valid retry needs a new event class (425 merger side), amendment/withdrawal trajectory, priced-deal terms (S-1/A pricing range), or closed forward rows under a shared helper.",
+    "new_evidence_required": "Either a stable sign here (then shared-paper-first full stack), or richer event provenance: pricing-range amendments, deal size vs theme float, first-trade dates."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+    "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+    "data/experiments/exp-20260702-017/propagation_rows.jsonl",
+    "experiments/logs/exp-20260702-017.json",
+    "experiments/cards/exp-20260702-017.md",
+    "experiments/manifests/exp-20260702-017.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_017_ipo_theme_propagation.py"
+  ],
+  "artifact": "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+  "audit_summary": {
+    "settled_rows": 449,
+    "pooled_median_delta_10d_bp": -28.0,
+    "observed_only_lead": false,
+    "per_window": {
+      "old_thin": {
+        "rows": 170,
+        "median_delta_10d_bp": -39.4
+      },
+      "mid_weak": {
+        "rows": 157,
+        "median_delta_10d_bp": -0.0
+      },
+      "late_strong": {
+        "rows": 117,
+        "median_delta_10d_bp": -115.2
+      }
+    }
+  }
+}

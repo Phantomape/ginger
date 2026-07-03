@@ -195,6 +195,98 @@ def test_stale_missing_asof_price_does_not_fill_pending_entry():
     assert snapshot["open_position_count"] == 0
 
 
+def _two_strong_features() -> dict[str, dict]:
+    features = {
+        "WIN": {
+            "trend_score": 1.0,
+            "breakout_20d": True,
+            "above_200ma": True,
+            "momentum_20d_pct": 0.40,
+            "momentum_60d_pct": 0.80,
+            "avg_historical_surprise_pct": 10.0,
+        },
+        "WIN2": {
+            "trend_score": 0.9,
+            "breakout_20d": True,
+            "above_200ma": True,
+            "momentum_20d_pct": 0.35,
+            "momentum_60d_pct": 0.70,
+            "avg_historical_surprise_pct": 8.0,
+        },
+    }
+    # Enough weak names that the top-decile bucket admits two strong candidates
+    # (WIN + WIN2), so the daily-slot idempotency guard is actually exercised.
+    for idx in range(18):
+        features[f"L{idx:02d}"] = {
+            "trend_score": 0.20,
+            "breakout_20d": False,
+            "above_200ma": True,
+            "momentum_20d_pct": -0.05,
+            "momentum_60d_pct": 0.02,
+        }
+    return features
+
+
+def _two_strong_ohlcv() -> dict[str, list[dict]]:
+    ohlcv = {
+        "SPY": _rows(base=100.0, step=0.08),
+        "IWM": _rows(base=100.0, step=0.22),
+        "WIN": _rows(base=80.0, step=0.10, volume=1_200_000.0),
+        "WIN2": _rows(base=78.0, step=0.095, volume=1_150_000.0),
+    }
+    for idx in range(18):
+        ohlcv[f"L{idx:02d}"] = _rows(base=45.0 + idx, step=0.03)
+    return ohlcv
+
+
+def test_same_signal_day_rerun_is_idempotent_and_does_not_double_admit():
+    """A second same-day run must not grant a fresh daily slot to the next-ranked
+    candidate once the top pick is already pending (the CAT/GEV bug: two pending
+    entries for one signal day when daily_entry_slots == 1)."""
+    ohlcv = _two_strong_ohlcv()
+    features = _two_strong_features()
+    as_of = ohlcv["SPY"][60]["date"]
+
+    first = build_alpha_score_market_regime_paper_sleeve_snapshot(
+        as_of=as_of,
+        features_by_ticker=features,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=list(features),
+        state=empty_alpha_score_market_regime_paper_state(),
+        persist=False,
+    )
+    # Run 1 admits exactly the top pick (WIN); WIN2 is held back by the daily slot.
+    assert first["new_pending_count"] == 1
+    assert first["pending_count"] == 1
+    assert first["pending_entries"][0]["ticker"] == "WIN"
+
+    state_after = empty_alpha_score_market_regime_paper_state()
+    state_after["pending_entries"] = first["pending_entries"]
+    state_after["open_positions"] = first["open_positions"]
+    state_after["closed_positions"] = first["closed_positions"]
+
+    second = build_alpha_score_market_regime_paper_sleeve_snapshot(
+        as_of=as_of,
+        features_by_ticker=features,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=list(features),
+        state=state_after,
+        persist=False,
+    )
+    # WIN2 is still a valid (non-pending) candidate on the re-run, so the only
+    # thing that can keep it out is the daily-slot idempotency guard - not the
+    # already-pending exclusion. Assert it stays out anyway.
+    assert [c["ticker"] for c in second["candidates"]] == ["WIN2"]
+    assert second["new_pending_count"] == 0
+    assert second["pending_count"] == 1
+    pending_tickers = [row["ticker"] for row in second["pending_entries"]]
+    assert pending_tickers == ["WIN"]
+    win2_reject = next(
+        c for c in second["rejected_candidates"] if c["ticker"] == "WIN2"
+    )
+    assert "daily_top1_or_capacity_limit" in win2_reject["reasons"]
+
+
 def test_default_off_alpha_attribution_includes_alpha_score_market_regime_surface():
     report = build_default_off_alpha_attribution_report(
         as_of="2026-03-02",

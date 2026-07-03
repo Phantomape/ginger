@@ -324,9 +324,20 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
+    # Same-signal-day idempotency guard: a re-run for an as_of that a prior run
+    # already processed must not grant a fresh daily slot. Count pending entries
+    # already created for this as_of and subtract them from daily_entry_slots so
+    # re-running the sleeve for one close date is idempotent (state.json pending
+    # stays capped at daily_entry_slots per signal day instead of accumulating).
+    pending_for_asof = sum(
+        1
+        for row in working_state.get("pending_entries") or []
+        if isinstance(row, dict) and _date10(row.get("created_asof")) == as_of_date
+    )
     new_pending = []
     if room > 0 and cfg.get("paper_enabled", True):
-        capacity = min(room, int(cfg["daily_entry_slots"]))
+        daily_room = max(0, int(cfg["daily_entry_slots"]) - pending_for_asof)
+        capacity = min(room, daily_room)
         for candidate in candidates[:capacity]:
             entry = _pending_entry_from_candidate(candidate, as_of=as_of_date, config=cfg)
             working_state["pending_entries"].append(entry)

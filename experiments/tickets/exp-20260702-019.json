@@ -1,0 +1,598 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260702-019/exp_20260702_019_moomoo_capital_flow_accumulation.json",
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260702-019.md",
+    "experiments/logs/exp-20260702-019.json",
+    "experiments/manifests/exp-20260702-019.json",
+    "experiments/tickets/exp-20260702-019.json",
+    "quant/data_paths.py",
+    "quant/experiments/exp_20260702_019_moomoo_capital_flow_accumulation.py",
+    "quant/moomoo_capital_flow_paper_sleeve.py",
+    "quant/test_moomoo_capital_flow_paper_sleeve.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-019.md",
+  "causal_components": [
+    "versioned get_capital_flow DAY archive",
+    "usable_trade_date mapping",
+    "shared paper sleeve helper",
+    "historical replay",
+    "daily default-off snapshot wiring",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1",
+  "claimed_at": "2026-07-02T16:16:58+00:00",
+  "completed_at": "2026-07-02T16:32:03+00:00",
+  "created_at": "2026-07-02T16:16:47+00:00",
+  "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-019",
+  "experiment_uid": "expuid-ba34a481e61b4097",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T16:16:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_capital_flow_accumulation"
+  },
+  "hypothesis": "candidate_pool/full_stack: daily vendor main capital-flow net inflow (main_in_flow > 0), ranked by main_flow_ratio = main_in_flow / adv20 under family-standard liquidity and SPY-relative guards, is a deployable top-1/day default-off paper source with replacement value on the covered canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_moomoo_historical_capital_flow_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-016",
+    "exp-20260621-017",
+    "exp-20260625-019",
+    "exp-20260622-010"
+  ],
+  "new_evidence_type": "new_data_source_versioned_historical_archive",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accumulation",
+        "activation",
+        "adds",
+        "an",
+        "archive",
+        "as",
+        "boundary",
+        "by",
+        "canonical",
+        "capital",
+        "covered",
+        "dollar",
+        "explicit",
+        "flow",
+        "from",
+        "full",
+        "get",
+        "guards",
+        "historical",
+        "history",
+        "hold",
+        "identifies",
+        "inflow",
+        "institutional",
+        "late",
+        "liquidity",
+        "main",
+        "materialized",
+        "mid",
+        "moomoo",
+        "net",
+        "normalized",
+        "old",
+        "on",
+        "partial",
+        "pit",
+        "recorded",
+        "relative",
+        "replacement",
+        "rolling",
+        "spy",
+        "standard",
+        "strong",
+        "structurally",
+        "thin",
+        "top",
+        "uncovered",
+        "value",
+        "vendor",
+        "versioned",
+        "volume",
+        "weak",
+        "windows",
+        "year"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.1771,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "institutional_13f_active_flow_historical_candidate_source",
+        "reopen_condition": "Need materially more closed 10d forward rows, non-quarterly active-manager flow provenance, populated borrow/loan availability cross-evidence, or shared helper/daily snapshot evidence with exact filing-date/as-of controls.",
+        "score": 0.1771,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1703,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "dollar_weakness_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT dollar/liquidity evidence, such as DXY/FX baskets, currency-flow, ETF creation/redemption, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.1685,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_and_hold_institutional_demand_candidate_pool",
+        "reopen_condition": "Need materially new PIT event/flow/catalyst provenance or forward replacement-value rows before revisiting gap-hold continuation.",
+        "score": 0.164,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: first materialization of the Moomoo get_capital_flow(period_type=DAY) historical daily main capital-flow archive, prescribed by the exp-20260702-016 capability probe. This ticket does not use SEC FTD or FINRA fields at all; the parked SEC FTD + FINRA observer match is a keyword false positive.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New data source: first materialization of the Moomoo get_capital_flow(period_type=DAY) historical daily main capital-flow archive, prescribed by the exp-20260702-016 capability probe. This ticket does not use SEC FTD or FINRA fields at all; the parked SEC FTD + FINRA observer match is a keyword false positive.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: first materialization of the Moomoo get_capital_flow(period_type=DAY) historical daily main capital-flow archive, prescribed by the exp-20260702-016 capability probe. This ticket does not use SEC FTD or FINRA fields at all; the parked SEC FTD + FINRA observer match is a keyword false positive.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "daniel-agent",
+  "post_run_reflection": {
+    "why_result_happened": "The fixed top-1/day main-flow accumulation source did not clear the predeclared Gate 4 bar on the covered windows: drawdown_drift_too_high; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract",
+    "forbidden_near_neighbor_retry": "Do not retune main_in_flow/min ADV/RS guard values, rank tie-breaks (super/big flow), hold days, cooldown, notional, or response curves on these same frozen windows; do not re-slice the same archive by flow bucket (super/big/mid/sml) as if it were a new axis.",
+    "new_evidence_required": "Materially more settled forward rows from the daily archive refresh (coverage only grows forward), a genuinely different vendor flow decomposition with intraday provenance, or PIT borrow/short-side economics joined to the same names."
+  },
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample_partial_coverage",
+      "concentration_failed",
+      "not_incremental_vs_accepted_comparators",
+      "flow_already_priced_by_next_open",
+      "window_instability"
+    ],
+    "confidence_reason": "exp-20260702-016 confirmed the historical DAY endpoint returns dated rows for mid_weak/late_strong/recent windows and prescribed exactly this archive+shared-helper full-stack test; the vendor history is a rolling 1-year window that erodes daily so materializing now preserves evidence; but flow-imbalance sources have a low base rate and next-open execution usually absorbs most of the signal.",
+    "recorded_at": "2026-07-02T16:16:03+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+    "full_stack_verdict": "reject",
+    "artifact": "data/experiments/exp-20260702-019/exp_20260702_019_moomoo_capital_flow_accumulation.json",
+    "log": "experiments/logs/exp-20260702-019.json",
+    "card": "experiments/cards/exp-20260702-019.md",
+    "aggregate_expected_value_delta": 0.2337,
+    "aggregate_strategy_total_pnl_delta": 4232.34,
+    "accepted": false,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+      "failed_reasons": [
+        "drawdown_drift_too_high",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten",
+        "daily_snapshot_not_exposed_for_full_stack_contract"
+      ],
+      "aggregate_ev_delta": 0.2337,
+      "aggregate_pnl_delta": 4232.34,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 177,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "covered_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "covered_target_window_count_min": 2,
+      "max_drawdown_worse": 0.0054,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7885,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.208634,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.099429,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98
+        },
+        "distribution": {
+          "experiment_id": "exp-20260611-007",
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "expected_value_score_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91
+        }
+      },
+      "source_activation_boundary": {
+        "vendor_history": "rolling ~1 year (earliest row 2025-07-02 at first materialization)",
+        "old_thin": "structurally uncovered; no flow rows exist or can ever be fetched",
+        "mid_weak": "covered only from 2025-07-02 (roughly the second half of the window)",
+        "late_strong": "fully covered",
+        "note": "The archive is refreshed daily by the sleeve so coverage only grows forward; frozen-window coverage can never improve. This boundary is a property of the data source, not a tunable choice."
+      },
+      "full_stack_contract": {
+        "daily_snapshot_exposed": false,
+        "parity_test_added": true
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "drawdown_drift_too_high",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten",
+        "daily_snapshot_not_exposed_for_full_stack_contract"
+      ],
+      "brier_score": 0.0484,
+      "actual_ev_delta": 0.2337,
+      "actual_pnl_delta": 4232.34
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "shared_default_off_paper_sleeve",
+      "shared_policy_changed": true,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": true,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_moomoo_capital_flow_archive": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "max_capital_pct": 0.04,
+        "min_dollar_volume": 50000000.0,
+        "slippage_bps": 5.0,
+        "max_displacement": 0,
+        "max_concurrent": 5,
+        "order_semantics": "next_open",
+        "kill_switch_drawdown_pct": 0.08,
+        "sleeve_drawdown_stop_pct": 0.05,
+        "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source additionally depends on a live local OpenD; a dead OpenD degrades to zero candidates without touching the ledger.",
+        "missing": [],
+        "complete": true
+      },
+      "parity_note": "One shared candidate rule (quant/moomoo_capital_flow_paper_sleeve.py) drives both the historical replay in this runner and the daily default-off snapshot; parity tests cover admission, ranking, same-day idempotency, fill/close lifecycle, and the replay/daily selection agreement. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed top-1/day main-flow accumulation source did not clear the predeclared Gate 4 bar on the covered windows: drawdown_drift_too_high; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract",
+      "forbidden_near_neighbor_retry": "Do not retune main_in_flow/min ADV/RS guard values, rank tie-breaks (super/big flow), hold days, cooldown, notional, or response curves on these same frozen windows; do not re-slice the same archive by flow bucket (super/big/mid/sml) as if it were a new axis.",
+      "new_evidence_required": "Materially more settled forward rows from the daily archive refresh (coverage only grows forward), a genuinely different vendor flow decomposition with intraday provenance, or PIT borrow/short-side economics joined to the same names."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-019.json",
+  "single_causal_variable": "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1",
+  "status": "rejected",
+  "summary": "The moomoo main capital-flow accumulation source failed the predeclared full-stack Gate 4 on the covered windows; do not retune it on frozen samples.",
+  "ticket_file": "experiments/tickets/exp-20260702-019.json",
+  "trial_family": "moomoo_capital_flow_day_accumulation_candidate_pool",
+  "trial_variant_id": "moomoo_capital_flow_main_inflow_top1_v1",
+  "artifact": "data/experiments/exp-20260702-019/exp_20260702_019_moomoo_capital_flow_accumulation.json",
+  "log": "experiments/logs/exp-20260702-019.json",
+  "aggregate_expected_value_delta": 0.2337,
+  "aggregate_strategy_total_pnl_delta": 4232.34,
+  "gate1": {
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1331,
+        "total_pnl": 77845.53,
+        "strategy_total_return_pct": 0.7785,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1118,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.644,
+        "total_pnl": 42933.82,
+        "strategy_total_return_pct": 0.4293,
+        "sharpe_daily": 1.5,
+        "max_drawdown_pct": 0.095,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "worst_trade_pct": -0.0928,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5948
+      }
+    },
+    "baseline_artifacts": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "passed": true
+  },
+  "gate2": {
+    "runtime_fields": [
+      "entry_date",
+      "exit_date",
+      "entry_price",
+      "exit_price",
+      "flow_date",
+      "main_in_flow",
+      "main_flow_ratio",
+      "avg_dollar_volume_20",
+      "ret20_excess_spy"
+    ],
+    "archive_row_count": 12348,
+    "target_price_scope": "not_applicable_fixed_10d_close_exit_paper_source; core entry_date/target_price fields unchanged in baseline",
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7885,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0,
+    "passed": true,
+    "note": "Default-off paper overlay only. Core signal generation and survival are unchanged."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+    "failed_reasons": [
+      "drawdown_drift_too_high",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "aggregate_ev_delta": 0.2337,
+    "aggregate_pnl_delta": 4232.34,
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 0,
+    "target_trade_count": 177,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "covered_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "covered_target_window_count_min": 2,
+    "max_drawdown_worse": 0.0054,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7885,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.208634,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.099429,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "accepted_comparators": {
+      "compression": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "source_activation_boundary": {
+      "vendor_history": "rolling ~1 year (earliest row 2025-07-02 at first materialization)",
+      "old_thin": "structurally uncovered; no flow rows exist or can ever be fetched",
+      "mid_weak": "covered only from 2025-07-02 (roughly the second half of the window)",
+      "late_strong": "fully covered",
+      "note": "The archive is refreshed daily by the sleeve so coverage only grows forward; frozen-window coverage can never improve. This boundary is a property of the data source, not a tunable choice."
+    },
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": true
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "shared_default_off_paper_sleeve",
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": true,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "uses_llm": false,
+    "uses_moomoo_capital_flow_archive": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "max_capital_pct": 0.04,
+      "min_dollar_volume": 50000000.0,
+      "slippage_bps": 5.0,
+      "max_displacement": 0,
+      "max_concurrent": 5,
+      "order_semantics": "next_open",
+      "kill_switch_drawdown_pct": 0.08,
+      "sleeve_drawdown_stop_pct": 0.05,
+      "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source additionally depends on a live local OpenD; a dead OpenD degrades to zero candidates without touching the ledger.",
+      "missing": [],
+      "complete": true
+    },
+    "parity_note": "One shared candidate rule (quant/moomoo_capital_flow_paper_sleeve.py) drives both the historical replay in this runner and the daily default-off snapshot; parity tests cover admission, ranking, same-day idempotency, fill/close lifecycle, and the replay/daily selection agreement. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T16:32:03+00:00"
+}

@@ -1,0 +1,297 @@
+{
+  "acceptance_rule": "Measurement repair: entity SIC coverage materializes for a large majority of IPO-registrant CIKs, SIC peer index and theme overlay are versioned artifacts with tests, deterministic join produces nonzero propagation candidate rows in every canonical window, zero strategy behavior change.",
+  "allowed_write_scope": [
+    "quant/entity_exposure_map.py",
+    "quant/test_entity_exposure_map.py",
+    "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "data/experiments/exp-20260702-009/exposure_row_sample.jsonl",
+    "experiments/logs/exp-20260702-009.json",
+    "experiments/cards/exp-20260702-009.md",
+    "experiments/manifests/exp-20260702-009.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-009.md",
+  "causal_components": [
+    "cik_sic_enrichment_with_backoff",
+    "sic_listed_peer_index_from_local_cache",
+    "versioned_theme_overlay_with_buildtime_peer_validation",
+    "deterministic_direction_free_event_join",
+    "blank_check_sic6770_exclusion"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "new_non_ohlcv_surface_entity_exposure_map",
+  "claimed_at": "2026-07-02T07:59:30+00:00",
+  "completed_at": "2026-07-02T08:14:49+00:00",
+  "created_at": "2026-07-02T07:59:21+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-009",
+  "experiment_uid": "expuid-21fc9bd99e544f8b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T07:59:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "entity_exposure_map"
+  },
+  "hypothesis": "A layered entity->exposure map (deterministic CIK->SIC enrichment, SIC->listed-peer index from cached submissions, and a versioned LLM-curated theme overlay) joins corporate-event rows to listed-ticker exposure candidates deterministically, with zero hot-path LLM calls.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entity_exposure_map_v1_sic_plus_theme_overlay"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260630-005"
+  ],
+  "new_evidence_type": "new_entity_to_listed_peer_exposure_surface",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "a",
+        "add",
+        "alpha",
+        "an",
+        "artifact",
+        "auditable",
+        "basket",
+        "behavior",
+        "build",
+        "cached",
+        "calls",
+        "change",
+        "codes",
+        "company",
+        "construction",
+        "corporate",
+        "curated",
+        "deterministic",
+        "direction",
+        "docs",
+        "enables",
+        "enabling",
+        "enrich",
+        "entities",
+        "entity",
+        "event",
+        "exp",
+        "exposure",
+        "from",
+        "hot",
+        "index",
+        "industry",
+        "ipo",
+        "item",
+        "join",
+        "json",
+        "keywords",
+        "listed",
+        "llm",
+        "locally",
+        "map",
+        "md",
+        "name",
+        "no",
+        "overlay",
+        "path",
+        "peer",
+        "plus",
+        "propagation",
+        "registrant",
+        "sic",
+        "small",
+        "static",
+        "stream",
+        "submissions",
+        "theme",
+        "ticker",
+        "trading",
+        "versioned",
+        "zero"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "reopen_condition": "If this fixed corporate-action absorption basket fails, do not retry by sweeping form weights, 8-K/A inclusion, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal/restructuring economics such as cash/stock consideration, bidder/target",
+        "score": 0.469,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "peer_earnings_reaction_exact_industry_candidate_pool",
+        "reopen_condition": "Forward rows or a materially stronger peer-relation source such as customer/supplier links, audited industry-level similarity, or multi-season event co-movement.",
+        "score": 0.4685,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4685,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_8k_nonreliance_absorption_candidate_pool",
+        "reopen_condition": "If this fixed Item 4.02 nonreliance absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT nonreliance semantics such as restatement scope, non-reliance period, auditor involvement, control weakness la",
+        "score": 0.4625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_8k_restructuring_absorption_candidate_pool",
+        "reopen_condition": "If this fixed Item 2.05 restructuring absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT restructuring semantics such as explicit charge size, headcount/facility reduction, segment affected, recurr",
+        "score": 0.4625,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "daniel-agent",
+  "prediction": {
+    "success_probability": 0.7,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "SEC submissions throttling on ~1.9k entity CIKs",
+      "SIC too coarse (6770 blank-check dominance)",
+      "listed-side SIC coverage too thin"
+    ],
+    "confidence_reason": "submissions JSON is a stable documented feed; join logic is pure and fixture-tested",
+    "recorded_at": "2026-07-02T08:14:49+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "accepted_measurement_repair_entity_exposure_map_v1",
+    "artifact": "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "log": "experiments/logs/exp-20260702-009.json",
+    "runner": "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "gate4": {
+      "mode": "measurement_repair_map_coverage_audit",
+      "passed": true,
+      "failed_reasons": []
+    },
+    "summary": "SIC does the heavy lifting deterministically (incl. 6770 blank-check SPAC exclusion); the theme overlay only covers cross-SIC themes and is validated against locally listed tickers at build time so every edge is tradable."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-009.json",
+  "single_causal_variable": "entity_exposure_map_v1_sic_plus_theme_overlay",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-009.json",
+  "trial_family": "entity_exposure_map_construction",
+  "trial_variant_id": "exp-20260702-009",
+  "alpha_hypothesis": "Later, separately gated: fresh IPO registrations and merger communications on primary entities propagate measurable replacement value to theme/SIC peers (docs/alpha_next_direction_20260701.md direction 0).",
+  "new_evidence_axis": "first entity->listed-ticker relation surface keyed on non-tradable primary entities; prior relation surfaces were listed-to-listed only",
+  "decision": "accepted_measurement_repair_entity_exposure_map_v1",
+  "artifact": "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+  "log": "experiments/logs/exp-20260702-009.json",
+  "gate1": {
+    "note": "measurement repair; canonical baseline unchanged"
+  },
+  "gate2": {
+    "required_artifacts_present": true
+  },
+  "gate3": {
+    "note": "no signal filtering changed; map coverage only"
+  },
+  "gate4": {
+    "mode": "measurement_repair_map_coverage_audit",
+    "passed": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Static versioned map + pure join function; no run.py wiring. Exposure edges carry no direction claim; direction is the job of the separately gated propagation alpha test."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "SIC does the heavy lifting deterministically (incl. 6770 blank-check SPAC exclusion); the theme overlay only covers cross-SIC themes and is validated against locally listed tickers at build time so every edge is tradable.",
+    "forbidden_near_neighbor_retry": "Do not tune overlay keywords/peers per-window, add themes to chase coverage, or claim alpha from edge counts. The next experiment is the gated propagation test: event -> exposure tickers -> next-open forward replacement value vs explicit-ticker controls and accepted relation comparators.",
+    "new_evidence_required": "Closed forward replacement-value rows for exposure tickers after fresh IPO / 425 events, with cost and comparator checks; optionally PIT SIC-as-of-filing repair."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl"
+  ],
+  "changed_files": [
+    "quant/entity_exposure_map.py",
+    "quant/test_entity_exposure_map.py",
+    "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "data/experiments/exp-20260702-009/exposure_row_sample.jsonl",
+    "experiments/logs/exp-20260702-009.json",
+    "experiments/cards/exp-20260702-009.md",
+    "experiments/manifests/exp-20260702-009.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T08:14:49+00:00"
+}

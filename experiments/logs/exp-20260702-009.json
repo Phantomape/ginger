@@ -1,0 +1,91 @@
+{
+  "experiment_id": "exp-20260702-009",
+  "timestamp": "2026-07-02T08:14:47.708749+00:00",
+  "owner": "daniel-agent",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_entity_exposure_map_v1",
+  "accepted": true,
+  "hypothesis": "A layered entity->exposure map (deterministic CIK->SIC enrichment, SIC->listed-peer index from cached submissions, and a versioned LLM-curated theme overlay) joins corporate-event rows to listed-ticker exposure candidates deterministically, with zero hot-path LLM calls.",
+  "alpha_hypothesis": "Later, separately gated: fresh IPO registrations and merger communications on primary entities propagate measurable replacement value to theme/SIC peers (docs/alpha_next_direction_20260701.md direction 0).",
+  "change_type": "identity_or_measurement_repair",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "trial_family": "entity_exposure_map_construction",
+  "trial_variant_id": "exp-20260702-009",
+  "single_causal_variable": "entity_exposure_map_v1_sic_plus_theme_overlay",
+  "changed_variable": "new_non_ohlcv_surface_entity_exposure_map",
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260630-005"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_entity_to_listed_peer_exposure_surface",
+  "new_evidence_axis": "first entity->listed-ticker relation surface keyed on non-tradable primary entities; prior relation surfaces were listed-to-listed only",
+  "gate4": {
+    "mode": "measurement_repair_map_coverage_audit",
+    "passed": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Static versioned map + pure join function; no run.py wiring. Exposure edges carry no direction claim; direction is the job of the separately gated propagation alpha test."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "SIC does the heavy lifting deterministically (incl. 6770 blank-check SPAC exclusion); the theme overlay only covers cross-SIC themes and is validated against locally listed tickers at build time so every edge is tradable.",
+    "forbidden_near_neighbor_retry": "Do not tune overlay keywords/peers per-window, add themes to chase coverage, or claim alpha from edge counts. The next experiment is the gated propagation test: event -> exposure tickers -> next-open forward replacement value vs explicit-ticker controls and accepted relation comparators.",
+    "new_evidence_required": "Closed forward replacement-value rows for exposure tickers after fresh IPO / 425 events, with cost and comparator checks; optionally PIT SIC-as-of-filing repair."
+  },
+  "changed_files": [
+    "quant/entity_exposure_map.py",
+    "quant/test_entity_exposure_map.py",
+    "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "data/experiments/exp-20260702-009/exposure_row_sample.jsonl",
+    "experiments/logs/exp-20260702-009.json",
+    "experiments/cards/exp-20260702-009.md",
+    "experiments/manifests/exp-20260702-009.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\entity_exposure_map.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_exposure_map.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_009_entity_exposure_map.py"
+  ],
+  "artifact": "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+  "audit_summary": {
+    "entities_with_sic": 1917,
+    "themes": 18,
+    "windows": {
+      "old_thin": {
+        "coverage_pct": 90.4,
+        "theme_edges": 1643
+      },
+      "mid_weak": {
+        "coverage_pct": 84.9,
+        "theme_edges": 1732
+      },
+      "late_strong": {
+        "coverage_pct": 82.6,
+        "theme_edges": 1340
+      },
+      "current_forward": {
+        "coverage_pct": 82.9,
+        "theme_edges": 594
+      }
+    }
+  }
+}

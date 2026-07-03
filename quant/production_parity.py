@@ -823,12 +823,14 @@ def build_early_relative_weakness_exit_actions(
     min_rs_vs_spy=-0.03,
     require_negative_return=True,
     reduce_pct=100,
+    min_actual_risk_pct=None,
 ):
     """Return next-open exits for fresh positions that fail early vs SPY.
 
     The trigger is intentionally narrow and production-visible: after the Nth
     available holding-session close, the position must be negative from avg
-    cost and trail SPY by at least `min_rs_vs_spy`.
+    cost and trail SPY by at least `min_rs_vs_spy`.  A caller may also require
+    a minimum production-known account risk percentage.
     """
     actions = []
     audit = []
@@ -844,6 +846,14 @@ def build_early_relative_weakness_exit_actions(
         }]
 
     target_days_since_entry = max(0, int(holding_rows) - 1)
+    actual_risk_threshold = None
+    if min_actual_risk_pct is not None:
+        try:
+            actual_risk_threshold = float(min_actual_risk_pct)
+            if not math.isfinite(actual_risk_threshold):
+                actual_risk_threshold = None
+        except (TypeError, ValueError):
+            actual_risk_threshold = None
     current_prices = current_prices or {}
     current_price_dates = (
         None if current_price_dates is None else normalise_price_dates(current_price_dates)
@@ -898,6 +908,29 @@ def build_early_relative_weakness_exit_actions(
                 "days_since_entry": int(days_since_entry),
                 "required_days_since_entry": target_days_since_entry,
                 "holding_rows": int(holding_rows),
+            })
+            continue
+
+        actual_risk_pct = None
+        raw_actual_risk_pct = pos.get("actual_risk_pct")
+        if raw_actual_risk_pct not in (None, ""):
+            try:
+                actual_risk_pct = float(raw_actual_risk_pct)
+                if not math.isfinite(actual_risk_pct):
+                    actual_risk_pct = None
+            except (TypeError, ValueError):
+                actual_risk_pct = None
+        if actual_risk_threshold is not None and (
+            actual_risk_pct is None or actual_risk_pct < actual_risk_threshold
+        ):
+            audit.append({
+                "ticker": ticker,
+                "status": "rejected",
+                "reason": "actual_risk_below_threshold",
+                "actual_risk_pct": (
+                    round(actual_risk_pct, 6) if actual_risk_pct is not None else None
+                ),
+                "min_actual_risk_pct": round(actual_risk_threshold, 6),
             })
             continue
 
@@ -974,6 +1007,13 @@ def build_early_relative_weakness_exit_actions(
             "rs_vs_spy": round(rs_vs_spy, 6),
             "min_rs_vs_spy": min_rs_vs_spy,
             "require_negative_return": bool(require_negative_return),
+            "actual_risk_pct": (
+                round(actual_risk_pct, 6) if actual_risk_pct is not None else None
+            ),
+            "min_actual_risk_pct": (
+                round(actual_risk_threshold, 6)
+                if actual_risk_threshold is not None else None
+            ),
             "reduce_pct": reduce_pct,
             "shares_before": current_shares,
             "shares_to_sell": shares_to_sell,

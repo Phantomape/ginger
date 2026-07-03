@@ -1,0 +1,304 @@
+{
+  "acceptance_rule": "Measurement repair: rows materialize across all three canonical windows plus current dates, append-only dedup by accession, tests pass, zero strategy behavior change.",
+  "allowed_write_scope": [
+    "quant/sec_corporate_event_stream.py",
+    "quant/test_sec_corporate_event_stream.py",
+    "quant/experiments/exp_20260702_008_sec_corporate_event_stream.py",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/sec_corporate_event_stream/manifest.json",
+    "data/experiments/exp-20260702-008/exp_20260702_008_sec_corporate_event_stream.json",
+    "experiments/logs/exp-20260702-008.json",
+    "experiments/cards/exp-20260702-008.md",
+    "experiments/manifests/exp-20260702-008.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-008.md",
+  "causal_components": [
+    "quarterly_full_index_fetch_with_backoff",
+    "right_anchored_idx_row_parser",
+    "predeclared_form_set_s1_f1_425",
+    "append_only_accession_dedup",
+    "cik_ticker_resolution_status"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "new_non_ohlcv_surface_sec_corporate_event_stream",
+  "claimed_at": "2026-07-02T07:41:56+00:00",
+  "completed_at": "2026-07-02T07:53:50+00:00",
+  "created_at": "2026-07-02T07:41:31+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-008",
+  "experiment_uid": "expuid-abae568694c34999",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T07:41:31+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_corporate_event_stream"
+  },
+  "hypothesis": "EDGAR daily/quarterly form-index enumeration of S-1/F-1 (IPO registration) and 425 (merger communication) filings is a production-visible PIT corporate-event stream the per-CIK submissions pipeline cannot discover, and it can be materialized across all three canonical windows plus the current forward stretch without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_corporate_event_stream_daily_form_index_ingestion_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260618-016",
+    "exp-20260620-018",
+    "exp-20260630-002"
+  ],
+  "new_evidence_type": "new_data_source_daily_form_index_enumeration",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "a",
+        "alpha",
+        "append",
+        "are",
+        "behavior",
+        "cannot",
+        "canonical",
+        "change",
+        "cik",
+        "communication",
+        "corporate",
+        "daily",
+        "data",
+        "direction",
+        "discover",
+        "docs",
+        "edgar",
+        "enabling",
+        "entities",
+        "entity",
+        "enumeration",
+        "event",
+        "existing",
+        "f",
+        "f1",
+        "filings",
+        "form",
+        "gate",
+        "has",
+        "historical",
+        "index",
+        "ingest",
+        "ingestion",
+        "into",
+        "ipo",
+        "is",
+        "l1",
+        "later",
+        "listed",
+        "md",
+        "merger",
+        "mode",
+        "new",
+        "no",
+        "non",
+        "not",
+        "of",
+        "often",
+        "peer",
+        "per",
+        "pipeline",
+        "pit",
+        "plus",
+        "primary",
+        "propagation",
+        "ready",
+        "registration",
+        "rows",
+        "s",
+        "s1",
+        "so",
+        "stream",
+        "structurally",
+        "submissions",
+        "test",
+        "that",
+        "theme",
+        "trading",
+        "windows",
+        "yet"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.466,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_submissions_current_category_pit_boundary",
+        "reopen_condition": "A valid filer-status retry needs accession-level 10-K/10-Q cover-page or XBRL status rows keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed large_accelerated/accelerated/non_accelerated/smaller_reporting/EGC booleans.",
+        "score": 0.4656,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_s8_employee_equity_absorption_candidate_pool",
+        "reopen_condition": "If this fixed S-8 employee-equity absorption bundle fails, do not retry by sweeping S-8/S-8 POS form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT employee-equity economics such as registered share amount normalized by float/market cap, plan amendment ",
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "reopen_condition": "If this fixed corporate-action absorption basket fails, do not retry by sweeping form weights, 8-K/A inclusion, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal/restructuring economics such as cash/stock consideration, bidder/target",
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_business_combination_absorption_candidate_pool",
+        "reopen_condition": "If this fixed business-combination/tender absorption bundle fails, do not retry by sweeping form weights, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal economics such as cash/stock consideration, premium/discount, bidder/target r",
+        "score": 0.4555,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "daniel-agent",
+  "prediction": {
+    "success_probability": 0.75,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily index coverage gaps or throttling",
+      "ticker resolution too sparse to matter later",
+      "425 volume dominated by SPAC boilerplate"
+    ],
+    "confidence_reason": "EDGAR full-index is a stable documented feed; parsing risk is bounded by fixture tests.",
+    "recorded_at": "2026-07-02T07:53:50+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "accepted_measurement_repair_sec_corporate_event_stream_backfill",
+    "artifact": "data/experiments/exp-20260702-008/exp_20260702_008_sec_corporate_event_stream.json",
+    "log": "experiments/logs/exp-20260702-008.json",
+    "runner": "quant/experiments/exp_20260702_008_sec_corporate_event_stream.py",
+    "gate4": {
+      "mode": "measurement_repair_surface_audit",
+      "passed": true,
+      "failed_reasons": []
+    },
+    "summary": "Quarterly full-index files (8 requests) avoided the daily-index throttling (HTTP 403) that blocked the per-day approach; the quarterly idx header is misaligned with data columns, so the parser is a right-anchored regex rather than fixed-width slicing."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-008.json",
+  "single_causal_variable": "sec_corporate_event_stream_daily_form_index_ingestion_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-008.json",
+  "trial_family": "sec_daily_form_index_s1_f1_425_ingestion",
+  "trial_variant_id": "exp-20260702-008",
+  "alpha_hypothesis": "Later, separately gated: events on non-tradable primary entities (fresh IPO registrations, merger communications) propagate to related listed tickers via an entity->exposure map (docs/alpha_next_direction_20260701.md direction 0).",
+  "new_evidence_axis": "form-type-first EDGAR index enumeration discovers filers outside any tracked universe; prior SEC surfaces were CIK-first",
+  "decision": "accepted_measurement_repair_sec_corporate_event_stream_backfill",
+  "artifact": "data/experiments/exp-20260702-008/exp_20260702_008_sec_corporate_event_stream.json",
+  "log": "experiments/logs/exp-20260702-008.json",
+  "gate1": {
+    "note": "measurement repair; canonical backtest baseline unchanged"
+  },
+  "gate2": {
+    "required_fields_present": true,
+    "missing_fields": []
+  },
+  "gate3": {
+    "note": "no signal filtering changed; surface-level counts only",
+    "rows_total": 17335
+  },
+  "gate4": {
+    "mode": "measurement_repair_surface_audit",
+    "passed": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only non-OHLCV surface. Daily refresh is available via `sec_corporate_event_stream.py --daily` (one request per run) but is NOT yet wired into run.py; wiring is deferred to avoid contending with active run.py claims."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Quarterly full-index files (8 requests) avoided the daily-index throttling (HTTP 403) that blocked the per-day approach; the quarterly idx header is misaligned with data columns, so the parser is a right-anchored regex rather than fixed-width slicing.",
+    "forbidden_near_neighbor_retry": "Do not widen the form set, re-parse the same indexes with different filters, or claim alpha from raw event counts. The next experiment must be the separately gated propagation test with an entity->exposure map and replacement-value checks.",
+    "new_evidence_required": "An entity->listed-ticker exposure map plus next-open forward replacement-value rows for event-linked tickers, compared against explicit-ticker control rows and accepted relation comparators."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl"
+  ],
+  "changed_files": [
+    "quant/sec_corporate_event_stream.py",
+    "quant/test_sec_corporate_event_stream.py",
+    "quant/experiments/exp_20260702_008_sec_corporate_event_stream.py",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/sec_corporate_event_stream/manifest.json",
+    "data/experiments/exp-20260702-008/exp_20260702_008_sec_corporate_event_stream.json",
+    "experiments/logs/exp-20260702-008.json",
+    "experiments/cards/exp-20260702-008.md",
+    "experiments/manifests/exp-20260702-008.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T07:53:50+00:00"
+}

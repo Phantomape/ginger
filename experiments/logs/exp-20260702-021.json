@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260702-021",
+  "timestamp": "2026-07-02T17:00:40.528456+00:00",
+  "owner": "daniel-agent",
+  "lane": "alpha_search",
+  "status": "observed_only",
+  "decision": "observed_only_positive_news_second_order_polarity_lead_not_promoted",
+  "accepted": false,
+  "hypothesis": "Baseline-controlled second-order exposure deltas separate by first-order news event polarity across the 2026-01..06 span with >= 25bp separation and half-span direction consistency.",
+  "alpha_hypothesis": "If a stable polarity separation exists, a later shared-paper experiment can express it as a default-off tilt on exposure names in the 10 sessions after qualified first-order events.",
+  "change_type": "observed_only_attribution",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "trial_family": "news_event_second_order_exposure_attribution",
+  "trial_variant_id": "exp-20260702-021",
+  "single_causal_variable": "news_second_order_polarity_propagation_10d_baseline_controlled_v1",
+  "changed_variable": "none_read_only",
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-017",
+    "exp-20260630-005",
+    "exp-20260630-017"
+  ],
+  "multiple_testing_risk_bucket": "low",
+  "new_evidence_type": "first_read_of_new_second_order_exposure_ledger",
+  "new_evidence_axis": "first attribution read of the exp-20260702-020 second-order exposure ledger; no prior probe on this population",
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "read-only attribution; nothing wired into any order path"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Baseline-controlled second-order deltas separated by event polarity with a consistent direction in both half-spans; this is an observed-only lead, not a promoted helper.",
+    "forbidden_near_neighbor_retry": "This population is now under the same-population saturation rule: do not re-slice these 3.5k closed rows by relation type, theme, horizon, magnitude flag, first-order ticker, or half-span to manufacture a lead. Reopen condition: materially more closed rows from CURRENT (non-replay) events accumulated by the daily observer, or an intraday timestamped entry (same-day execution) surface that tests the faster horizon this read cannot see.",
+    "new_evidence_required": "Forward accumulation of current-event second-order rows, or intraday-entry settlement semantics; not another cut of the replay rows."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260702_021_news_second_order_read.py",
+    "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json",
+    "experiments/logs/exp-20260702-021.json",
+    "experiments/cards/exp-20260702-021.md",
+    "experiments/manifests/exp-20260702-021.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_021_news_second_order_read.py"
+  ],
+  "artifact": "data/experiments/exp-20260702-021/exp_20260702_021_news_second_order_read.json",
+  "audit_summary": {
+    "deduped_rows": 1832,
+    "pooled_separation_bp": -49.6,
+    "observed_only_lead": true
+  }
+}

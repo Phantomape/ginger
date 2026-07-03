@@ -1,0 +1,203 @@
+{
+  "experiment_id": "exp-20260702-009",
+  "timestamp": "2026-07-02T08:14:47.708749+00:00",
+  "owner": "daniel-agent",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_entity_exposure_map_v1",
+  "accepted": true,
+  "hypothesis": "A layered entity->exposure map (deterministic CIK->SIC enrichment, SIC->listed-peer index from cached submissions, and a versioned LLM-curated theme overlay) joins corporate-event rows to listed-ticker exposure candidates deterministically, with zero hot-path LLM calls.",
+  "alpha_hypothesis": "Later, separately gated: fresh IPO registrations and merger communications on primary entities propagate measurable replacement value to theme/SIC peers (docs/alpha_next_direction_20260701.md direction 0).",
+  "change_type": "identity_or_measurement_repair",
+  "implementation_mode": "shared_module_plus_versioned_static_map",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "trial_family": "entity_exposure_map_construction",
+  "trial_variant_id": "exp-20260702-009",
+  "single_causal_variable": "entity_exposure_map_v1_sic_plus_theme_overlay",
+  "changed_variable": "new_non_ohlcv_surface_entity_exposure_map",
+  "causal_components": [
+    "cik_sic_enrichment_with_backoff",
+    "sic_listed_peer_index_from_local_cache",
+    "versioned_theme_overlay_with_buildtime_peer_validation",
+    "deterministic_direction_free_event_join",
+    "blank_check_sic6770_exclusion"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260630-005"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_entity_to_listed_peer_exposure_surface",
+  "new_evidence_axis": "first entity->listed-ticker relation surface keyed on non-tradable primary entities; prior relation surfaces were listed-to-listed only",
+  "audit": {
+    "entities_total": 1958,
+    "entities_fetched_ok": 1958,
+    "entities_with_sic": 1917,
+    "blank_check_entities": 332,
+    "listed_tickers_indexed": 2774,
+    "sic_buckets": 329,
+    "overlay_version": "theme_overlay_v1_20260702",
+    "themes": 18,
+    "dropped_unlisted_peers": {
+      "space_launch_satellites": [
+        "SPCE",
+        "RDW",
+        "PL",
+        "BKSY"
+      ],
+      "semiconductors_ai_hardware": [
+        "TXN"
+      ],
+      "biotech_pharma": [
+        "VRTX"
+      ],
+      "fintech_payments": [
+        "SOFI",
+        "XYZ"
+      ],
+      "cybersecurity": [
+        "ZS"
+      ],
+      "nuclear_uranium": [
+        "UEC"
+      ],
+      "solar_clean_energy": [
+        "PLUG"
+      ],
+      "data_center_power_cooling": [
+        "VRT"
+      ]
+    },
+    "theme_edge_counts": {
+      "biotech_pharma": 2737,
+      "cloud_saas_data": 707,
+      "fintech_payments": 492,
+      "semiconductors_ai_hardware": 448,
+      "ai_software_platforms": 240,
+      "crypto_digital_assets": 154,
+      "ev_battery": 132,
+      "defense_primes_and_drones": 91,
+      "nuclear_uranium": 78,
+      "space_launch_satellites": 75,
+      "quantum_computing": 54,
+      "cybersecurity": 36,
+      "solar_clean_energy": 30,
+      "evtol_air_mobility": 30,
+      "data_center_power_cooling": 5
+    },
+    "windows": {
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "fresh_ipo_events": 730,
+        "blank_check_events": 63,
+        "events_with_exposures": 660,
+        "coverage_pct": 90.4,
+        "exposure_edges": 14448,
+        "theme_edges": 1643
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "fresh_ipo_events": 817,
+        "blank_check_events": 107,
+        "events_with_exposures": 694,
+        "coverage_pct": 84.9,
+        "exposure_edges": 15561,
+        "theme_edges": 1732
+      },
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "fresh_ipo_events": 713,
+        "blank_check_events": 112,
+        "events_with_exposures": 589,
+        "coverage_pct": 82.6,
+        "exposure_edges": 12373,
+        "theme_edges": 1340
+      },
+      "current_forward": {
+        "start": "2026-04-22",
+        "end": "2026-12-31",
+        "fresh_ipo_events": 280,
+        "blank_check_events": 34,
+        "events_with_exposures": 232,
+        "coverage_pct": 82.9,
+        "exposure_edges": 4973,
+        "theme_edges": 594
+      }
+    }
+  },
+  "gate1": {
+    "note": "measurement repair; canonical baseline unchanged"
+  },
+  "gate2": {
+    "required_artifacts_present": true
+  },
+  "gate3": {
+    "note": "no signal filtering changed; map coverage only"
+  },
+  "gate4": {
+    "mode": "measurement_repair_map_coverage_audit",
+    "passed": true,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Static versioned map + pure join function; no run.py wiring. Exposure edges carry no direction claim; direction is the job of the separately gated propagation alpha test."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "SIC does the heavy lifting deterministically (incl. 6770 blank-check SPAC exclusion); the theme overlay only covers cross-SIC themes and is validated against locally listed tickers at build time so every edge is tradable.",
+    "forbidden_near_neighbor_retry": "Do not tune overlay keywords/peers per-window, add themes to chase coverage, or claim alpha from edge counts. The next experiment is the gated propagation test: event -> exposure tickers -> next-open forward replacement value vs explicit-ticker controls and accepted relation comparators.",
+    "new_evidence_required": "Closed forward replacement-value rows for exposure tickers after fresh IPO / 425 events, with cost and comparator checks; optionally PIT SIC-as-of-filing repair."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl"
+  ],
+  "changed_files": [
+    "quant/entity_exposure_map.py",
+    "quant/test_entity_exposure_map.py",
+    "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "data/experiments/exp-20260702-009/exposure_row_sample.jsonl",
+    "experiments/logs/exp-20260702-009.json",
+    "experiments/cards/exp-20260702-009.md",
+    "experiments/manifests/exp-20260702-009.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\entity_exposure_map.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_exposure_map.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_009_entity_exposure_map.py"
+  ],
+  "allowed_write_scope": [
+    "quant/entity_exposure_map.py",
+    "quant/test_entity_exposure_map.py",
+    "quant/experiments/exp_20260702_009_entity_exposure_map.py",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "data/experiments/exp-20260702-009/exp_20260702_009_entity_exposure_map.json",
+    "data/experiments/exp-20260702-009/exposure_row_sample.jsonl",
+    "experiments/logs/exp-20260702-009.json",
+    "experiments/cards/exp-20260702-009.md",
+    "experiments/manifests/exp-20260702-009.json",
+    "docs/alpha_next_direction_20260701.md"
+  ],
+  "lean_quality_passed": true
+}

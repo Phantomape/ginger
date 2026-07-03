@@ -1,0 +1,24 @@
+{
+  "experiment_id": "exp-20260701-004",
+  "lane": "measurement_repair",
+  "change_type": "measurement_repair",
+  "title": "alpha_score_market_regime paper sleeve: same-signal-day idempotency + report renders true pending queue",
+  "trigger": "Operator found CAT listed as rank-1 pending buy in data/paper_sleeves/alpha_score_market_regime/state.json but ABSENT from data/daily/reports/report_20260630.txt; the two disagreed.",
+  "root_cause": {
+    "double_run": "The daily pipeline processed the 2026-06-30 close signal twice (snapshots generated_at 2026-07-01T03:43:40Z and 2026-07-01T05:06:12Z, both asof_date=2026-06-30; identical universe 57 tickers / 53 ranked / identical alpha scores).",
+    "bug_a_non_idempotent_admission": "build_alpha_score_market_regime_paper_sleeve_snapshot computed capacity = min(room, daily_entry_slots) without subtracting pending entries already created for the same as_of. Run 1 captured CAT (rank 1) into pending_entries; run 2 excluded CAT via already_pending_in_paper_sleeve and then granted a FRESH daily slot to the next-ranked candidate GEV. Result: 2 pending entries (CAT+GEV) for one signal day although daily_entry_slots=1.",
+    "bug_b_report_shows_new_candidates_not_pending": "report_generator.generate_daily_report rendered alpha_score_market_regime_paper_sleeve['candidates'] (new-this-run shortlist). On run 2 CAT was excluded from that shortlist (already pending), so a real pending paper buy vanished from the operator-facing report while remaining in state.json pending_entries."
+  },
+  "disproven_hypothesis": {
+    "data_timing_backfill": "Considered that CAT's score was backfilled late (would make CAT a spurious signal). DISPROVEN: both same-day runs had identical universe size (57/53) and byte-identical alpha scores for GEV/DE/AMD/INTC; CAT ranked #1 stably at alpha_score=0.712875 in the first run. CAT is a legitimate rank-1 candidate; the defect is purely idempotency + reporting, not signal validity."
+  },
+  "fix": {
+    "quant/alpha_score_market_regime_paper_sleeve.py": "Subtract pending_for_asof (pending entries whose created_asof == as_of_date) from daily_entry_slots when computing capacity, making same-signal-day re-runs idempotent (pending capped at daily_entry_slots per signal day).",
+    "quant/report_generator.py": "Render an explicit 'Pending queue (next-open paper buys)' block from alpha_score_market_regime_paper_sleeve['pending_entries'] so an entry captured by an earlier same-day run stays visible; report and state.json pending can no longer disagree."
+  },
+  "test": "quant/test_alpha_score_market_regime_paper_sleeve.py::test_same_signal_day_rerun_is_idempotent_and_does_not_double_admit — two-strong-candidate universe (WIN rank1, WIN2 rank2, top_decile=2); run 1 admits only WIN; re-run keeps WIN2 as a valid candidate but the daily-slot guard rejects it (daily_top1_or_capacity_limit), pending stays [WIN].",
+  "production_impact": "None on live orders. Sleeve is trade_enabled=False, paper-only, alters_orders=False. Change affects paper-sleeve state hygiene and operator report fidelity only; no live buy/sell/rank/size/heat/LLM path touched.",
+  "residual_state_note": "The already-corrupted live state (CAT+GEV both pending for 2026-06-30) is NOT retroactively edited by this repair to avoid racing the scheduled auto-committer; the fix prevents recurrence. Cleaning the stale extra GEV pending is an optional follow-up.",
+  "before_metrics": {"expected_value_score": null, "total_pnl": null, "note": "measurement_repair; no strategy metric before"},
+  "after_metrics": {"expected_value_score": null, "total_pnl": null, "note": "measurement_repair; no strategy metric after"}
+}
