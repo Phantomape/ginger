@@ -1,0 +1,181 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Second-order structured-news exposure may become a deployable relation alpha only after current-event rows accumulate and close under the same observer semantics.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "run_adapter_shape_mismatch",
+      "observer_import_failure",
+      "ledger_idempotency_regression"
+    ],
+    "predicted_success_probability": 0.8,
+    "surprise_note": "Wiring was straightforward; focused tests covered both success and fail-soft observer failure behavior."
+  },
+  "causal_components": [
+    "daily structured-news snapshot",
+    "second-order exposure observer refresh",
+    "fail-soft run.py integration",
+    "daily wiring tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+    "experiments/logs/exp-20260702-026.json",
+    "experiments/cards/exp-20260702-026.md",
+    "experiments/manifests/exp-20260702-026.json",
+    "experiments/tickets/exp-20260702-026.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "news_event_exposure_observer_daily_pipeline_wiring_v1",
+  "decision": "accepted_measurement_repair_news_event_exposure_observer_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260702-026",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "_persist_daily_structured_news_observation",
+      "_persist_news_event_exposure_observer",
+      "news_event_exposure_observer.run",
+      "second_order_exposure_observer"
+    ],
+    "passed": true,
+    "wiring_checks": {
+      "daily_snapshot_attaches_observer_manifest": true,
+      "failure_test_exists": true,
+      "observer_fail_soft_status": true,
+      "observer_run_api_exists": true,
+      "run_helper_defined": true,
+      "run_helper_imports_observer": true,
+      "success_test_exists": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, or exit rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Wire the accepted second-order structured-news exposure observer into the daily pipeline so current-event rows accumulate automatically for future alpha tests.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260702-026.json",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-022",
+    "exp-20260702-025"
+  ],
+  "new_evidence_axis": "Routine append integration for the accepted second-order observer; not a new relation/theme/horizon reslice.",
+  "new_evidence_type": "daily_pipeline_wiring_for_existing_observer",
+  "next_retry_requires": [
+    "materially more closed current-event second-order exposure rows",
+    "or a distinct PIT relation/economic source",
+    "not another manual observer refresh experiment"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve future experiment IDs for routine manual refreshes of the same second-order exposure observer. Let the daily pipeline append rows and only reopen alpha after materially more current rows close, or after a genuinely new execution/data surface appears.",
+    "new_evidence_required": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+    "why_result_happened": "The accepted observer already had a pure run() API and tests, so daily wiring only needed a fail-soft call after the first-order structured-news snapshot."
+  },
+  "prediction": {
+    "confidence_reason": "The observer already exists with tests and accepted measurement-repair evidence in exp-20260702-020; the remaining blocker is daily pipeline wiring so future closed rows can mature without manual experiment-ID appends.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "run_adapter_shape_mismatch",
+      "observer_import_failure",
+      "ledger_idempotency_regression"
+    ],
+    "recorded_at": "2026-07-02T21:04:56+00:00",
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": true,
+    "live_ready": false,
+    "parity_note": "Daily run.py now refreshes an append-only observer ledger after the structured-news snapshot. It does not feed prompts, orders, ranking, sizing, exits, or core candidate selection.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\news_event_exposure_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_news_event_exposure_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "news_event_exposure_observer_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-02T21:11:29.457835+00:00",
+  "trial_family": "news_event_exposure_observer_daily_pipeline_wiring",
+  "trial_variant_id": "exp-20260702-026"
+}

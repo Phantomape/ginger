@@ -1,0 +1,388 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Non-listed entity and theme news may transmit to listed exposure tickers; automatic cash/SPY/QQQ outcome settlement is required before this observer can support a candidate-pool alpha test.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": null,
+    "surprise_note": "No surprise: the repair reused the existing observer pattern and kept all trading behavior unchanged."
+  },
+  "causal_components": [
+    "observer-only accumulated daily item scan",
+    "local warehouse OHLCV settlement",
+    "fail-soft run.py daily wrapper",
+    "focused unit tests",
+    "experiment-private outcome probe"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/entity_theme_news_observer.py",
+    "quant/run.py",
+    "quant/test_entity_theme_news_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+    "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+    "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+    "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+    "experiments/cards/exp-20260703-013.md",
+    "experiments/manifests/exp-20260703-013.json",
+    "experiments/tickets/exp-20260703-013.json",
+    "experiments/logs/exp-20260703-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "entity_theme_news_observer_forward_outcome_ledger_daily_wiring_v1",
+  "decision": "accepted_measurement_repair_entity_theme_news_outcome_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-013",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "published_at",
+      "candidate_tickers",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "outcome_status"
+    ],
+    "outcome_probe": {
+      "as_of_date": "2026-07-02",
+      "candidate_outcome_row_count": 3194,
+      "candidate_ticker_count": 32,
+      "horizons": [
+        10
+      ],
+      "ledger_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+      "notional_usd": 4000.0,
+      "observer_name": "entity_theme_news_observer",
+      "observer_only": true,
+      "outcome_rule_version": "entity_theme_news_forward_outcome_ledger_v1",
+      "settled_count": 2728,
+      "snapshot_path": "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260702.json",
+      "source_item_count": 520,
+      "status_counts": {
+        "settled": 2728,
+        "unsettled_horizon": 339,
+        "unsettled_no_entry_bar": 127
+      },
+      "strategy_behavior_changed": false,
+      "summary_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+      "trade_enabled": false,
+      "unsettled_count": 466,
+      "warehouse": {
+        "date_max": "2026-07-02",
+        "date_min": "2023-08-29",
+        "requested_tickers": 32,
+        "returned_rows": 19344,
+        "returned_tickers": 32,
+        "sources": [
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+            "returned_rows": 6166,
+            "tables": [
+              {
+                "returned_rows": 6166,
+                "row_count": 62784,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+            "returned_rows": 32374,
+            "tables": [
+              {
+                "returned_rows": 18987,
+                "row_count": 5015715,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 13387,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\experiments\\exp-20260519-030\\warehouse_main.sqlite",
+            "returned_rows": 13387,
+            "tables": [
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 13387,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          }
+        ],
+        "status": "ok"
+      }
+    },
+    "passed": true,
+    "wiring_checks": {
+      "observer_loads_local_warehouse_bars": true,
+      "observer_outcome_rule_versioned": true,
+      "observer_persist_test_exists": true,
+      "observer_scans_accumulated_daily_files": true,
+      "observer_writes_separate_outcome_artifacts": true,
+      "outcome_builder_importable": true,
+      "outcome_daily_helper_importable": true,
+      "outcomes_do_not_feed_prompt_signals": true,
+      "run_daily_paths_call_outcome_helper": true,
+      "run_fail_soft_test_exists": true,
+      "run_outcome_helper_defined": true,
+      "run_outcome_helper_fail_soft": true,
+      "run_outcome_helper_imports_observer_helper": true,
+      "run_success_test_exists": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, prompt, exit, or order rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_and_probe",
+    "outcome_probe": {
+      "as_of_date": "2026-07-02",
+      "candidate_outcome_row_count": 3194,
+      "candidate_ticker_count": 32,
+      "horizons": [
+        10
+      ],
+      "ledger_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+      "notional_usd": 4000.0,
+      "observer_name": "entity_theme_news_observer",
+      "observer_only": true,
+      "outcome_rule_version": "entity_theme_news_forward_outcome_ledger_v1",
+      "settled_count": 2728,
+      "snapshot_path": "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260702.json",
+      "source_item_count": 520,
+      "status_counts": {
+        "settled": 2728,
+        "unsettled_horizon": 339,
+        "unsettled_no_entry_bar": 127
+      },
+      "strategy_behavior_changed": false,
+      "summary_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+      "trade_enabled": false,
+      "unsettled_count": 466,
+      "warehouse": {
+        "date_max": "2026-07-02",
+        "date_min": "2023-08-29",
+        "requested_tickers": 32,
+        "returned_rows": 19344,
+        "returned_tickers": 32,
+        "sources": [
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+            "returned_rows": 6166,
+            "tables": [
+              {
+                "returned_rows": 6166,
+                "row_count": 62784,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+            "returned_rows": 32374,
+            "tables": [
+              {
+                "returned_rows": 18987,
+                "row_count": 5015715,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 13387,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\experiments\\exp-20260519-030\\warehouse_main.sqlite",
+            "returned_rows": 13387,
+            "tables": [
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 13387,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          }
+        ],
+        "status": "ok"
+      }
+    },
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Alpha blocker: entity/theme news observer rows cannot mature into non-listed event propagation alpha until candidate tickers have automatic forward outcome settlement versus cash, SPY, and QQQ; add an observer-only outcome ledger and daily wiring without changing trading behavior.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260703-013.json",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260703-001",
+    "exp-20260703-002",
+    "exp-20260702-026"
+  ],
+  "new_evidence_axis": "One-time measurement repair adding forward outcome settlement for the existing entity/theme observer. It is not a query, theme, ticker-map, horizon, threshold, notional, or response-curve reslice.",
+  "new_evidence_type": "entity_theme_observer_outcome_settlement_surface",
+  "next_retry_requires": [
+    ">=25 settled entity/theme observer candidate rows",
+    "cash/SPY/QQQ replacement-value separation by source/theme",
+    "or materially richer entity relation/economic mapping"
+  ],
+  "observer_contract": {
+    "artifact_root": "data/non_ohlcv/entity_theme_news_observer",
+    "horizons": [
+      10
+    ],
+    "ledger_pattern": "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_YYYYMMDD.jsonl",
+    "notional_usd": 4000.0,
+    "observer_name": "entity_theme_news_observer",
+    "observer_only": true,
+    "outcome_rule_version": "entity_theme_news_forward_outcome_ledger_v1",
+    "snapshot_date": "20260702",
+    "summary_pattern": "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_YYYYMMDD.json",
+    "trade_enabled": false
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve more experiments for manual entity/theme outcome refreshes, query retunes, theme/ticker-map reslices, horizon retunes, notional changes, or response curves on the same immature rows.",
+    "new_evidence_required": "Closed entity/theme observer outcome rows with cash/SPY/QQQ replacement-value separation, richer relation/economic mapping, or a materially different non-ticker event source.",
+    "why_result_happened": "The entity/theme observer already had isolated daily artifacts; the missing piece was deterministic settlement over accumulated daily files. The real 20260702 snapshot currently has 2728 settled rows and 466 unsettled rows, so this is measurement infrastructure, not alpha evidence."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Non-listed entity/theme headlines can lead listed exposure tickers only if closed forward rows later beat cash/SPY/QQQ.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260703-001",
+        "exp-20260703-002",
+        "exp-20260702-026"
+      ],
+      "novelty_gate": "experiment.py new accepted without override.",
+      "why_not_repeat": "Prior entity/theme work added the observer and rejected a same-population top-1 news candidate source; this run only adds settlement so future rows can mature without manual IDs."
+    },
+    "3_single_policy_bundle": "Observer-only daily outcome materialization for accumulated entity/theme rows; no executable trading policy changes.",
+    "4_success_failure_standard": "Accept only if helper, run.py calls, fail-soft flags, tests, probe artifact, and baseline identity metrics verify.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_013_entity_theme_news_outcome_daily_wiring.py"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "run.py now refreshes a separate observer-only outcome ledger after entity/theme news observer collection. The ledger stays outside clean_trade_news, trend_signals_dict, prompts, ranking, sizing, exits, and orders.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/entity_theme_news_observer.py",
+    "quant/run.py",
+    "quant/test_entity_theme_news_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260702.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\entity_theme_news_observer.py quant\\run.py quant\\test_entity_theme_news_observer.py quant\\test_run_daily_wiring.py quant\\experiments\\exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_theme_news_observer.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "entity_theme_news_observer_forward_outcome_ledger_daily_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T14:11:34.811773+00:00",
+  "trial_family": "entity_theme_news_observer_outcome_daily_wiring",
+  "trial_variant_id": "entity_theme_news_outcome_daily_wiring_v1"
+}

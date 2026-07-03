@@ -1,0 +1,184 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Prediction-market probability changes may timestamp non-ticker entity/theme events before public exposure tickers reprice; this run only wires the daily observer so current rows can mature.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260703-006/exp_20260703_006_prediction_market_event_observer_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": null,
+    "surprise_note": "Wiring matched the existing observer pattern; focused tests cover success and fail-soft provider failure behavior."
+  },
+  "causal_components": [
+    "prediction-market observer refresh",
+    "fail-soft run.py integration",
+    "daily wiring tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260703_006_prediction_market_event_observer_daily_wiring.py",
+    "data/experiments/exp-20260703-006/exp_20260703_006_prediction_market_event_observer_daily_wiring.json",
+    "experiments/logs/exp-20260703-006.json",
+    "experiments/cards/exp-20260703-006.md",
+    "experiments/manifests/exp-20260703-006.json",
+    "experiments/tickets/exp-20260703-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "prediction_market_event_observer_daily_pipeline_wiring_v1",
+  "decision": "accepted_measurement_repair_prediction_market_event_observer_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-006",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "_persist_prediction_market_event_observer",
+      "prediction_market_event_observer.persist_prediction_market_event_observer",
+      "prediction_market_query_id",
+      "yes_probability",
+      "candidate_tickers",
+      "observer_only"
+    ],
+    "passed": true,
+    "wiring_checks": {
+      "failure_test_exists": true,
+      "observer_module_exists": true,
+      "observer_writes_separate_non_ohlcv_artifacts": true,
+      "run_daily_path_calls_helper": true,
+      "run_helper_defined": true,
+      "run_helper_fail_soft_status": true,
+      "run_helper_imports_observer": true,
+      "run_helper_no_strategy_change_flags": true,
+      "source_specs_populated": true,
+      "sources_are_observer_only": true,
+      "success_test_exists": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, or exit rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Alpha blocker: prediction-market event probability rows cannot support entity/theme event-propagation alpha unless the daily pipeline refreshes the observer automatically; wire the accepted observer into run.py as a default-off non-trading surface.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260703-006.json",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260703-004",
+    "exp-20260703-001",
+    "exp-20260702-020",
+    "exp-20260703-005"
+  ],
+  "new_evidence_axis": "Daily accumulation for a new public prediction-market probability source. This is not a replay-row news reslice, SEC field, 13F field, or adjacent event keyword threshold.",
+  "new_evidence_type": "daily_pipeline_wiring_for_new_prediction_market_source",
+  "next_retry_requires": [
+    "closed forward rows from automatic prediction-market observations",
+    "daily row count/probability coverage moving beyond the first snapshot",
+    "or a materially different event-probability source"
+  ],
+  "observer_contract": {
+    "artifact_root": "data/non_ohlcv/prediction_market_event_observer",
+    "candidate_ticker_count": 30,
+    "observer_only": true,
+    "provider": "polymarket",
+    "query_ids": [
+      "spacex_ipo_probability",
+      "frontier_ai_private_capex_probability",
+      "ai_export_controls_probability",
+      "hyperscaler_power_shortage_probability",
+      "crypto_market_structure_probability",
+      "glp1_market_access_probability"
+    ],
+    "source_count": 6
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve future experiment IDs for hand-refreshes of this observer or one-off reslices of its first daily rows by theme, provider slug, or probability threshold.",
+    "new_evidence_required": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics.",
+    "why_result_happened": "The accepted observer already had a fixed manifest and fail-soft persistence API, so daily wiring only needed the same isolated helper pattern used by the existing non-OHLCV observers."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "run.py now refreshes a separate observer-only prediction-market event surface after trade-news collection. It does not feed clean_trade_news, prompts, ranking, sizing, exits, or orders.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\prediction_market_event_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_prediction_market_event_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_006_prediction_market_event_observer_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "prediction_market_event_observer_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T04:10:17.863428+00:00",
+  "trial_family": "prediction_market_event_observer_daily_wiring",
+  "trial_variant_id": "prediction_market_event_observer_daily_wiring_v1"
+}

@@ -1,0 +1,1160 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_014_daily_news_20260701_structured_event_delta.py",
+    "data/experiments/exp-20260702-014/exp_20260702_014_daily_news_20260701_structured_event_delta.json",
+    "experiments/cards/exp-20260702-014.md",
+    "experiments/manifests/exp-20260702-014.json",
+    "experiments/tickets/exp-20260702-014.json",
+    "experiments/logs/exp-20260702-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-014.md",
+  "causal_components": [
+    "daily structured-news artifact audit",
+    "experiment-owned pending observation delta",
+    "schema and duplicate checks",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "daily_news_20260701_structured_event_observation_delta_v1",
+  "claimed_at": "2026-07-02T13:03:54+00:00",
+  "completed_at": "2026-07-02T13:07:42+00:00",
+  "created_at": "2026-07-02T13:03:44+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-014",
+  "experiment_uid": "expuid-a01b41adefd140c4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T13:03:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "daily_news_20260701_structured_event_delta"
+  },
+  "hypothesis": "Alpha blocker: the 2026-07-01 daily structured-news artifact has new PIT forward observation rows, but they need an experiment-owned delta record before structured daily-news LLM event-scoring alpha can mature against closed cash/SPY/QQQ replacement value.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "daily_news_20260701_structured_event_observation_delta_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-005",
+    "exp-20260630-006",
+    "exp-20260630-007",
+    "exp-20260701-003",
+    "exp-20260701-010"
+  ],
+  "new_evidence_type": "new_daily_structured_event_pending_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "against",
+        "alpha",
+        "an",
+        "artifact",
+        "before",
+        "blocker",
+        "but",
+        "can",
+        "cash",
+        "closed",
+        "daily",
+        "delta",
+        "event",
+        "experiment",
+        "forward",
+        "has",
+        "llm",
+        "mature",
+        "need",
+        "new",
+        "news",
+        "observation",
+        "owned",
+        "pit",
+        "qqq",
+        "record",
+        "replacement",
+        "rows",
+        "scoring",
+        "spy",
+        "structured",
+        "they",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.08,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_news_structured_event_forward_observation_contract",
+        "reopen_condition": "Closed intraday event forward observations under this fixed contract, a PIT LLM event scorer that writes the same schema, or production intraday observer wiring that creates new rows.",
+        "score": 0.0667,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "structured_daily_news_relation_magnitude_forward_value",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows for structured events, a true PIT LLM scorer writing the same evidence-span schema, or historical daily-news coverage spanning the canonical fixed windows.",
+        "score": 0.0667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_daily_observation_snapshot",
+        "reopen_condition": "Let daily runs accumulate new forward observations, then close them against cash/SPY/QQQ replacement value; alternatively add a true PIT LLM scorer using the same evidence-span schema or canonical-window daily-news coverage.",
+        "score": 0.0571,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_structured_event_forward_observation_delta",
+        "reopen_condition": "Closed replacement-value outcomes from this fixed observer, materially more prospective captures, or a PIT LLM scorer writing the same evidence-span schema.",
+        "score": 0.0571,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.86,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "missing_20260701_daily_structured_artifacts",
+      "structured_observer_zero_rows",
+      "duplicate_observation_ids",
+      "schema_drift"
+    ],
+    "confidence_reason": "Preflight found final 2026-07-01 daily structured-news artifacts with nonzero pending observation rows under the already accepted observer contract; this run should only record the row delta and zero strategy movement.",
+    "recorded_at": "2026-07-02T13:03:44+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_daily_news_20260701_structured_event_delta",
+    "artifact": "data/experiments/exp-20260702-014/exp_20260702_014_daily_news_20260701_structured_event_delta.json",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_daily_news_20260701_structured_event_delta",
+      "failed_reasons": [],
+      "measurement_repair_only": true,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "max_drawdown_pct_delta": 0.0
+      }
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "event_rows": 4,
+      "observation_rows": 4,
+      "pending_forward_rows": 4,
+      "target_relation_quality_rows": 1,
+      "target_relation_quality_tickers": 1,
+      "event_date_count": 2,
+      "event_dates": [
+        "2026-06-30",
+        "2026-07-01"
+      ],
+      "source_date_counts": {
+        "2026-07-01": 4
+      },
+      "relation_counts": {
+        "guidance_or_rating_upgrade": 1,
+        "drawdown_or_failed_transaction": 2,
+        "legal_or_regulatory_pressure": 1
+      },
+      "polarity_counts": {
+        "positive": 1,
+        "negative": 3
+      },
+      "ticker_counts": {
+        "APP": 1,
+        "MU": 1,
+        "RBLX": 1,
+        "WDC": 1
+      },
+      "magnitude_rows": 1
+    },
+    "production_impact": {
+      "run_adapter_changed": false,
+      "backtester_adapter_changed": false,
+      "daily_snapshot_exposed": true,
+      "shared_policy_changed": false,
+      "trade_enabled": false,
+      "live_orders_changed": false,
+      "paper_orders_changed": false,
+      "entry_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exit_rules_changed": false,
+      "llm_prompt_changed": false,
+      "news_archives_changed": false,
+      "live_ready": false,
+      "parity_note": "Experiment reads existing read-only daily structured-news artifacts and writes only experiment-owned closeout files. It is not attached to prompts, quant_signals, orders, ranking, sizing, or exits."
+    },
+    "calibration": {
+      "predicted_success_probability": 0.86,
+      "actual_success": true,
+      "predicted_failure_modes": [
+        "missing_20260701_daily_structured_artifacts",
+        "structured_observer_zero_rows",
+        "duplicate_observation_ids",
+        "schema_drift"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_mode_hit": [],
+      "brier_score": 0.0196
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-014.json",
+  "single_causal_variable": "daily_news_20260701_structured_event_observation_delta_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-014.json",
+  "trial_family": "daily_news_structured_event_forward_observation_delta",
+  "trial_variant_id": "20260701_pending_delta_v1",
+  "alpha_hypothesis": "Structured daily-news relation-quality events may become tradable LLM event-scoring alpha if the production daily observer keeps accumulating PIT rows that can later close against cash/SPY/QQQ replacement value.",
+  "implementation_mode": "measurement_repair_daily_news_forward_observation_delta",
+  "new_evidence_axis": "New 2026-07-01 prospective daily structured-news pending rows under the fixed accepted observer contract; this is not a relation-list, prompt, horizon, notional, ticker, or response-curve reslice.",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "event_id",
+      "event_date",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "evidence_span",
+      "source_provenance",
+      "observation_id",
+      "target_relation_quality",
+      "entry_semantics",
+      "exit_semantics",
+      "entry_date",
+      "target_price",
+      "outcome_status"
+    ],
+    "event_required_field_audit": {
+      "required_fields": [
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "actor",
+        "object",
+        "magnitude",
+        "evidence_span",
+        "sanitized_text_hash",
+        "source_provenance"
+      ],
+      "missing_counts": {},
+      "all_required_fields_present": true
+    },
+    "observation_required_field_audit": {
+      "required_fields": [
+        "observation_id",
+        "event_id",
+        "event_date",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "target_relation_quality",
+        "entry_semantics",
+        "exit_semantics",
+        "unit_notional_usd",
+        "outcome_status"
+      ],
+      "missing_counts": {},
+      "all_required_fields_present": true
+    },
+    "duplicate_event_ids": 0,
+    "duplicate_observation_ids": 0,
+    "entry_date_scope": "Forward observations are pending; entry_date is intentionally null until a future settlement/closeout pass resolves next-session open.",
+    "target_price_scope": "No target exit is scheduled; target_price is intentionally null.",
+    "artifact_write_audit": {
+      "clean_trade_news_path": "data/daily/news/trade/clean_trade_news_20260701.json",
+      "clean_trade_news_exists": true,
+      "clean_trade_news_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+      "event_artifact_path": "data/daily/news/structured/daily_news_structured_events_20260701.json",
+      "event_artifact_exists": true,
+      "event_artifact_sha256": "b9f546052908916bc2631774b19ca2d372fa11b8d7093739baa4e99b712aa708",
+      "observation_artifact_path": "data/daily/news/structured/daily_news_structured_event_observations_20260701.jsonl",
+      "observation_artifact_exists": true,
+      "observation_artifact_sha256": "6015515bf3916b5bdd95d72b667fd408a024dd7344e1838821f05295c9a81ba4",
+      "source_artifacts_rewritten_by_runner": false
+    },
+    "in_memory_rebuild_stability": {
+      "passed": true,
+      "event_ids_match_rebuild": true,
+      "observation_ids_match_rebuild": true,
+      "rebuilt_event_rows": 4,
+      "rebuilt_observation_rows": 4,
+      "source_artifacts_rewritten": false
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 4,
+    "signals_survived": 4,
+    "survival_rate": 1.0,
+    "target_relation_quality_rows": 1,
+    "note": "Measurement rows only; no executable filter or rank rule was added."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_daily_news_20260701_structured_event_delta",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0665
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "survival_rate": 0.8667,
+        "max_drawdown_pct": 0.1001
+      }
+    ]
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0665
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "survival_rate": 0.8667,
+        "max_drawdown_pct": 0.1001
+      }
+    ]
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "max_drawdown_pct_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "event_rows": 4,
+    "observation_rows": 4,
+    "pending_forward_rows": 4,
+    "target_relation_quality_rows": 1,
+    "target_relation_quality_tickers": 1,
+    "event_date_count": 2,
+    "event_dates": [
+      "2026-06-30",
+      "2026-07-01"
+    ],
+    "source_date_counts": {
+      "2026-07-01": 4
+    },
+    "relation_counts": {
+      "guidance_or_rating_upgrade": 1,
+      "drawdown_or_failed_transaction": 2,
+      "legal_or_regulatory_pressure": 1
+    },
+    "polarity_counts": {
+      "positive": 1,
+      "negative": 3
+    },
+    "ticker_counts": {
+      "APP": 1,
+      "MU": 1,
+      "RBLX": 1,
+      "WDC": 1
+    },
+    "magnitude_rows": 1
+  },
+  "daily_structured_snapshot_audit": {
+    "clean_payload_summary": {
+      "top_level_type": "list",
+      "row_count": 18,
+      "explicit_ticker_items": 18,
+      "source_counts": {
+        "google_news": 17,
+        "sec": 1
+      },
+      "ticker_top20": {
+        "AMD": 2,
+        "NVDA": 1,
+        "NFLX": 1,
+        "RBLX": 1,
+        "TSLA": 1,
+        "MU": 1,
+        "CRDO": 1,
+        "INTC": 1,
+        "WDC": 1,
+        "META": 1,
+        "SOFI": 1,
+        "APLD": 1,
+        "VRT": 1,
+        "COIN": 1,
+        "MRVL": 1,
+        "BE": 1,
+        "APP": 1
+      },
+      "sample_titles": [
+        "NVIDIA Price Forecast: Michael Burry Shorts NVDA, but Analysts See $299 - TradingKey",
+        "Netflix (NASDAQ: NFLX) Stock Price Surges Over 3% After Wall Street Journal Dismisses NBCUniversal Takeover Talk - foreignpolicyjournal.com",
+        "RBLX DEADLINE ALERT: Roblox Corporation (RBLX) Investors with Substantial Losses Have Opportunity to Lead the Roblox Class Action Lawsuit - TradingView",
+        "AMD's Su, Executive Team to Receive Raises, Stock Bonuses - marketscreener.com",
+        "8-K - ADVANCED MICRO DEVICES INC (0000002488) (Filer)"
+      ]
+    },
+    "event_contract_audit": {
+      "news_root": "D:\\Github\\ginger\\data\\daily\\news",
+      "source_kind": "clean_trade_news",
+      "file_count": 1,
+      "ignored_temp_file_count": 19,
+      "unreadable_files": 0,
+      "raw_items": 18,
+      "explicit_ticker_items": 17,
+      "raw_event_rows": 4,
+      "ledger_rows": 4,
+      "duplicate_input_rows_removed": 0,
+      "duplicate_event_ids": 0,
+      "date_range": {
+        "start": "2026-06-30",
+        "end": "2026-07-01"
+      },
+      "event_date_count": 2,
+      "source_date_counts": {
+        "2026-07-01": 4
+      },
+      "relation_counts": {
+        "drawdown_or_failed_transaction": 2,
+        "guidance_or_rating_upgrade": 1,
+        "legal_or_regulatory_pressure": 1
+      },
+      "polarity_counts": {
+        "negative": 3,
+        "positive": 1
+      },
+      "ticker_top20": {
+        "APP": 1,
+        "MU": 1,
+        "RBLX": 1,
+        "WDC": 1
+      },
+      "magnitude_rows": 1,
+      "magnitude_row_share": 0.25,
+      "target_relation_quality_rows": 1,
+      "target_relation_quality_event_dates": 1,
+      "target_relation_quality_tickers": 1,
+      "required_field_audit": {
+        "required_fields": [
+          "event_id",
+          "event_date",
+          "ticker",
+          "relation_type",
+          "relation_polarity",
+          "actor",
+          "object",
+          "magnitude",
+          "evidence_span",
+          "sanitized_text_hash",
+          "source_provenance"
+        ],
+        "missing_counts": {},
+        "all_required_fields_present": true
+      }
+    },
+    "forward_observation_contract_audit": {
+      "observation_rows": 4,
+      "duplicate_observation_ids": 0,
+      "target_relation_quality_rows": 1,
+      "target_relation_quality_event_dates": 1,
+      "target_relation_quality_tickers": 1,
+      "date_range": {
+        "start": "2026-06-30",
+        "end": "2026-07-01"
+      },
+      "event_date_count": 2,
+      "relation_counts": {
+        "drawdown_or_failed_transaction": 2,
+        "guidance_or_rating_upgrade": 1,
+        "legal_or_regulatory_pressure": 1
+      },
+      "required_field_audit": {
+        "required_fields": [
+          "observation_id",
+          "event_id",
+          "event_date",
+          "ticker",
+          "relation_type",
+          "relation_polarity",
+          "target_relation_quality",
+          "entry_semantics",
+          "exit_semantics",
+          "unit_notional_usd",
+          "outcome_status"
+        ],
+        "missing_counts": {},
+        "all_required_fields_present": true
+      }
+    },
+    "source_artifact_audit": {
+      "clean_trade_news_path": "data/daily/news/trade/clean_trade_news_20260701.json",
+      "clean_trade_news_exists": true,
+      "clean_trade_news_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+      "event_artifact_path": "data/daily/news/structured/daily_news_structured_events_20260701.json",
+      "event_artifact_exists": true,
+      "event_artifact_sha256": "b9f546052908916bc2631774b19ca2d372fa11b8d7093739baa4e99b712aa708",
+      "observation_artifact_path": "data/daily/news/structured/daily_news_structured_event_observations_20260701.jsonl",
+      "observation_artifact_exists": true,
+      "observation_artifact_sha256": "6015515bf3916b5bdd95d72b667fd408a024dd7344e1838821f05295c9a81ba4",
+      "source_artifacts_rewritten_by_runner": false
+    },
+    "sample_event_rows": [
+      {
+        "event_id": "95109ee449526afa6003d751",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "event_date": "2026-06-30",
+        "published_at": "2026-06-30T17:35:00+00:00",
+        "ticker": "APP",
+        "relation_type": "guidance_or_rating_upgrade",
+        "relation_polarity": "positive",
+        "actor": {
+          "type": "ticker",
+          "ticker": "APP",
+          "match_status": "explicit_text_match",
+          "match_confidence": "high"
+        },
+        "object": {
+          "type": "forecast_or_rating",
+          "text": "forecast_or_rating",
+          "counterparty_extracted": false,
+          "source": "local_evidence_window"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "d1558f5beab3b561"
+        },
+        "evidence_span": {
+          "start": 41,
+          "end": 48,
+          "context_start": 0,
+          "context_end": 177,
+          "text": "AppLovin Stock (APP) Opinions on Analyst Upgrade and Growth Metrics - Quiver Quantitative\nAppLovin Stock (APP) Opinions on Analyst Upgrade and Growth Metrics Quiver Quantitative"
+        },
+        "evidence_trigger": {
+          "text": "upgrade",
+          "hash": "7fef9479c8bc5a3c"
+        },
+        "evidence_text_hash": "59ec9dd43901365ca4fff804",
+        "sanitized_text_hash": "59ec9dd43901365c",
+        "source_item_hash": "6cfe31cc3197d81fc9e9fa63",
+        "source_provenance": {
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 17,
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQbFpOSXZOZ2tfRnJLTTQyeEUzckxfMWJEQTZ5Z1RNMFRzdUFRWXJEbjRHYkxNSm92OUlvNEVsY2w4VjU2Y2xldGdKaVVYd2xhUmVKaEtpb2lVMzJmR2hKNEdyS1pxRnh2aG9tWjFlMUdCV0tEZVlsUVBjNHhFazZJQ29MSUdYR3g3dHBZMjR0TzJxOUtTNkpwSW9uZ3FfbFAxQ3E3dFlhTQ?oc=5",
+          "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en"
+        },
+        "text_quality": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "ticker_entity_status": "explicit_text_match"
+        }
+      },
+      {
+        "event_id": "33cbe5a7ddf57025e5b3b294",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "event_date": "2026-07-01",
+        "published_at": "2026-07-01T18:31:44+00:00",
+        "ticker": "MU",
+        "relation_type": "drawdown_or_failed_transaction",
+        "relation_polarity": "negative",
+        "actor": {
+          "type": "ticker",
+          "ticker": "MU",
+          "match_status": "explicit_text_match",
+          "match_confidence": "high"
+        },
+        "object": {
+          "type": "market_or_transaction_failure",
+          "text": "Micron Stock The Motley FoolMicron Stock Falls",
+          "counterparty_extracted": true,
+          "source": "local_evidence_window"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": true,
+          "values": [
+            "$1",
+            "$1"
+          ],
+          "window_hash": "83e7348fc09563b7"
+        },
+        "evidence_span": {
+          "start": 197,
+          "end": 202,
+          "context_start": 57,
+          "context_end": 342,
+          "text": "Micron Stock Is Plummeting Today Yahoo FinanceHere's Why I Will Never Pay Anywhere Near $1,100 for Micron Stock The Motley FoolMicron Stock Falls Even After Analyst Forecasts Strong Demand and $1,600 Target Barron'sMicron Stock Redefined Its Future, But the Market Isn’t Convinced Yet"
+        },
+        "evidence_trigger": {
+          "text": "falls",
+          "hash": "c1b7cf7c9cdf6f57"
+        },
+        "evidence_text_hash": "b4b1b867570382c906957224",
+        "sanitized_text_hash": "25f442c212d2b51a",
+        "source_item_hash": "811348cab41b522131944f15",
+        "source_provenance": {
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 6,
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOQnNrNXM2eFRKWnFSZUVpdk9pRTFXZFIyeDltSDJlS3JWTVdrbmNpVzVCLW9PSU03SnZ2dFE2RzA2R0hFZnhhdmhIQk82bkFUN0tvME83ejhHT1ZGR3JKbURxXzBxbEx3MDZUTnE0bzFWVTd0YVVxbUVpY09sZ3RLeDdVSkY3eW1FUF9aeDRfR3FVSkVUaTVtdm9acTlmQ1U?oc=5",
+          "raw_source": "https://news.google.com/rss/search?q=MU+stock&hl=en-US&gl=US&ceid=US:en"
+        },
+        "text_quality": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "ticker_entity_status": "explicit_text_match"
+        }
+      },
+      {
+        "event_id": "7d127c606af794578b3f6fb6",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "event_date": "2026-07-01",
+        "published_at": "2026-07-01T22:05:00+00:00",
+        "ticker": "RBLX",
+        "relation_type": "legal_or_regulatory_pressure",
+        "relation_polarity": "negative",
+        "actor": {
+          "type": "ticker",
+          "ticker": "RBLX",
+          "match_status": "explicit_text_match",
+          "match_confidence": "high"
+        },
+        "object": {
+          "type": "legal_regulatory_risk",
+          "text": "Substantial Losses Have Opportunity to Lead the",
+          "counterparty_extracted": true,
+          "source": "local_evidence_window"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "b6e7a7a0487c87c1"
+        },
+        "evidence_span": {
+          "start": 130,
+          "end": 137,
+          "context_start": 0,
+          "context_end": 277,
+          "text": "RBLX DEADLINE ALERT: Roblox Corporation (RBLX) Investors with Substantial Losses Have Opportunity to Lead the Roblox Class Action Lawsuit - TradingView\nRBLX DEADLINE ALERT: Roblox Corporation (RBLX) Investors with Substantial Losses Have Opportunity to Lead the Roblox Class Ac"
+        },
+        "evidence_trigger": {
+          "text": "lawsuit",
+          "hash": "b85b91c53558d46d"
+        },
+        "evidence_text_hash": "084ced1306093411d74466e8",
+        "sanitized_text_hash": "5fb31030f786263a",
+        "source_item_hash": "476a1d5f4ded48c4704cde6c",
+        "source_provenance": {
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 2,
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMioAJBVV95cUxQc0ZpZTFEdGtlYVlXSTFzaG5fclhJQlZTMHpORXNDYjFVQkkxSzdSUmpUUUF3Wk5HVlZub1hEbGFfMVFJUGdkSW9XUkdVZ3lkS0dwUHV2R0dXamt0S2d4ME5OSERicFE4YU1qQngwcF9mN05VRHhOaV9aZl82cGR2RUpPMC1KWHFPSGYxelBQaFdnbXNMZ05BZ0JxeEdrNHozN1J0Qk5LZ3g2RS1OdTlndFBTS0pOeHVFU1N4OXozMGh0YWpSZU1NOVRDVHViUjR0RTBmcDRILUVZY01ONHdTRWJuRG1VNVVCZ1h2VkpBc3h0X09yR3pGT2xCUXVMeWpDVXhhbW0wUUc0T2ZNZHNVbU1SeTF4V0lHZjNmbVp0d0w?oc=5",
+          "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en"
+        },
+        "text_quality": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "ticker_entity_status": "explicit_text_match"
+        }
+      },
+      {
+        "event_id": "0bd398b08fb9c04280fddde8",
+        "rule_version": "daily_news_structured_event_ledger_v1",
+        "event_date": "2026-07-01",
+        "published_at": "2026-07-01T15:02:19+00:00",
+        "ticker": "WDC",
+        "relation_type": "drawdown_or_failed_transaction",
+        "relation_polarity": "negative",
+        "actor": {
+          "type": "ticker",
+          "ticker": "WDC",
+          "match_status": "explicit_text_match",
+          "match_confidence": "high"
+        },
+        "object": {
+          "type": "market_or_transaction_failure",
+          "text": "market_or_transaction_failure",
+          "counterparty_extracted": false,
+          "source": "local_evidence_window"
+        },
+        "magnitude": {
+          "has_numeric_magnitude": false,
+          "values": [],
+          "window_hash": "4d7201725e5abf70"
+        },
+        "evidence_span": {
+          "start": 62,
+          "end": 67,
+          "context_start": 0,
+          "context_end": 207,
+          "text": "Western Digital (WDC) Price Forecast: 50% Gross Margin Record Fails to Stop Triangle Breakdown - TradingKey\nWestern Digital (WDC) Price Forecast: 50% Gross Margin Record Fails to Stop Triangle Breakdown Trad"
+        },
+        "evidence_trigger": {
+          "text": "fails",
+          "hash": "c1481e2eb555ca92"
+        },
+        "evidence_text_hash": "7689d0ddd71b705d2f293ce6",
+        "sanitized_text_hash": "dc605044cc94116b",
+        "source_item_hash": "c51b3b1c5b014ed08024c6b8",
+        "source_provenance": {
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 9,
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPandpR3VSdnRLM3VxVGxueG5LME95VmREbExfSE5kbUk3VU8zSW02MG5LR012WWM4SWVaQXg1dkZ5N1VaMHl4NExpZ0NuSHRLQXBXMWdwRmcyYU1ucGxHaEZBc3hLQWh0RVJxVzZmNkdwWDBmNXI4aWFoZHM1cjE1SENUZ3lJTktpQ2ZsdTUxYU5RekE1VVd6Q1RwN0d1UW4teHZQRE9sQlV0Rm9ra3E4Rzc3V1Zob05GdXFGX0dTdkFyb2xaUEpORUZhYkw?oc=5",
+          "raw_source": "https://news.google.com/rss/search?q=WDC+stock&hl=en-US&gl=US&ceid=US:en"
+        },
+        "text_quality": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "ticker_entity_status": "explicit_text_match"
+        }
+      }
+    ],
+    "sample_observation_rows": [
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-06-30",
+        "event_id": "95109ee449526afa6003d751",
+        "evidence_text_hash": "59ec9dd43901365ca4fff804",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "38dbf8434bef6a633efd8e53",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-06-30T17:35:00+00:00",
+        "relation_polarity": "positive",
+        "relation_type": "guidance_or_rating_upgrade",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "59ec9dd43901365c",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "6cfe31cc3197d81fc9e9fa63",
+        "source_provenance": {
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 17,
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQbFpOSXZOZ2tfRnJLTTQyeEUzckxfMWJEQTZ5Z1RNMFRzdUFRWXJEbjRHYkxNSm92OUlvNEVsY2w4VjU2Y2xldGdKaVVYd2xhUmVKaEtpb2lVMzJmR2hKNEdyS1pxRnh2aG9tWjFlMUdCV0tEZVlsUVBjNHhFazZJQ29MSUdYR3g3dHBZMjR0TzJxOUtTNkpwSW9uZ3FfbFAxQ3E3dFlhTQ?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": true,
+        "ticker": "APP",
+        "unit_notional_usd": 4000.0
+      },
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-07-01",
+        "event_id": "33cbe5a7ddf57025e5b3b294",
+        "evidence_text_hash": "b4b1b867570382c906957224",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": true,
+        "observation_id": "e0f36744eaaced0f056d490c",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-07-01T18:31:44+00:00",
+        "relation_polarity": "negative",
+        "relation_type": "drawdown_or_failed_transaction",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "25f442c212d2b51a",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "811348cab41b522131944f15",
+        "source_provenance": {
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 6,
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "raw_source": "https://news.google.com/rss/search?q=MU+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOQnNrNXM2eFRKWnFSZUVpdk9pRTFXZFIyeDltSDJlS3JWTVdrbmNpVzVCLW9PSU03SnZ2dFE2RzA2R0hFZnhhdmhIQk82bkFUN0tvME83ejhHT1ZGR3JKbURxXzBxbEx3MDZUTnE0bzFWVTd0YVVxbUVpY09sZ3RLeDdVSkY3eW1FUF9aeDRfR3FVSkVUaTVtdm9acTlmQ1U?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": false,
+        "ticker": "MU",
+        "unit_notional_usd": 4000.0
+      },
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-07-01",
+        "event_id": "7d127c606af794578b3f6fb6",
+        "evidence_text_hash": "084ced1306093411d74466e8",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "d32cbe74a381639e5825462b",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-07-01T22:05:00+00:00",
+        "relation_polarity": "negative",
+        "relation_type": "legal_or_regulatory_pressure",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "5fb31030f786263a",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "476a1d5f4ded48c4704cde6c",
+        "source_provenance": {
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 2,
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMioAJBVV95cUxQc0ZpZTFEdGtlYVlXSTFzaG5fclhJQlZTMHpORXNDYjFVQkkxSzdSUmpUUUF3Wk5HVlZub1hEbGFfMVFJUGdkSW9XUkdVZ3lkS0dwUHV2R0dXamt0S2d4ME5OSERicFE4YU1qQngwcF9mN05VRHhOaV9aZl82cGR2RUpPMC1KWHFPSGYxelBQaFdnbXNMZ05BZ0JxeEdrNHozN1J0Qk5LZ3g2RS1OdTlndFBTS0pOeHVFU1N4OXozMGh0YWpSZU1NOVRDVHViUjR0RTBmcDRILUVZY01ONHdTRWJuRG1VNVVCZ1h2VkpBc3h0X09yR3pGT2xCUXVMeWpDVXhhbW0wUUc0T2ZNZHNVbU1SeTF4V0lHZjNmbVp0d0w?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": false,
+        "ticker": "RBLX",
+        "unit_notional_usd": 4000.0
+      },
+      {
+        "entry_date": null,
+        "entry_semantics": "next_session_open_after_news_date",
+        "event_date": "2026-07-01",
+        "event_id": "0bd398b08fb9c04280fddde8",
+        "evidence_text_hash": "7689d0ddd71b705d2f293ce6",
+        "excluded_positive_relation": false,
+        "exit_semantics": "ten_trading_day_close_observation",
+        "forward_10d_return_pct": null,
+        "forward_5d_return_pct": null,
+        "magnitude_qualified": false,
+        "observation_id": "f8d4172297a00c789a565626",
+        "outcome_status": "pending_forward_close",
+        "published_at": "2026-07-01T15:02:19+00:00",
+        "relation_polarity": "negative",
+        "relation_type": "drawdown_or_failed_transaction",
+        "replacement_value_vs_cash_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+        "sanitized_text_hash": "dc605044cc94116b",
+        "source_event_rule_version": "daily_news_structured_event_ledger_v1",
+        "source_item_hash": "c51b3b1c5b014ed08024c6b8",
+        "source_provenance": {
+          "file_sha256": "d945784bcb3ed8fcb736f6fc6637a45facb6e08874cda0a2939782b5143f7e10",
+          "item_index": 9,
+          "kind": "clean_trade_news",
+          "news_date": "2026-07-01",
+          "path": "data/daily/news/trade/clean_trade_news_20260701.json",
+          "raw_source": "https://news.google.com/rss/search?q=WDC+stock&hl=en-US&gl=US&ceid=US:en",
+          "source": "google_news",
+          "tier": "T3",
+          "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPandpR3VSdnRLM3VxVGxueG5LME95VmREbExfSE5kbUk3VU8zSW02MG5LR012WWM4SWVaQXg1dkZ5N1VaMHl4NExpZ0NuSHRLQXBXMWdwRmcyYU1ucGxHaEZBc3hLQWh0RVJxVzZmNkdwWDBmNXI4aWFoZHM1cjE1SENUZ3lJTktpQ2ZsdTUxYU5RekE1VVd6Q1RwN0d1UW4teHZQRE9sQlV0Rm9ra3E4Rzc3V1Zob05GdXFGX0dTdkFyb2xaUEpORUZhYkw?oc=5"
+        },
+        "target_cohort_version": "structured_relation_quality_v1",
+        "target_price": null,
+        "target_relation_quality": false,
+        "ticker": "WDC",
+        "unit_notional_usd": 4000.0
+      }
+    ]
+  },
+  "production_impact": {
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "llm_prompt_changed": false,
+    "news_archives_changed": false,
+    "live_ready": false,
+    "parity_note": "Experiment reads existing read-only daily structured-news artifacts and writes only experiment-owned closeout files. It is not attached to prompts, quant_signals, orders, ranking, sizing, or exits."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The production daily structured-news observer already emitted schema-complete 2026-07-01 pending rows under the fixed accepted contract. The useful output is an experiment-owned delta record, not a new rule or row slice.",
+    "forbidden_near_neighbor_retry": "Do not slice these 2026-07-01 pending daily news rows by relation, ticker, source, prompt wording, magnitude, horizon, notional, or response curve before closed replacement-value outcomes exist.",
+    "new_evidence_required": "Closed cash/SPY/QQQ replacement-value outcomes for these and later daily structured observations, materially more prospective daily captures under the same contract, or a PIT LLM scorer that writes the same evidence-span schema."
+  },
+  "next_retry_requires": [
+    "closed structured-news forward outcomes for 2026-07-01 or later rows",
+    "materially more prospective daily captures under the fixed observer",
+    "PIT LLM labels persisted with the same evidence-span schema"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_014_daily_news_20260701_structured_event_delta.py",
+    "data/experiments/exp-20260702-014/exp_20260702_014_daily_news_20260701_structured_event_delta.json",
+    "experiments/cards/exp-20260702-014.md",
+    "experiments/manifests/exp-20260702-014.json",
+    "experiments/tickets/exp-20260702-014.json",
+    "experiments/logs/exp-20260702-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/daily_news_text_sanitation.py",
+    "quant/daily_news_structured_events.py",
+    "quant/daily_news_structured_event_snapshot.py",
+    "data/daily/news/trade/clean_trade_news_20260701.json",
+    "data/daily/news/structured/daily_news_structured_events_20260701.json",
+    "data/daily/news/structured/daily_news_structured_event_observations_20260701.jsonl",
+    "experiments/logs/exp-20260630-005.json",
+    "experiments/logs/exp-20260630-006.json",
+    "experiments/logs/exp-20260630-007.json",
+    "experiments/logs/exp-20260701-003.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_014_daily_news_20260701_structured_event_delta.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260702_014_daily_news_20260701_structured_event_delta.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_daily_news_structured_event_snapshot.py quant\\test_daily_news_structured_events.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "calibration": {
+    "predicted_success_probability": 0.86,
+    "actual_success": true,
+    "predicted_failure_modes": [
+      "missing_20260701_daily_structured_artifacts",
+      "structured_observer_zero_rows",
+      "duplicate_observation_ids",
+      "schema_drift"
+    ],
+    "realized_failure_modes": [],
+    "predicted_failure_mode_hit": [],
+    "brier_score": 0.0196
+  },
+  "artifact": "data/experiments/exp-20260702-014/exp_20260702_014_daily_news_20260701_structured_event_delta.json",
+  "log": "experiments/logs/exp-20260702-014.json",
+  "updated_at": "2026-07-02T13:07:42+00:00"
+}

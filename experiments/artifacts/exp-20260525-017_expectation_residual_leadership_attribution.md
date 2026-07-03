@@ -18,7 +18,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   },
   "candidates_with_eps_estimate_delta_7d": 18,
   "closed_forward_outcomes": {
-    "10d": 36,
+    "10d": 42,
     "20d": 30,
     "5d": 42
   },
@@ -51,9 +51,9 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 | Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 3 | 0.8169% |
+| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 7 | 1.5016% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 16 | -8.1461% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Reconstructed Scout
@@ -83,9 +83,9 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 | Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 3 | 0.8169% |
+| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 7 | 1.5016% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 16 | -8.1461% |
+| C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Gate

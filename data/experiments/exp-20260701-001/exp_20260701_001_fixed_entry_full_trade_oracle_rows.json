@@ -1,0 +1,48 @@
+{
+  "experiment_id": "exp-20260701-001",
+  "generated_at": "2026-07-01T02:10:24Z",
+  "diagnostic_only": true,
+  "decision": "rejected_duplicate_no_new_evidence",
+  "hypothesis": "Build full trade-level fixed-entry exit oracle rows across canonical windows so future exit-policy alpha can measure cohort denominators and false-positive rates instead of relying on top-regret samples.",
+  "duplicate_of": "exp-20260630-011",
+  "related_prior_experiments": [
+    "exp-20260630-011",
+    "exp-20260630-018",
+    "exp-20260630-020"
+  ],
+  "no_op_metrics": {
+    "source": "Current canonical aggregate baseline from docs/backtesting.md; no strategy or measurement surface was changed.",
+    "expected_value_score": 7.8941,
+    "sharpe_daily": null,
+    "total_pnl": 234850.99,
+    "max_drawdown_pct": 0.1119,
+    "win_rate": null,
+    "total_trades": 61,
+    "survival_rate": 0.7925
+  },
+  "expected_value_score": 7.8941,
+  "sharpe_daily": null,
+  "total_pnl": 234850.99,
+  "max_drawdown_pct": 0.1119,
+  "win_rate": null,
+  "total_trades": 61,
+  "survival_rate": 0.7925,
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "live_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_policy_changed": false
+  },
+  "gate_summary": {
+    "gate_1_baseline": "Current canonical aggregate accepted-stack baseline: EV 7.8941, PnL 234850.99, trades 61, min survival 0.7925.",
+    "gate_2_fields": "Not rerun; the intended full-trade oracle fields were already materialized by exp-20260630-011.",
+    "gate_3_survival": "No new filter; survival unchanged.",
+    "gate_4_before_after": "No before/after strategy comparison was run because the reservation duplicated exp-20260630-011 with no new evidence axis."
+  },
+  "reproduction": [
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py claim exp-20260701-001 --owner alpha-explore",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py close --experiment-id exp-20260701-001 --before data\\experiments\\exp-20260701-001\\exp_20260701_001_fixed_entry_full_trade_oracle_rows.json --after data\\experiments\\exp-20260701-001\\exp_20260701_001_fixed_entry_full_trade_oracle_rows.json --status-override rejected --write-registry --log-draft --append-log"
+  ],
+  "post_run_reflection": "Do not rerun fixed-entry full-trade oracle materialization unless new settled trade rows or a new oracle data surface exist. Valid next work needs a shared pre-exit helper with a new production-visible signal, or prospective shadow exit-advisory rows with settled replacement value."
+}

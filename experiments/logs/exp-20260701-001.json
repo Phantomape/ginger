@@ -1,0 +1,119 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7925,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.6084,
+    "calibration_direction": "overconfident",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "ohlcv_snapshot_schema_mismatch",
+      "trade_dates_missing",
+      "oracle_rows_duplicate_or_incomplete",
+      "audit_dirty_worktree_conflict"
+    ],
+    "predicted_success_probability": 0.78,
+    "realized_failure_mode": "duplicate_existing_accepted_measurement_repair",
+    "surprise_level": "high",
+    "surprise_note": "Startup history showed exp-20260630-011 had already materialized the exact full trade-level oracle surface; no new evidence axis existed."
+  },
+  "causal_components": [
+    "canonical window trade load",
+    "matching OHLCV replay",
+    "per-trade oracle MFE/MAE ledger",
+    "cohort denominator summary",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Closed duplicate fixed-entry full-trade oracle repair reservation without strategy changes.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "fixed_entry_full_trade_oracle_rows_v1",
+  "component": "quant/experiments/exp_20260701_001_fixed_entry_full_trade_oracle_rows.py, data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json, experiments/cards/exp-20260701-001.md, experiments/manifests/exp-20260701-001.json, experiments/tickets/exp-20260701-001.json, experiments/logs/exp-20260701-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260701-001",
+  "hypothesis": "Build full trade-level fixed-entry exit oracle rows across canonical windows so future exit-policy alpha can measure cohort denominators and false-positive rates instead of relying on top-regret samples.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "exit_policy_oracle_diagnostic",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260630-009",
+    "exp-20260623-003",
+    "exp-20260429-032"
+  ],
+  "new_evidence_type": "measurement_blocker_repair",
+  "next_retry_requires": [],
+  "notes": "No runner was added. Exp-20260630-011 already produced 61 full trade oracle rows; exp-20260630-020 already rejected the first shared early-weakness exit helper. Next valid work needs a new pre-exit signal/helper or prospective shadow-exit rows, not another oracle materialization or threshold retune.",
+  "parameters": {
+    "locked_variables": [
+      "fixed_entry_full_trade_oracle_rows_v1"
+    ],
+    "single_causal_variable": "fixed_entry_full_trade_oracle_rows_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun fixed-entry full-trade oracle materialization or retune stop/target/hold/response thresholds on the same oracle rows.",
+    "new_evidence_required": "A valid retry needs new settled trade rows, a shared pre-exit helper using production-visible fields, or prospective shadow exit-advisory rows with settled replacement value.",
+    "realized_failure_mode": "duplicate_existing_accepted_measurement_repair",
+    "why_result_happened": "Startup history showed exp-20260630-011 had already materialized the exact full trade-level oracle surface; no new evidence axis existed."
+  },
+  "prediction": {
+    "confidence_reason": "Exp-20260630-009 found a stable-looking trend_long stop regret cohort but rejected it because only top-regret rows existed. The archived canonical backtest windows and matching OHLCV snapshots are present, so a read-only full trade-level oracle ledger should be materializable without changing strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "ohlcv_snapshot_schema_mismatch",
+      "trade_dates_missing",
+      "oracle_rows_duplicate_or_incomplete",
+      "audit_dirty_worktree_conflict"
+    ],
+    "recorded_at": "2026-07-01T02:06:24+00:00",
+    "success_probability": 0.78
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json",
+    "data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-07-01T02:10:53+00:00",
+  "trial_family": "fixed_entry_full_trade_oracle_rows",
+  "trial_variant_id": "canonical_20260604_all_trades_v1"
+}

@@ -1,0 +1,410 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+    "experiments/cards/exp-20260702-004.md",
+    "experiments/manifests/exp-20260702-004.json",
+    "experiments/tickets/exp-20260702-004.json",
+    "experiments/logs/exp-20260702-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-004.md",
+  "causal_components": [
+    "current_sec_text_row_delta",
+    "fixed_semantic_parser",
+    "baseline_identity",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_current_semantic_forward_readiness_20260701_v1",
+  "claimed_at": "2026-07-02T03:06:39+00:00",
+  "completed_at": "2026-07-02T03:13:43+00:00",
+  "created_at": "2026-07-02T03:06:24+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-004",
+  "experiment_uid": "expuid-21619a479f444752",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T03:06:24+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_current_semantic_forward_readiness_20260701"
+  },
+  "hypothesis": "Alpha blocker: the new 2026-07-01 SEC filing/text snapshot has current 6-K, 8-K, and 10-Q rows, but current SEC semantic alpha cannot be trusted until the row delta, fixed semantic buckets, DEI/6-K coverage, and no-strategy-drift baseline are audited.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_current_semantic_forward_readiness_20260701_v1"
+  ],
+  "mechanism_family": "production_visible_sec_current_semantic_forward_readiness",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260701-007",
+    "exp-20260627-013",
+    "exp-20260630-002"
+  ],
+  "new_evidence_type": "current_daily_sec_text_forward_row_delta",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "are",
+        "audited",
+        "baseline",
+        "be",
+        "blocker",
+        "buckets",
+        "but",
+        "cannot",
+        "coverage",
+        "current",
+        "dei",
+        "delta",
+        "drift",
+        "filing",
+        "forward",
+        "has",
+        "k",
+        "new",
+        "no",
+        "q",
+        "readiness",
+        "row",
+        "rows",
+        "semantic",
+        "snapshot",
+        "strategy",
+        "text",
+        "trusted",
+        "until"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_alpha_surface_readiness_delta",
+        "reopen_condition": "Need materially more closed forward replacement rows for a diversified sleeve/source, non-skipped Kova intraday or 13F provenance, replayable historical 6-K text, PIT borrow/loan or options history, or a new production-visible field not already saturated.",
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "kova_multisource_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A valid next alpha needs materially more closed forward replacement rows for one diversified sleeve/source family, non-skipped Kova intraday or 13F provenance, PIT borrow/loan or options history with stronger provenance, or a new production-visible field not already saturated.",
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "moomoo_capital_flow_forward_readiness",
+        "reopen_condition": null,
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "reopen_condition": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+        "score": 0.0364,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.72,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_current_rows",
+      "no_directional_semantics",
+      "no_closed_forward_outcomes",
+      "unexpected_schema_drift"
+    ],
+    "confidence_reason": "The 2026-07-01 SEC event/text summaries exist with 21 text rows generated after the June 6-K ledger, so a row-delta audit is likely; prior SEC text alpha attempts were weak and saturated, so success is only measurement-readiness with zero expected strategy delta.",
+    "recorded_at": "2026-07-02T03:05:49+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_sec_current_semantic_forward_readiness_20260701",
+    "artifact": "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+    "log": "experiments/logs/exp-20260702-004.json",
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "survival_rate_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "text_rows": 21,
+      "event_rows": 21,
+      "rows_with_dei_cover_status": 6,
+      "six_k_rows": 3,
+      "eight_k_rows": 17,
+      "ten_q_rows": 1,
+      "nonroutine_watch_rows": 20,
+      "directional_guidance_rows": 0,
+      "current_unique_delta_vs_previous_snapshot": 4,
+      "current_6k_delta_vs_prior_6k_artifact": 0
+    },
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "max_drawdown_pct_worst": 0.1119,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171
+      }
+    },
+    "gate2": {
+      "passed": true,
+      "dependency_fields": [
+        "ticker",
+        "form_type",
+        "form_base",
+        "accession_number",
+        "accepted_at",
+        "usable_trade_date",
+        "primary_document",
+        "combined_text"
+      ],
+      "entry_date_target_price_note": "This is a forward SEC semantic readiness audit, not an executable candidate helper. It validates accepted_at and usable_trade_date; target_price is intentionally absent and no orders are generated.",
+      "jsonl_parse_errors": 0,
+      "runtime_text_rows": 21,
+      "runtime_event_rows": 21,
+      "rows_with_dei_cover_status": 6,
+      "text_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "event_file": "data/non_ohlcv/sec_filing_events_20260701.jsonl"
+    },
+    "gate3": {
+      "passed": true,
+      "note": "No executable filter was added; survival is unchanged.",
+      "strategy_changed": false,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    },
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "measurement_repair_only": true,
+      "strategy_changed": false,
+      "after_same_as_before": true,
+      "alpha_blockers": [
+        "closed_forward_replacement_value_absent",
+        "historical_standard_window_sec_text_alpha_saturated",
+        "current_rows_are_readiness_not_policy",
+        "no_directional_guidance_raise_or_cut_hit"
+      ],
+      "decision_basis": "The 2026-07-01 SEC current filing/text snapshot parsed cleanly and materialized fixed semantic readiness counts, but it has no closed replacement-value outcomes and does not change the accepted stack."
+    },
+    "reopen_condition": "Reopen SEC current semantic alpha only after at least 20 closed forward rows with cash/SPY/QQQ replacement values for one fixed semantic bucket, at least 5 rows in that bucket, max single ticker share <= 40%, and no strategy wiring before a shared default-off helper; or after true historical PIT SEC text bodies cover the standard backtest windows."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-004.json",
+  "single_causal_variable": "sec_current_semantic_forward_readiness_20260701_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-004.json",
+  "trial_family": "sec_current_semantic_forward_readiness",
+  "trial_variant_id": "sec_current_semantic_forward_readiness_20260701_v1",
+  "alpha_hypothesis": "A production-visible SEC current semantic alpha should only be reopened if the 2026-07-01 public-PIT filing text snapshot creates materially more fixed-bucket forward rows with replayable provenance; this run audits row readiness only.",
+  "implementation_mode": "experiment_scoped_current_sec_text_readiness_audit",
+  "new_evidence_axis": "The 2026-07-01 SEC current filing/text snapshot is a newly generated public-PIT row surface spanning 6-K, 8-K, and 10-Q forms; this run audits row materialization and fixed semantic buckets only, not phrase or threshold alpha scans.",
+  "pre_run_questions": {
+    "money_making_hypothesis": "A production-visible SEC current semantic alpha should only be reopened if the 2026-07-01 public-PIT filing text snapshot creates materially more fixed-bucket forward rows with replayable provenance; this run audits row readiness only.",
+    "category": "LLM event scoring / candidate pool readiness",
+    "prior_work": "exp-20260701-007 refreshed current 6-K semantic rows but did not find directional guidance or closed forward outcomes; SEC text alpha scans remain historically saturated.",
+    "single_policy_bundle": "Only the fixed row readiness and semantic-bucket audit for the 2026-07-01 SEC current snapshot is tested. No trading policy changes.",
+    "success_criteria": "Parse 20260701 event/text rows cleanly, reconcile summaries, count fixed semantic buckets and row deltas, and prove baseline metrics are unchanged.",
+    "reproducibility": "Runner, artifact, log shard, card, manifest, ticket, and registry are written with commands and source hashes."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "max_drawdown_pct_worst": 0.1119,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields": [
+      "ticker",
+      "form_type",
+      "form_base",
+      "accession_number",
+      "accepted_at",
+      "usable_trade_date",
+      "primary_document",
+      "combined_text"
+    ],
+    "entry_date_target_price_note": "This is a forward SEC semantic readiness audit, not an executable candidate helper. It validates accepted_at and usable_trade_date; target_price is intentionally absent and no orders are generated.",
+    "jsonl_parse_errors": 0,
+    "runtime_text_rows": 21,
+    "runtime_event_rows": 21,
+    "rows_with_dei_cover_status": 6,
+    "text_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+    "event_file": "data/non_ohlcv/sec_filing_events_20260701.jsonl"
+  },
+  "gate3": {
+    "passed": true,
+    "note": "No executable filter was added; survival is unchanged.",
+    "strategy_changed": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "measurement_repair_only": true,
+    "strategy_changed": false,
+    "after_same_as_before": true,
+    "alpha_blockers": [
+      "closed_forward_replacement_value_absent",
+      "historical_standard_window_sec_text_alpha_saturated",
+      "current_rows_are_readiness_not_policy",
+      "no_directional_guidance_raise_or_cut_hit"
+    ],
+    "decision_basis": "The 2026-07-01 SEC current filing/text snapshot parsed cleanly and materialized fixed semantic readiness counts, but it has no closed replacement-value outcomes and does not change the accepted stack."
+  },
+  "reopen_condition": "Reopen SEC current semantic alpha only after at least 20 closed forward rows with cash/SPY/QQQ replacement values for one fixed semantic bucket, at least 5 rows in that bucket, max single ticker share <= 40%, and no strategy wiring before a shared default-off helper; or after true historical PIT SEC text bodies cover the standard backtest windows.",
+  "production_impact": {
+    "production_impact": "experiment_scoped_measurement_repair_only",
+    "shared_policy_changed": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "replay_only": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "reason": "Experiment-scoped readiness ledger only; fixed semantic buckets are not wired into shared helpers, daily orders, ranking, sizing, exits, watchlists, or LLM hard decisions."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The 2026-07-01 SEC current filing/text snapshot parsed cleanly and materialized fixed semantic readiness counts, but it has no closed replacement-value outcomes and does not change the accepted stack.",
+    "forbidden_near_neighbor_retry": "Do not run SEC text phrase, semantic, top-N, hold-day, notional, or candidate-pool scans from these current rows. The binding constraint is closed forward replacement value and/or true historical PIT text coverage, not another adjacent text field.",
+    "new_evidence_required": "Materially more closed current SEC semantic forward rows, or true historical PIT SEC text bodies for the canonical windows, before any alpha lane retry."
+  },
+  "next_retry_requires": [
+    "closed_forward_replacement_value_for_current_sec_semantic_rows",
+    "at_least_20_closed_rows_for_one_fixed_bucket",
+    "at_least_5_rows_in_that_bucket",
+    "max_single_ticker_share_lte_40pct",
+    "shared_default_off_sec_semantic_helper_before_alpha_claim"
+  ],
+  "related_files": [
+    "data/non_ohlcv/sec_filing_events_20260701.jsonl",
+    "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+    "data/non_ohlcv/sec_filing_backfill_summary_20260701.json",
+    "data/non_ohlcv/sec_filing_text_backfill_summary_20260701.json",
+    "data/non_ohlcv/sec_filing_text_20260630.jsonl",
+    "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+    "experiments/logs/exp-20260702-004.json",
+    "experiments/cards/exp-20260702-004.md",
+    "experiments/manifests/exp-20260702-004.json",
+    "experiments/tickets/exp-20260702-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "claim_note": "Reserved and claimed before runner/artifact/log writes; no novelty override used.",
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_sec_current_semantic_forward_readiness_20260701",
+  "artifact": "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+  "log": "experiments/logs/exp-20260702-004.json",
+  "updated_at": "2026-07-02T03:13:43+00:00"
+}

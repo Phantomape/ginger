@@ -1,0 +1,346 @@
+{
+  "experiment_id": "exp-20260702-022",
+  "timestamp": "2026-07-02T17:15:26+00:00",
+  "owner": "alpha-explore",
+  "lane": "alpha_search",
+  "status": "rejected",
+  "decision": "rejected_observed_only_intraday_structured_news_h1_h3_not_allocation_ready",
+  "accepted": false,
+  "accepted_alpha": false,
+  "alpha_ready": false,
+  "hypothesis": "Intraday structured relation-quality news rows known by the 13:00 ET capture may show short-horizon h1/h3 replacement value before 5d/10d daily observer rows mature; positive-polarity rows should beat negative rows and SPY/QQQ over the first settled horizons.",
+  "alpha_hypothesis": "If 13:00 ET structured relation-quality news contains immediate replacement value, positive relation polarity should separate from negative polarity on next-session h1/h3 outcomes before the 5d/10d observer ledger has enough closed rows.",
+  "change_type": "observed_only_attribution",
+  "implementation_mode": "read_only_diagnostic",
+  "mechanism_family": "intraday_news_llm_event_scoring_alpha",
+  "trial_family": "intraday_structured_relation_quality_short_horizon_read",
+  "trial_variant_id": "exp-20260702-022",
+  "single_causal_variable": "intraday_structured_relation_quality_h1_h3_short_horizon_value_v1",
+  "changed_variable": "none_read_only",
+  "causal_components": [
+    "fixed_intraday_observer_rows",
+    "target_relation_quality_only",
+    "pooled_positive_vs_negative_polarity",
+    "next_session_open_entry_after_13ET_capture",
+    "h1_entry_day_close",
+    "h3_third_session_close",
+    "cash_spy_qqq_replacement_value",
+    "no_relation_type_or_keyword_reslice"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260630-005",
+    "exp-20260630-013",
+    "exp-20260630-015",
+    "exp-20260630-019",
+    "exp-20260701-010",
+    "exp-20260702-021"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "timestamped_intraday_capture_short_horizon_settlement",
+  "new_evidence_axis": "First h1/h3 settlement read of the fixed 13:00 ET intraday structured relation-quality observer rows; not a reslice of the daily 5d/10d second-order population.",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "baseline_trade_count": 61,
+    "note": "Read-only attribution; canonical baseline unchanged."
+  },
+  "gate2": {
+    "fields": [
+      "observation_id",
+      "event_id",
+      "capture_date",
+      "time_label",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "target_relation_quality",
+      "entry_semantics",
+      "outcome_status",
+      "unit_notional_usd",
+      "entry_date",
+      "target_price"
+    ],
+    "field_audit": {
+      "required_fields": [
+        "observation_id",
+        "event_id",
+        "capture_date",
+        "time_label",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "target_relation_quality",
+        "entry_semantics",
+        "outcome_status",
+        "unit_notional_usd"
+      ],
+      "row_count": 24,
+      "missing_by_field": {
+        "observation_id": 0,
+        "event_id": 0,
+        "capture_date": 0,
+        "time_label": 0,
+        "ticker": 0,
+        "relation_type": 0,
+        "relation_polarity": 0,
+        "target_relation_quality": 0,
+        "entry_semantics": 0,
+        "outcome_status": 0,
+        "unit_notional_usd": 0
+      },
+      "all_required_fields_present": true,
+      "entry_date_present_rows": 0,
+      "target_price_present_rows": 0
+    },
+    "entry_date_note": "Observer rows intentionally carry null entry_date until settled; runner derives next-session entry from hot warehouse.",
+    "target_price_note": "Observer is replacement-value attribution, not price-target strategy logic; target_price remains null by contract."
+  },
+  "gate3": {
+    "signals_generated": 14,
+    "signals_survived": 5,
+    "survival_rate": 0.3571,
+    "note": "No strategy filters changed; survival here is settled h1/h3 horizon rows available in the hot warehouse."
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": false,
+    "decision_rule": {
+      "lead_if": [
+        "h1 has >= 4 rows per polarity",
+        "h3 has >= 3 rows per polarity",
+        "positive median replacement value versus cash is positive on h1 and h3",
+        "positive-minus-negative median vs SPY >= $25.0",
+        "positive-minus-negative median vs QQQ >= $25.0"
+      ],
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "h3_positive_rows_below_3",
+        "h1_negative_rows_below_4",
+        "h3_negative_rows_below_3",
+        "h1_positive_not_beating_negative_vs_spy_by_25usd",
+        "h1_positive_not_beating_negative_vs_qqq_by_25usd",
+        "h1_negative_cash_median_missing",
+        "h3_positive_median_vs_cash_not_positive",
+        "h3_positive_not_beating_negative_vs_spy_by_25usd",
+        "h3_positive_not_beating_negative_vs_qqq_by_25usd",
+        "h3_negative_cash_median_missing"
+      ]
+    },
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    }
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution; no shared policy/helper or order path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed intraday structured-news observer currently has too few settled short-horizon rows to support allocation: the hot warehouse only closes the earliest h1 rows and leaves h3 mostly pending, so the pooled polarity comparison fails the predeclared row-count and ETF-excess separation gates.",
+    "realized_failure_mode": "too_few_settled_rows",
+    "forbidden_near_neighbor_retry": "Do not re-slice these same 2026-06-29 through 2026-07-02 intraday structured-news rows by relation_type, ticker, keyword, prompt wording, horizon, notional, time_label, or response curve. The binding constraint is settled row count, not another adjacent condition field.",
+    "new_evidence_required": "Reopen only after materially more timestamped intraday structured observer rows have closed h1/h3 outcomes, or after a true intraday bar execution surface allows same-day post-capture execution that this daily warehouse read cannot test."
+  },
+  "reopen_condition": "Reopen alpha allocation only after fixed intraday structured-event observer rows have at least 20 closed h1 rows with at least 8 per polarity and at least 12 closed h3 rows with at least 4 per polarity, or after a new same-day intraday fill surface changes execution timing.",
+  "changed_files": [
+    "quant/experiments/exp_20260702_022_intraday_structured_news_h1_h3_read.py",
+    "data/experiments/exp-20260702-022/exp_20260702_022_intraday_structured_news_h1_h3_read.json",
+    "experiments/logs/exp-20260702-022.json",
+    "experiments/cards/exp-20260702-022.md",
+    "experiments/manifests/exp-20260702-022.json",
+    "experiments/tickets/exp-20260702-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_022_intraday_structured_news_h1_h3_read.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "artifact": "data/experiments/exp-20260702-022/exp_20260702_022_intraday_structured_news_h1_h3_read.json",
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_success": 0,
+    "predicted_success_probability": 0.18,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "surprise_level": "very_low",
+    "expected_ev_delta": null,
+    "actual_ev_delta": 0.0,
+    "ev_prediction_error": null,
+    "expected_pnl_delta": null,
+    "actual_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_modes": [
+      "too_few_settled_rows",
+      "polarity_not_separated",
+      "duplicate_capture_concentration",
+      "warehouse_not_advanced"
+    ],
+    "realized_failure_mode": "too_few_settled_rows",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "The fixed intraday structured-news observer currently has too few settled short-horizon rows to support allocation: the hot warehouse only closes the earliest h1 rows and leaves h3 mostly pending, so the pooled polarity comparison fails the predeclared row-count and ETF-excess separation gates."
+  },
+  "audit_summary": {
+    "deduped_target_rows": 7,
+    "closed_horizon_rows": 5,
+    "pending_reasons": {
+      "entry_date_not_in_warehouse_yet": 4,
+      "h3_exit_date_not_in_warehouse_yet": 5
+    },
+    "outcome_summary": {
+      "h1": {
+        "rows": 5,
+        "by_polarity": {
+          "positive": {
+            "rows": 5,
+            "vs_cash_usd": {
+              "rows": 5,
+              "mean": 49.19,
+              "median": 14.87,
+              "win_rate": 0.6,
+              "min": -137.33,
+              "max": 219.46
+            },
+            "vs_spy_usd": {
+              "rows": 5,
+              "mean": 52.92,
+              "median": 28.79,
+              "win_rate": 0.6,
+              "min": -123.41,
+              "max": 233.38
+            },
+            "vs_qqq_usd": {
+              "rows": 5,
+              "mean": 53.43,
+              "median": 54.9,
+              "win_rate": 0.6,
+              "min": -97.3,
+              "max": 259.49
+            },
+            "tickers": [
+              [
+                "META",
+                2
+              ],
+              [
+                "APP",
+                2
+              ],
+              [
+                "AMD",
+                1
+              ]
+            ]
+          },
+          "negative": {
+            "rows": 0,
+            "vs_cash_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_spy_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_qqq_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "tickers": []
+          }
+        },
+        "positive_minus_negative_median_vs_spy_usd": null,
+        "positive_minus_negative_median_vs_qqq_usd": null
+      },
+      "h3": {
+        "rows": 0,
+        "by_polarity": {
+          "positive": {
+            "rows": 0,
+            "vs_cash_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_spy_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_qqq_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "tickers": []
+          },
+          "negative": {
+            "rows": 0,
+            "vs_cash_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_spy_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "vs_qqq_usd": {
+              "rows": 0,
+              "mean": null,
+              "median": null,
+              "win_rate": null,
+              "min": null,
+              "max": null
+            },
+            "tickers": []
+          }
+        },
+        "positive_minus_negative_median_vs_spy_usd": null,
+        "positive_minus_negative_median_vs_qqq_usd": null
+      }
+    }
+  }
+}

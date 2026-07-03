@@ -1,0 +1,1275 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+    "experiments/cards/exp-20260702-004.md",
+    "experiments/manifests/exp-20260702-004.json",
+    "experiments/tickets/exp-20260702-004.json",
+    "experiments/logs/exp-20260702-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "A production-visible SEC current semantic alpha should only be reopened if the 2026-07-01 public-PIT filing text snapshot creates materially more fixed-bucket forward rows with replayable provenance; this run audits row readiness only.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0784,
+    "predicted_failure_modes": [
+      "thin_current_rows",
+      "no_directional_semantics",
+      "no_closed_forward_outcomes",
+      "unexpected_schema_drift"
+    ],
+    "predicted_failure_modes_hit": [
+      "thin_current_rows",
+      "no_closed_forward_outcomes"
+    ],
+    "predicted_success_probability": 0.72,
+    "realized_failure_mode": "current_rows_materialized_but_not_alpha_ready",
+    "surprise_note": "The 20260701 all-form SEC text snapshot added current all-form row coverage versus the 20260630 snapshot, but did not add new 6-K accessions beyond the exp-20260701-007 6-K ledger and still lacks closed forward values."
+  },
+  "causal_components": [
+    "current_sec_text_row_delta",
+    "fixed_semantic_parser",
+    "baseline_identity",
+    "no_strategy_behavior_change"
+  ],
+  "change_summary": "Added an experiment-scoped readiness audit for the 2026-07-01 SEC current filing/text snapshot. No strategy behavior or production path changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    "data/experiments/exp-20260702-004/exp_20260702_004_sec_current_semantic_forward_readiness_20260701.json",
+    "experiments/logs/exp-20260702-004.json",
+    "experiments/cards/exp-20260702-004.md",
+    "experiments/manifests/exp-20260702-004.json",
+    "experiments/tickets/exp-20260702-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_current_semantic_forward_readiness_20260701_v1",
+  "claim_note": "Reserved and claimed before runner/artifact/log writes; no novelty override used.",
+  "decision": "accepted_measurement_repair_sec_current_semantic_forward_readiness_20260701",
+  "delta_metrics": {
+    "current_6k_delta_vs_prior_6k_artifact": 0,
+    "current_unique_delta_vs_previous_snapshot": 4,
+    "directional_guidance_rows": 0,
+    "eight_k_rows": 17,
+    "event_rows": 21,
+    "expected_value_score_sum_delta": 0.0,
+    "nonroutine_watch_rows": 20,
+    "rows_with_dei_cover_status": 6,
+    "six_k_rows": 3,
+    "strategy_behavior_changed": false,
+    "survival_rate_delta": 0.0,
+    "ten_q_rows": 1,
+    "text_rows": 21,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260702-004",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "dependency_fields": [
+      "ticker",
+      "form_type",
+      "form_base",
+      "accession_number",
+      "accepted_at",
+      "usable_trade_date",
+      "primary_document",
+      "combined_text"
+    ],
+    "entry_date_target_price_note": "This is a forward SEC semantic readiness audit, not an executable candidate helper. It validates accepted_at and usable_trade_date; target_price is intentionally absent and no orders are generated.",
+    "event_file": "data/non_ohlcv/sec_filing_events_20260701.jsonl",
+    "jsonl_parse_errors": 0,
+    "passed": true,
+    "rows_with_dei_cover_status": 6,
+    "runtime_event_rows": 21,
+    "runtime_text_rows": 21,
+    "text_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl"
+  },
+  "gate3": {
+    "note": "No executable filter was added; survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "strategy_changed": false,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "after_same_as_before": true,
+    "alpha_blockers": [
+      "closed_forward_replacement_value_absent",
+      "historical_standard_window_sec_text_alpha_saturated",
+      "current_rows_are_readiness_not_policy",
+      "no_directional_guidance_raise_or_cut_hit"
+    ],
+    "alpha_ready": false,
+    "decision_basis": "The 2026-07-01 SEC current filing/text snapshot parsed cleanly and materialized fixed semantic readiness counts, but it has no closed replacement-value outcomes and does not change the accepted stack.",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_changed": false
+  },
+  "hypothesis": "Alpha blocker: the new 2026-07-01 SEC filing/text snapshot has current 6-K, 8-K, and 10-Q rows, but current SEC semantic alpha cannot be trusted until the row delta, fixed semantic buckets, DEI/6-K coverage, and no-strategy-drift baseline are audited.",
+  "implementation_mode": "experiment_scoped_current_sec_text_readiness_audit",
+  "lane": "measurement_repair",
+  "mechanism_family": "production_visible_sec_current_semantic_forward_readiness",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260701-007",
+    "exp-20260627-013",
+    "exp-20260630-002"
+  ],
+  "new_evidence_axis": "The 2026-07-01 SEC current filing/text snapshot is a newly generated public-PIT row surface spanning 6-K, 8-K, and 10-Q forms; this run audits row materialization and fixed semantic buckets only, not phrase or threshold alpha scans.",
+  "new_evidence_type": "current_daily_sec_text_forward_row_delta",
+  "next_retry_requires": [
+    "closed_forward_replacement_value_for_current_sec_semantic_rows",
+    "at_least_20_closed_rows_for_one_fixed_bucket",
+    "at_least_5_rows_in_that_bucket",
+    "max_single_ticker_share_lte_40pct",
+    "shared_default_off_sec_semantic_helper_before_alpha_claim"
+  ],
+  "owner": "codex-alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run SEC text phrase, semantic, top-N, hold-day, notional, or candidate-pool scans from these current rows. The binding constraint is closed forward replacement value and/or true historical PIT text coverage, not another adjacent text field.",
+    "new_evidence_required": "Materially more closed current SEC semantic forward rows, or true historical PIT SEC text bodies for the canonical windows, before any alpha lane retry.",
+    "why_result_happened": "The 2026-07-01 SEC current filing/text snapshot parsed cleanly and materialized fixed semantic readiness counts, but it has no closed replacement-value outcomes and does not change the accepted stack."
+  },
+  "pre_run_questions": {
+    "category": "LLM event scoring / candidate pool readiness",
+    "money_making_hypothesis": "A production-visible SEC current semantic alpha should only be reopened if the 2026-07-01 public-PIT filing text snapshot creates materially more fixed-bucket forward rows with replayable provenance; this run audits row readiness only.",
+    "prior_work": "exp-20260701-007 refreshed current 6-K semantic rows but did not find directional guidance or closed forward outcomes; SEC text alpha scans remain historically saturated.",
+    "reproducibility": "Runner, artifact, log shard, card, manifest, ticket, and registry are written with commands and source hashes.",
+    "single_policy_bundle": "Only the fixed row readiness and semantic-bucket audit for the 2026-07-01 SEC current snapshot is tested. No trading policy changes.",
+    "success_criteria": "Parse 20260701 event/text rows cleanly, reconcile summaries, count fixed semantic buckets and row deltas, and prove baseline metrics are unchanged."
+  },
+  "prediction": {
+    "confidence_reason": "The 2026-07-01 SEC event/text summaries exist with 21 text rows generated after the June 6-K ledger, so a row-delta audit is likely; prior SEC text alpha attempts were weak and saturated, so success is only measurement-readiness with zero expected strategy delta.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_current_rows",
+      "no_directional_semantics",
+      "no_closed_forward_outcomes",
+      "unexpected_schema_drift"
+    ],
+    "recorded_at": "2026-07-02T03:05:49+00:00",
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "production_impact": "experiment_scoped_measurement_repair_only",
+    "ranking_changed": false,
+    "reason": "Experiment-scoped readiness ledger only; fixed semantic buckets are not wired into shared helpers, daily orders, ranking, sizing, exits, watchlists, or LLM hard decisions.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_filing_events_20260701.jsonl",
+    "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+    "data/non_ohlcv/sec_filing_backfill_summary_20260701.json",
+    "data/non_ohlcv/sec_filing_text_backfill_summary_20260701.json",
+    "data/non_ohlcv/sec_filing_text_20260630.jsonl",
+    "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reopen_condition": "Reopen SEC current semantic alpha only after at least 20 closed forward rows with cash/SPY/QQQ replacement values for one fixed semantic bucket, at least 5 rows in that bucket, max single ticker share <= 40%, and no strategy wiring before a shared default-off helper; or after true historical PIT SEC text bodies cover the standard backtest windows.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_004_sec_current_semantic_forward_readiness_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "row_delta_audit": {
+    "current_6k_accessions": 3,
+    "current_6k_delta_vs_previous_snapshot": [],
+    "current_6k_delta_vs_prior_6k_artifact": [],
+    "current_accessions": 21,
+    "current_unique_delta_vs_previous_snapshot": [
+      "0000002488-26-000115",
+      "0001140361-26-027202",
+      "0001193125-26-291986",
+      "0001193125-26-292531"
+    ],
+    "previous_6k_accessions": 3,
+    "previous_accessions": 17,
+    "previous_snapshot_exists": true,
+    "previous_snapshot_file": "data/non_ohlcv/sec_filing_text_20260630.jsonl",
+    "previous_snapshot_parse_errors": 0,
+    "previous_unique_missing_from_current_snapshot": [],
+    "prior_6k_artifact": "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+    "prior_6k_artifact_accessions": 4,
+    "prior_6k_missing_from_current_snapshot": [
+      "0001171843-26-004116"
+    ]
+  },
+  "semantic_ledger_rows": [
+    {
+      "accepted_at": "2026-06-22T17:10:03",
+      "accession_number": "0001193125-26-277682",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.02"
+      ],
+      "filing_date": "2026-06-22",
+      "form_base": "8-K",
+      "form_type": "8-K/A",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "d168613d8ka.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 3,
+        "contract_or_capacity": 0,
+        "governance_comp": 24,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 1,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 28,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 58584,
+      "text_sha256_16": "7930dd56e10e3292",
+      "text_word_count": 6738,
+      "ticker": "BE",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-23"
+    },
+    {
+      "accepted_at": "2026-06-22T17:00:20",
+      "accession_number": "0001493152-26-029615",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.02",
+        "5.07",
+        "9.01"
+      ],
+      "filing_date": "2026-06-22",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "form8-k.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 4,
+        "contract_or_capacity": 0,
+        "governance_comp": 13,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 1,
+        "routine_admin": 2,
+        "routine_bank_capital_market": 4,
+        "vote_result": 17
+      },
+      "semantic_hit_total": 41,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 20530,
+      "text_sha256_16": "72bc1a5c730500be",
+      "text_word_count": 2860,
+      "ticker": "MARA",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-23"
+    },
+    {
+      "accepted_at": "2026-06-24T16:28:37",
+      "accession_number": "0001193125-26-281123",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "8.01",
+        "9.01"
+      ],
+      "filing_date": "2026-06-24",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "d103941d8k.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 13,
+        "contract_or_capacity": 0,
+        "governance_comp": 1,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 5,
+        "routine_admin": 1,
+        "routine_bank_capital_market": 17,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 37,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 22400,
+      "text_sha256_16": "ec2e0b1fccf966ca",
+      "text_word_count": 2992,
+      "ticker": "GS",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-24T16:06:40",
+      "accession_number": "0001628280-26-045167",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "8.01",
+        "9.01"
+      ],
+      "filing_date": "2026-06-24",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "jpm-20260624.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 3,
+        "contract_or_capacity": 0,
+        "governance_comp": 1,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 5,
+        "routine_admin": 2,
+        "routine_bank_capital_market": 23,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 34,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 27835,
+      "text_sha256_16": "92367a74ae013d2f",
+      "text_word_count": 3739,
+      "ticker": "JPM",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-24T16:07:40",
+      "accession_number": "0001628280-26-045169",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "7.01",
+        "9.01"
+      ],
+      "filing_date": "2026-06-24",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "jpm-20260624.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 31,
+        "contract_or_capacity": 3,
+        "governance_comp": 2,
+        "guidance_context": 43,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 60,
+        "routine_admin": 3,
+        "routine_bank_capital_market": 65,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 207,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 50611,
+      "text_sha256_16": "30bef4434bc1a964",
+      "text_word_count": 6946,
+      "ticker": "JPM",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-24T16:02:01",
+      "accession_number": "0000723125-26-000013",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "2.02",
+        "9.01"
+      ],
+      "filing_date": "2026-06-24",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "mu-20260624.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 8,
+        "governance_comp": 1,
+        "guidance_context": 9,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 46,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 1,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 65,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 26667,
+      "text_sha256_16": "405ed796f9a5a222",
+      "text_word_count": 3801,
+      "ticker": "MU",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-24T22:59:46",
+      "accession_number": "0000723125-26-000015",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [],
+      "filing_date": "2026-06-25",
+      "form_base": "10-Q",
+      "form_type": "10-Q",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "mu-20260528.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 9,
+        "contract_or_capacity": 73,
+        "governance_comp": 11,
+        "guidance_context": 3,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 13,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 109,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 38432,
+      "text_sha256_16": "9303996620620be6",
+      "text_word_count": 5353,
+      "ticker": "MU",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-24T06:00:12",
+      "accession_number": "0001171843-26-004275",
+      "documents_fetched": 3,
+      "eight_k_item_codes": [],
+      "filing_date": "2026-06-24",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "f6k_062226.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 2,
+        "guidance_context": 2,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 0,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 4,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 81939,
+      "text_sha256_16": "14338e25ac8a29b5",
+      "text_word_count": 5137,
+      "ticker": "NVO",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-25"
+    },
+    {
+      "accepted_at": "2026-06-25T16:05:40",
+      "accession_number": "0000040545-26-000042",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.03",
+        "9.01"
+      ],
+      "filing_date": "2026-06-25",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "ge-20260625.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 15,
+        "contract_or_capacity": 19,
+        "governance_comp": 116,
+        "guidance_context": 2,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 18,
+        "routine_admin": 15,
+        "routine_bank_capital_market": 1,
+        "vote_result": 37
+      },
+      "semantic_hit_total": 223,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 82083,
+      "text_sha256_16": "b7f611f079c99bfa",
+      "text_word_count": 13097,
+      "ticker": "GE",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-26"
+    },
+    {
+      "accepted_at": "2026-06-25T07:59:33",
+      "accession_number": "0000019617-26-000241",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.02"
+      ],
+      "filing_date": "2026-06-25",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "jpm-20260624.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 3,
+        "contract_or_capacity": 0,
+        "governance_comp": 20,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 1,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 18,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 42,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 26426,
+      "text_sha256_16": "47e4715048ccd230",
+      "text_word_count": 3529,
+      "ticker": "JPM",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-26"
+    },
+    {
+      "accepted_at": "2026-06-25T16:42:50",
+      "accession_number": "0000950142-26-001875",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "8.01",
+        "9.01"
+      ],
+      "filing_date": "2026-06-25",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "eh260796591_8k.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 16,
+        "governance_comp": 3,
+        "guidance_context": 4,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 20,
+        "routine_admin": 3,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 46,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 33170,
+      "text_sha256_16": "52ae8ea774736cdf",
+      "text_word_count": 4657,
+      "ticker": "MARA",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-26"
+    },
+    {
+      "accepted_at": "2026-06-25T06:52:39",
+      "accession_number": "0001046179-26-000377",
+      "documents_fetched": 3,
+      "eight_k_item_codes": [],
+      "filing_date": "2026-06-25",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "tsm-monthend6kx20260625.htm",
+      "primary_semantic_bucket": "contract_or_capacity",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 2,
+        "contract_or_capacity": 14,
+        "governance_comp": 4,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 0,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 20,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 9859,
+      "text_sha256_16": "5b71ab7107b22eda",
+      "text_word_count": 1432,
+      "ticker": "TSM",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-26"
+    },
+    {
+      "accepted_at": "2026-06-26T17:03:38",
+      "accession_number": "0001493152-26-030333",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "1.01",
+        "2.03",
+        "3.02",
+        "9.01"
+      ],
+      "filing_date": "2026-06-26",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context",
+        "operating_update",
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "form8-k.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 3,
+        "contract_or_capacity": 325,
+        "governance_comp": 20,
+        "guidance_context": 2,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 4,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 9,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 363,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 61632,
+      "text_sha256_16": "abfb5f0b68e1aea2",
+      "text_word_count": 9444,
+      "ticker": "APLD",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-29"
+    },
+    {
+      "accepted_at": "2026-06-26T16:07:23",
+      "accession_number": "0001403161-26-000086",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "8.01"
+      ],
+      "filing_date": "2026-06-26",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "v-20260624.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 51,
+        "contract_or_capacity": 0,
+        "governance_comp": 2,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 2,
+        "routine_admin": 2,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 57,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 63941,
+      "text_sha256_16": "bb4d51c562c433f6",
+      "text_word_count": 5628,
+      "ticker": "V",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-29"
+    },
+    {
+      "accepted_at": "2026-06-29T16:16:12",
+      "accession_number": "0001171843-26-004353",
+      "documents_fetched": 3,
+      "eight_k_item_codes": [],
+      "filing_date": "2026-06-29",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "guidance_context"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "f6k_062926.htm",
+      "primary_semantic_bucket": "guidance_context",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 2,
+        "guidance_context": 2,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 0,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 4,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 81939,
+      "text_sha256_16": "9b0e5d3d34d76120",
+      "text_word_count": 5135,
+      "ticker": "NVO",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-06-30"
+    },
+    {
+      "accepted_at": "2026-06-30T16:27:26",
+      "accession_number": "0001045810-26-000056",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.07"
+      ],
+      "filing_date": "2026-06-30",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "nvda-20260624.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 3,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 7,
+        "routine_admin": 2,
+        "routine_bank_capital_market": 0,
+        "vote_result": 16
+      },
+      "semantic_hit_total": 28,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 19146,
+      "text_sha256_16": "4d924bdea72db78b",
+      "text_word_count": 2582,
+      "ticker": "NVDA",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-07-01"
+    },
+    {
+      "accepted_at": "2026-06-30T16:22:30",
+      "accession_number": "0001640147-26-000032",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.07"
+      ],
+      "filing_date": "2026-06-30",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "snow-20260629.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 8,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 5,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 19
+      },
+      "semantic_hit_total": 32,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 17397,
+      "text_sha256_16": "049ae96cb35d1cf1",
+      "text_word_count": 2314,
+      "ticker": "SNOW",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-07-01"
+    },
+    {
+      "accepted_at": "2026-07-01T16:27:26",
+      "accession_number": "0000002488-26-000115",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.02"
+      ],
+      "filing_date": "2026-07-01",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "amd-20260626.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 20,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 8,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 28,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 20666,
+      "text_sha256_16": "3585e325948e4db4",
+      "text_word_count": 2911,
+      "ticker": "AMD",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-07-02"
+    },
+    {
+      "accepted_at": "2026-07-01T16:05:32",
+      "accession_number": "0001140361-26-027202",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.02"
+      ],
+      "filing_date": "2026-07-01",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "contract_or_capacity"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "ef20077190_8k.htm",
+      "primary_semantic_bucket": "contract_or_capacity",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 2,
+        "governance_comp": 19,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 0,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 21,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 18218,
+      "text_sha256_16": "7071958d177312be",
+      "text_word_count": 2477,
+      "ticker": "IREN",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-07-02"
+    },
+    {
+      "accepted_at": "2026-07-01T16:05:24",
+      "accession_number": "0001193125-26-292531",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "5.07"
+      ],
+      "filing_date": "2026-07-01",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": false,
+      "nonroutine_semantic_buckets": [],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "d68553d8k.htm",
+      "primary_semantic_bucket": "governance_comp",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 0,
+        "contract_or_capacity": 0,
+        "governance_comp": 7,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 0,
+        "routine_admin": 0,
+        "routine_bank_capital_market": 0,
+        "vote_result": 12
+      },
+      "semantic_hit_total": 19,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 16116,
+      "text_sha256_16": "140ee354f3de5b80",
+      "text_word_count": 2151,
+      "ticker": "TRIP",
+      "usable_for_future_alpha_watch": false,
+      "usable_trade_date": "2026-07-02"
+    },
+    {
+      "accepted_at": "2026-07-01T12:34:56",
+      "accession_number": "0001193125-26-291986",
+      "documents_fetched": 4,
+      "eight_k_item_codes": [
+        "1.01",
+        "2.01",
+        "3.01",
+        "3.03",
+        "5.02",
+        "5.03",
+        "9.01"
+      ],
+      "filing_date": "2026-07-01",
+      "form_base": "8-K",
+      "form_type": "8-K",
+      "has_directional_guidance": false,
+      "has_nonroutine_semantics": true,
+      "nonroutine_semantic_buckets": [
+        "operating_update",
+        "contract_or_capacity",
+        "capital_markets_or_dilution"
+      ],
+      "pit_caveat": "SEC public archive text fetched after the fact and keyed by accepted_at/usable_trade_date; it is a replayable public-PIT proxy, not proof the production pipeline observed the document.",
+      "pit_source": "sec_archive_public_filing_text",
+      "primary_document": "d70995d8k.htm",
+      "primary_semantic_bucket": "operating_update",
+      "semantic_hit_counts": {
+        "capital_markets_or_dilution": 22,
+        "contract_or_capacity": 33,
+        "governance_comp": 18,
+        "guidance_context": 0,
+        "guidance_cut": 0,
+        "guidance_raise": 0,
+        "operating_update": 1,
+        "routine_admin": 9,
+        "routine_bank_capital_market": 1,
+        "vote_result": 0
+      },
+      "semantic_hit_total": 84,
+      "source_file": "data/non_ohlcv/sec_filing_text_20260701.jsonl",
+      "status": "ok",
+      "text_char_count": 27522,
+      "text_sha256_16": "7a32be3f4ca3f2b4",
+      "text_word_count": 3779,
+      "ticker": "XOM",
+      "usable_for_future_alpha_watch": true,
+      "usable_trade_date": "2026-07-02"
+    }
+  ],
+  "semantic_summary": {
+    "directional_guidance_rows": 0,
+    "eight_k_item_counts": {
+      "1.01": 2,
+      "2.01": 1,
+      "2.02": 1,
+      "2.03": 1,
+      "3.01": 1,
+      "3.02": 1,
+      "3.03": 1,
+      "5.02": 6,
+      "5.03": 2,
+      "5.07": 4,
+      "7.01": 1,
+      "8.01": 4,
+      "9.01": 9
+    },
+    "eight_k_rows": 17,
+    "form_primary_bucket_counts": {
+      "10-Q": {
+        "guidance_context": 1
+      },
+      "6-K": {
+        "contract_or_capacity": 1,
+        "guidance_context": 2
+      },
+      "8-K": {
+        "contract_or_capacity": 1,
+        "governance_comp": 1,
+        "guidance_context": 5,
+        "operating_update": 10
+      }
+    },
+    "nonroutine_watch_rows": 20,
+    "primary_bucket_counts": {
+      "contract_or_capacity": 2,
+      "governance_comp": 1,
+      "guidance_context": 8,
+      "operating_update": 10
+    },
+    "row_count": 21,
+    "six_k_rows": 3,
+    "ten_q_rows": 1,
+    "ticker_counts": {
+      "AMD": 1,
+      "APLD": 1,
+      "BE": 1,
+      "GE": 1,
+      "GS": 1,
+      "IREN": 1,
+      "JPM": 3,
+      "MARA": 2,
+      "MU": 2,
+      "NVDA": 1,
+      "NVO": 2,
+      "SNOW": 1,
+      "TRIP": 1,
+      "TSM": 1,
+      "V": 1,
+      "XOM": 1
+    },
+    "usable_trade_date_counts": {
+      "2026-06-23": 2,
+      "2026-06-25": 6,
+      "2026-06-26": 4,
+      "2026-06-29": 2,
+      "2026-06-30": 1,
+      "2026-07-01": 2,
+      "2026-07-02": 4
+    }
+  },
+  "single_causal_variable": "sec_current_semantic_forward_readiness_20260701_v1",
+  "source_audit": {
+    "dei_cover_status_parse_counts": {
+      "blocked_no_cover_page_status_terms": 1,
+      "missing": 14,
+      "parsed_machine_readable_dei_fact": 6
+    },
+    "duplicate_event_accessions": [],
+    "duplicate_text_accessions": [],
+    "event_accessions": 21,
+    "event_accessions_missing_text": [],
+    "event_date_range": {
+      "end": "2026-07-01",
+      "start": "2026-06-21"
+    },
+    "event_form_counts": {
+      "10-Q": 1,
+      "6-K": 3,
+      "8-K": 17
+    },
+    "event_parse_errors": 0,
+    "event_rows": 21,
+    "pit_caveat": "This backfills SEC public availability by accepted_at/accession metadata. It is not a replay of what the local news pipeline or LLM actually observed.",
+    "pit_safe_rows": 21,
+    "rows_with_dei_cover_status": 6,
+    "summary_error_counts": {
+      "events_error_count": 0,
+      "text_status_counts": {
+        "ok": 21
+      }
+    },
+    "summary_rows_written": {
+      "events": 21,
+      "text": 21
+    },
+    "text_accessions": 21,
+    "text_accessions_missing_in_events": [],
+    "text_form_counts": {
+      "10-Q": 1,
+      "6-K": 3,
+      "8-K": 17
+    },
+    "text_parse_errors": 0,
+    "text_rows": 21
+  },
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-02T03:13:43Z",
+  "trial_family": "sec_current_semantic_forward_readiness",
+  "trial_variant_id": "sec_current_semantic_forward_readiness_20260701_v1"
+}

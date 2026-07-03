@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "quant_signal_payload_shape_not_candidate",
+      "ledger_rerun_still_zero_matches",
+      "artifact_ordering_not_repaired"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Low surprise: pre-flight loader already saw 65 same-day signal records; the repair confirmed the dependency-ordering issue."
+  },
+  "causal_components": [
+    "post_quant_signal_artifact_presence",
+    "existing_estimate_revision_matcher",
+    "ledger_regeneration_no_strategy_change"
+  ],
+  "change_summary": "Regenerated the 2026-06-29 estimate-revision ledger after quant_signals_20260629 existed, increasing matched candidate rows from 0 to 5 and daily signal match records from 0 to 65 without changing strategy behavior.",
+  "change_type": "measurement_repair",
+  "changed_variable": "estimate_revision_post_quant_signal_match_rerun_v1",
+  "component": "quant/experiments/exp_20260630_021_estimate_revision_post_quant_signal_match_rerun.py, data/experiments/exp-20260630-021/exp_20260630_021_estimate_revision_post_quant_signal_match_rerun.json, data/non_ohlcv/estimate_revision_ledger_20260629.jsonl, data/non_ohlcv/estimate_revision_ledger_summary_20260629.json, experiments/logs/exp-20260630-021.json, experiments/cards/exp-20260630-021.md, experiments/manifests/exp-20260630-021.json, experiments/tickets/exp-20260630-021.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260630-021",
+  "hypothesis": "Alpha-enabling repair: estimate-revision candidate-match attribution is only testable when the daily revision ledger is generated after same-day quant/trend signal artifacts exist; rerunning the 2026-06-29 ledger after quant_signals_20260629 landed should produce real matched candidate rows without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "estimate_revision_candidate_match_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260624-012",
+    "exp-20260625-002",
+    "exp-20260625-017",
+    "exp-20260628-017"
+  ],
+  "new_evidence_type": "post_quant_signal_artifact_match_surface",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair only. Candidate tickers now matched: BKNG, DDOG, DE, GS, LITE; one matched row has an up EPS revision (GS). Next alpha work needs closed 3/5/10d replacement-value outcomes before any revision threshold or allocation test.",
+  "parameters": {
+    "locked_variables": [
+      "estimate_revision_post_quant_signal_match_rerun_v1"
+    ],
+    "single_causal_variable": "estimate_revision_post_quant_signal_match_rerun_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run estimate-revision thresholds, direction gates, top-N, hold, notional, or observed-only condition slices from these five matched rows until selected/current matches have closed 3/5/10d replacement-value outcomes.",
+    "new_evidence_required": "Next alpha-compliant revision work needs closed replacement-value outcomes for the matched candidate rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation field.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Low surprise: pre-flight loader already saw 65 same-day signal records; the repair confirmed the dependency-ordering issue."
+  },
+  "prediction": {
+    "confidence_reason": "Pre-flight load_daily_signal_match_records now sees 65 same-day signal records and 5 candidate records for 2026-06-29, while the current summary was generated before quant_signals_20260629 existed.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "quant_signal_payload_shape_not_candidate",
+      "ledger_rerun_still_zero_matches",
+      "artifact_ordering_not_repaired"
+    ],
+    "recorded_at": "2026-06-30T22:11:29+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-06-30T22:14:39+00:00",
+  "trial_family": "estimate_revision_daily_candidate_match_surface",
+  "trial_variant_id": "post_quant_signal_20260629_match_rerun_v1"
+}

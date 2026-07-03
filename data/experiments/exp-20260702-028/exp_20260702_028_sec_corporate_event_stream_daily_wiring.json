@@ -1,0 +1,184 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Issuer-overhang and event-propagation alpha can only be retested legally after fresh current SEC corporate-event rows accumulate and close under production-visible daily semantics.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": null,
+    "surprise_note": "Wiring matched the existing observer pattern; tests cover both success and fail-soft failure behavior."
+  },
+  "causal_components": [
+    "fail_soft_daily_pipeline_helper",
+    "current_quarter_sec_corporate_event_refresh",
+    "run_py_default_off_wiring",
+    "wiring_parity_tests",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+    "experiments/logs/exp-20260702-028.json",
+    "experiments/cards/exp-20260702-028.md",
+    "experiments/manifests/exp-20260702-028.json",
+    "experiments/tickets/exp-20260702-028.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_corporate_event_stream_daily_pipeline_wiring_v1",
+  "decision": "accepted_measurement_repair_sec_corporate_event_stream_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260702-028",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "_persist_sec_corporate_event_stream",
+      "sec_corporate_event_stream.ingest_range",
+      "sec_ticker_map.load_company_ticker_map"
+    ],
+    "passed": true,
+    "wiring_checks": {
+      "failure_test_exists": true,
+      "run_daily_path_calls_helper": true,
+      "run_helper_current_quarter_start": true,
+      "run_helper_defined": true,
+      "run_helper_fail_soft_status": true,
+      "run_helper_imports_ingest_range": true,
+      "run_helper_imports_ticker_map": true,
+      "run_helper_no_strategy_change_flags": true,
+      "stream_daily_cli_exists": true,
+      "stream_ingest_range_exists": true,
+      "success_test_exists": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, or exit rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Wire the accepted SEC corporate event stream daily refresh into the production daily path so current S-1/F-1/425 event rows accumulate automatically for future issuer-overhang and event-propagation alpha tests without changing trading behavior.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260702-028.json",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-011",
+    "exp-20260702-012",
+    "exp-20260702-023",
+    "exp-20260702-024",
+    "exp-20260702-027"
+  ],
+  "new_evidence_axis": "Production daily path now refreshes the accepted current-quarter SEC S-1/F-1/425 stream; this creates future rows rather than reslicing exp-20260702 historical rows.",
+  "new_evidence_type": "daily_forward_row_accumulation_wiring",
+  "next_retry_requires": [
+    "fresh closed current SEC corporate-event rows",
+    "parsed offering or deal economics fields",
+    "not another historical S-1/F-1/425 reslice"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve experiment IDs for routine manual SEC corporate event stream refreshes or adjacent S-1/F-1/425 reslices. Let daily rows accumulate, then reopen alpha only with fresh closed rows or parsed offering/deal economics.",
+    "new_evidence_required": "Fresh closed current SEC corporate-event rows, parsed registered-amount/resale/selling-holder/effectiveness fields, or a distinct PIT event relation source. Not another historical theme/form/horizon cut.",
+    "why_result_happened": "The accepted exp-20260702-008 stream already exposed an idempotent ingest_range() API, so daily wiring only needed a current-quarter fail-soft helper plus focused run.py tests."
+  },
+  "prediction": null,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "live_ready": false,
+    "parity_note": "Daily run.py now refreshes the append-only SEC corporate-event stream after news observation. The returned manifest is not fed to prompts, orders, ranking, sizing, exits, or core candidates.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\sec_corporate_event_stream.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_sec_corporate_event_stream.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_corporate_event_stream_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "surface_summary": {
+    "forms": [
+      "425",
+      "F-1",
+      "F-1/A",
+      "S-1",
+      "S-1/A"
+    ],
+    "last_run_utc": "2026-07-02T07:53:48.140324+00:00",
+    "manifest_exists": true,
+    "row_count": 17335,
+    "rows_file_exists": true,
+    "schema_version": "sec_corporate_event_stream_v1"
+  },
+  "timestamp": "2026-07-02T23:09:00.519918+00:00",
+  "trial_family": "sec_corporate_event_stream_daily_pipeline_wiring",
+  "trial_variant_id": "exp-20260702-028",
+  "write_fallbacks": []
+}

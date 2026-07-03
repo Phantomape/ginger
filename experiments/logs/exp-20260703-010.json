@@ -1,0 +1,146 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "expected_value_score_sum": 7.8941,
+    "daily_signal_match_record_count": 65,
+    "matched_candidate_rows": 4,
+    "strategy_behavior_changed": false,
+    "trade_count_sum": 61,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "expected_value_score_sum": 7.8941,
+    "daily_signal_match_record_count": 0,
+    "matched_candidate_rows": 0,
+    "strategy_behavior_changed": false,
+    "trade_count_sum": 61,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "post-signal hook not reachable",
+      "duplicate ledger writes not reflected in snapshot",
+      "test fixture too brittle"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "none",
+    "surprise_level": "low",
+    "surprise_note": "The existing 2026-07-02 quant_signals file was already readable; the zero-match revision ledger was entirely a run.py timing issue."
+  },
+  "causal_components": [
+    "run.py post-quant-signal refresh",
+    "non-OHLCV snapshot summary update",
+    "regression test"
+  ],
+  "change_summary": "Added a post-quant-signals estimate-revision ledger refresh in run.py, updated the final quant_signals payload with the refreshed non-OHLCV snapshot, and added regression coverage for success and fail-soft paths.",
+  "change_type": "alpha_enabling_forward_ledger_repair",
+  "changed_variable": "estimate_revision_ledger_pipeline_timing",
+  "component": "quant/run.py, quant/test_run_daily_wiring.py, quant/test_estimate_revision_ledger.py, quant/experiments, data/experiments, experiments/logs, experiments/cards, experiments/manifests, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "daily_signal_match_record_count_delta": 65,
+    "expected_value_score_sum_delta": 0.0,
+    "matched_candidate_rows_delta": 4,
+    "strategy_behavior_changed": false,
+    "total_pnl": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-010",
+  "hypothesis": "Alpha-enabling repair: estimate-revision candidate-match alpha cannot be judged if run.py writes the default-off revision ledger before same-day quant_signals exist; add a post-quant-signal ledger refresh so future daily runs produce trustworthy matched candidate rows without changing trading behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_estimate_revision_candidate_match_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260630-021",
+    "exp-20260630-022",
+    "exp-20260701-006",
+    "exp-20260702-005"
+  ],
+  "new_evidence_type": "shared_pipeline_order_repair_not_daily_reslice",
+  "next_retry_requires": [
+    "Closed cash/SPY/QQQ replacement-value outcomes for matched estimate-revision rows.",
+    "Materially more non-flat matched rows from future daily runs.",
+    "A different unsaturated PIT expectation field/source, not another same-date ledger recovery."
+  ],
+  "notes": "Accepted as measurement repair only. The probe left canonical data/non_ohlcv untouched and showed 2026-07-02 signal match records 0 -> 65, matched candidate rows 0 -> 4, with EV/PnL/trade count unchanged. No revision threshold, ranking, sizing, exit, or order behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "revision thresholds",
+      "candidate ranking",
+      "position sizing",
+      "exits",
+      "order generation",
+      "universe"
+    ],
+    "single_causal_variable": "estimate_revision_post_quant_signal_ledger_refresh_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open more per-date estimate-revision artifact recovery experiments for no_daily_signal_match_artifacts_loaded. The shared run.py post-quant refresh is now the repair; future work must use new closed outcomes or a different PIT expectation source.",
+    "new_evidence_required": "Closed cash/SPY/QQQ replacement-value outcomes for matched estimate-revision rows, materially more non-flat matched rows, or a different unsaturated PIT expectation field/source.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The existing 2026-07-02 quant_signals file was already readable; the zero-match revision ledger was entirely a run.py timing issue."
+  },
+  "prediction": {
+    "confidence_reason": "run.py already comments that current-day quant_signals are written later; prior daily recoveries show the same blocker, so a shared post-signal refresh directly addresses it.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "post-signal hook not reachable",
+      "duplicate ledger writes not reflected in snapshot",
+      "test fixture too brittle"
+    ],
+    "recorded_at": "2026-07-03T10:08:31+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 4,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260703_010_estimate_revision_post_quant_signal_ledger_refresh.py",
+    "data/experiments/exp-20260703-010/exp_20260703_010_estimate_revision_post_quant_signal_ledger_refresh.json",
+    "data/experiments/exp-20260703-010/before_metrics.json",
+    "data/experiments/exp-20260703-010/after_metrics.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\experiments\\exp_20260703_010_estimate_revision_post_quant_signal_ledger_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_010_estimate_revision_post_quant_signal_ledger_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-03T10:15:03+00:00",
+  "trial_family": "estimate_revision_daily_candidate_match_surface_repair",
+  "trial_variant_id": "estimate_revision_post_quant_signal_ledger_refresh_v1"
+}

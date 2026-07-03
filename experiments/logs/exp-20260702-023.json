@@ -1,0 +1,211 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_023_resolved_s1_issuer_overhang.py",
+    "data/experiments/exp-20260702-023/exp_20260702_023_resolved_s1_issuer_overhang.json",
+    "experiments/cards/exp-20260702-023.md",
+    "experiments/manifests/exp-20260702-023.json",
+    "experiments/tickets/exp-20260702-023.json",
+    "experiments/logs/exp-20260702-023.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "If the issuer-self overhang sign is stable, a later shared-paper-first experiment can test registration-overhang as a default-off de-allocation context or long-candidate veto.",
+  "anti_js": {
+    "evidence": "Python runner, py_compile, and experiment audit only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260702-023/exp_20260702_023_resolved_s1_issuer_overhang.json",
+  "audit_summary": {
+    "observed_only_lead": true,
+    "per_window": {
+      "late_strong": {
+        "median_delta_10d_bp": -43.5,
+        "negative_share": 0.523,
+        "rows": 662
+      },
+      "mid_weak": {
+        "median_delta_10d_bp": -137.6,
+        "negative_share": 0.548,
+        "rows": 816
+      },
+      "old_thin": {
+        "median_delta_10d_bp": -165.5,
+        "negative_share": 0.556,
+        "rows": 732
+      }
+    },
+    "pooled_median_delta_10d_bp": -102.7,
+    "settled_rows": 2211,
+    "source_rows": 5065
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.5776,
+    "predicted_failure_modes": [
+      "microcap_or_warrant_rows_not_tradeable",
+      "registration_effect_already_priced",
+      "sign_flips_across_windows",
+      "top_ticker_concentration",
+      "warehouse_frame_gaps"
+    ],
+    "predicted_failure_modes_hit": [],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "observed_only_positive_lead_not_promoted"
+    ],
+    "surprise_note": "Resolved S-1/F-1 issuer overhang met the observed-only lead rule."
+  },
+  "causal_components": [
+    "resolved_ticker_s1_f1_only",
+    "issuer_self_return",
+    "next_open_entry",
+    "10d_close_exit",
+    "spy_excess_metric",
+    "same_ticker_unconditional_baseline",
+    "read_only_no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260702_023_resolved_s1_issuer_overhang.py",
+    "data/experiments/exp-20260702-023/exp_20260702_023_resolved_s1_issuer_overhang.json",
+    "experiments/cards/exp-20260702-023.md",
+    "experiments/manifests/exp-20260702-023.json",
+    "experiments/tickets/exp-20260702-023.json",
+    "experiments/logs/exp-20260702-023.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "none_read_only",
+  "decision": "observed_only_positive_resolved_s1_issuer_overhang_lead_not_promoted",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260702-023",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "event_class",
+      "ticker_status",
+      "form_type",
+      "filed_date",
+      "ticker",
+      "entry_date",
+      "Open/Close warehouse bars"
+    ],
+    "passed": true,
+    "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter or rank rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "observed_only_attribution",
+    "observed_only_lead": true,
+    "passed": false
+  },
+  "hypothesis": "Resolved-ticker S-1/F-1 registration events on already listed issuers may signal dilution or supply overhang, so the issuer's own next-open 10d SPY-excess should underperform its same-window unconditional baseline with a stable negative sign across canonical windows.",
+  "implementation_mode": "read_only_diagnostic",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260702-023.json",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-017",
+    "exp-20260702-018",
+    "exp-20260629-002"
+  ],
+  "new_evidence_axis": "first issuer-self attribution on resolved-ticker S-1/F-1 registration rows; prior SEC corporate-event reads tested private IPO theme peers and 425 theme peers, not listed issuer overhang",
+  "new_evidence_type": "new_event_class_issuer_self_attribution",
+  "next_retry_requires": [
+    "registered amount or resale-vs-primary offering fields",
+    "selling-holder or effectiveness-date provenance",
+    "fresh forward rows under a shared helper"
+  ],
+  "observed_only_lead": true,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-slice the same resolved S-1/F-1 rows by amendment flag, form subtype, ticker suffix, horizon, entry lag, notional, top-N, liquidity, event age, or response shape. That would be the same source-row attribution surface.",
+    "new_evidence_required": "A valid retry needs richer offering economics such as registered amount, resale versus primary issuance, selling holder identity, effectiveness date, prospectus supplement terms, or fresh forward rows under a shared helper.",
+    "why_result_happened": "Resolved issuer S-1/F-1 rows had a consistently negative 10d SPY-excess delta versus same-ticker baselines, but this remains only an observed-only lead because no shared helper or daily path changed."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Resolved-ticker S-1/F-1 registration events on already listed issuers may signal dilution or supply overhang, so the issuer's own next-open 10d SPY-excess should underperform its same-window unconditional baseline with a stable negative sign across canonical windows.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260702-008",
+        "exp-20260702-017",
+        "exp-20260702-018",
+        "exp-20260629-002"
+      ],
+      "new_evidence_axis": "issuer-self resolved S-1/F-1 overhang, distinct from private IPO/425 theme-peer propagation",
+      "novelty_gate": "experiment.py new accepted without override."
+    },
+    "3_single_policy_bundle": "Read-only attribution: resolved issuer S-1/F-1 registration rows, issuer ticker itself, next-open 10d SPY-excess versus same-ticker unconditional baseline.",
+    "4_success_failure_standard": "lead iff every canonical window median 10d delta is negative, pooled median delta <= -25.0bp, >= 100 settled rows per window, and top ticker share <= 5% in each window",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_023_resolved_s1_issuer_overhang.py"
+  },
+  "prediction": {
+    "confidence_reason": "The SEC index surface has dense PIT resolved S-1/F-1 issuer rows and dilution overhang is economically plausible; prior 7/2 runs tested private IPO or 425 theme-peer propagation, not issuer self-drift. Base rate is low because many rows are microcaps/warrants and registration events may already be priced.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "microcap_or_warrant_rows_not_tradeable",
+      "registration_effect_already_priced",
+      "sign_flips_across_windows",
+      "top_ticker_concentration",
+      "warehouse_frame_gaps"
+    ],
+    "recorded_at": "2026-07-02T18:05:46+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution; no production or backtest behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_023_resolved_s1_issuer_overhang.py"
+  ],
+  "single_causal_variable": "resolved_ticker_s1_f1_issuer_overhang_10d_spy_excess_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-02T18:11:30Z",
+  "trial_family": "resolved_ticker_s1_f1_issuer_overhang_attribution",
+  "trial_variant_id": "resolved_s1_f1_self_10d_spy_excess_v1"
+}

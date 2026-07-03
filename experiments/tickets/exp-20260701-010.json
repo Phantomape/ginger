@@ -1,0 +1,555 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/tickets",
+    "experiments/manifests",
+    "experiments/dashboard",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260701-010.md",
+  "causal_components": [
+    "new intraday capture audit",
+    "experiment-owned pending observation delta",
+    "duplicate/schema checks",
+    "no strategy behavior change"
+  ],
+  "change_type": "intraday_structured_event_forward_observation_delta",
+  "changed_variable": "intraday_structured_event_observation_delta_20260701_1302_v1",
+  "claimed_at": "2026-07-01T21:05:49+00:00",
+  "completed_at": "2026-07-01T21:09:25+00:00",
+  "created_at": "2026-07-01T21:05:22+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260701-010",
+  "experiment_uid": "expuid-0fb5269ca32e4f56",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260701-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-01T21:05:22+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_structured_event_delta_20260701"
+  },
+  "hypothesis": "Intraday structured relation-quality news rows may become LLM event-scoring alpha only after the fixed observer accumulates replayable pending and closed replacement-value rows; the new 2026-07-01 13:02ET capture should be copied into an experiment-owned delta ledger without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "intraday_structured_event_observation_delta_20260701_1302_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_measurement_repair",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-013",
+    "exp-20260630-015",
+    "exp-20260630-019",
+    "exp-20260701-003"
+  ],
+  "new_evidence_type": "new_timestamped_intraday_structured_event_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "02et",
+        "accumulates",
+        "after",
+        "alpha",
+        "an",
+        "be",
+        "become",
+        "behavior",
+        "capture",
+        "changing",
+        "closed",
+        "copied",
+        "daily",
+        "delta",
+        "event",
+        "experiment",
+        "forward",
+        "into",
+        "intraday",
+        "ledger",
+        "llm",
+        "may",
+        "measurement",
+        "new",
+        "news",
+        "observation",
+        "observer",
+        "only",
+        "owned",
+        "pending",
+        "relation",
+        "repair",
+        "replacement",
+        "replayable",
+        "rows",
+        "scoring",
+        "should",
+        "structured",
+        "trading",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.5262,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "structured_daily_news_relation_magnitude_forward_value",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows for structured events, a true PIT LLM scorer writing the same evidence-span schema, or historical daily-news coverage spanning the canonical fixed windows.",
+        "score": 0.5151,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.4926,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "forward_replacement_entry_date_cross_sleeve_breadth",
+        "reopen_condition": "Need materially more closed forward replacement rows with multi-sleeve same-date support, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-date, multi-sleeve coverage.",
+        "score": 0.4674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "characteristic_similarity_peer_shock",
+        "reopen_condition": "A legal retry requires a genuinely new relation data source, a new gate shape that changes the event being tested, or materially more settled forward replacement-value rows from a shared default-off paper observation surface.",
+        "score": 0.4667,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.82,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "missing_20260701_observation_file",
+      "malformed_observation_schema",
+      "duplicate_observation_ids",
+      "no_target_relation_quality_rows"
+    ],
+    "confidence_reason": "Prior accepted repairs established the structured intraday observer contract and 2026-06-30 delta path; this run only checks whether a genuinely new timestamped 2026-07-01 capture produces schema-complete pending rows, with zero expected strategy metric change.",
+    "recorded_at": "2026-07-01T21:04:48+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_intraday_structured_event_delta_20260701",
+    "artifact": "data/experiments/exp-20260701-010/exp_20260701_010_intraday_structured_event_delta_20260701.json",
+    "log": "experiments/logs/exp-20260701-010.json",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_intraday_structured_event_delta_20260701",
+      "measurement_repair_only": true,
+      "failed_reasons": [],
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "entry_changed": false,
+        "exit_changed": false
+      }
+    },
+    "delta_metrics": {
+      "capture_count": 1,
+      "delta_observation_rows": 1,
+      "pending_forward_rows": 1,
+      "target_relation_quality_rows": 1,
+      "magnitude_qualified_rows": 0,
+      "unique_observation_ids": 1,
+      "duplicate_observation_ids": 0,
+      "unique_event_ids": 1,
+      "unique_semantic_events": 1,
+      "semantic_duplicate_groups": 0,
+      "semantic_duplicate_rows": 0,
+      "relation_counts": {
+        "guidance_or_rating_upgrade": 1
+      },
+      "polarity_counts": {
+        "positive": 1
+      },
+      "ticker_counts": {
+        "APP": 1
+      },
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "calibration": {
+      "predicted_success_probability": 0.82,
+      "actual_success": true,
+      "predicted_failure_modes": [
+        "missing_20260701_observation_file",
+        "malformed_observation_schema",
+        "duplicate_observation_ids",
+        "no_target_relation_quality_rows"
+      ],
+      "realized_failure_modes": [],
+      "brier_score": 0.0324
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260701-010.json",
+  "single_causal_variable": "intraday_structured_event_observation_delta_20260701_1302_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260701-010.json",
+  "trial_family": "intraday_structured_event_forward_observation_delta",
+  "trial_variant_id": "20260701_1302ET_delta_v1",
+  "alpha_hypothesis": "Structured intraday relation-quality events may become LLM event-scoring alpha after this fixed default-off observer accumulates enough closed cash/SPY/QQQ replacement-value outcomes.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "new prospective pending rows under the accepted fixed intraday observer contract",
+  "decision": "accepted_measurement_repair_intraday_structured_event_delta_20260701",
+  "artifact": "data/experiments/exp-20260701-010/exp_20260701_010_intraday_structured_event_delta_20260701.json",
+  "log": "experiments/logs/exp-20260701-010.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "observation_id",
+      "event_id",
+      "event_date",
+      "capture_date",
+      "time_label",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "target_relation_quality",
+      "entry_date",
+      "entry_semantics",
+      "exit_semantics",
+      "target_price",
+      "unit_notional_usd",
+      "outcome_status",
+      "event_artifact_path",
+      "observation_artifact_path",
+      "outcome_status",
+      "target_price",
+      "entry_date"
+    ],
+    "required_field_audit": {
+      "all_required_fields_present": true,
+      "missing_counts": {},
+      "required_fields": [
+        "observation_id",
+        "event_id",
+        "event_date",
+        "capture_date",
+        "time_label",
+        "ticker",
+        "relation_type",
+        "relation_polarity",
+        "target_relation_quality",
+        "entry_date",
+        "entry_semantics",
+        "exit_semantics",
+        "target_price",
+        "unit_notional_usd",
+        "outcome_status"
+      ]
+    },
+    "entry_date_scope": "Pending forward observations only; entry_date is intentionally null.",
+    "target_price_scope": "Pending forward observations only; target_price is intentionally null."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 1,
+    "signals_survived": 1,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_intraday_structured_event_delta_20260701",
+    "measurement_repair_only": true,
+    "failed_reasons": [],
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "entry_changed": false,
+      "exit_changed": false
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0665
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "survival_rate": 0.8667,
+        "max_drawdown_pct": 0.1001
+      }
+    ]
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0665
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "max_drawdown_pct": 0.1119
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "survival_rate": 0.8667,
+        "max_drawdown_pct": 0.1001
+      }
+    ]
+  },
+  "delta_metrics": {
+    "capture_count": 1,
+    "delta_observation_rows": 1,
+    "pending_forward_rows": 1,
+    "target_relation_quality_rows": 1,
+    "magnitude_qualified_rows": 0,
+    "unique_observation_ids": 1,
+    "duplicate_observation_ids": 0,
+    "unique_event_ids": 1,
+    "unique_semantic_events": 1,
+    "semantic_duplicate_groups": 0,
+    "semantic_duplicate_rows": 0,
+    "relation_counts": {
+      "guidance_or_rating_upgrade": 1
+    },
+    "polarity_counts": {
+      "positive": 1
+    },
+    "ticker_counts": {
+      "APP": 1
+    },
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "run_intraday_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "intraday_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "llm_prompt_changed": false,
+    "live_ready": false,
+    "parity_test_added": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted intraday structured-event observer contract already existed, and the 2026-07-01 13:02ET source artifact was schema-valid. The useful output is a bounded experiment-owned pending row delta, not a new trading rule.",
+    "forbidden_near_neighbor_retry": "Do not retune relation keywords, prompts, horizons, notional, action response curves, or target-only filters on this pending row.",
+    "new_evidence_required": "Closed replacement-value outcomes from this fixed observer, materially more prospective captures, or a PIT LLM scorer writing the same evidence-span schema."
+  },
+  "next_retry_requires": [
+    "closed intraday structured-event replacement-value rows",
+    "materially more prospective captures under this fixed observer",
+    "PIT LLM event scorer using the same evidence-span schema"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260701_010_intraday_structured_event_delta_20260701.py",
+    "data/experiments/exp-20260701-010/exp_20260701_010_intraday_structured_event_delta_20260701.json",
+    "experiments/logs/exp-20260701-010.json",
+    "experiments/cards/exp-20260701-010.md",
+    "experiments/manifests/exp-20260701-010.json",
+    "experiments/tickets/exp-20260701-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260701_010_intraday_structured_event_delta_20260701.py",
+    "data/experiments/exp-20260701-010/exp_20260701_010_intraday_structured_event_delta_20260701.json",
+    "experiments/logs/exp-20260701-010.json",
+    "experiments/cards/exp-20260701-010.md",
+    "experiments/manifests/exp-20260701-010.json",
+    "experiments/tickets/exp-20260701-010.json",
+    "docs/experiment_registry.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/daily/intraday/structured/intraday_news_structured_events_20260701_1302ET.json",
+    "data/daily/intraday/structured/intraday_news_structured_event_observations_20260701_1302ET.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260701_010_intraday_structured_event_delta_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260701_010_intraday_structured_event_delta_20260701.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-01T21:09:25+00:00"
+}

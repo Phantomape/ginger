@@ -1,0 +1,226 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260701_001_fixed_entry_full_trade_oracle_rows.py",
+    "data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json",
+    "experiments/cards/exp-20260701-001.md",
+    "experiments/manifests/exp-20260701-001.json",
+    "experiments/tickets/exp-20260701-001.json",
+    "experiments/logs/exp-20260701-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260701-001.md",
+  "causal_components": [
+    "canonical window trade load",
+    "matching OHLCV replay",
+    "per-trade oracle MFE/MAE ledger",
+    "cohort denominator summary",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "fixed_entry_full_trade_oracle_rows_v1",
+  "claimed_at": "2026-07-01T02:09:40+00:00",
+  "completed_at": "2026-07-01T02:10:53+00:00",
+  "created_at": "2026-07-01T02:06:59+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260701-001",
+  "experiment_uid": "expuid-c52ca75837074785",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260701-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-01T02:06:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fixed_entry_full_trade_oracle_rows"
+  },
+  "hypothesis": "Build full trade-level fixed-entry exit oracle rows across canonical windows so future exit-policy alpha can measure cohort denominators and false-positive rates instead of relying on top-regret samples.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "fixed_entry_full_trade_oracle_rows_v1"
+  ],
+  "mechanism_family": "exit_policy_oracle_diagnostic",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-009",
+    "exp-20260623-003",
+    "exp-20260429-032"
+  ],
+  "new_evidence_type": "measurement_blocker_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "across",
+        "alpha",
+        "build",
+        "can",
+        "canonical",
+        "cohort",
+        "denominators",
+        "diagnostic",
+        "entry",
+        "exit",
+        "false",
+        "full",
+        "future",
+        "instead",
+        "level",
+        "measure",
+        "of",
+        "on",
+        "oracle",
+        "policy",
+        "positive",
+        "rates",
+        "regret",
+        "relying",
+        "rows",
+        "samples",
+        "so",
+        "top",
+        "trade",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_full_trade_rows",
+        "reopen_condition": "A valid exit-policy alpha retry now needs a shared production/backtest exit helper using only pre-exit fields, or prospective shadow exit advisory rows with settled replacement value. Oracle exit dates/prices remain future-only labels.",
+        "score": 0.0933,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_regret_cluster_attribution",
+        "reopen_condition": "A valid exit-lifecycle retry needs closed forward paper rows from a shared default-off advisory helper, PIT intratrade path features available before exit, or a live-realistic slot-reuse and winner-collateral envelope measured before promotion.",
+        "score": 0.0727,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "high_account_risk_exit_oracle_regret",
+        "reopen_condition": "A shared exit lifecycle helper that uses only pre-exit account-risk and path-state fields, plus Gate 1-4 before/after evidence; or prospective shadow exit-advisory rows with settled replacement value.",
+        "score": 0.0541,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "fixed_entry_exit_oracle_gap_attribution",
+        "reopen_condition": "A valid exit-policy retry needs full trade-level fixed-entry oracle rows with production-visible pre-exit features, or prospective shadow exit-advisory rows with settled replacement value; then implement a shared exit helper and run Gate 1-4.",
+        "score": 0.0485,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0417,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Exp-20260630-009 found a stable-looking trend_long stop regret cohort but rejected it because only top-regret rows existed. The archived canonical backtest windows and matching OHLCV snapshots are present, so a read-only full trade-level oracle ledger should be materializable without changing strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "ohlcv_snapshot_schema_mismatch",
+      "trade_dates_missing",
+      "oracle_rows_duplicate_or_incomplete",
+      "audit_dirty_worktree_conflict"
+    ],
+    "recorded_at": "2026-07-01T02:06:24+00:00",
+    "success_probability": 0.78
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json",
+    "after_result_file": "data/experiments/exp-20260701-001/exp_20260701_001_fixed_entry_full_trade_oracle_rows.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.78,
+      "brier_score": 0.6084,
+      "calibration_direction": "overconfident",
+      "surprise_level": "high",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "ohlcv_snapshot_schema_mismatch",
+        "trade_dates_missing",
+        "oracle_rows_duplicate_or_incomplete",
+        "audit_dirty_worktree_conflict"
+      ],
+      "realized_failure_mode": "duplicate_existing_accepted_measurement_repair",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Startup history showed exp-20260630-011 had already materialized the exact full trade-level oracle surface; no new evidence axis existed."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260701-001.json",
+  "single_causal_variable": "fixed_entry_full_trade_oracle_rows_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260701-001.json",
+  "trial_family": "fixed_entry_full_trade_oracle_rows",
+  "trial_variant_id": "canonical_20260604_all_trades_v1"
+}

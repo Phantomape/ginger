@@ -221459,15 +221459,351 @@
       "updated_at": "2026-07-01T04:19:38+00:00"
     },
     {
-      "experiment_id": "exp-20260701-004",
-      "status": "proposed",
-      "lane": "measurement_repair",
-      "owner": null,
-      "hypothesis": "Same-signal-day re-runs of the alpha_score_market_regime paper sleeve accumulate multiple pending entries beyond daily_entry_slots, and the daily report renders new-candidates-this-run instead of the actual pending queue, so state.json pending and the report disagree (CAT appears in state pending but not in the 6/30 report).",
-      "ticket_file": "experiments/tickets/exp-20260701-004.json",
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+        "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+        "experiments/cards/exp-20260701-004.md",
+        "experiments/manifests/exp-20260701-004.json",
+        "experiments/tickets/exp-20260701-004.json",
+        "experiments/logs/exp-20260701-004.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "quant/alpha_score_market_regime_paper_sleeve.py",
+        "quant/report_generator.py",
+        "quant/test_alpha_score_market_regime_paper_sleeve.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
       "card_file": "experiments/cards/exp-20260701-004.md",
+      "causal_components": [
+        "same-asof pending count guard",
+        "daily_entry_slots capacity cap",
+        "snapshot pending_entries exposure",
+        "daily report pending queue rendering",
+        "default-off no-order contract"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "idempotent same-day pending admission + report renders true pending queue",
+      "claimed_at": "2026-07-03T11:10:52+00:00",
+      "completed_at": "2026-07-03T11:15:45+00:00",
+      "created_at": "2026-07-01T07:02:47+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260701-004",
+      "experiment_uid": "expuid-e72f4f4703be42c0",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260701-004",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-01T07:02:47+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "alpha_score_sleeve_same_day_idempotency_and_pending_report"
+      },
+      "hypothesis": "Same-signal-day re-runs of the alpha_score_market_regime paper sleeve accumulate multiple pending entries beyond daily_entry_slots, and the daily report renders new-candidates-this-run instead of the actual pending queue, so state.json pending and the report disagree (CAT appears in state pending but not in the 6/30 report).",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "idempotent same-day pending admission + report renders true pending queue"
+      ],
+      "mechanism_family": "identity_or_measurement_repair",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260531-021",
+        "exp-20260701-005"
+      ],
+      "new_evidence_type": "measurement_repair_for_forward_paper_ledger",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+            "score": 0.6356,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+            "score": 0.616,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "compression_breakout_tail_state_candidate_pool",
+            "score": 0.6091,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+            "score": 0.6089,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "tail_state_winner_continuation_candidate_pool",
+            "score": 0.6085,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "regime_state",
+          "field_tags": [
+            "accumulate",
+            "actual",
+            "admission",
+            "alpha",
+            "appears",
+            "beyond",
+            "but",
+            "candidates",
+            "cat",
+            "daily",
+            "disagree",
+            "entries",
+            "entry",
+            "idempotency",
+            "idempotent",
+            "in",
+            "instead",
+            "json",
+            "market",
+            "multiple",
+            "new",
+            "not",
+            "of",
+            "pending",
+            "queue",
+            "re",
+            "regime",
+            "renders",
+            "report",
+            "run",
+            "runs",
+            "same",
+            "score",
+            "signal",
+            "sleeve",
+            "slots",
+            "so",
+            "state",
+            "this",
+            "true"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+            "score": 0.6356,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+            "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+            "score": 0.616,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "compression_breakout_tail_state_candidate_pool",
+            "reopen_condition": "A retry needs forward replacement-value rows or a materially different PIT flow/catalyst field; not another OHLCV tail-state threshold sweep.",
+            "score": 0.6091,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+            "reopen_condition": null,
+            "score": 0.6089,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "tail_state_winner_continuation_candidate_pool",
+            "reopen_condition": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator.",
+            "score": 0.6085,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": true,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "regime_state",
+          "trials": 8
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": null,
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_alpha_score_same_day_idempotency_pending_report",
+        "artifact": "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+        "log": "experiments/logs/exp-20260701-004.json",
+        "runner": "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+        "gate4": {
+          "passed": true,
+          "mode": "measurement_repair_behavioral_contract",
+          "idempotency_check": {
+            "as_of": "2026-03-02",
+            "passed": true,
+            "checks": {
+              "first_run_new_pending_count_is_one": true,
+              "first_run_pending_count_is_one": true,
+              "first_run_ticker_is_win": true,
+              "second_run_candidate_is_win2": true,
+              "second_run_new_pending_count_is_zero": true,
+              "second_run_pending_count_stays_one": true,
+              "second_run_pending_queue_stays_win": true,
+              "win2_rejected_by_daily_capacity": true,
+              "trade_enabled_false": true,
+              "orders_unchanged": true
+            },
+            "first": {
+              "candidate_count": 2,
+              "new_pending_count": 1,
+              "pending_count": 1,
+              "pending_tickers": [
+                "WIN"
+              ]
+            },
+            "second": {
+              "candidate_count": 1,
+              "candidate_tickers": [
+                "WIN2"
+              ],
+              "new_pending_count": 0,
+              "pending_count": 1,
+              "pending_tickers": [
+                "WIN"
+              ],
+              "rejected_win2_reasons": [
+                "daily_top1_or_capacity_limit"
+              ]
+            }
+          },
+          "report_check": {
+            "passed": true,
+            "checks": {
+              "section_rendered_from_pending_count": true,
+              "pending_queue_header_rendered": true,
+              "stale_pending_ticker_rendered": true,
+              "stale_pending_signal_date_rendered": true,
+              "pending_notional_rendered": true,
+              "fresh_candidate_not_required": true
+            },
+            "report_excerpt": [
+              "ALPHA-SCORE MARKET-REGIME PAPER SLEEVE",
+              "  Candidates: 0  |  Rejected: 0  |  Pending: 1  |  Open: 0  |  Closed today: 0",
+              "  Pending queue (next-open paper buys):",
+              "    CAT: signal 2026-06-30 alpha=0.91 rank_pct=0.04 notional=$4,000 (paper only)"
+            ]
+          },
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          },
+          "failed_reasons": []
+        },
+        "summary": "The sleeve now subtracts already-created same-asof pending entries from daily_entry_slots before admitting new paper entries, and the report renders pending_entries directly. A re-run can still see a valid next-ranked candidate, but it does not grant a fresh daily slot."
+      },
       "revision_manifest_file": "experiments/manifests/exp-20260701-004.json",
-      "updated_at": "2026-07-01T07:02:47+00:00"
+      "single_causal_variable": "idempotent same-day pending admission + report renders true pending queue",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260701-004.json",
+      "trial_family": "alpha_score_market_regime_paper_ledger_repair",
+      "trial_variant_id": "same_day_idempotency_and_pending_report_v1",
+      "alpha_hypothesis": "The alpha-score market-regime paper sleeve can only produce usable forward replacement-value evidence if its same-day pending queue is idempotent and visible in the daily report.",
+      "change_summary": "Verified same-signal-day pending admission is capped by daily_entry_slots and report rendering uses pending_entries.",
+      "implementation_mode": "measurement_repair",
+      "new_evidence_axis": "Ledger/report parity repair for an already accepted default-off paper adapter; no new alpha threshold or response curve was tested.",
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "This closes a default-off paper ledger/report parity defect only. The sleeve still emits no live orders and does not alter core signals, ranking, sizing, exits, heat, LLM prompts, or watchlists."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The sleeve now subtracts already-created same-asof pending entries from daily_entry_slots before admitting new paper entries, and the report renders pending_entries directly. A re-run can still see a valid next-ranked candidate, but it does not grant a fresh daily slot.",
+        "forbidden_near_neighbor_retry": "Do not retune alpha-score regime thresholds, top-decile cutoffs, paper notional, or response curves on this repair. The next alpha step needs closed forward replacement-value rows from the repaired ledger.",
+        "new_evidence_required": "Closed alpha_score_market_regime paper outcomes with replacement value versus cash/SPY/QQQ or a materially different production-visible PIT source."
+      },
+      "next_retry_requires": [
+        "closed forward paper replacement-value rows emitted after this repair",
+        "a materially different production-visible PIT alpha source",
+        "or an activation-envelope audit after the repaired ledger matures"
+      ],
+      "changed_files": [
+        "quant/alpha_score_market_regime_paper_sleeve.py",
+        "quant/report_generator.py",
+        "quant/test_alpha_score_market_regime_paper_sleeve.py",
+        "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+        "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+        "experiments/logs/exp-20260701-004.json",
+        "experiments/cards/exp-20260701-004.md",
+        "experiments/manifests/exp-20260701-004.json",
+        "experiments/tickets/exp-20260701-004.json",
+        "docs/experiment_registry.json",
+        "docs/experiment_log.jsonl"
+      ],
+      "artifact": "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+      "log": "experiments/logs/exp-20260701-004.json",
+      "updated_at": "2026-07-03T11:15:45+00:00"
     },
     {
       "experiment_id": "exp-20260701-005",
@@ -243690,8 +244026,2626 @@
         "new_evidence_required": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics."
       },
       "updated_at": "2026-07-03T04:10:25+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+        "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+        "experiments/cards/exp-20260703-007.md",
+        "experiments/manifests/exp-20260703-007.json",
+        "experiments/tickets/exp-20260703-007.json",
+        "experiments/logs/exp-20260703-007.json",
+        "quant/run.py",
+        "quant/test_run_daily_wiring.py",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json"
+      ],
+      "alpha_hypothesis": "Moomoo daily main capital-flow may identify accumulation candidates, but the rejected historical top-1 test needs automatically accumulated forward rows before any new allocation claim.",
+      "artifact": "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-007.md",
+      "causal_components": [
+        "run.py shared helper import",
+        "fail-soft default-off paper sleeve build",
+        "daily quant artifact exposure",
+        "prompt-facing trend_signals exclusion",
+        "wiring tests"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_files": [
+        "quant/run.py",
+        "quant/test_run_daily_wiring.py",
+        "quant/experiments/exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+        "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+        "experiments/logs/exp-20260703-007.json",
+        "experiments/cards/exp-20260703-007.md",
+        "experiments/manifests/exp-20260703-007.json",
+        "experiments/tickets/exp-20260703-007.json",
+        "docs/experiment_registry.json"
+      ],
+      "changed_variable": "moomoo_capital_flow_daily_default_off_snapshot_wiring_v1",
+      "claimed_at": "2026-07-03T07:21:07+00:00",
+      "completed_at": "2026-07-03T07:28:06+00:00",
+      "created_at": "2026-07-03T07:20:56+00:00",
+      "decision": "accepted_measurement_repair_moomoo_capital_flow_daily_wiring",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-007",
+      "experiment_uid": "expuid-4ea9a070d9aa4914",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-007",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T07:20:56+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "moomoo_capital_flow_daily_wiring"
+      },
+      "hypothesis": "Wire the shared Moomoo capital-flow default-off paper helper into run.py daily snapshots so future settled forward rows can accumulate after the rejected historical top-1 test, without changing live orders, ranking, sizing, exits, prompts, or core signals.",
+      "implementation_mode": "shared_default_off_daily_snapshot_wiring",
+      "lane": "measurement_repair",
+      "lean_quality_passed": true,
+      "locked_variables": [
+        "moomoo_capital_flow_daily_default_off_snapshot_wiring_v1"
+      ],
+      "log_file": "experiments/logs/exp-20260703-007.json",
+      "mechanism_family": "moomoo_capital_flow_day_accumulation_candidate_pool",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260702-016",
+        "exp-20260702-019",
+        "exp-20260625-003",
+        "exp-20260625-019",
+        "exp-20260625-024"
+      ],
+      "new_evidence_axis": "Forward row accumulation via run.py daily snapshot for an existing shared Moomoo capital-flow helper. This is not a same-window threshold retune, response-curve retune, or observed-only reslice.",
+      "new_evidence_type": "daily_pipeline_wiring_for_existing_shared_moomoo_capital_flow_helper",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "accumulate",
+            "after",
+            "can",
+            "capital",
+            "changing",
+            "core",
+            "daily",
+            "exits",
+            "flow",
+            "forward",
+            "future",
+            "helper",
+            "historical",
+            "into",
+            "live",
+            "moomoo",
+            "or",
+            "orders",
+            "prompts",
+            "py",
+            "ranking",
+            "rejected",
+            "rows",
+            "run",
+            "settled",
+            "signals",
+            "sizing",
+            "snapshot",
+            "snapshots",
+            "so",
+            "test",
+            "top",
+            "wire",
+            "wiring",
+            "without"
+          ],
+          "gate_shape": "allocator_source"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "forward_replacement_stock_vs_etf_diversification",
+            "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+            "score": 0.1962,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "moomoo_daily_short_volume_clean_flow_quality_gate",
+            "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a materially different non-OHLCV flow field.",
+            "score": 0.1773,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.3333,
+            "data_source": "allocator",
+            "family_key": "accepted_default_off_helper_source_priority_allocation",
+            "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+            "score": 0.169,
+            "status": "has_accepted",
+            "trials": 24
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "candidate_pool",
+            "reopen_condition": "Only a universe-AWARE ranking+risk retune (per-name strategy-fit selected out-of-sample, validated on a later non-overlapping window) with stable OOS persistence would reopen; or a genuinely new data source. Naive add-names is frozen.",
+            "score": 0.169,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "core_slot_rank_post_sizing_topup",
+            "reopen_condition": null,
+            "score": 0.1678,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "allocator_source",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "observer_contract": {
+        "sleeve_name": "MOOMOO_CAPITAL_FLOW_ACCUMULATION_PAPER",
+        "source_rule_version": "moomoo_get_capital_flow_day_archive_v1",
+        "paper_rule_version": "moomoo_capital_flow_day_main_inflow_top1_v1",
+        "artifact_paths": {
+          "rows": "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+          "manifest": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+          "state": "data/paper_sleeves/moomoo_capital_flow/state.json",
+          "snapshots": "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl"
+        },
+        "default_off": true,
+        "paper_enabled": true,
+        "trade_enabled": false
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "why_result_happened": "The shared helper from exp-20260702-019 already carried the state machine, archive refresh, and default-off paper contract; the missing piece was daily run.py exposure so rows can mature.",
+        "forbidden_near_neighbor_retry": "Do not reserve IDs for Moomoo capital-flow threshold/ranking/response retunes or daily hand-refreshes on the same rows.",
+        "new_evidence_required": "Materially more closed forward rows from automatic daily snapshots, a genuinely different vendor flow decomposition, or PIT borrow economics."
+      },
+      "prediction": null,
+      "prior_trial_count": 0,
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "daily_collector_changed": true,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "run.py now calls the shared default-off Moomoo capital-flow paper sleeve and stores its snapshot in the daily quant artifact. It is not added to trend_signals_dict, prompts, live ranking, sizing, exits, or orders."
+      },
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -c \"import ast, pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ['quant/run.py','quant/test_run_daily_wiring.py','quant/moomoo_capital_flow_paper_sleeve.py']]\"",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_moomoo_capital_flow_paper_sleeve.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_moomoo_capital_flow_daily_wiring",
+        "artifact": "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+        "log": "experiments/logs/exp-20260703-007.json",
+        "runner": "quant/experiments/exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_wiring_gate",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          }
+        },
+        "summary": "The shared helper from exp-20260702-019 already carried the state machine, archive refresh, and default-off paper contract; the missing piece was daily run.py exposure so rows can mature."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-007.json",
+      "single_causal_variable": "moomoo_capital_flow_daily_default_off_snapshot_wiring_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-007.json",
+      "trial_family": "moomoo_capital_flow_daily_default_off_snapshot_wiring",
+      "trial_variant_id": "moomoo_capital_flow_daily_wiring_v1",
+      "updated_at": "2026-07-03T07:28:06+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/prediction_market_event_observer.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/experiments/exp_*_prediction_market_event_relevance_gate.py",
+        "data/experiments/*/exp_*_prediction_market_event_relevance_gate.json",
+        "experiments/logs/*.json",
+        "experiments/cards/*.md",
+        "experiments/manifests/*.json",
+        "experiments/tickets/*.json",
+        "docs/experiment_registry.json",
+        "quant/experiments/exp_20260703_008_prediction_market_event_relevance_gate.py",
+        "data/experiments/exp-20260703-008/exp_20260703_008_prediction_market_event_relevance_gate.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260703.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/source_stats/prediction_market_event_observer_source_stats_20260703.json",
+        "experiments/logs/exp-20260703-008.json",
+        "experiments/cards/exp-20260703-008.md",
+        "experiments/manifests/exp-20260703-008.json",
+        "experiments/tickets/exp-20260703-008.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/source_manifest.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/latest_summary.json"
+      ],
+      "alpha_hypothesis": "Prediction-market probability jumps may be useful for entity/theme event propagation only if the observer emits semantically relevant market rows before forward outcome settlement.",
+      "artifact": "data/experiments/exp-20260703-008/exp_20260703_008_prediction_market_event_relevance_gate.json",
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-008.md",
+      "causal_components": [
+        "source relevance groups",
+        "min hit gate",
+        "rejected item counts",
+        "observer artifact audit",
+        "tests",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_files": [
+        "quant/prediction_market_event_observer.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/experiments/exp_20260703_008_prediction_market_event_relevance_gate.py",
+        "data/experiments/exp-20260703-008/exp_20260703_008_prediction_market_event_relevance_gate.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260703.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/source_stats/prediction_market_event_observer_source_stats_20260703.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/source_manifest.json",
+        "data/experiments/exp-20260703-008/observer_probe/non_ohlcv/prediction_market_event_observer/latest_summary.json",
+        "experiments/logs/exp-20260703-008.json",
+        "experiments/cards/exp-20260703-008.md",
+        "experiments/manifests/exp-20260703-008.json",
+        "experiments/tickets/exp-20260703-008.json",
+        "docs/experiment_registry.json"
+      ],
+      "changed_variable": "prediction_market_event_relevance_gate_v1",
+      "claimed_at": "2026-07-03T08:08:36+00:00",
+      "completed_at": "2026-07-03T08:15:07+00:00",
+      "created_at": "2026-07-03T08:08:25+00:00",
+      "decision": "accepted_measurement_repair_prediction_market_event_relevance_gate",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-008",
+      "experiment_uid": "expuid-1cffdcd6c6ef4de1",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-008",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T08:08:25+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "prediction_market_event_relevance_gate"
+      },
+      "hypothesis": "Alpha blocker: prediction-market event probability jumps cannot support entity/theme propagation alpha while the Polymarket observer admits unrelated markets from broad search hits; add a replayable source relevance gate and audit so only semantically relevant rows can accumulate forward outcomes.",
+      "implementation_mode": "measurement_repair",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "prediction_market_event_relevance_gate_v1"
+      ],
+      "log_file": "experiments/logs/exp-20260703-008.json",
+      "mechanism_family": "daily_news_llm_event_scoring_alpha",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260703-004",
+        "exp-20260703-006"
+      ],
+      "new_evidence_axis": "New measurement gate on the newly wired public prediction-market source; it removes broad-search false positives before forward rows can be interpreted.",
+      "new_evidence_type": "measurement_repair_for_new_prediction_market_source",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "accumulate",
+            "add",
+            "admits",
+            "alpha",
+            "audit",
+            "blocker",
+            "can",
+            "cannot",
+            "daily",
+            "entity",
+            "event",
+            "forward",
+            "from",
+            "gate",
+            "hits",
+            "jumps",
+            "llm",
+            "market",
+            "markets",
+            "news",
+            "observer",
+            "only",
+            "outcomes",
+            "polymarket",
+            "prediction",
+            "probability",
+            "propagation",
+            "relevance",
+            "relevant",
+            "repair",
+            "replayable",
+            "rows",
+            "scoring",
+            "search",
+            "semantically",
+            "so",
+            "support",
+            "theme",
+            "unrelated",
+            "while"
+          ],
+          "gate_shape": "notional_scalar"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "allocator",
+            "family_key": "alpha_score_market_regime_source_consensus_support",
+            "reopen_condition": "If positive, add a shared default-off source-consensus adapter and collect forward replacement-value rows. If rejected, do not retune the scalar on these frozen windows.",
+            "score": 0.1761,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "alpha_score_market_regime_external_macro_context",
+            "reopen_condition": "If revisiting macro context, first add shared production/backtest VIX ingestion and only then test forward replacement rows. Do not retune VIX thresholds on this frozen sample.",
+            "score": 0.174,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "broad_market_sector_open_crowding_paper_allocation",
+            "reopen_condition": "If rejected, do not retry adjacent same-sector support scalars without new forward closed outcomes. Next broad-market data edge should use a distinct field such as industry-level leadership breadth or cost-adjusted replacement value.",
+            "score": 0.1674,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "broad_market_repeat_leadership_support",
+            "reopen_condition": null,
+            "score": 0.167,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "revision_expectation",
+            "family_key": "post_earnings_event_quality_support",
+            "reopen_condition": "If metric-positive, run a separate shared-adapter promotion ticket and collect forward replacement-value rows before considering live/default activation.",
+            "score": 0.167,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "notional_scalar",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "observer_contract": {
+        "source_count": 6,
+        "query_ids": [
+          "spacex_ipo_probability",
+          "frontier_ai_private_capex_probability",
+          "ai_export_controls_probability",
+          "hyperscaler_power_shortage_probability",
+          "crypto_market_structure_probability",
+          "glp1_market_access_probability"
+        ],
+        "candidate_ticker_count": 30,
+        "artifact_root": "data/non_ohlcv/prediction_market_event_observer",
+        "provider": "polymarket",
+        "observer_only": true,
+        "relevance_gate_version": "prediction_market_event_relevance_gate_v1",
+        "existing_snapshot_strict_reject_total": 378
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "why_result_happened": "The first real daily Polymarket snapshot showed broad search queries can match unrelated markets on a single generic term. The repair requires multiple semantic groups and records rejected market counts so future forward rows are interpretable.",
+        "forbidden_near_neighbor_retry": "Do not rerun prediction-market alpha by changing probability thresholds, theme labels, or provider slugs on the polluted first snapshot. Use rows emitted after this relevance gate, a distinct event-probability source, or settled forward outcomes.",
+        "new_evidence_required": "Relevant post-repair prediction-market rows with closed forward cash/SPY/QQQ replacement outcomes, or a materially different probability source with cleaner event taxonomy."
+      },
+      "prediction": null,
+      "prior_trial_count": 0,
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_collector_changed": true,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "The run.py observer call remains default-off and observer-only. This repair only changes which prediction-market rows are saved for future attribution; it does not feed prompts, rankings, sizing, exits, or orders."
+      },
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\prediction_market_event_observer.py quant\\test_prediction_market_event_observer.py quant\\experiments\\exp_20260703_008_prediction_market_event_relevance_gate.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_prediction_market_event_observer.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_008_prediction_market_event_relevance_gate.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_prediction_market_event_relevance_gate",
+        "artifact": "data/experiments/exp-20260703-008/exp_20260703_008_prediction_market_event_relevance_gate.json",
+        "log": "experiments/logs/exp-20260703-008.json",
+        "runner": "quant/experiments/exp_20260703_008_prediction_market_event_relevance_gate.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_relevance_gate",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          },
+          "existing_snapshot_audit": {
+            "snapshot_items": 560,
+            "strict_keep_total": 182,
+            "strict_reject_total": 378,
+            "strict_reject_rate": 0.675,
+            "by_query": {
+              "ai_export_controls_probability": {
+                "rows": 11,
+                "strict_keep": 7,
+                "strict_reject": 4
+              },
+              "crypto_market_structure_probability": {
+                "rows": 76,
+                "strict_keep": 2,
+                "strict_reject": 74
+              },
+              "frontier_ai_private_capex_probability": {
+                "rows": 17,
+                "strict_keep": 10,
+                "strict_reject": 7
+              },
+              "hyperscaler_power_shortage_probability": {
+                "rows": 9,
+                "strict_keep": 5,
+                "strict_reject": 4
+              },
+              "spacex_ipo_probability": {
+                "rows": 447,
+                "strict_keep": 158,
+                "strict_reject": 289
+              }
+            },
+            "false_positive_samples": [
+              {
+                "query_id": "ai_export_controls_probability",
+                "title": "Will OpenAI launch a consumer hardware product by...?",
+                "question": "Will OpenAI launch a new consumer hardware product in 2025?",
+                "provider_slug": "will-openai-launch-a-consumer-hardware-product-by"
+              },
+              {
+                "query_id": "ai_export_controls_probability",
+                "title": "Will OpenAI launch a consumer hardware product by...?",
+                "question": "Will OpenAI launch a new consumer hardware product by March 31, 2026?",
+                "provider_slug": "will-openai-launch-a-consumer-hardware-product-by"
+              },
+              {
+                "query_id": "ai_export_controls_probability",
+                "title": "Will OpenAI launch a consumer hardware product by...?",
+                "question": "Will OpenAI launch a new consumer hardware product by December 31, 2026?",
+                "provider_slug": "will-openai-launch-a-consumer-hardware-product-by"
+              },
+              {
+                "query_id": "ai_export_controls_probability",
+                "title": "Xi Jinping out before 2027?",
+                "question": "Xi Jinping out before 2027?",
+                "provider_slug": "xi-jinping-out-before-2027"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Kraken IPO by ___ ?",
+                "question": "Kraken IPO by June 30, 2026?",
+                "provider_slug": "kraken-ipo-in-2025"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Kraken IPO by ___ ?",
+                "question": "Kraken IPO in 2025?",
+                "provider_slug": "kraken-ipo-in-2025"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Kraken IPO by ___ ?",
+                "question": "Kraken IPO by March 31, 2026?",
+                "provider_slug": "kraken-ipo-in-2025"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Kraken IPO by ___ ?",
+                "question": "Kraken IPO by December 31, 2026?",
+                "provider_slug": "kraken-ipo-in-2025"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "What will happen before GTA VI?",
+                "question": "Will Jesus Christ return before GTA VI?",
+                "provider_slug": "what-will-happen-before-gta-vi"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "What will happen before GTA VI?",
+                "question": "Will China invades Taiwan before GTA VI?",
+                "provider_slug": "what-will-happen-before-gta-vi"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Harvey Weinstein prison time?",
+                "question": "Will Harvey Weinstein be sentenced to no prison time?",
+                "provider_slug": "harvey-weinstein-prison-time"
+              },
+              {
+                "query_id": "crypto_market_structure_probability",
+                "title": "Harvey Weinstein prison time?",
+                "question": "Will Harvey Weinstein be sentenced to less than 5 years in prison?",
+                "provider_slug": "harvey-weinstein-prison-time"
+              }
+            ],
+            "snapshot_path": "data/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260702.json"
+          }
+        },
+        "summary": "The first real daily Polymarket snapshot showed broad search queries can match unrelated markets on a single generic term. The repair requires multiple semantic groups and records rejected market counts so future forward rows are interpretable."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-008.json",
+      "single_causal_variable": "prediction_market_event_relevance_gate_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-008.json",
+      "trial_family": "prediction_market_event_observer_relevance_repair",
+      "trial_variant_id": "prediction_market_event_relevance_gate_v1",
+      "updated_at": "2026-07-03T08:15:07+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+        "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+        "experiments/cards/exp-20260703-009.md",
+        "experiments/manifests/exp-20260703-009.json",
+        "experiments/tickets/exp-20260703-009.json",
+        "experiments/logs/exp-20260703-009.json",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-009.md",
+      "causal_components": [
+        "resolved issuer S-1/F-1 event rows",
+        "entity exposure map peer join",
+        "next-open 10d SPY-excess",
+        "same-peer unconditional baseline",
+        "read-only no strategy change"
+      ],
+      "change_type": "observed_only_attribution",
+      "changed_variable": "none_read_only",
+      "claimed_at": "2026-07-03T09:06:04+00:00",
+      "completed_at": "2026-07-03T09:13:12+00:00",
+      "created_at": "2026-07-03T09:05:54+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-009",
+      "experiment_uid": "expuid-f0d27fb82ac04c03",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-009",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T09:05:54+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "resolved_s1_peer_substitution"
+      },
+      "hypothesis": "Resolved listed-issuer S-1/F-1 overhang may redirect capital into listed SIC/theme peers, so peers should show positive next-open 10d SPY-excess versus same-peer unconditional baselines across canonical windows.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "resolved_s1_f1_issuer_overhang_peer_substitution_10d_spy_excess_v1"
+      ],
+      "mechanism_family": "production_visible_sec_corporate_event_stream",
+      "multiple_testing_risk_bucket": "low",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260702-023",
+        "exp-20260702-024",
+        "exp-20260702-018",
+        "exp-20260702-017"
+      ],
+      "new_evidence_type": "new_target_side_relation_join",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "across",
+            "baselines",
+            "canonical",
+            "capital",
+            "excess",
+            "f",
+            "f1",
+            "into",
+            "issuer",
+            "listed",
+            "may",
+            "overhang",
+            "peer",
+            "peers",
+            "positive",
+            "redirect",
+            "resolved",
+            "s",
+            "s1",
+            "same",
+            "should",
+            "show",
+            "sic",
+            "so",
+            "spy",
+            "substitution",
+            "theme",
+            "unconditional",
+            "versus",
+            "windows"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "sec_425_merger_theme_peer_propagation_attribution",
+            "reopen_condition": "A valid retry needs richer deal economics such as cash/stock consideration, bidder/target role, deal size versus peer float, post-announcement amendment/termination trajectory, or fresh forward rows under a shared helper.",
+            "score": 0.4944,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "same_industry_peer_shock_candidate_pool",
+            "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger non-price peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+            "score": 0.4864,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "same_sector_peer_shock_candidate_pool",
+            "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+            "score": 0.4864,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "sector_peer_moderate_shock_candidate_pool",
+            "reopen_condition": "Forward replacement-value rows or a materially stronger relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+            "score": 0.4833,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "industry_peer_moderate_shock_candidate_pool",
+            "reopen_condition": "Forward replacement-value rows or a materially stronger non-price relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+            "score": 0.4742,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [],
+          "new_evidence_axis": {
+            "axis": null,
+            "categories": [],
+            "invalid_same_source_field_only": false,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": false
+          },
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "ohlcv_relation",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.23,
+        "expected_ev_delta": null,
+        "expected_pnl_delta": null,
+        "main_failure_modes": [
+          "peer relation too noisy",
+          "sign flips across windows",
+          "issuer overhang already priced",
+          "top ticker concentration",
+          "near-neighbor SEC propagation saturation"
+        ],
+        "confidence_reason": "The issuer-self S-1/F-1 overhang read was stable negative and this tests a distinct substitution target-side relation; prior SEC peer propagation was noisy and the same SEC corporate-event surface is heavily explored, so success odds are low.",
+        "recorded_at": "2026-07-03T09:05:18+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "rejected_no_resolved_s1_peer_substitution_edge",
+        "artifact": "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+        "log": "experiments/logs/exp-20260703-009.json",
+        "runner": "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+        "gate4": {
+          "mode": "observed_only_attribution",
+          "passed": false,
+          "observed_only_lead": false,
+          "failed_reasons": [
+            "not_positive_all_windows",
+            "pooled_positive_delta_below_threshold"
+          ]
+        },
+        "summary": "Resolved listed-issuer S-1/F-1 overhang did not produce a stable positive peer delta versus same-peer baselines across canonical windows."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-009.json",
+      "single_causal_variable": "resolved_s1_f1_issuer_overhang_peer_substitution_10d_spy_excess_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260703-009.json",
+      "trial_family": "resolved_s1_f1_peer_substitution_attribution",
+      "trial_variant_id": "resolved_s1_f1_peer_substitution_10d_spy_excess_v1",
+      "alpha_hypothesis": "If the peer-substitution sign is stable, a later shared-paper-first experiment can test resolved S-1/F-1 overhang as a default-off peer candidate source or allocator context.",
+      "implementation_mode": "read_only_diagnostic",
+      "new_evidence_axis": "new target-side relation: resolved listed-issuer S-1/F-1 overhang to listed SIC/theme peers. Prior exp-20260702-023 tested issuer-self overhang; prior peer reads tested private IPO and 425 event classes.",
+      "decision": "rejected_no_resolved_s1_peer_substitution_edge",
+      "artifact": "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+      "log": "experiments/logs/exp-20260703-009.json",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "window_count": 3,
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61,
+          "signals_generated": 164,
+          "signals_survived": 135,
+          "survival_rate": 0.823171
+        }
+      },
+      "gate2": {
+        "passed": true,
+        "fields": [
+          "event_class",
+          "ticker_status",
+          "form_type",
+          "filed_date",
+          "ticker",
+          "relation_type",
+          "entry_date",
+          "Open/Close warehouse bars"
+        ],
+        "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "note": "No executable filter or rank rule was added.",
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171
+      },
+      "gate4": {
+        "mode": "observed_only_attribution",
+        "passed": false,
+        "observed_only_lead": false,
+        "failed_reasons": [
+          "not_positive_all_windows",
+          "pooled_positive_delta_below_threshold"
+        ]
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "live_ready": false,
+        "parity_note": "Read-only attribution; no production or backtest behavior changed."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "Resolved listed-issuer S-1/F-1 overhang did not produce a stable positive peer delta versus same-peer baselines across canonical windows.",
+        "forbidden_near_neighbor_retry": "Do not re-slice the same resolved S-1/F-1 peer rows by relation type, theme subset, amendment flag, form subtype, horizon, entry lag, ticker-status, density, top-N, hold, cooldown, notional, or response shape.",
+        "new_evidence_required": "A valid retry needs richer offering economics such as registered amount, resale versus primary issuance, selling-holder identity, effectiveness date, prospectus-supplement terms, or fresh forward rows under a shared helper."
+      },
+      "related_files": [
+        "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+        "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+        "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+        "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+        "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+        "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+        "experiments/cards/exp-20260703-009.md",
+        "experiments/manifests/exp-20260703-009.json",
+        "experiments/tickets/exp-20260703-009.json",
+        "experiments/logs/exp-20260703-009.json",
+        "docs/experiment_registry.json"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-07-03T09:13:12+00:00"
+    },
+    {
+      "experiment_id": "exp-20260703-010",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Alpha-enabling repair: estimate-revision candidate-match alpha cannot be judged if run.py writes the default-off revision ledger before same-day quant_signals exist; add a post-quant-signal ledger refresh so future daily runs produce trustworthy matched candidate rows without changing trading behavior.",
+      "ticket_file": "experiments/tickets/exp-20260703-010.json",
+      "card_file": "experiments/cards/exp-20260703-010.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260703-010.json",
+      "updated_at": "2026-07-03T10:15:02+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/prediction_market_event_observer.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/experiments/exp_20260703_011_prediction_market_event_outcome_ledger.py",
+        "data/experiments/exp-20260703-011/exp_20260703_011_prediction_market_event_outcome_ledger.json",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_20260703.jsonl",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_summary_20260703.json",
+        "experiments/cards/exp-20260703-011.md",
+        "experiments/manifests/exp-20260703-011.json",
+        "experiments/tickets/exp-20260703-011.json",
+        "experiments/logs/exp-20260703-011.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_20260702.jsonl",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_summary_20260702.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-011.md",
+      "causal_components": [
+        "shared observer-only forward outcome ledger helper",
+        "cash/SPY/QQQ comparator settlement semantics",
+        "focused tests with synthetic OHLCV bars",
+        "real 20260702 snapshot maturity audit",
+        "no strategy behavior change"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "prediction_market_event_observer_forward_outcome_ledger_v1",
+      "claimed_at": "2026-07-03T12:07:11+00:00",
+      "completed_at": "2026-07-03T12:13:33+00:00",
+      "created_at": "2026-07-03T12:07:01+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-011",
+      "experiment_uid": "expuid-4b0d518919fa45f9",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-011",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T12:07:01+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "prediction_market_event_outcome_ledger"
+      },
+      "hypothesis": "Alpha blocker: prediction-market event probability jumps cannot be evaluated as entity/theme propagation alpha until relevant observer rows have a replayable forward outcome ledger versus cash, SPY, and QQQ; add the observer-only settlement surface without changing trading behavior.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "prediction_market_event_observer_forward_outcome_ledger_v1"
+      ],
+      "mechanism_family": "daily_news_llm_event_scoring_alpha",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260703-004",
+        "exp-20260703-006",
+        "exp-20260703-008"
+      ],
+      "new_evidence_type": "new_prediction_market_outcome_settlement_surface",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "add",
+            "alpha",
+            "as",
+            "be",
+            "behavior",
+            "blocker",
+            "cannot",
+            "cash",
+            "changing",
+            "entity",
+            "evaluated",
+            "event",
+            "forward",
+            "have",
+            "jumps",
+            "ledger",
+            "market",
+            "observer",
+            "only",
+            "outcome",
+            "prediction",
+            "probability",
+            "propagation",
+            "qqq",
+            "relevant",
+            "replayable",
+            "rows",
+            "settlement",
+            "spy",
+            "surface",
+            "theme",
+            "trading",
+            "until",
+            "versus",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "prediction_market_event_observer_surface",
+            "reopen_condition": "Current rows with non-null probabilities plus subsequent entity-exposure forward settlement, or a daily run.py wiring measurement repair that makes rows accumulate automatically.",
+            "score": 0.0556,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_event_entity_exposure_forward_value",
+            "reopen_condition": "If pursued, the next experiment must be a shared-paper-first helper with one fixed ex-ante selection rule, such as source/date arbitration or relation-priority ranking, then daily default-off exposure rows and comparator-aware Gate 1-4 measurement.",
+            "score": 0.0476,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "prediction_market_event_observer_daily_wiring",
+            "reopen_condition": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics.",
+            "score": 0.041,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "prediction_market_event_observer_relevance_repair",
+            "reopen_condition": "Relevant post-repair prediction-market rows with closed forward cash/SPY/QQQ replacement outcomes, or a materially different probability source with cleaner event taxonomy.",
+            "score": 0.041,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "onclickmedia_options_forward_outcome_settlement",
+            "reopen_condition": "Next options alpha evidence needs materially more closed forward rows including the exp020 daily deltas, PIT vendor/asof controls, borrow or loan-availability context, or historical PIT options chains covering canonical windows before any shared helper promotion.",
+            "score": 0.039,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": null,
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_prediction_market_event_outcome_ledger",
+        "artifact": "data/experiments/exp-20260703-011/exp_20260703_011_prediction_market_event_outcome_ledger.json",
+        "log": "experiments/logs/exp-20260703-011.json",
+        "runner": "quant/experiments/exp_20260703_011_prediction_market_event_outcome_ledger.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_outcome_probe",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          },
+          "outcome_probe": {
+            "observer_only": true,
+            "observer_name": "prediction_market_event_observer",
+            "outcome_rule_version": "prediction_market_event_forward_outcome_ledger_v1",
+            "source_item_count": 560,
+            "candidate_outcome_row_count": 3386,
+            "settled_count": 0,
+            "unsettled_count": 3386,
+            "status_counts": {
+              "unsettled_no_entry_bar": 3386
+            },
+            "horizons": [
+              10
+            ],
+            "notional_usd": 4000.0,
+            "as_of_date": "2026-07-02",
+            "strategy_behavior_changed": false,
+            "trade_enabled": false,
+            "snapshot_path": "data/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260702.json",
+            "ledger_path": "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_20260702.jsonl",
+            "summary_path": "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_summary_20260702.json",
+            "warehouse": {
+              "warehouse_exists": true,
+              "source_table": "ohlcv_snapshot_versions",
+              "requested_tickers": 28,
+              "returned_rows": 5967,
+              "date_min": "2023-08-29",
+              "date_max": "2026-04-21"
+            },
+            "candidate_ticker_count": 28
+          }
+        },
+        "summary": "The observer now has a deterministic settlement contract and tests prove both settled and immature-row handling. The real 20260702 snapshot has no settled 10-day outcomes because the available warehouse bars end at 2026-04-21; this is correct observer maturity accounting, not alpha evidence."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-011.json",
+      "single_causal_variable": "prediction_market_event_observer_forward_outcome_ledger_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-011.json",
+      "trial_family": "prediction_market_event_observer_outcome_settlement",
+      "trial_variant_id": "prediction_market_event_outcome_ledger_v1",
+      "alpha_hypothesis": "Prediction-market event probability jumps may identify entity/theme propagation alpha only if relevant observer rows later show positive cash/SPY/QQQ replacement value under a fixed settlement ledger.",
+      "implementation_mode": "measurement_repair",
+      "new_evidence_axis": "New outcome-settlement axis for the new prediction-market observer; not a probability threshold, source-label, keyword, or theme reslice.",
+      "observer_contract": {
+        "observer_name": "prediction_market_event_observer",
+        "outcome_rule_version": "prediction_market_event_forward_outcome_ledger_v1",
+        "snapshot_date": "20260702",
+        "horizons": [
+          10
+        ],
+        "notional_usd": 4000.0,
+        "trade_enabled": false,
+        "ledger_path": "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_20260702.jsonl",
+        "summary_path": "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_summary_20260702.json"
+      },
+      "decision": "accepted_measurement_repair_prediction_market_event_outcome_ledger",
+      "artifact": "data/experiments/exp-20260703-011/exp_20260703_011_prediction_market_event_outcome_ledger.json",
+      "log_file": "experiments/logs/exp-20260703-011.json",
+      "changed_files": [
+        "quant/prediction_market_event_observer.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/experiments/exp_20260703_011_prediction_market_event_outcome_ledger.py",
+        "data/experiments/exp-20260703-011/exp_20260703_011_prediction_market_event_outcome_ledger.json",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_20260702.jsonl",
+        "data/experiments/exp-20260703-011/outcome_probe/prediction_market_event_outcome_ledger_summary_20260702.json",
+        "experiments/cards/exp-20260703-011.md",
+        "experiments/manifests/exp-20260703-011.json",
+        "experiments/tickets/exp-20260703-011.json",
+        "experiments/logs/exp-20260703-011.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\prediction_market_event_observer.py quant\\test_prediction_market_event_observer.py quant\\experiments\\exp_20260703_011_prediction_market_event_outcome_ledger.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_prediction_market_event_observer.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_011_prediction_market_event_outcome_ledger.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_collector_changed": false,
+        "daily_snapshot_exposed": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "Shared observer helper only. The experiment writes a probe ledger under data/experiments and does not wire outcomes into run.py, prompts, rankings, sizing, exits, or orders."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The observer now has a deterministic settlement contract and tests prove both settled and immature-row handling. The real 20260702 snapshot has no settled 10-day outcomes because the available warehouse bars end at 2026-04-21; this is correct observer maturity accounting, not alpha evidence.",
+        "forbidden_near_neighbor_retry": "Do not reserve IDs to change prediction-market probability thresholds, theme labels, query slugs, horizons, or response curves on the same unclosed rows.",
+        "new_evidence_required": "Closed post-relevance-gate prediction-market outcome rows with cash/SPY/QQQ replacement value, or a materially different event-probability source."
+      },
+      "updated_at": "2026-07-03T12:13:33+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260703_012_prediction_market_event_outcome_daily_wiring.py",
+        "data/experiments/exp-20260703-012/exp_20260703_012_prediction_market_event_outcome_daily_wiring.json",
+        "experiments/cards/exp-20260703-012.md",
+        "experiments/manifests/exp-20260703-012.json",
+        "experiments/tickets/exp-20260703-012.json",
+        "experiments/logs/exp-20260703-012.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "quant/prediction_market_event_observer.py",
+        "quant/run.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/test_run_daily_wiring.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-012.md",
+      "causal_components": [
+        "observer-only accumulated daily item scan",
+        "local warehouse OHLCV settlement",
+        "fail-soft run.py daily wrapper",
+        "focused unit tests"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "prediction_market_event_outcome_ledger_daily_pipeline_wiring_v1",
+      "claimed_at": "2026-07-03T13:11:24+00:00",
+      "completed_at": "2026-07-03T13:18:14+00:00",
+      "created_at": "2026-07-03T13:11:05+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-012",
+      "experiment_uid": "expuid-c8a1c884d5934325",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-012",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T13:11:05+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "prediction_market_event_outcome_daily_wiring"
+      },
+      "hypothesis": "Alpha blocker: prediction-market event probability rows cannot mature into entity/theme propagation alpha if forward outcome settlement remains a manual experiment probe; wire the observer-only cash/SPY/QQQ outcome ledger into the daily run path without changing trading behavior.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "prediction_market_event_outcome_ledger_daily_pipeline_wiring_v1"
+      ],
+      "mechanism_family": "daily_news_llm_event_scoring_alpha",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260703-004",
+        "exp-20260703-006",
+        "exp-20260703-008",
+        "exp-20260703-011"
+      ],
+      "new_evidence_type": "daily_pipeline_wiring_for_existing_outcome_surface",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "alpha",
+            "behavior",
+            "blocker",
+            "cannot",
+            "cash",
+            "changing",
+            "daily",
+            "entity",
+            "event",
+            "experiment",
+            "forward",
+            "if",
+            "into",
+            "ledger",
+            "manual",
+            "market",
+            "mature",
+            "observer",
+            "only",
+            "outcome",
+            "path",
+            "pipeline",
+            "prediction",
+            "probability",
+            "probe",
+            "propagation",
+            "qqq",
+            "remains",
+            "rows",
+            "run",
+            "settlement",
+            "spy",
+            "theme",
+            "trading",
+            "wire",
+            "wiring",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "prediction_market_event_observer_daily_wiring",
+            "reopen_condition": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics.",
+            "score": 0.0737,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "entity_theme_news_observer_daily_pipeline_wiring",
+            "reopen_condition": "Closed forward rows from this observer, a materially richer entity-relation/economic mapping, or a different non-ticker news source such as PR wire full text or prediction-market event data.",
+            "score": 0.0615,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+            "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+            "score": 0.0488,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "other",
+            "family_key": "intraday_structured_event_forward_observer_wiring",
+            "reopen_condition": "Closed replacement-value outcomes from this fixed observer, or a PIT LLM scorer writing the same evidence-span schema.",
+            "score": 0.0465,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "sec_event_entity_exposure_forward_value",
+            "reopen_condition": "If pursued, the next experiment must be a shared-paper-first helper with one fixed ex-ante selection rule, such as source/date arbitration or relation-priority ranking, then daily default-off exposure rows and comparator-aware Gate 1-4 measurement.",
+            "score": 0.0455,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": null,
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_prediction_market_event_outcome_daily_wiring",
+        "artifact": "data/experiments/exp-20260703-012/exp_20260703_012_prediction_market_event_outcome_daily_wiring.json",
+        "log": "experiments/logs/exp-20260703-012.json",
+        "runner": "quant/experiments/exp_20260703_012_prediction_market_event_outcome_daily_wiring.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_wiring_gate",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          }
+        },
+        "summary": "The accepted exp011 outcome math was already deterministic; the missing step was turning it into routine daily materialization over all accumulated observer files. This removes the need for future hand-refresh experiment IDs."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-012.json",
+      "single_causal_variable": "prediction_market_event_outcome_ledger_daily_pipeline_wiring_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-012.json",
+      "trial_family": "prediction_market_event_outcome_daily_wiring",
+      "trial_variant_id": "prediction_market_event_outcome_daily_wiring_v1",
+      "alpha_hypothesis": "Prediction-market event probability changes may timestamp entity/theme exposure before public candidate tickers reprice; the surface needs automatic forward outcome settlement before any probability-jump alpha can be tested credibly.",
+      "implementation_mode": "measurement_repair",
+      "new_evidence_axis": "One-time measurement repair that converts the accepted outcome probe into automatic daily observer materialization. It is not a new probability threshold, source label, theme slice, horizon retune, or response-curve retune.",
+      "observer_contract": {
+        "observer_name": "prediction_market_event_observer",
+        "outcome_rule_version": "prediction_market_event_forward_outcome_ledger_v1",
+        "artifact_root": "data/non_ohlcv/prediction_market_event_observer",
+        "ledger_pattern": "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers/prediction_market_event_observer_outcomes_YYYYMMDD.jsonl",
+        "summary_pattern": "data/non_ohlcv/prediction_market_event_observer/outcome_summaries/prediction_market_event_observer_outcome_summary_YYYYMMDD.json",
+        "observer_only": true,
+        "trade_enabled": false
+      },
+      "decision": "accepted_measurement_repair_prediction_market_event_outcome_daily_wiring",
+      "artifact": "data/experiments/exp-20260703-012/exp_20260703_012_prediction_market_event_outcome_daily_wiring.json",
+      "log_file": "experiments/logs/exp-20260703-012.json",
+      "changed_files": [
+        "quant/prediction_market_event_observer.py",
+        "quant/run.py",
+        "quant/test_prediction_market_event_observer.py",
+        "quant/test_run_daily_wiring.py",
+        "quant/experiments/exp_20260703_012_prediction_market_event_outcome_daily_wiring.py",
+        "data/experiments/exp-20260703-012/exp_20260703_012_prediction_market_event_outcome_daily_wiring.json",
+        "experiments/logs/exp-20260703-012.json",
+        "experiments/cards/exp-20260703-012.md",
+        "experiments/manifests/exp-20260703-012.json",
+        "experiments/tickets/exp-20260703-012.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\prediction_market_event_observer.py quant\\run.py quant\\test_prediction_market_event_observer.py quant\\test_run_daily_wiring.py quant\\experiments\\exp_20260703_012_prediction_market_event_outcome_daily_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_prediction_market_event_observer.py quant\\test_run_daily_wiring.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_012_prediction_market_event_outcome_daily_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "daily_collector_changed": true,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "run.py now refreshes a separate observer-only outcome ledger after prediction-market event collection. The ledger stays outside clean_trade_news, trend_signals_dict, prompts, ranking, sizing, exits, and orders."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The accepted exp011 outcome math was already deterministic; the missing step was turning it into routine daily materialization over all accumulated observer files. This removes the need for future hand-refresh experiment IDs.",
+        "forbidden_near_neighbor_retry": "Do not reserve more experiments for manual prediction-market outcome refreshes, same-source probability thresholds, theme reslices, horizon retunes, or response-curve retunes on the same immature rows.",
+        "new_evidence_required": "Closed forward rows from automatically accumulated probability observations, materially richer entity/exposure economics, or a genuinely different event-probability source."
+      },
+      "lean_quality_passed": true,
+      "updated_at": "2026-07-03T13:18:14+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+        "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+        "experiments/cards/exp-20260703-013.md",
+        "experiments/manifests/exp-20260703-013.json",
+        "experiments/tickets/exp-20260703-013.json",
+        "experiments/logs/exp-20260703-013.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "quant/entity_theme_news_observer.py",
+        "quant/run.py",
+        "quant/test_entity_theme_news_observer.py",
+        "quant/test_run_daily_wiring.py",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-013.md",
+      "causal_components": [
+        "observer-only accumulated daily item scan",
+        "local warehouse OHLCV settlement",
+        "fail-soft run.py daily wrapper",
+        "focused unit tests",
+        "experiment-private outcome probe"
+      ],
+      "change_type": "identity_or_measurement_repair",
+      "changed_variable": "entity_theme_news_observer_forward_outcome_ledger_daily_wiring_v1",
+      "claimed_at": "2026-07-03T14:03:49+00:00",
+      "completed_at": "2026-07-03T14:11:42+00:00",
+      "created_at": "2026-07-03T14:03:39+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-013",
+      "experiment_uid": "expuid-9546b2154a774033",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-013",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T14:03:39+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "entity_theme_news_outcome_daily_wiring"
+      },
+      "hypothesis": "Alpha blocker: entity/theme news observer rows cannot mature into non-listed event propagation alpha until candidate tickers have automatic forward outcome settlement versus cash, SPY, and QQQ; add an observer-only outcome ledger and daily wiring without changing trading behavior.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "entity_theme_news_observer_forward_outcome_ledger_daily_wiring_v1"
+      ],
+      "mechanism_family": "daily_news_llm_event_scoring_alpha",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260703-001",
+        "exp-20260703-002",
+        "exp-20260702-026"
+      ],
+      "new_evidence_type": "entity_theme_observer_outcome_settlement_surface",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "add",
+            "alpha",
+            "an",
+            "automatic",
+            "behavior",
+            "blocker",
+            "cannot",
+            "cash",
+            "changing",
+            "daily",
+            "entity",
+            "event",
+            "forward",
+            "have",
+            "into",
+            "ledger",
+            "listed",
+            "mature",
+            "news",
+            "non",
+            "observer",
+            "only",
+            "outcome",
+            "propagation",
+            "qqq",
+            "rows",
+            "settlement",
+            "spy",
+            "theme",
+            "tickers",
+            "trading",
+            "until",
+            "versus",
+            "wiring",
+            "without"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "non_ohlcv_options_structure_overlay",
+            "reopen_condition": null,
+            "score": 0.1767,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "alpha_direction_triage",
+            "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+            "score": 0.1761,
+            "status": "frozen_rejected",
+            "trials": 3
+          },
+          {
+            "accept_rate": 0.75,
+            "data_source": "revision_expectation",
+            "family_key": "estimate_revision_candidate_match_outcome_ledger",
+            "reopen_condition": "Next alpha-compliant revision work needs h3/h5/h10 settlement for these rows plus materially more matched/non-flat rows, another settled production revision cohort, or a different unsaturated PIT expectation source.",
+            "score": 0.1761,
+            "status": "has_accepted",
+            "trials": 4
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec_text_event",
+            "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+            "reopen_condition": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+            "score": 0.17,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "nonrepeat_alpha_candidate_readiness",
+            "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+            "score": 0.17,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": null,
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": null,
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_entity_theme_news_outcome_daily_wiring",
+        "artifact": "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+        "log": "experiments/logs/exp-20260703-013.json",
+        "runner": "quant/experiments/exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_wiring_and_probe",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          },
+          "outcome_probe": {
+            "observer_only": true,
+            "observer_name": "entity_theme_news_observer",
+            "outcome_rule_version": "entity_theme_news_forward_outcome_ledger_v1",
+            "source_item_count": 520,
+            "candidate_outcome_row_count": 3194,
+            "settled_count": 2728,
+            "unsettled_count": 466,
+            "status_counts": {
+              "settled": 2728,
+              "unsettled_horizon": 339,
+              "unsettled_no_entry_bar": 127
+            },
+            "horizons": [
+              10
+            ],
+            "notional_usd": 4000.0,
+            "as_of_date": "2026-07-02",
+            "strategy_behavior_changed": false,
+            "trade_enabled": false,
+            "snapshot_path": "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260702.json",
+            "ledger_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+            "summary_path": "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+            "warehouse": {
+              "status": "ok",
+              "requested_tickers": 32,
+              "returned_tickers": 32,
+              "returned_rows": 19344,
+              "date_min": "2023-08-29",
+              "date_max": "2026-07-02",
+              "sources": [
+                {
+                  "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+                  "exists": true,
+                  "tables": [
+                    {
+                      "table": "ohlcv",
+                      "row_count": 62784,
+                      "returned_rows": 6166
+                    },
+                    {
+                      "table": "ohlcv_snapshot_versions",
+                      "row_count": 0,
+                      "returned_rows": 0
+                    }
+                  ],
+                  "returned_rows": 6166
+                },
+                {
+                  "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+                  "exists": true,
+                  "tables": [
+                    {
+                      "table": "ohlcv",
+                      "row_count": 5015715,
+                      "returned_rows": 18987
+                    },
+                    {
+                      "table": "ohlcv_snapshot_versions",
+                      "row_count": 64561,
+                      "returned_rows": 13387
+                    }
+                  ],
+                  "returned_rows": 32374
+                },
+                {
+                  "path": "D:\\Github\\ginger\\data\\experiments\\exp-20260519-030\\warehouse_main.sqlite",
+                  "exists": true,
+                  "tables": [
+                    {
+                      "table": "ohlcv",
+                      "row_count": 0,
+                      "returned_rows": 0
+                    },
+                    {
+                      "table": "ohlcv_snapshot_versions",
+                      "row_count": 64561,
+                      "returned_rows": 13387
+                    }
+                  ],
+                  "returned_rows": 13387
+                }
+              ]
+            },
+            "candidate_ticker_count": 32
+          }
+        },
+        "summary": "The entity/theme observer already had isolated daily artifacts; the missing piece was deterministic settlement over accumulated daily files. The real 20260702 snapshot currently has 2728 settled rows and 466 unsettled rows, so this is measurement infrastructure, not alpha evidence."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-013.json",
+      "single_causal_variable": "entity_theme_news_observer_forward_outcome_ledger_daily_wiring_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-013.json",
+      "trial_family": "entity_theme_news_observer_outcome_daily_wiring",
+      "trial_variant_id": "entity_theme_news_outcome_daily_wiring_v1",
+      "alpha_hypothesis": "Non-listed entity and theme news may transmit to listed exposure tickers; automatic cash/SPY/QQQ outcome settlement is required before this observer can support a candidate-pool alpha test.",
+      "implementation_mode": "measurement_repair",
+      "new_evidence_axis": "One-time measurement repair adding forward outcome settlement for the existing entity/theme observer. It is not a query, theme, ticker-map, horizon, threshold, notional, or response-curve reslice.",
+      "observer_contract": {
+        "observer_name": "entity_theme_news_observer",
+        "outcome_rule_version": "entity_theme_news_forward_outcome_ledger_v1",
+        "snapshot_date": "20260702",
+        "horizons": [
+          10
+        ],
+        "notional_usd": 4000.0,
+        "artifact_root": "data/non_ohlcv/entity_theme_news_observer",
+        "ledger_pattern": "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_YYYYMMDD.jsonl",
+        "summary_pattern": "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_YYYYMMDD.json",
+        "observer_only": true,
+        "trade_enabled": false
+      },
+      "decision": "accepted_measurement_repair_entity_theme_news_outcome_daily_wiring",
+      "artifact": "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+      "log_file": "experiments/logs/exp-20260703-013.json",
+      "changed_files": [
+        "quant/entity_theme_news_observer.py",
+        "quant/run.py",
+        "quant/test_entity_theme_news_observer.py",
+        "quant/test_run_daily_wiring.py",
+        "quant/experiments/exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+        "data/experiments/exp-20260703-013/exp_20260703_013_entity_theme_news_outcome_daily_wiring.json",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+        "experiments/cards/exp-20260703-013.md",
+        "experiments/manifests/exp-20260703-013.json",
+        "experiments/tickets/exp-20260703-013.json",
+        "experiments/logs/exp-20260703-013.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\entity_theme_news_observer.py quant\\run.py quant\\test_entity_theme_news_observer.py quant\\test_run_daily_wiring.py quant\\experiments\\exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_theme_news_observer.py quant\\test_run_daily_wiring.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_013_entity_theme_news_outcome_daily_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "daily_collector_changed": true,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "run.py now refreshes a separate observer-only outcome ledger after entity/theme news observer collection. The ledger stays outside clean_trade_news, trend_signals_dict, prompts, ranking, sizing, exits, and orders."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The entity/theme observer already had isolated daily artifacts; the missing piece was deterministic settlement over accumulated daily files. The real 20260702 snapshot currently has 2728 settled rows and 466 unsettled rows, so this is measurement infrastructure, not alpha evidence.",
+        "forbidden_near_neighbor_retry": "Do not reserve more experiments for manual entity/theme outcome refreshes, query retunes, theme/ticker-map reslices, horizon retunes, notional changes, or response curves on the same immature rows.",
+        "new_evidence_required": "Closed entity/theme observer outcome rows with cash/SPY/QQQ replacement-value separation, richer relation/economic mapping, or a materially different non-ticker event source."
+      },
+      "lean_quality_passed": true,
+      "updated_at": "2026-07-03T14:11:42+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260703_014_entity_theme_news_source_bundle_forward_value.py",
+        "data/experiments/exp-20260703-014/exp_20260703_014_entity_theme_news_source_bundle_forward_value.json",
+        "experiments/cards/exp-20260703-014.md",
+        "experiments/manifests/exp-20260703-014.json",
+        "experiments/tickets/exp-20260703-014.json",
+        "experiments/logs/exp-20260703-014.json",
+        "docs/experiment_registry.json"
+      ],
+      "baseline_result_file": "data\\experiments\\exp-20260703-013\\outcome_probe\\entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+      "card_file": "experiments/cards/exp-20260703-014.md",
+      "causal_components": [
+        "read_only_outcome_ledger_analysis",
+        "source_bundle_aggregate_checks",
+        "theme_and_ticker_concentration_audit",
+        "pit_snapshot_caveat"
+      ],
+      "change_type": "candidate_pool_observed_attribution",
+      "changed_variable": "entity_theme_news_observer_source_bundle_forward_value_v1",
+      "claimed_at": "2026-07-03T15:12:35+00:00",
+      "completed_at": "2026-07-03T15:16:41+00:00",
+      "created_at": "2026-07-03T15:12:25+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-014",
+      "experiment_uid": "expuid-931fbc9b69cb4ac8",
+      "gate4": {
+        "passed": false,
+        "observed_only": true,
+        "accepted_alpha": false,
+        "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge",
+        "acceptance_rule": {
+          "min_settled_rows": 250,
+          "min_query_groups": 6,
+          "min_positive_query_groups_vs_spy_and_qqq": 4,
+          "max_positive_cash_ticker_share": 0.4,
+          "max_positive_cash_query_share": 0.6,
+          "require_row_level_primary_means_positive": true,
+          "require_row_level_primary_medians_nonnegative": true,
+          "require_observed_date_level_primary_means_positive": true
+        },
+        "acceptance_checks": {
+          "settled_rows_min_passed": true,
+          "query_groups_min_passed": true,
+          "positive_query_groups_vs_spy_and_qqq_passed": true,
+          "row_level_primary_means_positive": false,
+          "row_level_primary_medians_nonnegative": false,
+          "observed_date_level_primary_means_positive": true,
+          "positive_cash_ticker_share_passed": true,
+          "positive_cash_query_share_passed": true
+        },
+        "failed_reasons": [
+          "row_level_primary_means_positive",
+          "row_level_primary_medians_nonnegative"
+        ],
+        "pit_caveat": "The source rows are from the first current Google News observer snapshot and include historical published_at rows returned by the current search. That makes this an attribution lead check, not strict PIT historical candidate-pool evidence.",
+        "strategy_rerun_required": false,
+        "before_after_strategy_delta": {
+          "expected_value_score_sum_delta": 0.0,
+          "total_pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "strategy_behavior_changed": false
+        }
+      },
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-014",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T15:12:25+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "entity_theme_news_source_bundle_forward_value"
+      },
+      "hypothesis": "Observed-only alpha: the fixed entity/theme news observer source bundle, using exp-20260703-013 settled cash/SPY/QQQ outcome rows, should show positive 10-day replacement value versus cash and ETF comparators before it deserves a shared default-off candidate-pool promotion.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "entity_theme_news_observer_source_bundle_forward_value_v1"
+      ],
+      "mechanism_family": "production_visible_entity_theme_news_observer_candidate_pool",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260703-001",
+        "exp-20260703-002",
+        "exp-20260703-013",
+        "exp-20260702-026"
+      ],
+      "new_evidence_type": "new_closed_forward_rows",
+      "next_retry_requires": [
+        "prospective daily entity/theme observer rows with closed outcomes",
+        "or a PIT historical news archive with observation-time availability",
+        "same fixed source manifest and no query/theme/ticker-map retune",
+        "shared-paper-first helper only after PIT replay evidence exists"
+      ],
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "a",
+            "alpha",
+            "before",
+            "bundle",
+            "cash",
+            "comparators",
+            "deserves",
+            "entity",
+            "etf",
+            "exp",
+            "forward",
+            "it",
+            "news",
+            "observed",
+            "observer",
+            "only",
+            "outcome",
+            "positive",
+            "promotion",
+            "qqq",
+            "replacement",
+            "rows",
+            "settled",
+            "should",
+            "show",
+            "spy",
+            "theme",
+            "using",
+            "value",
+            "versus"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "space_forward_replacement_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.1853,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_momentum",
+            "family_key": "platform_rs20_missed_candidate_replacement_value",
+            "reopen_condition": null,
+            "score": 0.1742,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "other",
+            "family_key": "sma20_reclaim_missed_candidate_replacement_value",
+            "reopen_condition": null,
+            "score": 0.1742,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_earnings_yield_rs_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.1735,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "companyfacts_ratio",
+            "family_key": "companyfacts_fcf_yield_rs_candidate_pool",
+            "reopen_condition": null,
+            "score": 0.1735,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "new data source: entity_theme_news_observer; exp-20260703-013 also materialized 2728 settled forward rows with cash/SPY/QQQ replacement values. This is not SEC FTD FINRA and not a sentiment keyword or ticker-news reslice.",
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [
+            {
+              "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+              "checks_satisfied": false,
+              "experiment_id": "exp-20260702-001",
+              "numeric_checks": [
+                {
+                  "current_key": "sec_ftd_202606a_rows",
+                  "current_value": 307,
+                  "operator": ">=",
+                  "passed": true,
+                  "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+                  "threshold": 20
+                },
+                {
+                  "current_key": null,
+                  "current_value": null,
+                  "operator": "<=",
+                  "passed": false,
+                  "required_key": "single_ticker_positive_share_max",
+                  "threshold": 0.4
+                },
+                {
+                  "current_key": null,
+                  "current_value": null,
+                  "operator": "<=",
+                  "passed": false,
+                  "required_key": "top5_positive_share_max",
+                  "threshold": 0.7
+                }
+              ],
+              "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+              "source_log": "experiments/logs/exp-20260702-001.json",
+              "status": "published_ftd_rows_current_not_alpha_ready",
+              "surface": "SEC FTD + FINRA default-off observer"
+            }
+          ],
+          "new_evidence_axis": {
+            "axis": "new data source: entity_theme_news_observer; exp-20260703-013 also materialized 2728 settled forward rows with cash/SPY/QQQ replacement values. This is not SEC FTD FINRA and not a sentiment keyword or ticker-news reslice.",
+            "categories": [
+              "new_data_source",
+              "materially_more_forward_rows"
+            ],
+            "invalid_same_source_field_only": false,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": true
+          },
+          "override_accepted": true,
+          "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": "new data source: entity_theme_news_observer; exp-20260703-013 also materialized 2728 settled forward rows with cash/SPY/QQQ replacement values. This is not SEC FTD FINRA and not a sentiment keyword or ticker-news reslice.",
+          "categories": [
+            "new_data_source",
+            "materially_more_forward_rows"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "candidate_pool_top1_10d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "post_run_reflection": {
+        "why_result_happened": "The fixed entity/theme observer bundle did not show broad, non-concentrated positive 10-day replacement value across row-level, date-level, and query-level checks. The source rows are from the first current Google News observer snapshot and include historical published_at rows returned by the current search. That makes this an attribution lead check, not strict PIT historical candidate-pool evidence.",
+        "forbidden_near_neighbor_retry": "Do not retune entity/theme queries, theme labels, candidate ticker maps, horizons, notional, or response curves on this same first snapshot. Do not promote the observer as a candidate-pool source until prospectively logged rows or a true PIT historical archive reproduce the replacement-value edge.",
+        "new_evidence_required": "Prospectively accumulated daily entity/theme rows with closed cash/SPY/QQQ replacement value, or a true PIT historical news archive with observation-time availability and the same fixed source manifest."
+      },
+      "prediction": {
+        "success_probability": 0.22,
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "no_positive_replacement_value",
+          "theme_mixture_dilution",
+          "ticker_concentration",
+          "current_snapshot_pit_caveat"
+        ],
+        "confidence_reason": "The observer is a genuinely new non-ticker news relation surface and exp-20260703-013 produced 2728 settled cash/SPY/QQQ outcome rows, but prior daily-news and second-order news candidate-pool attempts failed after top-1 compression and this first snapshot may be historical-search-biased rather than strict PIT.",
+        "recorded_at": "2026-07-03T15:11:48+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "observed_only_lead": false,
+        "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge",
+        "artifact": "data/experiments/exp-20260703-014/exp_20260703_014_entity_theme_news_source_bundle_forward_value.json",
+        "log": "experiments/logs/exp-20260703-014.json",
+        "runner": "quant/experiments/exp_20260703_014_entity_theme_news_source_bundle_forward_value.py",
+        "gate4": {
+          "passed": false,
+          "observed_only": true,
+          "accepted_alpha": false,
+          "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge",
+          "acceptance_rule": {
+            "min_settled_rows": 250,
+            "min_query_groups": 6,
+            "min_positive_query_groups_vs_spy_and_qqq": 4,
+            "max_positive_cash_ticker_share": 0.4,
+            "max_positive_cash_query_share": 0.6,
+            "require_row_level_primary_means_positive": true,
+            "require_row_level_primary_medians_nonnegative": true,
+            "require_observed_date_level_primary_means_positive": true
+          },
+          "acceptance_checks": {
+            "settled_rows_min_passed": true,
+            "query_groups_min_passed": true,
+            "positive_query_groups_vs_spy_and_qqq_passed": true,
+            "row_level_primary_means_positive": false,
+            "row_level_primary_medians_nonnegative": false,
+            "observed_date_level_primary_means_positive": true,
+            "positive_cash_ticker_share_passed": true,
+            "positive_cash_query_share_passed": true
+          },
+          "failed_reasons": [
+            "row_level_primary_means_positive",
+            "row_level_primary_medians_nonnegative"
+          ],
+          "pit_caveat": "The source rows are from the first current Google News observer snapshot and include historical published_at rows returned by the current search. That makes this an attribution lead check, not strict PIT historical candidate-pool evidence.",
+          "strategy_rerun_required": false,
+          "before_after_strategy_delta": {
+            "expected_value_score_sum_delta": 0.0,
+            "total_pnl_delta": 0.0,
+            "trade_count_delta": 0,
+            "strategy_behavior_changed": false
+          }
+        },
+        "summary": {
+          "candidate_outcome_rows": 3194,
+          "settled_rows": 2728,
+          "query_groups": 6,
+          "positive_query_groups_vs_spy_and_qqq": 4,
+          "row_mean_cash": 31.9429,
+          "row_mean_spy": 19.8052,
+          "row_mean_qqq": -1.6971,
+          "row_median_cash": 0.4,
+          "row_median_spy": 3.415,
+          "row_median_qqq": -18.55,
+          "max_positive_cash_ticker_share": 0.169342,
+          "max_positive_cash_query_share": 0.313866,
+          "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge"
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-014.json",
+      "single_causal_variable": "entity_theme_news_observer_source_bundle_forward_value_v1",
+      "status": "observed_only_rejected",
+      "ticket_file": "experiments/tickets/exp-20260703-014.json",
+      "trial_family": "entity_theme_news_observer_source_bundle_forward_value",
+      "trial_variant_id": "fixed_source_bundle_10d_outcome_attribution",
+      "alpha_hypothesis": "Observed-only alpha: the fixed entity/theme news observer source bundle, using exp-20260703-013 settled cash/SPY/QQQ outcome rows, should show positive 10-day replacement value versus cash and ETF comparators before it deserves a shared default-off candidate-pool promotion.",
+      "implementation_mode": "observed_only_attribution",
+      "new_evidence_axis": "new data source: entity_theme_news_observer; exp-20260703-013 also materialized 2728 settled forward rows with cash/SPY/QQQ replacement values. This is not SEC FTD FINRA and not a sentiment keyword or ticker-news reslice.",
+      "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge",
+      "artifact": "data/experiments/exp-20260703-014/exp_20260703_014_entity_theme_news_source_bundle_forward_value.json",
+      "log_file": "experiments/logs/exp-20260703-014.json",
+      "gate1": {
+        "passed": true,
+        "baseline_metrics": {
+          "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+          "expected_value_score_sum": 7.8941,
+          "total_pnl": 234850.99,
+          "trade_count": 61,
+          "signals_generated": 164,
+          "signals_survived": 135,
+          "survival_rate": 0.823171,
+          "window_count": 3
+        },
+        "note": "Observed-only attribution; canonical strategy baseline unchanged."
+      },
+      "gate2": {
+        "passed": true,
+        "fields_checked": [
+          "entity_theme_query_id",
+          "theme",
+          "relation_type",
+          "candidate_ticker",
+          "observed_date",
+          "entry_date",
+          "exit_date",
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd",
+          "replacement_value_vs_qqq_usd"
+        ],
+        "entry_date_present_rows": 2728,
+        "target_price_relevance": "This observer does not create target exits or orders; target_price is not part of the read-only outcome ledger."
+      },
+      "gate3": {
+        "passed": true,
+        "filter_added": false,
+        "signals_generated": 3194,
+        "signals_survived": 2728,
+        "survival_rate": 0.854101,
+        "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added."
+      },
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "paper_orders_changed": false,
+        "live_orders_changed": false,
+        "trade_enabled": false,
+        "live_realism_evaluated": false,
+        "live_ready": false,
+        "parity_note": "Read-only analysis over exp-20260703-013 observer outcome rows. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260703_014_entity_theme_news_source_bundle_forward_value.py",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_20260702.jsonl",
+        "data/experiments/exp-20260703-013/outcome_probe/entity_theme_news_outcome_daily_wiring_summary_20260702.json",
+        "experiments/logs/exp-20260703-001.json",
+        "experiments/logs/exp-20260703-002.json",
+        "experiments/logs/exp-20260703-013.json",
+        "experiments/logs/exp-20260702-026.json"
+      ],
+      "changed_files": [
+        "quant/experiments/exp_20260703_014_entity_theme_news_source_bundle_forward_value.py",
+        "data/experiments/exp-20260703-014/exp_20260703_014_entity_theme_news_source_bundle_forward_value.json",
+        "experiments/cards/exp-20260703-014.md",
+        "experiments/manifests/exp-20260703-014.json",
+        "experiments/tickets/exp-20260703-014.json",
+        "experiments/logs/exp-20260703-014.json",
+        "docs/experiment_registry.json"
+      ],
+      "lean_quality_passed": true,
+      "updated_at": "2026-07-03T15:16:41+00:00"
+    },
+    {
+      "acceptance_rule": "Use AGENTS.md Gate 4.",
+      "allowed_write_scope": [
+        "quant/run.py",
+        "quant/test_run_daily_wiring.py",
+        "quant/test_market_context.py",
+        "quant/experiments",
+        "data/experiments",
+        "experiments/logs",
+        "experiments/cards",
+        "experiments/manifests",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/tickets",
+        "quant/experiments/exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+        "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+        "experiments/logs/exp-20260703-015.json",
+        "experiments/cards/exp-20260703-015.md",
+        "experiments/manifests/exp-20260703-015.json",
+        "experiments/tickets/exp-20260703-015.json"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "card_file": "experiments/cards/exp-20260703-015.md",
+      "causal_components": [
+        "run.py passes existing ohlcv_dict as universe_ohlcv_by_ticker",
+        "market_context computes non-index breadth",
+        "market_state_snapshot remains diagnostic_only",
+        "focused AST and unit tests"
+      ],
+      "change_type": "measurement_repair",
+      "changed_variable": "daily_regime_chop_full_fidelity_breadth_wiring_v1",
+      "claimed_at": "2026-07-03T16:09:20+00:00",
+      "completed_at": "2026-07-03T16:13:55+00:00",
+      "created_at": "2026-07-03T16:08:54+00:00",
+      "evaluation_windows": [],
+      "experiment_id": "exp-20260703-015",
+      "experiment_uid": "expuid-1e89a5055eed4de0",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260703-015",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-03T16:08:54+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "regime_chop_daily_breadth_wiring"
+      },
+      "hypothesis": "Alpha-enabling repair: the regime_chop forward tagging surface cannot reach full fidelity in daily production snapshots while run.py omits universe breadth from build_readonly_market_state_context; pass the existing daily OHLCV universe into the read-only diagnostic context so future default-off sleeve rows get PIT breadth without changing orders.",
+      "lane": "measurement_repair",
+      "locked_variables": [
+        "daily_regime_chop_full_fidelity_breadth_wiring_v1"
+      ],
+      "mechanism_family": "full_fidelity_daily_regime_chop_context",
+      "multiple_testing_risk_bucket": "minimal",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260615-025",
+        "exp-20260615-028",
+        "exp-20260622-017"
+      ],
+      "new_evidence_type": "daily_pipeline_wiring_for_existing_shared_regime_chop_breadth_field",
+      "novelty": {
+        "blocking_matches": [],
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "regime_state",
+          "field_tags": [
+            "alpha",
+            "breadth",
+            "build",
+            "cannot",
+            "changing",
+            "chop",
+            "context",
+            "daily",
+            "diagnostic",
+            "enabling",
+            "existing",
+            "fidelity",
+            "forward",
+            "from",
+            "full",
+            "future",
+            "get",
+            "in",
+            "into",
+            "market",
+            "omits",
+            "only",
+            "orders",
+            "pass",
+            "pit",
+            "py",
+            "reach",
+            "read",
+            "readonly",
+            "regime",
+            "repair",
+            "rows",
+            "run",
+            "sleeve",
+            "snapshots",
+            "so",
+            "state",
+            "surface",
+            "tagging",
+            "while",
+            "wiring",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "full_fidelity_daily_regime_chop_context",
+            "reopen_condition": "Once exp-20260607-003 releases run.py, pass universe_ohlcv_by_ticker to build_readonly_market_state_context for full-fidelity breadth. Then validate the exposure_scalar soft tilt on forward / live-pilot rows tagged with entry-time regime_chop. Do not tune constants on frozen windows.",
+            "score": 0.5058,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "regime_state",
+            "family_key": "default_off_forward_regime_tagging",
+            "reopen_condition": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+            "score": 0.4944,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "pit_regime_state_classifier_diagnostic",
+            "reopen_condition": "If a sleeve shows stable cross-window regime separation here, the next step is a shared default-off regime artifact + portfolio-level soft capital tilt (monotonic in risk_off_score, few parameters), validated on forward state-tagged replacement-value rows, NOT a hard per-window on/off gate. exp-20260614-010 already showed a hard frozen-window breadth filter regresses all three windows.",
+            "score": 0.4944,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "shared_pit_regime_chop_state_helper",
+            "reopen_condition": "Forward / live-pilot rows tagged with entry-time regime_chop and exposure_scalar. Do not tune the regime constants or exposure floor on the frozen windows.",
+            "score": 0.4856,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "regime_state",
+            "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+            "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+            "score": 0.484,
+            "status": "single_attempt",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "One-time daily pipeline wiring of an existing shared regime_chop breadth input left open by exp-20260615-028; no regime constants, thresholds, exposure floor, candidate selection, ranking, sizing, exits, or forward attribution slice are changed.",
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": false,
+          "blocked": false,
+          "matched_conditions": [],
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "saturated_source_axis": {
+          "axis": "One-time daily pipeline wiring of an existing shared regime_chop breadth input left open by exp-20260615-028; no regime constants, thresholds, exposure floor, candidate selection, ranking, sizing, exits, or forward attribution slice are changed.",
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "regime_state",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "codex",
+      "prediction": {
+        "confidence_reason": "exp-20260615-028 left this exact run.py breadth wiring as the remaining full-fidelity gap; market_context already supports universe_ohlcv_by_ticker and the snapshot is diagnostic_only.",
+        "expected_ev_delta": 0.0,
+        "expected_pnl_delta": 0.0,
+        "main_failure_modes": [
+          "run_py_call_lacks_usable_universe_frames",
+          "breadth_field_not_persisted",
+          "diagnostic_snapshot_unintentionally_affects_orders"
+        ],
+        "recorded_at": "2026-07-03T16:08:12+00:00",
+        "success_probability": 0.78
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": true,
+        "accepted_alpha": false,
+        "alpha_ready": false,
+        "decision": "accepted_measurement_repair_regime_chop_daily_breadth_wiring",
+        "artifact": "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+        "log": "experiments/logs/exp-20260703-015.json",
+        "runner": "quant/experiments/exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+        "gate4": {
+          "mode": "measurement_repair_identity_plus_wiring_gate",
+          "passed": true,
+          "failed_reasons": [],
+          "strategy_delta": {
+            "expected_value_score": 0.0,
+            "total_pnl": 0.0,
+            "trade_count": 0,
+            "max_drawdown_pct": 0.0
+          }
+        },
+        "summary": "The shared market_context helper already supported universe_ohlcv_by_ticker; the daily path simply omitted the existing ohlcv_dict. Passing it lets non-index breadth materialize without changing trading behavior."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260703-015.json",
+      "single_causal_variable": "daily_regime_chop_full_fidelity_breadth_wiring_v1",
+      "status": "accepted_measurement_repair",
+      "ticket_file": "experiments/tickets/exp-20260703-015.json",
+      "trial_family": "regime_chop_daily_breadth_wiring",
+      "trial_variant_id": "regime_chop_daily_breadth_wiring_v1",
+      "alpha_hypothesis": "Sleeve-specific regime_chop exposure may become a default-off allocation field after enough forward rows carry entry-time full fidelity breadth and closed replacement value.",
+      "implementation_mode": "shared_daily_diagnostic_context_wiring",
+      "new_evidence_axis": "One-time daily pipeline wiring of the existing shared regime_chop breadth input left open by exp-20260615-028. No constants, thresholds, exposure floor, candidate selection, ranking, sizing, exits, or forward attribution slices changed.",
+      "decision": "accepted_measurement_repair_regime_chop_daily_breadth_wiring",
+      "artifact": "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+      "log_file": "experiments/logs/exp-20260703-015.json",
+      "changed_files": [
+        "quant/run.py",
+        "quant/test_run_daily_wiring.py",
+        "quant/test_market_context.py",
+        "quant/experiments/exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+        "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+        "experiments/logs/exp-20260703-015.json",
+        "experiments/cards/exp-20260703-015.md",
+        "experiments/manifests/exp-20260703-015.json",
+        "experiments/tickets/exp-20260703-015.json",
+        "docs/experiment_registry.json"
+      ],
+      "reproduction_commands": [
+        ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\market_context.py quant\\test_run_daily_wiring.py quant\\test_market_context.py quant\\experiments\\exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_market_context.py quant\\test_regime_chop_state.py quant\\test_market_state_analysis.py quant\\test_run_daily_wiring.py -q",
+        ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+        ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+      ],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "daily_market_state_field_enriched": true,
+        "daily_snapshot_exposed": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "feeds_llm_prompt": false,
+        "trade_enabled": false,
+        "live_ready": false,
+        "parity_note": "run.py now passes the already-loaded OHLCV universe into the read-only market-state context so regime_chop can report full_breadth_and_drawdown when breadth is available. The field remains inside diagnostic_only market_state_snapshot and does not feed prompts, core signals, ranking, sizing, exits, or orders."
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The shared market_context helper already supported universe_ohlcv_by_ticker; the daily path simply omitted the existing ohlcv_dict. Passing it lets non-index breadth materialize without changing trading behavior.",
+        "forbidden_near_neighbor_retry": "Do not retune regime_chop constants, exposure floor, thresholds, or portfolio/sleeve capital scalars on frozen windows. Do not open more IDs for routine daily regime-tag refreshes.",
+        "new_evidence_required": "Closed forward replacement-value rows carrying entry-time full-fidelity regime_chop tags for a specific default-off sleeve, followed by one fixed regime-conditioned policy test."
+      },
+      "lean_quality_passed": true,
+      "updated_at": "2026-07-03T16:13:55+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-07-03T04:10:25+00:00"
+  "updated_at": "2026-07-03T16:13:55+00:00"
 }

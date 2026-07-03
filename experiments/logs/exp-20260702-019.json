@@ -1,0 +1,290 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.2337,
+  "aggregate_strategy_total_pnl_delta": 4232.34,
+  "anti_js": "No JavaScript was used.",
+  "archive": {
+    "earliest_flow_date": "2025-07-02",
+    "latest_flow_date": "2026-07-02",
+    "manifest_path": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "row_count": 12348,
+    "rows_path": "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "ticker_count": 49
+  },
+  "artifact": "data/experiments/exp-20260702-019/exp_20260702_019_moomoo_capital_flow_accumulation.json",
+  "backtest_protocol": {
+    "execution_model": "Signal uses only same-day vendor flow plus signal-date OHLCV context. Paper entry is next-session open with entry fill slippage; exit is the 10th-trading-day close with sell slippage; trades whose exit falls outside the frozen window are not scored.",
+    "source": "docs/backtesting.md canonical three-window accepted core baseline plus default-off paper overlay from the shared moomoo capital-flow sleeve replay",
+    "windows": {
+      "late_strong": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": {
+    "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+  },
+  "calibration": {
+    "actual_ev_delta": 0.2337,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 4232.34,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "failure_modes_observed": [
+      "drawdown_drift_too_high",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "predicted_success_probability": 0.22
+  },
+  "card": "experiments/cards/exp-20260702-019.md",
+  "changed_variable": "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1",
+  "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+  "experiment_id": "exp-20260702-019",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.04,
+      "max_concurrent": 5,
+      "max_displacement": 0,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source additionally depends on a live local OpenD; a dead OpenD degrades to zero candidates without touching the ledger.",
+      "order_semantics": "next_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical_status": "blocked",
+    "gate4_strict_materiality_status": "blocked",
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "materiality_note": "Strict materiality recorded for transparency; the binding standard for candidate sources is beating the accepted comparators after costs.",
+    "verdict": "reject"
+  },
+  "full_stack_verdict": "reject",
+  "gate4": {
+    "accepted_comparators": {
+      "compression": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "aggregate_ev_delta": 0.2337,
+    "aggregate_pnl_delta": 4232.34,
+    "covered_target_window_count_min": 2,
+    "covered_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "decision": "rejected_moomoo_capital_flow_default_off_candidate_source",
+    "failed_reasons": [
+      "drawdown_drift_too_high",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": true
+    },
+    "max_drawdown_worse": 0.0054,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7885,
+    "passed": false,
+    "source_activation_boundary": {
+      "late_strong": "fully covered",
+      "mid_weak": "covered only from 2025-07-02 (roughly the second half of the window)",
+      "note": "The archive is refreshed daily by the sleeve so coverage only grows forward; frozen-window coverage can never improve. This boundary is a property of the data source, not a tunable choice.",
+      "old_thin": "structurally uncovered; no flow rows exist or can ever be fetched",
+      "vendor_history": "rolling ~1 year (earliest row 2025-07-02 at first materialization)"
+    },
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.208634,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.099429,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 177,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "candidate_pool/full_stack: daily vendor main capital-flow net inflow (main_in_flow > 0), ranked by main_flow_ratio = main_in_flow / adv20 under family-standard liquidity and SPY-relative guards, is a deployable top-1/day default-off paper source with replacement value on the covered canonical windows.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260702-019.json",
+  "mechanism_family": "production_visible_moomoo_historical_capital_flow_candidate_pool",
+  "owner": "daniel-agent",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune main_in_flow/min ADV/RS guard values, rank tie-breaks (super/big flow), hold days, cooldown, notional, or response curves on these same frozen windows; do not re-slice the same archive by flow bucket (super/big/mid/sml) as if it were a new axis.",
+    "new_evidence_required": "Materially more settled forward rows from the daily archive refresh (coverage only grows forward), a genuinely different vendor flow decomposition with intraday provenance, or PIT borrow/short-side economics joined to the same names.",
+    "why_result_happened": "The fixed top-1/day main-flow accumulation source did not clear the predeclared Gate 4 bar on the covered windows: drawdown_drift_too_high; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract"
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/full_stack: daily vendor main capital-flow net inflow (main_in_flow > 0), ranked by main_flow_ratio = main_in_flow / adv20 under family-standard liquidity and SPY-relative guards, is a deployable top-1/day default-off paper source with replacement value on the covered canonical windows.",
+    "2_history_check": {
+      "exp-20260621-017": "blocked: get_capital_distribution is snapshot-only, no history",
+      "exp-20260622-010": "moomoo short-volume absorption line (different endpoint/signal)",
+      "exp-20260625-019": "clean-flow GATE on the accepted allocator rejected two ways; this is a candidate SOURCE from a different endpoint, not a gate retune",
+      "exp-20260702-016": "positive data-source lead: get_capital_flow(DAY, start, end) returns dated history; prescribed exactly this archive + shared-helper full stack"
+    },
+    "3_single_causal_variable": "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1",
+    "4_acceptance_standard": "docs/backtesting.md canonical windows with a predeclared source activation boundary: old_thin has zero vendor coverage and is recorded as boundary, not scored; acceptance needs aggregate EV/PnL positive, no EV/PnL regression window, both covered windows improved, >=20 target trades, drawdown drift <=0.5pp, concentration guards, accepted compression AND distribution comparators beaten, and the full-stack contract (shared helper + daily default-off snapshot + parity test + execution envelope) complete.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_019_moomoo_capital_flow_accumulation.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260702-016 confirmed the historical DAY endpoint returns dated rows for mid_weak/late_strong/recent windows and prescribed exactly this archive+shared-helper full-stack test; the vendor history is a rolling 1-year window that erodes daily so materializing now preserves evidence; but flow-imbalance sources have a low base rate and next-open execution usually absorbs most of the signal.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample_partial_coverage",
+      "concentration_failed",
+      "not_incremental_vs_accepted_comparators",
+      "flow_already_priced_by_next_open",
+      "window_instability"
+    ],
+    "recorded_at": "2026-07-02T16:16:03+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "adapter_status": "shared_default_off_paper_sleeve",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.04,
+      "max_concurrent": 5,
+      "max_displacement": 0,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source additionally depends on a live local OpenD; a dead OpenD degrades to zero candidates without touching the ledger.",
+      "order_semantics": "next_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "One shared candidate rule (quant/moomoo_capital_flow_paper_sleeve.py) drives both the historical replay in this runner and the daily default-off snapshot; parity tests cover admission, ranking, same-day idempotency, fill/close lifecycle, and the replay/daily selection agreement. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes.",
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true,
+    "trade_enabled": false,
+    "uses_llm": false,
+    "uses_moomoo_capital_flow_archive": true
+  },
+  "rejection_reason": "drawdown_drift_too_high; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract",
+  "related_files": [
+    "quant/experiments/exp_20260702_019_moomoo_capital_flow_accumulation.py",
+    "quant/moomoo_capital_flow_paper_sleeve.py",
+    "quant/test_moomoo_capital_flow_paper_sleeve.py",
+    "quant/data_paths.py",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "data/experiments/exp-20260702-019/exp_20260702_019_moomoo_capital_flow_accumulation.json",
+    "experiments/logs/exp-20260702-019.json",
+    "experiments/tickets/exp-20260702-019.json",
+    "experiments/cards/exp-20260702-019.md",
+    "experiments/manifests/exp-20260702-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "single_causal_variable": "moomoo_capital_flow_day_main_inflow_default_off_candidate_source_v1",
+  "source_activation_boundary": {
+    "late_strong": "fully covered",
+    "mid_weak": "covered only from 2025-07-02 (roughly the second half of the window)",
+    "note": "The archive is refreshed daily by the sleeve so coverage only grows forward; frozen-window coverage can never improve. This boundary is a property of the data source, not a tunable choice.",
+    "old_thin": "structurally uncovered; no flow rows exist or can ever be fetched",
+    "vendor_history": "rolling ~1 year (earliest row 2025-07-02 at first materialization)"
+  },
+  "status": "rejected",
+  "timestamp": "2026-07-02T16:30:31+00:00",
+  "trial_family": "moomoo_capital_flow_day_accumulation_candidate_pool",
+  "trial_variant_id": "moomoo_capital_flow_main_inflow_top1_v1",
+  "windows": [
+    {
+      "expected_value_after": 5.1997,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": 0.0369,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 40.72,
+      "target_trade_count": 109
+    },
+    {
+      "expected_value_after": 2.3299,
+      "expected_value_before": 2.1331,
+      "expected_value_delta": 0.1968,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 4191.62,
+      "target_trade_count": 68
+    },
+    {
+      "expected_value_after": 0.644,
+      "expected_value_before": 0.644,
+      "expected_value_delta": 0.0,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 0.0,
+      "target_trade_count": 0
+    }
+  ]
+}

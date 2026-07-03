@@ -1,0 +1,279 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92
+      },
+      {
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11
+      },
+      {
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96
+      }
+    ]
+  },
+  "alpha_hypothesis": "Sleeve-specific regime_chop exposure may become a default-off allocation field after enough forward rows carry entry-time full fidelity breadth and closed replacement value.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92
+      },
+      {
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11
+      },
+      {
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96
+      }
+    ]
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_modes": [
+      "run_py_call_lacks_usable_universe_frames",
+      "breadth_field_not_persisted",
+      "diagnostic_snapshot_unintentionally_affects_orders"
+    ],
+    "predicted_success_probability": 0.78,
+    "realized_failure_mode": null,
+    "surprise_note": "No surprise: the helper already supported breadth; the repair was one kwarg plus regression coverage."
+  },
+  "causal_components": [
+    "run.py passes existing ohlcv_dict as universe_ohlcv_by_ticker",
+    "market_context computes non-index breadth",
+    "market_state_snapshot remains diagnostic_only",
+    "focused AST and unit tests"
+  ],
+  "change_type": "measurement_repair",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/test_market_context.py",
+    "quant/experiments/exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+    "data/experiments/exp-20260703-015/exp_20260703_015_regime_chop_daily_breadth_wiring.json",
+    "experiments/logs/exp-20260703-015.json",
+    "experiments/cards/exp-20260703-015.md",
+    "experiments/manifests/exp-20260703-015.json",
+    "experiments/tickets/exp-20260703-015.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "daily_regime_chop_full_fidelity_breadth_wiring_v1",
+  "decision": "accepted_measurement_repair_regime_chop_daily_breadth_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-015",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92
+        },
+        {
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11
+        },
+        {
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate2": {
+    "checks": {
+      "context_breadth_computed": true,
+      "context_full_fidelity": true,
+      "run_breadth_unit_test_present": true,
+      "run_preserve_existing_breadth_test_present": true,
+      "run_run_ast_regression_test_present": true,
+      "run_single_call": true,
+      "run_universe_arg_is_ohlcv_dict": true,
+      "snapshot_diagnostic_only": true,
+      "snapshot_trade_enabled_false": true
+    },
+    "context_materialization": {
+      "breadth": 0.5,
+      "diagnostic_only": true,
+      "expected_full_fidelity": true,
+      "regime_chop_fidelity": "full_breadth_and_drawdown",
+      "spy_drawdown_from_high": -0.02,
+      "spy_vol_ratio": 1.1,
+      "trade_enabled": false
+    },
+    "entry_date_target_price_note": "This repair emits a diagnostic market-state context field, not signal rows; entry_date and target_price are not generated.",
+    "passed": true,
+    "required_fields_checked": [
+      "universe_ohlcv_by_ticker",
+      "Close",
+      "breadth",
+      "spy_drawdown_from_high",
+      "spy_vol_ratio",
+      "regime_chop.fidelity"
+    ],
+    "run_wiring": {
+      "breadth_unit_test_present": true,
+      "call_count": 1,
+      "preserve_existing_breadth_test_present": true,
+      "run_ast_regression_test_present": true,
+      "single_call": true,
+      "universe_arg_is_ohlcv_dict": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, prompt, exit, or order rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Alpha-enabling repair: the regime_chop forward tagging surface cannot reach full fidelity in daily production snapshots while run.py omits universe breadth from build_readonly_market_state_context; pass the existing daily OHLCV universe into the read-only diagnostic context so future default-off sleeve rows get PIT breadth without changing orders.",
+  "implementation_mode": "shared_daily_diagnostic_context_wiring",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260703-015.json",
+  "mechanism_family": "full_fidelity_daily_regime_chop_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260615-025",
+    "exp-20260615-028",
+    "exp-20260622-017"
+  ],
+  "new_evidence_axis": "One-time daily pipeline wiring of the existing shared regime_chop breadth input left open by exp-20260615-028. No constants, thresholds, exposure floor, candidate selection, ranking, sizing, exits, or forward attribution slices changed.",
+  "new_evidence_type": "daily_pipeline_wiring_for_existing_shared_regime_chop_breadth_field",
+  "owner": "codex",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune regime_chop constants, exposure floor, thresholds, or portfolio/sleeve capital scalars on frozen windows. Do not open more IDs for routine daily regime-tag refreshes.",
+    "new_evidence_required": "Closed forward replacement-value rows carrying entry-time full-fidelity regime_chop tags for a specific default-off sleeve, followed by one fixed regime-conditioned policy test.",
+    "why_result_happened": "The shared market_context helper already supported universe_ohlcv_by_ticker; the daily path simply omitted the existing ohlcv_dict. Passing it lets non-index breadth materialize without changing trading behavior."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Future default-off sleeve allocation may benefit from entry-time regime_chop tags, but only after daily rows carry full-fidelity PIT breadth and later close.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260615-025",
+        "exp-20260615-028",
+        "exp-20260622-017"
+      ],
+      "novelty_gate": "experiment.py new accepted without override.",
+      "why_not_repeat": "exp-20260615-028 explicitly deferred this run.py breadth wiring; this run does not retune or re-slice the regime surface."
+    },
+    "3_single_policy_bundle": "Observer-only daily market-state context fidelity repair; no executable trading policy change.",
+    "4_success_failure_standard": "Accept only if run.py passes the universe frames, breadth materializes, the regime_chop fidelity tier becomes full in a sample snapshot, tests pass, and strategy metrics remain identity.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_015_regime_chop_daily_breadth_wiring.py"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_market_state_field_enriched": true,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "run.py now passes the already-loaded OHLCV universe into the read-only market-state context so regime_chop can report full_breadth_and_drawdown when breadth is available. The field remains inside diagnostic_only market_state_snapshot and does not feed prompts, core signals, ranking, sizing, exits, or orders.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\market_context.py quant\\test_run_daily_wiring.py quant\\test_market_context.py quant\\experiments\\exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_market_context.py quant\\test_regime_chop_state.py quant\\test_market_state_analysis.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_015_regime_chop_daily_breadth_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "daily_regime_chop_full_fidelity_breadth_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T16:13:47.868587+00:00",
+  "trial_family": "regime_chop_daily_breadth_wiring",
+  "trial_variant_id": "regime_chop_daily_breadth_wiring_v1"
+}

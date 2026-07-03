@@ -1,0 +1,443 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.py",
+    "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+    "experiments/cards/exp-20260701-007.md",
+    "experiments/manifests/exp-20260701-007.json",
+    "experiments/tickets/exp-20260701-007.json",
+    "experiments/logs/exp-20260701-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Foreign issuer 6-K operating updates may contain guidance revisions, ADR liquidity context, capital-capacity changes, or issuer-country shocks that are absent from domestic 8-K pools; this run only refreshes the current forward semantic evidence ledger.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0676,
+    "predicted_failure_modes": [
+      "daily_6k_rows_still_too_thin",
+      "no_guidance_direction_hit",
+      "not_material_new_row_delta",
+      "audit_dirty_worktree_conflict"
+    ],
+    "predicted_failure_modes_hit": [
+      "daily_6k_rows_still_too_thin",
+      "no_guidance_direction_hit"
+    ],
+    "predicted_success_probability": 0.74,
+    "realized_failure_mode": "current_6k_rows_still_too_thin_no_directional_guidance",
+    "surprise_note": "The current June SEC 6-K semantic ledger now has four unique current forward rows versus two in exp-20260627-010, including three rows with fixed guidance-context vocabulary. This is useful forward evidence plumbing, but it is not alpha-ready: no directional guidance raise/cut was parsed, the sample is far below the 20-row watch floor, and there are no closed replacement-value rows for this surface."
+  },
+  "causal_components": [
+    "current daily 6-K text audit",
+    "fixed semantic parser",
+    "append-only forward readiness ledger",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Refreshed the experiment-scoped current SEC 6-K semantic forward ledger. No strategy behavior or production path changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.py",
+    "data/experiments/exp-20260701-007/exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.json",
+    "experiments/logs/exp-20260701-007.json",
+    "experiments/cards/exp-20260701-007.md",
+    "experiments/manifests/exp-20260701-007.json",
+    "experiments/tickets/exp-20260701-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_6k_current_semantic_forward_ledger_refresh_v1",
+  "decision": "accepted_measurement_repair_sec_6k_current_semantic_forward_ledger_refresh",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "max_drawdown_pct_worst_delta": 0.0,
+    "row_delta_vs_exp_20260627_010": 2,
+    "rows_with_guidance_context": 3,
+    "rows_with_guidance_direction": 0,
+    "rows_with_operating_or_capacity_terms": 1,
+    "sec_6k_text_rows": 4,
+    "strategy_behavior_changed": false,
+    "survival_rate_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "usable_for_future_6k_alpha_rows": 4
+  },
+  "experiment_id": "exp-20260701-007",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "dependency_fields": [
+      "ticker",
+      "form_type",
+      "accession_number",
+      "accepted_at",
+      "usable_trade_date",
+      "primary_document",
+      "combined_text"
+    ],
+    "entry_date_target_price_note": "This is a forward semantic observation ledger, not an executable candidate helper. It validates accepted_at and usable_trade_date; target_price is intentionally absent.",
+    "files_scanned": 30,
+    "jsonl_parse_errors": 0,
+    "passed": true,
+    "runtime_6k_text_rows": 4,
+    "source_glob": "data/non_ohlcv/sec_filing_text_202606*.jsonl"
+  },
+  "gate3": {
+    "note": "No executable filter was added; survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "strategy_changed": false,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "after_same_as_before": true,
+    "alpha_blockers": [
+      "current_6k_forward_sample_below_20",
+      "no_directional_guidance_raise_or_cut_hit",
+      "historical_standard_window_6k_text_missing",
+      "closed_forward_replacement_value_absent"
+    ],
+    "alpha_ready": false,
+    "decision_basis": "The current June SEC 6-K semantic ledger now has four unique current forward rows versus two in exp-20260627-010, including three rows with fixed guidance-context vocabulary. This is useful forward evidence plumbing, but it is not alpha-ready: no directional guidance raise/cut was parsed, the sample is far below the 20-row watch floor, and there are no closed replacement-value rows for this surface.",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_changed": false
+  },
+  "hypothesis": "alpha_blocker: current daily SEC 6-K text rows have advanced beyond the prior two-row forward semantic ledger and need an append-only fixed operating/guidance semantic refresh before any 6-K candidate-pool alpha can be considered.",
+  "implementation_mode": "experiment_scoped_forward_readiness_ledger",
+  "lane": "measurement_repair",
+  "ledger_summary": {
+    "blocked_reason_if_not_alpha_ready": "current_sample_too_thin_no_directional_guidance_and_no_closed_forward_value",
+    "file_stats": [
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260601.jsonl",
+        "parse_errors": 0,
+        "rows": 16,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260602.jsonl",
+        "parse_errors": 0,
+        "rows": 15,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260603.jsonl",
+        "parse_errors": 0,
+        "rows": 16,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260604.jsonl",
+        "parse_errors": 0,
+        "rows": 17,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260605.jsonl",
+        "parse_errors": 0,
+        "rows": 23,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260606.jsonl",
+        "parse_errors": 0,
+        "rows": 21,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260607.jsonl",
+        "parse_errors": 0,
+        "rows": 19,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260608.jsonl",
+        "parse_errors": 0,
+        "rows": 21,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260609.jsonl",
+        "parse_errors": 0,
+        "rows": 23,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260610.jsonl",
+        "parse_errors": 0,
+        "rows": 26,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260611.jsonl",
+        "parse_errors": 0,
+        "rows": 31,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260612.jsonl",
+        "parse_errors": 0,
+        "rows": 28,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260613.jsonl",
+        "parse_errors": 0,
+        "rows": 27,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260614.jsonl",
+        "parse_errors": 0,
+        "rows": 25,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260615.jsonl",
+        "parse_errors": 0,
+        "rows": 27,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260616.jsonl",
+        "parse_errors": 0,
+        "rows": 23,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260617.jsonl",
+        "parse_errors": 0,
+        "rows": 26,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260618.jsonl",
+        "parse_errors": 0,
+        "rows": 30,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260619.jsonl",
+        "parse_errors": 0,
+        "rows": 27,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260620.jsonl",
+        "parse_errors": 0,
+        "rows": 21,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260621.jsonl",
+        "parse_errors": 0,
+        "rows": 18,
+        "six_k_rows": 0
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260622.jsonl",
+        "parse_errors": 0,
+        "rows": 16,
+        "six_k_rows": 1
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260623.jsonl",
+        "parse_errors": 0,
+        "rows": 15,
+        "six_k_rows": 1
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260624.jsonl",
+        "parse_errors": 0,
+        "rows": 20,
+        "six_k_rows": 2
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260625.jsonl",
+        "parse_errors": 0,
+        "rows": 24,
+        "six_k_rows": 3
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260626.jsonl",
+        "parse_errors": 0,
+        "rows": 23,
+        "six_k_rows": 2
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260627.jsonl",
+        "parse_errors": 0,
+        "rows": 21,
+        "six_k_rows": 2
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260628.jsonl",
+        "parse_errors": 0,
+        "rows": 18,
+        "six_k_rows": 2
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260629.jsonl",
+        "parse_errors": 0,
+        "rows": 15,
+        "six_k_rows": 3
+      },
+      {
+        "file": "data/non_ohlcv/sec_filing_text_20260630.jsonl",
+        "parse_errors": 0,
+        "rows": 17,
+        "six_k_rows": 3
+      }
+    ],
+    "files_scanned": 30,
+    "first_usable_trade_date": "2026-06-16",
+    "last_usable_trade_date": "2026-06-30",
+    "parse_errors": 0,
+    "primary_semantic_bucket_counts": {
+      "capital_capacity": 1,
+      "guidance_context": 3
+    },
+    "prior_artifact": "data/experiments/exp-20260627-010/exp_20260627_010_sec_6k_current_semantic_forward_ledger.json",
+    "prior_experiment_id": "exp-20260627-010",
+    "prior_rows_with_guidance_direction": 0,
+    "prior_sec_6k_text_rows": 2,
+    "prior_usable_for_future_6k_alpha_rows": 1,
+    "raw_rows_scanned": 649,
+    "routine_context_only_rows": 0,
+    "row_delta_vs_exp_20260627_010": 2,
+    "rows_with_guidance_context": 3,
+    "rows_with_guidance_direction": 0,
+    "rows_with_operating_or_capacity_terms": 1,
+    "sec_6k_text_rows": 4,
+    "sec_6k_tickers": [
+      "NVO",
+      "TSM"
+    ],
+    "sec_6k_unique_accessions": 4,
+    "source_glob": "data/non_ohlcv/sec_filing_text_202606*.jsonl",
+    "usable_for_future_6k_alpha_accessions": [
+      "0001171843-26-004116",
+      "0001171843-26-004275",
+      "0001046179-26-000377",
+      "0001171843-26-004353"
+    ],
+    "usable_for_future_6k_alpha_rows": 4,
+    "usable_row_delta_vs_exp_20260627_010": 3
+  },
+  "log": "experiments/logs/exp-20260701-007.json",
+  "mechanism_family": "production_visible_free_sec_6k_foreign_issuer_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260627-010",
+    "exp-20260627-013",
+    "exp-20260627-015"
+  ],
+  "new_evidence_axis": "Two additional current daily 6-K text accessions since exp-20260627-010, including NVO rows with operating/results/guidance vocabulary; this is append-only forward-row refresh, not candidate-pool replay or phrase sweep.",
+  "new_evidence_type": "current_daily_6k_text_forward_row_delta",
+  "next_retry_requires": [
+    "historical_6k_text_bodies_by_accession",
+    "at_least_20_current_6k_forward_rows",
+    "closed_forward_replacement_value_for_6k_semantic_rows",
+    "shared_default_off_6k_semantic_helper_before_alpha_claim"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run 6-K phrase, semantic, RS, top-N, hold-day, cooldown, notional, or candidate-pool scans from these current rows or from historical windows while 6-K text bodies remain missing and closed 6-K replacement values are absent.",
+    "new_evidence_required": "Populate historical 6-K/6-KA text bodies, or accumulate at least 20 current daily 6-K rows with closed forward replacement values, then build one shared default-off helper using fixed semantic fields.",
+    "why_result_happened": "The current June SEC 6-K semantic ledger now has four unique current forward rows versus two in exp-20260627-010, including three rows with fixed guidance-context vocabulary. This is useful forward evidence plumbing, but it is not alpha-ready: no directional guidance raise/cut was parsed, the sample is far below the 20-row watch floor, and there are no closed replacement-value rows for this surface."
+  },
+  "prediction": {
+    "confidence_reason": "The local June SEC text files now expose four unique 6-K rows versus the prior two-row 20260627 ledger. This is alpha-enabling forward evidence plumbing only; it must not become a phrase or threshold scan.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_6k_rows_still_too_thin",
+      "no_guidance_direction_hit",
+      "not_material_new_row_delta",
+      "audit_dirty_worktree_conflict"
+    ],
+    "recorded_at": "2026-07-01T18:13:28+00:00",
+    "success_probability": 0.74
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "reason": "Experiment-scoped measurement ledger only; fixed semantics are not wired into shared helpers, daily orders, ranking, sizing, exits, watchlists, or LLM hard decisions.",
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_filing_text_202606*.jsonl",
+    "data/experiments/exp-20260627-010/exp_20260627_010_sec_6k_current_semantic_forward_ledger.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260627-010.json",
+    "experiments/logs/exp-20260627-013.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260701_007_sec_6k_current_semantic_forward_ledger_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_6k_current_semantic_forward_ledger_refresh_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-01T18:18:21Z",
+  "trial_family": "sec_6k_current_operating_guidance_semantic_ledger",
+  "trial_variant_id": "current_daily_6k_semantic_forward_ledger_refresh_20260630_v1"
+}
