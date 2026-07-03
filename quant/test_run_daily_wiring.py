@@ -639,3 +639,69 @@ def test_moomoo_capital_flow_paper_sleeve_not_added_to_prompt_trend_signals():
                 prompt_facing_assignments.append(node)
 
     assert prompt_facing_assignments == []
+
+
+def test_finra_ats_share_paper_sleeve_daily_wiring_uses_shared_helper():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    expected_imports = {
+        "empty_finra_ats_share_paper_sleeve_snapshot",
+        "prep_and_build_finra_ats_share_paper_sleeve_snapshot",
+    }
+    imported_names = set()
+    referenced_names = set()
+    helper_calls = []
+    quant_artifact_keys = []
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == "finra_ats_share_paper_sleeve":
+            imported_names.update(alias.name for alias in node.names)
+        if isinstance(node, ast.Name):
+            referenced_names.add(node.id)
+        if (
+            isinstance(node, ast.Call)
+            and getattr(node.func, "id", None)
+            == "prep_and_build_finra_ats_share_paper_sleeve_snapshot"
+        ):
+            helper_calls.append(node)
+        if isinstance(node, ast.Dict):
+            quant_artifact_keys.extend(
+                key.value
+                for key in node.keys
+                if isinstance(key, ast.Constant) and isinstance(key.value, str)
+            )
+
+    assert expected_imports <= imported_names
+    assert "empty_finra_ats_share_paper_sleeve_snapshot" in referenced_names
+    assert helper_calls
+
+    helper_kwargs = {keyword.arg for keyword in helper_calls[0].keywords}
+    assert {
+        "as_of",
+        "ohlcv_dict",
+        "spy_ohlcv",
+        "same_day_core_tickers",
+        "open_prices",
+        "current_prices",
+    } <= helper_kwargs
+    assert "finra_ats_share_paper_sleeve" in quant_artifact_keys
+
+
+def test_finra_ats_share_paper_sleeve_not_added_to_prompt_trend_signals():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    prompt_facing_assignments = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if not isinstance(target, ast.Subscript):
+                continue
+            if getattr(target.value, "id", None) != "trend_signals_dict":
+                continue
+            slice_node = target.slice
+            if (
+                isinstance(slice_node, ast.Constant)
+                and slice_node.value == "finra_ats_share_paper_sleeve"
+            ):
+                prompt_facing_assignments.append(node)
+
+    assert prompt_facing_assignments == []
