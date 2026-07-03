@@ -169,3 +169,62 @@ def test_candidate_rows_exclude_accepted_rolling_corr_overlap() -> None:
 
     assert candidates == []
     assert scan["pairs_rejected_high_prior_corr"] > 0
+
+
+def _write_ledger(path: Path, rows: list[dict[str, Any]]) -> None:
+    import json
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8"
+    )
+
+
+def test_coverage_index_reads_live_nonohlcv_ledger_and_asof_field(tmp_path: Path) -> None:
+    # Regression: the loader used to only glob data/experiments/exp-*/ and only
+    # accept an `asof_date` field, so the live data/non_ohlcv ledger (which keys
+    # its date as `as_of_date`) was silently invisible -> 0 rows.
+    data = tmp_path / "data"
+    _write_ledger(
+        data / "non_ohlcv" / "estimate_revision_ledger_20260630.jsonl",
+        [
+            {"ticker": "AAPL", "as_of_date": "2026-06-10", "estimate_revision_usable": True},
+            {"ticker": "MSFT", "as_of_date": "2026-06-11", "analyst_count": 34},
+        ],
+    )
+    idx, audit = csp.AnalystCoverageIndex.from_revision_ledgers(
+        root=data / "experiments", max_asof="2026-06-30", tickers=["AAPL", "MSFT"]
+    )
+    assert audit["status"] == "ok"
+    assert audit["row_count"] == 2
+    assert audit["usable_coverage_rows"] == 2
+    assert idx.coverage_count("AAPL", "2026-06-30") == 1.0   # presence proxy
+    assert idx.coverage_count("MSFT", "2026-06-30") == 34.0  # explicit count
+
+
+def test_coverage_index_reports_no_coverage_field_when_rows_lack_counts(tmp_path: Path) -> None:
+    # Rows match ticker+asof but carry no coverage field and are not
+    # estimate_revision_usable -> honest "no_coverage_field_in_source", not "empty".
+    data = tmp_path / "data"
+    _write_ledger(
+        data / "non_ohlcv" / "estimate_revision_ledger_20260630.jsonl",
+        [{"ticker": "AAPL", "as_of_date": "2026-06-10", "eps_estimate": 1.23}],
+    )
+    idx, audit = csp.AnalystCoverageIndex.from_revision_ledgers(
+        root=data / "experiments", max_asof="2026-06-30", tickers=["AAPL"]
+    )
+    assert audit["row_count"] == 1
+    assert audit["usable_coverage_rows"] == 0
+    assert audit["status"] == "no_coverage_field_in_source"
+
+
+def test_coverage_index_empty_when_no_rows_match(tmp_path: Path) -> None:
+    data = tmp_path / "data"
+    _write_ledger(
+        data / "non_ohlcv" / "estimate_revision_ledger_20260630.jsonl",
+        [{"ticker": "AAPL", "as_of_date": "2026-06-10", "estimate_revision_usable": True}],
+    )
+    idx, audit = csp.AnalystCoverageIndex.from_revision_ledgers(
+        root=data / "experiments", max_asof="2026-06-30", tickers=["ZZZZ"]
+    )
+    assert audit["row_count"] == 0
+    assert audit["status"] == "empty"
