@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-02.
+Last refreshed: 2026-07-03.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -518,6 +518,39 @@ Sources:
 - <https://www.sciencedirect.com/science/article/pii/S0952197626010080>
 - <https://arxiv.org/abs/2603.05917>
 
+### Supply-Chain Text Propagation Needs PIT Relation Edges
+
+Late-June 2026 research combines annual-report LLM embeddings with supply-chain
+knowledge-graph propagation and reports cross-sectional return predictability
+after momentum, volatility, size, sector-neutral, placebo, and out-of-sample
+checks. The Ginger-compatible lesson is not to deploy a text embedding factor.
+It is to make entity-relation edges first-class, timestamped evidence: a filing
+or news label may matter more when it propagates through a verified
+customer/supplier/economic-exposure graph than when scored only on the issuer.
+
+Implementable fields:
+
+- `supply_chain_edge_source_id`
+- `supply_chain_edge_asof`
+- `supply_chain_relation_type`
+- `supplier_customer_exposure_bucket`
+- `text_embedding_source_accession`
+- `network_propagated_text_signal_bucket`
+- `relation_propagation_placebo_delta`
+- `sector_neutral_relation_delta`
+- `relation_propagated_replacement_value`
+
+Controls:
+
+- use only relation edges known before the candidate decision date;
+- separate issuer text, neighbor text, and propagated text effects;
+- run sector, momentum, volatility, size, and random-edge placebos before
+  counting a propagated signal as alpha;
+- compare against accepted relation adapters and same-theme opportunity cost
+  after costs, not against cash alone.
+
+Source: <https://arxiv.org/abs/2606.29290>
+
 ### Transaction-Cost Trap
 
 Recent transaction-cost research reinforces Ginger's local rule: prediction
@@ -897,10 +930,18 @@ Implementable fields:
 - `rag_missing_source_reason`
 - `rag_contradiction_bucket`
 - `rag_verified_event_field_version`
+- `rag_hard_negative_retriever_version`
+- `rag_program_of_thought_code_hash`
+- `rag_adaptive_complexity_bucket`
+- `rag_cost_budget_bucket`
 
 Controls:
 
 - fail closed when source spans or numeric self-checks are missing;
+- execute arithmetic and period matching through deterministic code, not LLM
+  mental math;
+- route expensive multi-step retrieval only when the task complexity requires
+  it, and log the cost/latency tradeoff;
 - keep retrieval and verification artifacts replayable by timestamp;
 - promote only schema-bound fields with Gate 1-4 evidence.
 

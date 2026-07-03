@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-02.
+Last refreshed: 2026-07-03.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -547,13 +547,15 @@ replayable and comparator-aware. SEC 13F same-manager co-accumulation was a
 valid new relation axis after static co-ownership failed, but it still did not
 beat the accepted rolling-correlation peer-shock helper: quarterly ownership
 lag, thin sample, concentration, and window regression dominated the apparent
-aggregate lift. Moomoo capital-flow is forward-only and current-snapshot-only,
-so it remains blocked until it has enough dated closed replacement-value rows;
-Moomoo daily short-volume is a better data-engineering lead because the live
+aggregate lift. Moomoo capital-flow is no longer merely a current snapshot:
+`exp-20260702-016` proved DAY history exists and `exp-20260702-019`
+materialized a dated archive, but the fixed top-1 main-inflow helper still
+failed full-stack Gate 4 versus drawdown/comparator/full-stack contract bars.
+Moomoo daily short-volume is a separate data-engineering lead because the live
 probe and raw archive reached the canonical history, but the first activity
-absorption helper was negative and concentrated. Treat short-volume rows as an
-activity/liquidity/borrow-context surface until broader archived coverage,
-borrow fee/utilization/availability, or closed forward replacement value exists.
+absorption helper was negative and concentrated. Treat both flow surfaces as
+activity/liquidity/borrow-context surfaces until materially more forward rows,
+new intraday provenance, or borrow fee/utilization/availability evidence exists.
 The forward-replacement refresh also says no accepted helper is activation-ready
 yet: comparator-session repair made the ledger measurable, but no sleeve/source
 family has enough enriched closed rows across cash, SPY, and QQQ. Finally, the
@@ -792,10 +794,26 @@ campaign outcomes, borrow/loan cross-evidence, or materially more closed
 stable sign tests; valid retries need richer deal economics such as pricing
 range, consideration mix, bidder/target role, deal size versus peer float,
 amendment/withdrawal/termination trajectory, or fresh forward rows under a
-shared helper. Moomoo `get_capital_flow` is a real data-source lead because the
-SDK/OpenD returned dated daily rows for sample names in mid_weak, late_strong,
-and recent_observe, but old_thin was empty; the next step is archive
-materialization and PIT usable-date mapping, not a main-flow threshold sweep.
+shared helper. Moomoo `get_capital_flow` graduated from data-source probe to a
+full-stack rejection in `exp-20260702-019`: the archive covered mid_weak from
+2025-07-02 and late_strong, but old_thin is structurally unrecoverable; the
+fixed top-1/day main-inflow helper improved EV/PnL on covered windows but failed
+drawdown drift, accepted-distribution comparator, and daily snapshot exposure
+requirements. Do not turn this into a main-flow threshold or hold/notional
+sweep.
+
+The July 3 batch is mostly forward-row infrastructure, not an accepted alpha
+promotion. Entity/theme news and prediction-market event observers were wired
+into the daily path, relevance-gated, and given automatic cash/SPY/QQQ outcome
+ledgers; estimate-revision candidate matching now refreshes after same-day
+`quant_signals`; Moomoo capital-flow rows are exposed daily for forward
+observation. The direct alpha reads were weak: second-order negative news failed
+deployable top-1 compression, resolved S-1 peer substitution found no stable
+edge, and entity/theme source-bundle rows were observed-only rejected. The
+correct next step is to wait for these new default-off ledgers to accumulate
+settled replacement-value rows, then test one fixed source-ranking rule or
+relation graph. Do not reslice the first partial rows by source, keyword,
+theme, prediction-market wording, or event-age buckets.
 
 ## Detail Sources
 
@@ -1579,14 +1597,16 @@ production-visible field:
   failed window, sample, concentration, and accepted rolling-correlation
   comparator gates. Reopen only with non-quarterly ownership/flow evidence,
   active-manager conviction attribution, or closed forward replacement rows;
-- Moomoo current-snapshot capital-flow candidate pools and Moomoo daily
-  short-volume activity-absorption retries that sweep main-flow, daily
-  short-volume activity, RS/absorption, top-N, hold, cooldown, or notional.
-  `exp-20260621-017` blocked capital flow as forward-only, while
-  `exp-20260622-008`/`009` made daily short-volume a positive backfill/archive
-  lead and `exp-20260622-010` rejected the first activity helper. A valid retry
-  needs broader archived coverage, a shared daily/backtest observation helper,
-  PIT borrow fee/utilization/loan availability, or closed forward replacement
+- Moomoo capital-flow and daily short-volume retries that sweep main-flow,
+  short-volume activity, RS/absorption, top-N, hold, cooldown, notional, or
+  response curves on the same frozen rows. `exp-20260702-019` rejected the
+  first replayable `get_capital_flow(DAY)` top-1 main-inflow helper despite
+  positive EV/PnL deltas because drawdown drift, accepted-distribution
+  comparators, and full-stack daily exposure failed. `exp-20260622-010`
+  separately rejected the daily short-volume activity helper. A valid retry
+  needs materially more settled forward rows, genuinely new intraday/vendor
+  flow decomposition, a completed daily default-off adapter exposure gap, PIT
+  borrow fee/utilization/loan availability, or closed forward replacement
   value;
 - forward activation-envelope experiments for accepted default-off helpers
   before one helper/source family has enough enriched closed rows with positive
@@ -1768,13 +1788,23 @@ production-visible field:
   only with richer deal economics, such as S-1/A pricing range, priced deal
   size, cash/stock consideration, bidder/target role, amendment/withdrawal or
   termination trajectory, or new forward rows under a shared helper;
-- Moomoo capital-flow alpha retries that use only one-day current snapshots,
-  `get_capital_distribution`, main-flow thresholds, bucket response curves,
-  top-N, hold, cooldown, or notional. `exp-20260702-016` is a positive
-  data-source lead for `get_capital_flow` DAY history, not an accepted alpha.
-  Reopen after a versioned archive exists for the target universe with
-  next-session usable-trade-date mapping, explicit old_thin/source-activation
-  coverage, and a shared default-off helper/daily snapshot;
+- Moomoo capital-flow alpha retries that use only `get_capital_distribution`,
+  main-flow thresholds, bucket response curves, top-N, hold, cooldown, or
+  notional. `exp-20260702-016` proved `get_capital_flow(DAY)` history exists;
+  `exp-20260702-019` then rejected the fixed versioned-archive top-1 helper on
+  Gate 4. Reopen only after materially more settled forward rows, a genuinely
+  different intraday/vendor flow decomposition, PIT borrow economics, or a
+  daily default-off exposure/parity repair that changes the full-stack contract;
+- entity/theme news, prediction-market event, and news second-order exposure
+  retries that only re-slice the first July 2026 observer/outcome rows by source
+  bundle, market wording, source relevance, theme, event-age, polarity,
+  same-day bar, top-N, hold, cooldown, or notional. `exp-20260703-001`,
+  `004`, `006`, `008`, `011`, `012`, and `013` made the observers and outcome
+  ledgers automatic; `exp-20260703-002` and `014` rejected the first deployable
+  or observed-only alpha reads. Reopen after materially more settled
+  cash/SPY/QQQ replacement rows, or with a truly new PIT entity-relation source
+  such as supply-chain, customer, contract, or verified economic-exposure
+  provenance;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
