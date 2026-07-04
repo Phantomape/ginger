@@ -1,0 +1,322 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: accepted sec_financial_report paper rows cannot mature if daily observation structurally cannot admit the same candidates the accepted replay admitted.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260704-016/exp_20260704_016_sec_financial_report_cohort_parity_repair.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_sec_financial_report_daily_cohort_parity_repaired",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.8,
+    "surprise_note": "Low surprise: exp-20260704-015 already produced the counterfactual admissions with the same derivation; moving it into the shared builder reproduced them exactly."
+  },
+  "causal_components": [
+    "replay-parity platform-pool cohort derivation for cohort-less rows",
+    "shared queue builder wiring",
+    "focused regression test",
+    "archive replay verification against exp-20260704-015 counterfactual",
+    "production parity matrix update",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/sec_event_queue.py",
+    "quant/test_sec_event_queue.py",
+    "docs/production_backtest_parity_matrix.md",
+    "quant/experiments/exp_20260704_016_sec_financial_report_cohort_parity_repair.py",
+    "data/experiments/exp-20260704-016/exp_20260704_016_sec_financial_report_cohort_parity_repair.json",
+    "experiments/logs/exp-20260704-016.json",
+    "experiments/cards/exp-20260704-016.md",
+    "experiments/manifests/exp-20260704-016.json",
+    "experiments/tickets/exp-20260704-016.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_financial_report_daily_cohort_derivation_parity_repair_v1",
+  "decision": "accepted_measurement_repair_sec_financial_report_daily_cohort_parity_repaired",
+  "delta_metrics": {
+    "after_repaired_span_candidate_total": 8,
+    "before_recorded_span_candidate_total": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-016",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_scope": "No executable order or target exit is created. The repair restores default-off paper candidate observation only; paper entry/exit lifecycle fields are produced by the unchanged sleeve.",
+    "fields_checked": [
+      "cohort",
+      "cohort_source",
+      "usable_trade_date",
+      "t1_date",
+      "event_family",
+      "t1_excess_return_vs_spy",
+      "accession_number",
+      "parameters.cohort_derivation_rule_version"
+    ],
+    "passed": true,
+    "replayed_day_count": 53
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision_basis": "The repaired shared queue builder derives the replay-parity cohort (static platform pool membership, exactly the exp-20260510-023 analysis-time rule) for rows the daily collector leaves cohort-less, and stamps cohort_source for provenance. Replaying the sleeve's full recorded archive span as-is now admits 8 candidates, exactly matching the exp-20260704-015 counterfactual set, while platform-pool rows remain excluded and the qualify rule stays fail-closed on a truly missing cohort. Thresholds, families, exclusions, notionals, ranking, sizing, exits, and orders are unchanged.",
+    "failed_reasons": [],
+    "mode": "measurement_repair_sec_financial_report_daily_cohort_parity_repair",
+    "passed": true,
+    "strategy_behavior_changed": false,
+    "verification": {
+      "cohort_derivation_rule_version": "sec_financial_report_platform_pool_cohort_derivation_v1",
+      "cohort_source_totals": {
+        "sec_financial_report_platform_pool_cohort_derivation_v1": 8
+      },
+      "expected_candidate_keys": [
+        "AVGO|2026-06-10|0001730168-26-000054",
+        "COIN|2026-05-08|0001679788-26-000053",
+        "COIN|2026-05-08|0001679788-26-000054",
+        "CRDO|2026-06-16|0001628280-26-043303",
+        "CVX|2026-05-08|0000093410-26-000113",
+        "IREN|2026-05-11|0001878848-26-000025",
+        "IREN|2026-05-11|0001878848-26-000026",
+        "SNOW|2026-05-28|0001640147-26-000027"
+      ],
+      "matches_probe_counterfactual": true,
+      "platform_pool_candidates_admitted": 0,
+      "platform_pool_constant_matches_rs20_watch": true,
+      "probe_artifact": "data/experiments/exp-20260704-015/exp_20260704_015_sec_financial_report_admission_parity_probe.json",
+      "probe_as_is_candidate_total": 0,
+      "probe_counterfactual_total": 8,
+      "probe_recorded_candidate_total": 0,
+      "repaired_candidate_keys": [
+        "AVGO|2026-06-10|0001730168-26-000054",
+        "COIN|2026-05-08|0001679788-26-000053",
+        "COIN|2026-05-08|0001679788-26-000054",
+        "CRDO|2026-06-16|0001628280-26-043303",
+        "CVX|2026-05-08|0000093410-26-000113",
+        "IREN|2026-05-11|0001878848-26-000025",
+        "IREN|2026-05-11|0001878848-26-000026",
+        "SNOW|2026-05-28|0001640147-26-000027"
+      ],
+      "repaired_candidate_total": 8,
+      "replayed_day_count": 53
+    }
+  },
+  "hypothesis": "Alpha blocker: accepted sec_financial_report T+1 drift paper rows cannot accumulate forward replacement-value evidence because the shared daily queue builder requires a non-empty cohort field that the daily SEC filing events collector has never written and the builder never derives; repair daily cohort parity by deriving the replay-parity cohort inside the shared queue builder when rows lack the field, without changing thresholds, families, exclusions, ranking, sizing, exits, or orders.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260704-016.json",
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260704-015",
+    "exp-20260704-009",
+    "exp-20260510-027",
+    "exp-20260510-023"
+  ],
+  "new_evidence_axis": "Measurement repair for the exact daily/replay cohort-field drift isolated by exp-20260704-015; the derivation reproduces the accepted exp-20260510-023/027 replay rule verbatim (platform_pool membership tuple) and is not a threshold, family, exclusion, notional, hold, cooldown, top-N, or response retune.",
+  "new_evidence_type": "daily_cohort_parity_repair_after_stagewise_probe",
+  "next_retry_requires": [
+    "post-repair forward sec_financial_report rows",
+    "closed cash/SPY/QQQ replacement value",
+    "no frozen-window threshold/notional/hold/cooldown retune"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the T+1 excess threshold, event families, platform-pool membership, notional scalars, RS20 rule, hold days, max positions, or response curves from this repair. Do not relax the platform_pool exclusion.",
+    "new_evidence_required": "Let future daily snapshots accumulate post-repair sec_financial_report pending/closed rows and closed cash/SPY/QQQ replacement values before any activation or allocation experiment.",
+    "why_result_happened": "The repaired shared queue builder derives the replay-parity cohort (static platform pool membership, exactly the exp-20260510-023 analysis-time rule) for rows the daily collector leaves cohort-less, and stamps cohort_source for provenance. Replaying the sleeve's full recorded archive span as-is now admits 8 candidates, exactly matching the exp-20260704-015 counterfactual set, while platform-pool rows remain excluded and the qualify rule stays fail-closed on a truly missing cohort. Thresholds, families, exclusions, notionals, ranking, sizing, exits, and orders are unchanged."
+  },
+  "prediction": {
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "Default-off paper observation can now admit the same non-platform financial-report T+1 drift candidates the accepted replay admitted. No core/live orders, ranking, sizing, exits, or prompts changed; the queue and sleeve remain observe-only.",
+    "parity_test_added": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "repair_verification": {
+    "cohort_derivation_rule_version": "sec_financial_report_platform_pool_cohort_derivation_v1",
+    "cohort_source_totals": {
+      "sec_financial_report_platform_pool_cohort_derivation_v1": 8
+    },
+    "expected_candidate_keys": [
+      "AVGO|2026-06-10|0001730168-26-000054",
+      "COIN|2026-05-08|0001679788-26-000053",
+      "COIN|2026-05-08|0001679788-26-000054",
+      "CRDO|2026-06-16|0001628280-26-043303",
+      "CVX|2026-05-08|0000093410-26-000113",
+      "IREN|2026-05-11|0001878848-26-000025",
+      "IREN|2026-05-11|0001878848-26-000026",
+      "SNOW|2026-05-28|0001640147-26-000027"
+    ],
+    "matches_probe_counterfactual": true,
+    "platform_pool_candidates_admitted": 0,
+    "platform_pool_constant_matches_rs20_watch": true,
+    "probe_artifact": "data/experiments/exp-20260704-015/exp_20260704_015_sec_financial_report_admission_parity_probe.json",
+    "probe_as_is_candidate_total": 0,
+    "probe_counterfactual_total": 8,
+    "probe_recorded_candidate_total": 0,
+    "repaired_candidate_keys": [
+      "AVGO|2026-06-10|0001730168-26-000054",
+      "COIN|2026-05-08|0001679788-26-000053",
+      "COIN|2026-05-08|0001679788-26-000054",
+      "CRDO|2026-06-16|0001628280-26-043303",
+      "CVX|2026-05-08|0000093410-26-000113",
+      "IREN|2026-05-11|0001878848-26-000025",
+      "IREN|2026-05-11|0001878848-26-000026",
+      "SNOW|2026-05-28|0001640147-26-000027"
+    ],
+    "repaired_candidate_total": 8,
+    "repaired_candidates": [
+      {
+        "accession_number": "0001679788-26-000053",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "earnings_8k",
+        "t1_date": "2026-05-11",
+        "t1_excess_return_vs_spy": 0.074477,
+        "ticker": "COIN",
+        "usable_trade_date": "2026-05-08"
+      },
+      {
+        "accession_number": "0001679788-26-000054",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "periodic_report",
+        "t1_date": "2026-05-11",
+        "t1_excess_return_vs_spy": 0.074477,
+        "ticker": "COIN",
+        "usable_trade_date": "2026-05-08"
+      },
+      {
+        "accession_number": "0000093410-26-000113",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "periodic_report",
+        "t1_date": "2026-05-11",
+        "t1_excess_return_vs_spy": 0.014901,
+        "ticker": "CVX",
+        "usable_trade_date": "2026-05-08"
+      },
+      {
+        "accession_number": "0001878848-26-000025",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "earnings_8k",
+        "t1_date": "2026-05-12",
+        "t1_excess_return_vs_spy": 0.027082,
+        "ticker": "IREN",
+        "usable_trade_date": "2026-05-11"
+      },
+      {
+        "accession_number": "0001878848-26-000026",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "periodic_report",
+        "t1_date": "2026-05-12",
+        "t1_excess_return_vs_spy": 0.027082,
+        "ticker": "IREN",
+        "usable_trade_date": "2026-05-11"
+      },
+      {
+        "accession_number": "0001640147-26-000027",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "earnings_8k",
+        "t1_date": "2026-05-29",
+        "t1_excess_return_vs_spy": 0.065861,
+        "ticker": "SNOW",
+        "usable_trade_date": "2026-05-28"
+      },
+      {
+        "accession_number": "0001730168-26-000054",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "periodic_report",
+        "t1_date": "2026-06-11",
+        "t1_excess_return_vs_spy": 0.019203,
+        "ticker": "AVGO",
+        "usable_trade_date": "2026-06-10"
+      },
+      {
+        "accession_number": "0001628280-26-043303",
+        "cohort": "other_equity",
+        "cohort_source": "sec_financial_report_platform_pool_cohort_derivation_v1",
+        "event_family": "periodic_report",
+        "t1_date": "2026-06-17",
+        "t1_excess_return_vs_spy": 0.054925,
+        "ticker": "CRDO",
+        "usable_trade_date": "2026-06-16"
+      }
+    ],
+    "replayed_day_count": 53
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_event_queue.py quant\\test_sec_event_queue.py quant\\experiments\\exp_20260704_016_sec_financial_report_cohort_parity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_event_queue.py quant\\test_sec_financial_report_event_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_016_sec_financial_report_cohort_parity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_financial_report_daily_cohort_derivation_parity_repair_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-04T16:33:08+00:00",
+  "trial_family": "sec_financial_report_cohort_parity_repair",
+  "trial_variant_id": "sec_financial_report_platform_pool_cohort_derivation_v1",
+  "write_fallbacks": []
+}

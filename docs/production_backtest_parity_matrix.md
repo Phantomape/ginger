@@ -5,6 +5,28 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## Rejected SEC Item 1.01 Contract-Relation Paper Candidate
+
+`exp-20260703-019` tested promotion of the fixed `exp-20260703-018`
+observed-only SEC 8-K Item 1.01 issuer-self contract-relation lead into
+`quant/sec_item101_contract_relation_paper_sleeve.py` plus a daily
+default-off snapshot in `run.py`, but Gate 4 rejected the candidate. Any
+historical replay or retained daily observation must use the same frozen
+helper semantics: local `sec_contract_relation_provenance` rows, `accepted_at`
+mapped to `usable_trade_date` as the public-archive PIT proxy, specific
+relation phrases only, one best row per accession, the fixed relation-priority
+ordering, top-1 accession per usable trade date, `$4,000` paper notional,
+first available open on or after the usable date, 10-trading-session close
+exit, slippage, and round-trip cost. Daily observation, if retained, may emit
+pending rows without future exit bars, but it may fill, advance, or close the
+paper ledger only from exact `as_of` OHLCV rows. This is not an accepted alpha
+and must remain observe-only: `trade_enabled=false`, no live/default orders,
+no core universe/ranking/sizing/exit/watchlist/LLM/news changes, and no
+prompt-facing `trend_signals_dict` entry. A valid retry requires materially
+more closed forward rows or a genuinely different source/gate shape; do not
+retune relation buckets, regexes, item codes, top-N, notional, hold days, or
+response curves on the same frozen sample.
+
 ## Companyfacts Cost-Liquidity Paper Support
 
 `exp-20260601-030` promoted the Companyfacts cost-liquidity support field into
@@ -270,11 +292,13 @@ Historical replay must pass the full loaded trading calendar into the shared
 helper so last-trading-day labels are computed from an untruncated calendar.
 Daily observation may emit observe-only same-day pending candidates without
 future bars, but it must not infer last-trading-day labels from truncated OHLCV.
-Month-end observation in daily mode requires explicit `calendar_dates` or
-`known_month_end_dates`; otherwise the month-end route fails closed. First
-three trading days can be labeled from the observed daily sequence. The helper
-emits turn-of-month context, candidate-universe coverage, pending/open/closed
-paper ledger state, and forward gate metadata. It remains observe-only:
+As of `exp-20260704-009`, the daily prep wrapper supplies deterministic
+`known_month_end_dates` when `as_of` is the last regular US equity session of
+the month; explicit `calendar_dates` or `known_month_end_dates` remain valid
+for replay/probe calls. First three trading days can be labeled from the
+observed daily sequence. The helper emits turn-of-month context,
+candidate-universe coverage, pending/open/closed paper ledger state, and
+forward gate metadata. It remains observe-only:
 `trade_enabled=false`, no live/default orders, and no core universe, ranking,
 sizing, exit, watchlist, LLM/news, or activation behavior may diverge between
 replay and production.
@@ -367,7 +391,7 @@ LLM/news, or activation behavior may diverge between replay and production.
 | Pilot outcome attribution | `candidate_competition_logger.py`, `performance_engine.py`, `pilot_sleeve.py`, `report_generator.py` | `--include-pilot-sleeve` computes in-memory direct PnL, cash-relative PnL, replacement value, and risk-adjusted replacement value | daily run reports direct PnL, cash-relative PnL, replacement value, pending counterfactual coverage, and read-only `AI_INFRA_AGGRESSIVE` promotion readiness blockers | backtester replay must not write `data/ledgers/pilot_competition_decisions.jsonl`; production appends real decisions only; promotion readiness cannot change slots/orders without a separate Gate 1-4 experiment |
 | SEC negative-reaction event queue | `sec_event_queue.py`, `sec_negative_event_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical event-sleeve replays must use shared queue semantics before promotion | daily run emits default-off queue plus paper sleeve state/snapshots only | observe-only until forward replacement-value evidence and an explicit shared trade adapter exist |
 | SEC governance/procedural event queue | `sec_event_queue.py`, `sec_event_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical event-sleeve replays must use shared queue semantics before promotion | daily run emits default-off queue plus paper sleeve state/snapshots only | observe-only until forward replacement-value evidence and an explicit shared trade adapter exist |
-| SEC financial-report T+1 drift queue | `sec_event_queue.py`, `sec_financial_report_event_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical replays must use shared queue/sleeve semantics before promotion | daily run emits default-off non-platform financial-report positive T+1 excess >= 1% queue plus paper sleeve state/snapshots at the accepted $15k base notional, with non-10-Q `periodic_report` rows tracked at 1.25x paper notional, 10-Q `periodic_report` rows tracked at 2.00x paper notional, covered `neutral_or_mixed_language` rows with `t1_excess_return_vs_spy <= 2%` tracked with an additional 2.00x neutral-underreaction paper notional scalar, those accepted neutral-underreaction rows with `spy_t1_return >= -0.5%` tracked with an additional 1.50x market-context paper notional scalar, and covered `earnings_release_text` rows with `spy_t1_return >= -0.5%` tracked with an additional 1.10x earnings-release market-context paper notional scalar | observe-only until closed forward replacement-value evidence and an explicit shared trade adapter exist |
+| SEC financial-report T+1 drift queue | `sec_event_queue.py`, `sec_financial_report_event_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical replays must use shared queue/sleeve semantics before promotion | daily run emits default-off non-platform financial-report positive T+1 excess >= 1% queue plus paper sleeve state/snapshots at the accepted $15k base notional, with non-10-Q `periodic_report` rows tracked at 1.25x paper notional, 10-Q `periodic_report` rows tracked at 2.00x paper notional, covered `neutral_or_mixed_language` rows with `t1_excess_return_vs_spy <= 2%` tracked with an additional 2.00x neutral-underreaction paper notional scalar, those accepted neutral-underreaction rows with `spy_t1_return >= -0.5%` tracked with an additional 1.50x market-context paper notional scalar, and covered `earnings_release_text` rows with `spy_t1_return >= -0.5%` tracked with an additional 1.10x earnings-release market-context paper notional scalar; as of `exp-20260704-016` the shared queue builder derives the replay-parity cohort (`platform_pool` for the static META/NFLX/GOOG/AMZN/SPOT/DIS/APP pool, else `other_equity`) for rows the daily collector leaves cohort-less, matching the accepted `exp-20260510-023/027` analysis-time derivation, and stamps `cohort_source` for provenance | observe-only until closed forward replacement-value evidence and an explicit shared trade adapter exist |
 | Default-off external event overlay bundle | `event_sleeve_bundle.py`, `state_surface_sleeve.py`, `form4_event_sleeve.py`, `sec_negative_event_sleeve.py`, `sec_event_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical bundle replays must use shared source queues/sleeves, the shared state-surface add-on annotation, rotation-surface paper tilt, front-rank rotation paper tilt, broad-breadth event paper tilt, sec-governance source-quality paper tilt, negative-reaction event paper tilt, positive-state context paper tilt, non-narrow state-bucket context paper tilt, SEC governance item 5.03 paper haircut, and the shared forward-gated trade-plan helper before promotion | daily run emits aggregate default-off bundle attribution, normalized candidate schema, source-priority dedupe, state-surface paper add-on eligibility, rotation-surface, front-rank rotation, broad-breadth, sec-governance source-quality, negative-reaction, positive-state context, non-narrow state-bucket context, and SEC governance item 5.03 haircut counts, forward gate, kill-switch status, and default-blocked trade-plan status only | observe-only until closed forward outcomes pass the shared gate and the explicit trade adapter is enabled |
 | Default-off broad-market leadership paper sleeve | `broad_market_paper_sleeve.py`, `report_generator.py` | default core backtests do not trade it; historical broad-market replays must use the shared `price_floor_40` feature/filter helper, candidate exclusion semantics, `[1.20, 1.00, 0.80]` source-rank paper-notional profile, the shared `ret5 <= 0.02` low-extension `1.15x` paper-notional scalar, the shared `realized_volatility_20 >= 0.055` high-volatility `1.15x` paper-notional scalar, the shared `positive_day_ratio_20 >= 0.55` trend-persistence `1.15x` paper-notional scalar, 20-trading-day paper hold, and concentration guard before promotion | daily run emits the default-off `BROAD_MARKET_LEADERSHIP_PAPER` candidate queue with the shared `[1.20, 1.00, 0.80]` source-rank paper-notional profile, the shared low-extension, high-volatility, and trend-persistence paper-notional metadata/scalars, pending/open/closed paper ledger state, source coverage metadata, forward paper gate, and report block; `data/state/broad_market_paper/universe.json` remains the static feed when present, otherwise `run.py` derives a conservative `broad_market_universe_state_observation_feed_v1` feed from the persisted daily `universe_state` observation records | observe-only until closed forward replacement-value outcomes pass a separate gate and an explicit trade adapter is enabled |
 | Default-off macro relief leadership paper sleeve | `macro_relief_leadership_paper_sleeve.py`, `run.py`, `default_off_alpha_attribution.py`, `report_generator.py` | default core backtests do not trade it; historical evidence comes from accepted `exp-20260606-020` and must use the shared helper with official CPI/FOMC/NFP dates, same-day `SPY`/`QQQ` relief and close-location gates, broad-market sector-known liquid stock universe, stock leadership score fields, selected-core same-ticker overlap exclusion, top-2/day, next-open paper entry, 10-trading-day close exit, costs, cooldown, and concentration guard before promotion | daily run derives the candidate universe from the same broad-market paper universe feed, loads `SPY` and `QQQ` OHLCV, emits macro-relief context, candidate-universe coverage, selected/filtered candidates, pending/open/closed paper ledger state, forward paper gate, default-off alpha-attribution surface, and human-report block | observe-only; no core universe expansion, no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and activation requires closed forward replacement-value outcomes plus a separate Gate 1-4 trade adapter |
