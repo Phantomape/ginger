@@ -494,6 +494,32 @@ def _persist_sec_corporate_event_stream(today):
         }
 
 
+def _persist_sec_contract_relation_provenance(today):
+    """Refresh read-only SEC Item 1.01 contract-relation provenance rows."""
+    try:
+        from sec_contract_relation_provenance import (
+            persist_sec_contract_relation_provenance,
+        )
+
+        summary = persist_sec_contract_relation_provenance(today)
+        log.info(
+            "SEC contract relation provenance: source_rows=%s item101=%s rows=%s appended=%s",
+            summary.get("input_row_count"),
+            summary.get("item_101_input_row_count"),
+            summary.get("provenance_row_count"),
+            summary.get("rows_appended"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"SEC contract relation provenance unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
 def _persist_entity_theme_news_observer(today):
     """Refresh read-only entity/theme news rows for current daily runs."""
     try:
@@ -1678,6 +1704,10 @@ def main():
         empty_sec_ftd_finra_paper_sleeve_snapshot,
         prep_and_build_sec_ftd_finra_paper_sleeve_snapshot,
     )
+    from sec_item101_contract_relation_paper_sleeve import (
+        empty_sec_item101_contract_relation_paper_sleeve_snapshot,
+        prep_and_build_sec_item101_contract_relation_paper_sleeve_snapshot,
+    )
     from moomoo_capital_flow_paper_sleeve import (
         empty_moomoo_capital_flow_paper_sleeve_snapshot,
         prep_and_build_moomoo_capital_flow_paper_sleeve_snapshot,
@@ -2721,6 +2751,7 @@ def main():
         # operator handoff did not need.
         _persist_daily_structured_news_observation(today)
         _persist_sec_corporate_event_stream(today)
+        _persist_sec_contract_relation_provenance(today)
         _persist_entity_theme_news_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
@@ -3204,6 +3235,20 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    sec_item101_contract_relation_paper_sleeve = _sleeve(
+        lambda: prep_and_build_sec_item101_contract_relation_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_dict=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_sec_item101_contract_relation_paper_sleeve_snapshot,
+        "SEC Item 1.01 contract relation",
+        "sec_item101_contract_relation_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     alpha_score_market_regime_ohlcv = {}
     alpha_score_market_regime_candidate_universe = {"status": "not_built", "tickers": []}
 
@@ -3650,12 +3695,31 @@ def main():
         from sleeve_health import build_sleeve_health_report
 
         sleeve_health_report = build_sleeve_health_report(today_iso, trend_signals_dict)
-        if sleeve_health_report.get("failing_builds") or sleeve_health_report.get("stalled_sleeves"):
+        if (
+            sleeve_health_report.get("failing_builds")
+            or sleeve_health_report.get("stalled_sleeves")
+            or sleeve_health_report.get("starving_sleeves")
+        ):
             log.warning(
-                "Sleeve health: failing_builds=%s stalled_sleeves=%s",
+                "Sleeve health: failing_builds=%s stalled_sleeves=%s starving_sleeves=%s",
                 sleeve_health_report.get("failing_builds"),
                 sleeve_health_report.get("stalled_sleeves"),
+                sleeve_health_report.get("starving_sleeves"),
             )
+        for name, row in (
+            (sleeve_health_report.get("fire_rate_watch") or {}).get("sleeves") or {}
+        ).items():
+            if str(row.get("status", "")).startswith("alert_"):
+                log.warning(
+                    "Sleeve fire-rate ALERT %s: actual=%s expected=%.2f over %s days "
+                    "(replay rate %.4f/day, %s)",
+                    name,
+                    row.get("actual_admissions"),
+                    float(row.get("expected_admissions") or 0.0),
+                    row.get("observed_days"),
+                    float(row.get("replay_daily_fire_rate") or 0.0),
+                    row.get("rate_source"),
+                )
     except Exception as e:
         log.warning(f"Sleeve health report unavailable: {e}")
         sleeve_health_report = {"status": "error", "error": str(e)}
@@ -3787,6 +3851,7 @@ def main():
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
+        "sec_item101_contract_relation_paper_sleeve": sec_item101_contract_relation_paper_sleeve,
         "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
         "finra_ats_share_paper_sleeve": finra_ats_share_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
@@ -3831,6 +3896,7 @@ def main():
         trade_items = _collect_trade_news(today, universe, pilot_universe)
         _persist_daily_structured_news_observation(today)
         _persist_sec_corporate_event_stream(today)
+        _persist_sec_contract_relation_provenance(today)
         _persist_entity_theme_news_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
