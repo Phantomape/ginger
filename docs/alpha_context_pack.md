@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1500`
-- Raw records loaded by meta report: `2308`
-- History fingerprint: `61c1678d6cd79d93`
+- Strategy records counted: `1504`
+- Raw records loaded by meta report: `4706`
+- History fingerprint: `142a98a3c4f4a2bd`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -28,26 +28,26 @@ facts before changing strategy behavior.
 
 ## Current Research Priorities
 
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `2`, accept `100.00%`, sum EV `+1.2856`, sum PnL `$25,160.29`.
-  Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_adapter` priority `0.8172`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
-  Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
-- `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
-  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
-  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6303`: experiments `171`, accept `25.73%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
-  Reason: 1/171 records have sample >= 10; 170/171 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
-  Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5712`: experiments `168`, accept `25.60%`, sum EV `+41.2903`, sum PnL `$740,666.62`.
-  Reason: 160/168 records show multi-window evidence; 8/168 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
-- `candidate_pool_full_stack` priority `0.5655`: experiments `13`, accept `23.08%`, sum EV `+2.7799`, sum PnL `$51,588.55`.
-  Reason: 10/13 records show multi-window evidence; 2/13 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: average drawdown delta worsens; heavily explored family; diminishing-return risk; many prior rejections in this family
-- `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
-  Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `4`, accept `100.00%`, sum EV `+2.5712`, sum PnL `$50,320.58`.
+  Reason: 4/4 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `default_off_paper_adapter` priority `0.7972`: experiments `14`, accept `85.71%`, sum EV `+9.6062`, sum PnL `$163,913.86`.
+  Reason: 14/14 records show multi-window evidence; 2/14 records have sample >= 10; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positi...
   Guardrail: heavily explored family; diminishing-return risk
+- `default_off_shared_paper_adapter` priority `0.7726`: experiments `4`, accept `100.00%`, sum EV `+0.3626`, sum PnL `$6,125.56`.
+  Reason: 4/4 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `default_off_paper_shared_adapter` priority `0.7477`: experiments `6`, accept `100.00%`, sum EV `+1.4290`, sum PnL `$27,491.32`.
+  Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `paper_notional_support_scout` priority `0.7009`: experiments `6`, accept `66.67%`, sum EV `+0.1608`, sum PnL `$2,787.28`.
+  Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
+  Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
+  Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
+- `slot_or_ranking` priority `0.5706`: experiments `338`, accept `25.44%`, sum EV `+82.5806`, sum PnL `$1,481,333.24`.
+  Reason: 16/338 records have sample >= 10; 322/338 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
+- `candidate_pool_full_stack` priority `0.5655`: experiments `26`, accept `23.08%`, sum EV `+5.5598`, sum PnL `$103,177.10`.
+  Reason: 20/26 records show multi-window evidence; 4/26 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: average drawdown delta worsens; heavily explored family; diminishing-return risk; many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -64,14 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260629-009` `rejected_sec_13d_item4_governance_terms_candidate_pool`: EV `-0.0287`, PnL `$-270.72`, family `production_visible_sec_ownership_item4_governance_terms`, trial `sec_13d_item4_governance_terms_candidate_pool`.
-  Lesson: The structured 13D Item-4 governance-term source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, ta...
-- `exp-20260630-002` `rejected_no_daily_news_event_forward_value_edge`: EV `+0.0000`, PnL `$0.00`, family `daily_news_llm_event_scoring_alpha`, trial `daily_clean_trade_news_event_taxonomy_forward_value`.
-  Lesson: The fixed positive-event taxonomy did not clear the predeclared forward edge checks versus explicit-ticker control rows after dedupe and 10d settlement; daily news remains an attribution surface, not a trading rule. D...
-- `exp-20260630-012` `rejected_close_confirmed_static_stop`: EV `+0.0000`, PnL `$0.00`, family `exit_policy_shared_gate`, trial `close_confirmed_static_stop_exit`.
-  Lesson: Close-confirmed stops changed enough trade exits to test the shakeout hypothesis. Do not retune stop distance, trailing stops, target trims, time stops, hold days, or response curves from these same rows. A valid retr...
-- `exp-20260630-020` `rejected_high_actual_risk_early_relative_weakness_exit`: EV `+0.0192`, PnL `$695.17`, family `exit_policy_oracle_diagnostic`, trial `high_account_risk_early_relative_weakness_exit`.
-  Lesson: The high-risk gate did not overcome the broad early-weakness exit weakness. Do not retune early-weakness holding rows, SPY threshold, stop distance, target trims, or response curves on the same fixed-entry rows. A leg...
 - `exp-20260702-003` `rejected_space_catalyst_defense_budget_same_theme_not_incremental`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `event_or_llm`.
   Lesson: Defense-budget Space rows still look good versus cash and broad ETFs, but the effect is not incremental after same-theme opportunity cost: same-theme checks failed on the tested 10d/20d mature rows. Do not rerun Space...
 - `exp-20260702-010` `rejected_high_actual_risk_entry_risk_cap`: EV `+0.0000`, PnL `$0.00`, family `entry_risk_allocation`, trial `high_actual_risk_entry_risk_cap`.
@@ -88,6 +80,14 @@ facts before changing strategy behavior.
   Lesson: The broad baseline-controlled polarity lead did not survive the deployable top-1/day compression and full fixed-window bar: fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small...
 - `exp-20260703-016` `rejected_finra_ats_dark_share_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_finra_ats_weekly_dark_share_candidate_pool`, trial `finra_ats_weekly_dark_share_candidate_pool`.
   Lesson: The fixed top-1/publication-day ATS dark-share rise source did not clear the predeclared Gate 4 bar on the canonical windows: window_ev_regression; window_pnl_regression; accepted_compression_ev_not_beaten; accepted_d...
+- `exp-20260703-019` `rejected_sec_item101_contract_relation_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_contract_relation_candidate_pool_alpha`, trial `sec_item101_contract_relation_issuer_self_shared_default_off`.
+  Lesson: The fixed Item 1.01 relation top-1 rule failed the predeclared full-stack Gate 4: aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows;...
+- `exp-20260704-001` `rejected_sec_item101_contract_relation_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_contract_relation_candidate_pool_alpha`, trial `sec_item101_contract_economic_terms_shared_default_off`.
+  Lesson: The fixed amount_or_duration Item 1.01 policy failed the predeclared full-stack Gate 4: aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_wi...
+- `exp-20260705-009` `rejected_duplicate_exposure_cap_historical_validation_failed`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `duplicate_exposure_cap_policy_sim`.
+  Lesson: The forward ledger can support a cross-sleeve cap simulation, but the independent historical accepted-paper surface is still too thin or concentrated to validate a default-off duplicate exposure policy. Do not retune...
+- `exp-20260705-014` `rejected_cisa_kev_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `external_event_entry_risk_gate`, trial `cisa_kev_mapped_issuer_entry_risk_window`.
+  Lesson: Mapped mega-cap issuers absorb KEV headlines without systematic near-term underperformance, or the flagged sample was too thin/saturated for a deployable gate: thin_vetoed_trade_sample Do not retune the 5-session wind...
 
 ## Highest-Signal Historical Records
 

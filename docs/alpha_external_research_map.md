@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-03.
+Last refreshed: 2026-07-05.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -389,6 +389,42 @@ Sources:
 
 - <https://arxiv.org/abs/2606.27100>
 - <https://arxiv.org/abs/2605.21504>
+
+### Semantic Retrieval Forecasting Needs Evidence Keys
+
+Recent retrieval-augmented time-series work points to a useful middle ground
+between raw nearest-neighbor pattern matching and black-box forecasting. FinSeer
+uses financial-history retrieval tailored to stock forecasting; SERAF adds a
+second semantic retrieval channel because numeric similarity alone can fail
+under non-stationarity. Ginger's translation is narrow: retrieved analogs are
+not trade signals unless the retrieval key is PIT, semantically explainable,
+and scored against the displaced candidate after costs.
+
+Implementable fields:
+
+- `retrieval_forecast_protocol_id`
+- `numeric_pattern_retrieval_key`
+- `semantic_pattern_retrieval_key`
+- `retrieved_analog_asof`
+- `retrieved_analog_future_blind_flag`
+- `retrieval_relation_explanation_bucket`
+- `semantic_numeric_retrieval_agreement_bucket`
+- `retrieval_after_cost_replacement_value`
+
+Controls:
+
+- persist retrieved analog ids, source windows, semantic labels, and as-of
+  timestamps before scoring;
+- compare numeric-only, semantic-only, and joint retrieval against momentum,
+  random-walk, and accepted-helper comparators;
+- forbid retrieval keys that smuggle future return paths or post-event labels;
+- use semantic retrieval first to prioritize forward observation rows, not to
+  change orders or sizing before Gate 1-4.
+
+Sources:
+
+- <https://arxiv.org/abs/2502.05878>
+- <https://arxiv.org/abs/2606.14941>
 
 ### Continuous Style Allocation Beats Discrete Regime Rules
 
@@ -2345,3 +2381,125 @@ Controls:
   as candidate-pool alpha.
 
 Source: <https://arxiv.org/abs/2505.16336>
+
+### Short-Trend Alpha Needs Microstructure Viability
+
+A July 2026 q-fin study argues that short-horizon trend following degraded
+after 2009 mostly where the volatility-normalized tick size is small: trend
+PnL collapsed in small-tick contracts but survived better in large-tick
+contracts. The Ginger translation is not another momentum threshold. It is to
+treat short-trend, breakout, and compression continuations as execution
+microstructure hypotheses: the same price pattern may be viable only when tick
+size, spread, depth proxy, and impact costs support aggressive execution.
+
+Implementable fields:
+
+- `vol_normalized_tick_size_bucket`
+- `spread_to_atr_bucket`
+- `dollar_depth_proxy_bucket`
+- `trend_signal_speed_bucket`
+- `impact_reinforcement_viability_flag`
+- `small_tick_trend_decay_risk_bucket`
+- `microstructure_cost_scenario_id`
+- `trend_after_cost_replacement_value`
+
+Controls:
+
+- stratify any short-trend or breakout replay by tick/spread/impact buckets;
+- compare against the same accepted helper after realistic next-open and
+  spread costs;
+- treat small-tick positive gross momentum as execution-risk context until
+  after-cost replacement value clears;
+- avoid retuning momentum labels without a new PIT microstructure field.
+
+Source: <https://arxiv.org/abs/2607.01550>
+
+### Order-Flow Impact Is A Liquidity State, Not Raw Flow Alpha
+
+A July 2026 paper estimates Kyle-style price impact from daily equity order
+flow and reports that signed order flow predicts contemporaneous and
+one-month-ahead returns, while volume volatility predicts weaker subsequent
+returns. This is directly relevant to Ginger's Moomoo main-flow failures: raw
+inflow labels are too blunt unless they are tied to a PIT impact estimate,
+publication timing, horizon, and costed displacement comparator.
+
+Implementable fields:
+
+- `signed_order_flow_bucket`
+- `kyle_lambda_estimator_version`
+- `amihud_impact_bucket`
+- `volume_volatility_bucket`
+- `impact_normalization_horizon`
+- `flow_publication_lag_bucket`
+- `flow_impact_reversion_context`
+- `flow_after_cost_replacement_value`
+
+Controls:
+
+- estimate impact only from data available before the decision date;
+- lock the horizon before scoring flow rows, especially 10d versus one-month;
+- compare flow rows against cash, SPY/QQQ, and accepted allocator/distribution
+  sources after costs;
+- do not retry raw main-flow thresholds without a new PIT impact or borrow /
+  loan-availability field.
+
+Source: <https://arxiv.org/abs/2607.01377>
+
+### MACD-Style Signals Need Latent-Drift And Cost Context
+
+New mathematical-finance work derives MACD-like signals from filtered latent
+drift with fast and slow factors. The useful local lesson is narrow: MACD is a
+state estimator, not an independent alpha license. Any revival of trend
+indicators should log the fast/slow factor spread, signal half-life, and
+execution envelope, then prove incremental replacement value over existing
+trend and accepted default-off helpers.
+
+Implementable fields:
+
+- `latent_drift_filter_version`
+- `fast_slow_ema_spread_bucket`
+- `signal_half_life_bucket`
+- `volterra_correction_bucket`
+- `trend_state_confidence_bucket`
+- `macd_placebo_delta`
+- `latent_drift_after_cost_replacement_value`
+
+Controls:
+
+- compare MACD-style features to simple momentum, current trend helpers, and
+  accepted paper adapters on the same dates;
+- predeclare fast/slow windows and cost assumptions before replay;
+- use the signal first as state/risk context unless Gate 1-4 proves an entry,
+  ranking, or sizing change;
+- do not sweep EMA windows on frozen rows without a new evidence axis.
+
+Source: <https://arxiv.org/abs/2607.01705>
+
+### Factor Models Need Cap-Axis Diagnostics
+
+A July 2026 factor-model diagnostic shows that a low-dimensional model can
+improve the maximum-Sharpe frontier while still leaving pricing errors along
+the market-cap rank axis. Ginger should apply the same idea to broad-universe
+and factor-like candidate pools: a positive aggregate EV or Sharpe is not
+enough if the result is just hidden large-cap / small-cap bridge alpha.
+
+Implementable fields:
+
+- `cap_rank_bucket`
+- `cap_axis_bridge_alpha_curve`
+- `cap_axis_norm`
+- `lead_lag_corrected_cap_alpha`
+- `factor_size_exposure_bucket`
+- `cap_subspace_zero_alpha_passed`
+- `cap_axis_replacement_value_delta`
+
+Controls:
+
+- report candidate performance by market-cap rank bucket before promoting
+  broad factor or universe-expansion sources;
+- compare cap-axis behavior against SPY/QQQ, static size/style alternatives,
+  and accepted default-off comparators;
+- distinguish Sharpe improvement from residual cap-subspace alpha;
+- reject broad sources whose edge vanishes after cap-axis and lead-lag checks.
+
+Source: <https://arxiv.org/abs/2607.01765>

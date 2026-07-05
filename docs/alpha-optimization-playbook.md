@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-03.
+Last refreshed: 2026-07-05.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -815,6 +815,52 @@ settled replacement-value rows, then test one fixed source-ranking rule or
 relation graph. Do not reslice the first partial rows by source, keyword,
 theme, prediction-market wording, or event-age buckets.
 
+The July 3 late / July 4 batch tightens the same lesson: new surfaces are
+valuable only when they create durable, PIT, settled rows. SEC Item 1.01
+contract-relation provenance is now a useful observer surface, and economic
+term tags are exposed through the shared daily observer, but issuer-self,
+peer-target, public-counterparty, and amount/duration top-1 candidate sources
+failed or remained observed-only. Do not turn that into regex, priority,
+top-N, hold, cooldown, or notional sweeps; the next valid evidence is
+prospective closed rows, normalized customer/supplier identity, contract value
+/ duration / revenue exposure, or a non-SEC relation source. Prediction-market
+rows needed semantic relevance repair before attribution; after the repair,
+probability markets are event-risk context until closed replacement rows
+mature. Accepted-sleeve forward maturation is now partly a parity problem:
+volatility-relief and industry-stable core-flow underfiring was real current
+sparsity, while turn-of-month had a concrete daily calendar parity defect that
+was repaired. Let the repaired turn-of-month ledger collect outcomes before
+activation work. Options event-distance / earnings-surprise-history joins and
+Kova RS-proxy / static SEC13F breadth slices were not allocation-ready; current
+observer alphas also remain blocked until a PIT settlement price surface covers
+their entry sessions.
+
+The July 5 batch produced no accepted alpha; it converted several "maybe ready"
+surfaces back into concrete forward-data requirements. Narrow-range compression
+and post-earnings underpriced drift passed representative admission/lifecycle
+parity probes, so do not spend another ID on those probes unless a specific
+daily helper input drifts. Observer outcome ledgers now distinguish true
+no-entry price gaps from rows whose future entry date has not arrived, and
+latest prediction-market / entity-theme summaries were refreshed under that
+semantics; alpha reads still need more settled entry/open bars and replacement
+value. Duplicate same-ticker same-entry exposure remains only an observed lead:
+the historical validation and fixed cap simulation both failed on sample,
+concentration, or Gate-4 evidence, so no cap/scalar/response change is allowed
+until materially more independent duplicate rows close. Form 4 sale-overhang
+context is now wired into daily non-OHLCV collection by default, but a risk
+response needs at least 25 closed shared-helper context rows, at least 8
+high-overhang rows, cash/SPY/QQQ replacement values, and max single-ticker share
+<=40%. Turn-of-month has post-repair row supply (one open and one pending as of
+the July 5 audit), but zero closed post-repair cash/SPY/QQQ replacement rows;
+activation remains blocked. The orphan atomic-temp line was hardened after the
+initial blocked cleanup: permission-retry cleanup is accepted measurement repair
+only, and does not justify retuning observer, prediction-market, or contract
+relation alpha fields. CISA KEV catalog additions became a rejected observed
+lead: mapped MSFT/AAPL/GOOG/META event-study drift was mixed, baseline replay
+had zero KEV-flagged trades, and the source remains context-only until a broader
+issuer map or materially more flagged core entries can support a shared-helper
+Gate 4 risk test.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -874,6 +920,14 @@ Since exp-20260611-020, closed rows in `data/paper_sleeves/*/state.json`
 carry replacement-value fields where comparable data exists. A readiness audit
 should wait for materially more closed rows per adapter and use those fields as
 the activation surface, not rerun a generic "replacement fields missing" audit.
+
+July 5 status: admission/lifecycle parity is confirmed for narrow-range
+compression and post-earnings underpriced drift, while turn-of-month has
+post-repair supply but no closed comparator-ready rows. The next valid action is
+collection and settlement, not threshold, rank, notional, hold-day, cooldown, or
+activation-envelope retuning. CISA KEV is not a ready gate; reopen only with a
+broader predeclared issuer map plus materially nonzero KEV-flagged replay trades,
+or with a distinct cybersecurity event source.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -1805,6 +1859,60 @@ production-visible field:
   cash/SPY/QQQ replacement rows, or with a truly new PIT entity-relation source
   such as supply-chain, customer, contract, or verified economic-exposure
   provenance;
+- SEC Item 1.01 contract-relation retries that only adjust relation regexes,
+  economic-term regexes, counterparty-count tags, relation priority, source
+  ranking, top-N, hold, cooldown, notional, or public-counterparty / peer-target
+  response shapes on the `exp-20260703-017..022` and `exp-20260704-001/004`
+  rows. The provenance and economic-term observer surface is retained for
+  forward evidence, but deployable issuer-self, peer, public-counterparty, and
+  amount/duration candidate sources did not clear the bar. Reopen only with
+  prospective closed replacement rows, normalized CIK-linked customer/supplier
+  identity, contract value/duration/revenue exposure, or a genuinely different
+  non-SEC relation source;
+- accepted-sleeve activation or admission-parity retries that ignore the July
+  4/5 autopsy split: volatility-relief and industry-stable core-flow currently
+  have expected sparse admissions; turn-of-month had a daily calendar parity
+  defect that was repaired and now has only open/pending post-repair rows;
+  narrow-range compression and post-earnings underpriced drift have
+  representative parity confirmed. Do not retune thresholds, ranks, scalars,
+  hold days, cooldowns, or activation envelopes from zero or open-only rows;
+  wait for post-repair closed cash/SPY/QQQ replacement value or a concrete
+  helper-input drift;
+- options event-distance / earnings-history and Kova RS-proxy / static SEC13F
+  ownership-breadth retries that only reslice the same current forward rows by
+  DTE, surprise-history bucket, 20d/120d RS ranks, holder breadth, top-N, hold,
+  cooldown, or notional. `exp-20260704-002`, `011`, `013`, and `014` found no
+  allocation-ready edge. Reopen only with materially more settled forward rows,
+  historical PIT options-chain or Kova coverage, richer earnings guidance/call
+  fields, non-quarterly ownership/flow provenance, borrow/options cross-evidence,
+  or a new production-visible data source;
+- current observer alpha retries before the settlement price surface is
+  gate-ready. `exp-20260704-012` blocked prediction-market, entity-theme, and
+  intraday structured-news reads because entry/open bars, `entry_date`, or
+  `target_price` were missing and the hot warehouse update hit disk I/O errors;
+  `exp-20260705-006/007` repaired future-entry versus true-no-entry semantics
+  and refreshed summaries, but did not create allocation evidence. Reopen only
+  after materially more settled observer rows have entry/open bars and
+  cash/SPY/QQQ replacement value, or after a genuinely different PIT observer
+  relation source appears;
+- duplicate same-ticker same-entry paper-exposure caps, scalars, source
+  priority changes, or response curves based only on the first July 5 forward
+  lead. `exp-20260705-002` was observed-only positive, while
+  `exp-20260705-003` and `exp-20260705-009` failed historical validation /
+  policy evidence. Reopen only with materially more closed cross-sleeve
+  duplicate forward rows, independent historical/default-off duplicate rows
+  across at least two windows, or a full shared-policy Gate 1-4 cap test;
+- Form 4 sale-overhang risk-allocation retries before the daily context logger
+  accumulates the recorded minimum sample. `exp-20260705-011` wired the
+  accepted data-only context into daily non-OHLCV collection; a valid alpha
+  retry needs at least 25 closed shared-helper context rows, at least 8
+  high-sale-overhang rows, cash/SPY/QQQ replacement values, and max
+  single-ticker share <=40%, or a distinct new data source/gate shape;
+- CISA KEV entry-risk gates on the first mega-cap issuer map. `exp-20260705-014`
+  found mixed post-addition event-study drift and zero KEV-flagged canonical
+  replay trades, so threshold/window/response retunes are frozen. Reopen only
+  with a broader predeclared issuer map producing materially nonzero flagged
+  baseline trades, or with a distinct cybersecurity incident source;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
