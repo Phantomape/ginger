@@ -1,4 +1,4 @@
-# Pilot tracker - as of 2026-07-03T03:39:57+00:00
+# Pilot tracker - as of 2026-07-05T03:27:53+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
@@ -13,7 +13,7 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 
 | pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |
 |---|--:|--:|--:|--:|--:|--:|--:|---|
-| Source-priority allocator (TOP-1 only) | 2 | 50% | $630 | $-945 | $-929 | $-990 | 9.4% | **COLLECTING** |
+| Source-priority allocator (TOP-1 only) | 2 | 50% | $630 | $630 | $730 | $963 | 9.4% | **COLLECTING** |
 | Distribution-day absorption leadership | 0 | - | $0 | $0 | $0 | $0 | 0.0% | **COLLECTING** |
 | Fundamental growth + RS | 8 | 50% | $-802 | $-802 | $613 | $900 | 24.4% | **KILL** |
 
