@@ -1,0 +1,700 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "alpha_hypothesis": "CISA KEV catalog additions (dateAdded, PIT, credential-free) mapping to core-universe issuers MSFT/AAPL/GOOG/META mark elevated near-term operational/headline risk; core entries within 5 trading days after a mapped KEV addition should show worse forward returns, supporting an entry risk gate.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260705-014/exp_20260705_014_cisa_kev_entry_risk_gate.json",
+  "baseline_trade_attribution": {
+    "late_strong": {
+      "flagged_rows": [],
+      "kev_flagged": {
+        "n": 0,
+        "pnl_mean": null,
+        "pnl_sum": 0,
+        "win_rate": null
+      },
+      "mapped_ticker_unflagged": {
+        "n": 1,
+        "pnl_mean": 7450.31,
+        "pnl_sum": 7450.31,
+        "win_rate": 1.0
+      },
+      "window": "late_strong"
+    },
+    "mid_weak": {
+      "flagged_rows": [],
+      "kev_flagged": {
+        "n": 0,
+        "pnl_mean": null,
+        "pnl_sum": 0,
+        "win_rate": null
+      },
+      "mapped_ticker_unflagged": {
+        "n": 2,
+        "pnl_mean": 4307.28,
+        "pnl_sum": 8614.57,
+        "win_rate": 0.5
+      },
+      "window": "mid_weak"
+    },
+    "old_thin": {
+      "flagged_rows": [],
+      "kev_flagged": {
+        "n": 0,
+        "pnl_mean": null,
+        "pnl_sum": 0,
+        "win_rate": null
+      },
+      "mapped_ticker_unflagged": {
+        "n": 1,
+        "pnl_mean": -434.82,
+        "pnl_sum": -434.82,
+        "win_rate": 0.0
+      },
+      "window": "old_thin"
+    }
+  },
+  "before_after_strategy_behavior_changed": false,
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "total_return_pct": 1.1707,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.039653
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1331,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1118,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.74,
+      "signals_generated": 52,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7885,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 77845.53,
+      "total_return_pct": 0.7785,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "expected_value_score": 0.644,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.095,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.5,
+      "signals_generated": 62,
+      "signals_survived": 56,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9032,
+      "tail_loss_share": 0.5948,
+      "total_pnl": 42933.82,
+      "total_return_pct": 0.4293,
+      "trade_count": 23,
+      "win_rate": 0.4348,
+      "worst_trade_pct": -0.092804
+    }
+  },
+  "calibration": {
+    "actual_decision": "rejected_cisa_kev_entry_risk_gate",
+    "actual_success": 0,
+    "brier_score": 0.0225,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "kev_window_near_always_on_for_msft",
+      "thin_vetoed_trade_sample",
+      "event_drift_not_negative"
+    ],
+    "predicted_success_probability": 0.15,
+    "realized_failure_modes": [
+      "thin_vetoed_trade_sample"
+    ]
+  },
+  "causal_components": [
+    "pit kev archive materialization",
+    "vendor ticker map",
+    "event study forward returns",
+    "baseline trade attribution",
+    "gate verdict"
+  ],
+  "change_type": "entry_filter",
+  "changed_variable": "cisa_kev_mapped_issuer_5d_entry_risk_window",
+  "decision": "rejected_cisa_kev_entry_risk_gate",
+  "event_study": {
+    "late_strong": {
+      "coverage": {
+        "AAPL": {
+          "kev_window_sessions": 23,
+          "kev_window_share": 0.187,
+          "window_sessions": 123
+        },
+        "GOOG": {
+          "kev_window_sessions": 25,
+          "kev_window_share": 0.2033,
+          "window_sessions": 123
+        },
+        "META": {
+          "kev_window_sessions": 5,
+          "kev_window_share": 0.0407,
+          "window_sessions": 123
+        },
+        "MSFT": {
+          "kev_window_sessions": 51,
+          "kev_window_share": 0.4146,
+          "window_sessions": 123
+        }
+      },
+      "per_ticker": {
+        "AAPL": {
+          "events_in_window": 4,
+          "h10": {
+            "event_mean": -0.002225,
+            "event_median": 0.004618,
+            "event_n": 4,
+            "excess_mean": -0.001715,
+            "unconditional_mean": -0.00051
+          },
+          "h5": {
+            "event_mean": -0.007107,
+            "event_median": -0.008939,
+            "event_n": 4,
+            "excess_mean": -0.00799,
+            "unconditional_mean": 0.000884
+          }
+        },
+        "GOOG": {
+          "events_in_window": 5,
+          "h10": {
+            "event_mean": 0.021475,
+            "event_median": 0.005646,
+            "event_n": 5,
+            "excess_mean": 0.003985,
+            "unconditional_mean": 0.017489
+          },
+          "h5": {
+            "event_mean": 0.029024,
+            "event_median": 0.028066,
+            "event_n": 5,
+            "excess_mean": 0.018983,
+            "unconditional_mean": 0.010041
+          }
+        },
+        "META": {
+          "events_in_window": 1,
+          "h10": {
+            "event_mean": -0.014989,
+            "event_median": -0.014989,
+            "event_n": 1,
+            "excess_mean": -0.012523,
+            "unconditional_mean": -0.002466
+          },
+          "h5": {
+            "event_mean": -0.037515,
+            "event_median": -0.037515,
+            "event_n": 1,
+            "excess_mean": -0.034922,
+            "unconditional_mean": -0.002592
+          }
+        },
+        "MSFT": {
+          "events_in_window": 12,
+          "h10": {
+            "event_mean": -0.036188,
+            "event_median": -0.041038,
+            "event_n": 10,
+            "excess_mean": -0.014718,
+            "unconditional_mean": -0.021471
+          },
+          "h5": {
+            "event_mean": -0.022387,
+            "event_median": -0.033054,
+            "event_n": 12,
+            "excess_mean": -0.014358,
+            "unconditional_mean": -0.008029
+          }
+        }
+      },
+      "pooled": {
+        "h10": {
+          "event_n": 20,
+          "pooled_excess_mean": -0.007332,
+          "pooled_excess_median": -0.012183
+        },
+        "h5": {
+          "event_n": 22,
+          "pooled_excess_mean": -0.006558,
+          "pooled_excess_median": -0.015458
+        }
+      }
+    },
+    "mid_weak": {
+      "coverage": {
+        "AAPL": {
+          "kev_window_sessions": 15,
+          "kev_window_share": 0.1181,
+          "window_sessions": 127
+        },
+        "GOOG": {
+          "kev_window_sessions": 20,
+          "kev_window_share": 0.1575,
+          "window_sessions": 127
+        },
+        "META": {
+          "kev_window_sessions": 5,
+          "kev_window_share": 0.0394,
+          "window_sessions": 127
+        },
+        "MSFT": {
+          "kev_window_sessions": 36,
+          "kev_window_share": 0.2835,
+          "window_sessions": 127
+        }
+      },
+      "per_ticker": {
+        "AAPL": {
+          "events_in_window": 3,
+          "h10": {
+            "event_mean": 0.056816,
+            "event_median": 0.056816,
+            "event_n": 2,
+            "excess_mean": 0.039759,
+            "unconditional_mean": 0.017057
+          },
+          "h5": {
+            "event_mean": 0.021987,
+            "event_median": 0.021987,
+            "event_n": 2,
+            "excess_mean": 0.013285,
+            "unconditional_mean": 0.008702
+          }
+        },
+        "GOOG": {
+          "events_in_window": 4,
+          "h10": {
+            "event_mean": -0.000684,
+            "event_median": -0.00226,
+            "event_n": 4,
+            "excess_mean": -0.037382,
+            "unconditional_mean": 0.036698
+          },
+          "h5": {
+            "event_mean": 0.00229,
+            "event_median": 0.007465,
+            "event_n": 4,
+            "excess_mean": -0.014953,
+            "unconditional_mean": 0.017243
+          }
+        },
+        "META": {
+          "events_in_window": 1,
+          "h10": {
+            "event_mean": 0.058424,
+            "event_median": 0.058424,
+            "event_n": 1,
+            "excess_mean": 0.03797,
+            "unconditional_mean": 0.020453
+          },
+          "h5": {
+            "event_mean": 0.040353,
+            "event_median": 0.040353,
+            "event_n": 1,
+            "excess_mean": 0.030379,
+            "unconditional_mean": 0.009974
+          }
+        },
+        "MSFT": {
+          "events_in_window": 8,
+          "h10": {
+            "event_mean": 0.011473,
+            "event_median": 0.028393,
+            "event_n": 6,
+            "excess_mean": -0.008795,
+            "unconditional_mean": 0.020268
+          },
+          "h5": {
+            "event_mean": 0.000418,
+            "event_median": 0.011485,
+            "event_n": 7,
+            "excess_mean": -0.0102,
+            "unconditional_mean": 0.010618
+          }
+        }
+      },
+      "pooled": {
+        "h10": {
+          "event_n": 13,
+          "pooled_excess_mean": -0.006524,
+          "pooled_excess_median": 0.002179
+        },
+        "h5": {
+          "event_n": 14,
+          "pooled_excess_mean": -0.005305,
+          "pooled_excess_median": 0.003556
+        }
+      }
+    },
+    "old_thin": {
+      "coverage": {
+        "AAPL": {
+          "kev_window_sessions": 22,
+          "kev_window_share": 0.1594,
+          "window_sessions": 138
+        },
+        "GOOG": {
+          "kev_window_sessions": 5,
+          "kev_window_share": 0.0362,
+          "window_sessions": 138
+        },
+        "META": {
+          "kev_window_sessions": 5,
+          "kev_window_share": 0.0362,
+          "window_sessions": 138
+        },
+        "MSFT": {
+          "kev_window_sessions": 67,
+          "kev_window_share": 0.4855,
+          "window_sessions": 138
+        }
+      },
+      "per_ticker": {
+        "AAPL": {
+          "events_in_window": 5,
+          "h10": {
+            "event_mean": 0.029912,
+            "event_median": 0.030646,
+            "event_n": 4,
+            "excess_mean": 0.033248,
+            "unconditional_mean": -0.003336
+          },
+          "h5": {
+            "event_mean": 0.02973,
+            "event_median": 0.037651,
+            "event_n": 5,
+            "excess_mean": 0.029018,
+            "unconditional_mean": 0.000712
+          }
+        },
+        "GOOG": {
+          "events_in_window": 1,
+          "h10": {
+            "event_mean": -0.043052,
+            "event_median": -0.043052,
+            "event_n": 1,
+            "excess_mean": -0.041816,
+            "unconditional_mean": -0.001236
+          },
+          "h5": {
+            "event_mean": -0.059929,
+            "event_median": -0.059929,
+            "event_n": 1,
+            "excess_mean": -0.059666,
+            "unconditional_mean": -0.000263
+          }
+        },
+        "META": {
+          "events_in_window": 1,
+          "h10": {
+            "event_mean": -0.015568,
+            "event_median": -0.015568,
+            "event_n": 1,
+            "excess_mean": -0.008946,
+            "unconditional_mean": -0.006621
+          },
+          "h5": {
+            "event_mean": -0.036937,
+            "event_median": -0.036937,
+            "event_n": 1,
+            "excess_mean": -0.034233,
+            "unconditional_mean": -0.002704
+          }
+        },
+        "MSFT": {
+          "events_in_window": 16,
+          "h10": {
+            "event_mean": 0.000981,
+            "event_median": 0.005869,
+            "event_n": 15,
+            "excess_mean": 0.005538,
+            "unconditional_mean": -0.004557
+          },
+          "h5": {
+            "event_mean": 0.012344,
+            "event_median": 0.002009,
+            "event_n": 16,
+            "excess_mean": 0.013655,
+            "unconditional_mean": -0.001311
+          }
+        }
+      },
+      "pooled": {
+        "h10": {
+          "event_n": 21,
+          "pooled_excess_mean": 0.007872,
+          "pooled_excess_median": 0.004982
+        },
+        "h5": {
+          "event_n": 23,
+          "pooled_excess_mean": 0.011725,
+          "pooled_excess_median": 0.003841
+        }
+      }
+    }
+  },
+  "experiment_id": "exp-20260705-014",
+  "gate1": {
+    "accepted_reference": {
+      "expected_value_score_sum": 7.8941,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61
+    },
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "rerun_before_aggregate": {
+      "expected_value_score_sum": 7.9399,
+      "max_drawdown_pct_worst": 0.1118,
+      "signals_generated_sum": 165,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7885,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62
+    }
+  },
+  "gate2": {
+    "fields_checked": [
+      "entry_date",
+      "target_price"
+    ],
+    "missing_entry_date": 0,
+    "missing_target_price_on_trade_rows": 62,
+    "passed": true,
+    "target_price_relevance": "target_price lives on generated signals and drives exits inside the engine; closed-trade rows do not carry it and this read-only attribution does not consume it (same semantics as exp-20260702-010 gate2)."
+  },
+  "gate3": {
+    "minimum_before_survival_rate": 0.7885,
+    "new_entry_filter_added": false,
+    "note": "Attribution only; no filter applied, so survival is the unchanged baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "applicable": false,
+    "decision": "rejected_cisa_kev_entry_risk_gate",
+    "failed_reasons": [
+      "thin_vetoed_trade_sample"
+    ],
+    "kev_flagged_pooled_pnl_mean": null,
+    "kev_flagged_trade_count": 0,
+    "mapped_unflagged_pooled_pnl_mean": 3774.26,
+    "max_ticker_kev_window_coverage": 0.4855,
+    "note": "No before/after strategy change proposed; the predeclared source-validation rule decides. A positive lead would still need a shared-helper Gate 4 veto experiment.",
+    "passed": false,
+    "supporting_windows": [
+      "late_strong",
+      "mid_weak"
+    ]
+  },
+  "hypothesis": "CISA KEV catalog additions (dateAdded, PIT, credential-free) mapping to core-universe issuers MSFT/AAPL/GOOG/META mark elevated near-term operational/headline risk; core entries within 5 trading days after a mapped KEV addition should show worse forward returns, supporting an entry risk gate.",
+  "implementation_mode": "private_replay_scout",
+  "kev_mapping_diagnostics": {
+    "decision_cve_counts": {
+      "AAPL": 93,
+      "GOOG": 72,
+      "META": 5,
+      "MSFT": 378
+    },
+    "decision_unique_event_days": {
+      "AAPL": 43,
+      "GOOG": 42,
+      "META": 5,
+      "MSFT": 113
+    },
+    "diagnostic_vendor_cve_counts_not_in_decision": {
+      "ADBE": 79,
+      "AVGO": 33,
+      "CSCO": 93,
+      "FTNT": 26,
+      "ORCL": 44,
+      "PANW": 15,
+      "SAP": 14,
+      "TEAM": 13
+    },
+    "top_unmapped_vendors_since_2024_10": [
+      [
+        "ivanti",
+        15
+      ],
+      [
+        "linux",
+        10
+      ],
+      [
+        "synacor",
+        9
+      ],
+      [
+        "d-link",
+        6
+      ],
+      [
+        "citrix",
+        6
+      ],
+      [
+        "solarwinds",
+        5
+      ],
+      [
+        "android",
+        5
+      ],
+      [
+        "qualcomm",
+        5
+      ],
+      [
+        "sonicwall",
+        5
+      ],
+      [
+        "simplehelp",
+        4
+      ]
+    ]
+  },
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260705-014.json",
+  "mechanism_family": "external_event_entry_risk_gate",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-027",
+    "exp-20260702-010"
+  ],
+  "new_evidence_type": "new_free_pit_event_data_source_cisa_kev",
+  "next_retry_requires": [
+    "forward rows after future mapped KEV additions",
+    "or a shared-helper Gate 4 veto experiment on a positive lead"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "decision_rule": "Lead only if pooled 5- and 10-session post-KEV excess drift is negative in >=2 canonical windows with >=10 events each, AND >=5 baseline trades enter inside the 5-session KEV window with worse mean PnL than mapped-ticker non-KEV trades. Otherwise rejected; no strategy behavior changes either way.",
+    "decision_vendor_map": {
+      "apple": "AAPL",
+      "google": "GOOG",
+      "meta": "META",
+      "microsoft": "MSFT"
+    },
+    "event_horizons": [
+      5,
+      10
+    ],
+    "kev_catalog_sha256": "f1bc020ba9b0aa3e49bd66af4e777e344a32066cfb516cd77a2247f1eb5582d8",
+    "kev_catalog_version": "2026.07.01",
+    "kev_entry_count": 1631,
+    "kev_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "kev_window_sessions": 5,
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 5-session window, the horizon pair, the vendor prefix map, or re-slice the same KEV events by CVE attributes (ransomware flag, CWE, product line) on the same fixed windows. Do not expand to weak vendor mappings to pad the sample.",
+    "new_evidence_required": "A legal retry needs settled forward rows recorded after a future mapped KEV addition, a genuinely different external event source, or a shared-helper Gate 4 experiment if this lead is positive.",
+    "why_result_happened": "Mapped mega-cap issuers absorb KEV headlines without systematic near-term underperformance, or the flagged sample was too thin/saturated for a deployable gate: thin_vetoed_trade_sample"
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "CISA KEV catalog additions (dateAdded, PIT, credential-free) mapping to core-universe issuers MSFT/AAPL/GOOG/META mark elevated near-term operational/headline risk; core entries within 5 trading days after a mapped KEV addition should show worse forward returns, supporting an entry risk gate.",
+    "2_history_check": {
+      "exp-20260702-010": "Entry risk cap rejected at the materiality hurdle; this test validates the source before proposing any gate.",
+      "exp-20260702-027": "S-1/F-1 overhang core entry veto rejected on zero core intersection; KEV maps directly to four core megacaps so the intersection risk is coverage saturation instead.",
+      "novelty_gate": "experiment.py new accepted the proposal without override; cisa_kev is a new data source with no prior family."
+    },
+    "3_single_policy_bundle": "cisa_kev_mapped_issuer_5d_entry_risk_window",
+    "4_success_failure_standard": "Predeclared two-layer rule in parameters.decision_rule; docs/backtesting.md canonical windows and baselines.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_014_cisa_kev_entry_risk_gate.py"
+  },
+  "prediction": {
+    "confidence_reason": "New free PIT event source verified live today (447 rows since 2024-10, 108 mapped to the predeclared 4 issuers); entry-veto family has a poor historical base rate and MSFT KEV density may saturate the window, so success probability is set low; the disconfirmer is machine-checkable event-study drift.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "kev_window_near_always_on_for_msft",
+      "thin_vetoed_trade_sample",
+      "event_drift_not_negative"
+    ],
+    "recorded_at": "2026-07-05T16:19:51+00:00",
+    "success_probability": 0.15
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only attribution over canonical replay trades and OHLCV snapshots plus a live KEV catalog fetch; no production or backtest behavior changed.",
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "thin_vetoed_trade_sample",
+  "related_files": [
+    "quant/experiments/exp_20260705_014_cisa_kev_entry_risk_gate.py",
+    "data/experiments/exp-20260705-014/exp_20260705_014_cisa_kev_entry_risk_gate.json",
+    "experiments/logs/exp-20260705-014.json",
+    "experiments/cards/exp-20260705-014.md",
+    "experiments/manifests/exp-20260705-014.json",
+    "experiments/tickets/exp-20260705-014.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_014_cisa_kev_entry_risk_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_014_cisa_kev_entry_risk_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "cisa_kev_mapped_issuer_5d_entry_risk_window",
+  "status": "rejected",
+  "timestamp": "2026-07-05T16:31:11+00:00",
+  "trial_family": "cisa_kev_mapped_issuer_entry_risk_window",
+  "trial_variant_id": "cisa_kev_mapped_issuer_5d_entry_risk_window_v1"
+}
