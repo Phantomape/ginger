@@ -1,0 +1,505 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/prediction_market_event_observer.py",
+    "quant/test_prediction_market_event_observer.py",
+    "quant/experiments/exp_20260704_005_prediction_market_semantic_relevance_repair.py",
+    "data/experiments/exp-20260704-005/exp_20260704_005_prediction_market_semantic_relevance_repair.json",
+    "experiments/cards/exp-20260704-005.md",
+    "experiments/manifests/exp-20260704-005.json",
+    "experiments/tickets/exp-20260704-005.json",
+    "experiments/logs/exp-20260704-005.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Prediction-market probabilities can become an event-risk context surface only if each saved market is semantically tied to the configured public-equity exposure theme.",
+  "artifact": "data/experiments/exp-20260704-005/exp_20260704_005_prediction_market_semantic_relevance_repair.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-005.md",
+  "causal_components": [
+    "token-boundary relevance matching",
+    "query-specific off-theme exclusions",
+    "20260703 contaminated observer-row audit",
+    "observer-only regression tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/prediction_market_event_observer.py",
+    "quant/test_prediction_market_event_observer.py",
+    "quant/experiments/exp_20260704_005_prediction_market_semantic_relevance_repair.py",
+    "data/experiments/exp-20260704-005/exp_20260704_005_prediction_market_semantic_relevance_repair.json",
+    "experiments/logs/exp-20260704-005.json",
+    "experiments/cards/exp-20260704-005.md",
+    "experiments/manifests/exp-20260704-005.json",
+    "experiments/tickets/exp-20260704-005.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "prediction_market_event_semantic_relevance_gate_v2",
+  "claimed_at": "2026-07-04T06:59:49+00:00",
+  "completed_at": "2026-07-04T07:09:56+00:00",
+  "created_at": "2026-07-04T06:58:04+00:00",
+  "decision": "accepted_measurement_repair_prediction_market_semantic_relevance_gate",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-005",
+  "experiment_uid": "expuid-db326383e10e4126",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Canonical strategy baseline is identity-only for this observer repair.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_scope": "Not applicable. Observer-only event context creates no entries, target exits, paper orders, or live orders.",
+    "fields_checked": [
+      "prediction_market_query_id",
+      "provider_slug",
+      "title",
+      "question",
+      "relevance_groups",
+      "exclude_terms",
+      "relevance_method",
+      "relevance_hit_terms",
+      "relevance_excluded_terms"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, rank, size, exit, prompt, or order rule changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "checks": {
+      "baseline_loaded": true,
+      "known_off_theme_rows_rejected": true,
+      "metadata_complete": true,
+      "source_rows_present": true,
+      "specific_relevant_rows_retained": true,
+      "strategy_identity_unchanged": true
+    },
+    "decision_basis": "Accepted only as measurement repair: the shared observer helper now rejects semantically unrelated prediction markets before they can enter forward attribution.",
+    "failed_reasons": [],
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T06:58:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "prediction_market_semantic_relevance_repair"
+  },
+  "hypothesis": "Alpha hypothesis: prediction-market probabilities can become an event-risk context surface only if each admitted market is semantically tied to its configured public-equity exposure theme; the current 20260703 observer output admits unrelated questions, so repair the relevance gate before any alpha attribution.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "prediction_market_event_semantic_relevance_gate_v2"
+  ],
+  "log_file": "experiments/logs/exp-20260704-005.json",
+  "mechanism_family": "prediction_market_event_observer_semantic_relevance_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-004",
+    "exp-20260703-008",
+    "exp-20260703-011"
+  ],
+  "new_evidence_type": "semantic_relevance_defect_in_20260703_prediction_market_rows",
+  "next_retry_requires": [
+    "post-repair prediction-market rows with closed cash/SPY/QQQ replacement outcomes",
+    "materially different event-probability source or cleaner taxonomy",
+    "no use of contaminated 20260703 rows for alpha attribution"
+  ],
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "admits",
+        "admitted",
+        "alpha",
+        "an",
+        "any",
+        "attribution",
+        "become",
+        "before",
+        "can",
+        "configured",
+        "context",
+        "current",
+        "each",
+        "equity",
+        "event",
+        "exposure",
+        "gate",
+        "hypothesis",
+        "if",
+        "is",
+        "its",
+        "market",
+        "observer",
+        "only",
+        "output",
+        "prediction",
+        "probabilities",
+        "public",
+        "questions",
+        "relevance",
+        "repair",
+        "risk",
+        "semantic",
+        "semantically",
+        "so",
+        "surface",
+        "theme",
+        "tied",
+        "to",
+        "unrelated"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "prediction_market_event_observer_relevance_repair",
+        "reopen_condition": "Relevant post-repair prediction-market rows with closed forward cash/SPY/QQQ replacement outcomes, or a materially different probability source with cleaner event taxonomy.",
+        "score": 0.07,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "prediction_market_event_observer_surface",
+        "reopen_condition": "Current rows with non-null probabilities plus subsequent entity-exposure forward settlement, or a daily run.py wiring measurement repair that makes rows accumulate automatically.",
+        "score": 0.05,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "prediction_market_event_observer_daily_wiring",
+        "reopen_condition": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics.",
+        "score": 0.0372,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "prediction_market_event_observer_outcome_settlement",
+        "reopen_condition": "Closed post-relevance-gate prediction-market outcome rows with cash/SPY/QQQ replacement value, or a materially different event-probability source.",
+        "score": 0.0364,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.0356,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "semantic relevance defect: current 20260703 observer rows admit unrelated Polymarket markets under configured event themes; this is a fault recovery exception, not a threshold retune",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "semantic relevance defect: current 20260703 observer rows admit unrelated Polymarket markets under configured event themes; this is a fault recovery exception, not a threshold retune",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The prior gate used raw substring matching, so short terms such as 'ai' and broad terms such as 'power' admitted unrelated political, military, and consumer-hardware markets. Token/phrase boundary matching plus source-specific exclusion terms removes that pollution before forward settlement.",
+    "forbidden_near_neighbor_retry": "Do not run prediction-market alpha on the polluted first snapshot or by sweeping probability thresholds, provider slugs, theme labels, or ticker maps. Use post-repair rows with closed cash/SPY/QQQ outcomes.",
+    "new_evidence_required": "Relevant post-repair prediction-market rows with closed forward cash/SPY/QQQ replacement outcomes, or a materially different probability source with cleaner event taxonomy."
+  },
+  "prediction": {
+    "success_probability": 0.78,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "overfilter_relevant_markets",
+      "provider_schema_drift",
+      "test_fixture_mismatch"
+    ],
+    "confidence_reason": "Daily 20260703 rows show admitted military/political markets under AI export-control and data-center-power query ids; this directly blocks a later prediction-market alpha read.",
+    "recorded_at": "2026-07-04T06:57:27+00:00"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "The observer remains default-off and observer-only. This repair only changes which prediction-market rows are saved for future attribution; it does not feed prompts, rankings, sizing, exits, or orders."
+  },
+  "related_files": [
+    "quant/prediction_market_event_observer.py",
+    "quant/test_prediction_market_event_observer.py",
+    "data/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260703.json",
+    "experiments/logs/exp-20260703-004.json",
+    "experiments/logs/exp-20260703-008.json",
+    "experiments/logs/exp-20260703-011.json"
+  ],
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_prediction_market_semantic_relevance_gate",
+    "artifact": "data/experiments/exp-20260704-005/exp_20260704_005_prediction_market_semantic_relevance_repair.json",
+    "log": "experiments/logs/exp-20260704-005.json",
+    "runner": "quant/experiments/exp_20260704_005_prediction_market_semantic_relevance_repair.py",
+    "gate4": {
+      "mode": "measurement_repair_semantic_relevance_gate",
+      "passed": true,
+      "failed_reasons": [],
+      "strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "current_daily_audit": {
+        "snapshot_path": "data/non_ohlcv/prediction_market_event_observer/daily/prediction_market_event_observer_20260703.json",
+        "snapshot_items": 10,
+        "strict_keep_total": 2,
+        "strict_reject_total": 8,
+        "strict_reject_rate": 0.8,
+        "by_query": {
+          "crypto_market_structure_probability": {
+            "rows": 2,
+            "strict_keep": 2,
+            "strict_reject": 0,
+            "reject_methods": {}
+          },
+          "frontier_ai_private_capex_probability": {
+            "rows": 3,
+            "strict_keep": 0,
+            "strict_reject": 3,
+            "reject_methods": {
+              "relevance_exclusions": 3
+            }
+          },
+          "hyperscaler_power_shortage_probability": {
+            "rows": 5,
+            "strict_keep": 0,
+            "strict_reject": 5,
+            "reject_methods": {
+              "relevance_exclusions": 5
+            }
+          }
+        },
+        "rejected_samples": [
+          {
+            "query_id": "frontier_ai_private_capex_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product in 2025?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "frontier_ai_private_capex_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product by March 31, 2026?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "frontier_ai_private_capex_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product by December 31, 2026?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "hyperscaler_power_shortage_probability",
+            "title": "What will happen before GTA VI?",
+            "question": "Russia-Ukraine Ceasefire before GTA VI?",
+            "provider_slug": "what-will-happen-before-gta-vi",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "gta",
+              "russia",
+              "ukraine",
+              "ceasefire"
+            ]
+          },
+          {
+            "query_id": "hyperscaler_power_shortage_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product in 2025?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "hyperscaler_power_shortage_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product by March 31, 2026?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "hyperscaler_power_shortage_probability",
+            "title": "Will OpenAI launch a consumer hardware product by...?",
+            "question": "Will OpenAI launch a new consumer hardware product by December 31, 2026?",
+            "provider_slug": "will-openai-launch-a-consumer-hardware-product-by",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "consumer hardware"
+            ]
+          },
+          {
+            "query_id": "hyperscaler_power_shortage_probability",
+            "title": "Xi Jinping out before 2027?",
+            "question": "Xi Jinping out before 2027?",
+            "provider_slug": "xi-jinping-out-before-2027",
+            "method": "relevance_exclusions",
+            "hit_terms": [],
+            "excluded_terms": [
+              "xi jinping"
+            ]
+          }
+        ],
+        "kept_samples": [
+          {
+            "query_id": "crypto_market_structure_probability",
+            "title": "Trump eliminates capital gains tax on crypto by ___?",
+            "question": "Trump eliminates capital gains tax on crypto before 2027?",
+            "provider_slug": "trump-eliminates-capital-gains-tax-on-crypto-in-2025",
+            "method": "relevance_groups",
+            "hit_terms": [
+              "crypto",
+              "tax"
+            ],
+            "excluded_terms": []
+          },
+          {
+            "query_id": "crypto_market_structure_probability",
+            "title": "Trump eliminates capital gains tax on crypto by ___?",
+            "question": "Trump eliminates capital gains tax on crypto in 2025?",
+            "provider_slug": "trump-eliminates-capital-gains-tax-on-crypto-in-2025",
+            "method": "relevance_groups",
+            "hit_terms": [
+              "crypto",
+              "tax"
+            ],
+            "excluded_terms": []
+          }
+        ]
+      }
+    },
+    "summary": "The prior gate used raw substring matching, so short terms such as 'ai' and broad terms such as 'power' admitted unrelated political, military, and consumer-hardware markets. Token/phrase boundary matching plus source-specific exclusion terms removes that pollution before forward settlement."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-005.json",
+  "single_causal_variable": "prediction_market_event_semantic_relevance_gate_v2",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260704-005.json",
+  "trial_family": "prediction_market_event_observer_relevance_repair",
+  "trial_variant_id": "prediction_market_event_semantic_relevance_gate_v2",
+  "updated_at": "2026-07-04T07:09:56+00:00",
+  "new_evidence_axis": "semantic relevance defect: current 20260703 observer rows admit unrelated Polymarket markets under configured event themes; this is a fault recovery exception, not a threshold retune",
+  "observer_contract": {
+    "artifact_root": "data/non_ohlcv/prediction_market_event_observer",
+    "observer_only": true,
+    "provider": "polymarket",
+    "relevance_gate_version": "prediction_market_event_semantic_relevance_gate_v2",
+    "source_count": 6,
+    "query_ids": [
+      "spacex_ipo_probability",
+      "frontier_ai_private_capex_probability",
+      "ai_export_controls_probability",
+      "hyperscaler_power_shortage_probability",
+      "crypto_market_structure_probability",
+      "glp1_market_access_probability"
+    ],
+    "current_daily_strict_reject_total": 8,
+    "current_daily_strict_keep_total": 2
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\prediction_market_event_observer.py quant\\test_prediction_market_event_observer.py quant\\experiments\\exp_20260704_005_prediction_market_semantic_relevance_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_prediction_market_event_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_005_prediction_market_semantic_relevance_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "gate_ready_new_alpha_rows": 0,
+    "observer_rows_audited": 6653,
+    "strategy_behavior_changed": false
+  },
+  "alpha_hypothesis": "LLM and non-OHLCV observer events may become useful candidate-pool context only after forward rows are closed with cash/SPY/QQQ replacement value; without the entry/open price surface, any current-row alpha result would be a measurement artifact rather than a tradeable edge.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260704-012/exp_20260704_012_current_observer_settlement_price_surface.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0
+  },
+  "calibration": {
+    "actual_decision": "blocked",
+    "actual_success": 0,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.28,
+    "surprise_note": "Low surprise: the audit confirmed stale/failed settlement inputs and zero new gate-ready current observer rows."
+  },
+  "causal_components": [
+    "current prediction-market outcome summary audit",
+    "current entity/theme outcome summary audit",
+    "current intraday structured-news observation audit",
+    "trend OHLCV warehouse status audit",
+    "Kova intraday refresh status audit",
+    "blocked reopen-condition contract",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_012_current_observer_settlement_price_surface.py",
+    "data/experiments/exp-20260704-012/exp_20260704_012_current_observer_settlement_price_surface.json",
+    "experiments/logs/exp-20260704-012.json",
+    "experiments/cards/exp-20260704-012.md",
+    "experiments/manifests/exp-20260704-012.json",
+    "experiments/tickets/exp-20260704-012.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "current_observer_settlement_price_surface_blocker_v1",
+  "decision": "blocked_current_observer_settlement_price_surface_not_gate_ready",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-012",
+  "gate1": {
+    "baseline_exists": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_reused_without_strategy_mutation": true
+  },
+  "gate2": {
+    "entity_theme_has_settled_replacement_values": true,
+    "entry_date_target_price_check": "failed_for_intraday_current_rows",
+    "intraday_entry_date_missing_count": 5,
+    "intraday_target_price_missing_count": 5,
+    "passed": false,
+    "prediction_market_has_settled_replacement_values": false,
+    "required_fields": [
+      "entry_date",
+      "target_price",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "runtime_dependencies_present": false
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Observer rows were audited for settlement availability; no executable strategy filter was added.",
+    "signals_generated": 6653,
+    "signals_survived": 0,
+    "survival_rate": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "blocked_reason": "settlement_price_surface_not_gate_ready",
+    "expected_value_score_delta": 0.0,
+    "failed_reasons": [
+      "prediction_market_zero_settled_rows",
+      "prediction_market_no_entry_bar_rows",
+      "entity_theme_remaining_no_entry_bar_rows",
+      "intraday_entry_date_missing",
+      "intraday_target_price_missing",
+      "trend_ohlcv_warehouse_update_failed",
+      "trend_ohlcv_warehouse_disk_io_error",
+      "kova_intraday_skipped_or_failed",
+      "no_new_gate_ready_forward_rows"
+    ],
+    "pnl_delta": 0.0,
+    "ran": false
+  },
+  "hypothesis": "Alpha-enabling measurement repair: current prediction-market, entity-theme, and intraday structured-news observer alphas cannot be evaluated credibly while their forward rows lack an entry/open settlement price surface; quantify the no-entry-bar blocker and record a machine-checkable reopen condition instead of reslicing the same observer evidence.",
+  "implementation_mode": "read_only_observer_settlement_blocker_audit",
+  "lane": "measurement_repair",
+  "lean_quality_passed": false,
+  "log": "experiments/logs/exp-20260704-012.json",
+  "mechanism_family": "observer_forward_settlement_price_surface",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260703-011",
+    "exp-20260703-012",
+    "exp-20260703-013",
+    "exp-20260703-014",
+    "exp-20260704-005"
+  ],
+  "new_evidence_axis": "Measurement-repair only: this combines the current prediction-market, entity/theme, intraday structured-news, trend-signal warehouse, and Kova intraday status snapshots to prove whether current observer rows have a settlement price surface. It does not retune thresholds or reslice the same observer rows.",
+  "new_evidence_type": "settlement_price_surface_blocker_quantification",
+  "next_retry_requires": "Reopen current observer alpha only after the warehouse or another PIT price surface covers observer entry sessions through at least 2026-07-03 for the audited tickers, warehouse_main_hot.sqlite no longer reports disk I/O errors, prediction_market_event_observer has at least 250 settled rows with cash/SPY/QQQ replacement value, and intraday structured-news observations have non-null entry_date and target_price for at least 20 ticker-date rows with regular-session close comparators. Then run a shared-paper-first Gate 1-4 alpha; do not reslice source/query/theme/event-age/top-N/hold/notional on the present unsettled batch.",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another experiment that changes prediction-market query groups, entity/theme source bundles, intraday event filters, event age, polarity, top-N, hold, cooldown, or notional on these same current rows. That would not create new evidence while entry/open settlement remains missing.",
+    "new_evidence_required": "Reopen current observer alpha only after the warehouse or another PIT price surface covers observer entry sessions through at least 2026-07-03 for the audited tickers, warehouse_main_hot.sqlite no longer reports disk I/O errors, prediction_market_event_observer has at least 250 settled rows with cash/SPY/QQQ replacement value, and intraday structured-news observations have non-null entry_date and target_price for at least 20 ticker-date rows with regular-session close comparators. Then run a shared-paper-first Gate 1-4 alpha; do not reslice source/query/theme/event-age/top-N/hold/notional on the present unsettled batch.",
+    "why_result_happened": "The current observer surfaces can write event rows, but the available settlement price surface is stale or failed: prediction-market rows are all no-entry-bar, intraday rows lack entry_date and target_price, the trend OHLCV warehouse update failed with disk I/O, and Kova intraday refresh was skipped_or_failed."
+  },
+  "prediction": {
+    "confidence_reason": "Startup reads already showed the likely blocker, but the experiment needed a compact cross-surface artifact and reopen condition before another agent spends IDs reslicing current observer rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "warehouse_stale_before_observer_dates",
+      "hot_warehouse_disk_io_error",
+      "prediction_market_zero_settled_rows",
+      "intraday_rows_missing_entry_price"
+    ],
+    "recorded_at": "2026-07-04T14:09:45+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "default_off_only": true,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not evaluated; no current observer alpha rule is gate-ready because settlement price rows are missing.",
+    "llm_boundary_changed": false,
+    "paper_orders_changed": false,
+    "ranking_sizing_entry_exit_changed": false,
+    "trade_enabled_changed": false
+  },
+  "reopen_condition": "Reopen current observer alpha only after the warehouse or another PIT price surface covers observer entry sessions through at least 2026-07-03 for the audited tickers, warehouse_main_hot.sqlite no longer reports disk I/O errors, prediction_market_event_observer has at least 250 settled rows with cash/SPY/QQQ replacement value, and intraday structured-news observations have non-null entry_date and target_price for at least 20 ticker-date rows with regular-session close comparators. Then run a shared-paper-first Gate 1-4 alpha; do not reslice source/query/theme/event-age/top-N/hold/notional on the present unsettled batch.",
+  "runner": "quant/experiments/exp_20260704_012_current_observer_settlement_price_surface.py",
+  "single_causal_variable": "current_observer_settlement_price_surface_blocker_v1",
+  "status": "blocked",
+  "summary": {
+    "decision_reason": "blocked: current observer rows do not add a gate-ready forward settlement surface; the warehouse update failed and Kova intraday refresh was skipped, so another alpha reslice would not create new evidence.",
+    "entity_theme_candidate_rows": 3194,
+    "entity_theme_no_entry_rows": 496,
+    "entity_theme_settled_rows": 2300,
+    "gate_ready_new_alpha_rows": 0,
+    "intraday_entry_missing_rows": 5,
+    "intraday_observation_rows": 5,
+    "kova_intraday_status": "skipped_or_failed",
+    "observer_rows_audited": 6653,
+    "prediction_market_candidate_rows": 3454,
+    "prediction_market_no_entry_rows": 3454,
+    "prediction_market_settled_rows": 0,
+    "settled_rows_available_total": 2300,
+    "trend_warehouse_status": "failed",
+    "warehouse_date_max": "2026-06-15"
+  },
+  "timestamp": "2026-07-04T14:14:49Z",
+  "trial_family": "current_observer_settlement_price_surface_blocker",
+  "trial_variant_id": "prediction_entity_intraday_current_forward_rows_20260703"
+}

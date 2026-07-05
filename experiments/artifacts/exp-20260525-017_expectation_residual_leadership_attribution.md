@@ -1,6 +1,6 @@
 # exp-20260525-017 Expectation Residual Leadership Attribution
 
-Decision: `observed_only_data_gap`.
+Decision: `rejected_expectation_residual_leadership_attribution`.
 
 Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or orders changed.
 
@@ -20,7 +20,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   "closed_forward_outcomes": {
     "10d": 42,
     "20d": 30,
-    "5d": 42
+    "5d": 43
   },
   "expectation_join_status_counts": {
     "ledger_row_not_usable": 12,
@@ -51,7 +51,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 | Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 7 | 1.5016% |
+| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 7 | 1.5016% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
 | C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
@@ -62,9 +62,9 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 ```json
 {
-  "bucket_a_closed_5d_outcomes": 7,
+  "bucket_a_closed_5d_outcomes": 8,
   "can_promote": false,
-  "decision": "observed_only_data_gap",
+  "decision": "rejected_expectation_residual_leadership_attribution",
   "not_gate4_evidence": true,
   "pit_caveat_counts": {
     "missing_next_earnings_date": 11,
@@ -77,13 +77,13 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     "non_pit_reconstructed": 12,
     "pit_usable": 29
   },
-  "total_usable_candidates": 42
+  "total_usable_candidates": 43
 }
 ```
 
 | Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 7 | 1.2193% | 7 | 1.5016% |
+| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 7 | 1.5016% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
 | C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
@@ -92,16 +92,62 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 ```json
 {
-  "bucket_a_closed_5d_outcomes": 7,
-  "data_gap_reasons": [
-    "bucket_a_closed_5d_outcomes"
+  "bucket_a_closed_5d_outcomes": 8,
+  "comparisons": [
+    {
+      "bucket_a_avg_return": 0.011268,
+      "comparison_avg_return": null,
+      "comparison_bucket": "B_positive_expectation_only",
+      "horizon": "5d",
+      "passed": false
+    },
+    {
+      "bucket_a_avg_return": 0.011268,
+      "comparison_avg_return": -0.049747,
+      "comparison_bucket": "C_residual_leader_only",
+      "horizon": "5d",
+      "passed": true
+    },
+    {
+      "bucket_a_avg_return": 0.011268,
+      "comparison_avg_return": 0.000331,
+      "comparison_bucket": "D_neither",
+      "horizon": "5d",
+      "passed": true
+    },
+    {
+      "bucket_a_avg_return": 0.015016,
+      "comparison_avg_return": null,
+      "comparison_bucket": "B_positive_expectation_only",
+      "horizon": "10d",
+      "passed": false
+    },
+    {
+      "bucket_a_avg_return": 0.015016,
+      "comparison_avg_return": -0.091422,
+      "comparison_bucket": "C_residual_leader_only",
+      "horizon": "10d",
+      "passed": true
+    },
+    {
+      "bucket_a_avg_return": 0.015016,
+      "comparison_avg_return": -0.017556,
+      "comparison_bucket": "D_neither",
+      "horizon": "10d",
+      "passed": true
+    }
   ],
-  "decision": "observed_only_data_gap",
-  "minimum_bucket_a_closed_5d_outcomes": 8,
-  "minimum_total_usable_candidates": 30,
+  "concentration": {
+    "max_single_ticker_positive_guardrail": 0.5,
+    "max_single_ticker_positive_share": 0.603954,
+    "passed": false,
+    "top5_positive_contribution_guardrail": 0.6,
+    "top5_positive_contribution_share": 1.0
+  },
+  "decision": "rejected_expectation_residual_leadership_attribution",
   "passed": false,
-  "reason": "insufficient_bucket_or_total_sample",
-  "total_usable_candidates": 42
+  "reason": "bucket_a_failed_outperformance_or_concentration",
+  "total_usable_candidates": 43
 }
 ```
 

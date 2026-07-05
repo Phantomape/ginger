@@ -1,0 +1,302 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "daily_probe": {
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "bucket_counts": {
+        "purchase_or_sales_agreement": 1
+      },
+      "contract_amount_row_count": 1,
+      "contract_duration_row_count": 0,
+      "counterparty_candidate_row_count": 1,
+      "daily_rows_path": "data/experiments/exp-20260703-022/probe_data/non_ohlcv/sec_contract_relation_provenance/daily/sec_contract_relation_provenance_20241025.jsonl",
+      "daily_summary_path": "data/experiments/exp-20260703-022/probe_data/non_ohlcv/sec_contract_relation_provenance/daily/sec_contract_relation_provenance_summary_20241025.json",
+      "date": "20241025",
+      "economic_terms_bucket_counts": {
+        "amount_or_duration": 1
+      },
+      "economic_terms_detail_counts": {
+        "amount_only": 1
+      },
+      "generic_relation_row_count": 0,
+      "input_row_count": 21,
+      "item_101_input_row_count": 1,
+      "observer_name": "sec_contract_relation_provenance",
+      "observer_only": true,
+      "probe_daily_rows_path": "data/experiments/exp-20260703-022/probe_data/non_ohlcv/sec_contract_relation_provenance/daily/sec_contract_relation_provenance_20241025.jsonl",
+      "probe_date": "20241025",
+      "probe_field_counts": {
+        "economic_terms_bucket_counts": {
+          "amount_or_duration": 1
+        },
+        "economic_terms_detail_counts": {
+          "amount_only": 1
+        },
+        "row_count": 1,
+        "rows_with_contract_amount": 1,
+        "rows_with_contract_duration": 0,
+        "rows_with_economic_terms_bucket": 1,
+        "rows_with_named_counterparty": 1
+      },
+      "probe_source_path": "data/non_ohlcv/sec_filing_text_20241025.jsonl",
+      "provenance_row_count": 1,
+      "quality_counts": {
+        "specific_relation_phrase": 1
+      },
+      "rows_appended": 1,
+      "rows_path": "data/experiments/exp-20260703-022/probe_data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+      "schema_version": "sec_contract_relation_provenance_v1",
+      "source_file_count": 1,
+      "source_path": "data/non_ohlcv/sec_filing_text_20241025.jsonl",
+      "specific_relation_row_count": 1,
+      "status": "ok",
+      "strategy_behavior_changed": false,
+      "trade_enabled": false,
+      "unique_accession_count": 1,
+      "unique_ticker_count": 1,
+      "write_mode": "append_daily"
+    },
+    "expected_value_score_sum": 7.8941,
+    "rebuilt_full_surface": {
+      "economic_terms_bucket_counts": {
+        "amount_or_duration": 70,
+        "no_amount_or_duration": 222
+      },
+      "economic_terms_detail_counts": {
+        "amount_and_duration": 1,
+        "amount_only": 69,
+        "named_counterparty_only": 104,
+        "no_machine_economics": 118
+      },
+      "row_count": 292,
+      "rows_with_contract_amount": 70,
+      "rows_with_contract_duration": 1,
+      "rows_with_economic_terms_bucket": 292,
+      "rows_with_named_counterparty": 155
+    },
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "candidate_pool: Item 1.01 contracts with machine-checkable amount or duration terms may have better replacement value, but only after the same fields are logged by the shared observer for future rows.",
+  "artifact": "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "existing_global_surface": {
+      "economic_terms_bucket_counts": {
+        "": 292
+      },
+      "economic_terms_detail_counts": {
+        "": 292
+      },
+      "row_count": 292,
+      "rows_with_contract_amount": 0,
+      "rows_with_contract_duration": 0,
+      "rows_with_economic_terms_bucket": 0,
+      "rows_with_named_counterparty": 0
+    },
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "shared_extractor_does_not_match_runner_contract",
+      "daily_persist_path_omits_new_fields",
+      "real_surface_has_zero_amount_or_duration_rows"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_modes": [],
+    "surprise_note": "Low surprise: the exp021 extractor moved into the shared observer and both real full-surface rows and daily probe rows carry fields."
+  },
+  "causal_components": [
+    "shared amount/duration regex extractor",
+    "normalized counterparty count tags",
+    "full-surface materialization verification",
+    "daily persist verification in experiment-owned probe data",
+    "no trading behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/sec_contract_relation_provenance.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/experiments/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+    "experiments/cards/exp-20260703-022.md",
+    "experiments/manifests/exp-20260703-022.json",
+    "experiments/tickets/exp-20260703-022.json",
+    "experiments/logs/exp-20260703-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_item101_contract_economic_terms_shared_observer_surface",
+  "decision": "accepted_measurement_repair_sec_item101_contract_economic_terms_daily_surface",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "global_existing_rows_with_economic_terms_bucket_before": 0,
+    "rebuilt_amount_or_duration_rows_after": 70,
+    "rebuilt_rows_with_economic_terms_bucket_after": 292,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-022",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Canonical strategy baseline is an identity reference only.",
+    "passed": true
+  },
+  "gate2": {
+    "fields_checked": [
+      "economic_terms_bucket",
+      "economic_terms_detail_bucket",
+      "contract_amount_count",
+      "contract_amount_examples",
+      "contract_duration_count",
+      "contract_duration_examples",
+      "normalized_counterparty_count",
+      "counterparty_examples",
+      "has_contract_amount",
+      "has_contract_duration",
+      "has_named_counterparty"
+    ],
+    "passed": true,
+    "target_price_relevance": "Observer-only provenance rows do not create target exits or orders."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, rank, size, exit, prompt, or order rule changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "checks": {
+      "all_rebuilt_rows_have_bucket": true,
+      "amount_or_duration_rows_present": true,
+      "daily_probe_ok": true,
+      "daily_probe_rows_have_bucket": true,
+      "real_surface_rows_present": true,
+      "strategy_identity_unchanged": true
+    },
+    "decision_basis": "Accepted only as measurement repair: shared observer rows now carry the exp021 economic-term tags needed for future forward replacement-value evidence.",
+    "failed_reasons": [],
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Expose the exp-20260703-021 SEC Item 1.01 contract economic-terms extractor in the shared observer-only provenance surface so future daily rows can accumulate closed replacement-value evidence under the unchanged amount/duration field contract without changing trading behavior.",
+  "implementation_mode": "shared_observer_surface_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260703-022.json",
+  "mechanism_family": "sec_contract_relation_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260703-017",
+    "exp-20260703-018",
+    "exp-20260703-019",
+    "exp-20260703-020",
+    "exp-20260703-021"
+  ],
+  "new_evidence_type": "alpha_enabling_shared_observer_field_contract",
+  "next_retry_requires": [
+    "prospectively accumulated daily Item 1.01 economics rows with closed replacement value",
+    "exhibit-level normalized customer/supplier identity",
+    "contract revenue exposure by counterparty",
+    "a different non-SEC-text economic relation source"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep Item 1.01 amount regexes, duration regexes, counterparty-count thresholds, relation priority, top-N, hold, notional, or response curves on these rows.",
+    "new_evidence_required": "Next alpha evidence requires prospectively accumulated daily Item 1.01 economics rows with closed cash/SPY/QQQ replacement value, true exhibit-level normalized customer/supplier identity, contract revenue exposure, or a different non-SEC-text source.",
+    "why_result_happened": "The exp021 extractor depended only on evidence snippets and counterparty candidates already produced by the shared observer, so moving it into the observer surface was a narrow field-contract repair."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260703-021 already proved the extractor on the same local provenance rows. This repair only moves that fixed observer-only field contract into the shared surface and verifies daily persistence.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared_extractor_does_not_match_runner_contract",
+      "daily_persist_path_omits_new_fields",
+      "real_surface_has_zero_amount_or_duration_rows"
+    ],
+    "recorded_at": "2026-07-03T22:04:15+00:00",
+    "success_probability": 0.82
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "daily_snapshot_schema_changed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "The existing run.py daily hook calls the shared observer. This repair only enriches observer-only rows saved by that hook.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/sec_contract_relation_provenance.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/run.py",
+    "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "experiments/logs/exp-20260703-021.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_contract_relation_provenance.py quant\\test_sec_contract_relation_provenance.py quant\\experiments\\exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_contract_relation_provenance.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_item101_contract_economic_terms_shared_observer_surface",
+  "status": "accepted_measurement_repair",
+  "summary": {
+    "before_global_rows_with_economic_terms_bucket": 0,
+    "daily_probe_rows": 1,
+    "daily_probe_status": "ok",
+    "decision": "accepted_measurement_repair_sec_item101_contract_economic_terms_daily_surface",
+    "rebuilt_amount_or_duration_rows": 70,
+    "rebuilt_contract_amount_rows": 70,
+    "rebuilt_contract_duration_rows": 1,
+    "rebuilt_provenance_rows": 292,
+    "source_file_count": 475
+  },
+  "timestamp": "2026-07-03T22:08:48Z",
+  "trial_family": "sec_item101_contract_economic_terms_daily_surface",
+  "trial_variant_id": "shared_observer_surface_v1"
+}

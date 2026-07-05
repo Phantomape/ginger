@@ -2,13 +2,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sqlite3
+import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 import pandas as pd
 
+
+log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 # exp-20260612-017: the warehouse is production infrastructure, not experiment
@@ -145,13 +149,63 @@ def _normalise_frame_row(
 # blocked connection wait out the (short) writer transaction instead of failing.
 _WAREHOUSE_BUSY_TIMEOUT_S = 60.0
 
+# The busy timeout only covers "database is locked" waits inside SQLite. On
+# this Windows host, external file-lock contention (concurrent agent runs,
+# AV/indexer scans touching the rollback journal) instead surfaces as a
+# transient "disk I/O error" that aborts the call outright: the 2026-07-03
+# daily run lost the whole primary_batch hot-tier write this way, and readers
+# hit the same error attaching the hot tier (exp-20260628-002,
+# exp-20260704-012). Warehouse writes are idempotent upserts, so a bounded
+# retry with backoff is safe on both the write and attach paths.
+_RETRYABLE_SQLITE_MARKERS = ("disk i/o error", "database is locked")
+_SQLITE_RETRY_DELAYS_S = (0.5, 2.0, 5.0)
+
+
+def _is_retryable_sqlite_error(exc: sqlite3.Error) -> bool:
+    message = str(exc).lower()
+    return any(marker in message for marker in _RETRYABLE_SQLITE_MARKERS)
+
+
+def _retry_sqlite(operation: Callable[[], Any], *, what: str) -> Any:
+    max_retries = len(_SQLITE_RETRY_DELAYS_S)
+    for attempt in range(max_retries + 1):
+        try:
+            return operation()
+        except sqlite3.OperationalError as exc:
+            if attempt >= max_retries or not _is_retryable_sqlite_error(exc):
+                raise
+            delay_s = _SQLITE_RETRY_DELAYS_S[attempt]
+            log.warning(
+                "%s hit retryable sqlite error (%s); retrying in %.1fs",
+                what,
+                exc,
+                delay_s,
+            )
+            time.sleep(delay_s)
+
 
 def _connect(path: Path, *, journal_mode_off: bool = False) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
-    if journal_mode_off:
-        conn.execute("PRAGMA journal_mode=OFF")
-        conn.execute("PRAGMA synchronous=OFF")
+    try:
+        if journal_mode_off:
+            conn.execute("PRAGMA journal_mode=OFF")
+            conn.execute("PRAGMA synchronous=OFF")
+        else:
+            # PERSIST keeps the rollback journal file between transactions and
+            # only zeroes its header on commit, so commits stop deleting and
+            # recreating the journal — the delete/create step is where Windows
+            # file-lock contention surfaces as "disk I/O error". Both tiers'
+            # journal sidecars are gitignored.
+            conn.execute("PRAGMA journal_mode=PERSIST")
+        _ensure_schema(conn)
+    except BaseException:
+        conn.close()
+        raise
+    return conn
+
+
+def _ensure_schema(conn: sqlite3.Connection) -> None:
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS ohlcv (
@@ -206,13 +260,14 @@ def _connect(path: Path, *, journal_mode_off: bool = False) -> sqlite3.Connectio
         """
     )
     conn.commit()
-    return conn
 
 
 # Columns of the ``ohlcv`` table, in storage order. The overlay view emits the
 # same shape so readers can swap ``FROM ohlcv`` -> ``FROM ohlcv_overlay`` with
 # no other change.
 _OHLCV_COLUMNS = "ticker, date, open, high, low, close, volume, source, updated_at"
+
+_OVERLAY_STATUS_TABLE = "ohlcv_overlay_status"
 
 
 def connect_overlay_reader(
@@ -226,24 +281,61 @@ def connect_overlay_reader(
     pass-through over ``ohlcv``, so behaviour is identical to the pre-split
     warehouse. Callers query ``ohlcv_overlay`` and close the connection as usual;
     the attach + temp view are connection-scoped.
+
+    The hot tier is attached read-only so a reader never competes for write
+    locks with the daily writer, and the attach is retried on transient disk
+    I/O contention. If the hot tier exists but still cannot be attached, the
+    view falls back to cold-only rows — that fallback freezes reads at the cold
+    date edge, so it is logged and recorded in the connection-scoped
+    ``ohlcv_overlay_status`` temp table (see ``overlay_reader_status``) instead
+    of being silent (exp-20260704-017).
     """
     cold = Path(cold_path)
-    conn = sqlite3.connect(cold, timeout=_WAREHOUSE_BUSY_TIMEOUT_S)
+    # uri=True so the ATTACH below may use a ?mode=ro URI; the cold main
+    # connection itself keeps default read-write semantics.
+    conn = sqlite3.connect(
+        cold.resolve().as_uri(), timeout=_WAREHOUSE_BUSY_TIMEOUT_S, uri=True
+    )
     hot = hot_path_for(cold)
+    hot_exists = hot.exists()
     attached = False
-    if hot.exists():
-        try:
-            conn.execute("ATTACH DATABASE ? AS hot", (str(hot),))
+    hot_error: str | None = None
+    if hot_exists:
+        hot_uri = hot.resolve().as_uri() + "?mode=ro"
+
+        def _attach_hot() -> None:
+            conn.execute("ATTACH DATABASE ? AS hot", (hot_uri,))
             # Confirm the hot DB actually carries the ohlcv table before relying
             # on it; a partially-initialised file falls back to cold-only.
-            conn.execute("SELECT 1 FROM hot.ohlcv LIMIT 1")
-            attached = True
-        except sqlite3.Error:
             try:
-                conn.execute("DETACH DATABASE hot")
+                conn.execute("SELECT 1 FROM hot.ohlcv LIMIT 1")
             except sqlite3.Error:
-                pass
-            attached = False
+                try:
+                    conn.execute("DETACH DATABASE hot")
+                except sqlite3.Error:
+                    pass
+                raise
+
+        try:
+            _retry_sqlite(_attach_hot, what=f"hot warehouse attach ({hot.name})")
+            attached = True
+        except sqlite3.Error as exc:
+            hot_error = f"{type(exc).__name__}: {exc}"
+            log.warning(
+                "hot warehouse tier %s exists but could not be attached (%s); "
+                "serving cold-only rows — the most recent sessions will be "
+                "missing from ohlcv_overlay",
+                hot,
+                hot_error,
+            )
+    conn.execute(
+        f"CREATE TEMP TABLE {_OVERLAY_STATUS_TABLE} "
+        "(hot_path TEXT, hot_exists INTEGER, hot_attached INTEGER, hot_error TEXT)"
+    )
+    conn.execute(
+        f"INSERT INTO {_OVERLAY_STATUS_TABLE} VALUES (?, ?, ?, ?)",
+        (str(hot), int(hot_exists), int(attached), hot_error),
+    )
     if attached:
         conn.execute(
             f"""
@@ -262,6 +354,26 @@ def connect_overlay_reader(
             f"CREATE TEMP VIEW ohlcv_overlay AS SELECT {_OHLCV_COLUMNS} FROM ohlcv"
         )
     return conn
+
+
+def overlay_reader_status(conn: sqlite3.Connection) -> dict[str, Any]:
+    """Hot-tier attach status for a ``connect_overlay_reader`` connection.
+
+    ``hot_exists and not hot_attached`` means the overlay silently degraded to
+    cold-only rows and reads are frozen at the cold date edge — callers that
+    depend on recent sessions (forward settlement, liquidity ranks) should
+    surface that instead of treating stale reads as complete.
+    """
+    row = conn.execute(
+        f"SELECT hot_path, hot_exists, hot_attached, hot_error "
+        f"FROM {_OVERLAY_STATUS_TABLE}"
+    ).fetchone()
+    return {
+        "hot_path": row[0],
+        "hot_exists": bool(row[1]),
+        "hot_attached": bool(row[2]),
+        "hot_error": row[3],
+    }
 
 
 def _upsert_fetch_status(
@@ -382,7 +494,12 @@ def upsert_ohlcv_frames(
     processed_tickers: set[str] = set()
     pending_writes = 0
 
-    conn = _connect(db)
+    conn = _retry_sqlite(
+        lambda: _connect(db), what=f"warehouse write connect ({db.name})"
+    )
+    _commit = lambda: _retry_sqlite(  # noqa: E731
+        conn.commit, what=f"warehouse upsert commit ({db.name})"
+    )
     try:
         for raw_ticker, frame in items:
             ticker = str(raw_ticker).upper().strip()
@@ -400,7 +517,7 @@ def upsert_ohlcv_frames(
                 )
                 pending_writes += 1
                 if pending_writes >= commit_every:
-                    conn.commit()
+                    _commit()
                     pending_writes = 0
                 continue
 
@@ -473,7 +590,7 @@ def upsert_ohlcv_frames(
                         skipped_existing += 1
 
                 if pending_writes >= commit_every:
-                    conn.commit()
+                    _commit()
                     pending_writes = 0
 
             _upsert_fetch_status(
@@ -485,11 +602,11 @@ def upsert_ohlcv_frames(
             )
             pending_writes += 1
             if pending_writes >= commit_every:
-                conn.commit()
+                _commit()
                 pending_writes = 0
 
         if pending_writes:
-            conn.commit()
+            _commit()
     except Exception:
         conn.rollback()
         raise

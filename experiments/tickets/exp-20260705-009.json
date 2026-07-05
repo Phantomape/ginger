@@ -1,0 +1,2174 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_009_duplicate_exposure_cap_policy_sim.py",
+    "data/experiments/exp-20260705-009/exp_20260705_009_duplicate_exposure_cap_policy_sim.json",
+    "experiments/cards/exp-20260705-009.md",
+    "experiments/manifests/exp-20260705-009.json",
+    "experiments/tickets/exp-20260705-009.json",
+    "experiments/logs/exp-20260705-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-009.md",
+  "causal_components": [
+    "static cross-sleeve duplicate cap policy",
+    "forward replacement ledger simulation",
+    "historical accepted paper validation",
+    "FINRA/FTD surface exclusion",
+    "production parity boundary"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "fixed_same_ticker_same_entry_date_duplicate_exposure_cap_non_finra_paper_v1",
+  "claimed_at": "2026-07-05T10:10:58+00:00",
+  "completed_at": "2026-07-05T10:17:11+00:00",
+  "created_at": "2026-07-05T10:09:39+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-009",
+  "experiment_uid": "expuid-d2fac4475fe0419b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T10:09:39+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "duplicate_exposure_cap_policy_sim"
+  },
+  "hypothesis": "Default-off paper duplicate-exposure cap: a fixed shared policy that keeps only the highest-priority same-ticker same-entry-date paper row across accepted non-FINRA sleeves may improve forward replacement value without changing live orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "fixed same-ticker same-entry-date duplicate exposure cap over default-off accepted non-FINRA paper rows"
+  ],
+  "mechanism_family": "risk_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260705-002",
+    "exp-20260705-003",
+    "exp-20260705-004",
+    "exp-20260704-022"
+  ],
+  "new_evidence_type": "new_gate_shape_policy_simulation",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "a",
+        "accepted",
+        "across",
+        "cap",
+        "changing",
+        "date",
+        "duplicate",
+        "entry",
+        "exposure",
+        "finra",
+        "forward",
+        "highest",
+        "improve",
+        "keeps",
+        "live",
+        "may",
+        "non",
+        "only",
+        "orders",
+        "over",
+        "policy",
+        "priority",
+        "replacement",
+        "row",
+        "rows",
+        "same",
+        "sim",
+        "sleeves",
+        "that",
+        "ticker",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.4853,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained.",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "daily_non_ohlcv_borrow_availability_forward_collection",
+        "reopen_condition": "Enable REFRESH_BORROW_AVAILABILITY after OpenD is available and collect at least 20 forward dates with nonzero borrow fields, then run closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4711,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "accepted_free_data_cross_source_consensus_source_family_count",
+        "reopen_condition": null,
+        "score": 0.47,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "reopen_condition": "With the broad-universe coverage gap closed, a valid retry needs a materially DIFFERENT signal axis - PIT borrow fee/utilization or loan-availability, options-implied move/skew, or closed forward replacement-value rows from a shared default-off helper - not another threshold or universe-size retune.",
+        "score": 0.47,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: cross-sleeve duplicate-exposure cap policy simulation over accepted non-FINRA default-off paper rows; explicitly excludes SEC FTD/FINRA parked observers and is not a FINRA readiness audit, source retune, threshold retune, or response-curve retry.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New gate shape: cross-sleeve duplicate-exposure cap policy simulation over accepted non-FINRA default-off paper rows; explicitly excludes SEC FTD/FINRA parked observers and is not a FINRA readiness audit, source retune, threshold retune, or response-curve retry.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: cross-sleeve duplicate-exposure cap policy simulation over accepted non-FINRA default-off paper rows; explicitly excludes SEC FTD/FINRA parked observers and is not a FINRA readiness audit, source retune, threshold retune, or response-curve retry.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "historical_validation_failed",
+      "duplicate_sample_too_thin",
+      "concentration_failed",
+      "forward_only_not_gate_ready"
+    ],
+    "confidence_reason": "Forward rows showed a positive duplicate-loss lead in exp-20260705-002, but exp-20260705-003 historical validation failed due thin and concentrated duplicates; a fixed cap policy should fail if the lead is not robust beyond the current forward ledger.",
+    "recorded_at": "2026-07-05T10:08:58+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_duplicate_exposure_cap_historical_validation_failed",
+    "artifact": "data/experiments/exp-20260705-009/exp_20260705_009_duplicate_exposure_cap_policy_sim.json",
+    "log": "experiments/logs/exp-20260705-009.json",
+    "summary": {
+      "decision": "rejected_duplicate_exposure_cap_historical_validation_failed",
+      "forward_source_rows": 60,
+      "forward_enriched_rows": 60,
+      "forward_excluded_finra_ftd_rows": 0,
+      "forward_eligible_rows": 60,
+      "forward_ineligible_rows": 0,
+      "forward_duplicate_rows": 8,
+      "forward_duplicate_groups": 3,
+      "forward_same_sleeve_multi_groups": 1,
+      "forward_policy_skipped_rows": 5,
+      "forward_policy_kept_rows": 55,
+      "forward_cash_cap_delta_sum": 539.11,
+      "forward_spy_cap_delta_sum": -19.13,
+      "forward_qqq_cap_delta_sum": -53.42,
+      "historical_source_rows": 266,
+      "historical_excluded_finra_ftd_rows": 143,
+      "historical_eligible_rows": 123,
+      "historical_ineligible_rows": 0,
+      "historical_duplicate_rows": 4,
+      "historical_duplicate_groups": 2,
+      "historical_same_sleeve_multi_groups": 0,
+      "historical_policy_skipped_rows": 2,
+      "historical_policy_kept_rows": 121,
+      "historical_pnl_per_10k_cap_delta_sum": -3728.02,
+      "forward_support": false,
+      "historical_support": false,
+      "policy_supported": false
+    },
+    "calibration": {
+      "actual_success": 0,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "predicted_failure_modes": [
+        "historical_validation_failed",
+        "duplicate_sample_too_thin",
+        "concentration_failed",
+        "forward_only_not_gate_ready"
+      ],
+      "realized_failure_modes": [
+        "concentration_failed",
+        "duplicate_sample_too_thin",
+        "historical_validation_failed"
+      ],
+      "predicted_failure_mode_hit": true,
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "surprise_note": "The static cap can be measured on the forward ledger, but Gate 4 cannot accept it: the independent historical accepted-paper surface does not meet the duplicate sample, concentration, and/or primary metric support requirements."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-009.json",
+  "single_causal_variable": "fixed_same_ticker_same_entry_date_duplicate_exposure_cap_non_finra_paper_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260705-009.json",
+  "trial_family": "duplicate_exposure_cap_policy_sim",
+  "trial_variant_id": "cross_sleeve_static_priority_same_ticker_entry_v1",
+  "alpha_hypothesis": "Default-off paper duplicate-exposure cap: a fixed shared policy that keeps only the highest-priority same-ticker same-entry-date paper row across accepted non-FINRA sleeves may improve forward replacement value without changing live orders.",
+  "implementation_mode": "read_only_duplicate_exposure_cap_policy_simulation",
+  "new_evidence_axis": "Cross-sleeve duplicate-exposure cap policy simulation over accepted non-FINRA default-off paper rows, explicitly excluding SEC FTD/FINRA parked observers. This is not a threshold, source-field, notional, hold, response-curve, or readiness-audit retry.",
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "loaded": true,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "min_window_survival_rate": 0.7925,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      ]
+    },
+    "note": "Policy simulation only; before and after executable strategy behavior are identical."
+  },
+  "gate2": {
+    "passed": true,
+    "forward_field_reality": {
+      "required_fields": [
+        "ticker",
+        "entry_date",
+        "replacement_value_vs_cash_usd",
+        "replacement_value_vs_spy_usd",
+        "replacement_value_vs_qqq_usd"
+      ],
+      "source_rows": 60,
+      "enriched_rows": 60,
+      "eligible_rows": 60,
+      "ineligible_rows": 0,
+      "entry_date_present_rows": 60,
+      "target_price_relevance": "Forward replacement rows are settled ledger outcomes; target_price is not required because this runner schedules no exits or orders."
+    },
+    "historical_field_reality": {
+      "required_fields": [
+        "window",
+        "entry_date",
+        "ticker",
+        "sleeve",
+        "pnl_per_10k"
+      ],
+      "source_rows": 266,
+      "eligible_rows": 123,
+      "ineligible_rows": 0,
+      "target_price_present_rows": 0,
+      "target_price_relevance": "Historical accepted paper rows are completed outcomes; target_price is not required for read-only cap simulation."
+    },
+    "source_report_summary": {
+      "source_count": 6,
+      "rows_total": 266,
+      "rows_with_required_fields": 266,
+      "invalid_rows": 0,
+      "by_sleeve": [
+        {
+          "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+          "accepted_experiment_id": "exp-20260606-001",
+          "artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+          "rows_total": 19,
+          "rows_with_required_fields": 19,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        },
+        {
+          "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+          "accepted_experiment_id": "exp-20260606-020",
+          "artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+          "rows_total": 20,
+          "rows_with_required_fields": 20,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        },
+        {
+          "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+          "accepted_experiment_id": "exp-20260604-009",
+          "artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+          "rows_total": 64,
+          "rows_with_required_fields": 64,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        },
+        {
+          "sleeve": "SEC_FTD_FINRA_CONFIRMED_PAPER",
+          "accepted_experiment_id": "exp-20260604-027",
+          "artifact": "data/experiments/exp-20260604-026/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.json",
+          "rows_total": 121,
+          "rows_with_required_fields": 121,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        },
+        {
+          "sleeve": "FINRA_IWM_BORROW_PRESSURE_PAPER",
+          "accepted_experiment_id": "exp-20260603-007",
+          "artifact": "data/experiments/exp-20260603-006/exp_20260603_006_finra_borrow_pressure_candidate_pool.json",
+          "rows_total": 22,
+          "rows_with_required_fields": 22,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        },
+        {
+          "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+          "accepted_experiment_id": "exp-20260603-022",
+          "artifact": "data/experiments/exp-20260603-022/exp_20260603_022_post_earnings_non_core_overlap_shared_support.json",
+          "rows_total": 20,
+          "rows_with_required_fields": 20,
+          "invalid_rows": 0,
+          "missing_state_rows": 0
+        }
+      ]
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No executable filter was added; the cap is simulated only.",
+    "baseline_survival_rate": 0.823171,
+    "baseline_min_window_survival_rate": 0.7925,
+    "survival_guard_passed": true
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_duplicate_exposure_cap_historical_validation_failed",
+    "observed_only": true,
+    "accepted_strategy_change": false,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "acceptance_rule": {
+      "policy": "Within each non-FINRA cross-sleeve same-entry-date same-ticker group, keep the row from the first sleeve in the static priority list and skip the remaining duplicate rows. Do not use future replacement outcomes to choose the kept row.",
+      "policy_priority": [
+        "accepted_helper_source_priority_allocator",
+        "accepted_source_consensus",
+        "free_data_cross_source_consensus",
+        "fundamental_growth_rs",
+        "alpha_score_market_regime",
+        "volume_breadth_breakout",
+        "state_surface",
+        "sec_governance",
+        "supplier_financing_debt_relief",
+        "sec_financial_report",
+        "low_deployment_etf",
+        "broad_market"
+      ],
+      "duplicate_definition": "two or more eligible rows with the same ticker and entry_date, and at least two distinct sleeves; same-sleeve multi-row groups are reported but not capped",
+      "forward_min_duplicate_rows": 6,
+      "forward_min_duplicate_groups": 3,
+      "forward_max_single_duplicate_ticker_share": 0.5,
+      "forward_max_single_duplicate_sleeve_share": 0.7,
+      "require_forward_cap_improves_all_primary_metrics": true,
+      "historical_min_duplicate_rows": 12,
+      "historical_min_duplicate_groups": 5,
+      "historical_min_duplicate_windows": 2,
+      "historical_max_single_duplicate_ticker_share": 0.5,
+      "historical_max_single_duplicate_sleeve_share": 0.7,
+      "require_historical_cap_improves_primary_metric": true,
+      "require_no_outcome_peeking": true
+    },
+    "acceptance_checks": {
+      "forward_duplicate_rows_min_passed": true,
+      "forward_duplicate_groups_min_passed": true,
+      "forward_single_duplicate_ticker_share_passed": true,
+      "forward_single_duplicate_sleeve_share_passed": true,
+      "forward_cap_improves_required_metrics": false,
+      "historical_duplicate_rows_min_passed": false,
+      "historical_duplicate_groups_min_passed": false,
+      "historical_single_duplicate_ticker_share_passed": false,
+      "historical_single_duplicate_sleeve_share_passed": true,
+      "historical_cap_improves_required_metrics": false,
+      "historical_duplicate_windows_min_passed": false,
+      "forward_field_reality_passed": true,
+      "historical_field_reality_passed": true,
+      "no_outcome_peeking_passed": true
+    },
+    "failed_reasons": [
+      "forward_cap_improves_required_metrics",
+      "historical_duplicate_rows_min_passed",
+      "historical_duplicate_groups_min_passed",
+      "historical_single_duplicate_ticker_share_passed",
+      "historical_cap_improves_required_metrics",
+      "historical_duplicate_windows_min_passed"
+    ],
+    "forward_failed_reasons": [
+      "forward_cap_improves_required_metrics"
+    ],
+    "historical_failed_reasons": [
+      "historical_duplicate_rows_min_passed",
+      "historical_duplicate_groups_min_passed",
+      "historical_single_duplicate_ticker_share_passed",
+      "historical_cap_improves_required_metrics",
+      "historical_duplicate_windows_min_passed"
+    ],
+    "forward_support": false,
+    "historical_support": false,
+    "policy_priority_note": "Static sleeve priority was predeclared and does not use cash, SPY, QQQ, pnl, or replacement outcomes to select kept rows.",
+    "forward_policy": {
+      "delta": {
+        "replacement_value_vs_cash_usd": {
+          "uncapped_sum": -11186.03,
+          "capped_sum": -10646.92,
+          "skipped_sum": -539.11,
+          "capped_minus_uncapped_sum": 539.11,
+          "uncapped_mean": -186.433833,
+          "capped_mean": -193.580364,
+          "skipped_mean": -107.822,
+          "sum_improved_by_cap": true,
+          "skipped_rows_negative": true
+        },
+        "replacement_value_vs_spy_usd": {
+          "uncapped_sum": -4976.37,
+          "capped_sum": -4995.5,
+          "skipped_sum": 19.13,
+          "capped_minus_uncapped_sum": -19.13,
+          "uncapped_mean": -82.9395,
+          "capped_mean": -90.827273,
+          "skipped_mean": 3.826,
+          "sum_improved_by_cap": false,
+          "skipped_rows_negative": false
+        },
+        "replacement_value_vs_qqq_usd": {
+          "uncapped_sum": -7832.62,
+          "capped_sum": -7886.04,
+          "skipped_sum": 53.42,
+          "capped_minus_uncapped_sum": -53.42,
+          "uncapped_mean": -130.543667,
+          "capped_mean": -143.382545,
+          "skipped_mean": 10.684,
+          "sum_improved_by_cap": false,
+          "skipped_rows_negative": false
+        }
+      },
+      "duplicate_rows": {
+        "row_count": 8,
+        "ticker_count": 3,
+        "sleeve_count": 5,
+        "window_count": 1,
+        "ticker_counts": {
+          "CRDO": 4,
+          "DDOG": 2,
+          "WDC": 2
+        },
+        "sleeve_counts": {
+          "accepted_helper_source_priority_allocator": 1,
+          "accepted_source_consensus": 1,
+          "alpha_score_market_regime": 1,
+          "free_data_cross_source_consensus": 3,
+          "fundamental_growth_rs": 2
+        },
+        "window_counts": {
+          "forward": 8
+        },
+        "top_tickers": [
+          {
+            "ticker": "CRDO",
+            "rows": 4,
+            "share": 0.5
+          },
+          {
+            "ticker": "WDC",
+            "rows": 2,
+            "share": 0.25
+          },
+          {
+            "ticker": "DDOG",
+            "rows": 2,
+            "share": 0.25
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "free_data_cross_source_consensus",
+            "rows": 3,
+            "share": 0.375
+          },
+          {
+            "sleeve": "fundamental_growth_rs",
+            "rows": 2,
+            "share": 0.25
+          },
+          {
+            "sleeve": "accepted_helper_source_priority_allocator",
+            "rows": 1,
+            "share": 0.125
+          },
+          {
+            "sleeve": "alpha_score_market_regime",
+            "rows": 1,
+            "share": 0.125
+          },
+          {
+            "sleeve": "accepted_source_consensus",
+            "rows": 1,
+            "share": 0.125
+          }
+        ],
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 8,
+            "sum": -1971.61,
+            "mean": -246.45125,
+            "median": -223.67,
+            "min": -877.83,
+            "max": 463.3,
+            "p20": -505.64,
+            "worst_20pct_mean": -734.305,
+            "positive_rate": 0.25
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 8,
+            "sum": -1249.35,
+            "mean": -156.16875,
+            "median": -173.05,
+            "min": -818.25,
+            "max": 451.1,
+            "p20": -327.95,
+            "worst_20pct_mean": -595.02,
+            "positive_rate": 0.25
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 8,
+            "sum": -1099.25,
+            "mean": -137.40625,
+            "median": -134.23,
+            "min": -700.21,
+            "max": 368.03,
+            "p20": -319.004,
+            "worst_20pct_mean": -548.085,
+            "positive_rate": 0.25
+          }
+        }
+      },
+      "skipped_rows": {
+        "row_count": 5,
+        "ticker_count": 3,
+        "sleeve_count": 3,
+        "window_count": 1,
+        "ticker_counts": {
+          "CRDO": 3,
+          "DDOG": 1,
+          "WDC": 1
+        },
+        "sleeve_counts": {
+          "alpha_score_market_regime": 1,
+          "free_data_cross_source_consensus": 2,
+          "fundamental_growth_rs": 2
+        },
+        "window_counts": {
+          "forward": 5
+        },
+        "top_tickers": [
+          {
+            "ticker": "CRDO",
+            "rows": 3,
+            "share": 0.6
+          },
+          {
+            "ticker": "WDC",
+            "rows": 1,
+            "share": 0.2
+          },
+          {
+            "ticker": "DDOG",
+            "rows": 1,
+            "share": 0.2
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "free_data_cross_source_consensus",
+            "rows": 2,
+            "share": 0.4
+          },
+          {
+            "sleeve": "fundamental_growth_rs",
+            "rows": 2,
+            "share": 0.4
+          },
+          {
+            "sleeve": "alpha_score_market_regime",
+            "rows": 1,
+            "share": 0.2
+          }
+        ],
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 5,
+            "sum": -539.11,
+            "mean": -107.822,
+            "median": -179.47,
+            "min": -590.78,
+            "max": 463.3,
+            "p20": -332.452,
+            "worst_20pct_mean": -590.78,
+            "positive_rate": 0.4
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 5,
+            "sum": 19.13,
+            "mean": 3.826,
+            "median": -147.02,
+            "min": -262.19,
+            "max": 451.1,
+            "p20": -211.702,
+            "worst_20pct_mean": -262.19,
+            "positive_rate": 0.4
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 5,
+            "sum": 53.42,
+            "mean": 10.684,
+            "median": -79.59,
+            "min": -203.57,
+            "max": 368.03,
+            "p20": -191.81,
+            "worst_20pct_mean": -203.57,
+            "positive_rate": 0.4
+          }
+        }
+      },
+      "kept_rows": {
+        "row_count": 55,
+        "ticker_count": 25,
+        "sleeve_count": 15,
+        "window_count": 1,
+        "ticker_counts": {
+          "AAPL": 1,
+          "AMD": 3,
+          "AVGO": 2,
+          "BE": 1,
+          "BKNG": 1,
+          "COHR": 1,
+          "COIN": 2,
+          "CRDO": 3,
+          "CVX": 1,
+          "DDOG": 3,
+          "DE": 1,
+          "GE": 2,
+          "GS": 1,
+          "HOOD": 1,
+          "INTC": 1,
+          "LITE": 1,
+          "MRVL": 2,
+          "MU": 3,
+          "NOW": 1,
+          "QQQ": 17,
+          "RKLB": 1,
+          "SNOW": 3,
+          "SNXX": 1,
+          "UNH": 1,
+          "WDC": 1
+        },
+        "sleeve_counts": {
+          "accepted_helper_source_priority_allocator": 2,
+          "accepted_source_consensus": 1,
+          "alpha_score_market_regime": 4,
+          "broad_market": 1,
+          "free_data_cross_source_consensus": 2,
+          "fundamental_growth_rs": 6,
+          "low_deployment_etf": 17,
+          "sec_financial_report": 5,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "supplier_financing_debt_relief": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 4
+        },
+        "window_counts": {
+          "forward": 55
+        },
+        "top_tickers": [
+          {
+            "ticker": "QQQ",
+            "rows": 17,
+            "share": 0.309091
+          },
+          {
+            "ticker": "AMD",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "ticker": "CRDO",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "ticker": "MU",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "ticker": "SNOW",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "ticker": "DDOG",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "ticker": "GE",
+            "rows": 2,
+            "share": 0.036364
+          },
+          {
+            "ticker": "COIN",
+            "rows": 2,
+            "share": 0.036364
+          },
+          {
+            "ticker": "AVGO",
+            "rows": 2,
+            "share": 0.036364
+          },
+          {
+            "ticker": "MRVL",
+            "rows": 2,
+            "share": 0.036364
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "low_deployment_etf",
+            "rows": 17,
+            "share": 0.309091
+          },
+          {
+            "sleeve": "fundamental_growth_rs",
+            "rows": 6,
+            "share": 0.109091
+          },
+          {
+            "sleeve": "sec_financial_report",
+            "rows": 5,
+            "share": 0.090909
+          },
+          {
+            "sleeve": "volume_breadth_breakout",
+            "rows": 4,
+            "share": 0.072727
+          },
+          {
+            "sleeve": "alpha_score_market_regime",
+            "rows": 4,
+            "share": 0.072727
+          },
+          {
+            "sleeve": "state_surface",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "sleeve": "supplier_financing_debt_relief",
+            "rows": 3,
+            "share": 0.054545
+          },
+          {
+            "sleeve": "sec_governance",
+            "rows": 2,
+            "share": 0.036364
+          },
+          {
+            "sleeve": "sec_negative",
+            "rows": 2,
+            "share": 0.036364
+          },
+          {
+            "sleeve": "volatility_contraction",
+            "rows": 2,
+            "share": 0.036364
+          }
+        ],
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 55,
+            "sum": -10646.92,
+            "mean": -193.580364,
+            "median": -57.7,
+            "min": -6327.17,
+            "max": 2772.28,
+            "p20": -814.814,
+            "worst_20pct_mean": -2376.47,
+            "positive_rate": 0.490909
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 55,
+            "sum": -4995.5,
+            "mean": -90.827273,
+            "median": 196.04,
+            "min": -6806.63,
+            "max": 2788.46,
+            "p20": -574.47,
+            "worst_20pct_mean": -2318.955455,
+            "positive_rate": 0.6
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 55,
+            "sum": -7886.04,
+            "mean": -143.382545,
+            "median": 299.03,
+            "min": -7244.11,
+            "max": 2704.37,
+            "p20": -473.02,
+            "worst_20pct_mean": -2371.481818,
+            "positive_rate": 0.581818
+          }
+        }
+      },
+      "duplicate_group_examples": [
+        {
+          "window": "forward",
+          "entry_date": "2026-06-12",
+          "ticker": "CRDO",
+          "row_count": 4,
+          "kept_rows": 1,
+          "skipped_rows": 3,
+          "sleeves": {
+            "accepted_helper_source_priority_allocator": 1,
+            "alpha_score_market_regime": 1,
+            "free_data_cross_source_consensus": 1,
+            "fundamental_growth_rs": 1
+          },
+          "kept": [
+            {
+              "window": null,
+              "entry_date": "2026-06-12",
+              "exit_date": "2026-06-29",
+              "ticker": "CRDO",
+              "sleeve": "accepted_helper_source_priority_allocator",
+              "decision_id": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER:accepted_helper_source_priority_top1_with_lagged_consensus_allocation_v1:2026-06-11:CRDO:lagged_cross_source_consensus",
+              "replacement_value_vs_cash_usd": -377.93,
+              "replacement_value_vs_spy_usd": -371.79,
+              "replacement_value_vs_qqq_usd": -395.96
+            }
+          ],
+          "skipped": [
+            {
+              "window": null,
+              "entry_date": "2026-06-12",
+              "exit_date": "2026-06-22",
+              "ticker": "CRDO",
+              "sleeve": "free_data_cross_source_consensus",
+              "decision_id": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-11:CRDO",
+              "replacement_value_vs_cash_usd": 463.3,
+              "replacement_value_vs_spy_usd": 451.1,
+              "replacement_value_vs_qqq_usd": 368.03
+            },
+            {
+              "window": null,
+              "entry_date": "2026-06-12",
+              "exit_date": "2026-06-23",
+              "ticker": "CRDO",
+              "sleeve": "fundamental_growth_rs",
+              "decision_id": "FUNDAMENTAL_GROWTH_RS_PAPER:fundamental_growth_rs_gross_margin_shared_adapter_v1:2026-06-11:CRDO",
+              "replacement_value_vs_cash_usd": 35.71,
+              "replacement_value_vs_spy_usd": 176.32,
+              "replacement_value_vs_qqq_usd": 157.42
+            },
+            {
+              "window": null,
+              "entry_date": "2026-06-12",
+              "exit_date": "2026-07-01",
+              "ticker": "CRDO",
+              "sleeve": "alpha_score_market_regime",
+              "decision_id": "ALPHA_SCORE_MARKET_REGIME_PAPER:alpha_score_market_regime_safe_notional_shared_v1:2026-06-11:CRDO",
+              "replacement_value_vs_cash_usd": -179.47,
+              "replacement_value_vs_spy_usd": -199.08,
+              "replacement_value_vs_qqq_usd": -203.57
+            }
+          ],
+          "metrics_uncapped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 4,
+              "sum": -58.39,
+              "mean": -14.5975,
+              "median": -71.88,
+              "min": -377.93,
+              "max": 463.3,
+              "p20": -258.854,
+              "worst_20pct_mean": -377.93,
+              "positive_rate": 0.5
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 4,
+              "sum": 56.55,
+              "mean": 14.1375,
+              "median": -11.38,
+              "min": -371.79,
+              "max": 451.1,
+              "p20": -268.164,
+              "worst_20pct_mean": -371.79,
+              "positive_rate": 0.5
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 4,
+              "sum": -74.08,
+              "mean": -18.52,
+              "median": -23.075,
+              "min": -395.96,
+              "max": 368.03,
+              "p20": -280.526,
+              "worst_20pct_mean": -395.96,
+              "positive_rate": 0.5
+            }
+          },
+          "metrics_kept": {
+            "replacement_value_vs_cash_usd": {
+              "n": 1,
+              "sum": -377.93,
+              "mean": -377.93,
+              "median": -377.93,
+              "min": -377.93,
+              "max": -377.93,
+              "p20": -377.93,
+              "worst_20pct_mean": -377.93,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 1,
+              "sum": -371.79,
+              "mean": -371.79,
+              "median": -371.79,
+              "min": -371.79,
+              "max": -371.79,
+              "p20": -371.79,
+              "worst_20pct_mean": -371.79,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 1,
+              "sum": -395.96,
+              "mean": -395.96,
+              "median": -395.96,
+              "min": -395.96,
+              "max": -395.96,
+              "p20": -395.96,
+              "worst_20pct_mean": -395.96,
+              "positive_rate": 0.0
+            }
+          },
+          "metrics_skipped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 3,
+              "sum": 319.54,
+              "mean": 106.513333,
+              "median": 35.71,
+              "min": -179.47,
+              "max": 463.3,
+              "p20": -93.398,
+              "worst_20pct_mean": -179.47,
+              "positive_rate": 0.666667
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 3,
+              "sum": 428.34,
+              "mean": 142.78,
+              "median": 176.32,
+              "min": -199.08,
+              "max": 451.1,
+              "p20": -48.92,
+              "worst_20pct_mean": -199.08,
+              "positive_rate": 0.666667
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 3,
+              "sum": 321.88,
+              "mean": 107.293333,
+              "median": 157.42,
+              "min": -203.57,
+              "max": 368.03,
+              "p20": -59.174,
+              "worst_20pct_mean": -203.57,
+              "positive_rate": 0.666667
+            }
+          }
+        },
+        {
+          "window": "forward",
+          "entry_date": "2026-06-16",
+          "ticker": "WDC",
+          "row_count": 2,
+          "kept_rows": 1,
+          "skipped_rows": 1,
+          "sleeves": {
+            "accepted_source_consensus": 1,
+            "free_data_cross_source_consensus": 1
+          },
+          "kept": [
+            {
+              "window": null,
+              "entry_date": "2026-06-16",
+              "exit_date": "2026-07-02",
+              "ticker": "WDC",
+              "sleeve": "accepted_source_consensus",
+              "decision_id": "ACCEPTED_SOURCE_CONSENSUS_PAPER:accepted_source_consensus_shared_v1:2026-06-15:WDC",
+              "replacement_value_vs_cash_usd": -877.83,
+              "replacement_value_vs_spy_usd": -818.25,
+              "replacement_value_vs_qqq_usd": -700.21
+            }
+          ],
+          "skipped": [
+            {
+              "window": null,
+              "entry_date": "2026-06-16",
+              "exit_date": "2026-06-24",
+              "ticker": "WDC",
+              "sleeve": "free_data_cross_source_consensus",
+              "decision_id": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-15:WDC",
+              "replacement_value_vs_cash_usd": -267.87,
+              "replacement_value_vs_spy_usd": -147.02,
+              "replacement_value_vs_qqq_usd": -79.59
+            }
+          ],
+          "metrics_uncapped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 2,
+              "sum": -1145.7,
+              "mean": -572.85,
+              "median": -572.85,
+              "min": -877.83,
+              "max": -267.87,
+              "p20": -755.838,
+              "worst_20pct_mean": -877.83,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 2,
+              "sum": -965.27,
+              "mean": -482.635,
+              "median": -482.635,
+              "min": -818.25,
+              "max": -147.02,
+              "p20": -684.004,
+              "worst_20pct_mean": -818.25,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 2,
+              "sum": -779.8,
+              "mean": -389.9,
+              "median": -389.9,
+              "min": -700.21,
+              "max": -79.59,
+              "p20": -576.086,
+              "worst_20pct_mean": -700.21,
+              "positive_rate": 0.0
+            }
+          },
+          "metrics_kept": {
+            "replacement_value_vs_cash_usd": {
+              "n": 1,
+              "sum": -877.83,
+              "mean": -877.83,
+              "median": -877.83,
+              "min": -877.83,
+              "max": -877.83,
+              "p20": -877.83,
+              "worst_20pct_mean": -877.83,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 1,
+              "sum": -818.25,
+              "mean": -818.25,
+              "median": -818.25,
+              "min": -818.25,
+              "max": -818.25,
+              "p20": -818.25,
+              "worst_20pct_mean": -818.25,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 1,
+              "sum": -700.21,
+              "mean": -700.21,
+              "median": -700.21,
+              "min": -700.21,
+              "max": -700.21,
+              "p20": -700.21,
+              "worst_20pct_mean": -700.21,
+              "positive_rate": 0.0
+            }
+          },
+          "metrics_skipped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 1,
+              "sum": -267.87,
+              "mean": -267.87,
+              "median": -267.87,
+              "min": -267.87,
+              "max": -267.87,
+              "p20": -267.87,
+              "worst_20pct_mean": -267.87,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 1,
+              "sum": -147.02,
+              "mean": -147.02,
+              "median": -147.02,
+              "min": -147.02,
+              "max": -147.02,
+              "p20": -147.02,
+              "worst_20pct_mean": -147.02,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 1,
+              "sum": -79.59,
+              "mean": -79.59,
+              "median": -79.59,
+              "min": -79.59,
+              "max": -79.59,
+              "p20": -79.59,
+              "worst_20pct_mean": -79.59,
+              "positive_rate": 0.0
+            }
+          }
+        },
+        {
+          "window": "forward",
+          "entry_date": "2026-06-17",
+          "ticker": "DDOG",
+          "row_count": 2,
+          "kept_rows": 1,
+          "skipped_rows": 1,
+          "sleeves": {
+            "free_data_cross_source_consensus": 1,
+            "fundamental_growth_rs": 1
+          },
+          "kept": [
+            {
+              "window": null,
+              "entry_date": "2026-06-17",
+              "exit_date": "2026-06-25",
+              "ticker": "DDOG",
+              "sleeve": "free_data_cross_source_consensus",
+              "decision_id": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-16:DDOG",
+              "replacement_value_vs_cash_usd": -176.74,
+              "replacement_value_vs_spy_usd": -78.44,
+              "replacement_value_vs_qqq_usd": -56.5
+            }
+          ],
+          "skipped": [
+            {
+              "window": null,
+              "entry_date": "2026-06-17",
+              "exit_date": "2026-06-25",
+              "ticker": "DDOG",
+              "sleeve": "fundamental_growth_rs",
+              "decision_id": "FUNDAMENTAL_GROWTH_RS_PAPER:fundamental_growth_rs_gross_margin_shared_adapter_v1:2026-06-16:DDOG",
+              "replacement_value_vs_cash_usd": -590.78,
+              "replacement_value_vs_spy_usd": -262.19,
+              "replacement_value_vs_qqq_usd": -188.87
+            }
+          ],
+          "metrics_uncapped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 2,
+              "sum": -767.52,
+              "mean": -383.76,
+              "median": -383.76,
+              "min": -590.78,
+              "max": -176.74,
+              "p20": -507.972,
+              "worst_20pct_mean": -590.78,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 2,
+              "sum": -340.63,
+              "mean": -170.315,
+              "median": -170.315,
+              "min": -262.19,
+              "max": -78.44,
+              "p20": -225.44,
+              "worst_20pct_mean": -262.19,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 2,
+              "sum": -245.37,
+              "mean": -122.685,
+              "median": -122.685,
+              "min": -188.87,
+              "max": -56.5,
+              "p20": -162.396,
+              "worst_20pct_mean": -188.87,
+              "positive_rate": 0.0
+            }
+          },
+          "metrics_kept": {
+            "replacement_value_vs_cash_usd": {
+              "n": 1,
+              "sum": -176.74,
+              "mean": -176.74,
+              "median": -176.74,
+              "min": -176.74,
+              "max": -176.74,
+              "p20": -176.74,
+              "worst_20pct_mean": -176.74,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 1,
+              "sum": -78.44,
+              "mean": -78.44,
+              "median": -78.44,
+              "min": -78.44,
+              "max": -78.44,
+              "p20": -78.44,
+              "worst_20pct_mean": -78.44,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 1,
+              "sum": -56.5,
+              "mean": -56.5,
+              "median": -56.5,
+              "min": -56.5,
+              "max": -56.5,
+              "p20": -56.5,
+              "worst_20pct_mean": -56.5,
+              "positive_rate": 0.0
+            }
+          },
+          "metrics_skipped": {
+            "replacement_value_vs_cash_usd": {
+              "n": 1,
+              "sum": -590.78,
+              "mean": -590.78,
+              "median": -590.78,
+              "min": -590.78,
+              "max": -590.78,
+              "p20": -590.78,
+              "worst_20pct_mean": -590.78,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_spy_usd": {
+              "n": 1,
+              "sum": -262.19,
+              "mean": -262.19,
+              "median": -262.19,
+              "min": -262.19,
+              "max": -262.19,
+              "p20": -262.19,
+              "worst_20pct_mean": -262.19,
+              "positive_rate": 0.0
+            },
+            "replacement_value_vs_qqq_usd": {
+              "n": 1,
+              "sum": -188.87,
+              "mean": -188.87,
+              "median": -188.87,
+              "min": -188.87,
+              "max": -188.87,
+              "p20": -188.87,
+              "worst_20pct_mean": -188.87,
+              "positive_rate": 0.0
+            }
+          }
+        }
+      ],
+      "same_sleeve_multi_group_count": 1
+    },
+    "historical_policy": {
+      "delta": {
+        "pnl_per_10k": {
+          "uncapped_sum": 51198.63,
+          "capped_sum": 47470.61,
+          "skipped_sum": 3728.02,
+          "capped_minus_uncapped_sum": -3728.02,
+          "uncapped_mean": 416.249024,
+          "capped_mean": 392.319091,
+          "skipped_mean": 1864.01,
+          "sum_improved_by_cap": false,
+          "skipped_rows_negative": false
+        },
+        "pnl_pct_net": {
+          "uncapped_sum": 5.119863,
+          "capped_sum": 4.747061,
+          "skipped_sum": 0.372802,
+          "capped_minus_uncapped_sum": -0.372802,
+          "uncapped_mean": 0.041625,
+          "capped_mean": 0.039232,
+          "skipped_mean": 0.186401,
+          "sum_improved_by_cap": false,
+          "skipped_rows_negative": false
+        },
+        "pnl": {
+          "uncapped_sum": 87429.77,
+          "capped_sum": 84029.33,
+          "skipped_sum": 3400.44,
+          "capped_minus_uncapped_sum": -3400.44,
+          "uncapped_mean": 710.811138,
+          "capped_mean": 694.457273,
+          "skipped_mean": 1700.22,
+          "sum_improved_by_cap": false,
+          "skipped_rows_negative": false
+        }
+      },
+      "duplicate_rows": {
+        "row_count": 4,
+        "ticker_count": 1,
+        "sleeve_count": 3,
+        "window_count": 1,
+        "ticker_counts": {
+          "MU": 4
+        },
+        "sleeve_counts": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 2,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 1,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "window_counts": {
+          "late_strong": 4
+        },
+        "top_tickers": [
+          {
+            "ticker": "MU",
+            "rows": 4,
+            "share": 1.0
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+            "rows": 2,
+            "share": 0.5
+          },
+          {
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+            "rows": 1,
+            "share": 0.25
+          },
+          {
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+            "rows": 1,
+            "share": 0.25
+          }
+        ],
+        "metrics": {
+          "pnl_per_10k": {
+            "n": 4,
+            "sum": 7456.04,
+            "mean": 1864.01,
+            "median": 1864.01,
+            "min": 1378.92,
+            "max": 2349.1,
+            "p20": 1378.92,
+            "worst_20pct_mean": 1378.92,
+            "positive_rate": 1.0
+          },
+          "pnl_pct_net": {
+            "n": 4,
+            "sum": 0.745604,
+            "mean": 0.186401,
+            "median": 0.186401,
+            "min": 0.137892,
+            "max": 0.23491,
+            "p20": 0.137892,
+            "worst_20pct_mean": 0.137892,
+            "positive_rate": 1.0
+          },
+          "pnl": {
+            "n": 4,
+            "sum": 7128.46,
+            "mean": 1782.115,
+            "median": 1864.01,
+            "min": 551.57,
+            "max": 2848.87,
+            "p20": 1047.98,
+            "worst_20pct_mean": 551.57,
+            "positive_rate": 1.0
+          }
+        }
+      },
+      "skipped_rows": {
+        "row_count": 2,
+        "ticker_count": 1,
+        "sleeve_count": 2,
+        "window_count": 1,
+        "ticker_counts": {
+          "MU": 2
+        },
+        "sleeve_counts": {
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 1,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "window_counts": {
+          "late_strong": 2
+        },
+        "top_tickers": [
+          {
+            "ticker": "MU",
+            "rows": 2,
+            "share": 1.0
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+            "rows": 1,
+            "share": 0.5
+          },
+          {
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+            "rows": 1,
+            "share": 0.5
+          }
+        ],
+        "metrics": {
+          "pnl_per_10k": {
+            "n": 2,
+            "sum": 3728.02,
+            "mean": 1864.01,
+            "median": 1864.01,
+            "min": 1378.92,
+            "max": 2349.1,
+            "p20": 1572.956,
+            "worst_20pct_mean": 1378.92,
+            "positive_rate": 1.0
+          },
+          "pnl_pct_net": {
+            "n": 2,
+            "sum": 0.372802,
+            "mean": 0.186401,
+            "median": 0.186401,
+            "min": 0.137892,
+            "max": 0.23491,
+            "p20": 0.157296,
+            "worst_20pct_mean": 0.137892,
+            "positive_rate": 1.0
+          },
+          "pnl": {
+            "n": 2,
+            "sum": 3400.44,
+            "mean": 1700.22,
+            "median": 1700.22,
+            "min": 551.57,
+            "max": 2848.87,
+            "p20": 1011.03,
+            "worst_20pct_mean": 551.57,
+            "positive_rate": 1.0
+          }
+        }
+      },
+      "kept_rows": {
+        "row_count": 121,
+        "ticker_count": 50,
+        "sleeve_count": 4,
+        "window_count": 3,
+        "ticker_counts": {
+          "AAPL": 1,
+          "ACMR": 1,
+          "ALB": 1,
+          "AMD": 2,
+          "AMZN": 2,
+          "APP": 14,
+          "AVGO": 1,
+          "BE": 1,
+          "CART": 1,
+          "CAT": 1,
+          "COIN": 2,
+          "CRDO": 7,
+          "CVX": 2,
+          "DDOG": 2,
+          "DE": 6,
+          "DG": 1,
+          "DIS": 1,
+          "GE": 1,
+          "GILD": 1,
+          "GLD": 9,
+          "GOOG": 1,
+          "GOOGL": 1,
+          "GS": 4,
+          "HOOD": 1,
+          "INSM": 1,
+          "ISRG": 3,
+          "IWM": 2,
+          "LLY": 2,
+          "META": 2,
+          "MSTR": 1,
+          "MTG": 1,
+          "MU": 10,
+          "NFLX": 1,
+          "NOW": 2,
+          "NXT": 1,
+          "PLTR": 7,
+          "QQQ": 2,
+          "RBLX": 1,
+          "RTX": 2,
+          "SCCO": 1,
+          "SLV": 5,
+          "SMTC": 1,
+          "SNOW": 3,
+          "SPOT": 3,
+          "SPY": 1,
+          "TSLA": 1,
+          "TTWO": 1,
+          "V": 1,
+          "VZ": 1,
+          "WULF": 1
+        },
+        "sleeve_counts": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 64,
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 19,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 19,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 19
+        },
+        "window_counts": {
+          "late_strong": 31,
+          "mid_weak": 44,
+          "old_thin": 46
+        },
+        "top_tickers": [
+          {
+            "ticker": "APP",
+            "rows": 14,
+            "share": 0.115702
+          },
+          {
+            "ticker": "MU",
+            "rows": 10,
+            "share": 0.082645
+          },
+          {
+            "ticker": "GLD",
+            "rows": 9,
+            "share": 0.07438
+          },
+          {
+            "ticker": "PLTR",
+            "rows": 7,
+            "share": 0.057851
+          },
+          {
+            "ticker": "CRDO",
+            "rows": 7,
+            "share": 0.057851
+          },
+          {
+            "ticker": "DE",
+            "rows": 6,
+            "share": 0.049587
+          },
+          {
+            "ticker": "SLV",
+            "rows": 5,
+            "share": 0.041322
+          },
+          {
+            "ticker": "GS",
+            "rows": 4,
+            "share": 0.033058
+          },
+          {
+            "ticker": "ISRG",
+            "rows": 3,
+            "share": 0.024793
+          },
+          {
+            "ticker": "SPOT",
+            "rows": 3,
+            "share": 0.024793
+          }
+        ],
+        "top_sleeves": [
+          {
+            "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+            "rows": 64,
+            "share": 0.528926
+          },
+          {
+            "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+            "rows": 19,
+            "share": 0.157025
+          },
+          {
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+            "rows": 19,
+            "share": 0.157025
+          },
+          {
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+            "rows": 19,
+            "share": 0.157025
+          }
+        ],
+        "metrics": {
+          "pnl_per_10k": {
+            "n": 121,
+            "sum": 47470.61,
+            "mean": 392.319091,
+            "median": 225.41,
+            "min": -2816.07,
+            "max": 8374.63,
+            "p20": -344.69,
+            "worst_20pct_mean": -923.8924,
+            "positive_rate": 0.628099
+          },
+          "pnl_pct_net": {
+            "n": 121,
+            "sum": 4.747061,
+            "mean": 0.039232,
+            "median": 0.022541,
+            "min": -0.281607,
+            "max": 0.837463,
+            "p20": -0.034469,
+            "worst_20pct_mean": -0.092389,
+            "positive_rate": 0.628099
+          },
+          "pnl": {
+            "n": 121,
+            "sum": 84029.33,
+            "mean": 694.457273,
+            "median": 230.32,
+            "min": -3733.24,
+            "max": 13661.15,
+            "p20": -370.94,
+            "worst_20pct_mean": -1368.7644,
+            "positive_rate": 0.628099
+          }
+        }
+      },
+      "duplicate_group_examples": [
+        {
+          "window": "late_strong",
+          "entry_date": "2025-12-22",
+          "ticker": "MU",
+          "row_count": 2,
+          "kept_rows": 1,
+          "skipped_rows": 1,
+          "sleeves": {
+            "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+            "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+          },
+          "kept": [
+            {
+              "window": "late_strong",
+              "entry_date": "2025-12-22",
+              "exit_date": "2026-01-06",
+              "ticker": "MU",
+              "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+              "decision_id": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2025-12-22|2026-01-06|2349.1",
+              "pnl_per_10k": 2349.1,
+              "pnl_pct_net": 0.23491,
+              "pnl": 2349.1
+            }
+          ],
+          "skipped": [
+            {
+              "window": "late_strong",
+              "entry_date": "2025-12-22",
+              "exit_date": "2026-01-06",
+              "ticker": "MU",
+              "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+              "decision_id": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|MU|2025-12-22|2026-01-06|2848.87",
+              "pnl_per_10k": 2349.1,
+              "pnl_pct_net": 0.23491,
+              "pnl": 2848.87
+            }
+          ],
+          "metrics_uncapped": {
+            "pnl_per_10k": {
+              "n": 2,
+              "sum": 4698.2,
+              "mean": 2349.1,
+              "median": 2349.1,
+              "min": 2349.1,
+              "max": 2349.1,
+              "p20": 2349.1,
+              "worst_20pct_mean": 2349.1,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 2,
+              "sum": 0.46982,
+              "mean": 0.23491,
+              "median": 0.23491,
+              "min": 0.23491,
+              "max": 0.23491,
+              "p20": 0.23491,
+              "worst_20pct_mean": 0.23491,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 2,
+              "sum": 5197.97,
+              "mean": 2598.985,
+              "median": 2598.985,
+              "min": 2349.1,
+              "max": 2848.87,
+              "p20": 2449.054,
+              "worst_20pct_mean": 2349.1,
+              "positive_rate": 1.0
+            }
+          },
+          "metrics_kept": {
+            "pnl_per_10k": {
+              "n": 1,
+              "sum": 2349.1,
+              "mean": 2349.1,
+              "median": 2349.1,
+              "min": 2349.1,
+              "max": 2349.1,
+              "p20": 2349.1,
+              "worst_20pct_mean": 2349.1,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 1,
+              "sum": 0.23491,
+              "mean": 0.23491,
+              "median": 0.23491,
+              "min": 0.23491,
+              "max": 0.23491,
+              "p20": 0.23491,
+              "worst_20pct_mean": 0.23491,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 1,
+              "sum": 2349.1,
+              "mean": 2349.1,
+              "median": 2349.1,
+              "min": 2349.1,
+              "max": 2349.1,
+              "p20": 2349.1,
+              "worst_20pct_mean": 2349.1,
+              "positive_rate": 1.0
+            }
+          },
+          "metrics_skipped": {
+            "pnl_per_10k": {
+              "n": 1,
+              "sum": 2349.1,
+              "mean": 2349.1,
+              "median": 2349.1,
+              "min": 2349.1,
+              "max": 2349.1,
+              "p20": 2349.1,
+              "worst_20pct_mean": 2349.1,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 1,
+              "sum": 0.23491,
+              "mean": 0.23491,
+              "median": 0.23491,
+              "min": 0.23491,
+              "max": 0.23491,
+              "p20": 0.23491,
+              "worst_20pct_mean": 0.23491,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 1,
+              "sum": 2848.87,
+              "mean": 2848.87,
+              "median": 2848.87,
+              "min": 2848.87,
+              "max": 2848.87,
+              "p20": 2848.87,
+              "worst_20pct_mean": 2848.87,
+              "positive_rate": 1.0
+            }
+          }
+        },
+        {
+          "window": "late_strong",
+          "entry_date": "2026-01-12",
+          "ticker": "MU",
+          "row_count": 2,
+          "kept_rows": 1,
+          "skipped_rows": 1,
+          "sleeves": {
+            "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+            "MACRO_RELIEF_LEADERSHIP_PAPER": 1
+          },
+          "kept": [
+            {
+              "window": "late_strong",
+              "entry_date": "2026-01-12",
+              "exit_date": "2026-01-26",
+              "ticker": "MU",
+              "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+              "decision_id": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2026-01-12|2026-01-26|1378.92",
+              "pnl_per_10k": 1378.92,
+              "pnl_pct_net": 0.137892,
+              "pnl": 1378.92
+            }
+          ],
+          "skipped": [
+            {
+              "window": "late_strong",
+              "entry_date": "2026-01-12",
+              "exit_date": "2026-01-26",
+              "ticker": "MU",
+              "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+              "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2026-01-09:MU",
+              "pnl_per_10k": 1378.92,
+              "pnl_pct_net": 0.137892,
+              "pnl": 551.57
+            }
+          ],
+          "metrics_uncapped": {
+            "pnl_per_10k": {
+              "n": 2,
+              "sum": 2757.84,
+              "mean": 1378.92,
+              "median": 1378.92,
+              "min": 1378.92,
+              "max": 1378.92,
+              "p20": 1378.92,
+              "worst_20pct_mean": 1378.92,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 2,
+              "sum": 0.275784,
+              "mean": 0.137892,
+              "median": 0.137892,
+              "min": 0.137892,
+              "max": 0.137892,
+              "p20": 0.137892,
+              "worst_20pct_mean": 0.137892,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 2,
+              "sum": 1930.49,
+              "mean": 965.245,
+              "median": 965.245,
+              "min": 551.57,
+              "max": 1378.92,
+              "p20": 717.04,
+              "worst_20pct_mean": 551.57,
+              "positive_rate": 1.0
+            }
+          },
+          "metrics_kept": {
+            "pnl_per_10k": {
+              "n": 1,
+              "sum": 1378.92,
+              "mean": 1378.92,
+              "median": 1378.92,
+              "min": 1378.92,
+              "max": 1378.92,
+              "p20": 1378.92,
+              "worst_20pct_mean": 1378.92,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 1,
+              "sum": 0.137892,
+              "mean": 0.137892,
+              "median": 0.137892,
+              "min": 0.137892,
+              "max": 0.137892,
+              "p20": 0.137892,
+              "worst_20pct_mean": 0.137892,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 1,
+              "sum": 1378.92,
+              "mean": 1378.92,
+              "median": 1378.92,
+              "min": 1378.92,
+              "max": 1378.92,
+              "p20": 1378.92,
+              "worst_20pct_mean": 1378.92,
+              "positive_rate": 1.0
+            }
+          },
+          "metrics_skipped": {
+            "pnl_per_10k": {
+              "n": 1,
+              "sum": 1378.92,
+              "mean": 1378.92,
+              "median": 1378.92,
+              "min": 1378.92,
+              "max": 1378.92,
+              "p20": 1378.92,
+              "worst_20pct_mean": 1378.92,
+              "positive_rate": 1.0
+            },
+            "pnl_pct_net": {
+              "n": 1,
+              "sum": 0.137892,
+              "mean": 0.137892,
+              "median": 0.137892,
+              "min": 0.137892,
+              "max": 0.137892,
+              "p20": 0.137892,
+              "worst_20pct_mean": 0.137892,
+              "positive_rate": 1.0
+            },
+            "pnl": {
+              "n": 1,
+              "sum": 551.57,
+              "mean": 551.57,
+              "median": 551.57,
+              "min": 551.57,
+              "max": 551.57,
+              "p20": 551.57,
+              "worst_20pct_mean": 551.57,
+              "positive_rate": 1.0
+            }
+          }
+        }
+      ],
+      "same_sleeve_multi_group_count": 0
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "decision": "rejected_duplicate_exposure_cap_historical_validation_failed",
+    "forward_source_rows": 60,
+    "forward_enriched_rows": 60,
+    "forward_excluded_finra_ftd_rows": 0,
+    "forward_eligible_rows": 60,
+    "forward_ineligible_rows": 0,
+    "forward_duplicate_rows": 8,
+    "forward_duplicate_groups": 3,
+    "forward_same_sleeve_multi_groups": 1,
+    "forward_policy_skipped_rows": 5,
+    "forward_policy_kept_rows": 55,
+    "forward_cash_cap_delta_sum": 539.11,
+    "forward_spy_cap_delta_sum": -19.13,
+    "forward_qqq_cap_delta_sum": -53.42,
+    "historical_source_rows": 266,
+    "historical_excluded_finra_ftd_rows": 143,
+    "historical_eligible_rows": 123,
+    "historical_ineligible_rows": 0,
+    "historical_duplicate_rows": 4,
+    "historical_duplicate_groups": 2,
+    "historical_same_sleeve_multi_groups": 0,
+    "historical_policy_skipped_rows": 2,
+    "historical_policy_kept_rows": 121,
+    "historical_pnl_per_10k_cap_delta_sum": -3728.02,
+    "forward_support": false,
+    "historical_support": false,
+    "policy_supported": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "exit_rules_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Read-only simulation over existing default-off paper artifacts. No shared helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.22,
+    "brier_score": 0.0484,
+    "predicted_failure_modes": [
+      "historical_validation_failed",
+      "duplicate_sample_too_thin",
+      "concentration_failed",
+      "forward_only_not_gate_ready"
+    ],
+    "realized_failure_modes": [
+      "concentration_failed",
+      "duplicate_sample_too_thin",
+      "historical_validation_failed"
+    ],
+    "predicted_failure_mode_hit": true,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "surprise_note": "The static cap can be measured on the forward ledger, but Gate 4 cannot accept it: the independent historical accepted-paper surface does not meet the duplicate sample, concentration, and/or primary metric support requirements."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The forward ledger can support a cross-sleeve cap simulation, but the independent historical accepted-paper surface is still too thin or concentrated to validate a default-off duplicate exposure policy.",
+    "alpha_interpretation": "The cap idea remains a forward-only risk-allocation lead, not an accepted alpha or production-ready control. The rejection is against promoting this fixed policy on current evidence.",
+    "forbidden_near_neighbor_retry": "Do not retune the sleeve priority order, duplicate group key, same-sleeve inclusion, concentration caps, threshold counts, notional scaling, hold window, or response function on the same 60 forward rows and current accepted-paper historical rows.",
+    "new_evidence_required": "A valid retry needs materially more closed forward cross-sleeve duplicate rows plus an independent historical/default-off row surface meeting the duplicate count, group, window, and concentration requirements, or a full shared-policy Gate 1-4 implementation with explicit parity."
+  },
+  "rejection_reason": "forward_cap_improves_required_metrics;historical_duplicate_rows_min_passed;historical_duplicate_groups_min_passed;historical_single_duplicate_ticker_share_passed;historical_cap_improves_required_metrics;historical_duplicate_windows_min_passed",
+  "next_retry_requires": [
+    "materially more closed cross-sleeve duplicate forward rows",
+    "independent historical/default-off duplicate rows across at least two windows",
+    "or a full shared-policy Gate 1-4 duplicate cap implementation"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_009_duplicate_exposure_cap_policy_sim.py",
+    "data/experiments/exp-20260705-009/exp_20260705_009_duplicate_exposure_cap_policy_sim.json",
+    "experiments/cards/exp-20260705-009.md",
+    "experiments/manifests/exp-20260705-009.json",
+    "experiments/tickets/exp-20260705-009.json",
+    "experiments/logs/exp-20260705-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "quant/experiments/exp_20260606_022_market_state_accepted_sleeve_replacement_value_attribution.py",
+    "experiments/logs/exp-20260705-002.json",
+    "experiments/logs/exp-20260705-003.json",
+    "experiments/logs/exp-20260705-004.json",
+    "experiments/logs/exp-20260704-022.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_009_duplicate_exposure_cap_policy_sim.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_009_duplicate_exposure_cap_policy_sim.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "rejected_duplicate_exposure_cap_historical_validation_failed",
+  "artifact": "data/experiments/exp-20260705-009/exp_20260705_009_duplicate_exposure_cap_policy_sim.json",
+  "log": "experiments/logs/exp-20260705-009.json",
+  "updated_at": "2026-07-05T10:17:11+00:00"
+}

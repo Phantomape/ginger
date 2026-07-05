@@ -1,0 +1,379 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_010_observer_contract_orphan_tmp_recovery.py",
+    "data/experiments/exp-20260705-010",
+    "experiments/cards/exp-20260705-010.md",
+    "experiments/manifests/exp-20260705-010.json",
+    "experiments/tickets/exp-20260705-010.json",
+    "experiments/logs/exp-20260705-010.json",
+    "data/non_ohlcv/entity_theme_news_observer",
+    "data/non_ohlcv/prediction_market_event_observer",
+    "data/non_ohlcv/sec_contract_relation_provenance"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-010.md",
+  "causal_components": [
+    "preflight orphan-temp count",
+    "stale atomic-write recovery",
+    "post-clean count",
+    "audit artifact",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "observer_and_contract_relation_orphan_atomic_tmp_recovery_v1",
+  "claimed_at": "2026-07-05T11:08:35+00:00",
+  "completed_at": "2026-07-05T11:12:53+00:00",
+  "created_at": "2026-07-05T11:07:41+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-010",
+  "experiment_uid": "expuid-d767c4821cb745bc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T11:07:41+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "observer_contract_orphan_tmp_recovery"
+  },
+  "hypothesis": "Alpha-enabling measurement repair: orphaned atomic-write temp files in observer and SEC contract provenance surfaces can make latest-summary and daily-provenance freshness audits unreliable; recover or clean only stale orphan temps while leaving strategy behavior unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "observer_and_contract_relation_orphan_atomic_tmp_recovery_v1"
+  ],
+  "mechanism_family": "observer_forward_outcome_maturity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260704-023",
+    "exp-20260705-007",
+    "exp-20260703-022"
+  ],
+  "new_evidence_type": "orphan_temp_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "alpha",
+        "atomic",
+        "audits",
+        "behavior",
+        "can",
+        "clean",
+        "contract",
+        "daily",
+        "enabling",
+        "files",
+        "forward",
+        "freshness",
+        "in",
+        "latest",
+        "leaving",
+        "make",
+        "maturity",
+        "measurement",
+        "observer",
+        "only",
+        "or",
+        "orphan",
+        "orphaned",
+        "outcome",
+        "provenance",
+        "recover",
+        "recovery",
+        "relation",
+        "repair",
+        "stale",
+        "strategy",
+        "summary",
+        "surfaces",
+        "temp",
+        "temps",
+        "tmp",
+        "unchanged",
+        "unreliable",
+        "while",
+        "write"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.4856,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "structured_daily_news_relation_magnitude_forward_value",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows for structured events, a true PIT LLM scorer writing the same evidence-span schema, or historical daily-news coverage spanning the canonical fixed windows.",
+        "score": 0.4761,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_fact_tone_gap_bucket",
+        "reopen_condition": "Persist language_bucket, phrase-hit counts, and evidence spans on SEC candidates, then rerun bucketed forward attribution.",
+        "score": 0.4674,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "intraday_structured_relation_quality_short_horizon_read",
+        "reopen_condition": "Reopen only after materially more timestamped intraday structured observer rows have closed h1/h3 outcomes, or after a true intraday bar execution surface allows same-day post-capture execution that this daily warehouse read cannot test.",
+        "score": 0.467,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_daily_calendar_parity_repair",
+        "reopen_condition": "Let future daily snapshots accumulate post-repair turn_of_month rows and closed cash/SPY/QQQ replacement values before any activation or allocation experiment.",
+        "score": 0.4667,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "True fault recovery: existing observer and SEC contract relation directories contain stale atomic-write .tmp residue after accepted outcome/provenance materializations; this is not a threshold, source-field, response, or readiness retune.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "True fault recovery: existing observer and SEC contract relation directories contain stale atomic-write .tmp residue after accepted outcome/provenance materializations; this is not a threshold, source-field, response, or readiness retune.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "temps_are_live_recent_writes",
+      "cleanup_tool_scope_mismatch",
+      "audit_finds_strategy_delta"
+    ],
+    "confidence_reason": "Preflight found stale .tmp files in observer and SEC contract provenance directories; AGENTS allows orphan-temp fault recovery as measurement repair, and cleanup should not touch strategy decisions or settled rows.",
+    "recorded_at": "2026-07-05T11:07:00+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "blocked_observer_contract_orphan_tmp_recovery_incomplete",
+    "artifact": "data/experiments/exp-20260705-010/exp_20260705_010_observer_contract_orphan_tmp_recovery.json",
+    "log": "experiments/logs/exp-20260705-010.json",
+    "summary": {
+      "target_directories": [
+        "data/non_ohlcv/entity_theme_news_observer",
+        "data/non_ohlcv/entity_theme_news_observer/daily",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer",
+        "data/non_ohlcv/prediction_market_event_observer/daily",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer/source_stats",
+        "data/non_ohlcv/sec_contract_relation_provenance",
+        "data/non_ohlcv/sec_contract_relation_provenance/daily"
+      ],
+      "before_tmp_count": 35,
+      "before_stale_tmp_count": 35,
+      "after_tmp_count": 35,
+      "after_stale_tmp_count": 35,
+      "after_young_tmp_count": 0,
+      "recovered_count": 0,
+      "cleaned_count": 0,
+      "fallback_cleaned_count": 0,
+      "skipped_count": 35,
+      "failed_checks": [
+        "no_orphan_temp_recovered_or_cleaned",
+        "stale_tmp_remaining_after_recovery",
+        "invalid_or_unrecoverable_tmp_skipped"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-010.json",
+  "single_causal_variable": "observer_and_contract_relation_orphan_atomic_tmp_recovery_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260705-010.json",
+  "trial_family": "orphan_atomic_write_temp_recovery",
+  "trial_variant_id": "observer_contract_relation_tmp_recovery_20260705",
+  "alpha_hypothesis": "Observer, prediction-market, and SEC contract-relation alpha reads need freshness/coverage audits over unambiguous final artifacts; orphan atomic temps are the current measurement blocker.",
+  "implementation_mode": "orphan_atomic_write_fault_recovery",
+  "new_evidence_axis": "True fault recovery: existing observer and SEC contract relation directories contain stale atomic-write .tmp residue after accepted outcome/provenance materializations; this is not a threshold, source-field, response, or readiness retune.",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "loaded": true,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3
+    },
+    "note": "Measurement repair only; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields": [
+      "latest_outcome_summary.json",
+      "outcome_summaries/*.json",
+      "daily observer/provenance json/jsonl",
+      "manifest/source_stats json"
+    ],
+    "field_reality": {
+      "target_directories": [
+        "data/non_ohlcv/entity_theme_news_observer",
+        "data/non_ohlcv/entity_theme_news_observer/daily",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer",
+        "data/non_ohlcv/prediction_market_event_observer/daily",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer/source_stats",
+        "data/non_ohlcv/sec_contract_relation_provenance",
+        "data/non_ohlcv/sec_contract_relation_provenance/daily"
+      ],
+      "before_tmp_count": 35,
+      "after_tmp_count": 35,
+      "target_price_relevance": "not_applicable; this repair touches observer/provenance artifacts only and schedules no exits or orders",
+      "entry_date_relevance": "not changed; future alpha reads must still verify entry_date on their own settled outcome rows"
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, rank, size, exit, or order policy changed."
+  },
+  "gate4": {
+    "passed": false,
+    "mode": "measurement_repair_orphan_atomic_write_recovery",
+    "failed_checks": [
+      "no_orphan_temp_recovered_or_cleaned",
+      "stale_tmp_remaining_after_recovery",
+      "invalid_or_unrecoverable_tmp_skipped"
+    ],
+    "acceptance_checks": {
+      "preflight_found_orphan_temps": true,
+      "recovered_or_cleaned_any": false,
+      "no_stale_tmp_remaining": false,
+      "strategy_behavior_unchanged": true
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "daily_snapshot_changed": true,
+    "parity_note": "Only orphan atomic-write temp files under observer/provenance data surfaces were recovered or removed. No strategy path changed."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.9,
+    "actual_success": 0,
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "One or more stale temps could not be safely recovered or cleaned."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Recent observer and contract-provenance materialization runs left dot-prefixed atomic-write temp files after final artifacts were already present or recoverable. Cleaning them removes a measurement ambiguity without changing any trading behavior.",
+    "forbidden_near_neighbor_retry": "Do not open another orphan-temp cleanup experiment for these same directories unless new stale temps appear after a later materialization run. Do not use this repair to retune observer queries, contract regexes, horizons, notional, ranks, or response functions.",
+    "new_evidence_required": "Next alpha work still needs materially more settled observer/provenance replacement-value rows or a genuinely new PIT data source; this repair only restores artifact hygiene."
+  },
+  "rejection_reason": "no_orphan_temp_recovered_or_cleaned;stale_tmp_remaining_after_recovery;invalid_or_unrecoverable_tmp_skipped",
+  "next_retry_requires": [
+    "new stale orphan temps after a later materialization run",
+    "or materially more settled observer/provenance replacement-value rows for alpha",
+    "no threshold, regex, horizon, notional, rank, or response retune from this cleanup"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_010_observer_contract_orphan_tmp_recovery.py",
+    "data/experiments/exp-20260705-010/exp_20260705_010_observer_contract_orphan_tmp_recovery.json",
+    "data/non_ohlcv/entity_theme_news_observer",
+    "data/non_ohlcv/prediction_market_event_observer",
+    "data/non_ohlcv/sec_contract_relation_provenance",
+    "experiments/cards/exp-20260705-010.md",
+    "experiments/manifests/exp-20260705-010.json",
+    "experiments/tickets/exp-20260705-010.json",
+    "experiments/logs/exp-20260705-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260705-010/exp_20260705_010_observer_contract_orphan_tmp_recovery.json",
+    "data/non_ohlcv/entity_theme_news_observer",
+    "data/non_ohlcv/entity_theme_news_observer/daily",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries",
+    "data/non_ohlcv/prediction_market_event_observer",
+    "data/non_ohlcv/prediction_market_event_observer/daily",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_summaries",
+    "data/non_ohlcv/prediction_market_event_observer/source_stats",
+    "data/non_ohlcv/sec_contract_relation_provenance",
+    "data/non_ohlcv/sec_contract_relation_provenance/daily"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_010_observer_contract_orphan_tmp_recovery.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_010_observer_contract_orphan_tmp_recovery.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "decision": "blocked_observer_contract_orphan_tmp_recovery_incomplete",
+  "artifact": "data/experiments/exp-20260705-010/exp_20260705_010_observer_contract_orphan_tmp_recovery.json",
+  "log": "experiments/logs/exp-20260705-010.json",
+  "updated_at": "2026-07-05T11:12:53+00:00"
+}

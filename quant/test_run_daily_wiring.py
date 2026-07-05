@@ -16,12 +16,14 @@ from fundamental_growth_rs_paper_sleeve import (  # noqa: E402
     prep_and_build_fundamental_growth_rs_paper_sleeve_snapshot,
 )
 from run import (  # noqa: E402
+    _build_daily_non_ohlcv_snapshot,
     _core_slot_ticker_set,
     _persist_daily_structured_news_observation,
     _persist_entity_theme_news_observer,
     _persist_entity_theme_news_outcomes,
     _persist_prediction_market_event_observer,
     _persist_prediction_market_event_outcomes,
+    _persist_sec_contract_relation_provenance,
     _persist_sec_corporate_event_stream,
     _refresh_estimate_revision_ledger_after_quant_signals,
     main,
@@ -197,6 +199,75 @@ def test_estimate_revision_ledger_refresh_skips_when_quant_signals_save_failed(
     assert summary["production_impact"]["alters_signal_generation"] is False
 
 
+def test_daily_non_ohlcv_wires_form4_context_into_run_path(monkeypatch):
+    calls = {"ensure": [], "fallback": []}
+
+    def fake_ensure_non_ohlcv_coverage(**kwargs):
+        calls["ensure"].append(kwargs)
+        return {
+            "profile": "daily",
+            "days_total": 1,
+            "days_generated": 1,
+            "days_recorded_existing": 0,
+            "days_failed": 0,
+            "errors": [],
+            "daily_snapshots": {},
+        }
+
+    def fake_persist_daily_non_ohlcv_snapshots(**kwargs):
+        calls["fallback"].append(kwargs)
+        return {
+            "status": "ok",
+            "form4_sale_overhang_context": {
+                "status": "ok",
+                "rows_written": 2,
+                "trade_enabled": False,
+                "daily_snapshot_wired": True,
+                "production_impact": {
+                    "alters_signal_generation": False,
+                    "alters_candidate_ranking": False,
+                    "alters_sizing": False,
+                    "alters_orders": False,
+                },
+            },
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "backfill_non_ohlcv",
+        types.SimpleNamespace(ensure_non_ohlcv_coverage=fake_ensure_non_ohlcv_coverage),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "daily_non_ohlcv_snapshot",
+        types.SimpleNamespace(
+            persist_daily_non_ohlcv_snapshots=fake_persist_daily_non_ohlcv_snapshots
+        ),
+    )
+
+    snapshot = _build_daily_non_ohlcv_snapshot(
+        today=date(2026, 7, 4),
+        today_iso="2026-07-04",
+        data_universe=["CRDO"],
+        options_ingest_tickers=["CRDO"],
+        option_underlying_prices={"CRDO": 1.0},
+        non_ohlcv_catchup_summary={"status": "ok", "days_total": 0},
+    )
+
+    assert calls["ensure"]
+    assert calls["ensure"][0]["profile"] == "daily"
+    assert calls["ensure"][0]["refresh_form4_context"] is True
+    assert calls["fallback"]
+    assert calls["fallback"][0]["refresh_form4_context"] is True
+    form4_context = snapshot["form4_sale_overhang_context"]
+    assert form4_context["trade_enabled"] is False
+    impact = form4_context["production_impact"]
+    assert impact["alters_signal_generation"] is False
+    assert impact["alters_candidate_ranking"] is False
+    assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
+
+
 def test_structured_news_observation_runs_second_order_exposure_observer(monkeypatch):
     calls = {"snapshot": 0, "observer": 0}
 
@@ -337,6 +408,65 @@ def test_sec_corporate_event_stream_daily_wiring_fail_soft(monkeypatch):
 
     assert summary["status"] == "unavailable"
     assert "sec unavailable" in summary["error"]
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["trade_enabled"] is False
+
+
+def test_sec_contract_relation_provenance_daily_wiring(monkeypatch):
+    calls = {"persist": 0}
+
+    def fake_persist_sec_contract_relation_provenance(today):
+        calls["persist"] += 1
+        assert today == "20260703"
+        return {
+            "status": "ok",
+            "input_row_count": 7,
+            "item_101_input_row_count": 3,
+            "provenance_row_count": 5,
+            "rows_appended": 2,
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+            "alters_orders": False,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "sec_contract_relation_provenance",
+        types.SimpleNamespace(
+            persist_sec_contract_relation_provenance=(
+                fake_persist_sec_contract_relation_provenance
+            )
+        ),
+    )
+
+    summary = _persist_sec_contract_relation_provenance("20260703")
+
+    assert calls == {"persist": 1}
+    assert summary["status"] == "ok"
+    assert summary["provenance_row_count"] == 5
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["trade_enabled"] is False
+    assert summary["alters_orders"] is False
+
+
+def test_sec_contract_relation_provenance_daily_wiring_fail_soft(monkeypatch):
+    def failing_persist_sec_contract_relation_provenance(today):
+        raise RuntimeError("contract relation surface unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "sec_contract_relation_provenance",
+        types.SimpleNamespace(
+            persist_sec_contract_relation_provenance=(
+                failing_persist_sec_contract_relation_provenance
+            )
+        ),
+    )
+
+    summary = _persist_sec_contract_relation_provenance("20260703")
+
+    assert summary["status"] == "unavailable"
+    assert "contract relation surface unavailable" in summary["error"]
     assert summary["strategy_behavior_changed"] is False
     assert summary["trade_enabled"] is False
 
@@ -701,6 +831,74 @@ def test_finra_ats_share_paper_sleeve_not_added_to_prompt_trend_signals():
             if (
                 isinstance(slice_node, ast.Constant)
                 and slice_node.value == "finra_ats_share_paper_sleeve"
+            ):
+                prompt_facing_assignments.append(node)
+
+    assert prompt_facing_assignments == []
+
+
+def test_sec_item101_contract_relation_paper_sleeve_daily_wiring_uses_shared_helper():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    expected_imports = {
+        "empty_sec_item101_contract_relation_paper_sleeve_snapshot",
+        "prep_and_build_sec_item101_contract_relation_paper_sleeve_snapshot",
+    }
+    imported_names = set()
+    referenced_names = set()
+    helper_calls = []
+    quant_artifact_keys = []
+
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.ImportFrom)
+            and node.module == "sec_item101_contract_relation_paper_sleeve"
+        ):
+            imported_names.update(alias.name for alias in node.names)
+        if isinstance(node, ast.Name):
+            referenced_names.add(node.id)
+        if (
+            isinstance(node, ast.Call)
+            and getattr(node.func, "id", None)
+            == "prep_and_build_sec_item101_contract_relation_paper_sleeve_snapshot"
+        ):
+            helper_calls.append(node)
+        if isinstance(node, ast.Dict):
+            quant_artifact_keys.extend(
+                key.value
+                for key in node.keys
+                if isinstance(key, ast.Constant) and isinstance(key.value, str)
+            )
+
+    assert expected_imports <= imported_names
+    assert "empty_sec_item101_contract_relation_paper_sleeve_snapshot" in referenced_names
+    assert helper_calls
+
+    helper_kwargs = {keyword.arg for keyword in helper_calls[0].keywords}
+    assert {
+        "as_of",
+        "ohlcv_dict",
+        "spy_ohlcv",
+        "open_prices",
+        "current_prices",
+    } <= helper_kwargs
+    assert "sec_item101_contract_relation_paper_sleeve" in quant_artifact_keys
+
+
+def test_sec_item101_contract_relation_paper_sleeve_not_added_to_prompt_trend_signals():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    prompt_facing_assignments = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if not isinstance(target, ast.Subscript):
+                continue
+            if getattr(target.value, "id", None) != "trend_signals_dict":
+                continue
+            slice_node = target.slice
+            if (
+                isinstance(slice_node, ast.Constant)
+                and slice_node.value == "sec_item101_contract_relation_paper_sleeve"
             ):
                 prompt_facing_assignments.append(node)
 

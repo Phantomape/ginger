@@ -85,6 +85,103 @@ def test_surface_match_handles_form4_aliases():
     )
 
 
+def test_surface_match_ignores_negated_sec_ftd_finra_alias():
+    assert not surface_matches_text(
+        "SEC FTD + FINRA default-off observer",
+        (
+            "supplier financing debt relief forward rows; this is not SEC FTD/FINRA, "
+            "not a new FINRA observer, and not a response-function retune"
+        ),
+    )
+
+
+def test_surface_match_still_matches_positive_sec_ftd_finra_alias():
+    assert surface_matches_text(
+        "SEC FTD + FINRA default-off observer",
+        "SEC FTD FINRA true trigger rows with replacement-value maturity",
+    )
+
+
+def test_reopen_guard_does_not_block_negated_sec_ftd_finra_surface(tmp_path):
+    _write_log(
+        tmp_path,
+        {
+            "experiment_id": "exp-test-sec-ftd",
+            "reopen_condition": {
+                "surface": "SEC FTD + FINRA default-off observer",
+                "current_counts": {
+                    "closed_sec_ftd_finra_true_trigger_rows": 0,
+                    "single_ticker_positive_share": None,
+                    "top5_positive_share": None,
+                },
+                "required_to_reopen": {
+                    "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+                    "single_ticker_positive_share_max": 0.4,
+                    "top5_positive_share_max": 0.7,
+                },
+            },
+        },
+    )
+
+    verdict = evaluate_reopen_condition_guard(
+        _args(
+            hypothesis="supplier financing debt relief new closed forward rows",
+            single_causal_variable="supplier_financing_debt_relief_new_closed_rows",
+            changed_variable="supplier_financing_debt_relief_new_closed_rows",
+            trial_family="supplier_financing_debt_relief_forward_closed_row_readiness",
+            trial_variant_id="supplier_financing_debt_relief_new_closed_rows_v1",
+            mechanism_family="observed_only_forward_closed_row_readiness",
+            file_slug="supplier_financing_debt_relief_new_closed_rows",
+            new_evidence_axis=(
+                "materially more closed forward rows for supplier financing debt relief; "
+                "this is not SEC FTD/FINRA and not a response-function retune"
+            ),
+        ),
+        repo_root=tmp_path,
+    )
+
+    assert verdict["blocked"] is False
+    assert verdict["matched_conditions"] == []
+
+
+def test_reopen_guard_still_blocks_positive_sec_ftd_finra_surface(tmp_path):
+    _write_log(
+        tmp_path,
+        {
+            "experiment_id": "exp-test-sec-ftd-positive",
+            "reopen_condition": {
+                "surface": "SEC FTD + FINRA default-off observer",
+                "current_counts": {
+                    "closed_sec_ftd_finra_true_trigger_rows": 0,
+                    "single_ticker_positive_share": None,
+                    "top5_positive_share": None,
+                },
+                "required_to_reopen": {
+                    "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+                    "single_ticker_positive_share_max": 0.4,
+                    "top5_positive_share_max": 0.7,
+                },
+            },
+        },
+    )
+
+    verdict = evaluate_reopen_condition_guard(
+        _args(
+            hypothesis="SEC FTD FINRA forward true-trigger maturity audit",
+            single_causal_variable="sec_ftd_finra_forward_true_trigger_rows",
+            changed_variable="sec_ftd_finra_forward_true_trigger_rows",
+            trial_family="sec_ftd_finra_forward_readiness",
+            trial_variant_id="sec_ftd_finra_forward_readiness_v1",
+            mechanism_family="sec_ftd_finra_forward_context",
+            file_slug="sec_ftd_finra_forward_readiness",
+        ),
+        repo_root=tmp_path,
+    )
+
+    assert verdict["blocked"] is True
+    assert verdict["matched_conditions"][0]["experiment_id"] == "exp-test-sec-ftd-positive"
+
+
 def test_reopen_numeric_checks_map_min_to_long_current_key():
     condition = {
         "current_counts": {

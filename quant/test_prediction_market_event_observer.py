@@ -145,6 +145,64 @@ def test_prediction_market_relevance_rejects_single_generic_term():
     ] is True
 
 
+def test_prediction_market_relevance_uses_token_boundaries_for_short_terms():
+    metadata = {
+        "relevance_groups": [["ai"], ["energy"]],
+        "min_relevance_groups": 2,
+    }
+
+    assert prediction_market_source_relevance(
+        {
+            "title": "Russia-Ukraine ceasefire before GTA VI?",
+            "question": "Will energy markets react?",
+        },
+        metadata,
+    )["matched"] is False
+    assert prediction_market_source_relevance(
+        {
+            "title": "AI energy shortage for data centers?",
+            "question": "Will AI data center energy shortages persist?",
+        },
+        metadata,
+    )["matched"] is True
+
+
+def test_prediction_market_relevance_rejects_known_off_theme_markets():
+    sources = get_prediction_market_observer_sources()
+    hyperscaler_metadata = [
+        source["metadata"]
+        for source in sources
+        if source["metadata"]["query_id"] == "hyperscaler_power_shortage_probability"
+    ][0]
+    frontier_ai_metadata = [
+        source["metadata"]
+        for source in sources
+        if source["metadata"]["query_id"] == "frontier_ai_private_capex_probability"
+    ][0]
+
+    assert prediction_market_source_relevance(
+        {
+            "title": "What will happen before GTA VI?",
+            "question": "Russia-Ukraine Ceasefire before GTA VI?",
+        },
+        hyperscaler_metadata,
+    )["matched"] is False
+    assert prediction_market_source_relevance(
+        {
+            "title": "Xi Jinping out before 2027?",
+            "question": "Xi Jinping out before 2027?",
+        },
+        hyperscaler_metadata,
+    )["matched"] is False
+    assert prediction_market_source_relevance(
+        {
+            "title": "Will OpenAI launch a consumer hardware product by 2026?",
+            "question": "Will OpenAI launch a new consumer hardware product?",
+        },
+        frontier_ai_metadata,
+    )["matched"] is False
+
+
 def test_persist_prediction_market_event_observer_records_relevance_rejects(tmp_path):
     def fake_fetch(url, params, timeout_seconds=10.0):
         if "AI chips export controls" in params["search"]:
@@ -353,6 +411,78 @@ def test_prediction_market_outcome_ledger_keeps_immature_rows_unsettled():
     assert rows[0]["outcome_status"] == "unsettled_horizon"
     assert rows[0]["entry_date"] == "2026-07-02"
     assert "replacement_value_vs_cash_usd" not in rows[0]
+
+
+def test_prediction_market_outcome_ledger_separates_future_entry_from_missing_price():
+    items = [
+        {
+            "prediction_market_query_id": "future_session_probability",
+            "provider": "polymarket",
+            "provider_event_id": "event-future",
+            "provider_market_id": "market-future",
+            "candidate_tickers": ["FUTR"],
+            "yes_probability": 0.42,
+            "observed_at": "2026-07-04T22:00:00+00:00",
+        },
+        {
+            "prediction_market_query_id": "missing_ticker_probability",
+            "provider": "polymarket",
+            "provider_event_id": "event-missing",
+            "provider_market_id": "market-missing",
+            "candidate_tickers": ["MISS"],
+            "yes_probability": 0.35,
+            "observed_at": "2026-07-01T22:00:00+00:00",
+        },
+    ]
+    ohlcv = {
+        "FUTR": _bars("FUTR", [("2026-07-02", 20.0, 21.0)]),
+        "MISS": _bars("MISS", [("2026-07-01", 10.0, 10.0)]),
+        "SPY": _bars(
+            "SPY",
+            [
+                ("2026-07-01", 500.0, 500.0),
+                ("2026-07-02", 500.0, 505.0),
+            ],
+        ),
+        "QQQ": _bars(
+            "QQQ",
+            [
+                ("2026-07-01", 400.0, 400.0),
+                ("2026-07-02", 400.0, 404.0),
+            ],
+        ),
+    }
+
+    rows, summary = build_prediction_market_event_outcome_ledger(
+        items,
+        ohlcv,
+        as_of_date="2026-07-04",
+        horizons=(2,),
+        notional_usd=4000.0,
+    )
+
+    by_query = {row["prediction_market_query_id"]: row for row in rows}
+    assert summary["settled_count"] == 0
+    assert summary["status_counts"] == {
+        "future_entry_session_not_reached": 1,
+        "unsettled_no_entry_bar": 1,
+    }
+    assert (
+        by_query["future_session_probability"]["outcome_status"]
+        == "future_entry_session_not_reached"
+    )
+    assert (
+        by_query["future_session_probability"]["outcome_status_detail"]
+        == "market_calendar_has_no_session_after_observed_date"
+    )
+    assert (
+        by_query["missing_ticker_probability"]["outcome_status"]
+        == "unsettled_no_entry_bar"
+    )
+    assert (
+        by_query["missing_ticker_probability"]["outcome_status_detail"]
+        == "market_calendar_has_next_session_but_ticker_missing_bar"
+    )
 
 
 def test_persist_prediction_market_event_outcome_ledger_reads_accumulated_daily_items(

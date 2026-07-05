@@ -1,0 +1,236 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.py",
+    "experiments/logs/exp-20260705-011.json",
+    "experiments/cards/exp-20260705-011.md",
+    "experiments/manifests/exp-20260705-011.json",
+    "experiments/tickets/exp-20260705-011.json",
+    "data/experiments/exp-20260705-011/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-011.md",
+  "causal_components": [
+    "run.py daily coverage wiring",
+    "fallback snapshot wiring",
+    "data-only Form4 context helper",
+    "tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1",
+  "claimed_at": "2026-07-05T13:18:16+00:00",
+  "completed_at": "2026-07-05T13:23:25+00:00",
+  "created_at": "2026-07-05T13:16:48+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-011",
+  "experiment_uid": "expuid-2f0251e0c776408b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T13:16:48+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_sale_overhang_daily_pipeline_wiring"
+  },
+  "hypothesis": "Risk allocation: accepted Form4 sale/10b5/officer overhang context may identify loss-tail risk, but the production daily pipeline currently skips the data-only context rows after repeated manual materializations; wire the accepted observer into run.py daily non-OHLCV coverage so future forward rows can settle with cash/SPY/QQQ RV evidence without changing orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "form4_sale_overhang_daily_pipeline_context_wiring_v1"
+  ],
+  "mechanism_family": "production_visible_form4_selling_overhang_forward_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "form4_insider",
+      "field_tags": [
+        "10b5",
+        "accepted",
+        "after",
+        "allocation",
+        "but",
+        "can",
+        "cash",
+        "changing",
+        "context",
+        "coverage",
+        "currently",
+        "daily",
+        "data",
+        "evidence",
+        "form4",
+        "forward",
+        "future",
+        "identify",
+        "into",
+        "logger",
+        "loss",
+        "manual",
+        "materializations",
+        "may",
+        "non",
+        "observer",
+        "officer",
+        "only",
+        "orders",
+        "overhang",
+        "pipeline",
+        "py",
+        "qqq",
+        "repeated",
+        "risk",
+        "rows",
+        "run",
+        "rv",
+        "sale",
+        "selling",
+        "settle",
+        "skips",
+        "so",
+        "spy",
+        "tail",
+        "wire",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+        "reopen_condition": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger.",
+        "score": 0.5269,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_forward_context_logger",
+        "reopen_condition": "Prospectively logged Form4 context rows must close with cash/SPY/QQQ replacement value: at least 25 closed rows, at least 8 high-sale-overhang rows, and max single-ticker share <=40%.",
+        "score": 0.5071,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_shared_daily_context_logger",
+        "reopen_condition": "A Form4 alpha response requires at least 25 closed forward rows with cash/SPY/QQQ replacement values, at least 8 high-sale-overhang rows, and max single-ticker share <=40%, or a distinct new data source/gate shape.",
+        "score": 0.499,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+        "score": 0.487,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "non_ohlcv_confluence_options_cross_evidence_attribution",
+        "reopen_condition": "A valid retry needs historical PIT options-chain coverage on the exp024 confluence dates, forward confluence rows collected on dates that also have options observations and closed replacement value, or a different allowed evidence axis such as borrow/loan availability or parsed filing-surprise semantics.",
+        "score": 0.4718,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new gate shape: convert accepted Form4 sale-overhang observer from repeated manual daily materialization IDs to run.py daily pipeline default-off context row production; no alpha response retune on existing rows",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "new gate shape: convert accepted Form4 sale-overhang observer from repeated manual daily materialization IDs to run.py daily pipeline default-off context row production; no alpha response retune on existing rows",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "form4_insider",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Existing accepted helper is already data-only and fail-soft; production run path simply omitted the refresh flag.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily snapshot context fails hard",
+      "context rows alter strategy behavior",
+      "tests reveal unsupported call shape"
+    ],
+    "recorded_at": "2026-07-05T13:16:07+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/experiments/exp-20260705-011/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.75,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "daily snapshot context fails hard",
+        "context rows alter strategy behavior",
+        "tests reveal unsupported call shape"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Claim initially failed because broad artifact scopes overlapped stale active tickets; narrowed exp-20260705-011 to exact artifact paths before claiming."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-011.json",
+  "single_causal_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260705-011.json",
+  "trial_family": "form4_sale_overhang_shared_daily_context_logger",
+  "trial_variant_id": "daily_pipeline_wiring_v1"
+}

@@ -15,7 +15,7 @@ import json
 import math
 from collections import Counter
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -24,11 +24,13 @@ try:
     from constants import ROUND_TRIP_COST_PCT
     from data_paths import DATA_ROOT
     from fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
+    from us_market_calendar import is_us_equity_session
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant import macro_relief_leadership_paper_sleeve as leader
     from quant.constants import ROUND_TRIP_COST_PCT
     from quant.data_paths import DATA_ROOT
     from quant.fill_model import SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_TARGET, apply_slippage
+    from quant.us_market_calendar import is_us_equity_session
 
 
 SLEEVE_NAME = "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER"
@@ -1002,6 +1004,38 @@ def _config(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
     return cfg
 
 
+def _parse_date(value: str | date) -> date | None:
+    if isinstance(value, date):
+        return value
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def _is_last_us_equity_session_of_month(as_of: str | date) -> bool:
+    session_date = _parse_date(as_of)
+    if session_date is None or not is_us_equity_session(session_date):
+        return False
+    probe = session_date + timedelta(days=1)
+    while probe.month == session_date.month:
+        if is_us_equity_session(probe):
+            return False
+        probe += timedelta(days=1)
+    return True
+
+
+def _daily_known_month_end_dates(
+    as_of: str | date,
+    known_month_end_dates: set[str] | list[str] | None = None,
+) -> set[str]:
+    dates = {str(value)[:10] for value in known_month_end_dates or [] if str(value)[:10]}
+    as_of_date = leader._date10(as_of)
+    if _is_last_us_equity_session_of_month(as_of_date):
+        dates.add(as_of_date)
+    return dates
+
+
 def prep_and_build_turn_of_month_liquid_leadership_snapshot(
     *,
     as_of: str,
@@ -1009,6 +1043,13 @@ def prep_and_build_turn_of_month_liquid_leadership_snapshot(
     broad_market_candidate_universe: dict,
     spy_ohlcv=None,
     core_entries=None,
+    calendar_dates: list[str] | None = None,
+    known_month_end_dates: set[str] | list[str] | None = None,
+    state: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
+    persist: bool = True,
+    state_path: Path | str = DEFAULT_STATE_PATH,
+    snapshot_log_path: Path | str = DEFAULT_SNAPSHOT_LOG_PATH,
 ):
     if not broad_market_candidate_universe.get("tickers"):
         return empty_turn_of_month_liquid_leadership_snapshot(
@@ -1016,10 +1057,18 @@ def prep_and_build_turn_of_month_liquid_leadership_snapshot(
     ohlcv = dict(broad_market_ohlcv)
     if "SPY" not in ohlcv and spy_ohlcv is not None:
         ohlcv["SPY"] = spy_ohlcv
+    daily_month_ends = _daily_known_month_end_dates(as_of, known_month_end_dates)
     return build_turn_of_month_liquid_leadership_snapshot(
         as_of=as_of, ohlcv_by_ticker=ohlcv,
         candidate_universe=broad_market_candidate_universe,
         core_entries=core_entries,
+        calendar_dates=calendar_dates,
+        known_month_end_dates=daily_month_ends,
+        state=state,
+        config=config,
+        persist=persist,
+        state_path=state_path,
+        snapshot_log_path=snapshot_log_path,
     )
 
 
@@ -1028,13 +1077,13 @@ def _production_impact() -> dict[str, Any]:
         "shared_policy_changed": True,
         "shared_policy_note": "paper attribution module only; core trading policy unchanged",
         "backtester_adapter_changed": True,
-        "run_adapter_changed": False,
+        "run_adapter_changed": True,
         "replay_only": False,
         "default_off_paper_only": True,
         "daily_snapshot_exposed": True,
         "daily_snapshot_note": (
-            "helper API emits default-off snapshots; run.py wiring is intentionally "
-            "unchanged in this experiment"
+            "daily prep supplies deterministic known-month-end dates for production "
+            "snapshots; default-off only and no live/default orders"
         ),
         "trade_enabled": False,
         "alters_orders": False,

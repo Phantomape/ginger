@@ -1,0 +1,239 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Observer alpha outcome summaries remain stale after exp-20260705-006: canonical prediction-market and entity-theme latest_outcome_summary files still label future-entry maturity rows as unsettled_no_entry_bar, blocking reliable RV attribution; refresh/materialize the repaired status semantics without changing thresholds, candidate maps, horizons, notional, orders, ranking, sizing, or exits.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": 0.85,
+    "surprise_note": "Canonical summaries were stale as expected; regeneration applied the exp-20260705-006 status split."
+  },
+  "causal_components": [
+    "prediction_market latest outcome summary refresh",
+    "entity_theme latest outcome summary refresh",
+    "no strategy behavior change"
+  ],
+  "change_type": "observer_outcome_summary_materialization_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260705_007_observer_latest_outcome_summary_refresh.py",
+    "data/experiments/exp-20260705-007/exp_20260705_007_observer_latest_outcome_summary_refresh.json",
+    "data/non_ohlcv/prediction_market_event_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_summaries/prediction_market_event_observer_outcome_summary_20260704.json",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers/prediction_market_event_observer_outcomes_20260704.jsonl",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260704.json",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_20260704.jsonl",
+    "experiments/cards/exp-20260705-007.md",
+    "experiments/manifests/exp-20260705-007.json",
+    "experiments/tickets/exp-20260705-007.json",
+    "experiments/logs/exp-20260705-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "observer_future_entry_status_summary_refresh_v1",
+  "decision": "accepted_measurement_repair_observer_latest_outcome_summary_refreshed",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260705-007",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Measurement repair only; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "field_reality": {
+      "entity_theme_latest_summary": "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+      "entry_date_relevance": "settled rows retain entry_date; future-entry rows are correctly marked before entry_date exists",
+      "prediction_market_latest_summary": "data/non_ohlcv/prediction_market_event_observer/latest_outcome_summary.json",
+      "target_price_relevance": "not_applicable_observer_fixed_horizon; no orders or exits are scheduled by this observer measurement ledger"
+    },
+    "fields": [
+      "outcome_status",
+      "outcome_status_detail",
+      "entry_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, rank, size, exit, or order policy changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "candidate_row_counts_stable": true,
+      "future_entry_status_present_after_refresh": true,
+      "old_no_entry_bucket_reduced": true,
+      "strategy_and_trade_flags_unchanged": true
+    },
+    "failed_checks": [],
+    "mode": "measurement_repair_status_materialization",
+    "passed": true
+  },
+  "hypothesis": "Observer alpha outcome summaries remain stale after exp-20260705-006: canonical prediction-market and entity-theme latest_outcome_summary files still label future-entry maturity rows as unsettled_no_entry_bar, blocking reliable RV attribution; refresh/materialize the repaired status semantics without changing thresholds, candidate maps, horizons, notional, orders, ranking, sizing, or exits.",
+  "implementation_mode": "canonical_observer_outcome_summary_refresh",
+  "lean_quality_passed": true,
+  "mechanism_family": "observer_forward_outcome_maturity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260705-006",
+    "exp-20260704-012",
+    "exp-20260703-014"
+  ],
+  "new_evidence_axis": "exp-20260705-006 fixed the observer status branch, but canonical latest outcome summaries still contained stale generated status counts; this run materializes that existing semantic repair.",
+  "new_evidence_type": "semantic_measurement_defect_materialization",
+  "next_retry_requires": [
+    "materially more settled observer outcome rows after warehouse date_max advances",
+    "or a genuinely different PIT observer source relation"
+  ],
+  "observer_surfaces": [
+    {
+      "after_status_counts": {
+        "future_entry_session_not_reached": 3466
+      },
+      "before_status_counts": {
+        "unsettled_no_entry_bar": 3466
+      },
+      "candidate_outcome_row_count_after": 3466,
+      "candidate_outcome_row_count_before": 3466,
+      "future_entry_session_not_reached_after": 3466,
+      "future_entry_session_not_reached_before": 0,
+      "latest_summary_path": "D:\\Github\\ginger\\data\\non_ohlcv\\prediction_market_event_observer\\latest_outcome_summary.json",
+      "ledger_path": "D:\\Github\\ginger\\data\\non_ohlcv\\prediction_market_event_observer\\outcome_ledgers\\prediction_market_event_observer_outcomes_20260704.jsonl",
+      "name": "prediction_market_event_observer",
+      "settled_count_after": 0,
+      "settled_count_before": 0,
+      "strategy_behavior_changed": false,
+      "summary_path": "D:\\Github\\ginger\\data\\non_ohlcv\\prediction_market_event_observer\\outcome_summaries\\prediction_market_event_observer_outcome_summary_20260704.json",
+      "trade_enabled": false,
+      "unsettled_no_entry_bar_after": 0,
+      "unsettled_no_entry_bar_before": 3466,
+      "warehouse_date_max": "2026-07-02"
+    },
+    {
+      "after_status_counts": {
+        "future_entry_session_not_reached": 78,
+        "settled": 2735,
+        "unsettled_horizon": 355,
+        "unsettled_no_entry_bar": 26
+      },
+      "before_status_counts": {
+        "settled": 2735,
+        "unsettled_horizon": 355,
+        "unsettled_no_entry_bar": 104
+      },
+      "candidate_outcome_row_count_after": 3194,
+      "candidate_outcome_row_count_before": 3194,
+      "future_entry_session_not_reached_after": 78,
+      "future_entry_session_not_reached_before": 0,
+      "latest_summary_path": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\latest_outcome_summary.json",
+      "ledger_path": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\outcome_ledgers\\entity_theme_news_observer_outcomes_20260704.jsonl",
+      "name": "entity_theme_news_observer",
+      "settled_count_after": 2735,
+      "settled_count_before": 2735,
+      "strategy_behavior_changed": false,
+      "summary_path": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\outcome_summaries\\entity_theme_news_observer_outcome_summary_20260704.json",
+      "trade_enabled": false,
+      "unsettled_no_entry_bar_after": 26,
+      "unsettled_no_entry_bar_before": 104,
+      "warehouse_date_max": "2026-07-02"
+    }
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune prediction-market or entity-theme observer thresholds, ticker maps, horizons, notional, or source bundles based only on these current future-entry rows.",
+    "new_evidence_required": "Wait for the warehouse to advance beyond the 2026-07-03/2026-07-04 observer event dates and produce materially more settled cash/SPY/QQQ replacement rows before observer alpha attribution.",
+    "why_result_happened": "The code-level semantic repair had not been propagated into the canonical latest outcome summary files, so downstream readiness checks still saw the old no-entry bucket."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260705-006 already added the status branch; current canonical summaries are stale generated files.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "refresh helper rewrites with old code",
+      "summary consumers require backward-compatible status counts",
+      "atomic temp files block canonical writes"
+    ],
+    "recorded_at": "2026-07-05T08:11:27+00:00",
+    "success_probability": 0.85
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "daily_snapshot_changed": true,
+    "live_ready": false,
+    "parity_note": "Only observer-only outcome ledger and summary files were regenerated from existing helpers; no production trade path changed.",
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/prediction_market_event_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/experiments/exp-20260705-007/exp_20260705_007_observer_latest_outcome_summary_refresh.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_007_observer_latest_outcome_summary_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_007_observer_latest_outcome_summary_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_prediction_market_event_observer.py quant\\test_entity_theme_news_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "observer_future_entry_status_summary_refresh_v1",
+  "status": "accepted_measurement_repair",
+  "summary": {
+    "entity_theme_future_entry_rows": 78,
+    "entity_theme_no_entry_rows_after": 26,
+    "entity_theme_no_entry_rows_before": 104,
+    "failed_checks": [],
+    "prediction_market_future_entry_rows": 3466,
+    "prediction_market_no_entry_rows_after": 0,
+    "prediction_market_no_entry_rows_before": 3466,
+    "row_counts_stable": true
+  },
+  "timestamp": "2026-07-05T08:15:34Z",
+  "trial_family": "observer_latest_outcome_summary_refresh",
+  "trial_variant_id": "20260705_future_entry_status_canonical_summary"
+}

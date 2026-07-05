@@ -1,0 +1,462 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 0,
+    "loaded": true,
+    "max_drawdown_pct_worst": null,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0,
+    "total_pnl": 0,
+    "trade_count": 0,
+    "window_count": 0
+  },
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: the accepted SEC financial-report T+1 drift sleeve can only support activation or allocation decisions after its repaired daily path produces closed cash/SPY/QQQ replacement-value rows.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 0,
+    "loaded": true,
+    "max_drawdown_pct_worst": null,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0,
+    "total_pnl": 0,
+    "trade_count": 0,
+    "window_count": 0
+  },
+  "calibration": {
+    "actual_success": 1,
+    "alpha_realized_non_activation": [
+      "sec_financial_report_closed_rows_below_activation_min:5/30",
+      "replacement_vs_cash_not_positive:-12439.72",
+      "replacement_vs_spy_not_positive:-13431.14",
+      "replacement_vs_qqq_not_positive:-14841.33"
+    ],
+    "brier_score": 0.0784,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "no_closed_rows_after_lifecycle_capacity",
+      "warehouse_missing_recent_bars",
+      "replacement_value_negative_or_too_thin"
+    ],
+    "predicted_success_probability": 0.72,
+    "realized_failure_modes": [],
+    "surprise_note": "Low surprise on repair success: the repaired builder admitted rows and the warehouse supplied comparator bars. The alpha side remains non-activation-ready because the five closed rows are negative versus cash, SPY, and QQQ and far below the row-count floor."
+  },
+  "causal_components": [
+    "post-repair archived daily sec_financial_report replay",
+    "default-off paper sleeve state materialization",
+    "cash/SPY/QQQ replacement-value enrichment",
+    "no threshold, notional, ranking, exit, order, or live behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_022_sec_financial_report_post_repair_forward_materialization.py",
+    "data/experiments/exp-20260704-022/exp_20260704_022_sec_financial_report_post_repair_forward_materialization.json",
+    "data/experiments/exp-20260704-022/sec_financial_report_state_before.json",
+    "data/experiments/exp-20260704-022/sec_financial_report_snapshots_before.jsonl",
+    "data/experiments/exp-20260704-022/forward_replacement_value_before.jsonl",
+    "data/paper_sleeves/sec_financial_report/state.json",
+    "data/paper_sleeves/sec_financial_report/snapshots.jsonl",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "experiments/logs/exp-20260704-022.json",
+    "experiments/cards/exp-20260704-022.md",
+    "experiments/manifests/exp-20260704-022.json",
+    "experiments/tickets/exp-20260704-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_financial_report_post_repair_forward_row_materialization_v1",
+  "classification": "measurement_repair_accepted_alpha_not_activation_ready",
+  "decision": "accepted_measurement_repair_sec_financial_report_post_repair_forward_rows_materialized",
+  "delta_metrics": {
+    "artifact_rows_after": 60,
+    "artifact_rows_before": 55,
+    "candidate_total": 8,
+    "closed_rows_after": 5,
+    "closed_rows_before": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "filled_total": 6,
+    "new_pending_total": 8,
+    "open_rows_after": 1,
+    "paper_pnl_total": -12439.72,
+    "pending_rows_after": 0,
+    "replacement_value_vs_cash_usd": -12439.72,
+    "replacement_value_vs_qqq_usd": -14841.33,
+    "replacement_value_vs_spy_usd": -13431.14,
+    "rows_updated_this_run": 5,
+    "sec_financial_report_artifact_rows": 5,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "skipped_rows_after": 2,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-022",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 0,
+      "loaded": true,
+      "max_drawdown_pct_worst": null,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0,
+      "trade_count": 0,
+      "window_count": 0
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_scope": "entry_date is present on materialized paper rows; target_price is not applicable because this default-off sleeve uses a fixed 10-session paper holding period and does not create executable orders.",
+    "fields_checked": [
+      "recorded_snapshots.data_source.path",
+      "recorded_snapshots.data_source.text_path",
+      "queue.candidates.usable_trade_date",
+      "queue.candidates.t1_date",
+      "closed_positions.entry_date",
+      "closed_positions.exit_date",
+      "closed_positions.pnl",
+      "closed_positions.notional",
+      "closed_positions.replacement_value_vs_cash_usd",
+      "closed_positions.replacement_value_vs_spy_usd",
+      "closed_positions.replacement_value_vs_qqq_usd"
+    ],
+    "missing_or_invalid_fields": [],
+    "passed": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "note": "No executable filter, entry, exit, ranking, sizing, risk, prompt, or order rule changed.",
+    "passed": true,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": 0.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_activation_blockers": [
+      "sec_financial_report_closed_rows_below_activation_min:5/30",
+      "replacement_vs_cash_not_positive:-12439.72",
+      "replacement_vs_spy_not_positive:-13431.14",
+      "replacement_vs_qqq_not_positive:-14841.33"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_sec_financial_report_post_repair_forward_rows_materialized",
+    "passed": true,
+    "repair_failed_reasons": []
+  },
+  "hypothesis": "Alpha blocker: after the sec_financial_report cohort parity repair, the accepted default-off sleeve still has empty state; replay the repaired archived daily span to materialize post-repair pending/open/closed paper rows and cash/SPY/QQQ replacement values without changing thresholds, sizing, exits, orders, or live behavior.",
+  "implementation_mode": "targeted_forward_row_materialization",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260704-015",
+    "exp-20260704-016",
+    "exp-20260704-017",
+    "exp-20260704-021"
+  ],
+  "new_evidence_axis": "Materially new settled forward rows from the repaired SEC financial-report daily path: 5 closed cash/SPY/QQQ-enriched rows plus one still-open row generated from the fixed exp-20260704-016 cohort parity builder. No threshold, top-N, hold, notional, response, or activation retune is tested.",
+  "new_evidence_type": "post_repair_forward_row_materialization",
+  "next_retry_requires": [
+    "materially_more_post_repair_sec_financial_report_closed_rows",
+    "positive_cash_spy_qqq_replacement_value_on_larger_sample",
+    "or_genuinely_new_pit_financial_report_economics_source",
+    "no_threshold_notional_hold_capacity_or_response_retune_on_same_rows"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "archived_previous_forward_replacement_value_file": "data/experiments/exp-20260704-022/forward_replacement_value_before.jsonl",
+    "archived_previous_snapshots_file": "data/experiments/exp-20260704-022/sec_financial_report_snapshots_before.jsonl",
+    "archived_previous_state_file": "data/experiments/exp-20260704-022/sec_financial_report_state_before.json",
+    "asof_date": "2026-07-04",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "forward_replacement_value_file": "data/paper_sleeves/forward_replacement_value.jsonl",
+    "min_activation_rows": 30,
+    "source_snapshot_log": "data/paper_sleeves/sec_financial_report/snapshots.jsonl",
+    "state_file": "data/paper_sleeves/sec_financial_report/state.json"
+  },
+  "post_run_reflection": {
+    "alpha_interpretation": "This is accepted measurement repair, not accepted alpha. The sec_financial_report forward surface is now non-empty and enriched, but it is negative and too thin for activation or allocation.",
+    "forbidden_near_neighbor_retry": "Do not retune SEC financial-report T+1 thresholds, event families, platform-pool membership, RS20 scalar, notional, max positions, hold days, cooldown, or response functions from these five closed rows.",
+    "new_evidence_required": "Reopen only after materially more post-repair SEC financial-report closed rows with cash/SPY/QQQ replacement values, or a genuinely new PIT financial-report economics/source field.",
+    "why_result_happened": "The exp-20260704-016 cohort repair unlocked the exact archived candidate set, and the sleeve lifecycle could fill and close five rows through the repaired hot/cold warehouse. The measured forward outcomes were poor: closed PnL and all replacement-value totals are negative, while one CRDO row remains open and two rows were skipped by the unchanged max-position capacity."
+  },
+  "pre_run_questions": {
+    "acceptance_standard": "Accept as measurement repair if the repaired archived span produces nonzero closed rows and every closed row receives cash/SPY/QQQ replacement values. Alpha activation remains blocked unless row count and comparator value clear predeclared readiness checks.",
+    "alpha_hypothesis": "Post-repair sec_financial_report forward rows can now mature into activation evidence if the repaired daily path is materialized.",
+    "history_check": {
+      "exp-20260704-015": "identified daily cohort parity drift and 8 counterfactual admissions",
+      "exp-20260704-016": "repaired shared cohort derivation without changing thresholds or orders",
+      "exp-20260704-017": "repaired hot warehouse settlement coverage",
+      "exp-20260704-021": "proved replacement-value enrichment works after warehouse repair but allocator rows stayed too thin"
+    },
+    "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_022_sec_financial_report_post_repair_forward_materialization.py",
+    "single_policy_bundle": "sec_financial_report_post_repair_forward_row_materialization_v1"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260704-016 already proved the repaired builder emits the same 8 candidates as the parity probe, and the hot warehouse repair restored comparator coverage; the main risk is not repair failure but that the newly materialized sample is too small or negative for alpha activation.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_closed_rows_after_lifecycle_capacity",
+      "warehouse_missing_recent_bars",
+      "replacement_value_negative_or_too_thin"
+    ],
+    "recorded_at": "2026-07-04T20:05:00+00:00",
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Only the default-off SEC financial-report paper sleeve state, snapshot log, and shared forward replacement-value artifact were materialized from already-recorded daily archives. No executable core/live behavior changed.",
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/sec_event_queue.py",
+    "quant/sec_financial_report_event_sleeve.py",
+    "quant/forward_replacement_value.py",
+    "experiments/logs/exp-20260704-015.json",
+    "experiments/logs/exp-20260704-016.json",
+    "experiments/logs/exp-20260704-017.json",
+    "experiments/logs/exp-20260704-021.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_022_sec_financial_report_post_repair_forward_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260704_022_sec_financial_report_post_repair_forward_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_event_queue.py quant\\test_sec_financial_report_event_sleeve.py quant\\test_forward_replacement_value.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sec_financial_report_forward_materialization": {
+    "archive_before": {
+      "forward_replacement_before_rows": 55,
+      "snapshots_before_rows": 82,
+      "state_before_closed": 0,
+      "state_before_open": 0,
+      "state_before_pending": 0,
+      "state_exists": true
+    },
+    "artifact_summary": {
+      "artifact_path": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "previous_rows": 55,
+      "previous_rows_not_in_current_state": [],
+      "rows_by_entry_regime_label": {
+        "risk_on_trend": 60
+      },
+      "rows_by_entry_short_volume_quintile": {
+        "Q1": 13,
+        "Q2": 13,
+        "Q3": 6,
+        "Q4": 10,
+        "Q5": 11
+      },
+      "rows_by_sleeve": {
+        "accepted_helper_source_priority_allocator": 2,
+        "accepted_source_consensus": 1,
+        "alpha_score_market_regime": 5,
+        "broad_market": 1,
+        "free_data_cross_source_consensus": 4,
+        "fundamental_growth_rs": 8,
+        "low_deployment_etf": 17,
+        "sec_financial_report": 5,
+        "sec_governance": 2,
+        "sec_leadership": 1,
+        "sec_negative": 2,
+        "state_surface": 3,
+        "supplier_financing_debt_relief": 3,
+        "volatility_contraction": 2,
+        "volume_breadth_breakout": 4
+      },
+      "rows_by_status": {
+        "enriched": 60
+      },
+      "rows_entry_short_volume_toxic": 11,
+      "rows_with_entry_regime": 60,
+      "rows_with_entry_short_volume": 53,
+      "rows_written": 60,
+      "skipped_missing_replacement": [],
+      "status": "ok"
+    },
+    "candidate_total": 8,
+    "closed_rows": [
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-08:COIN:0001679788-26-000053:earnings_8k",
+        "entry_date": "2026-05-12",
+        "entry_price": 211.9,
+        "entry_regime_label": "risk_on_trend",
+        "entry_short_volume_quintile": 5,
+        "exit_date": "2026-05-27",
+        "exit_price": 173.78,
+        "notional": 17250.0,
+        "pnl": -3163.58,
+        "replacement_value_status": "enriched",
+        "replacement_value_vs_cash_usd": -3163.58,
+        "replacement_value_vs_qqq_usd": -3622.05,
+        "replacement_value_vs_spy_usd": -3403.31,
+        "source_event_date": "2026-05-08",
+        "ticker": "COIN",
+        "trade_enabled": false
+      },
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-08:COIN:0001679788-26-000054:periodic_report",
+        "entry_date": "2026-05-12",
+        "entry_price": 211.9,
+        "entry_regime_label": "risk_on_trend",
+        "entry_short_volume_quintile": 5,
+        "exit_date": "2026-05-27",
+        "exit_price": 173.78,
+        "notional": 34500.0,
+        "pnl": -6327.17,
+        "replacement_value_status": "enriched",
+        "replacement_value_vs_cash_usd": -6327.17,
+        "replacement_value_vs_qqq_usd": -7244.11,
+        "replacement_value_vs_spy_usd": -6806.63,
+        "source_event_date": "2026-05-08",
+        "ticker": "COIN",
+        "trade_enabled": false
+      },
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-08:CVX:0000093410-26-000113:periodic_report",
+        "entry_date": "2026-05-12",
+        "entry_price": 184.8073,
+        "entry_regime_label": "risk_on_trend",
+        "entry_short_volume_quintile": 1,
+        "exit_date": "2026-05-27",
+        "exit_price": 182.4,
+        "notional": 30000.0,
+        "pnl": -495.78,
+        "replacement_value_status": "enriched",
+        "replacement_value_vs_cash_usd": -495.78,
+        "replacement_value_vs_qqq_usd": -1293.12,
+        "replacement_value_vs_spy_usd": -912.7,
+        "source_event_date": "2026-05-08",
+        "ticker": "CVX",
+        "trade_enabled": false
+      },
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-28:SNOW:0001640147-26-000027:earnings_8k",
+        "entry_date": "2026-06-01",
+        "entry_price": 259.97,
+        "entry_regime_label": "risk_on_trend",
+        "entry_short_volume_quintile": 2,
+        "exit_date": "2026-06-15",
+        "exit_price": 240.78,
+        "notional": 18975.0,
+        "pnl": -1467.08,
+        "replacement_value_status": "enriched",
+        "replacement_value_vs_cash_usd": -1467.08,
+        "replacement_value_vs_qqq_usd": -1560.71,
+        "replacement_value_vs_spy_usd": -1368.4,
+        "source_event_date": "2026-05-28",
+        "ticker": "SNOW",
+        "trade_enabled": false
+      },
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-06-10:AVGO:0001730168-26-000054:periodic_report",
+        "entry_date": "2026-06-12",
+        "entry_price": 383.72,
+        "entry_regime_label": "risk_on_trend",
+        "entry_short_volume_quintile": 4,
+        "exit_date": "2026-06-29",
+        "exit_price": 372.45,
+        "notional": 30000.0,
+        "pnl": -986.11,
+        "replacement_value_status": "enriched",
+        "replacement_value_vs_cash_usd": -986.11,
+        "replacement_value_vs_qqq_usd": -1121.34,
+        "replacement_value_vs_spy_usd": -940.1,
+        "source_event_date": "2026-06-10",
+        "ticker": "AVGO",
+        "trade_enabled": false
+      }
+    ],
+    "closed_total": 5,
+    "filled_total": 6,
+    "missing_event_files": [],
+    "new_pending_total": 8,
+    "open_rows": [
+      {
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-06-16:CRDO:0001628280-26-043303:periodic_report",
+        "entry_date": "2026-06-18",
+        "net_pnl_if_closed_now": -1478.02,
+        "observed_trading_days": 9,
+        "ticker": "CRDO"
+      }
+    ],
+    "open_total": 1,
+    "pending_total": 0,
+    "recorded_snapshot_days": 61,
+    "replacement_records_status": {
+      "enriched": 5
+    },
+    "replacement_records_updated_this_run": 5,
+    "replayed_dates": 61,
+    "skipped_rows": [
+      {
+        "created_asof": "2026-05-12",
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-11:IREN:0001878848-26-000025:earnings_8k",
+        "status": "skipped_capacity_full",
+        "ticker": "IREN"
+      },
+      {
+        "created_asof": "2026-05-12",
+        "decision_id": "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-11:IREN:0001878848-26-000026:periodic_report",
+        "status": "skipped_capacity_full",
+        "ticker": "IREN"
+      }
+    ],
+    "skipped_total": 2,
+    "span_end": "2026-07-03",
+    "span_start": "2026-04-30",
+    "target_artifact_rows": 5,
+    "warehouse_inputs": {
+      "comparator_bars": {
+        "QQQ": 713,
+        "SPY": 713
+      },
+      "entry_exhaustion_tickers": 4,
+      "event_tickers": 50,
+      "regime_spy_bars": 713,
+      "short_volume_symbols": 51,
+      "ticker_frames_loaded": 52
+    }
+  },
+  "single_causal_variable": "sec_financial_report_post_repair_forward_row_materialization_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-04T20:12:51Z",
+  "trial_family": "sec_financial_report_forward_row_materialization",
+  "trial_variant_id": "post_cohort_repair_archived_daily_span_20260704",
+  "write_fallbacks": [
+    "data/paper_sleeves/sec_financial_report/state.json: atomic fallback: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\sec_financial_report\\\\.state.json.s0uo01l6.tmp' -> 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\sec_financial_report\\\\state.json'",
+    "data/paper_sleeves/sec_financial_report/snapshots.jsonl: atomic fallback: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\sec_financial_report\\\\.snapshots.jsonl.xuy8g4ds.tmp' -> 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\sec_financial_report\\\\snapshots.jsonl'",
+    "data/paper_sleeves/forward_replacement_value.jsonl: atomic fallback: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\.forward_replacement_value.jsonl.wfq1o_du.tmp' -> 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\forward_replacement_value.jsonl'"
+  ]
+}

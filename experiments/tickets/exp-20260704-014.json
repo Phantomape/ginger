@@ -1,0 +1,781 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_014_options_earnings_surprise_history_forward_value.py",
+    "data/experiments/exp-20260704-014/exp_20260704_014_options_earnings_surprise_history_forward_value.json",
+    "experiments/cards/exp-20260704-014.md",
+    "experiments/manifests/exp-20260704-014.json",
+    "experiments/tickets/exp-20260704-014.json",
+    "experiments/logs/exp-20260704-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-014.md",
+  "causal_components": [
+    "closed options outcome ledger",
+    "daily earnings snapshot surprise-history join",
+    "cash SPY QQQ replacement attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "onclickmedia_options_earnings_surprise_history_forward_value_v1",
+  "claimed_at": "2026-07-04T16:07:01+00:00",
+  "completed_at": "2026-07-04T16:12:38+00:00",
+  "created_at": "2026-07-04T16:05:52+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-014",
+  "experiment_uid": "expuid-0c33e861c9b44ea1",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T16:05:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_earnings_surprise_history_forward_value"
+  },
+  "hypothesis": "Observed-only alpha: OnclickMedia closed options forward rows joined to daily earnings snapshots may show that tickers with consistently positive historical EPS surprise history have better 10-day cash SPY QQQ replacement value than weak or missing surprise-history names, without changing options demand thresholds or trading behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "onclickmedia_options_earnings_surprise_history_forward_value_v1"
+  ],
+  "mechanism_family": "production_visible_options_earnings_surprise_forward_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260704-002",
+    "exp-20260531-001",
+    "exp-20260421-008"
+  ],
+  "new_evidence_type": "closed_options_forward_rows_plus_daily_earnings_surprise_history_join",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "alpha",
+        "behavior",
+        "better",
+        "cash",
+        "changing",
+        "closed",
+        "consistently",
+        "daily",
+        "demand",
+        "earnings",
+        "eps",
+        "forward",
+        "have",
+        "historical",
+        "history",
+        "joined",
+        "may",
+        "missing",
+        "names",
+        "observed",
+        "onclickmedia",
+        "only",
+        "options",
+        "or",
+        "positive",
+        "qqq",
+        "replacement",
+        "rows",
+        "show",
+        "snapshots",
+        "spy",
+        "surprise",
+        "than",
+        "that",
+        "thresholds",
+        "tickers",
+        "to",
+        "trading",
+        "value",
+        "weak",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "pead_broad_universe_historical_candidate_pool",
+        "reopen_condition": "A retry after rejection needs a materially new PIT earnings data edge: revision trajectory, analyst estimate dispersion, call tone, guidance classification, or closed forward replacement rows.",
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_drift_monotonicity",
+        "reopen_condition": null,
+        "score": 0.484,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_pre_event_underpricing_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially richer post-earnings event-quality field; do not simply retune the pre-event RS threshold.",
+        "score": 0.4827,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_drift_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer production-visible event-quality field such as guidance direction, same-event revenue/EPS mix, or audited filing/news tone.",
+        "score": 0.4779,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_underpriced_shared_adapter",
+        "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+        "score": 0.4773,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "surprise_history_overlaps_pead",
+      "options_demand_noise_dominates",
+      "sample_concentration",
+      "no_incremental_replacement_value"
+    ],
+    "confidence_reason": "Options event-distance alone failed, and earnings surprise history has prior PEAD failures, but this is a new fixed cross-surface attribution using closed OnclickMedia 10d replacement rows plus daily earnings snapshot surprise history rather than an options threshold or pre-earnings candidate-pool retune.",
+    "recorded_at": "2026-07-04T16:05:14+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected",
+    "artifact": "data/experiments/exp-20260704-014/exp_20260704_014_options_earnings_surprise_history_forward_value.json",
+    "log": "experiments/logs/exp-20260704-014.json",
+    "runner": "quant/experiments/exp_20260704_014_options_earnings_surprise_history_forward_value.py",
+    "gate4": {
+      "passed": false,
+      "strategy_gate4_not_applicable": true,
+      "reason": "Observed-only surprise-history lead bar failed; no strategy change accepted.",
+      "acceptance_rule": {
+        "primary_horizon": 10,
+        "snapshot_join": "latest earnings snapshot with snapshot_date <= quote_date",
+        "positive_bucket": "historical_surprise_count >= 4, positive_surprise_count >= 3, avg_historical_surprise_pct >= 5.0",
+        "weak_bucket": "historical_surprise_count >= 4 and (positive_surprise_count <= 2 or avg_historical_surprise_pct <= 0)",
+        "missing_bucket": "avg_historical_surprise_pct missing or history_count < 4",
+        "control_group": "weak_or_negative_surprise + missing_or_insufficient_surprise",
+        "min_history_count": 4,
+        "min_positive_bucket_rows": 100,
+        "min_control_rows": 100,
+        "min_positive_bucket_tickers": 20,
+        "min_control_tickers": 20,
+        "positive_cash_mean_must_be_gt_zero": true,
+        "positive_must_beat_control_mean_for": [
+          "cash",
+          "spy",
+          "qqq"
+        ],
+        "positive_must_beat_control_median_for": [
+          "cash",
+          "spy",
+          "qqq"
+        ],
+        "max_positive_bucket_single_positive_pnl_share": 0.35,
+        "max_positive_bucket_positive_pnl_hhi": 0.2
+      },
+      "acceptance": {
+        "accepted_observed_only_lead": false,
+        "checks": {
+          "positive_rows_gte_min": true,
+          "control_rows_gte_min": true,
+          "positive_tickers_gte_min": true,
+          "control_tickers_gte_min": false,
+          "positive_cash_mean_gt_zero": true,
+          "positive_beats_control_all_means": true,
+          "positive_beats_control_all_medians": true,
+          "positive_concentration_guardrail": true
+        },
+        "failed_reasons": [
+          "control_tickers_gte_min"
+        ],
+        "concentration_checks": {
+          "cash": {
+            "positive_pnl": 191239.27,
+            "positive_ticker_count": 37,
+            "max_single_positive_pnl_share": 0.114459,
+            "positive_pnl_hhi": 0.056431,
+            "top_positive_tickers": [
+              {
+                "ticker": "SNOW",
+                "positive_pnl": 21889.15,
+                "share": 0.1145
+              },
+              {
+                "ticker": "MU",
+                "positive_pnl": 18442.78,
+                "share": 0.0964
+              },
+              {
+                "ticker": "CRDO",
+                "positive_pnl": 16803.59,
+                "share": 0.0879
+              },
+              {
+                "ticker": "WDC",
+                "positive_pnl": 14484.81,
+                "share": 0.0757
+              },
+              {
+                "ticker": "HOOD",
+                "positive_pnl": 12029.92,
+                "share": 0.0629
+              },
+              {
+                "ticker": "AMD",
+                "positive_pnl": 9010.51,
+                "share": 0.0471
+              },
+              {
+                "ticker": "DDOG",
+                "positive_pnl": 8554.86,
+                "share": 0.0447
+              },
+              {
+                "ticker": "APP",
+                "positive_pnl": 8197.5,
+                "share": 0.0429
+              }
+            ],
+            "passes_guardrail": true
+          },
+          "spy": {
+            "positive_pnl": 188685.44,
+            "positive_ticker_count": 37,
+            "max_single_positive_pnl_share": 0.113954,
+            "positive_pnl_hhi": 0.056888,
+            "top_positive_tickers": [
+              {
+                "ticker": "SNOW",
+                "positive_pnl": 21501.37,
+                "share": 0.114
+              },
+              {
+                "ticker": "MU",
+                "positive_pnl": 18381.55,
+                "share": 0.0974
+              },
+              {
+                "ticker": "CRDO",
+                "positive_pnl": 16921.58,
+                "share": 0.0897
+              },
+              {
+                "ticker": "WDC",
+                "positive_pnl": 14472.13,
+                "share": 0.0767
+              },
+              {
+                "ticker": "HOOD",
+                "positive_pnl": 12308.9,
+                "share": 0.0652
+              },
+              {
+                "ticker": "AMD",
+                "positive_pnl": 8732.05,
+                "share": 0.0463
+              },
+              {
+                "ticker": "DDOG",
+                "positive_pnl": 8171.86,
+                "share": 0.0433
+              },
+              {
+                "ticker": "APP",
+                "positive_pnl": 7671.93,
+                "share": 0.0407
+              }
+            ],
+            "passes_guardrail": true
+          },
+          "qqq": {
+            "positive_pnl": 171635.12,
+            "positive_ticker_count": 35,
+            "max_single_positive_pnl_share": 0.120784,
+            "positive_pnl_hhi": 0.060148,
+            "top_positive_tickers": [
+              {
+                "ticker": "SNOW",
+                "positive_pnl": 20730.74,
+                "share": 0.1208
+              },
+              {
+                "ticker": "MU",
+                "positive_pnl": 17398.51,
+                "share": 0.1014
+              },
+              {
+                "ticker": "CRDO",
+                "positive_pnl": 16108.11,
+                "share": 0.0939
+              },
+              {
+                "ticker": "WDC",
+                "positive_pnl": 13658.66,
+                "share": 0.0796
+              },
+              {
+                "ticker": "HOOD",
+                "positive_pnl": 11603.09,
+                "share": 0.0676
+              },
+              {
+                "ticker": "AMD",
+                "positive_pnl": 7771.59,
+                "share": 0.0453
+              },
+              {
+                "ticker": "DDOG",
+                "positive_pnl": 7415.78,
+                "share": 0.0432
+              },
+              {
+                "ticker": "APP",
+                "positive_pnl": 6944.66,
+                "share": 0.0405
+              }
+            ],
+            "passes_guardrail": true
+          }
+        }
+      },
+      "failed_reasons": [
+        "control_tickers_gte_min"
+      ],
+      "before_after_delta": {
+        "aggregate_expected_value_score_delta": 0.0,
+        "aggregate_total_pnl_delta": 0.0,
+        "aggregate_trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "no_strategy_behavior_change": true
+    },
+    "calibration": {
+      "pre_run_success_probability": 0.24,
+      "post_run_success": false,
+      "surprise_note": "Fixed surprise-history buckets did not meet the predeclared lead bar."
+    },
+    "summary": "The fixed surprise-history join produced usable rows, but the positive bucket did not satisfy all sample, breadth, outperformance, and concentration checks versus the weak/missing control."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-014.json",
+  "single_causal_variable": "onclickmedia_options_earnings_surprise_history_forward_value_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260704-014.json",
+  "trial_family": "onclickmedia_options_earnings_surprise_history_forward_attribution",
+  "trial_variant_id": "fixed_surprise_history_positive_vs_weak_missing_forward10_v1",
+  "implementation_mode": "observed_only_forward_attribution_runner",
+  "new_evidence_axis": "Closed OnclickMedia 10-day options replacement rows are joined to the daily earnings snapshot surprise-history field. This is a fixed cross-surface attribution and not an options threshold, event-distance, hold-period, notional, IV/OI/spread/liquidity, or response-curve retune.",
+  "decision": "observed_only_rejected",
+  "artifact": "data/experiments/exp-20260704-014/exp_20260704_014_options_earnings_surprise_history_forward_value.json",
+  "log": "experiments/logs/exp-20260704-014.json",
+  "gate1": {
+    "passed": true,
+    "baseline_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "exists": true,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "aggregate_trade_count": 61,
+      "aggregate_signals_generated": 164,
+      "aggregate_signals_survived": 135,
+      "aggregate_survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields": [
+      "ticker",
+      "quote_date",
+      "entry_date",
+      "entry_price",
+      "quality_pass",
+      "outcome_status",
+      "replacement_value_10d_vs_cash_usd",
+      "replacement_value_10d_vs_spy_usd",
+      "replacement_value_10d_vs_qqq_usd",
+      "earnings.historical_surprise_pct",
+      "earnings.avg_historical_surprise_pct"
+    ],
+    "field_coverage": {
+      "total_rows": 2147,
+      "closed_10d_rows": 1544,
+      "quality_closed_10d_rows": 1179,
+      "quality_rows_with_ticker": 1179,
+      "quality_rows_with_entry_date": 1179,
+      "quality_rows_with_entry_price": 1179,
+      "quality_rows_with_all_10d_replacements": 1179,
+      "joined_rows": 1179,
+      "bucket_consistent_positive_surprise": 726,
+      "joined_rows_with_sufficient_history": 1043,
+      "bucket_mixed_surprise_history": 198,
+      "bucket_weak_or_negative_surprise": 119,
+      "bucket_missing_or_insufficient_surprise": 136,
+      "joined_rows_with_insufficient_history": 136,
+      "earnings_snapshot_file_count": 475,
+      "first_snapshot_date": "2024-10-02",
+      "last_snapshot_date": "2026-07-03",
+      "join_rate_on_quality_rows": 1.0,
+      "sufficient_history_rate_on_joined_rows": 0.884648,
+      "missing_join_examples": []
+    },
+    "target_price_note": "target_price is not used for this fixed-horizon replacement-value ledger; entry_price and replacement-value fields are present instead."
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 1544,
+    "signals_survived": 1179,
+    "survival_rate": 0.763601,
+    "joined_attribution_rows": 1179,
+    "join_rate_on_quality_rows": 1.0,
+    "note": "This is an observed-only attribution, not an executable survival-filter change."
+  },
+  "gate4": {
+    "passed": false,
+    "strategy_gate4_not_applicable": true,
+    "reason": "Observed-only surprise-history lead bar failed; no strategy change accepted.",
+    "acceptance_rule": {
+      "primary_horizon": 10,
+      "snapshot_join": "latest earnings snapshot with snapshot_date <= quote_date",
+      "positive_bucket": "historical_surprise_count >= 4, positive_surprise_count >= 3, avg_historical_surprise_pct >= 5.0",
+      "weak_bucket": "historical_surprise_count >= 4 and (positive_surprise_count <= 2 or avg_historical_surprise_pct <= 0)",
+      "missing_bucket": "avg_historical_surprise_pct missing or history_count < 4",
+      "control_group": "weak_or_negative_surprise + missing_or_insufficient_surprise",
+      "min_history_count": 4,
+      "min_positive_bucket_rows": 100,
+      "min_control_rows": 100,
+      "min_positive_bucket_tickers": 20,
+      "min_control_tickers": 20,
+      "positive_cash_mean_must_be_gt_zero": true,
+      "positive_must_beat_control_mean_for": [
+        "cash",
+        "spy",
+        "qqq"
+      ],
+      "positive_must_beat_control_median_for": [
+        "cash",
+        "spy",
+        "qqq"
+      ],
+      "max_positive_bucket_single_positive_pnl_share": 0.35,
+      "max_positive_bucket_positive_pnl_hhi": 0.2
+    },
+    "acceptance": {
+      "accepted_observed_only_lead": false,
+      "checks": {
+        "positive_rows_gte_min": true,
+        "control_rows_gte_min": true,
+        "positive_tickers_gte_min": true,
+        "control_tickers_gte_min": false,
+        "positive_cash_mean_gt_zero": true,
+        "positive_beats_control_all_means": true,
+        "positive_beats_control_all_medians": true,
+        "positive_concentration_guardrail": true
+      },
+      "failed_reasons": [
+        "control_tickers_gte_min"
+      ],
+      "concentration_checks": {
+        "cash": {
+          "positive_pnl": 191239.27,
+          "positive_ticker_count": 37,
+          "max_single_positive_pnl_share": 0.114459,
+          "positive_pnl_hhi": 0.056431,
+          "top_positive_tickers": [
+            {
+              "ticker": "SNOW",
+              "positive_pnl": 21889.15,
+              "share": 0.1145
+            },
+            {
+              "ticker": "MU",
+              "positive_pnl": 18442.78,
+              "share": 0.0964
+            },
+            {
+              "ticker": "CRDO",
+              "positive_pnl": 16803.59,
+              "share": 0.0879
+            },
+            {
+              "ticker": "WDC",
+              "positive_pnl": 14484.81,
+              "share": 0.0757
+            },
+            {
+              "ticker": "HOOD",
+              "positive_pnl": 12029.92,
+              "share": 0.0629
+            },
+            {
+              "ticker": "AMD",
+              "positive_pnl": 9010.51,
+              "share": 0.0471
+            },
+            {
+              "ticker": "DDOG",
+              "positive_pnl": 8554.86,
+              "share": 0.0447
+            },
+            {
+              "ticker": "APP",
+              "positive_pnl": 8197.5,
+              "share": 0.0429
+            }
+          ],
+          "passes_guardrail": true
+        },
+        "spy": {
+          "positive_pnl": 188685.44,
+          "positive_ticker_count": 37,
+          "max_single_positive_pnl_share": 0.113954,
+          "positive_pnl_hhi": 0.056888,
+          "top_positive_tickers": [
+            {
+              "ticker": "SNOW",
+              "positive_pnl": 21501.37,
+              "share": 0.114
+            },
+            {
+              "ticker": "MU",
+              "positive_pnl": 18381.55,
+              "share": 0.0974
+            },
+            {
+              "ticker": "CRDO",
+              "positive_pnl": 16921.58,
+              "share": 0.0897
+            },
+            {
+              "ticker": "WDC",
+              "positive_pnl": 14472.13,
+              "share": 0.0767
+            },
+            {
+              "ticker": "HOOD",
+              "positive_pnl": 12308.9,
+              "share": 0.0652
+            },
+            {
+              "ticker": "AMD",
+              "positive_pnl": 8732.05,
+              "share": 0.0463
+            },
+            {
+              "ticker": "DDOG",
+              "positive_pnl": 8171.86,
+              "share": 0.0433
+            },
+            {
+              "ticker": "APP",
+              "positive_pnl": 7671.93,
+              "share": 0.0407
+            }
+          ],
+          "passes_guardrail": true
+        },
+        "qqq": {
+          "positive_pnl": 171635.12,
+          "positive_ticker_count": 35,
+          "max_single_positive_pnl_share": 0.120784,
+          "positive_pnl_hhi": 0.060148,
+          "top_positive_tickers": [
+            {
+              "ticker": "SNOW",
+              "positive_pnl": 20730.74,
+              "share": 0.1208
+            },
+            {
+              "ticker": "MU",
+              "positive_pnl": 17398.51,
+              "share": 0.1014
+            },
+            {
+              "ticker": "CRDO",
+              "positive_pnl": 16108.11,
+              "share": 0.0939
+            },
+            {
+              "ticker": "WDC",
+              "positive_pnl": 13658.66,
+              "share": 0.0796
+            },
+            {
+              "ticker": "HOOD",
+              "positive_pnl": 11603.09,
+              "share": 0.0676
+            },
+            {
+              "ticker": "AMD",
+              "positive_pnl": 7771.59,
+              "share": 0.0453
+            },
+            {
+              "ticker": "DDOG",
+              "positive_pnl": 7415.78,
+              "share": 0.0432
+            },
+            {
+              "ticker": "APP",
+              "positive_pnl": 6944.66,
+              "share": 0.0405
+            }
+          ],
+          "passes_guardrail": true
+        }
+      }
+    },
+    "failed_reasons": [
+      "control_tickers_gte_min"
+    ],
+    "before_after_delta": {
+      "aggregate_expected_value_score_delta": 0.0,
+      "aggregate_total_pnl_delta": 0.0,
+      "aggregate_trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "no_strategy_behavior_change": true
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_options_forward_outcome_ledger": true,
+    "uses_daily_earnings_snapshots": true,
+    "forward_only_not_fixed_window_pit_coverage": true,
+    "parity_note": "Observed-only attribution on experiment-owned forward outcome rows. No shared policy/helper or production adapter behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed surprise-history join produced usable rows, but the positive bucket did not satisfy all sample, breadth, outperformance, and concentration checks versus the weak/missing control.",
+    "decision_basis": "observed_only_rejected",
+    "forbidden_near_neighbor_retry": "Do not retune avg_historical_surprise_pct, positive-count, history-count, missing-history, options demand, event-distance, IV/OI/spread/liquidity, top-N, hold days, notional, cooldown, or response-curve thresholds on the same exp-20260630-008 options ledger.",
+    "new_evidence_required": "Valid next evidence requires materially more closed options forward rows under the unchanged surprise-history contract, historical PIT options-chain coverage across canonical windows, borrow/loan cost context, or richer earnings-event fields such as guidance direction, same-event revenue/EPS mix, revisions, or call tone."
+  },
+  "related_files": [
+    "data/experiments/exp-20260630-008/options_forward_outcome_refresh_all_current_sources.jsonl",
+    "data/daily/snapshots/earnings",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260704_014_options_earnings_surprise_history_forward_value.py",
+    "data/experiments/exp-20260704-014/exp_20260704_014_options_earnings_surprise_history_forward_value.json",
+    "experiments/logs/exp-20260704-014.json",
+    "experiments/cards/exp-20260704-014.md",
+    "experiments/manifests/exp-20260704-014.json",
+    "experiments/tickets/exp-20260704-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-04T16:12:38+00:00"
+}

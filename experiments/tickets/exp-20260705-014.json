@@ -1,0 +1,207 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_014_cisa_kev_entry_risk_gate.py",
+    "data/experiments/exp-20260705-014/exp_20260705_014_cisa_kev_entry_risk_gate.json",
+    "experiments/cards/exp-20260705-014.md",
+    "experiments/manifests/exp-20260705-014.json",
+    "experiments/tickets/exp-20260705-014.json",
+    "experiments/logs/exp-20260705-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-014.md",
+  "causal_components": [
+    "pit kev archive materialization",
+    "vendor ticker map",
+    "event study forward returns",
+    "baseline trade attribution",
+    "gate verdict"
+  ],
+  "change_type": "entry_filter",
+  "changed_variable": "cisa_kev_mapped_issuer_5d_entry_risk_window",
+  "claimed_at": "2026-07-05T16:21:02+00:00",
+  "completed_at": null,
+  "created_at": "2026-07-05T16:20:35+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-014",
+  "experiment_uid": "expuid-7e1e493879984fab",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T16:20:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cisa_kev_entry_risk_gate"
+  },
+  "hypothesis": "CISA KEV catalog additions (dateAdded, PIT, credential-free) mapping to core-universe issuers MSFT/AAPL/GOOG/META mark elevated near-term operational/headline risk; core entries within 5 trading days after a mapped KEV addition should show worse forward returns, supporting an entry risk gate.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cisa_kev_mapped_issuer_5d_entry_risk_window"
+  ],
+  "mechanism_family": "entry_filter",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-027",
+    "exp-20260702-010"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "5d",
+        "a",
+        "aapl",
+        "addition",
+        "additions",
+        "after",
+        "an",
+        "catalog",
+        "cisa",
+        "core",
+        "credential",
+        "dateadded",
+        "elevated",
+        "entries",
+        "entry",
+        "forward",
+        "gate",
+        "goog",
+        "headline",
+        "issuer",
+        "issuers",
+        "kev",
+        "mapped",
+        "mapping",
+        "mark",
+        "meta",
+        "msft",
+        "near",
+        "operational",
+        "pit",
+        "returns",
+        "risk",
+        "should",
+        "show",
+        "supporting",
+        "term",
+        "to",
+        "trading",
+        "window",
+        "within",
+        "worse"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_entry_catalyst_core_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_scalar_direction_gate",
+        "reopen_condition": null,
+        "score": 0.1697,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_sentiment_surface_constructive_risk",
+        "reopen_condition": null,
+        "score": 0.1674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "space_forward_replacement_consistency",
+        "reopen_condition": "Do not promote this forward-consistency scalar from the current sample. Revisit only after new closed Space forward rows broaden the multi-event consistency cohort beyond its current support.",
+        "score": 0.1674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_rs_accel_no_chase_risk",
+        "reopen_condition": null,
+        "score": 0.167,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "New free PIT event source verified live today (447 rows since 2024-10, 108 mapped to the predeclared 4 issuers); entry-veto family has a poor historical base rate and MSFT KEV density may saturate the window, so success probability is set low; the disconfirmer is machine-checkable event-study drift.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "kev_window_near_always_on_for_msft",
+      "thin_vetoed_trade_sample",
+      "event_drift_not_negative"
+    ],
+    "recorded_at": "2026-07-05T16:19:51+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260705-014.json",
+  "single_causal_variable": "cisa_kev_mapped_issuer_5d_entry_risk_window",
+  "status": "claimed",
+  "ticket_file": "experiments/tickets/exp-20260705-014.json",
+  "trial_family": "entry_filter",
+  "trial_variant_id": "exp-20260705-014"
+}

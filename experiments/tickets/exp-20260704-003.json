@@ -1,0 +1,350 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.py",
+    "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+    "experiments/cards/exp-20260704-003.md",
+    "experiments/manifests/exp-20260704-003.json",
+    "experiments/tickets/exp-20260704-003.json",
+    "experiments/logs/exp-20260704-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-003.md",
+  "causal_components": [
+    "local FINRA ATS archive cross-check",
+    "local FINRA OTC archive readiness audit",
+    "FINRA OTC_W_SMBL endpoint availability probe",
+    "blocked reopen-condition contract",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "finra_otc_weekly_internalization_archive_readiness_v1",
+  "claimed_at": "2026-07-04T02:08:40+00:00",
+  "completed_at": "2026-07-04T02:13:23+00:00",
+  "created_at": "2026-07-04T02:08:26+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-003",
+  "experiment_uid": "expuid-5fce16d0ebbe4644",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T02:08:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_otc_weekly_internalization_archive_readiness"
+  },
+  "hypothesis": "Alpha blocker: FINRA non-ATS OTC weekly internalization is the next legal venue-decomposition alpha surface after exp-20260703-016 ATS dark-share rejection, but the repo must first prove an as-of weekly OTC_W_SMBL archive can be materialized before any candidate-pool or sizing rule is credible.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "finra_otc_weekly_internalization_archive_readiness_v1"
+  ],
+  "mechanism_family": "finra_non_ats_wholesaler_internalization",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-016",
+    "exp-20260625-019",
+    "exp-20260625-024",
+    "exp-20260627-023"
+  ],
+  "new_evidence_type": "new_finra_otc_w_smbl_summary_type_source_readiness",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "score": 0.6488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "score": 0.616,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_short_pressure_breakout_candidate_pool",
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "score": 0.6091,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_short_pressure_iwm_confirmed_candidate_pool",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "after",
+        "alpha",
+        "an",
+        "any",
+        "archive",
+        "as",
+        "ats",
+        "be",
+        "before",
+        "blocker",
+        "but",
+        "can",
+        "credible",
+        "dark",
+        "decomposition",
+        "exp",
+        "finra",
+        "first",
+        "internalization",
+        "is",
+        "legal",
+        "materialized",
+        "must",
+        "non",
+        "of",
+        "or",
+        "otc",
+        "prove",
+        "readiness",
+        "rejection",
+        "repo",
+        "rule",
+        "share",
+        "sizing",
+        "smbl",
+        "surface",
+        "venue",
+        "w",
+        "weekly",
+        "wholesaler"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "reopen_condition": "Settled forward rows from the daily default-off snapshot, the non-ATS (OTC wholesaler internalization) weekly summary as a genuinely different venue decomposition with its own gate shape, or PIT borrow/short-side economics joined to the same names.",
+        "score": 0.6488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "reopen_condition": "If positive, the next evidence is closed forward replacement-value rows from the shared FINRA/IWM default-off ledger tagged with entry-time borrow-pressure. If negative, a valid retry needs a materially different PIT borrow-cost / hard-to-borrow / loan-availability field, not a days_to_cover, short-change, freshness, RS, top-N, hold, cooldown, or notional retune on these frozen windows.",
+        "score": 0.616,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_breakout_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger free/cheap short-pressure field, such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.6093,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.6091,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_iwm_confirmed_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger short-pressure field such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuinely different FINRA weekly summaryTypeCode OTC_W_SMBL non-ATS wholesaler/internalization venue source, not the prior ATS_W_SMBL dark-share source; this run only audits/materializes source readiness before any alpha rule.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Genuinely different FINRA weekly summaryTypeCode OTC_W_SMBL non-ATS wholesaler/internalization venue source, not the prior ATS_W_SMBL dark-share source; this run only audits/materializes source readiness before any alpha rule.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2222,
+      "accepts": 4,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 18
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_local_otc_cache",
+      "finra_api_network_blocked",
+      "otc_schema_not_pit_enough",
+      "insufficient_weekly_history"
+    ],
+    "confidence_reason": "Prior ATS experiment found this as the legal sibling source, but local cache checks found only ATS_W_SMBL and the current automation environment appears to block outbound FINRA API calls.",
+    "recorded_at": "2026-07-04T02:07:46+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "blocked_finra_otc_w_smbl_archive_not_materialized",
+    "artifact": "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+    "log": "experiments/logs/exp-20260704-003.json",
+    "runner": "quant/experiments/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.py",
+    "gate4": {
+      "ran": false,
+      "accepted_measurement_repair": false,
+      "accepted_alpha": false,
+      "expected_value_score_delta": 0.0,
+      "pnl_delta": 0.0,
+      "failed_reasons": [
+        "no_local_otc_w_smbl_rows",
+        "existing_finra_ats_archive_contains_no_otc_w_smbl_rows",
+        "finra_api_probe_failed",
+        "network_proxy_blocks_finra_api",
+        "otc_archive_not_gate_ready"
+      ]
+    },
+    "summary": "The repo has a useful ATS_W_SMBL weekly cache from exp-20260703-016, but no local OTC_W_SMBL archive. The direct FINRA weeklySummary probe failed in this automation environment, so the non-ATS internalization alpha cannot be credibly backtested yet.",
+    "reopen_condition": "Reopen only after a local PIT FINRA OTC_W_SMBL weekly archive is available with summaryTypeCode, issueSymbolIdentifier, weekStartDate, publication/as-of date, share quantity, trade count, and notional fields for at least 26 published weeks and >=40 Kova candidate tickers, or after network/cache access is restored enough to materialize that archive. Then run a shared-paper-first candidate source with Gate 1-4; do not retune ATS_W_SMBL dark-share thresholds."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-003.json",
+  "single_causal_variable": "finra_otc_weekly_internalization_archive_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260704-003.json",
+  "trial_family": "finra_weekly_venue_decomposition_source_readiness",
+  "trial_variant_id": "otc_w_smbl_initial_archive_readiness_v1",
+  "alpha_hypothesis": "If non-ATS wholesaler/internalization flow is the missing venue split, then tickers with unusually high OTC weekly share or notional internalization should separate liquidity-friction/flow-absorption candidates from ATS dark pool false positives once the source is available as a PIT weekly archive.",
+  "implementation_mode": "measurement_readiness_audit_no_strategy_change",
+  "decision": "blocked_finra_otc_w_smbl_archive_not_materialized",
+  "artifact": "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+  "log": "experiments/logs/exp-20260704-003.json",
+  "gate1": {
+    "baseline_identity": {
+      "exists": true,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "top_level_keys": [
+        "generated_at",
+        "warehouse",
+        "windows"
+      ]
+    },
+    "baseline_reused_without_strategy_mutation": true
+  },
+  "gate2": {
+    "required_fields_for_future_otc_alpha": [
+      "summaryTypeCode",
+      "issueSymbolIdentifier",
+      "weekStartDate",
+      "initialPublishedDate",
+      "totalWeeklyShareQuantity",
+      "totalWeeklyTradeCount",
+      "totalNotionalSum"
+    ],
+    "entry_date_target_price_check": "not_applicable_no_trade_rows_created",
+    "runtime_dependencies_present": false,
+    "reason": "Future full-stack alpha requires a PIT weekly OTC archive. This runner found the source absent locally, so no signal rows were built."
+  },
+  "gate3": {
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": null,
+    "reason": "blocked before signal generation; no extra filter added"
+  },
+  "gate4": {
+    "ran": false,
+    "accepted_measurement_repair": false,
+    "accepted_alpha": false,
+    "expected_value_score_delta": 0.0,
+    "pnl_delta": 0.0,
+    "failed_reasons": [
+      "no_local_otc_w_smbl_rows",
+      "existing_finra_ats_archive_contains_no_otc_w_smbl_rows",
+      "finra_api_probe_failed",
+      "network_proxy_blocks_finra_api",
+      "otc_archive_not_gate_ready"
+    ]
+  },
+  "production_impact": {
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_sizing_entry_exit_changed": false,
+    "llm_boundary_changed": false,
+    "default_off_only": true,
+    "live_realistic_execution_envelope": "Not evaluated; source is not materialized, so no live or paper candidate rule exists."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The repo has a useful ATS_W_SMBL weekly cache from exp-20260703-016, but no local OTC_W_SMBL archive. The direct FINRA weeklySummary probe failed in this automation environment, so the non-ATS internalization alpha cannot be credibly backtested yet.",
+    "forbidden_near_neighbor_retry": "Do not rerun ATS dark-share threshold/topN/hold/notional retunes, and do not reserve another OTC readiness audit until the local OTC_W_SMBL row count, week count, or network/cache access has actually changed.",
+    "new_evidence_required": "Reopen only after a local PIT FINRA OTC_W_SMBL weekly archive is available with summaryTypeCode, issueSymbolIdentifier, weekStartDate, publication/as-of date, share quantity, trade count, and notional fields for at least 26 published weeks and >=40 Kova candidate tickers, or after network/cache access is restored enough to materialize that archive. Then run a shared-paper-first candidate source with Gate 1-4; do not retune ATS_W_SMBL dark-share thresholds."
+  },
+  "reopen_condition": "Reopen only after a local PIT FINRA OTC_W_SMBL weekly archive is available with summaryTypeCode, issueSymbolIdentifier, weekStartDate, publication/as-of date, share quantity, trade count, and notional fields for at least 26 published weeks and >=40 Kova candidate tickers, or after network/cache access is restored enough to materialize that archive. Then run a shared-paper-first candidate source with Gate 1-4; do not retune ATS_W_SMBL dark-share thresholds.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/non_ohlcv/finra_ats_weekly/manifest.json",
+    "data/non_ohlcv/finra_ats_weekly/rows.jsonl",
+    "data/non_ohlcv/finra_otc_weekly/manifest.json",
+    "data/non_ohlcv/finra_otc_weekly/rows.jsonl"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.py",
+    "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+    "experiments/logs/exp-20260704-003.json",
+    "experiments/cards/exp-20260704-003.md",
+    "experiments/manifests/exp-20260704-003.json",
+    "experiments/tickets/exp-20260704-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": false,
+  "updated_at": "2026-07-04T02:13:23+00:00"
+}

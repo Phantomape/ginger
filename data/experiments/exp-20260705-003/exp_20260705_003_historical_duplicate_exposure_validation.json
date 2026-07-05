@@ -1,0 +1,3028 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "min_window_survival_rate": 0.7925,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "alpha_hypothesis": "Historical accepted paper replay rows can independently validate the exp-20260705-002 duplicate-exposure lead: if same-ticker same-entry-date cross-sleeve duplicate rows underperform singleton accepted paper rows in historical artifacts, a future shared duplicate-exposure cap has evidence beyond the current forward ledger.",
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260705-003/exp_20260705_003_historical_duplicate_exposure_validation.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "min_window_survival_rate": 0.7925,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0676,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "historical_duplicate_sample_too_thin",
+      "forward_lead_not_reproduced",
+      "accepted_artifact_schema_mismatch",
+      "single_ticker_concentration"
+    ],
+    "predicted_success_probability": 0.26,
+    "realized_failure_modes": [
+      "historical_duplicate_sample_too_thin",
+      "forward_lead_not_reproduced",
+      "single_ticker_concentration"
+    ],
+    "surprise_note": "The historical validation did not confirm the forward lead. After excluding FINRA/FTD surfaces, duplicate historical rows were too thin, concentrated, and not worse than singleton rows on pnl_per_10k."
+  },
+  "causal_components": [
+    "historical accepted paper row rebuild",
+    "new duplicate gate shape",
+    "singleton comparator",
+    "concentration guard",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260705_003_historical_duplicate_exposure_validation.py",
+    "data/experiments/exp-20260705-003/exp_20260705_003_historical_duplicate_exposure_validation.json",
+    "experiments/cards/exp-20260705-003.md",
+    "experiments/manifests/exp-20260705-003.json",
+    "experiments/tickets/exp-20260705-003.json",
+    "experiments/logs/exp-20260705-003.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "historical_accepted_paper_same_ticker_same_entry_duplicate_validation_v1",
+  "decision": "rejected_historical_duplicate_exposure_sample_or_concentration_failed",
+  "delta_metrics": {
+    "duplicate_groups": 2,
+    "duplicate_rows": 4,
+    "eligible_rows": 123,
+    "expected_value_score_sum_delta": 0.0,
+    "historical_source_rows": 266,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "singleton_rows": 119,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260705-003",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "max_drawdown_pct_worst": 0.1119,
+      "min_window_survival_rate": 0.7925,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Observed-only attribution; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "field_reality": {
+      "blocked": false,
+      "eligible_rows": 123,
+      "entry_date_present_rows": 123,
+      "excluded_finra_ftd_rows": 143,
+      "ineligible_non_finra_rows": 0,
+      "non_finra_rows": 123,
+      "required_source_fields": [
+        "window",
+        "entry_date",
+        "ticker",
+        "sleeve",
+        "pnl_per_10k"
+      ],
+      "source_rows_total": 266,
+      "target_price_present_rows": 0,
+      "target_price_relevance": "Historical accepted paper replay rows are fixed completed outcomes; target_price is not required for this read-only attribution and no new exits or orders are scheduled."
+    },
+    "passed": true,
+    "source_report_summary": {
+      "by_sleeve": [
+        {
+          "accepted_experiment_id": "exp-20260606-001",
+          "artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 19,
+          "rows_with_required_fields": 19,
+          "rows_with_state": 19,
+          "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE"
+        },
+        {
+          "accepted_experiment_id": "exp-20260606-020",
+          "artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 20,
+          "rows_with_required_fields": 20,
+          "rows_with_state": 20,
+          "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER"
+        },
+        {
+          "accepted_experiment_id": "exp-20260604-009",
+          "artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 64,
+          "rows_with_required_fields": 64,
+          "rows_with_state": 64,
+          "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
+        },
+        {
+          "accepted_experiment_id": "exp-20260604-027",
+          "artifact": "data/experiments/exp-20260604-026/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 121,
+          "rows_with_required_fields": 121,
+          "rows_with_state": 121,
+          "sleeve": "SEC_FTD_FINRA_CONFIRMED_PAPER"
+        },
+        {
+          "accepted_experiment_id": "exp-20260603-007",
+          "artifact": "data/experiments/exp-20260603-006/exp_20260603_006_finra_borrow_pressure_candidate_pool.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 22,
+          "rows_with_required_fields": 22,
+          "rows_with_state": 22,
+          "sleeve": "FINRA_IWM_BORROW_PRESSURE_PAPER"
+        },
+        {
+          "accepted_experiment_id": "exp-20260603-022",
+          "artifact": "data/experiments/exp-20260603-022/exp_20260603_022_post_earnings_non_core_overlap_shared_support.json",
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_total": 20,
+          "rows_with_required_fields": 20,
+          "rows_with_state": 20,
+          "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER"
+        }
+      ],
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "rows_total": 266,
+      "rows_with_required_fields": 266,
+      "rows_with_state": 266,
+      "source_count": 6
+    }
+  },
+  "gate3": {
+    "baseline_min_window_survival_rate": 0.7925,
+    "baseline_survival_rate": 0.823171,
+    "filter_added": false,
+    "note": "No executable filter was added; rows are only attributed.",
+    "passed": true,
+    "survival_guard_passed": true
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "duplicate_groups_min_passed": false,
+      "duplicate_loss_tail_worse": false,
+      "duplicate_mean_worse": false,
+      "duplicate_median_worse": false,
+      "duplicate_rows_min_passed": false,
+      "duplicate_windows_min_passed": false,
+      "field_reality_passed": true,
+      "single_duplicate_sleeve_share_passed": true,
+      "single_duplicate_ticker_share_passed": false,
+      "singleton_rows_min_passed": true,
+      "windows_duplicate_mean_worse_min_passed": false
+    },
+    "acceptance_rule": {
+      "duplicate_definition": "two or more rows from different accepted paper sleeves with the same window, entry_date, and ticker",
+      "group_key": [
+        "window",
+        "entry_date",
+        "ticker"
+      ],
+      "max_single_duplicate_sleeve_share": 0.7,
+      "max_single_duplicate_ticker_share": 0.5,
+      "min_duplicate_groups": 5,
+      "min_duplicate_rows": 12,
+      "min_duplicate_windows": 2,
+      "min_singleton_rows": 60,
+      "min_windows_duplicate_mean_worse": 2,
+      "primary_metric": "pnl_per_10k",
+      "require_duplicate_loss_tail_worse": true,
+      "require_duplicate_mean_worse": true,
+      "require_duplicate_median_worse": true,
+      "singleton_definition": "exactly one eligible row for the same group key"
+    },
+    "accepted_strategy_change": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "bucket_summary": {
+      "duplicate_rows": {
+        "metrics": {
+          "pnl": {
+            "max": 2848.87,
+            "mean": 1782.115,
+            "median": 1864.01,
+            "min": 551.57,
+            "n": 4,
+            "p20": 1047.98,
+            "positive_rate": 1.0,
+            "sum": 7128.46,
+            "worst_20pct_mean": 551.57
+          },
+          "pnl_pct_net": {
+            "max": 0.23491,
+            "mean": 0.186401,
+            "median": 0.186401,
+            "min": 0.137892,
+            "n": 4,
+            "p20": 0.137892,
+            "positive_rate": 1.0,
+            "sum": 0.7456,
+            "worst_20pct_mean": 0.137892
+          },
+          "pnl_per_10k": {
+            "max": 2349.1,
+            "mean": 1864.01,
+            "median": 1864.01,
+            "min": 1378.92,
+            "n": 4,
+            "p20": 1378.92,
+            "positive_rate": 1.0,
+            "sum": 7456.04,
+            "worst_20pct_mean": 1378.92
+          }
+        },
+        "row_count": 4,
+        "sleeve_count": 3,
+        "sleeve_counts": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 2,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 1,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker_count": 1,
+        "ticker_counts": {
+          "MU": 4
+        },
+        "top_sleeves": [
+          {
+            "rows": 2,
+            "share": 0.5,
+            "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
+          },
+          {
+            "rows": 1,
+            "share": 0.25,
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER"
+          },
+          {
+            "rows": 1,
+            "share": 0.25,
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 4,
+            "share": 1.0,
+            "ticker": "MU"
+          }
+        ],
+        "window_count": 1,
+        "window_counts": {
+          "late_strong": 4
+        }
+      },
+      "eligible_rows": {
+        "metrics": {
+          "pnl": {
+            "max": 13661.15,
+            "mean": 710.811138,
+            "median": 266.16,
+            "min": -3733.24,
+            "n": 123,
+            "p20": -360.44,
+            "positive_rate": 0.634146,
+            "sum": 87429.77,
+            "worst_20pct_mean": -1368.7644
+          },
+          "pnl_pct_net": {
+            "max": 0.837463,
+            "mean": 0.041625,
+            "median": 0.022895,
+            "min": -0.281607,
+            "n": 123,
+            "p20": -0.033577,
+            "positive_rate": 0.634146,
+            "sum": 5.1199,
+            "worst_20pct_mean": -0.092389
+          },
+          "pnl_per_10k": {
+            "max": 8374.63,
+            "mean": 416.249024,
+            "median": 228.95,
+            "min": -2816.07,
+            "n": 123,
+            "p20": -335.774,
+            "positive_rate": 0.634146,
+            "sum": 51198.63,
+            "worst_20pct_mean": -923.8924
+          }
+        },
+        "row_count": 123,
+        "sleeve_count": 4,
+        "sleeve_counts": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 64,
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 19,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 20,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 20
+        },
+        "ticker_count": 50,
+        "ticker_counts": {
+          "AAPL": 1,
+          "ACMR": 1,
+          "ALB": 1,
+          "AMD": 2,
+          "AMZN": 2,
+          "APP": 14,
+          "AVGO": 1,
+          "BE": 1,
+          "CART": 1,
+          "CAT": 1,
+          "COIN": 2,
+          "CRDO": 7,
+          "CVX": 2,
+          "DDOG": 2,
+          "DE": 6,
+          "DG": 1,
+          "DIS": 1,
+          "GE": 1,
+          "GILD": 1,
+          "GLD": 9,
+          "GOOG": 1,
+          "GOOGL": 1,
+          "GS": 4,
+          "HOOD": 1,
+          "INSM": 1,
+          "ISRG": 3,
+          "IWM": 2,
+          "LLY": 2,
+          "META": 2,
+          "MSTR": 1,
+          "MTG": 1,
+          "MU": 12,
+          "NFLX": 1,
+          "NOW": 2,
+          "NXT": 1,
+          "PLTR": 7,
+          "QQQ": 2,
+          "RBLX": 1,
+          "RTX": 2,
+          "SCCO": 1,
+          "SLV": 5,
+          "SMTC": 1,
+          "SNOW": 3,
+          "SPOT": 3,
+          "SPY": 1,
+          "TSLA": 1,
+          "TTWO": 1,
+          "V": 1,
+          "VZ": 1,
+          "WULF": 1
+        },
+        "top_sleeves": [
+          {
+            "rows": 64,
+            "share": 0.520325,
+            "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
+          },
+          {
+            "rows": 20,
+            "share": 0.162602,
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER"
+          },
+          {
+            "rows": 20,
+            "share": 0.162602,
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER"
+          },
+          {
+            "rows": 19,
+            "share": 0.154472,
+            "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 14,
+            "share": 0.113821,
+            "ticker": "APP"
+          },
+          {
+            "rows": 12,
+            "share": 0.097561,
+            "ticker": "MU"
+          },
+          {
+            "rows": 9,
+            "share": 0.073171,
+            "ticker": "GLD"
+          },
+          {
+            "rows": 7,
+            "share": 0.056911,
+            "ticker": "PLTR"
+          },
+          {
+            "rows": 7,
+            "share": 0.056911,
+            "ticker": "CRDO"
+          },
+          {
+            "rows": 6,
+            "share": 0.04878,
+            "ticker": "DE"
+          },
+          {
+            "rows": 5,
+            "share": 0.04065,
+            "ticker": "SLV"
+          },
+          {
+            "rows": 4,
+            "share": 0.03252,
+            "ticker": "GS"
+          },
+          {
+            "rows": 3,
+            "share": 0.02439,
+            "ticker": "ISRG"
+          },
+          {
+            "rows": 3,
+            "share": 0.02439,
+            "ticker": "SPOT"
+          }
+        ],
+        "window_count": 3,
+        "window_counts": {
+          "late_strong": 33,
+          "mid_weak": 44,
+          "old_thin": 46
+        }
+      },
+      "singleton_rows": {
+        "metrics": {
+          "pnl": {
+            "max": 13661.15,
+            "mean": 674.800924,
+            "median": 228.95,
+            "min": -3733.24,
+            "n": 119,
+            "p20": -376.536,
+            "positive_rate": 0.621849,
+            "sum": 80301.31,
+            "worst_20pct_mean": -1410.340417
+          },
+          "pnl_pct_net": {
+            "max": 0.837463,
+            "mean": 0.036758,
+            "median": 0.020036,
+            "min": -0.281607,
+            "n": 119,
+            "p20": -0.035519,
+            "positive_rate": 0.621849,
+            "sum": 4.3743,
+            "worst_20pct_mean": -0.094803
+          },
+          "pnl_per_10k": {
+            "max": 8374.63,
+            "mean": 367.58479,
+            "median": 200.36,
+            "min": -2816.07,
+            "n": 119,
+            "p20": -355.19,
+            "positive_rate": 0.621849,
+            "sum": 43742.59,
+            "worst_20pct_mean": -948.025833
+          }
+        },
+        "row_count": 119,
+        "sleeve_count": 4,
+        "sleeve_counts": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 62,
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 19,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 19,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 19
+        },
+        "ticker_count": 50,
+        "ticker_counts": {
+          "AAPL": 1,
+          "ACMR": 1,
+          "ALB": 1,
+          "AMD": 2,
+          "AMZN": 2,
+          "APP": 14,
+          "AVGO": 1,
+          "BE": 1,
+          "CART": 1,
+          "CAT": 1,
+          "COIN": 2,
+          "CRDO": 7,
+          "CVX": 2,
+          "DDOG": 2,
+          "DE": 6,
+          "DG": 1,
+          "DIS": 1,
+          "GE": 1,
+          "GILD": 1,
+          "GLD": 9,
+          "GOOG": 1,
+          "GOOGL": 1,
+          "GS": 4,
+          "HOOD": 1,
+          "INSM": 1,
+          "ISRG": 3,
+          "IWM": 2,
+          "LLY": 2,
+          "META": 2,
+          "MSTR": 1,
+          "MTG": 1,
+          "MU": 8,
+          "NFLX": 1,
+          "NOW": 2,
+          "NXT": 1,
+          "PLTR": 7,
+          "QQQ": 2,
+          "RBLX": 1,
+          "RTX": 2,
+          "SCCO": 1,
+          "SLV": 5,
+          "SMTC": 1,
+          "SNOW": 3,
+          "SPOT": 3,
+          "SPY": 1,
+          "TSLA": 1,
+          "TTWO": 1,
+          "V": 1,
+          "VZ": 1,
+          "WULF": 1
+        },
+        "top_sleeves": [
+          {
+            "rows": 62,
+            "share": 0.521008,
+            "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
+          },
+          {
+            "rows": 19,
+            "share": 0.159664,
+            "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE"
+          },
+          {
+            "rows": 19,
+            "share": 0.159664,
+            "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER"
+          },
+          {
+            "rows": 19,
+            "share": 0.159664,
+            "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 14,
+            "share": 0.117647,
+            "ticker": "APP"
+          },
+          {
+            "rows": 9,
+            "share": 0.07563,
+            "ticker": "GLD"
+          },
+          {
+            "rows": 8,
+            "share": 0.067227,
+            "ticker": "MU"
+          },
+          {
+            "rows": 7,
+            "share": 0.058824,
+            "ticker": "PLTR"
+          },
+          {
+            "rows": 7,
+            "share": 0.058824,
+            "ticker": "CRDO"
+          },
+          {
+            "rows": 6,
+            "share": 0.05042,
+            "ticker": "DE"
+          },
+          {
+            "rows": 5,
+            "share": 0.042017,
+            "ticker": "SLV"
+          },
+          {
+            "rows": 4,
+            "share": 0.033613,
+            "ticker": "GS"
+          },
+          {
+            "rows": 3,
+            "share": 0.02521,
+            "ticker": "ISRG"
+          },
+          {
+            "rows": 3,
+            "share": 0.02521,
+            "ticker": "SPOT"
+          }
+        ],
+        "window_count": 3,
+        "window_counts": {
+          "late_strong": 29,
+          "mid_weak": 44,
+          "old_thin": 46
+        }
+      }
+    },
+    "comparisons": {
+      "pnl": {
+        "duplicate_loss_tail_worse": false,
+        "duplicate_mean_worse": false,
+        "duplicate_median_worse": false,
+        "duplicate_rows": {
+          "max": 2848.87,
+          "mean": 1782.115,
+          "median": 1864.01,
+          "min": 551.57,
+          "n": 4,
+          "p20": 1047.98,
+          "positive_rate": 1.0,
+          "sum": 7128.46,
+          "worst_20pct_mean": 551.57
+        },
+        "mean_delta_duplicate_minus_singleton": 1107.314076,
+        "median_delta_duplicate_minus_singleton": 1635.06,
+        "singleton_rows": {
+          "max": 13661.15,
+          "mean": 674.800924,
+          "median": 228.95,
+          "min": -3733.24,
+          "n": 119,
+          "p20": -376.536,
+          "positive_rate": 0.621849,
+          "sum": 80301.31,
+          "worst_20pct_mean": -1410.340417
+        },
+        "tail_delta_duplicate_minus_singleton": 1961.910417
+      },
+      "pnl_pct_net": {
+        "duplicate_loss_tail_worse": false,
+        "duplicate_mean_worse": false,
+        "duplicate_median_worse": false,
+        "duplicate_rows": {
+          "max": 0.23491,
+          "mean": 0.186401,
+          "median": 0.186401,
+          "min": 0.137892,
+          "n": 4,
+          "p20": 0.137892,
+          "positive_rate": 1.0,
+          "sum": 0.7456,
+          "worst_20pct_mean": 0.137892
+        },
+        "mean_delta_duplicate_minus_singleton": 0.149643,
+        "median_delta_duplicate_minus_singleton": 0.166365,
+        "singleton_rows": {
+          "max": 0.837463,
+          "mean": 0.036758,
+          "median": 0.020036,
+          "min": -0.281607,
+          "n": 119,
+          "p20": -0.035519,
+          "positive_rate": 0.621849,
+          "sum": 4.3743,
+          "worst_20pct_mean": -0.094803
+        },
+        "tail_delta_duplicate_minus_singleton": 0.232695
+      },
+      "pnl_per_10k": {
+        "duplicate_loss_tail_worse": false,
+        "duplicate_mean_worse": false,
+        "duplicate_median_worse": false,
+        "duplicate_rows": {
+          "max": 2349.1,
+          "mean": 1864.01,
+          "median": 1864.01,
+          "min": 1378.92,
+          "n": 4,
+          "p20": 1378.92,
+          "positive_rate": 1.0,
+          "sum": 7456.04,
+          "worst_20pct_mean": 1378.92
+        },
+        "mean_delta_duplicate_minus_singleton": 1496.42521,
+        "median_delta_duplicate_minus_singleton": 1663.65,
+        "singleton_rows": {
+          "max": 8374.63,
+          "mean": 367.58479,
+          "median": 200.36,
+          "min": -2816.07,
+          "n": 119,
+          "p20": -355.19,
+          "positive_rate": 0.621849,
+          "sum": 43742.59,
+          "worst_20pct_mean": -948.025833
+        },
+        "tail_delta_duplicate_minus_singleton": 2326.945833
+      }
+    },
+    "decision": "rejected_historical_duplicate_exposure_sample_or_concentration_failed",
+    "directional_support": false,
+    "duplicate_group_examples": [
+      {
+        "accepted_experiment_ids": [
+          "exp-20260603-022",
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-12-22",
+        "metrics": {
+          "pnl": {
+            "row_mean": 2598.985,
+            "row_sum": 5197.97
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.23491,
+            "row_sum": 0.46982
+          },
+          "pnl_per_10k": {
+            "row_mean": 2349.1,
+            "row_sum": 4698.2
+          }
+        },
+        "row_count": 2,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2025-12-22|2026-01-06|2349.1",
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|MU|2025-12-22|2026-01-06|2848.87"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker": "MU",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009",
+          "exp-20260606-020"
+        ],
+        "entry_date": "2026-01-12",
+        "metrics": {
+          "pnl": {
+            "row_mean": 965.245,
+            "row_sum": 1930.49
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.137892,
+            "row_sum": 0.275784
+          },
+          "pnl_per_10k": {
+            "row_mean": 1378.92,
+            "row_sum": 2757.84
+          }
+        },
+        "row_count": 2,
+        "row_fingerprints": [
+          "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|MU|2026-01-12|2026-01-26|551.57",
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2026-01-12|2026-01-26|1378.92"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 1
+        },
+        "ticker": "MU",
+        "window": "late_strong"
+      }
+    ],
+    "failed_reasons": [
+      "duplicate_rows_min_passed",
+      "duplicate_groups_min_passed",
+      "duplicate_windows_min_passed",
+      "windows_duplicate_mean_worse_min_passed",
+      "single_duplicate_ticker_share_passed",
+      "duplicate_mean_worse",
+      "duplicate_median_worse",
+      "duplicate_loss_tail_worse"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "per_window_comparisons": {
+      "late_strong": {
+        "duplicate_mean_worse": false,
+        "duplicate_rows": {
+          "max": 2349.1,
+          "mean": 1864.01,
+          "median": 1864.01,
+          "min": 1378.92,
+          "n": 4,
+          "p20": 1378.92,
+          "positive_rate": 1.0,
+          "sum": 7456.04,
+          "worst_20pct_mean": 1378.92
+        },
+        "mean_delta_duplicate_minus_singleton": 1471.735862,
+        "singleton_rows": {
+          "max": 2290.63,
+          "mean": 392.274138,
+          "median": 297.71,
+          "min": -1385.02,
+          "n": 29,
+          "p20": -371.428,
+          "positive_rate": 0.62069,
+          "sum": 11375.95,
+          "worst_20pct_mean": -764.435
+        }
+      },
+      "mid_weak": {
+        "duplicate_mean_worse": false,
+        "duplicate_rows": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "n": 0,
+          "p20": null,
+          "positive_rate": null,
+          "sum": null,
+          "worst_20pct_mean": null
+        },
+        "mean_delta_duplicate_minus_singleton": null,
+        "singleton_rows": {
+          "max": 2612.97,
+          "mean": 275.366136,
+          "median": 169.935,
+          "min": -2647.49,
+          "n": 44,
+          "p20": -222.936,
+          "positive_rate": 0.613636,
+          "sum": 12116.11,
+          "worst_20pct_mean": -1068.718889
+        }
+      },
+      "old_thin": {
+        "duplicate_mean_worse": false,
+        "duplicate_rows": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "n": 0,
+          "p20": null,
+          "positive_rate": null,
+          "sum": null,
+          "worst_20pct_mean": null
+        },
+        "mean_delta_duplicate_minus_singleton": null,
+        "singleton_rows": {
+          "max": 8374.63,
+          "mean": 440.228913,
+          "median": 185.43,
+          "min": -2816.07,
+          "n": 46,
+          "p20": -344.69,
+          "positive_rate": 0.630435,
+          "sum": 20250.53,
+          "worst_20pct_mean": -875.571
+        }
+      }
+    },
+    "primary_comparison": {
+      "duplicate_loss_tail_worse": false,
+      "duplicate_mean_worse": false,
+      "duplicate_median_worse": false,
+      "duplicate_rows": {
+        "max": 2349.1,
+        "mean": 1864.01,
+        "median": 1864.01,
+        "min": 1378.92,
+        "n": 4,
+        "p20": 1378.92,
+        "positive_rate": 1.0,
+        "sum": 7456.04,
+        "worst_20pct_mean": 1378.92
+      },
+      "mean_delta_duplicate_minus_singleton": 1496.42521,
+      "median_delta_duplicate_minus_singleton": 1663.65,
+      "singleton_rows": {
+        "max": 8374.63,
+        "mean": 367.58479,
+        "median": 200.36,
+        "min": -2816.07,
+        "n": 119,
+        "p20": -355.19,
+        "positive_rate": 0.621849,
+        "sum": 43742.59,
+        "worst_20pct_mean": -948.025833
+      },
+      "tail_delta_duplicate_minus_singleton": 2326.945833
+    },
+    "same_sleeve_multi_group_examples": [],
+    "sample_ready": false,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Historical accepted paper replay rows can independently validate the exp-20260705-002 duplicate-exposure lead: if same-ticker same-entry-date cross-sleeve duplicate rows underperform singleton accepted paper rows in historical artifacts, a future shared duplicate-exposure cap has evidence beyond the current forward ledger.",
+  "implementation_mode": "observed_only_historical_accepted_paper_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260705-003.json",
+  "mechanism_family": "forward_replacement_duplicate_exposure_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260705-002",
+    "exp-20260609-021",
+    "exp-20260507-905"
+  ],
+  "new_evidence_axis": "Historical accepted paper artifact validation of the exp-20260705-002 same-ticker same-entry duplicate-exposure lead on a different row surface. This is not a readiness audit, not an observer/FTD/FINRA surface, not a threshold/scalar/top-N/hold/notional retune, and not a reslice of the same 60 forward rows.",
+  "new_evidence_type": "new_gate_shape_historical_artifact_validation",
+  "next_retry_requires": [
+    "materially more closed forward same-ticker same-entry duplicate rows",
+    "or a new accepted-paper artifact source with independent settled rows",
+    "or a full shared-policy Gate 1-4 duplicate exposure cap test"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "alpha_interpretation": "This rejects historical validation, not necessarily the forward risk-control idea. The forward lead remains a thin observed-only lead that needs more closed forward duplicate rows or a separate shared-policy Gate 1-4 test before any cap.",
+    "forbidden_near_neighbor_retry": "Do not retune duplicate thresholds, group keys, singleton definitions, per-window requirements, concentration caps, notional scaling, position caps, hold days, or response functions on these same historical rows.",
+    "new_evidence_required": "A valid retry needs materially more closed forward duplicate rows, a new accepted-paper artifact source with additional independent settled rows, or a separate shared-policy Gate 1-4 duplicate exposure cap experiment with explicit parity.",
+    "why_result_happened": "The independent historical accepted-paper surface did not support the forward duplicate-loss lead. After excluding FINRA/FTD sleeves, only four duplicate rows across two groups remained, all in MU and all in the late_strong window; their pnl_per_10k was better than singleton accepted-paper rows."
+  },
+  "prediction": {
+    "confidence_reason": "Forward rows showed a strong but thin duplicate-loss lead; historical accepted paper artifacts are an independent row surface, but prior same-entry displacement and cluster tests were fragile or concentration-limited.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "historical_duplicate_sample_too_thin",
+      "forward_lead_not_reproduced",
+      "accepted_artifact_schema_mismatch",
+      "single_ticker_concentration"
+    ],
+    "recorded_at": "2026-07-05T02:05:53+00:00",
+    "success_probability": 0.26
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only attribution over existing historical accepted paper replay artifacts. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": "duplicate_rows_min_passed;duplicate_groups_min_passed;duplicate_windows_min_passed;windows_duplicate_mean_worse_min_passed;single_duplicate_ticker_share_passed;duplicate_mean_worse;duplicate_median_worse;duplicate_loss_tail_worse",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/experiments/exp_20260606_022_market_state_accepted_sleeve_replacement_value_attribution.py",
+    "experiments/logs/exp-20260705-002.json",
+    "experiments/logs/exp-20260609-021.json",
+    "experiments/logs/exp-20260507-905.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_003_historical_duplicate_exposure_validation.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_003_historical_duplicate_exposure_validation.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sample_rows": {
+    "duplicate_groups": [
+      {
+        "accepted_experiment_ids": [
+          "exp-20260603-022",
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-12-22",
+        "metrics": {
+          "pnl": {
+            "row_mean": 2598.985,
+            "row_sum": 5197.97
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.23491,
+            "row_sum": 0.46982
+          },
+          "pnl_per_10k": {
+            "row_mean": 2349.1,
+            "row_sum": 4698.2
+          }
+        },
+        "row_count": 2,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2025-12-22|2026-01-06|2349.1",
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|MU|2025-12-22|2026-01-06|2848.87"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker": "MU",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009",
+          "exp-20260606-020"
+        ],
+        "entry_date": "2026-01-12",
+        "metrics": {
+          "pnl": {
+            "row_mean": 965.245,
+            "row_sum": 1930.49
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.137892,
+            "row_sum": 0.275784
+          },
+          "pnl_per_10k": {
+            "row_mean": 1378.92,
+            "row_sum": 2757.84
+          }
+        },
+        "row_count": 2,
+        "row_fingerprints": [
+          "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|MU|2026-01-12|2026-01-26|551.57",
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2026-01-12|2026-01-26|1378.92"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1,
+          "MACRO_RELIEF_LEADERSHIP_PAPER": 1
+        },
+        "ticker": "MU",
+        "window": "late_strong"
+      }
+    ],
+    "duplicate_rows": [
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2026-01-09:MU",
+        "entry_date": "2026-01-12",
+        "exit_date": "2026-01-26",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.004359,
+          "qqq_20d_return": -0.000243,
+          "qqq_minus_spy_ret20": -0.012679,
+          "qqq_pct_from_ma": 0.117591,
+          "spy_10d_return": 0.005345,
+          "spy_20d_return": 0.012436,
+          "spy_pct_from_ma": 0.106379
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": 551.57,
+        "pnl_pct_net": 0.137892,
+        "pnl_per_10k": 1378.92,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|MU|2026-01-12|2026-01-26|551.57",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-01-09",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2026-01-09",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260604-009",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": null,
+        "entry_date": "2026-01-12",
+        "exit_date": "2026-01-26",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.004359,
+          "qqq_20d_return": -0.000243,
+          "qqq_minus_spy_ret20": -0.012679,
+          "qqq_pct_from_ma": 0.117591,
+          "spy_10d_return": 0.005345,
+          "spy_20d_return": 0.012436,
+          "spy_pct_from_ma": 0.106379
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": 1378.92,
+        "pnl_pct_net": 0.137892,
+        "pnl_per_10k": 1378.92,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2026-01-12|2026-01-26|1378.92",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-01-09",
+        "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+        "source_artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+        "state_date": "2026-01-09",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "paper_candidate_pool_default_off",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260604-009",
+        "alters_orders": false,
+        "combined_state": "broad_up|balanced|normal",
+        "decision_id": null,
+        "entry_date": "2025-12-22",
+        "exit_date": "2026-01-06",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.013478,
+          "qqq_20d_return": 0.05358,
+          "qqq_minus_spy_ret20": 0.007496,
+          "qqq_pct_from_ma": 0.11755,
+          "spy_10d_return": -0.004505,
+          "spy_20d_return": 0.046084,
+          "spy_pct_from_ma": 0.099672
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": 2349.1,
+        "pnl_pct_net": 0.23491,
+        "pnl_per_10k": 2349.1,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2025-12-22|2026-01-06|2349.1",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2025-12-19",
+        "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+        "source_artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+        "state_date": "2025-12-19",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "paper_candidate_pool_default_off",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260603-022",
+        "alters_orders": false,
+        "combined_state": "broad_up|balanced|normal",
+        "decision_id": null,
+        "entry_date": "2025-12-22",
+        "exit_date": "2026-01-06",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.013478,
+          "qqq_20d_return": 0.05358,
+          "qqq_minus_spy_ret20": 0.007496,
+          "qqq_pct_from_ma": 0.11755,
+          "spy_10d_return": -0.004505,
+          "spy_20d_return": 0.046084,
+          "spy_pct_from_ma": 0.099672
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 12127.5,
+        "pnl": 2848.87,
+        "pnl_pct_net": 0.23491,
+        "pnl_per_10k": 2349.1,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|MU|2025-12-22|2026-01-06|2848.87",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2025-12-19",
+        "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+        "source_artifact": "data/experiments/exp-20260603-022/exp_20260603_022_post_earnings_non_core_overlap_shared_support.json",
+        "state_date": "2025-12-19",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "post_earnings_pre_event_underpriced_drift",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": true,
+        "window": "late_strong"
+      }
+    ],
+    "singleton_groups": [
+      {
+        "accepted_experiment_ids": [
+          "exp-20260606-001"
+        ],
+        "entry_date": "2025-10-24",
+        "metrics": {
+          "pnl": {
+            "row_mean": -3733.24,
+            "row_sum": -3733.24
+          },
+          "pnl_pct_net": {
+            "row_mean": -0.037332,
+            "row_sum": -0.037332
+          },
+          "pnl_per_10k": {
+            "row_mean": -373.32,
+            "row_sum": -373.32
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|GLD|2025-10-24|2025-11-06|-3733.24"
+        ],
+        "sleeves": {
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 1
+        },
+        "ticker": "GLD",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-10-24",
+        "metrics": {
+          "pnl": {
+            "row_mean": -42.26,
+            "row_sum": -42.26
+          },
+          "pnl_pct_net": {
+            "row_mean": -0.004226,
+            "row_sum": -0.004226
+          },
+          "pnl_per_10k": {
+            "row_mean": -42.26,
+            "row_sum": -42.26
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|ISRG|2025-10-24|2025-11-06|-42.26"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1
+        },
+        "ticker": "ISRG",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-10-27",
+        "metrics": {
+          "pnl": {
+            "row_mean": 537.58,
+            "row_sum": 537.58
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.053758,
+            "row_sum": 0.053758
+          },
+          "pnl_per_10k": {
+            "row_mean": 537.58,
+            "row_sum": 537.58
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|MU|2025-10-27|2025-11-07|537.58"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1
+        },
+        "ticker": "MU",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260603-022"
+        ],
+        "entry_date": "2025-10-31",
+        "metrics": {
+          "pnl": {
+            "row_mean": 2597.75,
+            "row_sum": 2597.75
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.214203,
+            "row_sum": 0.214203
+          },
+          "pnl_per_10k": {
+            "row_mean": 2142.03,
+            "row_sum": 2142.03
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|LLY|2025-10-31|2025-11-13|2597.75"
+        ],
+        "sleeves": {
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker": "LLY",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260603-022"
+        ],
+        "entry_date": "2025-11-03",
+        "metrics": {
+          "pnl": {
+            "row_mean": -31.67,
+            "row_sum": -31.67
+          },
+          "pnl_pct_net": {
+            "row_mean": -0.003167,
+            "row_sum": -0.003167
+          },
+          "pnl_per_10k": {
+            "row_mean": -31.67,
+            "row_sum": -31.67
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|CVX|2025-11-03|2025-11-14|-31.67"
+        ],
+        "sleeves": {
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker": "CVX",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260603-022"
+        ],
+        "entry_date": "2025-11-07",
+        "metrics": {
+          "pnl": {
+            "row_mean": -1526.98,
+            "row_sum": -1526.98
+          },
+          "pnl_pct_net": {
+            "row_mean": -0.138502,
+            "row_sum": -0.138502
+          },
+          "pnl_per_10k": {
+            "row_mean": -1385.02,
+            "row_sum": -1385.02
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER|late_strong|DDOG|2025-11-07|2025-11-20|-1526.98"
+        ],
+        "sleeves": {
+          "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER": 1
+        },
+        "ticker": "DDOG",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260606-001"
+        ],
+        "entry_date": "2025-11-14",
+        "metrics": {
+          "pnl": {
+            "row_mean": 2254.07,
+            "row_sum": 2254.07
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.022541,
+            "row_sum": 0.022541
+          },
+          "pnl_per_10k": {
+            "row_mean": 225.41,
+            "row_sum": 225.41
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SPY|2025-11-14|2025-11-28|2254.07"
+        ],
+        "sleeves": {
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 1
+        },
+        "ticker": "SPY",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260606-001"
+        ],
+        "entry_date": "2025-12-01",
+        "metrics": {
+          "pnl": {
+            "row_mean": 7447.41,
+            "row_sum": 7447.41
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.074474,
+            "row_sum": 0.074474
+          },
+          "pnl_per_10k": {
+            "row_mean": 744.74,
+            "row_sum": 744.74
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SLV|2025-12-01|2025-12-12|7447.41"
+        ],
+        "sleeves": {
+          "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE": 1
+        },
+        "ticker": "SLV",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-12-09",
+        "metrics": {
+          "pnl": {
+            "row_mean": 335.69,
+            "row_sum": 335.69
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.033569,
+            "row_sum": 0.033569
+          },
+          "pnl_per_10k": {
+            "row_mean": 335.69,
+            "row_sum": 335.69
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|GS|2025-12-09|2025-12-22|335.69"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1
+        },
+        "ticker": "GS",
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_ids": [
+          "exp-20260604-009"
+        ],
+        "entry_date": "2025-12-10",
+        "metrics": {
+          "pnl": {
+            "row_mean": 112.27,
+            "row_sum": 112.27
+          },
+          "pnl_pct_net": {
+            "row_mean": 0.011227,
+            "row_sum": 0.011227
+          },
+          "pnl_per_10k": {
+            "row_mean": 112.27,
+            "row_sum": 112.27
+          }
+        },
+        "row_count": 1,
+        "row_fingerprints": [
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER|late_strong|APP|2025-12-10|2025-12-23|112.27"
+        ],
+        "sleeves": {
+          "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER": 1
+        },
+        "ticker": "APP",
+        "window": "late_strong"
+      }
+    ],
+    "singleton_rows": [
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-10-23:GLD",
+        "entry_date": "2025-10-24",
+        "exit_date": "2025-11-06",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.000196,
+          "qqq_20d_return": 0.028726,
+          "qqq_minus_spy_ret20": 0.007892,
+          "qqq_pct_from_ma": 0.146772,
+          "spy_10d_return": 0.000894,
+          "spy_20d_return": 0.020834,
+          "spy_pct_from_ma": 0.112766
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": -3733.24,
+        "pnl_pct_net": -0.037332,
+        "pnl_per_10k": -373.32,
+        "regime": "baseline",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|GLD|2025-10-24|2025-11-06|-3733.24",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-10-23",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-10-23",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-13:SPY",
+        "entry_date": "2025-11-14",
+        "exit_date": "2025-11-28",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.028193,
+          "qqq_20d_return": 0.014017,
+          "qqq_minus_spy_ret20": -0.003239,
+          "qqq_pct_from_ma": 0.125832,
+          "spy_10d_return": -0.011459,
+          "spy_20d_return": 0.017256,
+          "spy_pct_from_ma": 0.10104
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 2254.07,
+        "pnl_pct_net": 0.022541,
+        "pnl_per_10k": 225.41,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SPY|2025-11-14|2025-11-28|2254.07",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-11-13",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-11-13",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SPY",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|spy_defensive_leads|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-28:SLV",
+        "entry_date": "2025-12-01",
+        "exit_date": "2025-12-12",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.017834,
+          "qqq_20d_return": -0.010862,
+          "qqq_minus_spy_ret20": -0.016098,
+          "qqq_pct_from_ma": 0.137501,
+          "spy_10d_return": 0.016889,
+          "spy_20d_return": 0.005237,
+          "spy_pct_from_ma": 0.113253
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": 7447.41,
+        "pnl_pct_net": 0.074474,
+        "pnl_per_10k": 744.74,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SLV|2025-12-01|2025-12-12|7447.41",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-11-28",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-11-28",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SLV",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-12-12:SLV",
+        "entry_date": "2025-12-15",
+        "exit_date": "2025-12-29",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.009092,
+          "qqq_20d_return": 0.00858,
+          "qqq_minus_spy_ret20": -0.005884,
+          "qqq_pct_from_ma": 0.117076,
+          "spy_10d_return": -0.002385,
+          "spy_20d_return": 0.014463,
+          "spy_pct_from_ma": 0.102801
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 13661.15,
+        "pnl_pct_net": 0.136612,
+        "pnl_per_10k": 1366.12,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SLV|2025-12-15|2025-12-29|13661.15",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-12-12",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-12-12",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SLV",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|spy_defensive_leads|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-03:GLD",
+        "entry_date": "2026-03-04",
+        "exit_date": "2026-03-17",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.000466,
+          "qqq_20d_return": -0.039224,
+          "qqq_minus_spy_ret20": -0.017539,
+          "qqq_pct_from_ma": 0.025509,
+          "spy_10d_return": -0.00369,
+          "spy_20d_return": -0.021685,
+          "spy_pct_from_ma": 0.042245
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": -3721.59,
+        "pnl_pct_net": -0.037216,
+        "pnl_per_10k": -372.16,
+        "regime": "baseline",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|GLD|2026-03-04|2026-03-17|-3721.59",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-03-03",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2026-03-03",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-17:SLV",
+        "entry_date": "2026-03-18",
+        "exit_date": "2026-03-31",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.002876,
+          "qqq_20d_return": 0.003343,
+          "qqq_minus_spy_ret20": 0.021004,
+          "qqq_pct_from_ma": 0.020833,
+          "spy_10d_return": -0.014023,
+          "spy_20d_return": -0.017661,
+          "spy_pct_from_ma": 0.020569
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": -2419.03,
+        "pnl_pct_net": -0.02419,
+        "pnl_per_10k": -241.9,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|SLV|2026-03-18|2026-03-31|-2419.03",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-03-17",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2026-03-17",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SLV",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-04-06:IWM",
+        "entry_date": "2026-04-07",
+        "exit_date": "2026-04-20",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.012339,
+          "qqq_20d_return": -0.017521,
+          "qqq_minus_spy_ret20": -0.000193,
+          "qqq_pct_from_ma": -0.00898,
+          "spy_10d_return": 0.015974,
+          "spy_20d_return": -0.017327,
+          "spy_pct_from_ma": -0.000681
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 9945.28,
+        "pnl_pct_net": 0.099453,
+        "pnl_per_10k": 994.53,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|late_strong|IWM|2026-04-07|2026-04-20|9945.28",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-04-06",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2026-04-06",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "IWM",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_down|balanced|extended",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-23:GLD",
+        "entry_date": "2025-04-24",
+        "exit_date": "2025-05-07",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.092535,
+          "qqq_20d_return": -0.078831,
+          "qqq_minus_spy_ret20": -0.009252,
+          "qqq_pct_from_ma": -0.073184,
+          "spy_10d_return": 0.078432,
+          "spy_20d_return": -0.069579,
+          "spy_pct_from_ma": -0.06085
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 776.9,
+        "pnl_pct_net": 0.007769,
+        "pnl_per_10k": 77.69,
+        "regime": "risk_off",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|mid_weak|GLD|2025-04-24|2025-05-07|776.9",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-04-23",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-04-23",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "broad_down",
+        "win": true,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|qqq_leads|extended",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-07:GLD",
+        "entry_date": "2025-05-08",
+        "exit_date": "2025-05-21",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.063226,
+          "qqq_20d_return": 0.161611,
+          "qqq_minus_spy_ret20": 0.031354,
+          "qqq_pct_from_ma": -0.013506,
+          "spy_10d_return": 0.048056,
+          "spy_20d_return": 0.130257,
+          "spy_pct_from_ma": -0.0161
+        },
+        "growth_leadership": "qqq_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": -1720.63,
+        "pnl_pct_net": -0.017206,
+        "pnl_per_10k": -172.06,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|mid_weak|GLD|2025-05-08|2025-05-21|-1720.63",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-05-07",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-05-07",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_up|qqq_leads|extended",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-21:QQQ",
+        "entry_date": "2025-05-22",
+        "exit_date": "2025-06-05",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.061535,
+          "qqq_20d_return": 0.128652,
+          "qqq_minus_spy_ret20": 0.040049,
+          "qqq_pct_from_ma": 0.04202,
+          "spy_10d_return": 0.038688,
+          "spy_20d_return": 0.088603,
+          "spy_pct_from_ma": 0.017975
+        },
+        "growth_leadership": "qqq_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": 1714.69,
+        "pnl_pct_net": 0.017147,
+        "pnl_per_10k": 171.47,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|mid_weak|QQQ|2025-05-22|2025-06-05|1714.69",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2025-05-21",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-05-21",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "QQQ",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": true,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_up|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-07-24:SLV",
+        "entry_date": "2025-07-25",
+        "exit_date": "2025-08-07",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.017211,
+          "qqq_20d_return": 0.044072,
+          "qqq_minus_spy_ret20": -0.000894,
+          "qqq_pct_from_ma": 0.113475,
+          "spy_10d_return": 0.013742,
+          "spy_20d_return": 0.044966,
+          "spy_pct_from_ma": 0.08698
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": -1922.34,
+        "pnl_pct_net": -0.019223,
+        "pnl_per_10k": -192.23,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|mid_weak|SLV|2025-07-25|2025-08-07|-1922.34",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2025-07-24",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-07-24",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SLV",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": false,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-08-21:IWM",
+        "entry_date": "2025-08-22",
+        "exit_date": "2025-09-05",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.01047,
+          "qqq_20d_return": -0.003062,
+          "qqq_minus_spy_ret20": -0.004843,
+          "qqq_pct_from_ma": 0.092987,
+          "spy_10d_return": 0.00522,
+          "spy_20d_return": 0.001781,
+          "spy_pct_from_ma": 0.077285
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 4119.5,
+        "pnl_pct_net": 0.041195,
+        "pnl_per_10k": 411.95,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|mid_weak|IWM|2025-08-22|2025-09-05|4119.5",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-08-21",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-08-21",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "IWM",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_up|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-02:SLV",
+        "entry_date": "2024-10-03",
+        "exit_date": "2024-10-16",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.02373,
+          "qqq_20d_return": 0.0478,
+          "qqq_minus_spy_ret20": 0.012126,
+          "qqq_pct_from_ma": 0.07607,
+          "spy_10d_return": 0.016396,
+          "spy_20d_return": 0.035675,
+          "spy_pct_from_ma": 0.093979
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": -450.26,
+        "pnl_pct_net": -0.004503,
+        "pnl_per_10k": -45.03,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|SLV|2024-10-03|2024-10-16|-450.26",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2024-10-02",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2024-10-02",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "SLV",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": false,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-17:GLD",
+        "entry_date": "2024-10-18",
+        "exit_date": "2024-10-31",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.020059,
+          "qqq_20d_return": 0.017751,
+          "qqq_minus_spy_ret20": -0.00529,
+          "qqq_pct_from_ma": 0.085624,
+          "spy_10d_return": 0.025589,
+          "spy_20d_return": 0.023041,
+          "spy_pct_from_ma": 0.10731
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 952.63,
+        "pnl_pct_net": 0.009526,
+        "pnl_per_10k": 95.26,
+        "regime": "baseline",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|GLD|2024-10-18|2024-10-31|952.63",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2024-10-17",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2024-10-17",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-12-20:QQQ",
+        "entry_date": "2024-12-23",
+        "exit_date": "2025-01-07",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.014853,
+          "qqq_20d_return": 0.02709,
+          "qqq_minus_spy_ret20": 0.027983,
+          "qqq_pct_from_ma": 0.099552,
+          "spy_10d_return": -0.024136,
+          "spy_20d_return": -0.000893,
+          "spy_pct_from_ma": 0.079302
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": -1290.23,
+        "pnl_pct_net": -0.012902,
+        "pnl_per_10k": -129.02,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|QQQ|2024-12-23|2025-01-07|-1290.23",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2024-12-20",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2024-12-20",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "QQQ",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-01-15:GLD",
+        "entry_date": "2025-01-16",
+        "exit_date": "2025-01-30",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.002114,
+          "qqq_20d_return": -0.024498,
+          "qqq_minus_spy_ret20": -0.008882,
+          "qqq_pct_from_ma": 0.083796,
+          "spy_10d_return": 0.007752,
+          "spy_20d_return": -0.015615,
+          "spy_pct_from_ma": 0.070762
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 100000.0,
+        "pnl": 2536.37,
+        "pnl_pct_net": 0.025364,
+        "pnl_per_10k": 253.64,
+        "regime": "baseline",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|GLD|2025-01-16|2025-01-30|2536.37",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2025-01-15",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-01-15",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_down|spy_defensive_leads|pullback",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-07:GLD",
+        "entry_date": "2025-03-10",
+        "exit_date": "2025-03-21",
+        "extension": "pullback",
+        "features": {
+          "qqq_10d_return": -0.06518,
+          "qqq_20d_return": -0.071394,
+          "qqq_minus_spy_ret20": -0.021255,
+          "qqq_pct_from_ma": -0.000213,
+          "spy_10d_return": -0.040037,
+          "spy_20d_return": -0.050139,
+          "spy_pct_from_ma": 0.01121
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": 3607.7,
+        "pnl_pct_net": 0.036077,
+        "pnl_per_10k": 360.77,
+        "regime": "risk_off",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|GLD|2025-03-10|2025-03-21|3607.7",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-03-07",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-03-07",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "broad_down",
+        "win": true,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_down|spy_defensive_leads|normal",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-21:GLD",
+        "entry_date": "2025-03-24",
+        "exit_date": "2025-04-04",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.022266,
+          "qqq_20d_return": -0.085994,
+          "qqq_minus_spy_ret20": -0.028883,
+          "qqq_pct_from_ma": -0.024842,
+          "spy_10d_return": -0.017786,
+          "spy_20d_return": -0.057112,
+          "spy_pct_from_ma": -0.010133
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": -159.85,
+        "pnl_pct_net": -0.001599,
+        "pnl_per_10k": -15.99,
+        "regime": "risk_off",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|GLD|2025-03-24|2025-04-04|-159.85",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-03-21",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-03-21",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "broad_down",
+        "win": false,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-001",
+        "alters_orders": false,
+        "combined_state": "broad_down|spy_defensive_leads|pullback",
+        "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-04:GLD",
+        "entry_date": "2025-04-07",
+        "exit_date": "2025-04-21",
+        "extension": "pullback",
+        "features": {
+          "qqq_10d_return": -0.119665,
+          "qqq_20d_return": -0.139266,
+          "qqq_minus_spy_ret20": -0.019249,
+          "qqq_pct_from_ma": -0.141939,
+          "spy_10d_return": -0.104082,
+          "spy_20d_return": -0.120017,
+          "spy_pct_from_ma": -0.115158
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 100000.0,
+        "pnl": 12708.38,
+        "pnl_pct_net": 0.127084,
+        "pnl_per_10k": 1270.84,
+        "regime": "risk_off",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE|old_thin|GLD|2025-04-07|2025-04-21|12708.38",
+        "sentiment": "panic_risk_off",
+        "sentiment_confidence": 0.9,
+        "sentiment_why": [
+          "high_vix_or_broad_drawdown"
+        ],
+        "signal_date": "2025-04-04",
+        "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+        "source_artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+        "state_date": "2025-04-04",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "low_deployment_etf_cash_substitute",
+        "ticker": "GLD",
+        "trade_enabled": false,
+        "trend_pressure": "broad_down",
+        "win": true,
+        "window": "old_thin"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|normal",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2026-01-09:SCCO",
+        "entry_date": "2026-01-12",
+        "exit_date": "2026-01-26",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": 0.004359,
+          "qqq_20d_return": -0.000243,
+          "qqq_minus_spy_ret20": -0.012679,
+          "qqq_pct_from_ma": 0.117591,
+          "spy_10d_return": 0.005345,
+          "spy_20d_return": 0.012436,
+          "spy_pct_from_ma": 0.106379
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": 340.97,
+        "pnl_pct_net": 0.085242,
+        "pnl_per_10k": 852.42,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|SCCO|2026-01-12|2026-01-26|340.97",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-01-09",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2026-01-09",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "SCCO",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|spy_defensive_leads|normal",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2026-02-06:ACMR",
+        "entry_date": "2026-02-09",
+        "exit_date": "2026-02-23",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.020989,
+          "qqq_20d_return": -0.017438,
+          "qqq_minus_spy_ret20": -0.019048,
+          "qqq_pct_from_ma": 0.057136,
+          "spy_10d_return": 0.002017,
+          "spy_20d_return": 0.00161,
+          "spy_pct_from_ma": 0.075127
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 4000.0,
+        "pnl": 230.32,
+        "pnl_pct_net": 0.05758,
+        "pnl_per_10k": 575.8,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|ACMR|2026-02-09|2026-02-23|230.32",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-02-06",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2026-02-06",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "ACMR",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|spy_defensive_leads|normal",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2026-02-06:WULF",
+        "entry_date": "2026-02-09",
+        "exit_date": "2026-02-23",
+        "extension": "normal",
+        "features": {
+          "qqq_10d_return": -0.020989,
+          "qqq_20d_return": -0.017438,
+          "qqq_minus_spy_ret20": -0.019048,
+          "qqq_pct_from_ma": 0.057136,
+          "spy_10d_return": 0.002017,
+          "spy_20d_return": 0.00161,
+          "spy_pct_from_ma": 0.075127
+        },
+        "growth_leadership": "spy_defensive_leads",
+        "paper_notional_usd": 4000.0,
+        "pnl": 132.74,
+        "pnl_pct_net": 0.033186,
+        "pnl_per_10k": 331.86,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|late_strong|WULF|2026-02-09|2026-02-23|132.74",
+        "sentiment": "choppy_uncertain",
+        "sentiment_confidence": 0.7,
+        "sentiment_why": [
+          "weak_directional_conviction"
+        ],
+        "signal_date": "2026-02-06",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2026-02-06",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "WULF",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "late_strong"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|extended",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2025-05-02:CART",
+        "entry_date": "2025-05-05",
+        "exit_date": "2025-05-16",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.100721,
+          "qqq_20d_return": 0.084698,
+          "qqq_minus_spy_ret20": 0.028689,
+          "qqq_pct_from_ma": -0.002009,
+          "spy_10d_return": 0.076651,
+          "spy_20d_return": 0.056009,
+          "spy_pct_from_ma": -0.005911
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": -3.94,
+        "pnl_pct_net": -0.000985,
+        "pnl_per_10k": -9.85,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|mid_weak|CART|2025-05-05|2025-05-16|-3.94",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-05-02",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2025-05-02",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "CART",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": false,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "mixed|balanced|extended",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2025-05-02:RBLX",
+        "entry_date": "2025-05-05",
+        "exit_date": "2025-05-16",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.100721,
+          "qqq_20d_return": 0.084698,
+          "qqq_minus_spy_ret20": 0.028689,
+          "qqq_pct_from_ma": -0.002009,
+          "spy_10d_return": 0.076651,
+          "spy_20d_return": 0.056009,
+          "spy_pct_from_ma": -0.005911
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": 497.74,
+        "pnl_pct_net": 0.124435,
+        "pnl_per_10k": 1244.35,
+        "regime": "chop",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|mid_weak|RBLX|2025-05-05|2025-05-16|497.74",
+        "sentiment": "baseline",
+        "sentiment_confidence": 0.5,
+        "sentiment_why": [
+          "mixed_or_incomplete_context"
+        ],
+        "signal_date": "2025-05-02",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2025-05-02",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "RBLX",
+        "trade_enabled": false,
+        "trend_pressure": "mixed",
+        "win": true,
+        "window": "mid_weak"
+      },
+      {
+        "accepted_experiment_id": "exp-20260606-020",
+        "alters_orders": false,
+        "combined_state": "broad_up|balanced|extended",
+        "decision_id": "MACRO_RELIEF_LEADERSHIP_PAPER:official_macro_relief_day_stock_leadership_top2_candidate_source_v1:2025-07-03:NXT",
+        "entry_date": "2025-07-07",
+        "exit_date": "2025-07-18",
+        "extension": "extended",
+        "features": {
+          "qqq_10d_return": 0.052656,
+          "qqq_20d_return": 0.053094,
+          "qqq_minus_spy_ret20": 0.000641,
+          "qqq_pct_from_ma": 0.108188,
+          "spy_10d_return": 0.049794,
+          "spy_20d_return": 0.052454,
+          "spy_pct_from_ma": 0.079635
+        },
+        "growth_leadership": "balanced",
+        "paper_notional_usd": 4000.0,
+        "pnl": -401.73,
+        "pnl_pct_net": -0.100432,
+        "pnl_per_10k": -1004.32,
+        "regime": "trend",
+        "regime_confidence": 0.8,
+        "row_fingerprint": "MACRO_RELIEF_LEADERSHIP_PAPER|mid_weak|NXT|2025-07-07|2025-07-18|-401.73",
+        "sentiment": "healthy_trend",
+        "sentiment_confidence": 0.75,
+        "sentiment_why": [
+          "broad_positive_trend"
+        ],
+        "signal_date": "2025-07-03",
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "source_artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+        "state_date": "2025-07-03",
+        "state_known_at": "prior_trading_day_close_before_entry_open",
+        "strategy": "MACRO_RELIEF_LEADERSHIP_PAPER",
+        "ticker": "NXT",
+        "trade_enabled": false,
+        "trend_pressure": "broad_up",
+        "win": false,
+        "window": "mid_weak"
+      }
+    ]
+  },
+  "single_causal_variable": "historical_accepted_paper_same_ticker_same_entry_duplicate_validation_v1",
+  "source_reports": [
+    {
+      "accepted_experiment_id": "exp-20260606-001",
+      "artifact": "data/experiments/exp-20260606-001/exp_20260606_001_low_deployment_etf_cash_substitute_shared_adapter.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "cash-substitute overlay rows; pnl is paper PnL versus idle cash",
+      "rows_total": 19,
+      "rows_with_required_fields": 19,
+      "rows_with_state": 19,
+      "shared_artifact": null,
+      "sleeve": "LOW_DEPLOYMENT_ETF_CASH_SUBSTITUTE",
+      "windows": {
+        "late_strong": {
+          "input_rows": 7,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 7,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 5,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 5,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 7,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 7,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    },
+    {
+      "accepted_experiment_id": "exp-20260606-020",
+      "artifact": "data/experiments/exp-20260606-020/exp_20260606_020_macro_relief_top2_shared_adapter.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "shared adapter artifact contains full target paper rows",
+      "rows_total": 20,
+      "rows_with_required_fields": 20,
+      "rows_with_state": 20,
+      "shared_artifact": null,
+      "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER",
+      "windows": {
+        "late_strong": {
+          "input_rows": 4,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 4,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 6,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 6,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 10,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 10,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    },
+    {
+      "accepted_experiment_id": "exp-20260604-009",
+      "artifact": "data/experiments/exp-20260604-008/lagged_independent_source_consensus.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "accepted shared adapter points to this positive replay evidence source",
+      "rows_total": 64,
+      "rows_with_required_fields": 64,
+      "rows_with_state": 64,
+      "shared_artifact": "data/experiments/exp-20260604-009/exp_20260604_009_lagged_consensus_shared_adapter.json",
+      "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER",
+      "windows": {
+        "late_strong": {
+          "input_rows": 17,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 17,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 24,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 24,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 23,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 23,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    },
+    {
+      "accepted_experiment_id": "exp-20260604-027",
+      "artifact": "data/experiments/exp-20260604-026/exp_20260604_026_sec_ftd_finra_confirmed_candidate_pool.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "accepted shared adapter points to this positive replay evidence source",
+      "rows_total": 121,
+      "rows_with_required_fields": 121,
+      "rows_with_state": 121,
+      "shared_artifact": "data/experiments/exp-20260604-027/exp_20260604_027_sec_ftd_finra_shared_adapter.json",
+      "sleeve": "SEC_FTD_FINRA_CONFIRMED_PAPER",
+      "windows": {
+        "late_strong": {
+          "input_rows": 39,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 39,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 40,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 40,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 42,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 42,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    },
+    {
+      "accepted_experiment_id": "exp-20260603-007",
+      "artifact": "data/experiments/exp-20260603-006/exp_20260603_006_finra_borrow_pressure_candidate_pool.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "accepted shared adapter points to this positive replay evidence source",
+      "rows_total": 22,
+      "rows_with_required_fields": 22,
+      "rows_with_state": 22,
+      "shared_artifact": "data/experiments/exp-20260603-007/exp_20260603_007_finra_borrow_pressure_shared_adapter.json",
+      "sleeve": "FINRA_IWM_BORROW_PRESSURE_PAPER",
+      "windows": {
+        "late_strong": {
+          "input_rows": 6,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 6,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 8,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 8,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 8,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 8,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    },
+    {
+      "accepted_experiment_id": "exp-20260603-022",
+      "artifact": "data/experiments/exp-20260603-022/exp_20260603_022_post_earnings_non_core_overlap_shared_support.json",
+      "artifact_exists": true,
+      "invalid_rows": 0,
+      "missing_state_rows": 0,
+      "notional_note": "shared adapter/support artifact contains full target paper rows",
+      "rows_total": 20,
+      "rows_with_required_fields": 20,
+      "rows_with_state": 20,
+      "shared_artifact": null,
+      "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER",
+      "windows": {
+        "late_strong": {
+          "input_rows": 5,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 5,
+          "window_end": "2026-04-21",
+          "window_start": "2025-10-23"
+        },
+        "mid_weak": {
+          "input_rows": 9,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 9,
+          "window_end": "2025-10-22",
+          "window_start": "2025-04-23"
+        },
+        "old_thin": {
+          "input_rows": 6,
+          "invalid_rows": 0,
+          "missing_state_rows": 0,
+          "rows_with_state": 6,
+          "window_end": "2025-04-22",
+          "window_start": "2024-10-02"
+        }
+      }
+    }
+  ],
+  "source_windows": [
+    {
+      "end": "2026-04-21",
+      "label": "late_strong",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "label": "mid_weak",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "label": "old_thin",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "summary": {
+    "decision": "rejected_historical_duplicate_exposure_sample_or_concentration_failed",
+    "duplicate_groups": 2,
+    "duplicate_rows": 4,
+    "duplicate_windows": {
+      "late_strong": 4
+    },
+    "eligible_rows": 123,
+    "excluded_finra_ftd_rows": 143,
+    "max_duplicate_sleeve_share": 0.5,
+    "max_duplicate_ticker_share": 1.0,
+    "non_finra_rows": 123,
+    "primary_mean_delta_duplicate_minus_singleton": 1496.42521,
+    "primary_median_delta_duplicate_minus_singleton": 1663.65,
+    "primary_tail_delta_duplicate_minus_singleton": 2326.945833,
+    "same_sleeve_multi_groups": 0,
+    "singleton_groups": 119,
+    "singleton_rows": 119,
+    "source_rows": 266,
+    "top_duplicate_sleeves": [
+      {
+        "rows": 2,
+        "share": 0.5,
+        "sleeve": "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
+      },
+      {
+        "rows": 1,
+        "share": 0.25,
+        "sleeve": "MACRO_RELIEF_LEADERSHIP_PAPER"
+      },
+      {
+        "rows": 1,
+        "share": 0.25,
+        "sleeve": "POST_EARNINGS_UNDERPRICED_DRIFT_PAPER"
+      }
+    ],
+    "top_duplicate_tickers": [
+      {
+        "rows": 4,
+        "share": 1.0,
+        "ticker": "MU"
+      }
+    ],
+    "windows_duplicate_mean_worse": [],
+    "windows_with_duplicate_rows": [
+      "late_strong"
+    ]
+  },
+  "timestamp": "2026-07-05T02:13:19Z",
+  "trial_family": "historical_duplicate_exposure_validation",
+  "trial_variant_id": "accepted_artifact_same_ticker_same_entry_v1"
+}

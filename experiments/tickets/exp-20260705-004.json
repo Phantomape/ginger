@@ -1,0 +1,1051 @@
+{
+  "acceptance_rule": "Observed-only positive lead only if there are at least 8 comparator-disagreement closed rows, max disagreement ticker share <=50%, max disagreement sleeve share <=70%, and cash-negative/index-positive rows separate from triple-positive rows on cash/SPY/QQQ without ETF concentration; otherwise reject or record a non-actionable risk note.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_004_forward_comparator_disagreement_attribution.py",
+    "data/experiments/exp-20260705-004/exp_20260705_004_forward_comparator_disagreement_attribution.json",
+    "experiments/cards/exp-20260705-004.md",
+    "experiments/manifests/exp-20260705-004.json",
+    "experiments/tickets/exp-20260705-004.json",
+    "experiments/logs/exp-20260705-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-004.md",
+  "causal_components": [
+    "forward replacement ledger sign partition",
+    "cash SPY QQQ comparator disagreement",
+    "concentration guard",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "forward_cash_vs_index_replacement_disagreement_attribution_v1",
+  "claimed_at": "2026-07-05T03:11:23+00:00",
+  "completed_at": "2026-07-05T03:15:20+00:00",
+  "created_at": "2026-07-05T03:11:07+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-004",
+  "experiment_uid": "expuid-4f337086fc1d4bc5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T03:11:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_comparator_disagreement_attribution"
+  },
+  "hypothesis": "Closed forward replacement rows may show that ETF-relative positive but cash-negative paper rows are optical alpha rather than deployable edge; if cash-vs-index comparator disagreement is broad, future activation should require cash/SPY/QQQ triple-positive evidence instead of index-relative promotion.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_cash_vs_index_replacement_disagreement_attribution_v1"
+  ],
+  "mechanism_family": "forward_replacement_comparator_disagreement_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260705-002",
+    "exp-20260705-003",
+    "exp-20260704-026"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "activation",
+        "alpha",
+        "are",
+        "attribution",
+        "but",
+        "cash",
+        "closed",
+        "comparator",
+        "deployable",
+        "disagreement",
+        "edge",
+        "etf",
+        "evidence",
+        "forward",
+        "future",
+        "if",
+        "index",
+        "instead",
+        "is",
+        "may",
+        "negative",
+        "of",
+        "optical",
+        "positive",
+        "promotion",
+        "qqq",
+        "rather",
+        "relative",
+        "replacement",
+        "require",
+        "rows",
+        "should",
+        "show",
+        "spy",
+        "than",
+        "that",
+        "triple"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.0585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0476,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_ftd_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+        "score": 0.0381,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.0372,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0364,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: partition closed forward replacement rows by cash/SPY/QQQ sign disagreement versus triple-positive rows, with ticker and sleeve concentration guards; this is not a duplicate-exposure group-key retune, short-volume retry, regime threshold/scalar retry, or readiness audit.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: partition closed forward replacement rows by cash/SPY/QQQ sign disagreement versus triple-positive rows, with ticker and sleeve concentration guards; this is not a duplicate-exposure group-key retune, short-volume retry, regime threshold/scalar retry, or readiness audit.",
+        "categories": [
+          "new_gate_shape",
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: partition closed forward replacement rows by cash/SPY/QQQ sign disagreement versus triple-positive rows, with ticker and sleeve concentration guards; this is not a duplicate-exposure group-key retune, short-volume retry, regime threshold/scalar retry, or readiness audit.",
+      "categories": [
+        "new_gate_shape",
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "disagreement_rows_are_etf_concentrated",
+      "no_cash_spy_qqq_actionable_separation",
+      "existing_activation_rules_already_require_cash_positive",
+      "not_gate4_actionable"
+    ],
+    "confidence_reason": "Preflight found 60 closed forward replacement rows and 9 cash/SPY/QQQ sign-disagreement rows, enough to test this new sign-partition gate shape, but 6 of the disagreement rows are QQQ low-deployment ETF rows so concentration is the main expected failure.",
+    "recorded_at": "2026-07-05T03:10:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_comparator_disagreement_etf_concentrated",
+    "artifact": "data/experiments/exp-20260705-004/exp_20260705_004_forward_comparator_disagreement_attribution.json",
+    "log": "experiments/logs/exp-20260705-004.json",
+    "summary": {
+      "source_rows": 60,
+      "eligible_rows": 60,
+      "disagreement_rows": 9,
+      "cash_negative_index_positive_rows": 7,
+      "triple_positive_rows": 27,
+      "triple_nonpositive_rows": 24,
+      "max_disagreement_ticker_share": 0.666667,
+      "max_disagreement_sleeve_share": 0.666667,
+      "top_disagreement_tickers": [
+        {
+          "value": "QQQ",
+          "rows": 6,
+          "share": 0.666667
+        },
+        {
+          "value": "UNH",
+          "rows": 1,
+          "share": 0.111111
+        },
+        {
+          "value": "GS",
+          "rows": 1,
+          "share": 0.111111
+        },
+        {
+          "value": "SNOW",
+          "rows": 1,
+          "share": 0.111111
+        }
+      ],
+      "top_disagreement_sleeves": [
+        {
+          "value": "low_deployment_etf",
+          "rows": 6,
+          "share": 0.666667
+        },
+        {
+          "value": "alpha_score_market_regime",
+          "rows": 1,
+          "share": 0.111111
+        },
+        {
+          "value": "sec_governance",
+          "rows": 1,
+          "share": 0.111111
+        },
+        {
+          "value": "volume_breadth_breakout",
+          "rows": 1,
+          "share": 0.111111
+        }
+      ],
+      "failed_acceptance_checks": [
+        "disagreement_ticker_concentration",
+        "cash_negative_index_positive_ticker_concentration"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-004.json",
+  "single_causal_variable": "forward_cash_vs_index_replacement_disagreement_attribution_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260705-004.json",
+  "trial_family": "forward_comparator_disagreement_attribution",
+  "trial_variant_id": "cash_vs_index_sign_partition_v1",
+  "alpha_hypothesis": "Closed forward replacement rows may show that ETF-relative positive but cash-negative paper rows are optical alpha rather than deployable edge; if cash-vs-index comparator disagreement is broad, future activation should require cash/SPY/QQQ triple-positive evidence instead of index-relative promotion.",
+  "implementation_mode": "observed_only_artifact_no_strategy_change",
+  "new_evidence_axis": "New gate shape: partition closed forward replacement rows by cash/SPY/QQQ sign disagreement versus triple-positive rows, with ticker and sleeve concentration guards; not a duplicate-exposure group-key retune, short-volume retry, regime threshold/scalar retry, or readiness audit.",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "baseline_trade_count": 61
+  },
+  "gate2": {
+    "runtime_surface": "data/paper_sleeves/forward_replacement_value.jsonl",
+    "source_rows": 60,
+    "eligible_rows": 60,
+    "field_presence": {
+      "ticker": 60,
+      "entry_date": 60,
+      "target_price": 0,
+      "replacement_value_vs_cash_usd": 60,
+      "replacement_value_vs_spy_usd": 60,
+      "replacement_value_vs_qqq_usd": 60
+    },
+    "entry_date_present_rows": 60,
+    "target_price_present_rows": 0,
+    "passed_for_activation": false,
+    "note": "The forward replacement ledger has entry_date and RV metrics, but no target_price field. This observed-only attribution did not change a signal generator; the missing activation sentinel keeps the result out of deployable policy."
+  },
+  "gate3": {
+    "baseline_signals_generated": 164,
+    "baseline_signals_survived": 135,
+    "baseline_survival_rate": 0.823171,
+    "survival_rate_floor": 0.05,
+    "passed": true
+  },
+  "gate4": {
+    "standard_backtest_rerun": false,
+    "reason": "Observed-only forward attribution; no entry, ranking, sizing, risk, exit, paper order, live order, or LLM decision boundary changed.",
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "acceptance_rule": {
+      "min_disagreement_rows": 8,
+      "max_disagreement_ticker_share": 0.5,
+      "max_disagreement_sleeve_share": 0.7,
+      "max_cash_negative_index_positive_ticker_share": 0.5,
+      "require_cash_negative_index_positive_separation": true,
+      "require_no_etf_concentration": true
+    },
+    "acceptance_failures": [
+      "disagreement_ticker_concentration",
+      "cash_negative_index_positive_ticker_concentration"
+    ],
+    "attribution": {
+      "source_rows": 60,
+      "sign_combos": {
+        "cash_False_spy_False_qqq_False": 24,
+        "cash_False_spy_False_qqq_True": 1,
+        "cash_False_spy_True_qqq_True": 6,
+        "cash_True_spy_True_qqq_False": 2,
+        "cash_True_spy_True_qqq_True": 27
+      },
+      "all_rows": {
+        "rows": 60,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 60,
+            "sum": -11186.03,
+            "mean": -186.4338,
+            "median": -65.75,
+            "min": -6327.17,
+            "max": 2772.28
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 60,
+            "sum": -4976.37,
+            "mean": -82.9395,
+            "median": 185.66,
+            "min": -6806.63,
+            "max": 2788.46
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 60,
+            "sum": -7832.62,
+            "mean": -130.5437,
+            "median": 173.51,
+            "min": -7244.11,
+            "max": 2704.37
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "QQQ",
+            "rows": 17,
+            "share": 0.283333
+          },
+          {
+            "value": "CRDO",
+            "rows": 6,
+            "share": 0.1
+          },
+          {
+            "value": "DDOG",
+            "rows": 4,
+            "share": 0.066667
+          },
+          {
+            "value": "SNOW",
+            "rows": 3,
+            "share": 0.05
+          },
+          {
+            "value": "AMD",
+            "rows": 3,
+            "share": 0.05
+          },
+          {
+            "value": "MU",
+            "rows": 3,
+            "share": 0.05
+          },
+          {
+            "value": "WDC",
+            "rows": 2,
+            "share": 0.033333
+          },
+          {
+            "value": "MRVL",
+            "rows": 2,
+            "share": 0.033333
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "low_deployment_etf",
+            "rows": 17,
+            "share": 0.283333
+          },
+          {
+            "value": "fundamental_growth_rs",
+            "rows": 8,
+            "share": 0.133333
+          },
+          {
+            "value": "alpha_score_market_regime",
+            "rows": 5,
+            "share": 0.083333
+          },
+          {
+            "value": "sec_financial_report",
+            "rows": 5,
+            "share": 0.083333
+          },
+          {
+            "value": "free_data_cross_source_consensus",
+            "rows": 4,
+            "share": 0.066667
+          },
+          {
+            "value": "volume_breadth_breakout",
+            "rows": 4,
+            "share": 0.066667
+          },
+          {
+            "value": "state_surface",
+            "rows": 3,
+            "share": 0.05
+          },
+          {
+            "value": "supplier_financing_debt_relief",
+            "rows": 3,
+            "share": 0.05
+          }
+        ],
+        "max_ticker_share": 0.283333,
+        "max_sleeve_share": 0.283333
+      },
+      "triple_positive": {
+        "rows": 27,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 27,
+            "sum": 22083.84,
+            "mean": 817.92,
+            "median": 629.81,
+            "min": 35.71,
+            "max": 2772.28
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 27,
+            "sum": 22254.08,
+            "mean": 824.2252,
+            "median": 663.73,
+            "min": 78.09,
+            "max": 2788.46
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 27,
+            "sum": 18304.66,
+            "mean": 677.9504,
+            "median": 450.65,
+            "min": 60.18,
+            "max": 2704.37
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "QQQ",
+            "rows": 11,
+            "share": 0.407407
+          },
+          {
+            "value": "CRDO",
+            "rows": 4,
+            "share": 0.148148
+          },
+          {
+            "value": "AMD",
+            "rows": 3,
+            "share": 0.111111
+          },
+          {
+            "value": "MRVL",
+            "rows": 2,
+            "share": 0.074074
+          },
+          {
+            "value": "DDOG",
+            "rows": 1,
+            "share": 0.037037
+          },
+          {
+            "value": "SNOW",
+            "rows": 1,
+            "share": 0.037037
+          },
+          {
+            "value": "GE",
+            "rows": 1,
+            "share": 0.037037
+          },
+          {
+            "value": "INTC",
+            "rows": 1,
+            "share": 0.037037
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "low_deployment_etf",
+            "rows": 11,
+            "share": 0.407407
+          },
+          {
+            "value": "fundamental_growth_rs",
+            "rows": 4,
+            "share": 0.148148
+          },
+          {
+            "value": "alpha_score_market_regime",
+            "rows": 3,
+            "share": 0.111111
+          },
+          {
+            "value": "state_surface",
+            "rows": 3,
+            "share": 0.111111
+          },
+          {
+            "value": "free_data_cross_source_consensus",
+            "rows": 2,
+            "share": 0.074074
+          },
+          {
+            "value": "accepted_helper_source_priority_allocator",
+            "rows": 1,
+            "share": 0.037037
+          },
+          {
+            "value": "sec_governance",
+            "rows": 1,
+            "share": 0.037037
+          },
+          {
+            "value": "sec_negative",
+            "rows": 1,
+            "share": 0.037037
+          }
+        ],
+        "max_ticker_share": 0.407407,
+        "max_sleeve_share": 0.407407
+      },
+      "triple_nonpositive": {
+        "rows": 24,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 24,
+            "sum": -31574.31,
+            "mean": -1315.5963,
+            "median": -755.595,
+            "min": -6327.17,
+            "max": -175.58
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 24,
+            "sum": -29272.29,
+            "mean": -1219.6788,
+            "median": -454.015,
+            "min": -6806.63,
+            "max": -78.44
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 24,
+            "sum": -29046.75,
+            "mean": -1210.2812,
+            "median": -421.915,
+            "min": -7244.11,
+            "max": -51.3
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "DDOG",
+            "rows": 3,
+            "share": 0.125
+          },
+          {
+            "value": "MU",
+            "rows": 3,
+            "share": 0.125
+          },
+          {
+            "value": "CRDO",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "WDC",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "AVGO",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "COIN",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "RKLB",
+            "rows": 1,
+            "share": 0.041667
+          },
+          {
+            "value": "CVX",
+            "rows": 1,
+            "share": 0.041667
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "sec_financial_report",
+            "rows": 5,
+            "share": 0.208333
+          },
+          {
+            "value": "fundamental_growth_rs",
+            "rows": 4,
+            "share": 0.166667
+          },
+          {
+            "value": "volume_breadth_breakout",
+            "rows": 3,
+            "share": 0.125
+          },
+          {
+            "value": "free_data_cross_source_consensus",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "supplier_financing_debt_relief",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "volatility_contraction",
+            "rows": 2,
+            "share": 0.083333
+          },
+          {
+            "value": "accepted_helper_source_priority_allocator",
+            "rows": 1,
+            "share": 0.041667
+          },
+          {
+            "value": "accepted_source_consensus",
+            "rows": 1,
+            "share": 0.041667
+          }
+        ],
+        "max_ticker_share": 0.125,
+        "max_sleeve_share": 0.208333
+      },
+      "disagreement": {
+        "rows": 9,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 9,
+            "sum": -1695.56,
+            "mean": -188.3956,
+            "median": -138.4,
+            "min": -795.5,
+            "max": 390.84
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 9,
+            "sum": 2041.84,
+            "mean": 226.8711,
+            "median": 195.0,
+            "min": -186.22,
+            "max": 632.4
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 9,
+            "sum": 2909.47,
+            "mean": 323.2744,
+            "median": 449.46,
+            "min": -66.61,
+            "max": 449.88
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "QQQ",
+            "rows": 6,
+            "share": 0.666667
+          },
+          {
+            "value": "UNH",
+            "rows": 1,
+            "share": 0.111111
+          },
+          {
+            "value": "GS",
+            "rows": 1,
+            "share": 0.111111
+          },
+          {
+            "value": "SNOW",
+            "rows": 1,
+            "share": 0.111111
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "low_deployment_etf",
+            "rows": 6,
+            "share": 0.666667
+          },
+          {
+            "value": "alpha_score_market_regime",
+            "rows": 1,
+            "share": 0.111111
+          },
+          {
+            "value": "sec_governance",
+            "rows": 1,
+            "share": 0.111111
+          },
+          {
+            "value": "volume_breadth_breakout",
+            "rows": 1,
+            "share": 0.111111
+          }
+        ],
+        "max_ticker_share": 0.666667,
+        "max_sleeve_share": 0.666667
+      },
+      "cash_negative_index_positive": {
+        "rows": 7,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 7,
+            "sum": -2129.48,
+            "mean": -304.2114,
+            "median": -170.4,
+            "min": -795.5,
+            "max": -57.7
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 7,
+            "sum": 1837.63,
+            "mean": 262.5186,
+            "median": 221.01,
+            "min": -186.22,
+            "max": 632.4
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 7,
+            "sum": 2996.6,
+            "mean": 428.0857,
+            "median": 449.57,
+            "min": 299.03,
+            "max": 449.88
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "QQQ",
+            "rows": 6,
+            "share": 0.857143
+          },
+          {
+            "value": "SNOW",
+            "rows": 1,
+            "share": 0.142857
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "low_deployment_etf",
+            "rows": 6,
+            "share": 0.857143
+          },
+          {
+            "value": "volume_breadth_breakout",
+            "rows": 1,
+            "share": 0.142857
+          }
+        ],
+        "max_ticker_share": 0.857143,
+        "max_sleeve_share": 0.857143
+      },
+      "cash_positive_index_mixed": {
+        "rows": 2,
+        "metrics": {
+          "replacement_value_vs_cash_usd": {
+            "n": 2,
+            "sum": 433.92,
+            "mean": 216.96,
+            "median": 216.96,
+            "min": 43.08,
+            "max": 390.84
+          },
+          "replacement_value_vs_spy_usd": {
+            "n": 2,
+            "sum": 204.21,
+            "mean": 102.105,
+            "median": 102.105,
+            "min": 9.21,
+            "max": 195.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "n": 2,
+            "sum": -87.13,
+            "mean": -43.565,
+            "median": -43.565,
+            "min": -66.61,
+            "max": -20.52
+          }
+        },
+        "top_tickers": [
+          {
+            "value": "UNH",
+            "rows": 1,
+            "share": 0.5
+          },
+          {
+            "value": "GS",
+            "rows": 1,
+            "share": 0.5
+          }
+        ],
+        "top_sleeves": [
+          {
+            "value": "alpha_score_market_regime",
+            "rows": 1,
+            "share": 0.5
+          },
+          {
+            "value": "sec_governance",
+            "rows": 1,
+            "share": 0.5
+          }
+        ],
+        "max_ticker_share": 0.5,
+        "max_sleeve_share": 0.5
+      },
+      "sample_disagreement_rows": [
+        {
+          "ticker": "UNH",
+          "sleeve_key": "alpha_score_market_regime",
+          "entry_date": "2026-06-10",
+          "exit_date": "2026-06-29",
+          "decision_id": "ALPHA_SCORE_MARKET_REGIME_PAPER:alpha_score_market_regime_safe_notional_shared_v1:2026-06-09:UNH",
+          "notional_usd": 4000.17,
+          "replacement_value_vs_cash_usd": 43.08,
+          "replacement_value_vs_spy_usd": 9.21,
+          "replacement_value_vs_qqq_usd": -66.61
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-05-12",
+          "exit_date": "2026-05-12",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-05-12:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -138.4,
+          "replacement_value_vs_spy_usd": 136.67,
+          "replacement_value_vs_qqq_usd": 449.78
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-05-15",
+          "exit_date": "2026-05-15",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-05-15:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -170.4,
+          "replacement_value_vs_spy_usd": 632.4,
+          "replacement_value_vs_qqq_usd": 449.78
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-05-18",
+          "exit_date": "2026-05-18",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-05-18:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -795.5,
+          "replacement_value_vs_spy_usd": -186.22,
+          "replacement_value_vs_qqq_usd": 449.1
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-05-22",
+          "exit_date": "2026-05-22",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-05-22:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -73.8,
+          "replacement_value_vs_spy_usd": 456.47,
+          "replacement_value_vs_qqq_usd": 449.88
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-05-27",
+          "exit_date": "2026-05-27",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-05-27:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -478.89,
+          "replacement_value_vs_spy_usd": 26.93,
+          "replacement_value_vs_qqq_usd": 449.46
+        },
+        {
+          "ticker": "QQQ",
+          "sleeve_key": "low_deployment_etf",
+          "entry_date": "2026-06-03",
+          "exit_date": "2026-06-03",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_dynamic_etf_overlay_v1:2026-06-03:QQQ",
+          "notional_usd": 100000.0,
+          "replacement_value_vs_cash_usd": -414.79,
+          "replacement_value_vs_spy_usd": 550.37,
+          "replacement_value_vs_qqq_usd": 449.57
+        },
+        {
+          "ticker": "GS",
+          "sleeve_key": "sec_governance",
+          "entry_date": "2026-05-05",
+          "exit_date": "2026-05-15",
+          "decision_id": "SEC_GOVERNANCE_EVENT_SLEEVE_PAPER:sec_governance_procedural_mild_reaction_v1:2026-05-04:GS:0001193125-26-199988:shareholder_vote|negative_excess_0_to_minus_2pct",
+          "notional_usd": 9999.98,
+          "replacement_value_vs_cash_usd": 390.84,
+          "replacement_value_vs_spy_usd": 195.0,
+          "replacement_value_vs_qqq_usd": -20.52
+        },
+        {
+          "ticker": "SNOW",
+          "sleeve_key": "volume_breadth_breakout",
+          "entry_date": "2026-05-29",
+          "exit_date": "2026-06-08",
+          "decision_id": "VOLUME_BREADTH_BREAKOUT_PAPER:volume_breadth_breakout_shared_top1_v1:2026-05-28:SNOW",
+          "notional_usd": 10499.79,
+          "replacement_value_vs_cash_usd": -57.7,
+          "replacement_value_vs_spy_usd": 221.01,
+          "replacement_value_vs_qqq_usd": 299.03
+        }
+      ]
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "survival_rate": 0.0
+  },
+  "production_impact": {
+    "changed_live_orders": false,
+    "changed_paper_orders": false,
+    "changed_ranking": false,
+    "changed_sizing": false,
+    "changed_exits": false,
+    "changed_llm_boundary": false,
+    "live_ready": false,
+    "reason": "Observed-only attribution failed concentration guards and the ledger lacks target_price, so no live or paper behavior can be promoted from this run."
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_success": 0,
+    "predicted_success_probability": 0.18,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "surprise_level": "very_low",
+    "expected_ev_delta": 0.0,
+    "actual_ev_delta": 0.0,
+    "ev_prediction_error": 0.0,
+    "expected_pnl_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_modes": [
+      "disagreement_rows_are_etf_concentrated",
+      "no_cash_spy_qqq_actionable_separation",
+      "existing_activation_rules_already_require_cash_positive",
+      "not_gate4_actionable"
+    ],
+    "realized_failure_mode": "disagreement_rows_are_etf_concentrated",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "The pre-run concern was correct: cash-vs-index disagreement exists but is concentrated in QQQ low-deployment ETF rows, so it is not a broad deployable alpha signal."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The sign-disagreement surface exists, but it is not broad. There are 9 disagreement rows; 6 are QQQ rows and 6 are from the low_deployment_etf sleeve. The cash-negative/index-positive subset has negative cash replacement but positive SPY/QQQ replacement, yet it is dominated by the same QQQ ETF exposure.",
+    "alpha_interpretation": "Do not treat ETF-relative positives as deployable alpha when cash replacement is negative. The current evidence supports the existing conservative requirement to inspect cash, SPY, and QQQ together, but it does not justify a new policy.",
+    "forbidden_near_neighbor_retry": "Do not retune cash/SPY/QQQ sign thresholds, comparator choice, ETF inclusion, notional, hold days, top-N, or sleeve scalars on these same 60 closed forward rows.",
+    "new_evidence_required": "Reopen only with materially more closed forward rows where cash-vs-index disagreement has max ticker share <=50% and max sleeve share <=70%, or with a separate shared-policy Gate 1-4 test that changes activation behavior with production/backtest parity."
+  },
+  "rejection_reason": "disagreement_ticker_concentration;cash_negative_index_positive_ticker_concentration",
+  "next_retry_requires": [
+    "materially more closed forward replacement rows",
+    ">=8 comparator-disagreement rows after refresh",
+    "max disagreement ticker share <=50%",
+    "max disagreement sleeve share <=70%",
+    "cash-negative/index-positive rows not dominated by QQQ or one ETF sleeve",
+    "or a full shared-policy Gate 1-4 activation test with production/backtest parity"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_004_forward_comparator_disagreement_attribution.py",
+    "data/experiments/exp-20260705-004/exp_20260705_004_forward_comparator_disagreement_attribution.json",
+    "experiments/cards/exp-20260705-004.md",
+    "experiments/manifests/exp-20260705-004.json",
+    "experiments/tickets/exp-20260705-004.json",
+    "experiments/logs/exp-20260705-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260705-002.json",
+    "experiments/logs/exp-20260705-003.json",
+    "experiments/logs/exp-20260704-026.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_004_forward_comparator_disagreement_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_004_forward_comparator_disagreement_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "rejected_comparator_disagreement_etf_concentrated",
+  "artifact": "data/experiments/exp-20260705-004/exp_20260705_004_forward_comparator_disagreement_attribution.json",
+  "log": "experiments/logs/exp-20260705-004.json",
+  "updated_at": "2026-07-05T03:15:20+00:00"
+}

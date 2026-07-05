@@ -1,0 +1,534 @@
+{
+  "acceptance_rule": "observed-only positive lead if near_event 0-30d quality rows and far_event >60d quality rows each have >=100 rows, >=20 tickers, near_event underperforms far_event on all 10d cash/SPY/QQQ medians and at least 2/3 means, concentration guards pass; otherwise reject",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_002_options_earnings_event_distance_forward_value.py",
+    "data/experiments/exp-20260704-002/",
+    "experiments/cards/exp-20260704-002.md",
+    "experiments/manifests/exp-20260704-002.json",
+    "experiments/tickets/exp-20260704-002.json",
+    "experiments/logs/exp-20260704-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-002.md",
+  "causal_components": [
+    "closed options outcome ledger",
+    "daily earnings snapshot join",
+    "event-distance buckets",
+    "cash SPY QQQ replacement-value attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "onclickmedia_options_earnings_event_distance_forward_value_v1",
+  "claimed_at": "2026-07-04T01:08:04+00:00",
+  "completed_at": "2026-07-04T01:13:56+00:00",
+  "created_at": "2026-07-04T01:07:56+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-002",
+  "experiment_uid": "expuid-b518ad943b6c4f8c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T01:07:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_earnings_event_distance_forward_value"
+  },
+  "hypothesis": "OnclickMedia options forward rows joined to daily earnings snapshots may show that near-earnings option demand carries weaker 10-day cash/SPY/QQQ replacement value than ordinary far-from-event quality options rows, making event distance a future risk-allocation context.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "onclickmedia_options_earnings_event_distance_forward_value_v1"
+  ],
+  "mechanism_family": "production_visible_forward_options_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-008",
+    "exp-20260630-010",
+    "exp-20260702-007"
+  ],
+  "new_evidence_type": "new_event_distance_field",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "attribution",
+        "carries",
+        "cash",
+        "context",
+        "daily",
+        "demand",
+        "distance",
+        "earnings",
+        "event",
+        "far",
+        "forward",
+        "from",
+        "future",
+        "joined",
+        "making",
+        "may",
+        "near",
+        "onclickmedia",
+        "option",
+        "options",
+        "ordinary",
+        "qqq",
+        "replacement",
+        "risk",
+        "rows",
+        "show",
+        "snapshots",
+        "spy",
+        "than",
+        "that",
+        "to",
+        "value",
+        "weaker"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_event_distance_forward_attribution",
+        "reopen_condition": "A valid options retry needs materially more closed forward rows, historical PIT options-chain coverage across canonical windows, or a different production-visible event/cost field that creates new rows rather than reslicing this same small forward sample.",
+        "score": 0.0889,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0615,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_ftd_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+        "score": 0.0513,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_bearish_put_demand_forward_value",
+        "reopen_condition": "A valid retry needs materially more closed forward rows beyond exp-20260630-008, PIT vendor/as-of controls, borrow/loan availability context, or historical PIT options-chain coverage across the canonical windows.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_monotonic_event_distance_edge",
+      "event_proximity_sample_too_thin",
+      "earnings_snapshot_join_sparse",
+      "options_quality_noise_dominates"
+    ],
+    "confidence_reason": "The options demand edge failed on prior closed rows, but the playbook explicitly allows a new event-distance field; daily earnings snapshots cover the options quote dates and the refreshed ledger has 1179 quality closed 10d rows.",
+    "recorded_at": "2026-07-04T01:07:15+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected",
+    "artifact": "data/experiments/exp-20260704-002/exp_20260704_002_options_earnings_event_distance_forward_value.json",
+    "log": "experiments/logs/exp-20260704-002.json",
+    "runner": "quant/experiments/exp_20260704_002_options_earnings_event_distance_forward_value.py",
+    "gate4": {
+      "passed": false,
+      "strategy_gate4_not_applicable": true,
+      "reason": "Observed-only event-distance lead bar failed; no strategy change accepted.",
+      "acceptance_rule": {
+        "primary_horizon": 10,
+        "event_buckets": [
+          {
+            "name": "near_event_0_30",
+            "min_days": 0,
+            "max_days": 30,
+            "description": "0 to 30 calendar days before next scheduled earnings"
+          },
+          {
+            "name": "mid_event_31_60",
+            "min_days": 31,
+            "max_days": 60,
+            "description": "31 to 60 calendar days before next scheduled earnings"
+          },
+          {
+            "name": "far_event_gt60",
+            "min_days": 61,
+            "max_days": null,
+            "description": "More than 60 calendar days before next scheduled earnings"
+          }
+        ],
+        "min_near_rows": 100,
+        "min_far_rows": 100,
+        "min_near_tickers": 20,
+        "min_far_tickers": 20,
+        "near_must_underperform_far_median_for": [
+          "cash",
+          "spy",
+          "qqq"
+        ],
+        "near_must_underperform_far_mean_count_gte": 2,
+        "max_single_negative_loss_share_guardrail": 0.5,
+        "negative_loss_hhi_guardrail": 0.35
+      },
+      "acceptance": {
+        "accepted_observed_only_lead": false,
+        "checks": {
+          "near_rows_gte_min": false,
+          "far_rows_gte_min": true,
+          "near_tickers_gte_min": false,
+          "far_tickers_gte_min": true,
+          "near_underperforms_far_all_medians": false,
+          "near_underperforms_far_at_least_2_means": false,
+          "near_loss_concentration_guardrail": true
+        },
+        "failed_reasons": [
+          "near_rows_gte_min",
+          "near_tickers_gte_min",
+          "near_underperforms_far_all_medians",
+          "near_underperforms_far_at_least_2_means"
+        ],
+        "concentration_checks": {
+          "cash": {
+            "max_single_negative_loss_share": 0.14152,
+            "negative_loss_hhi": 0.066752,
+            "passes_guardrail": true
+          },
+          "spy": {
+            "max_single_negative_loss_share": 0.127418,
+            "negative_loss_hhi": 0.055246,
+            "passes_guardrail": true
+          },
+          "qqq": {
+            "max_single_negative_loss_share": 0.102268,
+            "negative_loss_hhi": 0.044968,
+            "passes_guardrail": true
+          }
+        }
+      },
+      "failed_reasons": [
+        "near_rows_gte_min",
+        "near_tickers_gte_min",
+        "near_underperforms_far_all_medians",
+        "near_underperforms_far_at_least_2_means"
+      ],
+      "before_after_delta": {
+        "aggregate_expected_value_score_delta": 0.0,
+        "aggregate_total_pnl_delta": 0.0,
+        "aggregate_trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "no_strategy_behavior_change": true
+    },
+    "calibration": {
+      "pre_run_success_probability": 0.28,
+      "post_run_success": false,
+      "surprise_note": "Fixed event-distance buckets did not meet the predeclared lead bar."
+    },
+    "summary": "The event-distance join produced usable rows, but the fixed near-vs-far separation did not satisfy the predeclared sample, direction, and concentration checks."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-002.json",
+  "single_causal_variable": "onclickmedia_options_earnings_event_distance_forward_value_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260704-002.json",
+  "trial_family": "onclickmedia_options_earnings_event_distance_forward_value",
+  "trial_variant_id": "fixed_quality_event_distance_0_30_31_60_gt60_v1",
+  "implementation_mode": "observed_only_forward_attribution_runner",
+  "new_evidence_axis": "Daily earnings snapshots add a fixed PIT event-distance field to the exp-20260630-008 closed options ledger. This is not a put/call, IV, open interest, moneyness, spread, liquidity, top-N, hold, cooldown, notional, or response-curve retry on the rejected options demand family.",
+  "decision": "observed_only_rejected",
+  "artifact": "data/experiments/exp-20260704-002/exp_20260704_002_options_earnings_event_distance_forward_value.json",
+  "log": "experiments/logs/exp-20260704-002.json",
+  "gate1": {
+    "passed": true,
+    "baseline_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "source": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "exists": true,
+      "window_count": 3,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "aggregate_trade_count": 61,
+      "aggregate_signals_generated": 164,
+      "aggregate_signals_survived": 135,
+      "aggregate_survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependency_fields": [
+      "ticker",
+      "quote_date",
+      "entry_date",
+      "entry_price",
+      "quality_pass",
+      "outcome_status",
+      "replacement_value_10d_vs_cash_usd",
+      "replacement_value_10d_vs_spy_usd",
+      "replacement_value_10d_vs_qqq_usd",
+      "earnings.next_earnings_date",
+      "earnings.days_to_earnings"
+    ],
+    "field_coverage": {
+      "total_rows": 2147,
+      "closed_10d_rows": 1544,
+      "quality_closed_10d_rows": 1179,
+      "quality_rows_with_ticker": 1179,
+      "quality_rows_with_entry_date": 1179,
+      "quality_rows_with_entry_price": 1179,
+      "quality_rows_with_all_10d_replacements": 1179,
+      "joined_rows": 1046,
+      "bucket_far_event_gt60": 616,
+      "bucket_mid_event_31_60": 336,
+      "bucket_near_event_0_30": 94,
+      "quality_rows_without_days_to_earnings": 133,
+      "earnings_snapshot_file_count": 474,
+      "first_snapshot_date": "2024-10-02",
+      "last_snapshot_date": "2026-07-02",
+      "join_rate_on_quality_rows": 0.887193,
+      "missing_join_examples": []
+    },
+    "target_price_note": "target_price is not used or present for this fixed-horizon replacement-value ledger; entry_price and replacement-value fields are present instead."
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 1544,
+    "signals_survived": 1179,
+    "survival_rate": 0.763601,
+    "note": "This is an observed-only attribution, not an executable survival-filter change."
+  },
+  "gate4": {
+    "passed": false,
+    "strategy_gate4_not_applicable": true,
+    "reason": "Observed-only event-distance lead bar failed; no strategy change accepted.",
+    "acceptance_rule": {
+      "primary_horizon": 10,
+      "event_buckets": [
+        {
+          "name": "near_event_0_30",
+          "min_days": 0,
+          "max_days": 30,
+          "description": "0 to 30 calendar days before next scheduled earnings"
+        },
+        {
+          "name": "mid_event_31_60",
+          "min_days": 31,
+          "max_days": 60,
+          "description": "31 to 60 calendar days before next scheduled earnings"
+        },
+        {
+          "name": "far_event_gt60",
+          "min_days": 61,
+          "max_days": null,
+          "description": "More than 60 calendar days before next scheduled earnings"
+        }
+      ],
+      "min_near_rows": 100,
+      "min_far_rows": 100,
+      "min_near_tickers": 20,
+      "min_far_tickers": 20,
+      "near_must_underperform_far_median_for": [
+        "cash",
+        "spy",
+        "qqq"
+      ],
+      "near_must_underperform_far_mean_count_gte": 2,
+      "max_single_negative_loss_share_guardrail": 0.5,
+      "negative_loss_hhi_guardrail": 0.35
+    },
+    "acceptance": {
+      "accepted_observed_only_lead": false,
+      "checks": {
+        "near_rows_gte_min": false,
+        "far_rows_gte_min": true,
+        "near_tickers_gte_min": false,
+        "far_tickers_gte_min": true,
+        "near_underperforms_far_all_medians": false,
+        "near_underperforms_far_at_least_2_means": false,
+        "near_loss_concentration_guardrail": true
+      },
+      "failed_reasons": [
+        "near_rows_gte_min",
+        "near_tickers_gte_min",
+        "near_underperforms_far_all_medians",
+        "near_underperforms_far_at_least_2_means"
+      ],
+      "concentration_checks": {
+        "cash": {
+          "max_single_negative_loss_share": 0.14152,
+          "negative_loss_hhi": 0.066752,
+          "passes_guardrail": true
+        },
+        "spy": {
+          "max_single_negative_loss_share": 0.127418,
+          "negative_loss_hhi": 0.055246,
+          "passes_guardrail": true
+        },
+        "qqq": {
+          "max_single_negative_loss_share": 0.102268,
+          "negative_loss_hhi": 0.044968,
+          "passes_guardrail": true
+        }
+      }
+    },
+    "failed_reasons": [
+      "near_rows_gte_min",
+      "near_tickers_gte_min",
+      "near_underperforms_far_all_medians",
+      "near_underperforms_far_at_least_2_means"
+    ],
+    "before_after_delta": {
+      "aggregate_expected_value_score_delta": 0.0,
+      "aggregate_total_pnl_delta": 0.0,
+      "aggregate_trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "no_strategy_behavior_change": true
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "uses_options_forward_outcome_ledger": true,
+    "uses_daily_earnings_snapshots": true,
+    "forward_only_not_fixed_window_pit_coverage": true,
+    "parity_note": "Observed-only attribution on experiment-owned forward outcome rows. No shared policy/helper or production adapter behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The event-distance join produced usable rows, but the fixed near-vs-far separation did not satisfy the predeclared sample, direction, and concentration checks.",
+    "decision_basis": "observed_only_rejected",
+    "forbidden_near_neighbor_retry": "Do not retune the 0-30/31-60/>60 day buckets, quote-vs-entry date join, options demand thresholds, IV/OI/spread/liquidity cuts, top-N, hold days, notional, cooldown, or response curves on the same exp-20260630-008 options ledger.",
+    "new_evidence_required": "Valid next evidence requires materially more closed options forward rows carrying the unchanged event-distance field, historical PIT options-chain coverage across canonical windows, borrow/loan cost context, or a genuinely different production event/cost field."
+  },
+  "related_files": [
+    "data/experiments/exp-20260630-008/options_forward_outcome_refresh_all_current_sources.jsonl",
+    "data/daily/snapshots/earnings",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260704_002_options_earnings_event_distance_forward_value.py",
+    "data/experiments/exp-20260704-002/exp_20260704_002_options_earnings_event_distance_forward_value.json",
+    "experiments/logs/exp-20260704-002.json",
+    "experiments/cards/exp-20260704-002.md",
+    "experiments/manifests/exp-20260704-002.json",
+    "experiments/tickets/exp-20260704-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-04T01:13:56+00:00"
+}

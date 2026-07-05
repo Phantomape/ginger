@@ -368,6 +368,44 @@ def _bar_by_date(rows: list[dict[str, Any]], target_date: str) -> dict[str, Any]
     return None
 
 
+def _next_market_date(
+    bars_by_ticker: dict[str, list[dict[str, Any]]],
+    observed_date: str,
+) -> str | None:
+    dates: list[str] = []
+    benchmark_rows = [
+        row
+        for ticker in ("SPY", "QQQ")
+        for row in bars_by_ticker.get(ticker, [])
+    ]
+    rows = benchmark_rows or [
+        row for ticker_rows in bars_by_ticker.values() for row in ticker_rows
+    ]
+    for row in rows:
+        day = row.get("_date")
+        if isinstance(day, str) and day > observed_date:
+            dates.append(day)
+    return min(dates) if dates else None
+
+
+def _missing_entry_status(
+    ticker_bars: list[dict[str, Any]],
+    bars_by_ticker: dict[str, list[dict[str, Any]]],
+    observed_date: str,
+) -> tuple[str, str]:
+    if not ticker_bars:
+        return "unsettled_no_entry_bar", "ticker_has_no_price_rows"
+    if _next_market_date(bars_by_ticker, observed_date) is None:
+        return (
+            "future_entry_session_not_reached",
+            "market_calendar_has_no_session_after_observed_date",
+        )
+    return (
+        "unsettled_no_entry_bar",
+        "market_calendar_has_next_session_but_ticker_missing_bar",
+    )
+
+
 def _pnl_for_bars(
     entry_bar: dict[str, Any],
     exit_bar: dict[str, Any],
@@ -431,7 +469,18 @@ def build_entity_theme_news_outcome_ledger(
                     "trade_enabled": False,
                 }
                 if entry_idx is None:
-                    rows.append({**base, "outcome_status": "unsettled_no_entry_bar"})
+                    status, detail = _missing_entry_status(
+                        ticker_bars,
+                        bars,
+                        observed_date,
+                    )
+                    rows.append(
+                        {
+                            **base,
+                            "outcome_status": status,
+                            "outcome_status_detail": detail,
+                        }
+                    )
                     continue
                 exit_idx = entry_idx + horizon - 1
                 entry_bar = ticker_bars[entry_idx]

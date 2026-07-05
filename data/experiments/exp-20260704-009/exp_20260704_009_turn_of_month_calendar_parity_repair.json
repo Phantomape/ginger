@@ -1,0 +1,305 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: accepted turn-of-month paper rows cannot mature if daily production omits deterministic month-end calendar context.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260704-009/exp_20260704_009_turn_of_month_calendar_parity_repair.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": null,
+    "surprise_note": "Low surprise: exp-20260704-008 isolated the missing month-end label, and the deterministic calendar wrapper repaired the representative row."
+  },
+  "causal_components": [
+    "deterministic US equity session month-end label",
+    "daily prep wrapper parity repair",
+    "focused regression test",
+    "production parity matrix update",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Daily turn-of-month prep now supplies known_month_end_dates for actual last regular US equity sessions, plus regression coverage and parity docs.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/turn_of_month_liquid_leadership_paper_sleeve.py",
+    "quant/test_turn_of_month_liquid_leadership_paper_sleeve.py",
+    "docs/production_backtest_parity_matrix.md",
+    "quant/experiments/exp_20260704_009_turn_of_month_calendar_parity_repair.py",
+    "data/experiments/exp-20260704-009/exp_20260704_009_turn_of_month_calendar_parity_repair.json",
+    "experiments/logs/exp-20260704-009.json",
+    "experiments/cards/exp-20260704-009.md",
+    "experiments/manifests/exp-20260704-009.json",
+    "experiments/tickets/exp-20260704-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "turn_of_month_daily_month_end_calendar_parity_repair_v1",
+  "decision": "accepted_measurement_repair_turn_of_month_daily_calendar_parity_repaired",
+  "delta_metrics": {
+    "after_repaired_prep_candidate_count": 1,
+    "before_no_calendar_candidate_count": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-009",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_scope": "No executable order or target exit is created. The repair restores default-off paper candidate observation and checks paper entry/exit fields.",
+    "fields_checked": [
+      "accepted target_trades_by_window",
+      "candidate_month_label",
+      "deterministic US equity session calendar",
+      "daily prep known_month_end_dates",
+      "decision_id",
+      "entry_date",
+      "exit_date"
+    ],
+    "passed": true,
+    "representative_signal_date": "2024-10-31",
+    "representative_window": "old_thin"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision_basis": "The repaired daily prep wrapper reproduced the accepted representative last-trading-day row without external calendar arguments, while the old no-calendar build path still failed closed. The fix supplies only a deterministic known-month-end label for actual last US equity sessions and leaves thresholds, rank, sizing, exits, orders, and live/default trading unchanged.",
+    "failed_reasons": [],
+    "mode": "measurement_repair_turn_of_month_daily_calendar_parity_repair",
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Alpha blocker: accepted turn-of-month liquid-leadership paper rows cannot accumulate forward replacement-value evidence because daily production does not pass explicit month-end calendar context; repair daily calendar parity without changing thresholds, ranking, sizing, exits, or orders.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260704-009.json",
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260609-027",
+    "exp-20260704-006",
+    "exp-20260704-008"
+  ],
+  "new_evidence_axis": "Measurement repair for the exact daily/replay calendar drift isolated by exp-20260704-008; this is not a turn-of-month threshold, notional, hold, cooldown, top-N, or response retune.",
+  "new_evidence_type": "daily_calendar_parity_repair_after_representative_probe",
+  "next_retry_requires": [
+    "post-repair forward turn_of_month rows",
+    "closed cash/SPY/QQQ replacement value",
+    "no frozen-window threshold/notional/hold/cooldown retune"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune month-start/end day counts, leadership thresholds, close-location, volume bounds, volatility bounds, top-N, hold-day, cooldown, notional, or response curves from this repair.",
+    "new_evidence_required": "Let future daily snapshots accumulate post-repair turn_of_month rows and closed cash/SPY/QQQ replacement values before any activation or allocation experiment.",
+    "why_result_happened": "The repaired daily prep wrapper reproduced the accepted representative last-trading-day row without external calendar arguments, while the old no-calendar build path still failed closed. The fix supplies only a deterministic known-month-end label for actual last US equity sessions and leaves thresholds, rank, sizing, exits, orders, and live/default trading unchanged."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "Default-off paper observation now labels true daily month-end dates through a deterministic market-session calendar. No core/live orders, ranking, sizing, exits, or prompts changed.",
+    "parity_test_added": true,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "repair_probe": {
+    "accepted_artifact": "data/experiments/exp-20260609-027/exp_20260609_027_turn_of_month_liquid_leadership_shared_adapter.json",
+    "accepted_trades": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": "2024-11-01",
+        "exit_date": "2024-11-14",
+        "month_label": "last_trading_day",
+        "pnl": 435.73,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "before_no_calendar_candidate_count": 0,
+    "before_no_calendar_candidates": [],
+    "before_no_calendar_matches_accepted": false,
+    "before_no_calendar_new_pending_count": 0,
+    "before_no_calendar_scan": {
+      "candidate_universe_count": 1245,
+      "daily_entry_slots": 1,
+      "days_with_raw_turn_of_month_candidates": 0,
+      "hold_days": 10,
+      "max_realized_vol_20d": 0.08,
+      "max_ret20": 0.3,
+      "max_ret5": 0.08,
+      "max_volume_ratio_20d": 3.0,
+      "min_avg_dollar_volume_20d": 75000000.0,
+      "min_close_location": 0.7,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": 0.025,
+      "min_ret5": -0.02,
+      "min_ret60_excess_spy": 0.0,
+      "min_signal_return": 0.002,
+      "min_volume_ratio_20d": 0.8,
+      "month_end_label_policy": "explicit_known_month_end_dates_only_fail_closed",
+      "month_label_distribution": {},
+      "paper_notional_usd": 4000.0,
+      "raw_turn_of_month_candidates": 0,
+      "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "same_ticker_cooldown_days": 10,
+      "scanned_trading_days": 1,
+      "turn_of_month_days": 0,
+      "unique_candidate_tickers": 0
+    },
+    "historical_audit": {
+      "raw_candidate_count_by_window": {
+        "old_thin": 6
+      },
+      "scan_by_window": {
+        "old_thin": {
+          "candidate_universe_count": 1245,
+          "daily_entry_slots": 1,
+          "days_with_raw_turn_of_month_candidates": 1,
+          "hold_days": 10,
+          "max_realized_vol_20d": 0.08,
+          "max_ret20": 0.3,
+          "max_ret5": 0.08,
+          "max_volume_ratio_20d": 3.0,
+          "min_avg_dollar_volume_20d": 75000000.0,
+          "min_close_location": 0.7,
+          "min_price": 10.0,
+          "min_ret20_excess_spy": 0.025,
+          "min_ret5": -0.02,
+          "min_ret60_excess_spy": 0.0,
+          "min_signal_return": 0.002,
+          "min_volume_ratio_20d": 0.8,
+          "month_end_label_policy": "explicit_or_calendar_dates_only",
+          "month_label_distribution": {
+            "last_trading_day": 1
+          },
+          "paper_notional_usd": 4000.0,
+          "raw_turn_of_month_candidates": 6,
+          "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+          "same_ticker_cooldown_days": 10,
+          "scanned_trading_days": 1,
+          "turn_of_month_days": 1,
+          "unique_candidate_tickers": 6
+        }
+      },
+      "total_selected": 1
+    },
+    "historical_matches_accepted": true,
+    "historical_trades": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": "2024-11-01",
+        "exit_date": "2024-11-14",
+        "month_label": "last_trading_day",
+        "pnl": 435.73,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "repaired_prep_candidate_count": 1,
+    "repaired_prep_candidates": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": null,
+        "exit_date": null,
+        "month_label": "last_trading_day",
+        "pnl": null,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "repaired_prep_matches_accepted": true,
+    "repaired_prep_new_pending_count": 1,
+    "repaired_prep_scan": {
+      "candidate_universe_count": 1245,
+      "daily_entry_slots": 1,
+      "days_with_raw_turn_of_month_candidates": 1,
+      "hold_days": 10,
+      "max_realized_vol_20d": 0.08,
+      "max_ret20": 0.3,
+      "max_ret5": 0.08,
+      "max_volume_ratio_20d": 3.0,
+      "min_avg_dollar_volume_20d": 75000000.0,
+      "min_close_location": 0.7,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": 0.025,
+      "min_ret5": -0.02,
+      "min_ret60_excess_spy": 0.0,
+      "min_signal_return": 0.002,
+      "min_volume_ratio_20d": 0.8,
+      "month_end_label_policy": "explicit_known_month_end_dates_only_fail_closed",
+      "month_label_distribution": {
+        "last_trading_day": 1
+      },
+      "paper_notional_usd": 4000.0,
+      "raw_turn_of_month_candidates": 6,
+      "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "same_ticker_cooldown_days": 10,
+      "scanned_trading_days": 1,
+      "turn_of_month_days": 1,
+      "unique_candidate_tickers": 6
+    },
+    "signal_date": "2024-10-31",
+    "window_label": "old_thin"
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\turn_of_month_liquid_leadership_paper_sleeve.py quant\\test_turn_of_month_liquid_leadership_paper_sleeve.py quant\\experiments\\exp_20260704_009_turn_of_month_calendar_parity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_turn_of_month_liquid_leadership_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_009_turn_of_month_calendar_parity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "turn_of_month_daily_month_end_calendar_parity_repair_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-04T11:10:03+00:00",
+  "trial_family": "turn_of_month_daily_calendar_parity_repair",
+  "trial_variant_id": "turn_of_month_known_month_end_daily_prep_v1",
+  "write_fallbacks": []
+}

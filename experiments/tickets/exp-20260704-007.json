@@ -1,0 +1,299 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_007_volatility_relief_admission_parity_probe.py",
+    "data/experiments/exp-20260704-007/exp_20260704_007_volatility_relief_admission_parity_probe.json",
+    "experiments/cards/exp-20260704-007.md",
+    "experiments/manifests/exp-20260704-007.json",
+    "experiments/tickets/exp-20260704-007.json",
+    "experiments/logs/exp-20260704-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: if an accepted default-off sleeve underfires because daily production semantics drifted from replay, forward replacement-value evidence will never mature; if the helper is parity-clean, the legal next step is to wait for true VIXY relief rows rather than retuning thresholds.",
+  "artifact": "data/experiments/exp-20260704-007/exp_20260704_007_volatility_relief_admission_parity_probe.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-007.md",
+  "causal_components": [
+    "real accepted historical relief-day replay",
+    "daily snapshot helper with persist false",
+    "accepted artifact ticker/decision/lifecycle comparison",
+    "current forward context reason audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_007_volatility_relief_admission_parity_probe.py",
+    "data/experiments/exp-20260704-007/exp_20260704_007_volatility_relief_admission_parity_probe.json",
+    "experiments/logs/exp-20260704-007.json",
+    "experiments/cards/exp-20260704-007.md",
+    "experiments/manifests/exp-20260704-007.json",
+    "experiments/tickets/exp-20260704-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "volatility_relief_daily_vs_replay_representative_day_parity_v1",
+  "claimed_at": "2026-07-04T09:05:28+00:00",
+  "completed_at": "2026-07-04T09:11:00+00:00",
+  "created_at": "2026-07-04T09:05:20+00:00",
+  "decision": "accepted_measurement_repair_volatility_relief_admission_parity_confirmed",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-007",
+  "experiment_uid": "expuid-d2aefda6b56f444c",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "accepted target_trades_by_window",
+      "historical OHLCV rows for VIXY/SPY/QQQ/candidates",
+      "broad-market sector universe",
+      "daily snapshot candidate_count/raw_candidate_count",
+      "decision_id",
+      "entry_date",
+      "exit_date"
+    ],
+    "entry_date_target_price_scope": "No executable order or target exit is created. The parity probe checks paper entry_date/exit_date lifecycle fields on closed historical/default-off paper rows.",
+    "representative_window": "old_thin",
+    "representative_signal_date": "2024-10-04"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity."
+  },
+  "gate4": {
+    "mode": "measurement_repair_volatility_relief_admission_parity",
+    "passed": true,
+    "accepted_measurement_repair": true,
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "failed_reasons": [],
+    "representative_parity_passed": true,
+    "current_zero_fire_explained_by_accepted_rule": true,
+    "decision_basis": "Accepted as measurement repair: a real historical accepted volatility-relief day matches between accepted artifact, shared historical replay, and daily snapshot helper; current forward zero-fire is explained by accepted-rule candidate absence on the few relief context-pass dates, not by helper admission drift."
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T09:05:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "volatility_relief_admission_parity_probe"
+  },
+  "hypothesis": "Alpha blocker: volatility_relief_leadership forward rows cannot mature until we know whether its zero daily admissions are real current-regime sparsity or replay/daily admission drift; validate a real historical accepted relief day through the daily snapshot helper and audit current forward context reasons without changing thresholds or orders.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "volatility_relief_daily_vs_replay_representative_day_parity_v1"
+  ],
+  "log_file": "experiments/logs/exp-20260704-007.json",
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260607-019",
+    "exp-20260704-006"
+  ],
+  "new_evidence_axis": "Measurement-only representative-day parity evidence for an accepted default-off sleeve named by exp-20260704-006; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+  "new_evidence_type": "representative_day_daily_vs_replay_parity_probe",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "a",
+        "accepted",
+        "admission",
+        "admissions",
+        "alpha",
+        "are",
+        "audit",
+        "blocker",
+        "cannot",
+        "changing",
+        "context",
+        "current",
+        "daily",
+        "drift",
+        "forward",
+        "helper",
+        "historical",
+        "its",
+        "know",
+        "leadership",
+        "mature",
+        "or",
+        "orders",
+        "parity",
+        "probe",
+        "real",
+        "reasons",
+        "regime",
+        "representative",
+        "rows",
+        "snapshot",
+        "sparsity",
+        "thresholds",
+        "through",
+        "until",
+        "validate",
+        "volatility",
+        "we",
+        "whether",
+        "without",
+        "zero"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard_refresh",
+        "reopen_condition": "Reopen regime soft-tilt activation only after at least 50 tagged forward rows and at least 20 non-risk_on rows exist, or after a new forward/live-pilot policy surface creates materially different rows.",
+        "score": 0.4848,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.484,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_fidelity_daily_regime_chop_context",
+        "reopen_condition": "Once exp-20260607-003 releases run.py, pass universe_ohlcv_by_ticker to build_readonly_market_state_context for full-fidelity breadth. Then validate the exposure_scalar soft tilt on forward / live-pilot rows tagged with entry-time regime_chop. Do not tune constants on frozen windows.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "default_off_forward_regime_tagging",
+        "reopen_condition": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+        "score": 0.4761,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The helper reproduced a real accepted historical relief day in daily snapshot mode, including tickers, decision IDs, entry/exit dates, and context. Current forward snapshots had three VIXY/SPY/QQQ relief context-pass dates but zero accepted-rule stock-leadership raw candidates, so zero admissions are expected under the accepted rule.",
+    "forbidden_near_neighbor_retry": "Do not retune VIXY decline, SPY/QQQ relief, stock leadership, top-N, hold-day, cooldown, notional, or response curves from this zero-fire span. Its few relief context-pass dates produced no accepted-rule stock-leadership candidates.",
+    "new_evidence_required": "Reopen volatility-relief activation only after new forward daily snapshots include actual VIXY relief context passes with closed cash/SPY/QQQ replacement value, or after a concrete daily helper input drift is observed."
+  },
+  "prediction": null,
+  "prior_trial_count": 0,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Read-only parity probe over the existing shared volatility-relief helper and existing paper snapshots. It does not alter live/default orders, rankings, sizing, exits, or paper snapshot generation."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260704_007_volatility_relief_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_007_volatility_relief_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_volatility_relief_admission_parity_confirmed",
+    "artifact": "data/experiments/exp-20260704-007/exp_20260704_007_volatility_relief_admission_parity_probe.json",
+    "log": "experiments/logs/exp-20260704-007.json",
+    "runner": "quant/experiments/exp_20260704_007_volatility_relief_admission_parity_probe.py",
+    "gate4": {
+      "mode": "measurement_repair_volatility_relief_admission_parity",
+      "passed": true,
+      "accepted_measurement_repair": true,
+      "accepted_alpha": false,
+      "strategy_behavior_changed": false,
+      "failed_reasons": [],
+      "representative_parity_passed": true,
+      "current_zero_fire_explained_by_accepted_rule": true,
+      "decision_basis": "Accepted as measurement repair: a real historical accepted volatility-relief day matches between accepted artifact, shared historical replay, and daily snapshot helper; current forward zero-fire is explained by accepted-rule candidate absence on the few relief context-pass dates, not by helper admission drift."
+    },
+    "summary": "The helper reproduced a real accepted historical relief day in daily snapshot mode, including tickers, decision IDs, entry/exit dates, and context. Current forward snapshots had three VIXY/SPY/QQQ relief context-pass dates but zero accepted-rule stock-leadership raw candidates, so zero admissions are expected under the accepted rule."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-007.json",
+  "single_causal_variable": "volatility_relief_daily_vs_replay_representative_day_parity_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260704-007.json",
+  "trial_family": "volatility_relief_admission_parity_probe",
+  "trial_variant_id": "volatility_relief_representative_day_daily_vs_replay_v1",
+  "updated_at": "2026-07-04T09:11:00+00:00"
+}

@@ -2,10 +2,10 @@
   "after_metrics": {
     "accepted_core_expected_value_score_sum": 7.8941,
     "accepted_core_total_pnl_sum": 234850.99,
-    "bucket_a_closed_5d_outcomes": 7,
+    "bucket_a_closed_5d_outcomes": 8,
     "candidate_objects_total": 43,
     "strategy_behavior_changed": false,
-    "total_usable_candidates": 42
+    "total_usable_candidates": 43
   },
   "annotated_candidates": [
     {
@@ -2149,11 +2149,13 @@
           "return": null
         },
         "5d": {
-          "closed": false,
-          "future_date": null,
-          "gap_reason": "missing_5d_forward_price",
-          "pnl_proxy": null,
-          "return": null
+          "closed": true,
+          "future_close": 1213.91,
+          "future_date": "2026-07-03",
+          "gap_reason": null,
+          "pnl_proxy": 47.93,
+          "return": 0.004793,
+          "start_close": 1208.12
         }
       },
       "pit_caveat": null,
@@ -2234,20 +2236,21 @@
           "worst_row": null
         },
         "5d": {
-          "avg_pnl_proxy": 121.93,
+          "avg_pnl_proxy": 112.68,
           "avg_r": null,
-          "avg_return": 0.012193,
+          "avg_return": 0.011268,
           "candidate_count": 8,
-          "closed_outcomes": 7,
-          "max_single_ticker_positive_share": 0.615587,
+          "closed_outcomes": 8,
+          "max_single_ticker_positive_share": 0.603954,
           "positive_pnl_by_ticker": {
             "CAT": 1531.82,
+            "LLY": 47.93,
             "WDC": 956.57
           },
           "tail_loss": -0.117416,
           "top5_positive_contribution_share": 1.0,
-          "total_pnl_proxy": 853.53,
-          "win_rate": 0.5714,
+          "total_pnl_proxy": 901.46,
+          "win_rate": 0.625,
           "worst_return": -0.058708,
           "worst_row": {
             "as_of_date": "2026-06-20",
@@ -2580,7 +2583,7 @@
     "closed_forward_outcomes": {
       "10d": 42,
       "20d": 30,
-      "5d": 42
+      "5d": 43
     },
     "expectation_join_status_counts": {
       "ledger_row_not_usable": 12,
@@ -2613,7 +2616,7 @@
       "data/daily/signals/trend/trend_signals_*.json"
     ]
   },
-  "decision": "observed_only_data_gap",
+  "decision": "rejected_expectation_residual_leadership_attribution",
   "delta_metrics": {
     "expected_value_score_sum_delta": 0.0,
     "strategy_behavior_delta": 0,
@@ -2622,16 +2625,62 @@
   "expected_value_score_delta": 0.0,
   "experiment_id": "exp-20260525-017",
   "gate": {
-    "bucket_a_closed_5d_outcomes": 7,
-    "data_gap_reasons": [
-      "bucket_a_closed_5d_outcomes"
+    "bucket_a_closed_5d_outcomes": 8,
+    "comparisons": [
+      {
+        "bucket_a_avg_return": 0.011268,
+        "comparison_avg_return": null,
+        "comparison_bucket": "B_positive_expectation_only",
+        "horizon": "5d",
+        "passed": false
+      },
+      {
+        "bucket_a_avg_return": 0.011268,
+        "comparison_avg_return": -0.049747,
+        "comparison_bucket": "C_residual_leader_only",
+        "horizon": "5d",
+        "passed": true
+      },
+      {
+        "bucket_a_avg_return": 0.011268,
+        "comparison_avg_return": 0.000331,
+        "comparison_bucket": "D_neither",
+        "horizon": "5d",
+        "passed": true
+      },
+      {
+        "bucket_a_avg_return": 0.015016,
+        "comparison_avg_return": null,
+        "comparison_bucket": "B_positive_expectation_only",
+        "horizon": "10d",
+        "passed": false
+      },
+      {
+        "bucket_a_avg_return": 0.015016,
+        "comparison_avg_return": -0.091422,
+        "comparison_bucket": "C_residual_leader_only",
+        "horizon": "10d",
+        "passed": true
+      },
+      {
+        "bucket_a_avg_return": 0.015016,
+        "comparison_avg_return": -0.017556,
+        "comparison_bucket": "D_neither",
+        "horizon": "10d",
+        "passed": true
+      }
     ],
-    "decision": "observed_only_data_gap",
-    "minimum_bucket_a_closed_5d_outcomes": 8,
-    "minimum_total_usable_candidates": 30,
+    "concentration": {
+      "max_single_ticker_positive_guardrail": 0.5,
+      "max_single_ticker_positive_share": 0.603954,
+      "passed": false,
+      "top5_positive_contribution_guardrail": 0.6,
+      "top5_positive_contribution_share": 1.0
+    },
+    "decision": "rejected_expectation_residual_leadership_attribution",
     "passed": false,
-    "reason": "insufficient_bucket_or_total_sample",
-    "total_usable_candidates": 42
+    "reason": "bucket_a_failed_outperformance_or_concentration",
+    "total_usable_candidates": 43
   },
   "gate1": {
     "accepted_core_expected_value_score_sum": 7.8941,
@@ -2748,7 +2797,7 @@
     "trade_enabled": false
   },
   "reconstructed_scout": {
-    "bucket_a_closed_5d_outcomes": 7,
+    "bucket_a_closed_5d_outcomes": 8,
     "bucket_summary": {
       "A_positive_expectation_and_residual_leader": {
         "candidate_count": 8,
@@ -2805,20 +2854,21 @@
             "worst_row": null
           },
           "5d": {
-            "avg_pnl_proxy": 121.93,
+            "avg_pnl_proxy": 112.68,
             "avg_r": null,
-            "avg_return": 0.012193,
+            "avg_return": 0.011268,
             "candidate_count": 8,
-            "closed_outcomes": 7,
-            "max_single_ticker_positive_share": 0.615587,
+            "closed_outcomes": 8,
+            "max_single_ticker_positive_share": 0.603954,
             "positive_pnl_by_ticker": {
               "CAT": 1531.82,
+              "LLY": 47.93,
               "WDC": 956.57
             },
             "tail_loss": -0.117416,
             "top5_positive_contribution_share": 1.0,
-            "total_pnl_proxy": 853.53,
-            "win_rate": 0.5714,
+            "total_pnl_proxy": 901.46,
+            "win_rate": 0.625,
             "worst_return": -0.058708,
             "worst_row": {
               "as_of_date": "2026-06-20",
@@ -3148,7 +3198,7 @@
       "closed_forward_outcomes": {
         "10d": 42,
         "20d": 30,
-        "5d": 42
+        "5d": 43
       },
       "expectation_join_status_counts": {
         "missing_ledger_row": 2,
@@ -3175,17 +3225,63 @@
     },
     "data_policy": "Uses eps_estimate_delta_7d from both PIT-usable and non-PIT/reconstructed estimate_revision_ledger rows. This can guide research direction but cannot pass the primary gate.",
     "gate_like_check": {
-      "bucket_a_closed_5d_outcomes": 7,
-      "data_gap_reasons": [
-        "bucket_a_closed_5d_outcomes"
+      "bucket_a_closed_5d_outcomes": 8,
+      "comparisons": [
+        {
+          "bucket_a_avg_return": 0.011268,
+          "comparison_avg_return": null,
+          "comparison_bucket": "B_positive_expectation_only",
+          "horizon": "5d",
+          "passed": false
+        },
+        {
+          "bucket_a_avg_return": 0.011268,
+          "comparison_avg_return": -0.049747,
+          "comparison_bucket": "C_residual_leader_only",
+          "horizon": "5d",
+          "passed": true
+        },
+        {
+          "bucket_a_avg_return": 0.011268,
+          "comparison_avg_return": 0.000331,
+          "comparison_bucket": "D_neither",
+          "horizon": "5d",
+          "passed": true
+        },
+        {
+          "bucket_a_avg_return": 0.015016,
+          "comparison_avg_return": null,
+          "comparison_bucket": "B_positive_expectation_only",
+          "horizon": "10d",
+          "passed": false
+        },
+        {
+          "bucket_a_avg_return": 0.015016,
+          "comparison_avg_return": -0.091422,
+          "comparison_bucket": "C_residual_leader_only",
+          "horizon": "10d",
+          "passed": true
+        },
+        {
+          "bucket_a_avg_return": 0.015016,
+          "comparison_avg_return": -0.017556,
+          "comparison_bucket": "D_neither",
+          "horizon": "10d",
+          "passed": true
+        }
       ],
-      "decision": "observed_only_data_gap",
+      "concentration": {
+        "max_single_ticker_positive_guardrail": 0.5,
+        "max_single_ticker_positive_share": 0.603954,
+        "passed": false,
+        "top5_positive_contribution_guardrail": 0.6,
+        "top5_positive_contribution_share": 1.0
+      },
+      "decision": "rejected_expectation_residual_leadership_attribution",
       "decision_scope": "scout_only_not_promotable",
-      "minimum_bucket_a_closed_5d_outcomes": 8,
-      "minimum_total_usable_candidates": 30,
       "passed": false,
-      "reason": "insufficient_bucket_or_total_sample",
-      "total_usable_candidates": 42
+      "reason": "bucket_a_failed_outperformance_or_concentration",
+      "total_usable_candidates": 43
     },
     "not_gate4_evidence": true,
     "pit_caveat_counts": {
@@ -3199,9 +3295,9 @@
       "non_pit_reconstructed": 12,
       "pit_usable": 29
     },
-    "total_usable_candidates": 42
+    "total_usable_candidates": 43
   },
-  "rejection_reason": "insufficient expectation-residual candidate/outcome coverage",
+  "rejection_reason": "bucket A failed outperformance or concentration gate",
   "related_files": [
     "quant/experiments/exp_20260525_017_expectation_residual_leadership_attribution.py",
     "data/experiments/exp-20260525-017/expectation_residual_leadership_attribution.json",
@@ -3211,8 +3307,8 @@
     "docs/experiment_log.jsonl"
   ],
   "single_causal_variable": "expectation_residual_leadership_bucket_attribution_v1",
-  "status": "observed_only_data_gap",
-  "timestamp": "2026-07-03T03:40:09Z",
+  "status": "rejected",
+  "timestamp": "2026-07-05T03:27:58Z",
   "trial_family": "expectation_residual_leadership_bucket_attribution",
   "trial_variant_id": "bucket_attribution_v1"
 }

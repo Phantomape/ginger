@@ -13,11 +13,14 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from backtester import BacktestEngine  # noqa: E402
 from ohlcv_warehouse import (  # noqa: E402
+    _retry_sqlite,
+    connect_overlay_reader,
     hot_path_for,
     hot_status,
     load_warehouse_snapshot_ohlcv_frames,
     load_warehouse_ohlcv_frames,
     merge_hot_into_cold,
+    overlay_reader_status,
     seed_warehouse_snapshot_versions,
     seed_warehouse_from_snapshots,
     upsert_ohlcv_frames,
@@ -407,3 +410,109 @@ def test_merge_hot_no_hot_is_noop(tmp_path):
     summary = merge_hot_into_cold(cold)
     assert summary["status"] == "no_hot"
     assert summary["inserted"] == 0
+
+
+def test_overlay_reader_status_reports_attached_hot(tmp_path):
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)
+    hot_frame = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")[
+        "AAA"
+    ].copy()
+    upsert_ohlcv_frames(hot_path_for(cold), {"AAA": hot_frame}, source="hot")
+
+    conn = connect_overlay_reader(cold)
+    try:
+        status = overlay_reader_status(conn)
+    finally:
+        conn.close()
+    assert status["hot_exists"] is True
+    assert status["hot_attached"] is True
+    assert status["hot_error"] is None
+
+
+def test_overlay_reader_hot_attach_is_read_only(tmp_path):
+    # A reader must never compete for write locks with the daily hot writer
+    # (exp-20260704-017: write-lock contention surfaced as disk I/O errors).
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)
+    hot_frame = load_warehouse_ohlcv_frames(cold, ["AAA"], "2025-01-01", "2025-01-10")[
+        "AAA"
+    ].copy()
+    upsert_ohlcv_frames(hot_path_for(cold), {"AAA": hot_frame}, source="hot")
+
+    conn = connect_overlay_reader(cold)
+    try:
+        try:
+            conn.execute(
+                "INSERT INTO hot.ohlcv VALUES ('ZZZ','2025-01-09',1,1,1,1,1,'x','x')"
+            )
+            raised = False
+        except sqlite3.OperationalError:
+            raised = True
+    finally:
+        conn.close()
+    assert raised
+
+
+def test_overlay_reader_unreadable_hot_falls_back_cold_with_status(tmp_path):
+    # exp-20260704-012: an unreadable hot tier silently froze reads at the cold
+    # date edge. The fallback must still serve cold rows but report itself.
+    cold = tmp_path / "warehouse_main.sqlite"
+    _seed_cold(cold)
+    hot_path_for(cold).write_bytes(b"this is not a sqlite database at all....")
+
+    conn = connect_overlay_reader(cold)
+    try:
+        rows = conn.execute(
+            "SELECT COUNT(*) FROM ohlcv_overlay WHERE ticker = 'AAA'"
+        ).fetchone()[0]
+        status = overlay_reader_status(conn)
+    finally:
+        conn.close()
+    assert rows == 2  # cold rows still served
+    assert status["hot_exists"] is True
+    assert status["hot_attached"] is False
+    assert status["hot_error"]
+
+
+def test_retry_sqlite_retries_transient_errors_and_raises_others(monkeypatch):
+    import ohlcv_warehouse as wh
+
+    monkeypatch.setattr(wh.time, "sleep", lambda _s: None)
+
+    calls = {"n": 0}
+
+    def flaky():
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise sqlite3.OperationalError("disk I/O error")
+        return "ok"
+
+    assert _retry_sqlite(flaky, what="test flaky") == "ok"
+    assert calls["n"] == 3
+
+    def always_broken():
+        calls["n"] += 1
+        raise sqlite3.OperationalError("disk I/O error")
+
+    calls["n"] = 0
+    try:
+        _retry_sqlite(always_broken, what="test exhausted")
+        exhausted_raised = False
+    except sqlite3.OperationalError:
+        exhausted_raised = True
+    assert exhausted_raised
+    assert calls["n"] == 4  # initial attempt + 3 retries
+
+    def not_transient():
+        calls["n"] += 1
+        raise sqlite3.OperationalError("no such table: nope")
+
+    calls["n"] = 0
+    try:
+        _retry_sqlite(not_transient, what="test non-transient")
+        non_transient_raised = False
+    except sqlite3.OperationalError:
+        non_transient_raised = True
+    assert non_transient_raised
+    assert calls["n"] == 1  # no retry on non-transient errors

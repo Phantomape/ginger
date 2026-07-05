@@ -1,0 +1,336 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/sec_contract_relation_provenance.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/experiments/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+    "experiments/cards/exp-20260703-022.md",
+    "experiments/manifests/exp-20260703-022.json",
+    "experiments/tickets/exp-20260703-022.json",
+    "experiments/logs/exp-20260703-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-022.md",
+  "causal_components": [
+    "shared amount/duration regex extractor",
+    "normalized counterparty count tags",
+    "full-surface materialization verification",
+    "daily persist verification in experiment-owned probe data",
+    "no trading behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/sec_contract_relation_provenance.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/experiments/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+    "experiments/cards/exp-20260703-022.md",
+    "experiments/manifests/exp-20260703-022.json",
+    "experiments/tickets/exp-20260703-022.json",
+    "experiments/logs/exp-20260703-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_item101_contract_economic_terms_shared_observer_surface",
+  "claimed_at": "2026-07-03T22:04:27+00:00",
+  "completed_at": "2026-07-03T22:10:16+00:00",
+  "created_at": "2026-07-03T22:04:15+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-022",
+  "experiment_uid": "expuid-20caadce14ca4634",
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "failed_reasons": [],
+    "checks": {
+      "real_surface_rows_present": true,
+      "all_rebuilt_rows_have_bucket": true,
+      "amount_or_duration_rows_present": true,
+      "daily_probe_ok": true,
+      "daily_probe_rows_have_bucket": true,
+      "strategy_identity_unchanged": true
+    },
+    "decision_basis": "Accepted only as measurement repair: shared observer rows now carry the exp021 economic-term tags needed for future forward replacement-value evidence."
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T22:04:15+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_item101_contract_economic_terms_daily_surface"
+  },
+  "hypothesis": "Expose the exp-20260703-021 SEC Item 1.01 contract economic-terms extractor in the shared observer-only provenance surface so future daily rows can accumulate closed replacement-value evidence under the unchanged amount/duration field contract without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_item101_contract_economic_terms_shared_observer_surface"
+  ],
+  "mechanism_family": "sec_contract_relation_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-017",
+    "exp-20260703-018",
+    "exp-20260703-019",
+    "exp-20260703-020",
+    "exp-20260703-021"
+  ],
+  "new_evidence_type": "alpha_enabling_shared_observer_field_contract",
+  "next_retry_requires": [
+    "prospectively accumulated daily Item 1.01 economics rows with closed replacement value",
+    "exhibit-level normalized customer/supplier identity",
+    "contract revenue exposure by counterparty",
+    "a different non-SEC-text economic relation source"
+  ],
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "accumulate",
+        "amount",
+        "behavior",
+        "can",
+        "changing",
+        "closed",
+        "contract",
+        "daily",
+        "duration",
+        "economic",
+        "evidence",
+        "exp",
+        "expose",
+        "extractor",
+        "field",
+        "future",
+        "in",
+        "item",
+        "item101",
+        "observer",
+        "only",
+        "provenance",
+        "replacement",
+        "rows",
+        "so",
+        "surface",
+        "terms",
+        "trading",
+        "unchanged",
+        "under",
+        "value",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_daily_form_index_s1_f1_425_ingestion",
+        "reopen_condition": "An entity->listed-ticker exposure map plus next-open forward replacement-value rows for event-linked tickers, compared against explicit-ticker control rows and accepted relation comparators.",
+        "score": 0.4786,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "post_sec_item_nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "Best next alpha work is data-edge construction, not another replay: historical PIT 13F/crowding snapshots by filing availability date, supplier/customer concentration or payment-term contract fields for DPO, borrow fee/availability/utilization, PIT options history with vendor_asof, or mature closed forward replacement-value rows from accepted shared helpers.",
+        "score": 0.4722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_corporate_event_stream_daily_pipeline_wiring",
+        "reopen_condition": "Fresh closed current SEC corporate-event rows, parsed registered-amount/resale/selling-holder/effectiveness fields, or a distinct PIT event relation source. Not another historical theme/form/horizon cut.",
+        "score": 0.4716,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_contract_value_market_cap_materiality_candidate_pool",
+        "reopen_condition": "A retry needs materially richer PIT relation provenance, such as normalized customer/supplier identity, contract duration/funding certainty, revenue exposure by named counterparty, or closed forward replacement-value rows from a shared daily helper. Do not sweep market-cap ratio, regex phrase lists, value thresholds, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these f",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_13d_item4_governance_terms_surface",
+        "reopen_condition": "A valid alpha retry needs fixed use of the new board-seat/standstill fields with Gate 1-4, campaign/board-seat outcome evidence beyond regex provenance, repaired old_thin coverage, or closed forward replacement-value rows.",
+        "score": 0.4711,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The exp021 extractor depended only on evidence snippets and counterparty candidates already produced by the shared observer, so moving it into the observer surface was a narrow field-contract repair.",
+    "forbidden_near_neighbor_retry": "Do not sweep Item 1.01 amount regexes, duration regexes, counterparty-count thresholds, relation priority, top-N, hold, notional, or response curves on these rows.",
+    "new_evidence_required": "Next alpha evidence requires prospectively accumulated daily Item 1.01 economics rows with closed cash/SPY/QQQ replacement value, true exhibit-level normalized customer/supplier identity, contract revenue exposure, or a different non-SEC-text source."
+  },
+  "prediction": {
+    "success_probability": 0.82,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared_extractor_does_not_match_runner_contract",
+      "daily_persist_path_omits_new_fields",
+      "real_surface_has_zero_amount_or_duration_rows"
+    ],
+    "confidence_reason": "exp-20260703-021 already proved the extractor on the same local provenance rows. This repair only moves that fixed observer-only field contract into the shared surface and verifies daily persistence.",
+    "recorded_at": "2026-07-03T22:04:15+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_sec_item101_contract_economic_terms_daily_surface",
+    "artifact": "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+    "log": "experiments/logs/exp-20260703-022.json",
+    "runner": "quant/experiments/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.py",
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "strategy_behavior_changed": false,
+      "failed_reasons": [],
+      "checks": {
+        "real_surface_rows_present": true,
+        "all_rebuilt_rows_have_bucket": true,
+        "amount_or_duration_rows_present": true,
+        "daily_probe_ok": true,
+        "daily_probe_rows_have_bucket": true,
+        "strategy_identity_unchanged": true
+      },
+      "decision_basis": "Accepted only as measurement repair: shared observer rows now carry the exp021 economic-term tags needed for future forward replacement-value evidence."
+    },
+    "summary": {
+      "source_file_count": 475,
+      "rebuilt_provenance_rows": 292,
+      "rebuilt_amount_or_duration_rows": 70,
+      "rebuilt_contract_amount_rows": 70,
+      "rebuilt_contract_duration_rows": 1,
+      "before_global_rows_with_economic_terms_bucket": 0,
+      "daily_probe_status": "ok",
+      "daily_probe_rows": 1,
+      "decision": "accepted_measurement_repair_sec_item101_contract_economic_terms_daily_surface"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-022.json",
+  "single_causal_variable": "sec_item101_contract_economic_terms_shared_observer_surface",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260703-022.json",
+  "trial_family": "sec_item101_contract_economic_terms_daily_surface",
+  "trial_variant_id": "shared_observer_surface_v1",
+  "alpha_hypothesis": "candidate_pool: Item 1.01 contracts with machine-checkable amount or duration terms may have better replacement value, but only after the same fields are logged by the shared observer for future rows.",
+  "implementation_mode": "shared_observer_surface_repair",
+  "decision": "accepted_measurement_repair_sec_item101_contract_economic_terms_daily_surface",
+  "artifact": "data/experiments/exp-20260703-022/exp_20260703_022_sec_item101_contract_economic_terms_daily_surface.json",
+  "log_file": "experiments/logs/exp-20260703-022.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    },
+    "note": "Canonical strategy baseline is an identity reference only."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "economic_terms_bucket",
+      "economic_terms_detail_bucket",
+      "contract_amount_count",
+      "contract_amount_examples",
+      "contract_duration_count",
+      "contract_duration_examples",
+      "normalized_counterparty_count",
+      "counterparty_examples",
+      "has_contract_amount",
+      "has_contract_duration",
+      "has_named_counterparty"
+    ],
+    "target_price_relevance": "Observer-only provenance rows do not create target exits or orders."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, rank, size, exit, prompt, or order rule changed."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "daily_snapshot_schema_changed": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "trade_enabled": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "The existing run.py daily hook calls the shared observer. This repair only enriches observer-only rows saved by that hook."
+  },
+  "related_files": [
+    "quant/sec_contract_relation_provenance.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/run.py",
+    "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "experiments/logs/exp-20260703-021.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T22:10:16+00:00"
+}

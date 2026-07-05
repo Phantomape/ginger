@@ -225,6 +225,67 @@ def test_entity_theme_outcome_ledger_keeps_immature_rows_unsettled():
     assert "replacement_value_vs_cash_usd" not in rows[0]
 
 
+def test_entity_theme_outcome_ledger_separates_future_entry_from_missing_price():
+    items = [
+        {
+            "entity_theme_query_id": "future_session_theme",
+            "candidate_tickers": ["FUTR"],
+            "published_at": "2026-07-04T22:00:00+00:00",
+        },
+        {
+            "entity_theme_query_id": "missing_ticker_theme",
+            "candidate_tickers": ["MISS"],
+            "published_at": "2026-07-01T22:00:00+00:00",
+        },
+    ]
+    ohlcv = {
+        "FUTR": _bars("FUTR", [("2026-07-02", 20.0, 21.0)]),
+        "MISS": _bars("MISS", [("2026-07-01", 10.0, 10.0)]),
+        "SPY": _bars(
+            "SPY",
+            [
+                ("2026-07-01", 500.0, 500.0),
+                ("2026-07-02", 500.0, 505.0),
+            ],
+        ),
+        "QQQ": _bars(
+            "QQQ",
+            [
+                ("2026-07-01", 400.0, 400.0),
+                ("2026-07-02", 400.0, 404.0),
+            ],
+        ),
+    }
+
+    rows, summary = build_entity_theme_news_outcome_ledger(
+        items,
+        ohlcv,
+        as_of_date="2026-07-04",
+        horizons=(2,),
+        notional_usd=4000.0,
+    )
+
+    by_query = {row["entity_theme_query_id"]: row for row in rows}
+    assert summary["settled_count"] == 0
+    assert summary["status_counts"] == {
+        "future_entry_session_not_reached": 1,
+        "unsettled_no_entry_bar": 1,
+    }
+    assert (
+        by_query["future_session_theme"]["outcome_status"]
+        == "future_entry_session_not_reached"
+    )
+    assert (
+        by_query["future_session_theme"]["outcome_status_detail"]
+        == "market_calendar_has_no_session_after_observed_date"
+    )
+    assert by_query["missing_ticker_theme"]["outcome_status"] == "unsettled_no_entry_bar"
+    assert (
+        by_query["missing_ticker_theme"]["outcome_status_detail"]
+        == "market_calendar_has_next_session_but_ticker_missing_bar"
+    )
+
+
 def test_persist_entity_theme_news_outcome_ledger_reads_accumulated_daily_items(
     tmp_path,
 ):

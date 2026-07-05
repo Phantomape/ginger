@@ -1,0 +1,484 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_021_sec_item101_contract_relation_economic_terms.py",
+    "data/experiments/exp-20260703-021/exp_20260703_021_sec_item101_contract_relation_economic_terms.json",
+    "experiments/cards/exp-20260703-021.md",
+    "experiments/manifests/exp-20260703-021.json",
+    "experiments/tickets/exp-20260703-021.json",
+    "experiments/logs/exp-20260703-021.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-021.md",
+  "causal_components": [
+    "fixed relation bucket priority",
+    "machine-checkable contract economics extraction",
+    "daily top-1 compression",
+    "amount_or_duration versus no_amount_or_duration attribution",
+    "next-open 10-session outcomes",
+    "cash/SPY/QQQ replacement-value verdict",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_variable": "sec_item101_contract_relation_economic_terms_top1_10d_v1",
+  "claimed_at": "2026-07-03T21:06:12+00:00",
+  "completed_at": "2026-07-03T21:11:00+00:00",
+  "created_at": "2026-07-03T21:06:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-021",
+  "experiment_uid": "expuid-7f261469eca84add",
+  "gate4": {
+    "passed": true,
+    "observed_only": true,
+    "accepted_alpha": false,
+    "decision": "observed_only_positive_sec_item101_contract_economic_terms_lead",
+    "acceptance_rule": {
+      "target_bucket": "amount_or_duration",
+      "control_bucket": "no_amount_or_duration",
+      "min_target_rows": 12,
+      "min_settled_windows": 2,
+      "min_target_rows_per_window": 3,
+      "min_positive_target_windows_vs_spy_and_qqq": 2,
+      "max_top_ticker_share": 0.4,
+      "require_target_primary_means_positive": true,
+      "require_target_primary_medians_nonnegative": true,
+      "require_target_lift_vs_control": true
+    },
+    "acceptance_checks": {
+      "target_rows_min_passed": true,
+      "target_settled_windows_min_passed": true,
+      "positive_target_windows_vs_spy_and_qqq_passed": true,
+      "target_primary_means_positive": true,
+      "target_primary_medians_nonnegative": true,
+      "target_lift_vs_control_positive": true,
+      "target_top_ticker_share_passed": true
+    },
+    "failed_reasons": [],
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T21:06:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_item101_contract_relation_economic_terms"
+  },
+  "hypothesis": "Within the fixed SEC 8-K Item 1.01 contract-relation provenance rows, machine-extracted contract economics such as dollar amount, duration language, and normalized counterparty-count may distinguish material agreements with better 10-session replacement value than boilerplate relations.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_item101_contract_relation_economic_terms_top1_10d_v1"
+  ],
+  "mechanism_family": "sec_contract_relation_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/sec_contract_relation_provenance.py",
+    "quant/sec_item101_contract_relation_paper_sleeve.py",
+    "quant/test_sec_contract_relation_provenance.py",
+    "quant/test_sec_item101_contract_relation_paper_sleeve.py",
+    "quant/test_run_daily_wiring.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260703-017",
+    "exp-20260703-018",
+    "exp-20260703-019",
+    "exp-20260703-020"
+  ],
+  "new_evidence_type": "new_relation_economics_field",
+  "next_retry_requires": [
+    "prospectively accumulated daily Item 1.01 economics rows with closed replacement value",
+    "exhibit-level normalized customer/supplier identity",
+    "contract revenue exposure by counterparty",
+    "a different non-SEC-text economic relation source"
+  ],
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_named_counterparty_contract_economics_candidate_pool",
+        "score": 0.6316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "free_sec_submissions_8k_contract_termination_absorption_candidate_pool",
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_text_structured_contract_economics_candidate_pool",
+        "score": 0.6205,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "issuer_8k_public_counterparty_relation_candidate_pool",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_text_contract_value_market_cap_materiality_candidate_pool",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "agreements",
+        "alpha",
+        "amount",
+        "as",
+        "attribution",
+        "better",
+        "boilerplate",
+        "contract",
+        "count",
+        "counterparty",
+        "distinguish",
+        "dollar",
+        "duration",
+        "economic",
+        "economics",
+        "extracted",
+        "item",
+        "item101",
+        "k",
+        "language",
+        "machine",
+        "material",
+        "may",
+        "normalized",
+        "observed",
+        "only",
+        "provenance",
+        "relation",
+        "relations",
+        "replacement",
+        "rows",
+        "session",
+        "such",
+        "terms",
+        "than",
+        "value",
+        "within"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_named_counterparty_contract_economics_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer PIT relation provenance, such as normalized customer/supplier identity from exhibits, contract duration/funding certainty, revenue exposure by named counterparty, or closed forward replacement-value rows from a shared daily helper.",
+        "score": 0.6316,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_8k_contract_termination_absorption_candidate_pool",
+        "reopen_condition": "If this fixed Item 1.02 contract-termination absorption bundle fails, do not retry by sweeping 8-K/A inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT termination economics such as termination party, remaining contract value, revenue/customer concentra",
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_structured_contract_economics_candidate_pool",
+        "reopen_condition": "A retry needs a materially richer structured event tuple, such as counterparty identity, contract duration/value normalization by market cap, source-document evidence spans, or closed forward replacement rows. Do not sweep regex phrase lists, value thresholds, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6205,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "issuer_8k_public_counterparty_relation_candidate_pool",
+        "reopen_condition": "A retry needs materially stronger relation identity evidence, such as CIK-level counterparty extraction from exhibits, a customer/supplier graph, deal target/holder role labels, or closed forward replacement rows. Do not sweep public-name alias lists, relation phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_contract_value_market_cap_materiality_candidate_pool",
+        "reopen_condition": "A retry needs materially richer PIT relation provenance, such as normalized customer/supplier identity, contract duration/funding certainty, revenue exposure by named counterparty, or closed forward replacement-value rows from a shared daily helper. Do not sweep market-cap ratio, regex phrase lists, value thresholds, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these f",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape/field on the already fixed Item 1.01 provenance surface: machine-checkable contract economic terms (dollar amount, duration/term language, and normalized counterparty-count) extracted from evidence snippets. This is not a relation regex, item-code, top-N, hold, notional, priority, or response-curve retune.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape/field on the already fixed Item 1.01 provenance surface: machine-checkable contract economic terms (dollar amount, duration/term language, and normalized counterparty-count) extracted from evidence snippets. This is not a relation regex, item-code, top-N, hold, notional, priority, or response-curve retune.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape/field on the already fixed Item 1.01 provenance surface: machine-checkable contract economic terms (dollar amount, duration/term language, and normalized counterparty-count) extracted from evidence snippets. This is not a relation regex, item-code, top-N, hold, notional, priority, or response-curve retune.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": true,
+      "source": "sec_text_event",
+      "trials": 44
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The amount_or_duration subset of the fixed Item 1.01 issuer-self top-1 rows had positive cash/SPY/QQQ replacement value and positive lift versus no_amount_or_duration rows. This remains observed-only because the SEC text cache is a public-archive PIT proxy and no shared helper was promoted.",
+    "forbidden_near_neighbor_retry": "Do not sweep Item 1.01 amount regexes, duration regexes, counterparty-count thresholds, relation priority, RS/close/volume guards, top-N, hold days, cooldown, notional, or response curves on these rows.",
+    "new_evidence_required": "A valid retry needs prospectively accumulated daily rows with closed replacement value under the unchanged economics extractor, true exhibit-level normalized customer/supplier identity, contract revenue exposure by counterparty, or a different non-SEC-text economic relation source."
+  },
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "economics_regex_too_sparse",
+      "public_archive_pit_caveat",
+      "no_monotonic_replacement_edge",
+      "ticker concentration",
+      "already_captured_by_relation_priority"
+    ],
+    "confidence_reason": "exp-20260703-018 found an observed-only positive Item 1.01 issuer-self lead and explicitly required richer counterparty/value/duration economics before retry; nearby SEC text surfaces have weak base rates and exp-20260703-019 rejected shared promotion, so this is low-probability attribution only.",
+    "recorded_at": "2026-07-03T21:05:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_sec_item101_contract_economic_terms_lead",
+    "artifact": "data/experiments/exp-20260703-021/exp_20260703_021_sec_item101_contract_relation_economic_terms.json",
+    "log": "experiments/logs/exp-20260703-021.json",
+    "runner": "quant/experiments/exp_20260703_021_sec_item101_contract_relation_economic_terms.py",
+    "gate4": {
+      "passed": true,
+      "observed_only": true,
+      "accepted_alpha": false,
+      "decision": "observed_only_positive_sec_item101_contract_economic_terms_lead",
+      "acceptance_rule": {
+        "target_bucket": "amount_or_duration",
+        "control_bucket": "no_amount_or_duration",
+        "min_target_rows": 12,
+        "min_settled_windows": 2,
+        "min_target_rows_per_window": 3,
+        "min_positive_target_windows_vs_spy_and_qqq": 2,
+        "max_top_ticker_share": 0.4,
+        "require_target_primary_means_positive": true,
+        "require_target_primary_medians_nonnegative": true,
+        "require_target_lift_vs_control": true
+      },
+      "acceptance_checks": {
+        "target_rows_min_passed": true,
+        "target_settled_windows_min_passed": true,
+        "positive_target_windows_vs_spy_and_qqq_passed": true,
+        "target_primary_means_positive": true,
+        "target_primary_medians_nonnegative": true,
+        "target_lift_vs_control_positive": true,
+        "target_top_ticker_share_passed": true
+      },
+      "failed_reasons": [],
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "summary": {
+      "source_rows": 292,
+      "accession_deduped_rows": 138,
+      "daily_top1_candidates": 119,
+      "canonical_settled_rows": 99,
+      "outside_canonical_settled_rows": 18,
+      "settled_windows": [
+        "mid_weak",
+        "late_strong",
+        "old_thin"
+      ],
+      "positive_windows_vs_spy_and_qqq": 3,
+      "target_bucket": "amount_or_duration",
+      "target_bucket_rows": 23,
+      "control_bucket_rows": 76,
+      "target_settled_windows": [
+        "mid_weak",
+        "late_strong",
+        "old_thin"
+      ],
+      "positive_target_windows_vs_spy_and_qqq": 3,
+      "row_mean_cash": 185.6012,
+      "row_mean_spy": 168.3337,
+      "row_mean_qqq": 150.7883,
+      "row_median_cash": 104.88,
+      "row_median_spy": 83.31,
+      "row_median_qqq": 60.01,
+      "target_mean_cash": 302.9926,
+      "target_mean_spy": 252.6961,
+      "target_mean_qqq": 229.3948,
+      "target_median_cash": 149.08,
+      "target_median_spy": 83.31,
+      "target_median_qqq": 43.25,
+      "target_lift_vs_control_cash": 152.9177,
+      "target_lift_vs_control_spy": 109.8931,
+      "target_lift_vs_control_qqq": 102.3953,
+      "top_ticker_share": 0.161616,
+      "target_top_ticker_share": 0.173913,
+      "decision": "observed_only_positive_sec_item101_contract_economic_terms_lead"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-021.json",
+  "single_causal_variable": "sec_item101_contract_relation_economic_terms_top1_10d_v1",
+  "status": "observed_only_positive_lead",
+  "ticket_file": "experiments/tickets/exp-20260703-021.json",
+  "trial_family": "sec_item101_contract_relation_economic_terms_attribution",
+  "trial_variant_id": "economic_terms_top1_10d_v1",
+  "alpha_hypothesis": "Within the fixed SEC 8-K Item 1.01 contract-relation provenance rows, machine-extracted contract economics such as dollar amount, duration language, and normalized counterparty-count may distinguish material agreements with better 10-session replacement value than boilerplate relations.",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "New gate shape/field on the already fixed Item 1.01 provenance surface: machine-checkable contract economic terms (dollar amount, duration/term language, and normalized counterparty-count) extracted from evidence snippets. This is not a relation regex, item-code, top-N, hold, notional, priority, or response-curve retune.",
+  "decision": "observed_only_positive_sec_item101_contract_economic_terms_lead",
+  "artifact": "data/experiments/exp-20260703-021/exp_20260703_021_sec_item101_contract_relation_economic_terms.json",
+  "log_file": "experiments/logs/exp-20260703-021.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    },
+    "note": "Observed-only attribution; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "ticker",
+      "accession_number",
+      "relation_bucket",
+      "relation_quality",
+      "usable_trade_date",
+      "accepted_at",
+      "evidence_phrase_count",
+      "counterparty_candidates",
+      "economic_terms_bucket",
+      "economic_terms_detail_bucket",
+      "contract_amount_count",
+      "contract_duration_count",
+      "normalized_counterparty_count",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "source_rows": 292,
+    "accession_deduped_rows": 138,
+    "daily_top1_candidates": 119,
+    "canonical_settled_rows": 99,
+    "target_bucket": "amount_or_duration",
+    "target_bucket_rows": 23,
+    "control_bucket": "no_amount_or_duration",
+    "control_bucket_rows": 76,
+    "entry_date_present_rows": 99,
+    "target_price_relevance": "This observer-only fixed-horizon paper read does not create target exits or orders; target_price is not part of the surface."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 119,
+    "signals_survived": 99,
+    "survival_rate": 0.831933,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added. Survival here means daily top-1 candidates with settled canonical-window 10-session outcomes."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "trade_enabled": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Read-only analysis over exp-20260703-017 observer provenance rows. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260703_021_sec_item101_contract_relation_economic_terms.py",
+    "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "data/non_ohlcv/sec_contract_relation_provenance/latest_summary.json",
+    "experiments/logs/exp-20260703-017.json",
+    "experiments/logs/exp-20260703-018.json",
+    "experiments/logs/exp-20260703-019.json",
+    "experiments/logs/exp-20260703-020.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260703_021_sec_item101_contract_relation_economic_terms.py",
+    "data/experiments/exp-20260703-021/exp_20260703_021_sec_item101_contract_relation_economic_terms.json",
+    "experiments/cards/exp-20260703-021.md",
+    "experiments/manifests/exp-20260703-021.json",
+    "experiments/tickets/exp-20260703-021.json",
+    "experiments/logs/exp-20260703-021.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T21:11:00+00:00"
+}

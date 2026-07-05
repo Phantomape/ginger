@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -60,6 +61,12 @@ PREDICTION_MARKET_SOURCE_SPECS: list[dict[str, Any]] = [
             ["openai", "anthropic", "frontier ai"],
             ["data center", "ai chip", "gpu", "investment", "capex", "compute"],
         ],
+        "exclude_terms": [
+            "consumer hardware",
+            "consumer product",
+            "browser",
+            "phone",
+        ],
         "min_relevance_groups": 2,
         "rationale": (
             "Market-implied odds for frontier AI lab capex or supply events can "
@@ -78,6 +85,16 @@ PREDICTION_MARKET_SOURCE_SPECS: list[dict[str, Any]] = [
             ["ai chip", "chip", "semiconductor", "gpu", "nvidia", "amd"],
             ["export", "export control", "china", "taiwan", "restriction", "ban"],
         ],
+        "exclude_terms": [
+            "military clash",
+            "armed conflict",
+            "ceasefire",
+            "war",
+            "india",
+            "xi jinping",
+            "president",
+            "election",
+        ],
         "min_relevance_groups": 2,
         "rationale": (
             "Prediction markets can timestamp policy odds before direct company "
@@ -95,6 +112,18 @@ PREDICTION_MARKET_SOURCE_SPECS: list[dict[str, Any]] = [
         "relevance_groups": [
             ["data center", "hyperscaler", "ai"],
             ["power", "grid", "electricity", "energy", "shortage"],
+        ],
+        "exclude_terms": [
+            "consumer hardware",
+            "consumer product",
+            "gta",
+            "russia",
+            "ukraine",
+            "ceasefire",
+            "war",
+            "xi jinping",
+            "president",
+            "election",
         ],
         "min_relevance_groups": 2,
         "rationale": (
@@ -223,6 +252,7 @@ def get_prediction_market_observer_sources() -> list[dict[str, Any]]:
             "candidate_tickers": list(spec["candidate_tickers"]),
             "match_terms": list(spec["match_terms"]),
             "relevance_groups": [list(group) for group in spec["relevance_groups"]],
+            "exclude_terms": list(spec.get("exclude_terms") or []),
             "min_relevance_groups": int(spec["min_relevance_groups"]),
             "rationale": spec["rationale"],
         }
@@ -411,11 +441,23 @@ def _text_blob(*records: dict[str, Any] | None) -> str:
     return " ".join(pieces).lower()
 
 
+_TERM_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _term_pattern(term: str) -> re.Pattern[str] | None:
+    tokens = _TERM_TOKEN_RE.findall(term.lower())
+    if not tokens:
+        return None
+    body = r"[\W_]+".join(re.escape(token) for token in tokens)
+    return re.compile(rf"(?<![a-z0-9]){body}(?![a-z0-9])")
+
+
 def _term_hits(terms: list[Any], blob: str) -> list[str]:
     hits: list[str] = []
     for term in terms:
         text = str(term).strip().lower()
-        if text and text in blob:
+        pattern = _term_pattern(text)
+        if pattern is not None and pattern.search(blob):
             hits.append(text)
     return hits
 
@@ -425,6 +467,18 @@ def prediction_market_source_relevance(
     metadata: dict[str, Any],
 ) -> dict[str, Any]:
     blob = _text_blob(record)
+    excluded_hits = _term_hits(list(metadata.get("exclude_terms") or []), blob)
+    if excluded_hits:
+        return {
+            "matched": False,
+            "matched_group_count": 0,
+            "required_group_count": int(metadata.get("min_relevance_groups") or 0),
+            "group_hits": [],
+            "hit_terms": [],
+            "excluded_terms": excluded_hits,
+            "method": "relevance_exclusions",
+        }
+
     groups = metadata.get("relevance_groups") or []
     if groups:
         group_hits: list[dict[str, Any]] = []
@@ -439,6 +493,7 @@ def prediction_market_source_relevance(
             "required_group_count": required,
             "group_hits": group_hits,
             "hit_terms": sorted({term for group in group_hits for term in group["hit_terms"]}),
+            "excluded_terms": [],
             "method": "relevance_groups",
         }
 
@@ -451,6 +506,7 @@ def prediction_market_source_relevance(
         "required_group_count": required,
         "group_hits": [{"group_index": index, "hit_terms": [term]} for index, term in enumerate(hits)],
         "hit_terms": hits,
+        "excluded_terms": [],
         "method": "match_terms",
     }
 
@@ -783,6 +839,44 @@ def _bar_by_date(rows: list[dict[str, Any]], target_date: str) -> dict[str, Any]
     return None
 
 
+def _next_market_date(
+    bars_by_ticker: dict[str, list[dict[str, Any]]],
+    observed_date: str,
+) -> str | None:
+    dates: list[str] = []
+    benchmark_rows = [
+        row
+        for ticker in ("SPY", "QQQ")
+        for row in bars_by_ticker.get(ticker, [])
+    ]
+    rows = benchmark_rows or [
+        row for ticker_rows in bars_by_ticker.values() for row in ticker_rows
+    ]
+    for row in rows:
+        day = row.get("_date")
+        if isinstance(day, str) and day > observed_date:
+            dates.append(day)
+    return min(dates) if dates else None
+
+
+def _missing_entry_status(
+    ticker_bars: list[dict[str, Any]],
+    bars_by_ticker: dict[str, list[dict[str, Any]]],
+    observed_date: str,
+) -> tuple[str, str]:
+    if not ticker_bars:
+        return "unsettled_no_entry_bar", "ticker_has_no_price_rows"
+    if _next_market_date(bars_by_ticker, observed_date) is None:
+        return (
+            "future_entry_session_not_reached",
+            "market_calendar_has_no_session_after_observed_date",
+        )
+    return (
+        "unsettled_no_entry_bar",
+        "market_calendar_has_next_session_but_ticker_missing_bar",
+    )
+
+
 def _pnl_for_bars(entry_bar: dict[str, Any], exit_bar: dict[str, Any], notional: float) -> float | None:
     entry_open = _bar_float(entry_bar, "Open", "open")
     exit_close = _bar_float(exit_bar, "Close", "close")
@@ -851,7 +945,18 @@ def build_prediction_market_event_outcome_ledger(
                     "trade_enabled": False,
                 }
                 if entry_idx is None:
-                    rows.append({**base, "outcome_status": "unsettled_no_entry_bar"})
+                    status, detail = _missing_entry_status(
+                        ticker_bars,
+                        bars,
+                        observed_date,
+                    )
+                    rows.append(
+                        {
+                            **base,
+                            "outcome_status": status,
+                            "outcome_status_detail": detail,
+                        }
+                    )
                     continue
                 exit_idx = entry_idx + horizon - 1
                 entry_bar = ticker_bars[entry_idx]

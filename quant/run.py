@@ -1004,6 +1004,7 @@ def _build_daily_non_ohlcv_snapshot(
             options_max_expirations=2,
             options_max_strikes_per_side=12,
             options_max_tickers=OPTIONS_MAX_TICKERS,
+            refresh_form4_context=True,
             refresh_borrow_availability=refresh_borrow_availability,
             borrow_availability_broad=borrow_availability_broad,
             logger_obj=log,
@@ -1015,6 +1016,7 @@ def _build_daily_non_ohlcv_snapshot(
                 logger=log,
                 refresh_sec_submissions=False,
                 refresh_form4_submissions=False,
+                refresh_form4_context=True,
                 refresh_borrow_availability=refresh_borrow_availability,
                 borrow_availability_broad=borrow_availability_broad,
             )

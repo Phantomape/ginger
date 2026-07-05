@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -61,6 +62,32 @@ def _tokens(value):
         for token in _normalize_text(value).split()
         if len(token) >= 3 and token not in COMMON_SURFACE_TOKENS
     }
+
+
+def _surface_aliases(surface_text):
+    aliases = {surface_text}
+    tokens = surface_text.split()
+    token_set = set(tokens)
+    if {"sec", "ftd", "finra"}.issubset(token_set):
+        aliases.update({"sec ftd finra", "ftd finra"})
+    if "form4" in token_set or "form4" in surface_text.replace(" ", ""):
+        aliases.add("form4")
+    if "form144" in token_set or "form144" in surface_text.replace(" ", ""):
+        aliases.add("form144")
+    return sorted((alias for alias in aliases if alias), key=len, reverse=True)
+
+
+def _surface_negated_in_text(surface_text, proposed_text):
+    """Return True when text explicitly says it is not targeting a surface."""
+    for alias in _surface_aliases(surface_text):
+        alias_pattern = re.escape(alias).replace(r"\ ", r"\s+")
+        if re.search(rf"\bnot\b(?:\s+\w+){{0,3}}\s+{alias_pattern}\b", proposed_text):
+            return True
+        if re.search(rf"\bunrelated\s+to\b(?:\s+\w+){{0,3}}\s+{alias_pattern}\b", proposed_text):
+            return True
+        if re.search(rf"\bother\s+than\b(?:\s+\w+){{0,3}}\s+{alias_pattern}\b", proposed_text):
+            return True
+    return False
 
 
 def _is_number(value):
@@ -124,6 +151,9 @@ def surface_matches_text(surface, text):
     proposed_text = _normalize_text(text)
     surface_collapsed = surface_text.replace(" ", "")
     proposed_collapsed = proposed_text.replace(" ", "")
+
+    if _surface_negated_in_text(surface_text, proposed_text):
+        return False
 
     if "form4" in surface_collapsed:
         return "form4" in proposed_collapsed and any(

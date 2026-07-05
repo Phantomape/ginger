@@ -1,0 +1,1338 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "min_window_survival_rate": 0.7925,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "alpha_hypothesis": "Closed forward replacement rows may show that same-entry-date same-ticker duplicate paper exposure amplifies losses versus singleton default-off rows; if duplicates are broadly worse on cash/SPY/QQQ replacement value, a future shared duplicate-exposure cap may be justified.",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "min_window_survival_rate": 0.7925,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "expected_value_score": 5.1628,
+        "label": "late_strong",
+        "max_drawdown_pct": 0.0665,
+        "start": "2025-10-23",
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      {
+        "end": "2025-10-22",
+        "expected_value_score": 2.1402,
+        "label": "mid_weak",
+        "max_drawdown_pct": 0.1119,
+        "start": "2025-04-23",
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "trade_count": 21
+      },
+      {
+        "end": "2025-04-22",
+        "expected_value_score": 0.5911,
+        "label": "old_thin",
+        "max_drawdown_pct": 0.1001,
+        "start": "2024-10-02",
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "trade_count": 22
+      }
+    ]
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.5776,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "duplicate_sample_too_thin",
+      "sec_financial_report_or_coin_confound",
+      "no_cash_spy_qqq_separation",
+      "not_actionable_without_gate4"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [],
+    "surprise_note": "Upside surprise: duplicate rows passed the predeclared sample, concentration, mean, median, and loss-tail checks across cash/SPY/QQQ. The result is still observed-only because no shared policy was changed or backtested."
+  },
+  "causal_components": [
+    "forward replacement ledger duplicate grouping",
+    "cash SPY QQQ replacement attribution",
+    "concentration guard",
+    "no strategy change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260705_002_forward_duplicate_exposure_attribution.py",
+    "data/experiments/exp-20260705-002/exp_20260705_002_forward_duplicate_exposure_attribution.json",
+    "experiments/cards/exp-20260705-002.md",
+    "experiments/manifests/exp-20260705-002.json",
+    "experiments/tickets/exp-20260705-002.json",
+    "experiments/logs/exp-20260705-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "forward_same_ticker_same_entry_date_duplicate_exposure_attribution_v1",
+  "decision": "observed_only_positive_duplicate_exposure_forward_lead",
+  "delta_metrics": {
+    "duplicate_groups": 4,
+    "duplicate_rows": 10,
+    "eligible_rows": 60,
+    "enriched_rows": 60,
+    "excluded_finra_ftd_rows": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "ineligible_non_finra_ftd_rows": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "singleton_rows": 50,
+    "source_rows": 60,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260705-002",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "max_drawdown_pct_worst": 0.1119,
+      "min_window_survival_rate": 0.7925,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Observed-only attribution; before and after strategy behavior are identical.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present_rows": 60,
+    "excluded_finra_ftd_rows": 0,
+    "fields_checked": [
+      "decision_id",
+      "ticker",
+      "sleeve_key",
+      "entry_date",
+      "exit_date",
+      "pnl_usd",
+      "notional_usd",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "target_price"
+    ],
+    "ineligible_non_finra_ftd_rows": 0,
+    "passed": true,
+    "source_ledger": "data/paper_sleeves/forward_replacement_value.jsonl",
+    "target_price_relevance": "Forward replacement rows do not schedule target exits or orders; target_price is not required for this observed-only ledger attribution."
+  },
+  "gate3": {
+    "baseline_survival_rate": 0.823171,
+    "filter_added": false,
+    "note": "No executable filter was added; rows are only attributed.",
+    "passed": true,
+    "signals_generated": 60,
+    "signals_survived": 60,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "all_primary_loss_tails_worse": true,
+      "all_primary_means_worse": true,
+      "all_primary_medians_worse": true,
+      "duplicate_groups_min_passed": true,
+      "duplicate_rows_min_passed": true,
+      "single_duplicate_sleeve_share_passed": true,
+      "single_duplicate_ticker_share_passed": true,
+      "singleton_rows_min_passed": true
+    },
+    "acceptance_rule": {
+      "max_single_duplicate_sleeve_share": 0.7,
+      "max_single_duplicate_ticker_share": 0.5,
+      "min_duplicate_groups": 3,
+      "min_duplicate_rows": 6,
+      "min_singleton_rows": 30,
+      "require_all_primary_loss_tails_worse": true,
+      "require_all_primary_means_worse": true,
+      "require_all_primary_medians_worse": true
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "bucket_summary": {
+      "all_eligible_rows": {
+        "metrics": {
+          "notional_usd": {
+            "max": 100000.0,
+            "mean": 35182.9012,
+            "median": 11739.365,
+            "min": 1600.0,
+            "n": 60,
+            "p20": 4000.056,
+            "positive_rate": 1.0,
+            "sum": 2110974.07,
+            "worst_20pct_mean": 3399.9975
+          },
+          "pnl_usd": {
+            "max": 2772.28,
+            "mean": -186.4338,
+            "median": -65.75,
+            "min": -6327.17,
+            "n": 60,
+            "p20": -796.212,
+            "positive_rate": 0.483333,
+            "sum": -11186.03,
+            "worst_20pct_mean": -2245.0192
+          },
+          "replacement_value_vs_cash_usd": {
+            "max": 2772.28,
+            "mean": -186.4338,
+            "median": -65.75,
+            "min": -6327.17,
+            "n": 60,
+            "p20": -796.212,
+            "positive_rate": 0.483333,
+            "sum": -11186.03,
+            "worst_20pct_mean": -2245.0192
+          },
+          "replacement_value_vs_qqq_usd": {
+            "max": 2704.37,
+            "mean": -130.5437,
+            "median": 173.51,
+            "min": -7244.11,
+            "n": 60,
+            "p20": -406.342,
+            "positive_rate": 0.566667,
+            "sum": -7832.62,
+            "worst_20pct_mean": -2211.1808
+          },
+          "replacement_value_vs_spy_usd": {
+            "max": 2788.46,
+            "mean": -82.9395,
+            "median": 185.66,
+            "min": -6806.63,
+            "n": 60,
+            "p20": -404.68,
+            "positive_rate": 0.583333,
+            "sum": -4976.37,
+            "worst_20pct_mean": -2170.3958
+          }
+        },
+        "row_count": 60,
+        "sleeve_count": 15,
+        "sleeve_counts": {
+          "accepted_helper_source_priority_allocator": 2,
+          "accepted_source_consensus": 1,
+          "alpha_score_market_regime": 5,
+          "broad_market": 1,
+          "free_data_cross_source_consensus": 4,
+          "fundamental_growth_rs": 8,
+          "low_deployment_etf": 17,
+          "sec_financial_report": 5,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "supplier_financing_debt_relief": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 4
+        },
+        "ticker_count": 25,
+        "ticker_counts": {
+          "AAPL": 1,
+          "AMD": 3,
+          "AVGO": 2,
+          "BE": 1,
+          "BKNG": 1,
+          "COHR": 1,
+          "COIN": 2,
+          "CRDO": 6,
+          "CVX": 1,
+          "DDOG": 4,
+          "DE": 1,
+          "GE": 2,
+          "GS": 1,
+          "HOOD": 1,
+          "INTC": 1,
+          "LITE": 1,
+          "MRVL": 2,
+          "MU": 3,
+          "NOW": 1,
+          "QQQ": 17,
+          "RKLB": 1,
+          "SNOW": 3,
+          "SNXX": 1,
+          "UNH": 1,
+          "WDC": 2
+        },
+        "top_sleeves": [
+          {
+            "rows": 17,
+            "share": 0.283333,
+            "sleeve": "low_deployment_etf"
+          },
+          {
+            "rows": 8,
+            "share": 0.133333,
+            "sleeve": "fundamental_growth_rs"
+          },
+          {
+            "rows": 5,
+            "share": 0.083333,
+            "sleeve": "alpha_score_market_regime"
+          },
+          {
+            "rows": 5,
+            "share": 0.083333,
+            "sleeve": "sec_financial_report"
+          },
+          {
+            "rows": 4,
+            "share": 0.066667,
+            "sleeve": "free_data_cross_source_consensus"
+          },
+          {
+            "rows": 4,
+            "share": 0.066667,
+            "sleeve": "volume_breadth_breakout"
+          },
+          {
+            "rows": 3,
+            "share": 0.05,
+            "sleeve": "state_surface"
+          },
+          {
+            "rows": 3,
+            "share": 0.05,
+            "sleeve": "supplier_financing_debt_relief"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "sleeve": "accepted_helper_source_priority_allocator"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "sleeve": "sec_governance"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 17,
+            "share": 0.283333,
+            "ticker": "QQQ"
+          },
+          {
+            "rows": 6,
+            "share": 0.1,
+            "ticker": "CRDO"
+          },
+          {
+            "rows": 4,
+            "share": 0.066667,
+            "ticker": "DDOG"
+          },
+          {
+            "rows": 3,
+            "share": 0.05,
+            "ticker": "SNOW"
+          },
+          {
+            "rows": 3,
+            "share": 0.05,
+            "ticker": "AMD"
+          },
+          {
+            "rows": 3,
+            "share": 0.05,
+            "ticker": "MU"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "ticker": "WDC"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "ticker": "MRVL"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "ticker": "GE"
+          },
+          {
+            "rows": 2,
+            "share": 0.033333,
+            "ticker": "AVGO"
+          }
+        ]
+      },
+      "duplicate_rows": {
+        "metrics": {
+          "notional_usd": {
+            "max": 34500.01,
+            "mean": 10127.714,
+            "median": 4000.06,
+            "min": 3999.95,
+            "n": 10,
+            "p20": 3999.998,
+            "positive_rate": 1.0,
+            "sum": 101277.14,
+            "worst_20pct_mean": 3999.97
+          },
+          "pnl_usd": {
+            "max": 463.3,
+            "mean": -1146.236,
+            "median": -322.9,
+            "min": -6327.17,
+            "n": 10,
+            "p20": -1334.98,
+            "positive_rate": 0.2,
+            "sum": -11462.36,
+            "worst_20pct_mean": -4745.375
+          },
+          "replacement_value_vs_cash_usd": {
+            "max": 463.3,
+            "mean": -1146.236,
+            "median": -322.9,
+            "min": -6327.17,
+            "n": 10,
+            "p20": -1334.98,
+            "positive_rate": 0.2,
+            "sum": -11462.36,
+            "worst_20pct_mean": -4745.375
+          },
+          "replacement_value_vs_qqq_usd": {
+            "max": 368.03,
+            "mean": -1196.541,
+            "median": -196.22,
+            "min": -7244.11,
+            "n": 10,
+            "p20": -1284.578,
+            "positive_rate": 0.2,
+            "sum": -11965.41,
+            "worst_20pct_mean": -5433.08
+          },
+          "replacement_value_vs_spy_usd": {
+            "max": 451.1,
+            "mean": -1145.929,
+            "median": -230.635,
+            "min": -6806.63,
+            "n": 10,
+            "p20": -1335.262,
+            "positive_rate": 0.2,
+            "sum": -11459.29,
+            "worst_20pct_mean": -5104.97
+          }
+        },
+        "row_count": 10,
+        "sleeve_count": 6,
+        "sleeve_counts": {
+          "accepted_helper_source_priority_allocator": 1,
+          "accepted_source_consensus": 1,
+          "alpha_score_market_regime": 1,
+          "free_data_cross_source_consensus": 3,
+          "fundamental_growth_rs": 2,
+          "sec_financial_report": 2
+        },
+        "ticker_count": 4,
+        "ticker_counts": {
+          "COIN": 2,
+          "CRDO": 4,
+          "DDOG": 2,
+          "WDC": 2
+        },
+        "top_sleeves": [
+          {
+            "rows": 3,
+            "share": 0.3,
+            "sleeve": "free_data_cross_source_consensus"
+          },
+          {
+            "rows": 2,
+            "share": 0.2,
+            "sleeve": "fundamental_growth_rs"
+          },
+          {
+            "rows": 2,
+            "share": 0.2,
+            "sleeve": "sec_financial_report"
+          },
+          {
+            "rows": 1,
+            "share": 0.1,
+            "sleeve": "accepted_helper_source_priority_allocator"
+          },
+          {
+            "rows": 1,
+            "share": 0.1,
+            "sleeve": "alpha_score_market_regime"
+          },
+          {
+            "rows": 1,
+            "share": 0.1,
+            "sleeve": "accepted_source_consensus"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 4,
+            "share": 0.4,
+            "ticker": "CRDO"
+          },
+          {
+            "rows": 2,
+            "share": 0.2,
+            "ticker": "WDC"
+          },
+          {
+            "rows": 2,
+            "share": 0.2,
+            "ticker": "DDOG"
+          },
+          {
+            "rows": 2,
+            "share": 0.2,
+            "ticker": "COIN"
+          }
+        ]
+      },
+      "singleton_rows": {
+        "metrics": {
+          "notional_usd": {
+            "max": 100000.0,
+            "mean": 40193.9386,
+            "median": 12001.235,
+            "min": 1600.0,
+            "n": 50,
+            "p20": 9999.924,
+            "positive_rate": 1.0,
+            "sum": 2009696.93,
+            "worst_20pct_mean": 3880.013
+          },
+          "pnl_usd": {
+            "max": 2772.28,
+            "mean": 5.5266,
+            "median": 81.41,
+            "min": -3554.18,
+            "n": 50,
+            "p20": -728.804,
+            "positive_rate": 0.54,
+            "sum": 276.33,
+            "worst_20pct_mean": -1736.715
+          },
+          "replacement_value_vs_cash_usd": {
+            "max": 2772.28,
+            "mean": 5.5266,
+            "median": 81.41,
+            "min": -3554.18,
+            "n": 50,
+            "p20": -728.804,
+            "positive_rate": 0.54,
+            "sum": 276.33,
+            "worst_20pct_mean": -1736.715
+          },
+          "replacement_value_vs_qqq_usd": {
+            "max": 2704.37,
+            "mean": 82.6558,
+            "median": 400.495,
+            "min": -3487.68,
+            "n": 50,
+            "p20": -325.574,
+            "positive_rate": 0.64,
+            "sum": 4132.79,
+            "worst_20pct_mean": -1531.799
+          },
+          "replacement_value_vs_spy_usd": {
+            "max": 2788.46,
+            "mean": 129.6584,
+            "median": 229.66,
+            "min": -3463.7,
+            "n": 50,
+            "p20": -350.116,
+            "positive_rate": 0.66,
+            "sum": 6482.92,
+            "worst_20pct_mean": -1537.998
+          }
+        },
+        "row_count": 50,
+        "sleeve_count": 14,
+        "sleeve_counts": {
+          "accepted_helper_source_priority_allocator": 1,
+          "alpha_score_market_regime": 4,
+          "broad_market": 1,
+          "free_data_cross_source_consensus": 1,
+          "fundamental_growth_rs": 6,
+          "low_deployment_etf": 17,
+          "sec_financial_report": 3,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "supplier_financing_debt_relief": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 4
+        },
+        "ticker_count": 23,
+        "ticker_counts": {
+          "AAPL": 1,
+          "AMD": 3,
+          "AVGO": 2,
+          "BE": 1,
+          "BKNG": 1,
+          "COHR": 1,
+          "CRDO": 2,
+          "CVX": 1,
+          "DDOG": 2,
+          "DE": 1,
+          "GE": 2,
+          "GS": 1,
+          "HOOD": 1,
+          "INTC": 1,
+          "LITE": 1,
+          "MRVL": 2,
+          "MU": 3,
+          "NOW": 1,
+          "QQQ": 17,
+          "RKLB": 1,
+          "SNOW": 3,
+          "SNXX": 1,
+          "UNH": 1
+        },
+        "top_sleeves": [
+          {
+            "rows": 17,
+            "share": 0.34,
+            "sleeve": "low_deployment_etf"
+          },
+          {
+            "rows": 6,
+            "share": 0.12,
+            "sleeve": "fundamental_growth_rs"
+          },
+          {
+            "rows": 4,
+            "share": 0.08,
+            "sleeve": "alpha_score_market_regime"
+          },
+          {
+            "rows": 4,
+            "share": 0.08,
+            "sleeve": "volume_breadth_breakout"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "sleeve": "sec_financial_report"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "sleeve": "state_surface"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "sleeve": "supplier_financing_debt_relief"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "sleeve": "sec_governance"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "sleeve": "sec_negative"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "sleeve": "volatility_contraction"
+          }
+        ],
+        "top_tickers": [
+          {
+            "rows": 17,
+            "share": 0.34,
+            "ticker": "QQQ"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "ticker": "SNOW"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "ticker": "AMD"
+          },
+          {
+            "rows": 3,
+            "share": 0.06,
+            "ticker": "MU"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "ticker": "DDOG"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "ticker": "MRVL"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "ticker": "GE"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "ticker": "AVGO"
+          },
+          {
+            "rows": 2,
+            "share": 0.04,
+            "ticker": "CRDO"
+          },
+          {
+            "rows": 1,
+            "share": 0.02,
+            "ticker": "UNH"
+          }
+        ]
+      }
+    },
+    "comparisons": {
+      "replacement_value_vs_cash_usd": {
+        "duplicate_loss_tail_worse": true,
+        "duplicate_mean_worse": true,
+        "duplicate_median_worse": true,
+        "duplicate_rows": {
+          "max": 463.3,
+          "mean": -1146.236,
+          "median": -322.9,
+          "min": -6327.17,
+          "n": 10,
+          "p20": -1334.98,
+          "positive_rate": 0.2,
+          "sum": -11462.36,
+          "worst_20pct_mean": -4745.375
+        },
+        "mean_delta_duplicate_minus_singleton": -1151.7626,
+        "median_delta_duplicate_minus_singleton": -404.31,
+        "singleton_rows": {
+          "max": 2772.28,
+          "mean": 5.5266,
+          "median": 81.41,
+          "min": -3554.18,
+          "n": 50,
+          "p20": -728.804,
+          "positive_rate": 0.54,
+          "sum": 276.33,
+          "worst_20pct_mean": -1736.715
+        },
+        "tail_delta_duplicate_minus_singleton": -3008.66
+      },
+      "replacement_value_vs_qqq_usd": {
+        "duplicate_loss_tail_worse": true,
+        "duplicate_mean_worse": true,
+        "duplicate_median_worse": true,
+        "duplicate_rows": {
+          "max": 368.03,
+          "mean": -1196.541,
+          "median": -196.22,
+          "min": -7244.11,
+          "n": 10,
+          "p20": -1284.578,
+          "positive_rate": 0.2,
+          "sum": -11965.41,
+          "worst_20pct_mean": -5433.08
+        },
+        "mean_delta_duplicate_minus_singleton": -1279.1968,
+        "median_delta_duplicate_minus_singleton": -596.715,
+        "singleton_rows": {
+          "max": 2704.37,
+          "mean": 82.6558,
+          "median": 400.495,
+          "min": -3487.68,
+          "n": 50,
+          "p20": -325.574,
+          "positive_rate": 0.64,
+          "sum": 4132.79,
+          "worst_20pct_mean": -1531.799
+        },
+        "tail_delta_duplicate_minus_singleton": -3901.281
+      },
+      "replacement_value_vs_spy_usd": {
+        "duplicate_loss_tail_worse": true,
+        "duplicate_mean_worse": true,
+        "duplicate_median_worse": true,
+        "duplicate_rows": {
+          "max": 451.1,
+          "mean": -1145.929,
+          "median": -230.635,
+          "min": -6806.63,
+          "n": 10,
+          "p20": -1335.262,
+          "positive_rate": 0.2,
+          "sum": -11459.29,
+          "worst_20pct_mean": -5104.97
+        },
+        "mean_delta_duplicate_minus_singleton": -1275.5874,
+        "median_delta_duplicate_minus_singleton": -460.295,
+        "singleton_rows": {
+          "max": 2788.46,
+          "mean": 129.6584,
+          "median": 229.66,
+          "min": -3463.7,
+          "n": 50,
+          "p20": -350.116,
+          "positive_rate": 0.66,
+          "sum": 6482.92,
+          "worst_20pct_mean": -1537.998
+        },
+        "tail_delta_duplicate_minus_singleton": -3566.972
+      }
+    },
+    "decision": "observed_only_positive_duplicate_exposure_forward_lead",
+    "directional_support": true,
+    "failed_reasons": [],
+    "group_summary": {
+      "duplicate_group_examples": [
+        {
+          "decision_ids": [
+            "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-08:COIN:0001679788-26-000053:earnings_8k",
+            "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER:sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3:2026-05-08:COIN:0001679788-26-000054:periodic_report"
+          ],
+          "entry_date": "2026-05-12",
+          "metrics_sum": {
+            "notional_usd": 51749.99,
+            "pnl_usd": -9490.75,
+            "replacement_value_vs_cash_usd": -9490.75,
+            "replacement_value_vs_qqq_usd": -10866.16,
+            "replacement_value_vs_spy_usd": -10209.94
+          },
+          "row_count": 2,
+          "sleeves": {
+            "sec_financial_report": 2
+          },
+          "ticker": "COIN"
+        },
+        {
+          "decision_ids": [
+            "ACCEPTED_SOURCE_CONSENSUS_PAPER:accepted_source_consensus_shared_v1:2026-06-15:WDC",
+            "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-15:WDC"
+          ],
+          "entry_date": "2026-06-16",
+          "metrics_sum": {
+            "notional_usd": 7999.96,
+            "pnl_usd": -1145.7,
+            "replacement_value_vs_cash_usd": -1145.7,
+            "replacement_value_vs_qqq_usd": -779.8,
+            "replacement_value_vs_spy_usd": -965.27
+          },
+          "row_count": 2,
+          "sleeves": {
+            "accepted_source_consensus": 1,
+            "free_data_cross_source_consensus": 1
+          },
+          "ticker": "WDC"
+        },
+        {
+          "decision_ids": [
+            "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-16:DDOG",
+            "FUNDAMENTAL_GROWTH_RS_PAPER:fundamental_growth_rs_gross_margin_shared_adapter_v1:2026-06-16:DDOG"
+          ],
+          "entry_date": "2026-06-17",
+          "metrics_sum": {
+            "notional_usd": 17370.57,
+            "pnl_usd": -767.52,
+            "replacement_value_vs_cash_usd": -767.52,
+            "replacement_value_vs_qqq_usd": -245.37,
+            "replacement_value_vs_spy_usd": -340.63
+          },
+          "row_count": 2,
+          "sleeves": {
+            "free_data_cross_source_consensus": 1,
+            "fundamental_growth_rs": 1
+          },
+          "ticker": "DDOG"
+        },
+        {
+          "decision_ids": [
+            "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER:accepted_helper_source_priority_top1_with_lagged_consensus_allocation_v1:2026-06-11:CRDO:lagged_cross_source_consensus",
+            "ALPHA_SCORE_MARKET_REGIME_PAPER:alpha_score_market_regime_safe_notional_shared_v1:2026-06-11:CRDO",
+            "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER:accepted_free_data_cross_source_consensus_shared_v1:2026-06-11:CRDO",
+            "FUNDAMENTAL_GROWTH_RS_PAPER:fundamental_growth_rs_gross_margin_shared_adapter_v1:2026-06-11:CRDO"
+          ],
+          "entry_date": "2026-06-12",
+          "metrics_sum": {
+            "notional_usd": 24156.62,
+            "pnl_usd": -58.39,
+            "replacement_value_vs_cash_usd": -58.39,
+            "replacement_value_vs_qqq_usd": -74.08,
+            "replacement_value_vs_spy_usd": 56.55
+          },
+          "row_count": 4,
+          "sleeves": {
+            "accepted_helper_source_priority_allocator": 1,
+            "alpha_score_market_regime": 1,
+            "free_data_cross_source_consensus": 1,
+            "fundamental_growth_rs": 1
+          },
+          "ticker": "CRDO"
+        }
+      ],
+      "duplicate_groups": {
+        "group_count": 4,
+        "group_label": "duplicate_groups",
+        "metrics": {
+          "notional_usd": {
+            "max": 51749.99,
+            "mean": 25319.285,
+            "median": 20763.595,
+            "min": 7999.96,
+            "n": 4,
+            "p20": 13622.326,
+            "positive_rate": 1.0,
+            "sum": 101277.14,
+            "worst_20pct_mean": 7999.96
+          },
+          "pnl_usd": {
+            "max": -58.39,
+            "mean": -2865.59,
+            "median": -956.61,
+            "min": -9490.75,
+            "n": 4,
+            "p20": -4483.72,
+            "positive_rate": 0.0,
+            "sum": -11462.36,
+            "worst_20pct_mean": -9490.75
+          },
+          "replacement_value_vs_cash_usd": {
+            "max": -58.39,
+            "mean": -2865.59,
+            "median": -956.61,
+            "min": -9490.75,
+            "n": 4,
+            "p20": -4483.72,
+            "positive_rate": 0.0,
+            "sum": -11462.36,
+            "worst_20pct_mean": -9490.75
+          },
+          "replacement_value_vs_qqq_usd": {
+            "max": -74.08,
+            "mean": -2991.3525,
+            "median": -512.585,
+            "min": -10866.16,
+            "n": 4,
+            "p20": -4814.344,
+            "positive_rate": 0.0,
+            "sum": -11965.41,
+            "worst_20pct_mean": -10866.16
+          },
+          "replacement_value_vs_spy_usd": {
+            "max": 56.55,
+            "mean": -2864.8225,
+            "median": -652.95,
+            "min": -10209.94,
+            "n": 4,
+            "p20": -4663.138,
+            "positive_rate": 0.25,
+            "sum": -11459.29,
+            "worst_20pct_mean": -10209.94
+          }
+        },
+        "row_count": 10,
+        "ticker_count": 4,
+        "top_tickers": [
+          {
+            "groups": 1,
+            "share": 0.25,
+            "ticker": "COIN"
+          },
+          {
+            "groups": 1,
+            "share": 0.25,
+            "ticker": "CRDO"
+          },
+          {
+            "groups": 1,
+            "share": 0.25,
+            "ticker": "WDC"
+          },
+          {
+            "groups": 1,
+            "share": 0.25,
+            "ticker": "DDOG"
+          }
+        ]
+      },
+      "singleton_groups": {
+        "group_count": 50,
+        "group_label": "singleton_groups",
+        "metrics": {
+          "notional_usd": {
+            "max": 100000.0,
+            "mean": 40193.9386,
+            "median": 12001.235,
+            "min": 1600.0,
+            "n": 50,
+            "p20": 9999.924,
+            "positive_rate": 1.0,
+            "sum": 2009696.93,
+            "worst_20pct_mean": 3880.013
+          },
+          "pnl_usd": {
+            "max": 2772.28,
+            "mean": 5.5266,
+            "median": 81.41,
+            "min": -3554.18,
+            "n": 50,
+            "p20": -728.804,
+            "positive_rate": 0.54,
+            "sum": 276.33,
+            "worst_20pct_mean": -1736.715
+          },
+          "replacement_value_vs_cash_usd": {
+            "max": 2772.28,
+            "mean": 5.5266,
+            "median": 81.41,
+            "min": -3554.18,
+            "n": 50,
+            "p20": -728.804,
+            "positive_rate": 0.54,
+            "sum": 276.33,
+            "worst_20pct_mean": -1736.715
+          },
+          "replacement_value_vs_qqq_usd": {
+            "max": 2704.37,
+            "mean": 82.6558,
+            "median": 400.495,
+            "min": -3487.68,
+            "n": 50,
+            "p20": -325.574,
+            "positive_rate": 0.64,
+            "sum": 4132.79,
+            "worst_20pct_mean": -1531.799
+          },
+          "replacement_value_vs_spy_usd": {
+            "max": 2788.46,
+            "mean": 129.6584,
+            "median": 229.66,
+            "min": -3463.7,
+            "n": 50,
+            "p20": -350.116,
+            "positive_rate": 0.66,
+            "sum": 6482.92,
+            "worst_20pct_mean": -1537.998
+          }
+        },
+        "row_count": 50,
+        "ticker_count": 23,
+        "top_tickers": [
+          {
+            "groups": 17,
+            "share": 0.34,
+            "ticker": "QQQ"
+          },
+          {
+            "groups": 3,
+            "share": 0.06,
+            "ticker": "AMD"
+          },
+          {
+            "groups": 3,
+            "share": 0.06,
+            "ticker": "MU"
+          },
+          {
+            "groups": 3,
+            "share": 0.06,
+            "ticker": "SNOW"
+          },
+          {
+            "groups": 2,
+            "share": 0.04,
+            "ticker": "CRDO"
+          },
+          {
+            "groups": 2,
+            "share": 0.04,
+            "ticker": "GE"
+          },
+          {
+            "groups": 2,
+            "share": 0.04,
+            "ticker": "DDOG"
+          },
+          {
+            "groups": 2,
+            "share": 0.04,
+            "ticker": "AVGO"
+          },
+          {
+            "groups": 2,
+            "share": 0.04,
+            "ticker": "MRVL"
+          },
+          {
+            "groups": 1,
+            "share": 0.02,
+            "ticker": "GS"
+          }
+        ]
+      }
+    },
+    "observed_only": true,
+    "passed": true,
+    "sample_ready": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Closed forward replacement rows may show that same-entry-date same-ticker duplicate paper exposure amplifies losses versus singleton default-off rows; if duplicates are broadly worse on cash/SPY/QQQ replacement value, a future shared duplicate-exposure cap may be justified.",
+  "implementation_mode": "observed_only_forward_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "forward_replacement_duplicate_exposure_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260624-004",
+    "exp-20260624-006",
+    "exp-20260704-022"
+  ],
+  "new_evidence_axis": "Cross-sleeve same-ticker same-entry-date duplicate exposure attribution over the materialized forward replacement ledger, explicitly excluding SEC_FTD_FINRA and other FINRA/FTD parked surfaces. This is not a threshold, scalar, top-N, hold, notional, or response-function retune.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    ">=6 duplicate closed forward rows",
+    ">=3 duplicate same-ticker same-entry-date groups",
+    ">=30 singleton closed forward rows",
+    "max duplicate ticker share <=50%",
+    "max duplicate sleeve share <=70%",
+    "stable worse duplicate cash/SPY/QQQ replacement value",
+    "or a full shared-policy Gate 1-4 duplicate exposure cap test after the lead matures"
+  ],
+  "observed_only_lead": true,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "alpha_interpretation": "This is not accepted alpha. Duplicate exposure remains a plausible risk-control lead only if materially more closed forward rows show stable cash/SPY/QQQ underperformance without ticker or sleeve concentration.",
+    "forbidden_near_neighbor_retry": "Do not retune duplicate caps, singleton definitions, same-day thresholds, response curves, notional, max positions, hold days, cooldowns, or top-N allocation on these same rows.",
+    "new_evidence_required": "Do not rerun this observed-only attribution on the same rows. A valid next step is either materially more closed duplicate rows or a separate shared-policy Gate 1-4 duplicate-exposure cap test with explicit production/backtest parity.",
+    "why_result_happened": "The current ledger has four same-ticker same-entry-date duplicate groups after excluding FINRA/FTD rows, and all group-level cash replacement totals are negative. COIN is the largest loss group, while CRDO remains the largest duplicate ticker share at 40%, so the evidence is useful as a risk-control lead but still not a standalone activation result."
+  },
+  "prediction": {
+    "confidence_reason": "The newly materialized forward replacement ledger includes visible same-ticker same-entry duplicate exposure from post-repair SEC financial-report rows, but prior forward attribution surfaces are usually thin and concentration-prone.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "duplicate_sample_too_thin",
+      "sec_financial_report_or_coin_confound",
+      "no_cash_spy_qqq_separation",
+      "not_actionable_without_gate4"
+    ],
+    "recorded_at": "2026-07-05T01:05:24+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only attribution over an existing shared forward replacement ledger. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260624-004.json",
+    "experiments/logs/exp-20260624-006.json",
+    "experiments/logs/exp-20260704-022.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_002_forward_duplicate_exposure_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_002_forward_duplicate_exposure_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "forward_same_ticker_same_entry_date_duplicate_exposure_attribution_v1",
+  "status": "observed_only",
+  "summary": {
+    "decision": "observed_only_positive_duplicate_exposure_forward_lead",
+    "duplicate_groups": 4,
+    "duplicate_rows": 10,
+    "eligible_rows": 60,
+    "enriched_rows": 60,
+    "excluded_finra_ftd_rows": 0,
+    "max_duplicate_sleeve_share": 0.3,
+    "max_duplicate_ticker_share": 0.4,
+    "singleton_groups": 50,
+    "singleton_rows": 50,
+    "source_rows": 60,
+    "top_duplicate_sleeves": [
+      {
+        "rows": 3,
+        "share": 0.3,
+        "sleeve": "free_data_cross_source_consensus"
+      },
+      {
+        "rows": 2,
+        "share": 0.2,
+        "sleeve": "fundamental_growth_rs"
+      },
+      {
+        "rows": 2,
+        "share": 0.2,
+        "sleeve": "sec_financial_report"
+      },
+      {
+        "rows": 1,
+        "share": 0.1,
+        "sleeve": "accepted_helper_source_priority_allocator"
+      },
+      {
+        "rows": 1,
+        "share": 0.1,
+        "sleeve": "alpha_score_market_regime"
+      },
+      {
+        "rows": 1,
+        "share": 0.1,
+        "sleeve": "accepted_source_consensus"
+      }
+    ],
+    "top_duplicate_tickers": [
+      {
+        "rows": 4,
+        "share": 0.4,
+        "ticker": "CRDO"
+      },
+      {
+        "rows": 2,
+        "share": 0.2,
+        "ticker": "WDC"
+      },
+      {
+        "rows": 2,
+        "share": 0.2,
+        "ticker": "DDOG"
+      },
+      {
+        "rows": 2,
+        "share": 0.2,
+        "ticker": "COIN"
+      }
+    ]
+  },
+  "timestamp": "2026-07-05T01:12:47Z",
+  "trial_family": "forward_duplicate_exposure_attribution",
+  "trial_variant_id": "same_ticker_same_entry_date_v1"
+}
