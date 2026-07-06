@@ -494,7 +494,7 @@ def build_payload() -> dict[str, Any]:
     otc_rows = load_finra_otc_weekly_rows()
     if not otc_rows:
         raise RuntimeError(
-            "FINRA weekly ATS archive is empty; materialize it before replay"
+            "FINRA weekly non-ATS OTC archive is empty; materialize it before replay"
         )
     weeks = sorted({row["week_start_date"] for row in otc_rows})
     published = sorted({row["published_date"] for row in otc_rows})
@@ -780,7 +780,7 @@ def build_payload() -> dict[str, Any]:
             "Accepted as a default-off paper sleeve pending forward rows."
             if accepted
             else (
-                "The FINRA ATS dark-share rise source failed the predeclared "
+                "The FINRA non-ATS internalization-retreat source failed the predeclared "
                 "full-stack Gate 4 on the canonical windows; do not retune it "
                 "on frozen samples."
             )
@@ -837,7 +837,7 @@ def _build_card(payload: dict[str, Any]) -> str:
     verdict = payload["full_stack"]["verdict"]
     return "\n".join(
         [
-            f"# {EXPERIMENT_ID} FINRA ATS Weekly Dark-Share Rise Full Stack",
+            f"# {EXPERIMENT_ID} FINRA Weekly Non-ATS Internalization Retreat Full Stack",
             "",
             f"Status: `{payload['status']}`",
             f"Decision: `{payload['decision']}`",
@@ -852,7 +852,7 @@ def _build_card(payload: dict[str, Any]) -> str:
             "- Rows: `{row_count}` across `{ticker_count}` tickers, weeks `{earliest_week_start}` -> `{latest_week_start}` (published `{earliest_published_date}` -> `{latest_published_date}`)".format(
                 **payload["archive"]
             ),
-            "- Source boundary: all three canonical windows fully covered; per-row initialPublishedDate is the PIT boundary (~21-22d lag).",
+            "- Source boundary: all three canonical windows fully covered; per-row initialPublishedDate is the PIT boundary (multi-week lag).",
             "",
             "## Gate 4",
             "",
