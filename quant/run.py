@@ -1787,6 +1787,10 @@ def main():
         empty_finra_ats_share_paper_sleeve_snapshot,
         prep_and_build_finra_ats_share_paper_sleeve_snapshot,
     )
+    from finra_otc_internalization_paper_sleeve import (
+        empty_finra_otc_internalization_paper_sleeve_snapshot,
+        prep_and_build_finra_otc_internalization_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_shadow_snapshot,
@@ -3622,6 +3626,25 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    finra_otc_internalization_paper_sleeve = _sleeve(
+        lambda: prep_and_build_finra_otc_internalization_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_dict=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            same_day_core_tickers={
+                str(signal.get("ticker") or "").upper()
+                for signal in signals
+                if signal.get("ticker")
+            },
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_finra_otc_internalization_paper_sleeve_snapshot,
+        "FINRA OTC internalization-retreat",
+        "finra_otc_internalization_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     accepted_helper_source_priority_allocator_paper_sleeve = _sleeve(
         lambda: build_accepted_helper_source_priority_allocator_snapshot(
             as_of=today_iso,
@@ -3940,6 +3963,7 @@ def main():
         "sec_item101_contract_relation_paper_sleeve": sec_item101_contract_relation_paper_sleeve,
         "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
         "finra_ats_share_paper_sleeve": finra_ats_share_paper_sleeve,
+        "finra_otc_internalization_paper_sleeve": finra_otc_internalization_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
