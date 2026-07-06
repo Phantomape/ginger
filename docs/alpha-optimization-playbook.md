@@ -880,9 +880,15 @@ is now risk reporting, not alpha. Estimate-revision outcome settlement and
 core-risk-intensity heartbeat wiring are accepted measurement repairs; both are
 alpha-enabling only. Reopen estimate-revision and core-risk allocation after
 prospective rows have cash/SPY/QQQ replacement value, not through another
-readiness audit or risk-multiplier threshold sweep. New observer/provenance
-orphan temp cleanup remains blocked by filesystem permission-denied remnants;
-that is operational hygiene, not a new text/event alpha axis.
+readiness audit or risk-multiplier threshold sweep. FINRA weekly venue-share
+also failed the useful-control bar after the non-ATS internalization-retreat
+full-stack test (`exp-20260706-018`): aggregate EV/PnL was positive, but one
+window regressed and the source did not beat accepted compression/distribution
+comparators. Keep the archive and default-off snapshot for forward rows; do not
+retune ATS/non-ATS direction, share ratios, trailing weeks, guards, hold,
+cooldown, or notional on frozen windows. New observer/provenance orphan temp
+cleanup remains blocked by filesystem permission-denied remnants; that is
+operational hygiene, not a new text/event alpha axis.
 
 ## Detail Sources
 
@@ -958,7 +964,10 @@ daily path; core-risk-intensity now writes a heartbeat even when there are zero
 candidates; pilot reports now expose sector/industry concentration across manual
 pilot sleeves. The next valid action is to let those ledgers accumulate closed
 replacement-value rows and use them for attribution, not to retune sector caps,
-risk multiplier stacks, or pilot admission rules.
+risk multiplier stacks, or pilot admission rules. FINRA weekly ATS rise and
+non-ATS retreat are both historical rejections now; keep them as default-off
+forward ledgers only until settled rows or PIT borrow-fee/utilization evidence
+create a new axis.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -1552,6 +1561,13 @@ production-visible field:
   FINRA signal does not repair the window/drawdown/comparator problem. Reopen
   only with PIT borrow fee, utilization, loan availability, options/put-skew
   context, or closed forward replacement-value rows;
+- FINRA weekly OTC venue-share candidate pools that only change ATS vs non-ATS,
+  rise vs retreat, trailing-week count, share-ratio threshold, tier/notional
+  field, top-N, hold, cooldown, or notional. `exp-20260703-016` (ATS rise) and
+  `exp-20260706-018` (non-ATS internalization retreat) both failed accepted
+  comparator standards; reopen only with settled default-off forward rows from
+  the shared ledgers or true PIT borrow/loan-availability economics joined to
+  the same names;
 - uranium/nuclear theme relation leadership, same-day core-flow confirmation,
   and defensive-sector ETF breadth/stock-leadership candidate pools that only
   sweep fixed theme baskets, anchor ETF lists, breadth thresholds, core-flow
