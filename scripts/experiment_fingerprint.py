@@ -15,6 +15,11 @@ from typing import Any
 
 # Ordered: first matching source wins. Keep specific before generic.
 _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    # Kova snapshot rows are their own population: probes on the same Kova
+    # current-row batch must share one machine key (the observed-only streak
+    # gate counts per data_source), and they are not the canonical SEC13F/
+    # rs-proxy surfaces even when the joined field comes from those.
+    ("kova_snapshot", ("kova",)),
     ("finra_short_interest", ("finra", "short_interest", "shortinterest", "borrow", "days_to_cover", "dtc")),
     ("form4_insider", ("form4", "form_4", "insider")),
     ("sec13f_ownership", ("13f", "sec13f", "sponsorship", "holder")),

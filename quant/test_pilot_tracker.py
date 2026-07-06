@@ -191,3 +191,85 @@ def test_cross_pilot_overlap_includes_verdict_and_status_context() -> None:
     assert [
         row["pilot_key"] for row in overlap["participant_context"]
     ] == ["allocator_top1", "fundamental_growth_rs"]
+
+
+def _pos(ticker: str, notional: float = 10000.0) -> dict:
+    return {
+        "ticker": ticker,
+        "status": "HOLD",
+        "entry_date": "2026-06-22",
+        "days_held": 5,
+        "days_remaining": 5,
+        "stop_status": "OK",
+        "unrealized_pct": -0.12,
+        "pilot_notional_usd": notional,
+    }
+
+
+def test_cross_pilot_concentration_flags_same_theme_across_pilots(monkeypatch) -> None:
+    # The 2026-07 failure shape: three pilots, three DIFFERENT semiconductor
+    # tickers, zero same-ticker overlap -- must still alert at the sector level.
+    sector_by_ticker = {
+        "CRDO": ("Technology", "Semiconductors"),
+        "MU": ("Technology", "Semiconductors"),
+        "WDC": ("Technology", "Computer Hardware"),
+    }
+
+    def fake_lookup(ticker, cache):
+        sector, industry = sector_by_ticker[ticker]
+        return {"ticker": ticker, "sector": sector, "industry": industry, "status": "ok"}
+
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "load_cache", lambda *a, **k: {})
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "lookup_sector", fake_lookup)
+
+    recs = [
+        {"pilot": "allocator_top1", "label": "A", "sleeve": "a",
+         "actionable": [_pos("CRDO")]},
+        {"pilot": "distribution_absorption", "label": "B", "sleeve": "b",
+         "actionable": [_pos("MU")]},
+        {"pilot": "fundamental_growth_rs", "label": "C", "sleeve": "c",
+         "actionable": [_pos("WDC")]},
+    ]
+
+    assert pilot_tracker._cross_pilot_overlap(recs) == []
+
+    conc = pilot_tracker._cross_pilot_concentration(recs)
+    assert conc["position_count"] == 3
+    assert conc["total_actionable_exposure_usd"] == 30000.0
+    tech = [g for g in conc["by_sector"] if g["sector"] == "Technology"][0]
+    assert tech["positions"] == 3
+    assert tech["exposure_share"] == 1.0
+    assert tech["alert"] is True
+    assert tech["tickers"] == ["CRDO", "MU", "WDC"]
+    assert len(tech["pilots"]) == 3
+    assert any(g.get("sector") == "Technology" for g in conc["alerts"])
+    # Industry level: two semis positions carry 66.7% share -> share rule fires.
+    semis = [g for g in conc["by_industry"] if g["industry"] == "Semiconductors"][0]
+    assert semis["positions"] == 2
+    assert semis["alert"] is True
+
+
+def test_cross_pilot_concentration_no_alert_when_dispersed(monkeypatch) -> None:
+    themes = {
+        "AAA": ("Technology", "Software"),
+        "BBB": ("Healthcare", "Biotech"),
+        "CCC": ("Energy", "Oil"),
+        "DDD": ("Financials", "Banks"),
+    }
+
+    def fake_lookup(ticker, cache):
+        sector, industry = themes[ticker]
+        return {"ticker": ticker, "sector": sector, "industry": industry, "status": "ok"}
+
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "load_cache", lambda *a, **k: {})
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "lookup_sector", fake_lookup)
+
+    recs = [
+        {"pilot": "p1", "label": "P1", "sleeve": "s1",
+         "actionable": [_pos("AAA"), _pos("BBB")]},
+        {"pilot": "p2", "label": "P2", "sleeve": "s2",
+         "actionable": [_pos("CCC"), _pos("DDD")]},
+    ]
+
+    conc = pilot_tracker._cross_pilot_concentration(recs)
+    assert conc["alerts"] == []

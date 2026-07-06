@@ -30,6 +30,12 @@ def _mk_summary_sleeve(root, name, updated_at):
     )
 
 
+def _mk_state(root, name, payload):
+    d = root / name
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "state.json").write_text(json.dumps(payload) + chr(10), encoding="utf-8")
+
+
 def test_sessions_between_skips_weekends():
     # Fri 2026-06-05 -> Thu 2026-06-11 spans one weekend: Mon..Thu = 4 sessions.
     assert sh.sessions_between("2026-06-05", "2026-06-11") == 4
@@ -94,6 +100,52 @@ def test_report_accepts_as_of_snapshot_key(tmp_path):
     assert entry["last_snapshot"] == "2026-06-26"
     assert entry["status"] == "fresh"
     assert "core_risk_intensity_forward_observation" not in report["stalled_sleeves"]
+
+
+def test_report_uses_marked_heartbeat_state_when_snapshot_is_older(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    name = "core_risk_intensity_forward_observation"
+    _mk_sleeve(root, name, "2026-06-28", date_key="as_of")
+    _mk_state(
+        root,
+        name,
+        {
+            "surface_contract": "forward_observation_heartbeat",
+            "last_run_as_of": "2026-07-05",
+            "candidate_count": 0,
+            "rows_seen": 0,
+        },
+    )
+    report = sh.build_sleeve_health_report(
+        "2026-07-05",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    entry = report["disk_status"][name]
+    assert entry["status"] == "fresh_summary"
+    assert entry["last_snapshot"] == "2026-06-28"
+    assert entry["last_summary"] == "2026-07-05"
+    assert entry["summary_file"] == "state.json"
+    assert name not in report["stalled_sleeves"]
+
+
+def test_report_does_not_use_unmarked_state_to_mask_stale_snapshot(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    _mk_sleeve(root, "ordinary_sleeve", "2026-06-28")
+    _mk_state(root, "ordinary_sleeve", {"last_run_as_of": "2026-07-05"})
+    report = sh.build_sleeve_health_report(
+        "2026-07-05",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    entry = report["disk_status"]["ordinary_sleeve"]
+    assert entry["status"] == "stale"
+    assert entry["last_snapshot"] == "2026-06-28"
+    assert "ordinary_sleeve" in report["stalled_sleeves"]
 
 
 def test_report_is_read_only_flagged(tmp_path):

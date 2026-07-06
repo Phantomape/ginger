@@ -25,6 +25,8 @@ DEFAULT_LEDGER_PATH = (
     / "core_risk_intensity_forward_observation"
     / "snapshots.jsonl"
 )
+DEFAULT_STATE_PATH = DEFAULT_LEDGER_PATH.with_name("state.json")
+SURFACE_CONTRACT = "forward_observation_heartbeat"
 
 
 def utc_now() -> str:
@@ -274,12 +276,21 @@ def _existing_observation_ids(path: Path) -> set[str]:
     return ids
 
 
+def _load_state(path: Path) -> dict[str, Any]:
+    try:
+        state = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return state if isinstance(state, dict) else {}
+
+
 def append_core_risk_intensity_observation_snapshot(
     snapshot: dict[str, Any],
     ledger_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Append new observation rows to the forward ledger without duplicates."""
     path = Path(ledger_path) if ledger_path is not None else DEFAULT_LEDGER_PATH
+    state_path = path.with_name("state.json")
     rows = list(snapshot.get("rows") or [])
     path.parent.mkdir(parents=True, exist_ok=True)
     existing_ids = _existing_observation_ids(path)
@@ -290,11 +301,44 @@ def append_core_risk_intensity_observation_snapshot(
         with path.open("a", encoding="utf-8") as handle:
             for row in new_rows:
                 handle.write(json.dumps(row, sort_keys=True) + "\n")
-    return {
-        "ledger_path": str(path),
+    previous_state = _load_state(state_path)
+    as_of = str(snapshot.get("as_of") or "")[:10] or None
+    last_nonempty_as_of = as_of if rows else previous_state.get("last_nonempty_as_of")
+    state = {
+        "schema_version": SCHEMA_VERSION,
+        "rule_version": RULE_VERSION,
+        "surface_contract": SURFACE_CONTRACT,
+        "as_of": as_of,
+        "last_run_as_of": as_of,
+        "generated_at": snapshot.get("generated_at") or utc_now(),
+        "trade_enabled": False,
+        "candidate_count": int(snapshot.get("candidate_count") or len(rows)),
+        "selected_count": int(snapshot.get("selected_count") or 0),
+        "skipped_count": int(snapshot.get("skipped_count") or 0),
+        "skip_reasons": snapshot.get("skip_reasons") or {},
         "rows_seen": len(rows),
         "rows_written": len(new_rows),
         "rows_skipped_duplicate": len(rows) - len(new_rows),
+        "last_nonempty_as_of": last_nonempty_as_of,
+        "ledger_path": str(path),
+        "production_impact": {
+            "entry_rules_changed": False,
+            "exit_rules_changed": False,
+            "ranking_changed": False,
+            "sizing_changed": False,
+            "orders_changed": False,
+            "daily_snapshot_exposed": True,
+            "append_only_forward_observation": True,
+        },
+    }
+    state_path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    return {
+        "ledger_path": str(path),
+        "state_path": str(state_path),
+        "rows_seen": len(rows),
+        "rows_written": len(new_rows),
+        "rows_skipped_duplicate": len(rows) - len(new_rows),
+        "state_written": True,
         "schema_version": SCHEMA_VERSION,
         "rule_version": RULE_VERSION,
         "trade_enabled": False,

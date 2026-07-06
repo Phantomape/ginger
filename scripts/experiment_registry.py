@@ -640,17 +640,17 @@ def _looks_placeholder(value):
     text = str(value or "").strip().lower()
     if not text:
         return True
-    placeholders = (
-        "todo",
-        "tbd",
-        "n/a",
-        "none",
-        "placeholder",
-        "fill",
-        "test prediction",
-        "why this prior is reasonable",
+    # Word-boundary match for single-word placeholders: bare substring matching
+    # flagged real prose — "fill" inside "backfilled", "none" inside
+    # "nonetheless" — and backfill is a common repo term in confidence reasons
+    # and reflections.
+    word_placeholders = ("todo", "tbd", "none", "placeholder", "fill")
+    phrase_placeholders = ("n/a", "test prediction", "why this prior is reasonable")
+    if any(phrase in text for phrase in phrase_placeholders):
+        return True
+    return any(
+        re.search(rf"\b{re.escape(word)}\b", text) for word in word_placeholders
     )
-    return any(token in text for token in placeholders)
 
 
 def lean_prediction_quality_reasons(ticket):

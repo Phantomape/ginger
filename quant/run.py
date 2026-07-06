@@ -40,6 +40,7 @@ from constants import (
 from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
+from estimate_revision_outcomes import persist_estimate_revision_outcomes
 from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import core_slot_positions, has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
@@ -970,6 +971,69 @@ def _refresh_estimate_revision_ledger_after_quant_signals(
         return summary
 
 
+def _persist_estimate_revision_outcomes_after_quant_signals(
+    today_iso,
+    non_ohlcv_snapshot,
+    *,
+    quant_signals_saved,
+):
+    """Settle default-off estimate-revision outcomes after candidate matching."""
+    if not quant_signals_saved:
+        return {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "quant_signals_save_failed",
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_outcome_settlement_skipped",
+            },
+        }
+
+    try:
+        summary = persist_estimate_revision_outcomes(
+            as_of=today_iso,
+            data_dir="data",
+            output_dir="data/non_ohlcv",
+        )
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_outcomes"] = summary
+        log.info(
+            "Estimate revision outcomes settled: matched=%s h3_closed=%s h5_closed=%s",
+            summary.get("matched_candidate_rows"),
+            (summary.get("closed_rows_by_horizon") or {}).get("h3"),
+            (summary.get("closed_rows_by_horizon") or {}).get("h5"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Post-quant estimate revision outcome settlement unavailable: {e}")
+        summary = {
+            "status": "failed_post_quant_outcome_settlement",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_outcome_settlement_failed",
+            },
+        }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_outcomes"] = summary
+        return summary
+
+
 def _build_daily_non_ohlcv_snapshot(
     *,
     today,
@@ -1640,6 +1704,11 @@ def main():
     from narrow_range_compression_breakout_paper_sleeve import (
         empty_narrow_range_compression_breakout_snapshot,
         prep_and_build_narrow_range_compression_breakout_snapshot,
+    )
+    from deep_drawdown_rebound_paper_sleeve import (
+        BUDGET_CONFIG as DEEP_DRAWDOWN_REBOUND_BUDGET_CONFIG,
+        empty_deep_drawdown_rebound_snapshot,
+        prep_and_build_deep_drawdown_rebound_snapshot,
     )
     from distribution_day_absorption_leadership_paper_sleeve import (
         empty_distribution_day_absorption_leadership_snapshot,
@@ -3426,6 +3495,21 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    # exp-20260706-006: deep index drawdown rebound, first stabilization day per
+    # episode only (budget=1). Fires a few times per decade by design; the
+    # standing sleeve_health fire-rate watch knows episodic sleeves stay quiet.
+    deep_drawdown_rebound_paper_sleeve = _sleeve(
+        lambda: prep_and_build_deep_drawdown_rebound_snapshot(
+            as_of=today_iso, qqq_ohlcv=qqq_ohlcv,
+            cached_ohlcv_fn=_cached_ohlcv,
+            config=DEEP_DRAWDOWN_REBOUND_BUDGET_CONFIG,
+        ),
+        empty_deep_drawdown_rebound_snapshot,
+        "Deep-drawdown rebound",
+        "deep_drawdown_rebound_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     fiftytwo_week_high_proximity_paper_sleeve = _sleeve(
         lambda: prep_and_build_fiftytwo_week_high_proximity_snapshot(
             as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
@@ -3876,6 +3960,11 @@ def main():
         "quant signals",
     )
     estimate_revision_summary = _refresh_estimate_revision_ledger_after_quant_signals(
+        today_iso,
+        non_ohlcv_snapshot,
+        quant_signals_saved=quant_signals_saved,
+    )
+    _persist_estimate_revision_outcomes_after_quant_signals(
         today_iso,
         non_ohlcv_snapshot,
         quant_signals_saved=quant_signals_saved,

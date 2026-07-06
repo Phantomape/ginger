@@ -21,6 +21,7 @@ from run import (  # noqa: E402
     _persist_daily_structured_news_observation,
     _persist_entity_theme_news_observer,
     _persist_entity_theme_news_outcomes,
+    _persist_estimate_revision_outcomes_after_quant_signals,
     _persist_prediction_market_event_observer,
     _persist_prediction_market_event_outcomes,
     _persist_sec_contract_relation_provenance,
@@ -196,6 +197,68 @@ def test_estimate_revision_ledger_refresh_skips_when_quant_signals_save_failed(
     assert summary["status"] == "skipped"
     assert summary["reason"] == "quant_signals_save_failed"
     assert snapshot["estimate_revision_ledger"] == {"row_count": 3}
+    assert summary["production_impact"]["alters_signal_generation"] is False
+
+
+def test_estimate_revision_outcomes_settle_after_quant_signals(monkeypatch):
+    calls = []
+
+    def fake_persist_estimate_revision_outcomes(**kwargs):
+        calls.append(kwargs)
+        assert kwargs["as_of"] == "2026-07-02"
+        assert kwargs["data_dir"] == "data"
+        assert kwargs["output_dir"] == "data/non_ohlcv"
+        return {
+            "status": "ok",
+            "matched_candidate_rows": 3,
+            "closed_rows_by_horizon": {"h0": 3, "h1": 3, "h3": 2, "h5": 0},
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
+    monkeypatch.setattr(
+        run_module,
+        "persist_estimate_revision_outcomes",
+        fake_persist_estimate_revision_outcomes,
+    )
+    snapshot = {}
+
+    summary = _persist_estimate_revision_outcomes_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=True,
+    )
+
+    assert len(calls) == 1
+    assert summary["closed_rows_by_horizon"]["h3"] == 2
+    assert snapshot["estimate_revision_outcomes"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_estimate_revision_outcomes_skip_when_quant_signals_save_failed(monkeypatch):
+    def unexpected_persist_estimate_revision_outcomes(**kwargs):
+        raise AssertionError("should not settle outcomes without quant_signals")
+
+    monkeypatch.setattr(
+        run_module,
+        "persist_estimate_revision_outcomes",
+        unexpected_persist_estimate_revision_outcomes,
+    )
+    snapshot = {"estimate_revision_outcomes": {"status": "previous"}}
+
+    summary = _persist_estimate_revision_outcomes_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=False,
+    )
+
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "quant_signals_save_failed"
+    assert snapshot["estimate_revision_outcomes"] == {"status": "previous"}
     assert summary["production_impact"]["alters_signal_generation"] is False
 
 

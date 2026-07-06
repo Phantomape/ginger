@@ -45,7 +45,8 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    同样受 §2.4 饱和治理约束：豁免覆盖"会真正产出新行"的构建，不覆盖对同一面的反复摆弄。
 4. **饱和治理（硬规则）**。统一原理：**在同一证据面上重复动作不产生新证据。** 任何新实验 ID
    必须指向至少一条机器可查的新证据轴：**(a) 新数据源，(b) 新 gate shape，(c) 实质新增的已结
-   算 forward 行**；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
+   算 forward 行**（相对同面上次探针，已结算行数须明显增长——默认 ≥+50% 或达到 park 时声明的
+   reopen 计数；同一天的刷新不算新增）；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
    标签枚举可被无限满足，基准率不随之改变。换阈值、换响应函数（hard exclusion → 降权 →
    tilt / notional 缩放）、换切片条件、复述"还没成熟"，都**不算**。各通道的触发阈值与合法出路：
 
@@ -53,14 +54,21 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    |---|---|---|---|---|
    | 扫描源饱和 | 同 `(gate_shape, data_source)` ≥12 trials 且 accept ≤5% | 同源换字段/tag 后 override | (a)/(b)/(c) 之一 | ✅ |
    | 被拒信号 retune | 信号已被 Gate 4 拒绝 | 仅改响应函数或阈值再试 | 换信号 / (a)/(c) | ⚠️* |
-   | forward 行归因 | 同一批 forward / non-OHLCV 行连续 3 次 "no edge / not allocation_ready" | 再接一个 join / 条件字段再切片（字段"无前例"也不算轴：绑定约束是行数不是维度） | (c) 或换面 / (a)/(b) | ⚠️ |
+   | forward 行归因 | 同一 data_source 种群连续 3 次 observed-only 收尾 | 再接一个 join / 条件字段再切片（字段"无前例"也不算轴：绑定约束是行数不是维度） | (c) 或换面 / (a)/(b)；override 用 `--observed-only-override` + 合法证据轴 | ✅ |
    | 测量修复 plumbing | 同一 `(假设, 数据面)` 连续 3 次 `accepted_measurement_repair` / `blocked` 且 0 条 gate-ready 行 | 再开一轮增量解析 / 物化 | park：记 `blocked` + 定量 `reopen_condition` | ⚠️ |
    | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
-   | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）累计 ≥3 个 ID（跨面同形也计入） | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道，此后例行物化不占 ID、不记 log | ⚠️ |
+   | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
    | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
 
-   强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen guard）；
-   ⚠️ = 仅文字规则，代理必须自查；\* parked 面上的 retune 措辞会被 reopen guard 拦截。
+   强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
+   observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；
+   \* parked 面上的 retune 措辞会被 reopen guard 拦截。阈值可用
+   `GINGER_OBSERVED_ONLY_MAX_PROBES`、`GINGER_ROUTINE_MATERIALIZATION_MAX_IDS`、
+   `GINGER_ROUTINE_MATERIALIZATION_WINDOW_DAYS` 调整。
+   **分类器覆盖警告**：✅ guard 以 `scripts/experiment_fingerprint.py` 的 data_source 关键词
+   分类为键；未收录的新种群会落到 `other` 并被 guard 直接放行——新建数据面 / observer /
+   种群时必须在同一实验里给 `_DATA_SOURCE_KEYWORDS` 补关键词，否则该面的 ✅ 实际是 ⚠️
+   （案例：2026-07-05/06 deep-drawdown 5 连发与 entity-theme 11 小时 3 连发均因 `other` 逃逸）。
    **共同例外**：真正的故障恢复（orphan temp、上游格式变更、污染快照、语义相关性缺陷、发布
    异常）按 measurement repair 占 ID，不计入以上任何阈值。
    各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查

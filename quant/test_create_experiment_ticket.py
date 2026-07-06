@@ -1,3 +1,4 @@
+import datetime
 import json
 import sys
 from types import SimpleNamespace
@@ -10,8 +11,11 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from create_experiment_ticket import (  # noqa: E402
+    classify_routine_materialization,
     classify_saturated_source_axis,
+    evaluate_observed_only_streak_guard,
     evaluate_reopen_condition_guard,
+    evaluate_routine_materialization_guard,
     reopen_condition_numeric_checks,
     surface_matches_text,
 )
@@ -91,6 +95,19 @@ def test_surface_match_ignores_negated_sec_ftd_finra_alias():
         (
             "supplier financing debt relief forward rows; this is not SEC FTD/FINRA, "
             "not a new FINRA observer, and not a response-function retune"
+        ),
+    )
+
+
+def test_surface_match_ignores_generic_default_off_sleeve_tokens():
+    # "default-off paper sleeve" phrasing appears in nearly every sleeve ticket;
+    # it must not map an unrelated ETF-rebound ticket to a parked FTD/FINRA
+    # observer surface.
+    assert not surface_matches_text(
+        "SEC FTD + FINRA default-off observer",
+        (
+            "Deep index drawdown episode ETF rebound; next-open entry, fixed "
+            "5-day hold, default-off paper ETF sleeve"
         ),
     )
 
@@ -322,3 +339,266 @@ def test_reopen_guard_ignores_measurement_lane(tmp_path):
 
     assert verdict["applicable"] is False
     assert verdict["blocked"] is False
+
+
+def _write_logs(root, payloads):
+    log_dir = root / "experiments" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    for payload in payloads:
+        path = log_dir / f"{payload['experiment_id']}.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+_KOVA_OBSERVED_LOGS = [
+    {
+        "experiment_id": "exp-20260704-011",
+        "status": "observed_only_rejected",
+        "hypothesis": "Kova RS proxy rows recent acceleration forward attribution",
+        "change_type": "candidate_pool_observed_attribution",
+    },
+    {
+        "experiment_id": "exp-20260704-013",
+        "status": "observed_only_rejected",
+        "hypothesis": "Kova current SEC13F ownership breadth joined to RS proxy rows",
+        "change_type": "observed_only_forward_attribution",
+    },
+    {
+        "experiment_id": "exp-20260705-008",
+        "status": "observed_only_rejected",
+        "hypothesis": "Kova SEC13F active-manager active-flow forward separation",
+        "change_type": "observed_only_attribution",
+    },
+]
+
+
+def test_observed_only_streak_guard_blocks_fourth_probe_on_same_population(tmp_path):
+    _write_logs(tmp_path, _KOVA_OBSERVED_LOGS)
+
+    verdict = evaluate_observed_only_streak_guard(
+        _args(
+            hypothesis="Kova rows: options open-interest join for 10d forward separation",
+            change_type="candidate_pool_observed_attribution",
+        ),
+        "kova_snapshot",
+        repo_root=tmp_path,
+    )
+
+    assert verdict["applicable"] is True
+    assert verdict["streak"] == 3
+    assert verdict["blocked"] is True
+
+
+def test_observed_only_streak_guard_accepts_valid_axis_override(tmp_path):
+    _write_logs(tmp_path, _KOVA_OBSERVED_LOGS)
+
+    verdict = evaluate_observed_only_streak_guard(
+        _args(
+            hypothesis="Kova rows observed-only probe after new settlements",
+            change_type="candidate_pool_observed_attribution",
+            observed_only_override=True,
+            new_evidence_axis="materially more closed forward rows since the last probe",
+        ),
+        "kova_snapshot",
+        repo_root=tmp_path,
+    )
+
+    assert verdict["blocked"] is False
+    assert verdict["override_accepted"] is True
+
+
+def test_observed_only_streak_guard_resets_on_non_observed_close(tmp_path):
+    _write_logs(
+        tmp_path,
+        _KOVA_OBSERVED_LOGS
+        + [
+            {
+                "experiment_id": "exp-20260705-020",
+                "status": "accepted",
+                "hypothesis": "Kova snapshot daily wiring into run.py",
+                "change_type": "measurement_repair",
+            }
+        ],
+    )
+
+    verdict = evaluate_observed_only_streak_guard(
+        _args(
+            hypothesis="Kova rows observed-only probe",
+            change_type="candidate_pool_observed_attribution",
+        ),
+        "kova_snapshot",
+        repo_root=tmp_path,
+    )
+
+    assert verdict["streak"] == 0
+    assert verdict["blocked"] is False
+
+
+def test_observed_only_streak_guard_ignores_non_observed_proposal(tmp_path):
+    _write_logs(tmp_path, _KOVA_OBSERVED_LOGS)
+
+    verdict = evaluate_observed_only_streak_guard(
+        _args(
+            hypothesis="Kova snapshot shared default-off paper sleeve full-stack Gate 1-4",
+            change_type="candidate_pool_full_stack",
+        ),
+        "kova_snapshot",
+        repo_root=tmp_path,
+    )
+
+    assert verdict["applicable"] is False
+    assert verdict["blocked"] is False
+
+
+def test_classify_routine_materialization_shapes():
+    routine = classify_routine_materialization(
+        "Enrich newly closed forward rows with cash/SPY/QQQ replacement values"
+    )
+    assert routine["routine"] is True
+    assert routine["fault_recovery"] is False
+    assert routine["pipeline_wiring"] is False
+
+    wiring = classify_routine_materialization(
+        "Wire the forward-row replacement enrichment into run.py daily pipeline"
+    )
+    assert wiring["pipeline_wiring"] is True
+
+    fault = classify_routine_materialization(
+        "Recover orphan temp files and re-materialize the observer forward snapshot"
+    )
+    assert fault["fault_recovery"] is True
+
+
+_ROUTINE_ENRICHMENT_LOGS = [
+    {
+        "experiment_id": "exp-20260704-020",
+        "status": "accepted",
+        "hypothesis": "Enrich newly closed supplier-financing forward rows with replacement values",
+        "change_type": "identity_or_measurement_repair",
+    },
+    {
+        "experiment_id": "exp-20260704-021",
+        "status": "accepted_measurement_repair",
+        "hypothesis": "Enrich newly closed allocator/source-consensus forward rows with replacement values",
+        "change_type": "identity_or_measurement_repair",
+    },
+    {
+        "experiment_id": "exp-20260704-023",
+        "status": "accepted_measurement_repair",
+        "hypothesis": "Materialize estimate-revision overlap forward replacement outcome refresh",
+        "change_type": "identity_or_measurement_repair",
+    },
+]
+
+
+def test_routine_materialization_guard_blocks_after_cross_surface_budget(tmp_path):
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis="Enrich newly closed narrow-range forward rows with replacement values",
+            change_type="identity_or_measurement_repair",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 7, 5),
+    )
+
+    assert verdict["applicable"] is True
+    assert verdict["recent_cross_surface_count"] == 3
+    assert verdict["blocked"] is True
+
+
+def test_routine_materialization_guard_allows_pipeline_wiring_ticket(tmp_path):
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis=(
+                "Wire forward-row replacement enrichment into run.py settlement "
+                "pipeline so newly closed rows enrich automatically"
+            ),
+            change_type="measurement_repair",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 7, 5),
+    )
+
+    assert verdict["applicable"] is False
+    assert verdict["blocked"] is False
+
+
+def test_routine_materialization_guard_allows_fault_recovery(tmp_path):
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis="Recover orphan temp files and re-append the contaminated observer forward snapshot",
+            change_type="measurement_repair",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 7, 5),
+    )
+
+    assert verdict["applicable"] is False
+    assert verdict["blocked"] is False
+
+
+def test_routine_materialization_guard_window_expires(tmp_path):
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis="Enrich newly closed narrow-range forward rows with replacement values",
+            change_type="identity_or_measurement_repair",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 8, 1),
+    )
+
+    assert verdict["applicable"] is True
+    assert verdict["recent_cross_surface_count"] == 0
+    assert verdict["blocked"] is False
+
+
+def test_routine_materialization_guard_ignores_alpha_full_stack_ticket(tmp_path):
+    # An alpha-lane full-stack hypothesis mentioning "backfill" and "forward"
+    # is testing a hypothesis, not appending ledger rows; it must not trip the
+    # routine-materialization budget (live false positive, 2026-07-05).
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="alpha_search",
+            hypothesis=(
+                "Deep index drawdown episodes predict positive 5-day forward "
+                "ETF rebound; pre-2023 index history backfill as new evidence"
+            ),
+            change_type="candidate_pool_full_stack",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 7, 5),
+    )
+
+    assert verdict["applicable"] is False
+    assert verdict["blocked"] is False
+
+
+def test_routine_materialization_guard_override(tmp_path):
+    _write_logs(tmp_path, _ROUTINE_ENRICHMENT_LOGS)
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis="Enrich newly closed narrow-range forward rows with replacement values",
+            change_type="identity_or_measurement_repair",
+            routine_materialization_override=True,
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 7, 5),
+    )
+
+    assert verdict["blocked"] is False
+    assert verdict["override_accepted"] is True

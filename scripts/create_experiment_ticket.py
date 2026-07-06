@@ -24,12 +24,19 @@ COMMON_SURFACE_TOKENS = {
     "condition",
     "context",
     "daily",
+    # "default"/"off"/"paper"/"sleeve" appear in nearly every default-off
+    # paper-sleeve ticket; matching a parked surface on them alone falsely
+    # blocks unrelated reservations (recurrence of the exp-20260704-018
+    # false-mapping family, root-caused 2026-07-05).
+    "default",
     "entry",
     "experiment",
     "forward",
     "gate",
     "logger",
     "notional",
+    "off",
+    "paper",
     "park",
     "parked",
     "ranking",
@@ -41,6 +48,7 @@ COMMON_SURFACE_TOKENS = {
     "search",
     "shared",
     "sizing",
+    "sleeve",
     "surface",
     "trade",
 }
@@ -380,6 +388,302 @@ def classify_saturated_source_axis(axis):
     }
 
 
+_EXPERIMENT_LOG_NAME = re.compile(r"^exp-(\d{8})-\d+\.json$")
+
+
+def _iter_closed_logs(repo_root=None):
+    """Yield (id_date_str, payload) for closed experiment logs, oldest first.
+
+    Only real dated experiment ids participate (``exp-YYYYMMDD-NNN.json``);
+    placeholders like ``exp-next-001.json`` and lock residue are skipped.
+    Fails safe: unreadable/unparseable shards are silently ignored.
+    """
+    root = Path(repo_root) if repo_root is not None else _repo_root()
+    log_dir = root / "experiments" / "logs"
+    if not log_dir.exists():
+        return
+    for path in sorted(log_dir.glob("exp-*.json")):
+        match = _EXPERIMENT_LOG_NAME.match(path.name)
+        if not match:
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(payload, dict):
+            yield match.group(1), payload
+
+
+def _log_is_observed_only_probe(payload):
+    status = str(payload.get("status") or "").lower()
+    decision = str(payload.get("decision") or "").lower()
+    return status.startswith("observed_only") or decision.startswith("observed_only")
+
+
+def _log_data_source(payload):
+    try:
+        import experiment_fingerprint as efp
+
+        return efp.infer_fingerprint(
+            payload.get("hypothesis") or "",
+            payload.get("change_type") or "",
+            payload.get("component") or "",
+        ).get("data_source")
+    except Exception:
+        return None
+
+
+def evaluate_observed_only_streak_guard(args, proposal_source, repo_root=None):
+    """Machine form of the AGENTS.md §2.4 forward-attribution row.
+
+    After N consecutive observed-only "no edge / not allocation_ready" closes on
+    the same data_source population, another observed-only attribution probe on
+    that population is not new evidence: the binding constraint is the number of
+    settled rows, not another join/condition field. Block the reservation unless
+    the ticket declares a legal axis (materially more closed forward rows, a new
+    data source, or a new gate shape) together with --observed-only-override.
+    """
+    try:
+        max_probes = int(os.environ.get("GINGER_OBSERVED_ONLY_MAX_PROBES", "3"))
+    except (TypeError, ValueError):
+        max_probes = 3
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "source": proposal_source,
+        "streak": 0,
+        "max_probes": max_probes,
+        "streak_experiments": [],
+        "rule": (
+            "AGENTS.md §2.4 forward-row attribution: after "
+            f"{max_probes} consecutive observed-only closes on one data_source "
+            "population, a further observed-only probe needs materially more "
+            "settled rows, a new data source, or a new gate shape."
+        ),
+    }
+    try:
+        proposal_text = " ".join(
+            str(getattr(args, name, "") or "")
+            for name in ("change_type", "hypothesis", "trial_family")
+        ).lower()
+        proposal_is_observed_probe = (
+            "observed" in str(getattr(args, "change_type", "") or "").lower()
+            or "observed only" in proposal_text.replace("-", " ").replace("_", " ")
+        )
+        if not proposal_is_observed_probe:
+            return result
+        if not proposal_source or proposal_source == "other":
+            return result
+        result["applicable"] = True
+
+        streak = []
+        for _, payload in _iter_closed_logs(repo_root):
+            if _log_data_source(payload) != proposal_source:
+                continue
+            if _log_is_observed_only_probe(payload):
+                streak.append(payload.get("experiment_id"))
+            else:
+                streak = []
+        result["streak"] = len(streak)
+        result["streak_experiments"] = streak[-max_probes:]
+        if len(streak) < max_probes:
+            return result
+
+        axis = classify_saturated_source_axis(getattr(args, "new_evidence_axis", ""))
+        if getattr(args, "observed_only_override", False) and axis["valid"]:
+            result["override_accepted"] = True
+            result["override_axis_categories"] = axis["categories"]
+            return result
+        result["blocked"] = True
+    except Exception:
+        return result
+    return result
+
+
+_ROUTINE_MATERIALIZATION_VERBS = (
+    "enrich",
+    "materializ",
+    "refresh",
+    "backfill",
+    "append",
+)
+_ROUTINE_LEDGER_MARKERS = (
+    "forward",
+    "observer",
+    "ledger",
+    "settle",
+    "closed row",
+    "closed rows",
+    "outcome",
+    "snapshot",
+    "replacement",
+)
+_FAULT_RECOVERY_MARKERS = (
+    "orphan",
+    "corrupt",
+    "contaminat",
+    "upstream format",
+    "format change",
+    "schema change",
+    "recover",
+    "crash",
+    "lock residue",
+    "publish anomaly",
+)
+_PIPELINE_WIRING_MARKERS = (
+    "run py",
+    "pipeline",
+    "wire",
+    "wiring",
+    "scheduled task",
+    "cron",
+    "automat",
+    "daily job",
+)
+
+
+def classify_routine_materialization(text):
+    """Classify whether text describes routine forward-ledger delta materialization.
+
+    Routine = a materialization verb (enrich/materialize/refresh/backfill/append)
+    applied to a forward-ledger surface (forward rows, observer outcomes, settled
+    replacement values, snapshots). Fault recovery and one-time pipeline wiring
+    are the two legal shapes and are classified separately.
+    """
+    normalized = _normalize_text(text)
+    return {
+        "routine": (
+            any(verb in normalized for verb in _ROUTINE_MATERIALIZATION_VERBS)
+            and any(marker in normalized for marker in _ROUTINE_LEDGER_MARKERS)
+        ),
+        "fault_recovery": any(m in normalized for m in _FAULT_RECOVERY_MARKERS),
+        "pipeline_wiring": any(m in normalized for m in _PIPELINE_WIRING_MARKERS),
+    }
+
+
+def _log_is_routine_materialization(payload):
+    status = str(payload.get("status") or "").lower()
+    if status not in {"accepted_measurement_repair", "accepted"}:
+        return False
+    text = " ".join(
+        str(payload.get(key) or "")
+        for key in ("hypothesis", "change_type", "change_summary", "decision")
+    )
+    verdict = classify_routine_materialization(text)
+    return verdict["routine"] and not verdict["fault_recovery"] and not verdict["pipeline_wiring"]
+
+
+def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
+    """Machine form of the AGENTS.md §2.4 routine-delta-materialization row.
+
+    Manually re-running the same append/refresh/enrichment for accepted
+    observer / default-off sleeve forward ledgers is cron work wearing an
+    experiment coat: rows are real but there is no attributable hypothesis.
+    After the budget is spent (>= max_ids on one surface, or >= max_ids
+    same-shape closes across surfaces within the recent window), the only legal
+    next reservation is the one-time pipeline wiring (run.py / scheduled task)
+    or a genuine fault recovery — both pass this gate by classification.
+    """
+    try:
+        max_ids = int(os.environ.get("GINGER_ROUTINE_MATERIALIZATION_MAX_IDS", "3"))
+    except (TypeError, ValueError):
+        max_ids = 3
+    try:
+        window_days = int(
+            os.environ.get("GINGER_ROUTINE_MATERIALIZATION_WINDOW_DAYS", "7")
+        )
+    except (TypeError, ValueError):
+        window_days = 7
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "max_ids": max_ids,
+        "window_days": window_days,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": (
+            "AGENTS.md §2.4 routine delta materialization: after "
+            f"{max_ids} routine forward-ledger materialization IDs (one surface, "
+            f"or same-shape across surfaces within {window_days} days), wire the "
+            "materialization into run.py / the settlement pipeline once instead "
+            "of reserving further manual IDs. Fault recovery is exempt."
+        ),
+    }
+    try:
+        # Only measurement-shaped tickets can BE routine materialization. An
+        # alpha-lane full-stack ticket whose hypothesis merely mentions
+        # "backfill" or "forward returns" is testing a hypothesis, not
+        # re-running a ledger append; without this shape check the gate
+        # false-blocks alpha reservations (found on first live use 2026-07-05).
+        lane = str(getattr(args, "lane", "") or "").lower()
+        change_type = str(getattr(args, "change_type", "") or "").lower()
+        measurement_shaped = lane not in ALPHA_LANES or any(
+            marker in change_type
+            for marker in (
+                "repair",
+                "materializ",
+                "refresh",
+                "enrich",
+                "backfill",
+                "observation_delta",
+                "wiring",
+            )
+        )
+        if not measurement_shaped:
+            return result
+        proposal_text = " ".join(
+            str(getattr(args, name, "") or "")
+            for name in ("hypothesis", "change_type", "single_causal_variable", "trial_family")
+        )
+        verdict = classify_routine_materialization(proposal_text)
+        result["proposal_classification"] = verdict
+        if not verdict["routine"] or verdict["fault_recovery"] or verdict["pipeline_wiring"]:
+            return result
+        result["applicable"] = True
+
+        import datetime as _dt
+
+        current = today or _dt.date.today()
+        cutoff = current - _dt.timedelta(days=window_days)
+        try:
+            import experiment_fingerprint as efp
+
+            proposal_source = efp.infer_fingerprint(proposal_text).get("data_source")
+        except Exception:
+            proposal_source = None
+
+        per_source = 0
+        recent = []
+        for id_date_str, payload in _iter_closed_logs(repo_root):
+            if not _log_is_routine_materialization(payload):
+                continue
+            if proposal_source and proposal_source != "other":
+                if _log_data_source(payload) == proposal_source:
+                    per_source += 1
+            try:
+                id_date = _dt.datetime.strptime(id_date_str, "%Y%m%d").date()
+            except ValueError:
+                continue
+            if id_date >= cutoff:
+                recent.append(payload.get("experiment_id"))
+        result["per_source_count"] = per_source
+        result["recent_cross_surface_count"] = len(recent)
+        result["recent_experiments"] = recent[-8:]
+        if per_source < max_ids and len(recent) < max_ids:
+            return result
+
+        if getattr(args, "routine_materialization_override", False):
+            result["override_accepted"] = True
+            return result
+        result["blocked"] = True
+    except Exception:
+        return result
+    return result
+
+
 def _novelty_check(args):
     """Advisory near-neighbor check at reservation time. Fails safe.
 
@@ -531,6 +835,72 @@ def _novelty_check(args):
             f"new_evidence_axis={out['new_evidence_axis']}",
             file=sys.stderr,
         )
+
+    observed_guard = evaluate_observed_only_streak_guard(
+        args, fingerprint.get("data_source")
+    )
+    out["observed_only_streak_guard"] = observed_guard
+    if observed_guard.get("streak"):
+        print(
+            f"[observed-only] {observed_guard['streak']} consecutive observed-only "
+            f"close(s) on data_source '{observed_guard['source']}' "
+            f"(block at >= {observed_guard['max_probes']}): "
+            + ", ".join(str(e) for e in observed_guard["streak_experiments"]),
+            file=sys.stderr,
+        )
+    if observed_guard.get("blocked") and enforce and alpha_lane:
+        raise SystemExit(
+            "observed-only saturation gate blocked this reservation: data_source "
+            f"'{observed_guard['source']}' already has "
+            f"{observed_guard['streak']} consecutive observed-only closes "
+            f"({', '.join(str(e) for e in observed_guard['streak_experiments'])}). "
+            "Another join/condition-field slice on the same row population is not "
+            "new evidence — the binding constraint is settled-row count, not "
+            "field dimension. Legal next steps: materially more closed/settled "
+            "forward rows, a genuinely new data source, or a new gate shape. To "
+            "proceed, re-run with --observed-only-override and "
+            '--new-evidence-axis "<materially more closed forward rows | new '
+            'data source | new gate shape>".'
+        )
+    if observed_guard.get("override_accepted"):
+        print(
+            "[observed-only] override accepted; "
+            f"axis={out['new_evidence_axis']}",
+            file=sys.stderr,
+        )
+
+    routine_guard = evaluate_routine_materialization_guard(args)
+    out["routine_materialization_guard"] = routine_guard
+    if routine_guard.get("applicable"):
+        print(
+            "[routine-materialization] proposal classifies as routine "
+            "forward-ledger delta materialization; prior routine IDs: "
+            f"same-source={routine_guard['per_source_count']}, "
+            f"cross-surface last {routine_guard['window_days']}d="
+            f"{routine_guard['recent_cross_surface_count']} "
+            f"(block at >= {routine_guard['max_ids']}).",
+            file=sys.stderr,
+        )
+    if routine_guard.get("blocked") and enforce:
+        raise SystemExit(
+            "routine-materialization gate blocked this reservation: routine "
+            "forward-ledger delta materialization (append/refresh/enrichment) "
+            "has already consumed its ID budget ("
+            f"same-source={routine_guard['per_source_count']}, cross-surface "
+            f"last {routine_guard['window_days']}d="
+            f"{routine_guard['recent_cross_surface_count']}, threshold "
+            f"{routine_guard['max_ids']}; recent: "
+            f"{', '.join(str(e) for e in routine_guard['recent_experiments'])}). "
+            "This is cron work wearing an experiment coat. Legal next step: one "
+            "measurement-repair ID that wires the materialization into run.py / "
+            "the settlement pipeline (mention the wiring in the hypothesis), "
+            "after which routine rows land automatically without IDs. Genuine "
+            "fault recovery (orphan temp, upstream format change, contaminated "
+            "snapshot) is exempt when named. To proceed anyway, re-run with "
+            "--routine-materialization-override."
+        )
+    if routine_guard.get("override_accepted"):
+        print("[routine-materialization] override accepted.", file=sys.stderr)
 
     if result.get("warn") and enforce and alpha_lane:
         if not (args.novelty_override and (args.new_evidence_axis or "").strip()):
@@ -732,6 +1102,28 @@ def main(description=__doc__):
             "on purpose: also requires --new-evidence-axis naming a genuinely new "
             "data source, a new gate shape, or materially more closed/settled "
             "forward rows. Same-source new fields/tags are blocked."
+        ),
+    )
+    parser.add_argument(
+        "--observed-only-override",
+        action="store_true",
+        help=(
+            "Proceed despite the observed-only saturation block (>= N consecutive "
+            "observed-only closes on the same data_source population). Requires "
+            "--new-evidence-axis naming materially more closed/settled forward "
+            "rows, a new data source, or a new gate shape; another join/condition "
+            "field on the same rows does not qualify."
+        ),
+    )
+    parser.add_argument(
+        "--routine-materialization-override",
+        action="store_true",
+        help=(
+            "Proceed despite the routine-materialization block (forward-ledger "
+            "delta materialization past its ID budget). Prefer instead a ticket "
+            "that wires the materialization into run.py / the settlement "
+            "pipeline, or that names a genuine fault recovery — both pass the "
+            "gate without an override."
         ),
     )
     parser.add_argument(
