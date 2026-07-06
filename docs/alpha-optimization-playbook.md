@@ -869,6 +869,11 @@ secular bears while the episode-budget variant was positive but too thin and
 failed SPY-excess support. Do not retune stabilization, 200d, VIX, TLT, volume,
 range, entry-budget, hold, or notional on frozen rows; valid evidence is new
 settled live episodes or a genuinely new ex-ante capitulation/breadth source.
+The first broad-OHLCV breadth/capitulation retry (`exp-20260706-017`) then
+failed as a coverage read, not as alpha: only 2 of 17 historical first-entry
+episodes had enough broad-warehouse breadth context, so do not retune breadth
+thresholds until at least 12 of 17 rows are PIT-covered or new forward episodes
+settle with the same fields.
 Sector-concurrency and duplicate-exposure reads did not validate a cross-sleeve
 cap: crowded rows were not a stable loss cohort, and pilot sector concentration
 is now risk reporting, not alpha. Estimate-revision outcome settlement and
@@ -1945,9 +1950,12 @@ production-visible field:
   replay rows. `exp-20260706-003` rejected repeated-entry rebound because
   secular-bear re-entry bleed overwhelmed correction gains; `exp-20260706-004`,
   `005`, `008`, `009`, and `015` did not supply stable quality gates; and
-  `exp-20260706-006` retained only a default-off observer. Reopen with new
-  settled live episodes or a genuinely new ex-ante capitulation/breadth/macro
-  data source fixed before replay;
+  `exp-20260706-006` retained only a default-off observer. `exp-20260706-017`
+  tried the first broad-OHLCV breadth/capitulation gate but had only 2/17
+  PIT-covered rows, so breadth threshold/lookback retunes are frozen until
+  coverage reaches at least 12 of 17 historical rows or new forward episodes
+  settle with the same fields. Reopen with those rows or a genuinely new
+  ex-ante capitulation/breadth/macro data source fixed before replay;
 - same-sector concurrency, pilot sector concentration, or duplicate-exposure
   risk caps based only on current default-off forward rows. `exp-20260706-001`
   accepted reporting only, while `exp-20260706-002` rejected the sector

@@ -582,14 +582,15 @@ def build_payload() -> dict[str, Any]:
             "verdict": "reject",
             "gate4_passed": False,
             "next_step": (
-                "Reject and do not retune share-rise thresholds, trailing-week "
+                "Reject and do not retune retreat thresholds, trailing-week "
                 "counts, guard values, rank tie-breaks, hold days, cooldown, "
-                "or notional on these frozen windows. The archive and daily "
-                "snapshot keep accumulating; a valid retry needs settled "
-                "forward rows from the daily default-off snapshot, the "
-                "non-ATS (OTC wholesaler) summary as a genuinely different "
-                "venue decomposition, or PIT short-side economics joined to "
-                "the same names."
+                "or notional on these frozen windows. Both directions of the "
+                "FINRA weekly venue decomposition (ATS rise, non-ATS retreat) "
+                "are now tested; the archive and daily snapshot keep "
+                "accumulating, and a valid retry needs settled forward rows "
+                "from the daily default-off snapshot or PIT borrow/short-side "
+                "economics joined to the same names, not another venue-share "
+                "reshape."
             ),
         }
 
@@ -609,13 +610,15 @@ def build_payload() -> dict[str, Any]:
     if accepted:
         reflection = {
             "why_result_happened": (
-                "The rising ATS dark-share weeks carried enough next-open 10d "
-                "continuation after the fixed ~3-week publication lag to "
-                "clear the accepted comparators under the family-standard "
-                "guard bundle without touching the frozen thresholds."
+                "Weeks where wholesaler internalization retreated (retail "
+                "washout) while SPY-relative strength held carried enough "
+                "next-open 10d continuation after the multi-week publication "
+                "lag to clear the accepted comparators under the "
+                "family-standard guard bundle without touching the frozen "
+                "thresholds."
             ),
             "forbidden_near_neighbor_retry": (
-                "Do not sweep share-rise ratio, trailing-week count, guard "
+                "Do not sweep retreat ratio, trailing-week count, guard "
                 "values, rank tie-breaks, hold days, cooldown, notional, or "
                 "response shapes on these frozen windows; the retained asset "
                 "is the shared helper plus daily default-off snapshot."
@@ -629,24 +632,25 @@ def build_payload() -> dict[str, Any]:
     else:
         reflection = {
             "why_result_happened": (
-                "The fixed top-1/publication-day ATS dark-share rise source "
-                "did not clear the predeclared Gate 4 bar on the canonical "
-                "windows: "
+                "The fixed top-1/publication-day non-ATS internalization-"
+                "retreat source did not clear the predeclared Gate 4 bar on "
+                "the canonical windows: "
                 + ("; ".join(gate4["failed_reasons"]) or "none")
             ),
             "forbidden_near_neighbor_retry": (
-                "Do not retune share-rise ratio, trailing-week count, "
-                "min ADV/RS guard values, rank tie-breaks, hold days, "
-                "cooldown, or notional on these same frozen windows; do not "
-                "re-slice the same archive by tier, notional-per-trade, or "
-                "trade-count fields as if they were a new axis."
+                "Do not retune retreat ratio, trailing-week count, min ADV/RS "
+                "guard values, rank tie-breaks, hold days, cooldown, or "
+                "notional on these same frozen windows; do not re-slice the "
+                "same archive by tier, notional-per-trade, or trade-count "
+                "fields as if they were a new axis. Both directions of the "
+                "FINRA weekly venue decomposition (ATS rise exp-20260703-016, "
+                "non-ATS retreat this experiment) are now tested."
             ),
             "new_evidence_required": (
-                "Settled forward rows from the daily default-off snapshot, "
-                "the non-ATS (OTC wholesaler internalization) weekly summary "
-                "as a genuinely different venue decomposition with its own "
-                "gate shape, or PIT borrow/short-side economics joined to "
-                "the same names."
+                "Settled forward rows from the daily default-off snapshots of "
+                "either FINRA weekly sleeve, or PIT borrow/short-side "
+                "economics joined to the same names; not another venue-share "
+                "field, direction, or threshold reshape on the same archive."
             ),
         }
 
@@ -667,12 +671,11 @@ def build_payload() -> dict[str, Any]:
         "trial_family": TRIAL_FAMILY,
         "trial_variant_id": TRIAL_VARIANT_ID,
         "mechanism_family": MECHANISM_FAMILY,
-        "new_evidence_type": "new_data_source_versioned_historical_archive",
+        "new_evidence_type": "new_data_source_and_new_gate_shape",
         "nearby_prior_experiments": [
-            "exp-20260702-019",
-            "exp-20260622-021",
-            "exp-20260616-024",
-            "exp-20260616-026",
+            "exp-20260703-016",
+            "exp-20260704-003",
+            "exp-20260528-015",
         ],
         "multiple_testing_risk_bucket": "low",
         "prediction": PREDICTION,
@@ -685,7 +688,7 @@ def build_payload() -> dict[str, Any]:
             "source": (
                 "docs/backtesting.md canonical three-window accepted core "
                 "baseline plus default-off paper overlay from the shared "
-                "FINRA ATS dark-share sleeve replay"
+                "FINRA non-ATS OTC internalization-retreat sleeve replay"
             ),
             "windows": WINDOWS,
             "execution_model": (
@@ -705,8 +708,9 @@ def build_payload() -> dict[str, Any]:
             "guards": (
                 "family-standard: min_close $10, min adv20 $50M, "
                 "ret20_excess_spy >= 0; new information: newly published "
-                "weekly ATS share of consolidated volume > trailing 4 "
-                "published weeks' mean, rank by share_retreat_ratio"
+                "weekly non-ATS internalization share of consolidated volume "
+                "< trailing 4 published weeks' mean, rank ASCENDING by "
+                "share_retreat_ratio"
             ),
             "thresholds_retuned": False,
         },

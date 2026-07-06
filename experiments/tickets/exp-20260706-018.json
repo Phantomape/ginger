@@ -1,0 +1,281 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_018_finra_otc_internalization_retreat.py",
+    "data/experiments/exp-20260706-018/exp_20260706_018_finra_otc_internalization_retreat.json",
+    "experiments/cards/exp-20260706-018.md",
+    "experiments/manifests/exp-20260706-018.json",
+    "experiments/tickets/exp-20260706-018.json",
+    "experiments/logs/exp-20260706-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-018.md",
+  "causal_components": [
+    "OTC_W_SMBL PIT weekly archive",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "finra_otc_internalization_retreat_quiet_accumulation_candidate_source",
+  "claimed_at": "2026-07-06T16:14:28+00:00",
+  "completed_at": null,
+  "created_at": "2026-07-06T16:14:18+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-018",
+  "experiment_uid": "expuid-94e532f915254d9f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T16:14:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_otc_internalization_retreat"
+  },
+  "hypothesis": "FINRA OTC non-ATS wholesaler internalization weekly summary (OTC_W_SMBL): a published week whose internalization share of consolidated volume retreats below the trailing published mean (retail participation washout) while the tape holds non-negative 20d SPY-relative strength marks quiet institutional accumulation; a fixed top-1/publication-day default-off paper candidate source built on this quiet-retail retreat gate should add replacement value on the canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "finra_otc_internalization_retreat_quiet_accumulation_candidate_source"
+  ],
+  "mechanism_family": "candidate_pool_full_stack",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-016",
+    "exp-20260704-003"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "score": 0.6138,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "score": 0.6136,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "score": 0.6133,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "20d",
+        "a",
+        "accumulation",
+        "add",
+        "ats",
+        "below",
+        "built",
+        "canonical",
+        "consolidated",
+        "finra",
+        "gate",
+        "holds",
+        "institutional",
+        "internalization",
+        "marks",
+        "mean",
+        "negative",
+        "non",
+        "of",
+        "on",
+        "otc",
+        "participation",
+        "publication",
+        "published",
+        "quiet",
+        "relative",
+        "replacement",
+        "retail",
+        "retreat",
+        "retreats",
+        "share",
+        "should",
+        "smbl",
+        "spy",
+        "strength",
+        "summary",
+        "tape",
+        "this",
+        "top",
+        "trailing",
+        "value",
+        "volume",
+        "w",
+        "washout",
+        "week",
+        "weekly",
+        "while",
+        "wholesaler",
+        "whose",
+        "windows"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "reopen_condition": "Settled forward rows from the daily default-off snapshot, the non-ATS (OTC wholesaler internalization) weekly summary as a genuinely different venue decomposition with its own gate shape, or PIT borrow/short-side economics joined to the same names.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "reopen_condition": "With the broad-universe coverage gap closed, a valid retry needs a materially DIFFERENT signal axis - PIT borrow fee/utilization or loan-availability, options-implied move/skew, or closed forward replacement-value rows from a shared default-off helper - not another threshold or universe-size retune.",
+        "score": 0.6138,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially broader archived Moomoo coverage set, PIT borrow fee/utilization or loan-availability data, options/flow confirmation, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.6136,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "reopen_condition": "If positive, the next evidence is closed forward replacement-value rows from the shared FINRA/IWM default-off ledger tagged with entry-time borrow-pressure. If negative, a valid retry needs a materially different PIT borrow-cost / hard-to-borrow / loan-availability field, not a days_to_cover, short-change, freshness, RS, top-N, hold, cooldown, or notional retune on these frozen windows.",
+        "score": 0.6133,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "finra_short_interest",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+        "categories": [
+          "new_data_source",
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+      "categories": [
+        "new_data_source",
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2222,
+      "accepts": 4,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 18
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Different venue population (wholesaler internalization vs ATS dark pools) with inverse gate direction; quiet-participation mechanism has one accepted precedent (exp-20260528-015); but FINRA family base rate is 0/1 and publication lag ~3 weeks may stale the signal.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "window_ev_regression",
+      "not_incremental_vs_accepted_comparators",
+      "publication_lag_kills_edge"
+    ],
+    "recorded_at": "2026-07-06T16:13:38+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260706-018.json",
+  "single_causal_variable": "finra_otc_internalization_retreat_quiet_accumulation_candidate_source",
+  "status": "claimed",
+  "ticket_file": "experiments/tickets/exp-20260706-018.json",
+  "trial_family": "candidate_pool_full_stack",
+  "trial_variant_id": "exp-20260706-018"
+}

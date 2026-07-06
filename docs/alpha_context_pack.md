@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1504`
-- Raw records loaded by meta report: `2354`
-- History fingerprint: `0e5db4271c12fc44`
+- Strategy records counted: `1505`
+- Raw records loaded by meta report: `2373`
+- History fingerprint: `16288e0cb7f266a2`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -64,8 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260702-003` `rejected_space_catalyst_defense_budget_same_theme_not_incremental`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `event_or_llm`.
-  Lesson: Defense-budget Space rows still look good versus cash and broad ETFs, but the effect is not incremental after same-theme opportunity cost: same-theme checks failed on the tested 10d/20d mature rows. Do not rerun Space...
 - `exp-20260702-010` `rejected_high_actual_risk_entry_risk_cap`: EV `+0.0000`, PnL `$0.00`, family `entry_risk_allocation`, trial `high_actual_risk_entry_risk_cap`.
   Lesson: High-risk entries were often winners or too sparse, so cutting them did not clear the >10% EV materiality hurdle. Do not retune the 2% cap, try adjacent risk caps, combine with early-weakness exits, widen stop/target/...
 - `exp-20260702-012` `rejected_sec_event_exposure_top1_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_corporate_event_propagation`, trial `sec_event_exposure_top1_candidate_source`.
@@ -88,6 +86,8 @@ facts before changing strategy behavior.
   Lesson: The forward ledger can support a cross-sleeve cap simulation, but the independent historical accepted-paper surface is still too thin or concentrated to validate a default-off duplicate exposure policy. Do not retune...
 - `exp-20260705-014` `rejected_cisa_kev_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `external_event_entry_risk_gate`, trial `cisa_kev_mapped_issuer_entry_risk_window`.
   Lesson: Mapped mega-cap issuers absorb KEV headlines without systematic near-term underperformance, or the flagged sample was too thin/saturated for a deployable gate: thin_vetoed_trade_sample Do not retune the 5-session wind...
+- `exp-20260706-013` `rejected_core_risk_multiplier_stack_loss_tail`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `risk_allocation`.
+  Lesson: The high-stack bucket was not a loss-tail cohort: aggregate mean PnL was higher than non-high-stack, and no window showed both lower mean PnL and higher severe-loss rate for high-stack entries. Do not retune boost_cou...
 
 ## Highest-Signal Historical Records
 
