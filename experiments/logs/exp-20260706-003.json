@@ -1,0 +1,127 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.16,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "thin_episode_sample",
+      "falling_knife_stabilization_false_positive",
+      "single_window_concentration",
+      "survivorship_free_but_regime_shift"
+    ],
+    "predicted_success_probability": 0.4,
+    "realized_failure_mode": "falling_knife_stabilization_false_positive",
+    "surprise_level": "low",
+    "surprise_note": "Predicted 0.4 success; realized rejection matched the top predeclared failure mode. The surprise was magnitude and mechanism: episode duration, not entry quality, drives the loss - long bears convert one trigger into 50-124 sequential re-entries, so per-trade edge is dominated by episode-length exposure. Any retry must budget entries per episode or condition on bear-vs-correction state, which is a different gate shape."
+  },
+  "causal_components": [
+    "pre2023 index history PIT archive",
+    "shared episode trigger helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "run.py wiring",
+    "parity test",
+    "episode-level artifact"
+  ],
+  "change_summary": "Built pre-2023 index history PIT archive (QQQ/SPY/^VIX/TLT 2000-2023, 23156 rows, yfinance adjusted) + shared deep-drawdown episode rebound helper with full-history replay and daily default-off snapshot builder (replay/daily parity pinned by tests). Full 2000-2026 replay of the predeclared bundle: 342 closed trades / 17 episodes, total -$20657 on $10k notional, win rate 47.7%, mean -0.60%/trade, mean excess vs SPY -0.63%. Three secular bears (2000-04: 124 trades -$18265; 2008: 66 trades -$5598; 2022: 51 trades -$2571) overwhelm the +$5777 earned across the other 14 correction-type episodes. Policy NOT wired into run.py; production untouched (before==after baseline).",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False",
+  "component": "quant/experiments/exp_20260706_003_deep_drawdown_rebound.py, data/experiments/exp-20260706-003/exp_20260706_003_deep_drawdown_rebound.json, experiments/cards/exp-20260706-003.md, experiments/manifests/exp-20260706-003.json, experiments/tickets/exp-20260706-003.json, experiments/logs/exp-20260706-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json, quant/deep_drawdown_rebound_paper_sleeve.py, quant/test_deep_drawdown_rebound_paper_sleeve.py, quant/run.py, data/non_ohlcv/index_history/, data/paper_sleeves/deep_drawdown_rebound/",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260706-003",
+  "hypothesis": "Deep index drawdown episodes (QQQ close >=12% below rolling 252d high) followed by a first stabilization day (up close finishing in the upper half of the daily range) predict positive 5-day forward ETF rebound; next-open entry, fixed 5-day hold, default-off paper ETF sleeve with pre-2023 index history backfill as new evidence.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260606-003",
+    "exp-20260607-005",
+    "exp-20260611-011"
+  ],
+  "new_evidence_type": "new data source (pre-2023 index daily history, not in warehouse) + new gate shape (index-drawdown episode trigger vs unconditional scan)",
+  "next_retry_requires": [],
+  "notes": "Deep-drawdown 'buy the first stabilization day' is structurally a falling-knife policy in secular bears: the -12%/-5% hysteresis episode stays active for years while the 252d rolling high decays, so the sleeve re-enters every bounce (124 re-entries in the dot-com bear). Correction-type episodes (14 of 17) were mildly positive (+$5777, 11/14 positive), but the predeclared bundle cannot distinguish correction from bear onset ex ante, and slicing that after the fact would be a post-hoc retune. Evidence assets kept: data/non_ohlcv/index_history archive (new durable source), quant/deep_drawdown_rebound_paper_sleeve.py + tests, replay artifact data/experiments/exp-20260706-003/.",
+  "parameters": {
+    "locked_variables": [
+      "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False"
+    ],
+    "single_causal_variable": "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune trigger_drawdown_pct, episode_reset_drawdown_pct, rolling_high_days, min_close_location, hold_days, notional, cooldown, or response curves on this same QQQ 2000-2026 merged series; do not re-slice the same 342-trade replay into correction-only subsets and call the survivors alpha (that is the post-hoc version of the same bundle). Do not swap QQQ for SPY/IWM on the same trigger shape.",
+    "new_evidence_required": "A legitimate retry needs a genuinely different gate shape declared up front: a predeclared per-episode entry budget (e.g. first stabilization only), or an ex-ante bear-vs-correction conditioning state (e.g. PIT regime classifier risk_off vs chop, or 200d-slope filter) fixed BEFORE replay; or new settled forward rows from a live episode. The pre-2023 index archive (data/non_ohlcv/index_history) is durable and reusable for that follow-up without re-fetching.",
+    "realized_failure_mode": "falling_knife_stabilization_false_positive",
+    "why_result_happened": "Predicted 0.4 success; realized rejection matched the top predeclared failure mode. The surprise was magnitude and mechanism: episode duration, not entry quality, drives the loss - long bears convert one trigger into 50-124 sequential re-entries, so per-trade edge is dominated by episode-length exposure. Any retry must budget entries per episode or condition on bear-vs-correction state, which is a different gate shape."
+  },
+  "prediction": {
+    "confidence_reason": "Post-capitulation short-horizon index rebound is a documented crisis-alpha pattern; unconditional single-name reversal died in-repo (exp-20260606-003/20260607-005) but episode-conditioned ETF-level was never tested; backfilled history raises episode n from 3 to roughly 8-10.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_episode_sample",
+      "falling_knife_stabilization_false_positive",
+      "single_window_concentration",
+      "survivorship_free_but_regime_shift"
+    ],
+    "recorded_at": "2026-07-06T01:18:11+00:00",
+    "success_probability": 0.4
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-06T01:29:54+00:00",
+  "trial_family": "deep_drawdown_episode_etf_rebound_candidate_pool",
+  "trial_variant_id": "exp-20260706-003"
+}

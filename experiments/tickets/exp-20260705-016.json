@@ -1,0 +1,421 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.py",
+    "data/experiments/exp-20260705-016/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.json",
+    "experiments/cards/exp-20260705-016.md",
+    "experiments/manifests/exp-20260705-016.json",
+    "experiments/tickets/exp-20260705-016.json",
+    "experiments/logs/exp-20260705-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/paper_sleeves/moomoo_capital_flow/state.json",
+    "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-016.md",
+  "causal_components": [
+    "accepted shared Moomoo capital-flow helper",
+    "local get_capital_flow(DAY) archive through latest flow date",
+    "first default-off paper state/snapshot materialization",
+    "no threshold, ranking, notional, exit, prompt, or order change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_capital_flow_first_forward_snapshot_materialization_v1",
+  "claimed_at": "2026-07-05T22:12:55+00:00",
+  "completed_at": "2026-07-05T22:22:12+00:00",
+  "created_at": "2026-07-05T22:12:46+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-016",
+  "experiment_uid": "expuid-4a9b4d6687ae460d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-016",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T22:12:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_capital_flow_first_forward_snapshot"
+  },
+  "hypothesis": "Alpha blocker: Moomoo capital-flow daily wiring is accepted, but the default-off paper sleeve has no state or snapshot files; materializing the first post-wiring local-archive snapshot will create actual forward rows needed for future replacement-value evidence without changing thresholds, ranking, notional, exits, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "moomoo_capital_flow_first_forward_snapshot_materialization_v1"
+  ],
+  "mechanism_family": "moomoo_capital_flow_day_accumulation_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-019",
+    "exp-20260703-007"
+  ],
+  "new_evidence_type": "materially_new_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "actual",
+        "alpha",
+        "archive",
+        "blocker",
+        "but",
+        "capital",
+        "changing",
+        "create",
+        "daily",
+        "evidence",
+        "exits",
+        "files",
+        "first",
+        "flow",
+        "forward",
+        "future",
+        "has",
+        "is",
+        "local",
+        "materialization",
+        "materializing",
+        "moomoo",
+        "needed",
+        "no",
+        "notional",
+        "or",
+        "orders",
+        "post",
+        "ranking",
+        "replacement",
+        "rows",
+        "sleeve",
+        "snapshot",
+        "state",
+        "thresholds",
+        "value",
+        "will",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.2,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.4,
+        "data_source": "other",
+        "family_key": "event_rotation_replacement_value_maturation",
+        "reopen_condition": null,
+        "score": 0.1833,
+        "status": "has_accepted",
+        "trials": 5
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "moomoo_daily_short_volume_clean_flow_quality_gate",
+        "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a materially different non-OHLCV flow field.",
+        "score": 0.1833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "toxic_q5_notional_downweight",
+        "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a different non-OHLCV flow field.",
+        "score": 0.1827,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_consensus_forward_rv_enrichment",
+        "reopen_condition": "Materially more closed enriched accepted allocator/source-consensus forward rows, or a genuinely new production-visible source that changes the evidence rather than the response function.",
+        "score": 0.1755,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.76,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "missing local warehouse OHLCV for latest flow date; helper emits zero candidates; no new pending rows because same-day core overlap or guards block all candidates; accidental network fetch"
+    ],
+    "confidence_reason": "exp-20260703-007 accepted run.py wiring but data/paper_sleeves/moomoo_capital_flow/state.json and snapshots.jsonl are absent while the local capital-flow archive has 49 tickers through 2026-07-02. This is new forward-row materialization, not a threshold or response retry.",
+    "recorded_at": "2026-07-05T22:12:07+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_moomoo_capital_flow_first_forward_snapshot",
+    "classification": "measurement_repair_forward_rows_materialized_alpha_not_ready",
+    "artifact": "data/experiments/exp-20260705-016/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.json",
+    "log": "experiments/logs/exp-20260705-016.json",
+    "summary": "This is alpha-enabling evidence only: it creates a pending/open forward row so later replacement-value evidence can mature. It is not an allocation-ready Moomoo capital-flow alpha."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-016.json",
+  "single_causal_variable": "moomoo_capital_flow_first_forward_snapshot_materialization_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260705-016.json",
+  "trial_family": "moomoo_capital_flow_forward_row_materialization",
+  "trial_variant_id": "moomoo_capital_flow_first_forward_snapshot_materialization_v1",
+  "alpha_hypothesis": "Moomoo day-level main capital-flow may contain useful accumulation signals, but the accepted daily wiring needed actual default-off forward rows before any future replacement-value or allocation claim.",
+  "implementation_mode": "default_off_first_forward_snapshot_materialization",
+  "new_evidence_axis": "First actual default-off paper state/snapshot rows for the accepted Moomoo capital-flow daily wiring, using the local archive through 2026-07-02. This is forward-row materialization, not a threshold, ranking, notional, or response-function retry.",
+  "parameters": {
+    "as_of": "2026-07-02",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "state_path": "data/paper_sleeves/moomoo_capital_flow/state.json",
+    "snapshot_log_path": "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl",
+    "rows_path": "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "manifest_path": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "paper_rule_version": "moomoo_capital_flow_day_main_inflow_top1_v1",
+    "source_rule_version": "moomoo_get_capital_flow_day_archive_v1",
+    "sleeve_name": "MOOMOO_CAPITAL_FLOW_ACCUMULATION_PAPER",
+    "allow_network_fetch": false
+  },
+  "pre_run_questions": {
+    "alpha_hypothesis": "Alpha blocker: Moomoo capital-flow daily wiring is accepted, but the default-off paper sleeve has no state or snapshot files; materializing the first post-wiring local-archive snapshot will create actual forward rows needed for future replacement-value evidence without changing thresholds, ranking, notional, exits, or orders.",
+    "history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260702-019",
+        "exp-20260703-007"
+      ],
+      "novelty_nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "other",
+          "family_key": "forward_replacement_stock_vs_etf_diversification",
+          "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+          "score": 0.2,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.4,
+          "data_source": "other",
+          "family_key": "event_rotation_replacement_value_maturation",
+          "reopen_condition": null,
+          "score": 0.1833,
+          "status": "has_accepted",
+          "trials": 5
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "allocator",
+          "family_key": "moomoo_daily_short_volume_clean_flow_quality_gate",
+          "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a materially different non-OHLCV flow field.",
+          "score": 0.1833,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "allocator",
+          "family_key": "toxic_q5_notional_downweight",
+          "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a different non-OHLCV flow field.",
+          "score": 0.1827,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "allocator",
+          "family_key": "accepted_allocator_consensus_forward_rv_enrichment",
+          "reopen_condition": "Materially more closed enriched accepted allocator/source-consensus forward rows, or a genuinely new production-visible source that changes the evidence rather than the response function.",
+          "score": 0.1755,
+          "status": "has_accepted",
+          "trials": 1
+        }
+      ]
+    },
+    "single_policy_bundle": "moomoo_capital_flow_first_forward_snapshot_materialization_v1",
+    "acceptance_standard": "Accept as measurement repair if the local archive and warehouse can create a real default-off forward paper row, with state and snapshot files present afterward and strategy metrics unchanged.",
+    "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "loaded": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "flow_date",
+      "main_in_flow",
+      "main_flow_ratio",
+      "created_asof",
+      "pending_entries.candidate.signal_date",
+      "trade_enabled",
+      "alters_orders",
+      "data_source.flow_status"
+    ],
+    "missing_or_invalid_fields": []
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, entry, exit, ranking, sizing, risk, or order rule changed."
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_measurement_repair": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_moomoo_capital_flow_first_forward_snapshot",
+    "repair_failed_reasons": [],
+    "alpha_activation_blockers": [
+      "only first pending/open forward rows; no settled replacement-value sample yet",
+      "requires materially more closed rows before any allocation or activation claim"
+    ],
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "created_forward_rows_this_run": 1,
+    "snapshot_lines_appended_this_run": 1,
+    "candidate_count": 1,
+    "raw_candidate_count": 10,
+    "new_pending_count": 1,
+    "filled_count": 0,
+    "closed_count_today": 0
+  },
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": true,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Only the default-off Moomoo paper state/snapshot files changed. The shared helper, run.py wiring, live ranking, sizing, exits, orders, and prompts were unchanged."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.76,
+    "actual_success": 1,
+    "brier_score": 0.0576,
+    "predicted_failure_modes": [
+      "missing local warehouse OHLCV for latest flow date; helper emits zero candidates; no new pending rows because same-day core overlap or guards block all candidates; accidental network fetch"
+    ],
+    "realized_failure_modes": [],
+    "predicted_failure_mode_hit": false,
+    "surprise_note": "The local archive and warehouse were sufficient to create the first pending paper row."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted shared helper already had the state machine and local archive contract; the missing piece was an actual post-wiring materialization run against the local warehouse.",
+    "alpha_interpretation": "This is alpha-enabling evidence only: it creates a pending/open forward row so later replacement-value evidence can mature. It is not an allocation-ready Moomoo capital-flow alpha.",
+    "forbidden_near_neighbor_retry": "Do not reserve IDs for Moomoo capital-flow thresholds, ranking, notional scaling, or response-function retunes on this same row. Wait for materially more closed replacement-value rows or use a genuinely new data source/gate shape.",
+    "new_evidence_required": "Closed forward rows with cash/SPY/QQQ replacement values, a different PIT vendor flow decomposition, or borrow/loan economics."
+  },
+  "next_retry_requires": [
+    "materially more closed Moomoo capital-flow forward rows",
+    "cash/SPY/QQQ replacement-value enrichment on those closed rows",
+    "or a genuinely different PIT order-flow or borrow-economics source"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.py",
+    "data/experiments/exp-20260705-016/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.json",
+    "experiments/logs/exp-20260705-016.json",
+    "experiments/cards/exp-20260705-016.md",
+    "experiments/manifests/exp-20260705-016.json",
+    "experiments/tickets/exp-20260705-016.json",
+    "docs/experiment_registry.json",
+    "data/paper_sleeves/moomoo_capital_flow/state.json",
+    "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl"
+  ],
+  "related_files": [
+    "quant/moomoo_capital_flow_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_moomoo_capital_flow_paper_sleeve.py",
+    "quant/test_run_daily_wiring.py",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_moomoo_capital_flow_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "accepted_measurement_repair_moomoo_capital_flow_first_forward_snapshot",
+  "artifact": "data/experiments/exp-20260705-016/exp_20260705_016_moomoo_capital_flow_first_forward_snapshot.json",
+  "log": "experiments/logs/exp-20260705-016.json",
+  "updated_at": "2026-07-05T22:22:12+00:00"
+}

@@ -1,0 +1,225 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_017_deep_drawdown_breadth_capitulation_quality.py",
+    "data/experiments/exp-20260706-017/exp_20260706_017_deep_drawdown_breadth_capitulation_quality.json",
+    "experiments/cards/exp-20260706-017.md",
+    "experiments/manifests/exp-20260706-017.json",
+    "experiments/tickets/exp-20260706-017.json",
+    "experiments/logs/exp-20260706-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-017.md",
+  "causal_components": [
+    "fixed exp-20260706-006 first-entry rows",
+    "PIT broad-warehouse cross-sectional breadth label",
+    "capitulation-vs-noncapitulation cash/SPY attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "broad_market_breadth_capitulation_quality_gate_for_deep_drawdown_first_entries",
+  "claimed_at": "2026-07-06T16:10:06+00:00",
+  "completed_at": null,
+  "created_at": "2026-07-06T16:08:44+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-017",
+  "experiment_uid": "expuid-28512c211cad458a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T16:08:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "deep_drawdown_breadth_capitulation_quality"
+  },
+  "hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows should perform better when signal-day broad-market cross-sectional breadth shows capitulation washout plus initial stabilization, distinguishing durable correction rebounds from fragile bear-market bounces.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_market_breadth_capitulation_quality_gate_for_deep_drawdown_first_entries"
+  ],
+  "mechanism_family": "observed_only_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260706-003",
+    "exp-20260706-006",
+    "exp-20260706-008",
+    "exp-20260706-009",
+    "exp-20260706-015"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "alpha",
+        "bear",
+        "better",
+        "bounces",
+        "breadth",
+        "capitulation",
+        "correction",
+        "cross",
+        "deep",
+        "distinguishing",
+        "drawdown",
+        "durable",
+        "entries",
+        "entry",
+        "first",
+        "fragile",
+        "from",
+        "gate",
+        "initial",
+        "market",
+        "observed",
+        "only",
+        "perform",
+        "plus",
+        "qqq",
+        "rebound",
+        "rebounds",
+        "rows",
+        "sectional",
+        "should",
+        "shows",
+        "signal",
+        "stabilization",
+        "washout",
+        "when"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_market_candidate_breadth_selection_gate",
+        "reopen_condition": "If forward broad-market paper rows show thin-breadth days driving losses, retest with live ledger replacement-value evidence before enabling any shared selection rule.",
+        "score": 0.4824,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "forward_replacement_entry_date_cross_sleeve_breadth",
+        "reopen_condition": "Need materially more closed forward replacement rows with multi-sleeve same-date support, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-date, multi-sleeve coverage.",
+        "score": 0.4808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "full_universe_alpha_score_candidate_pool_component_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score component thresholds on the same frozen replay.",
+        "score": 0.4773,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_market_participation_confirmation",
+        "reopen_condition": null,
+        "score": 0.4761,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "market_structure_breadth_allocation",
+        "reopen_condition": null,
+        "score": 0.4716,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Predeclared cross-sectional breadth/capitulation source computed from the broad OHLCV warehouse across all available symbols on each signal date, explicitly named as a legal reopen axis in exp-20260706-015; not VIX, TLT, QQQ volume/range, threshold retune, hold/notional change, or episode-budget change.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Predeclared cross-sectional breadth/capitulation source computed from the broad OHLCV warehouse across all available symbols on each signal date, explicitly named as a legal reopen axis in exp-20260706-015; not VIX, TLT, QQQ volume/range, threshold retune, hold/notional change, or episode-budget change.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Predeclared cross-sectional breadth/capitulation source computed from the broad OHLCV warehouse across all available symbols on each signal date, explicitly named as a legal reopen axis in exp-20260706-015; not VIX, TLT, QQQ volume/range, threshold retune, hold/notional change, or episode-budget change.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The deep-drawdown family explicitly allows a predeclared cross-sectional breadth/capitulation source after VIX, TLT, and QQQ volume/range labels failed; the broad warehouse supplies PIT OHLCV breadth across many tickers, but the fixed episode sample is only 17 rows so power is low.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "breadth_sample_too_thin",
+      "breadth_rebound_lags_best_entries",
+      "no_spy_excess_lift",
+      "single_episode_concentration"
+    ],
+    "recorded_at": "2026-07-06T16:08:02+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260706-017.json",
+  "single_causal_variable": "broad_market_breadth_capitulation_quality_gate_for_deep_drawdown_first_entries",
+  "status": "claimed",
+  "ticket_file": "experiments/tickets/exp-20260706-017.json",
+  "trial_family": "observed_only_attribution",
+  "trial_variant_id": "exp-20260706-017"
+}

@@ -1,0 +1,253 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Observed-only alpha: after the 2026-07-05 entity/theme observer refresh, the unchanged 30-day corporate-event entity-exposure confirmation contract now has materially more settled forward rows and may separate stronger cash/SPY/QQQ replacement value than unconfirmed rows.",
+  "artifact": "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "confirmed_rows_still_do_not_beat_unconfirmed",
+      "entity_exposure_overbroad",
+      "new_rows_same_noise_profile",
+      "current_news_snapshot_pit_caveat"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "confirmed_primary_means_positive",
+      "confirmed_primary_medians_positive",
+      "confirmed_beats_unconfirmed_means",
+      "confirmed_beats_unconfirmed_medians"
+    ],
+    "surprise_note": "Low surprise: both source surfaces were noisy in prior tests, and their fixed 30-day ticker confirmation did not create a cleaner replacement-value cohort."
+  },
+  "causal_components": [
+    "read_only_entity_theme_outcome_ledger_analysis",
+    "read_only_sec_corporate_event_exposure_map",
+    "fixed_30_calendar_day_sec_confirmation_join",
+    "confirmed_vs_unconfirmed_cash_spy_qqq_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+    "experiments/cards/exp-20260706-007.md",
+    "experiments/manifests/exp-20260706-007.json",
+    "experiments/tickets/exp-20260706-007.json",
+    "experiments/logs/exp-20260706-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "entity_theme_news_corporate_event_exposure_confirmation_forward_20260705_v1",
+  "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260706-007",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Observed-only attribution; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present_rows": 8158,
+    "fields_checked": [
+      "candidate_ticker",
+      "observed_date",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "sec_event.filed_date",
+      "sec_exposure.ticker"
+    ],
+    "passed": true,
+    "target_price_relevance": "This observer does not create target exits or orders; target_price is not part of the read-only outcome ledger."
+  },
+  "gate3": {
+    "confirmed_survival_rate": 0.741971,
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added.",
+    "passed": true,
+    "signals_generated": 9534,
+    "signals_survived": 8158,
+    "survival_rate": 0.855674
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "confirmed_beats_unconfirmed_means": false,
+      "confirmed_beats_unconfirmed_medians": false,
+      "confirmed_primary_means_positive": false,
+      "confirmed_primary_medians_positive": false,
+      "confirmed_rows_min_passed": true,
+      "positive_confirmed_cash_ticker_share_passed": true,
+      "settled_rows_min_passed": true
+    },
+    "acceptance_rule": {
+      "max_single_positive_confirmed_cash_ticker_share": 0.4,
+      "min_confirmed_rows": 25,
+      "min_settled_rows": 250,
+      "require_confirmed_beats_unconfirmed_means": true,
+      "require_confirmed_beats_unconfirmed_medians": true,
+      "require_confirmed_primary_means_positive": true,
+      "require_confirmed_primary_medians_positive": true
+    },
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+    "failed_reasons": [
+      "confirmed_primary_means_positive",
+      "confirmed_primary_medians_positive",
+      "confirmed_beats_unconfirmed_means",
+      "confirmed_beats_unconfirmed_medians"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "pit_caveat": "Entity/theme source rows come from the current Google News observer snapshot and include historical published_at rows returned by the current search. SEC exposure map SIC values are current submissions classifications, not as-of-filing PIT classifications. This is a read-only attribution check, not strict historical deployable evidence.",
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Observed-only alpha: after the 2026-07-05 entity/theme observer refresh, the unchanged 30-day corporate-event entity-exposure confirmation contract now has materially more settled forward rows and may separate stronger cash/SPY/QQQ replacement value than unconfirmed rows.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260706-007.json",
+  "mechanism_family": "cross_source_entity_relation_confirmation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260705-017",
+    "exp-20260703-014",
+    "exp-20260702-011",
+    "exp-20260702-012"
+  ],
+  "new_evidence_axis": "new data source and materially more settled forward rows: entity_theme_news_observer outcome ledger plus corporate_event_entity_exposure_map, not SEC FTD and not FINRA; settled rows advanced from 2735 in exp-20260705-017 to 8158 in the 20260705 outcome summary under the unchanged 30-day confirmation contract",
+  "new_evidence_type": "materially_more_settled_forward_rows",
+  "next_retry_requires": [
+    "additional prospective entity/theme observer rows beyond the 20260705 ledger",
+    "unchanged 30-day corporate-event confirmation contract for the next audit",
+    "or a true PIT historical news archive with observation-time availability",
+    "or a different independent relation source; no threshold retune on this snapshot"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 30-day confirmation horizon, query/theme/ticker maps, SEC form set, notional, hold period, or response curve on this same first snapshot. A valid retry needs prospective cross-source rows with closed outcomes, a strict PIT news archive, or a materially different independent relation source.",
+    "new_evidence_required": "A further retry needs additional prospectively accumulated entity/theme rows beyond the 20260705 ledger under this unchanged confirmation contract, a true PIT historical news archive, or a different independent entity-relation source.",
+    "why_result_happened": "The fixed SEC confirmation gate did not separate a broad, non-concentrated confirmed cohort that beat unconfirmed rows on cash, SPY, and QQQ means and medians. Entity/theme source rows come from the current Google News observer snapshot and include historical published_at rows returned by the current search. SEC exposure map SIC values are current submissions classifications, not as-of-filing PIT classifications. This is a read-only attribution check, not strict historical deployable evidence."
+  },
+  "prediction": {
+    "confidence_reason": "The prior fixed 30-day corporate-event exposure confirmation contract failed on 2735 settled rows, but the 20260705 entity_theme_news_observer ledger expands to 8158 settled rows under the same observer/outcome rule. That is legal new forward evidence, not a threshold or horizon retune; the base rate stays low because both sources were noisy and the news observer remains a current-snapshot PIT caveat.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "confirmed_rows_still_do_not_beat_unconfirmed",
+      "entity_exposure_overbroad",
+      "new_rows_same_noise_profile",
+      "current_news_snapshot_pit_caveat"
+    ],
+    "recorded_at": "2026-07-06T04:07:01+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "feeds_llm_prompt": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only cross-source attribution over existing observer and SEC exposure ledgers. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_20260705.jsonl",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "experiments/logs/exp-20260705-017.json",
+    "experiments/logs/exp-20260703-014.json",
+    "experiments/logs/exp-20260702-011.json",
+    "experiments/logs/exp-20260702-012.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "entity_theme_news_corporate_event_exposure_confirmation_forward_20260705_v1",
+  "status": "observed_only_rejected",
+  "summary": {
+    "candidate_outcome_rows": 9534,
+    "cash_mean_delta_vs_unconfirmed": -34.4534,
+    "confirmed_mean_cash": 26.7366,
+    "confirmed_mean_qqq": -9.6984,
+    "confirmed_mean_spy": 13.0196,
+    "confirmed_median_cash": -2.55,
+    "confirmed_median_qqq": -24.03,
+    "confirmed_median_spy": -3.5,
+    "confirmed_rows": 6053,
+    "confirmed_survival_rate": 0.741971,
+    "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+    "max_positive_confirmed_cash_ticker_share": 0.215006,
+    "qqq_mean_delta_vs_unconfirmed": -38.547,
+    "settled_rows": 8158,
+    "spy_mean_delta_vs_unconfirmed": -36.8631,
+    "unconfirmed_mean_cash": 61.19,
+    "unconfirmed_mean_qqq": 28.8486,
+    "unconfirmed_mean_spy": 49.8827,
+    "unconfirmed_rows": 2105
+  },
+  "timestamp": "2026-07-06T04:09:12Z",
+  "trial_family": "entity_theme_corporate_event_exposure_confirmation",
+  "trial_variant_id": "corporate_event_exposure_30d_confirmation_20260705_forward_rows_v1"
+}

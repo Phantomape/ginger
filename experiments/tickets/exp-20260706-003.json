@@ -1,0 +1,295 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_003_deep_drawdown_rebound.py",
+    "data/experiments/exp-20260706-003/exp_20260706_003_deep_drawdown_rebound.json",
+    "experiments/cards/exp-20260706-003.md",
+    "experiments/manifests/exp-20260706-003.json",
+    "experiments/tickets/exp-20260706-003.json",
+    "experiments/logs/exp-20260706-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/test_deep_drawdown_rebound_paper_sleeve.py",
+    "quant/run.py",
+    "data/non_ohlcv/index_history/",
+    "data/paper_sleeves/deep_drawdown_rebound/"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-003.md",
+  "causal_components": [
+    "pre2023 index history PIT archive",
+    "shared episode trigger helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "run.py wiring",
+    "parity test",
+    "episode-level artifact"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False",
+  "claimed_at": "2026-07-06T01:19:08+00:00",
+  "completed_at": "2026-07-06T01:29:53+00:00",
+  "created_at": "2026-07-06T01:18:48+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260706-003",
+  "experiment_uid": "expuid-a53c8e77444342c6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T01:18:48+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "deep_drawdown_rebound"
+  },
+  "hypothesis": "Deep index drawdown episodes (QQQ close >=12% below rolling 252d high) followed by a first stabilization day (up close finishing in the upper half of the daily range) predict positive 5-day forward ETF rebound; next-open entry, fixed 5-day hold, default-off paper ETF sleeve with pre-2023 index history backfill as new evidence.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False"
+  ],
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260606-003",
+    "exp-20260607-005",
+    "exp-20260611-011"
+  ],
+  "new_evidence_type": "new data source (pre-2023 index daily history, not in warehouse) + new gate shape (index-drawdown episode trigger vs unconditional scan)",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "10k",
+        "252d",
+        "a",
+        "as",
+        "at",
+        "backfill",
+        "below",
+        "bundle",
+        "by",
+        "capitulation",
+        "close",
+        "conditioning",
+        "cooldown",
+        "daily",
+        "deep",
+        "drawdown",
+        "enabled",
+        "entry",
+        "episode",
+        "episodes",
+        "etf",
+        "event",
+        "evidence",
+        "false",
+        "finishing",
+        "first",
+        "followed",
+        "forward",
+        "half",
+        "high",
+        "history",
+        "hold",
+        "hysteresis",
+        "in",
+        "index",
+        "new",
+        "notional",
+        "observed",
+        "of",
+        "policy",
+        "positive",
+        "pre",
+        "predict",
+        "primary",
+        "qqq",
+        "range",
+        "rebound",
+        "reset",
+        "rolling",
+        "sleeve",
+        "spy",
+        "stabilization",
+        "trade",
+        "trading",
+        "trigger",
+        "up",
+        "upper"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_and_hold_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use forward paper outcomes or a materially different free data edge, such as verified event/sector context. Do not just retune gap, close-location, QQQ/SPY lookback, or topN thresholds on the frozen windows.",
+        "score": 0.1828,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "event_reaction_context_quality",
+        "reopen_condition": null,
+        "score": 0.1762,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "governed_space_trend_high_close_fixed_notional_paper_sleeve",
+        "reopen_condition": "Expose the same close-location bucket in the shared default-off Space observation helper and collect forward replacement-value rows before any live/default behavior changes.",
+        "score": 0.1758,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pullback_reclaim_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, require forward paper rows or an orthogonal production-visible catalyst/source field; do not just retune pullback depth, moving average, or market-confirmation thresholds on the frozen sample.",
+        "score": 0.1758,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "event_benchmark_momentum_context",
+        "reopen_condition": null,
+        "score": 0.1754,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-interactive",
+  "prediction": {
+    "confidence_reason": "Post-capitulation short-horizon index rebound is a documented crisis-alpha pattern; unconditional single-name reversal died in-repo (exp-20260606-003/20260607-005) but episode-conditioned ETF-level was never tested; backfilled history raises episode n from 3 to roughly 8-10.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_episode_sample",
+      "falling_knife_stabilization_false_positive",
+      "single_window_concentration",
+      "survivorship_free_but_regime_shift"
+    ],
+    "recorded_at": "2026-07-06T01:18:11+00:00",
+    "success_probability": 0.4
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.4,
+      "brier_score": 0.16,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "thin_episode_sample",
+        "falling_knife_stabilization_false_positive",
+        "single_window_concentration",
+        "survivorship_free_but_regime_shift"
+      ],
+      "realized_failure_mode": "falling_knife_stabilization_false_positive",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Predicted 0.4 success; realized rejection matched the top predeclared failure mode. The surprise was magnitude and mechanism: episode duration, not entry quality, drives the loss - long bears convert one trigger into 50-124 sequential re-entries, so per-trade edge is dominated by episode-length exposure. Any retry must budget entries per episode or condition on bear-vs-correction state, which is a different gate shape."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-003.json",
+  "single_causal_variable": "deep_drawdown_episode_etf_rebound_policy_bundle: trigger=-12% vs 252d close high, stabilization=up close in upper half of range, entry=next open, hold=5 trading days, cooldown=5 days, episode reset at -5% hysteresis, QQQ primary SPY observed, fixed $10k paper notional, trade_enabled=False",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-003.json",
+  "trial_family": "deep_drawdown_episode_etf_rebound_candidate_pool",
+  "trial_variant_id": "exp-20260706-003"
+}

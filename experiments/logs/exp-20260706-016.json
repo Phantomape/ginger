@@ -1,0 +1,138 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": 0.1119,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.821033,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "state_contract_conflicts_with_snapshot_priority",
+      "health_false_fresh_hides_dead_rows",
+      "test_fixture_misses_daily_run_shape"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The current health surface was not a broken as_of parser; it lacked a zero-row heartbeat, so stale meant no recent persisted candidate rows rather than proven dead plumbing."
+  },
+  "causal_components": [],
+  "change_summary": "Accepted measurement repair: core_risk_intensity forward observation now writes a state heartbeat for zero-candidate runs, and sleeve_health uses only marked heartbeat states to distinguish empty successful runs from stale plumbing.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "core_risk_intensity_forward_heartbeat_state_v1",
+  "component": "quant/core_risk_intensity_ledger.py, quant/sleeve_health.py, quant/test_core_risk_intensity_ledger.py, quant/test_sleeve_health.py, quant/experiments/exp_20260706_016_core_risk_intensity_forward_heartbeat_state.py, data/experiments/exp-20260706-016/exp_20260706_016_core_risk_intensity_forward_heartbeat_state.json, experiments/logs/exp-20260706-016.json, experiments/cards/exp-20260706-016.md, experiments/manifests/exp-20260706-016.json, experiments/tickets/exp-20260706-016.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "trade_count": null
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "artifact": "data/experiments/exp-20260706-016/exp_20260706_016_core_risk_intensity_forward_heartbeat_state.json",
+  "experiment_id": "exp-20260706-016",
+  "hypothesis": "alpha_blocker/measurement_repair: core_risk_intensity risk-allocation alpha needs prospective forward observations, but the row-only ledger has no daily heartbeat for zero-candidate runs, so sleeve_health reports the surface stale and cannot distinguish no candidates from dead plumbing.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260622-022",
+    "exp-20260629-001",
+    "exp-20260706-013"
+  ],
+  "new_evidence_type": "forward_observation_surface_runtime_heartbeat",
+  "next_retry_requires": [
+    "Do not rerun another health-only core risk-intensity readiness audit on this repair alone. Reopen alpha only after closed prospective core_risk_intensity rows have cash/SPY/QQQ replacement value, or after an orthogonal risk-intensity source/gate shape is wired."
+  ],
+  "notes": "No trading policy changed; entry/exit/ranking/sizing/orders remain unchanged. Focused tests cover empty heartbeat, nonempty heartbeat, and unmarked state not masking stale snapshots.",
+  "parameters": {
+    "locked_variables": [
+      "core_risk_intensity_forward_heartbeat_state_v1"
+    ],
+    "single_causal_variable": "core_risk_intensity_forward_heartbeat_state_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune core risk-intensity thresholds, multiplier counts, or health labels on the same row-only surface; this ticket only proves empty daily runs can be observed.",
+    "new_evidence_required": "Closed prospective core_risk_intensity forward rows with realized cash/SPY/QQQ replacement value, or a genuinely new risk-intensity source/gate shape.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The current health surface was not a broken as_of parser; it lacked a zero-row heartbeat, so stale meant no recent persisted candidate rows rather than proven dead plumbing."
+  },
+  "production_impact": {
+    "daily_snapshot_exposed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "paper_health_report_changed": true,
+    "parity_note": "Append-only observation heartbeat and read-side health only; no trading policy consumes this state.",
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "confidence_reason": "The ledger append path already runs inside quant.run; adding a sidecar state heartbeat follows existing paper-sleeve contracts and lets health distinguish an empty successful run from a stalled forward surface without changing trading policy.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "state_contract_conflicts_with_snapshot_priority",
+      "health_false_fresh_hides_dead_rows",
+      "test_fixture_misses_daily_run_shape"
+    ],
+    "recorded_at": "2026-07-06T15:07:00+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260706-016/exp_20260706_016_core_risk_intensity_forward_heartbeat_state.json",
+    "quant/core_risk_intensity_ledger.py",
+    "quant/sleeve_health.py",
+    "quant/test_core_risk_intensity_ledger.py",
+    "quant/test_sleeve_health.py",
+    "quant/experiments/exp_20260706_016_core_risk_intensity_forward_heartbeat_state.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_016_core_risk_intensity_forward_heartbeat_state.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_core_risk_intensity_ledger.py quant\\test_sleeve_health.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-06T15:13:52+00:00",
+  "trial_family": "core_risk_intensity_forward_observation_heartbeat",
+  "trial_variant_id": "exp-20260706-016"
+}

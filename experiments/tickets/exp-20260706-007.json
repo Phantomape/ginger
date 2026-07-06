@@ -1,0 +1,472 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+    "experiments/cards/exp-20260706-007.md",
+    "experiments/manifests/exp-20260706-007.json",
+    "experiments/tickets/exp-20260706-007.json",
+    "experiments/logs/exp-20260706-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-007.md",
+  "causal_components": [
+    "read_only_entity_theme_outcome_ledger_analysis",
+    "read_only_sec_corporate_event_exposure_map",
+    "fixed_30_calendar_day_sec_confirmation_join",
+    "confirmed_vs_unconfirmed_cash_spy_qqq_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_variable": "entity_theme_news_corporate_event_exposure_confirmation_forward_20260705_v1",
+  "claimed_at": "2026-07-06T04:07:49+00:00",
+  "completed_at": "2026-07-06T04:09:15+00:00",
+  "created_at": "2026-07-06T04:07:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-007",
+  "experiment_uid": "expuid-d55c0450827a4c22",
+  "gate4": {
+    "passed": false,
+    "observed_only": true,
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+    "acceptance_rule": {
+      "min_settled_rows": 250,
+      "min_confirmed_rows": 25,
+      "max_single_positive_confirmed_cash_ticker_share": 0.4,
+      "require_confirmed_primary_means_positive": true,
+      "require_confirmed_primary_medians_positive": true,
+      "require_confirmed_beats_unconfirmed_means": true,
+      "require_confirmed_beats_unconfirmed_medians": true
+    },
+    "acceptance_checks": {
+      "settled_rows_min_passed": true,
+      "confirmed_rows_min_passed": true,
+      "confirmed_primary_means_positive": false,
+      "confirmed_primary_medians_positive": false,
+      "confirmed_beats_unconfirmed_means": false,
+      "confirmed_beats_unconfirmed_medians": false,
+      "positive_confirmed_cash_ticker_share_passed": true
+    },
+    "failed_reasons": [
+      "confirmed_primary_means_positive",
+      "confirmed_primary_medians_positive",
+      "confirmed_beats_unconfirmed_means",
+      "confirmed_beats_unconfirmed_medians"
+    ],
+    "pit_caveat": "Entity/theme source rows come from the current Google News observer snapshot and include historical published_at rows returned by the current search. SEC exposure map SIC values are current submissions classifications, not as-of-filing PIT classifications. This is a read-only attribution check, not strict historical deployable evidence.",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T04:07:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "entity_theme_corp_event_confirmation_forward_20260705"
+  },
+  "hypothesis": "Observed-only alpha: after the 2026-07-05 entity/theme observer refresh, the unchanged 30-day corporate-event entity-exposure confirmation contract now has materially more settled forward rows and may separate stronger cash/SPY/QQQ replacement value than unconfirmed rows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entity_theme_news_corporate_event_exposure_confirmation_forward_20260705_v1"
+  ],
+  "mechanism_family": "cross_source_entity_relation_confirmation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260705-017",
+    "exp-20260703-014",
+    "exp-20260702-011",
+    "exp-20260702-012"
+  ],
+  "new_evidence_type": "materially_more_settled_forward_rows",
+  "next_retry_requires": [
+    "additional prospective entity/theme observer rows beyond the 20260705 ledger",
+    "unchanged 30-day corporate-event confirmation contract for the next audit",
+    "or a true PIT historical news archive with observation-time availability",
+    "or a different independent relation source; no threshold retune on this snapshot"
+  ],
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "after",
+        "alpha",
+        "cash",
+        "confirmation",
+        "contract",
+        "corp",
+        "corporate",
+        "cross",
+        "entity",
+        "event",
+        "exposure",
+        "forward",
+        "has",
+        "materially",
+        "may",
+        "more",
+        "news",
+        "now",
+        "observed",
+        "observer",
+        "only",
+        "qqq",
+        "refresh",
+        "relation",
+        "replacement",
+        "rows",
+        "separate",
+        "settled",
+        "spy",
+        "stronger",
+        "than",
+        "theme",
+        "unchanged",
+        "unconfirmed",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_event_entity_exposure_forward_value",
+        "reopen_condition": "If pursued, the next experiment must be a shared-paper-first helper with one fixed ex-ante selection rule, such as source/date arbitration or relation-priority ranking, then daily default-off exposure rows and comparator-aware Gate 1-4 measurement.",
+        "score": 0.5218,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_event_exposure_top1_candidate_source",
+        "reopen_condition": "A valid retry needs a shared helper plus daily default-off snapshot with fresh forward rows, PIT SIC-as-of-filing repair, or a materially new entity relation/economic data source.",
+        "score": 0.489,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item101_contract_relation_issuer_self_shared_default_off",
+        "reopen_condition": "Materially more closed forward rows, a real PIT EDGAR timestamp boundary, or a different non-SEC-text source/gate shape.",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_8k_contract_relation_provenance_surface",
+        "reopen_condition": "Next legal alpha step needs a fixed candidate-pool policy that uses this provenance with closed forward replacement rows, or materially richer counterparty normalization/exposure fields such as named customer identity, contract value/duration, or revenue exposure by counterparty.",
+        "score": 0.4705,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item101_contract_relation_economic_terms_attribution",
+        "reopen_condition": "A valid retry needs prospectively accumulated daily rows with closed replacement value under the unchanged economics extractor, true exhibit-level normalized customer/supplier identity, contract revenue exposure by counterparty, or a different non-SEC-text economic relation source.",
+        "score": 0.4705,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new data source and materially more settled forward rows: entity_theme_news_observer outcome ledger plus corporate_event_entity_exposure_map, not SEC FTD and not FINRA; settled rows advanced from 2735 in exp-20260705-017 to 8158 in the 20260705 outcome summary under the unchanged 30-day confirmation contract",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec_text_event",
+      "streak": 2,
+      "streak_experiments": [
+        "exp-20260704-004",
+        "exp-20260705-017"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "new data source and materially more settled forward rows: entity_theme_news_observer outcome ledger plus corporate_event_entity_exposure_map, not SEC FTD and not FINRA; settled rows advanced from 2735 in exp-20260705-017 to 8158 in the 20260705 outcome summary under the unchanged 30-day confirmation contract",
+        "categories": [
+          "new_data_source",
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new data source and materially more settled forward rows: entity_theme_news_observer outcome ledger plus corporate_event_entity_exposure_map, not SEC FTD and not FINRA; settled rows advanced from 2735 in exp-20260705-017 to 8158 in the 20260705 outcome summary under the unchanged 30-day confirmation contract",
+      "categories": [
+        "new_data_source",
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The fixed SEC confirmation gate did not separate a broad, non-concentrated confirmed cohort that beat unconfirmed rows on cash, SPY, and QQQ means and medians. Entity/theme source rows come from the current Google News observer snapshot and include historical published_at rows returned by the current search. SEC exposure map SIC values are current submissions classifications, not as-of-filing PIT classifications. This is a read-only attribution check, not strict historical deployable evidence.",
+    "forbidden_near_neighbor_retry": "Do not retune the 30-day confirmation horizon, query/theme/ticker maps, SEC form set, notional, hold period, or response curve on this same first snapshot. A valid retry needs prospective cross-source rows with closed outcomes, a strict PIT news archive, or a materially different independent relation source.",
+    "new_evidence_required": "A further retry needs additional prospectively accumulated entity/theme rows beyond the 20260705 ledger under this unchanged confirmation contract, a true PIT historical news archive, or a different independent entity-relation source."
+  },
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "confirmed_rows_still_do_not_beat_unconfirmed",
+      "entity_exposure_overbroad",
+      "new_rows_same_noise_profile",
+      "current_news_snapshot_pit_caveat"
+    ],
+    "confidence_reason": "The prior fixed 30-day corporate-event exposure confirmation contract failed on 2735 settled rows, but the 20260705 entity_theme_news_observer ledger expands to 8158 settled rows under the same observer/outcome rule. That is legal new forward evidence, not a threshold or horizon retune; the base rate stays low because both sources were noisy and the news observer remains a current-snapshot PIT caveat.",
+    "recorded_at": "2026-07-06T04:07:01+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+    "artifact": "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+    "log": "experiments/logs/exp-20260706-007.json",
+    "runner": "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "gate4": {
+      "passed": false,
+      "observed_only": true,
+      "accepted_alpha": false,
+      "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+      "acceptance_rule": {
+        "min_settled_rows": 250,
+        "min_confirmed_rows": 25,
+        "max_single_positive_confirmed_cash_ticker_share": 0.4,
+        "require_confirmed_primary_means_positive": true,
+        "require_confirmed_primary_medians_positive": true,
+        "require_confirmed_beats_unconfirmed_means": true,
+        "require_confirmed_beats_unconfirmed_medians": true
+      },
+      "acceptance_checks": {
+        "settled_rows_min_passed": true,
+        "confirmed_rows_min_passed": true,
+        "confirmed_primary_means_positive": false,
+        "confirmed_primary_medians_positive": false,
+        "confirmed_beats_unconfirmed_means": false,
+        "confirmed_beats_unconfirmed_medians": false,
+        "positive_confirmed_cash_ticker_share_passed": true
+      },
+      "failed_reasons": [
+        "confirmed_primary_means_positive",
+        "confirmed_primary_medians_positive",
+        "confirmed_beats_unconfirmed_means",
+        "confirmed_beats_unconfirmed_medians"
+      ],
+      "pit_caveat": "Entity/theme source rows come from the current Google News observer snapshot and include historical published_at rows returned by the current search. SEC exposure map SIC values are current submissions classifications, not as-of-filing PIT classifications. This is a read-only attribution check, not strict historical deployable evidence.",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "summary": {
+      "candidate_outcome_rows": 9534,
+      "settled_rows": 8158,
+      "confirmed_rows": 6053,
+      "unconfirmed_rows": 2105,
+      "confirmed_survival_rate": 0.741971,
+      "confirmed_mean_cash": 26.7366,
+      "confirmed_mean_spy": 13.0196,
+      "confirmed_mean_qqq": -9.6984,
+      "confirmed_median_cash": -2.55,
+      "confirmed_median_spy": -3.5,
+      "confirmed_median_qqq": -24.03,
+      "unconfirmed_mean_cash": 61.19,
+      "unconfirmed_mean_spy": 49.8827,
+      "unconfirmed_mean_qqq": 28.8486,
+      "cash_mean_delta_vs_unconfirmed": -34.4534,
+      "spy_mean_delta_vs_unconfirmed": -36.8631,
+      "qqq_mean_delta_vs_unconfirmed": -38.547,
+      "max_positive_confirmed_cash_ticker_share": 0.215006,
+      "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-007.json",
+  "single_causal_variable": "entity_theme_news_corporate_event_exposure_confirmation_forward_20260705_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-007.json",
+  "trial_family": "entity_theme_corporate_event_exposure_confirmation",
+  "trial_variant_id": "corporate_event_exposure_30d_confirmation_20260705_forward_rows_v1",
+  "alpha_hypothesis": "Observed-only alpha: after the 2026-07-05 entity/theme observer refresh, the unchanged 30-day corporate-event entity-exposure confirmation contract now has materially more settled forward rows and may separate stronger cash/SPY/QQQ replacement value than unconfirmed rows.",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "new data source and materially more settled forward rows: entity_theme_news_observer outcome ledger plus corporate_event_entity_exposure_map, not SEC FTD and not FINRA; settled rows advanced from 2735 in exp-20260705-017 to 8158 in the 20260705 outcome summary under the unchanged 30-day confirmation contract",
+  "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+  "artifact": "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+  "log_file": "experiments/logs/exp-20260706-007.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    },
+    "note": "Observed-only attribution; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "candidate_ticker",
+      "observed_date",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "sec_event.filed_date",
+      "sec_exposure.ticker"
+    ],
+    "entry_date_present_rows": 8158,
+    "target_price_relevance": "This observer does not create target exits or orders; target_price is not part of the read-only outcome ledger."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 9534,
+    "signals_survived": 8158,
+    "survival_rate": 0.855674,
+    "confirmed_survival_rate": 0.741971,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "trade_enabled": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Read-only cross-source attribution over existing observer and SEC exposure ledgers. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_20260705.jsonl",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/manifest.json",
+    "experiments/logs/exp-20260705-017.json",
+    "experiments/logs/exp-20260703-014.json",
+    "experiments/logs/exp-20260702-011.json",
+    "experiments/logs/exp-20260702-012.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.py",
+    "data/experiments/exp-20260706-007/exp_20260706_007_entity_theme_corp_event_confirmation_forward_20260705.json",
+    "experiments/cards/exp-20260706-007.md",
+    "experiments/manifests/exp-20260706-007.json",
+    "experiments/tickets/exp-20260706-007.json",
+    "experiments/logs/exp-20260706-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-06T04:09:15+00:00"
+}

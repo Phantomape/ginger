@@ -1,0 +1,297 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_006_deep_drawdown_rebound_budget.py",
+    "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "experiments/cards/exp-20260706-006.md",
+    "experiments/manifests/exp-20260706-006.json",
+    "experiments/tickets/exp-20260706-006.json",
+    "experiments/logs/exp-20260706-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/test_deep_drawdown_rebound_paper_sleeve.py",
+    "quant/run.py",
+    "data/paper_sleeves/deep_drawdown_rebound/"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-006.md",
+  "causal_components": [
+    "max_entries_per_episode config in shared helper",
+    "budget-aware replay",
+    "daily snapshot episode-budget parity",
+    "run.py default-off wiring",
+    "episode artifact"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation",
+  "claimed_at": "2026-07-06T03:34:59+00:00",
+  "completed_at": "2026-07-06T03:38:38+00:00",
+  "created_at": "2026-07-06T03:34:30+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260706-006",
+  "experiment_uid": "expuid-de562c1f96da4825",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T03:34:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "deep_drawdown_rebound_budget"
+  },
+  "hypothesis": "Per-episode entry budget of one converts the rejected deep-drawdown rebound bundle into a viable forward observer: taking only the FIRST stabilization day per drawdown episode removes the secular-bear re-entry bleed (124 re-entries in 2000-02) that killed exp-20260706-003, leaving a thin-but-positive episode-level rebound subset that only live forward rows can confirm.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation"
+  ],
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260706-003"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "10k",
+        "5d",
+        "a",
+        "accumulation",
+        "bear",
+        "bleed",
+        "budget",
+        "bundle",
+        "but",
+        "can",
+        "capitulation",
+        "conditioning",
+        "confirm",
+        "converts",
+        "deep",
+        "drawdown",
+        "enabled",
+        "entries",
+        "entry",
+        "episode",
+        "event",
+        "exp",
+        "false",
+        "first",
+        "forward",
+        "hold",
+        "hysteresis",
+        "identical",
+        "in",
+        "into",
+        "killed",
+        "leaving",
+        "level",
+        "live",
+        "max",
+        "observer",
+        "of",
+        "one",
+        "only",
+        "per",
+        "plus",
+        "positive",
+        "py",
+        "qqq",
+        "re",
+        "rebound",
+        "rejected",
+        "removes",
+        "rows",
+        "run",
+        "secular",
+        "stabilization",
+        "subset",
+        "taking",
+        "that",
+        "thin",
+        "to",
+        "trade",
+        "viable",
+        "wiring"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "deep_drawdown_episode_etf_rebound_candidate_pool",
+        "reopen_condition": "TODO",
+        "score": 0.0872,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0312,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_structured_event_forward_observer_wiring",
+        "reopen_condition": "Closed replacement-value outcomes from this fixed observer, or a PIT LLM scorer writing the same evidence-span schema.",
+        "score": 0.0308,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+        "score": 0.025,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "daily_clean_trade_news_event_taxonomy_forward_value",
+        "reopen_condition": "A replayable PIT structured event ledger with actor/object/relation/magnitude/evidence spans and enough closed replacement-value rows, or historical daily-news coverage spanning the canonical windows.",
+        "score": 0.0239,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new gate shape: per-episode entry budget (episode-level eligibility, first stabilization only) versus the rejected unlimited re-entry shape; plus prospective settled forward rows from run.py default-off wiring",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "new gate shape: per-episode entry budget (episode-level eligibility, first stabilization only) versus the rejected unlimited re-entry shape; plus prospective settled forward rows from run.py default-off wiring",
+        "categories": [
+          "new_gate_shape",
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new gate shape: per-episode entry budget (episode-level eligibility, first stabilization only) versus the rejected unlimited re-entry shape; plus prospective settled forward rows from run.py default-off wiring",
+      "categories": [
+        "new_gate_shape",
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-interactive",
+  "prediction": {
+    "confidence_reason": "Recorded exp-20260706-003 artifact already shows the first-trade-per-episode subset: n=17, +$1222 total, 71% win rate, mean +0.72% per 5d trade, but t roughly 0.6 with one -15.9% knife and mean excess vs SPY around -0.4%; this reservation formalizes the budget shape and ships default-off forward wiring because only live episodes can settle the verdict.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample_t_stat_below_1",
+      "single_trade_tail_dominates",
+      "spy_replacement_not_beaten"
+    ],
+    "recorded_at": "2026-07-06T03:33:50+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.25,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "thin_sample_t_stat_below_1",
+        "single_trade_tail_dominates",
+        "spy_replacement_not_beaten"
+      ],
+      "realized_failure_mode": "thin_sample_t_stat_below_1",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Predicted 0.25 acceptance and the thin-sample failure mode hit as expected; the informative part is the clean sign flip from removing episode-length exposure while entry quality stayed identical, plus SPY capturing most of the same rebound - the residual QQQ-specific edge is small or zero."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-006.json",
+  "single_causal_variable": "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260706-006.json",
+  "trial_family": "deep_drawdown_rebound_first_stabilization_budget",
+  "trial_variant_id": "exp-20260706-006"
+}

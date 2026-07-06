@@ -1,0 +1,523 @@
+{
+  "acceptance_rule": "observed-lead requires resolved_rows>=5 and positive sums vs cash/SPY/QQQ with win rates >=60%; activation requires >=30 resolved rows and concentration <=40%, so this run cannot promote live/default-on.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.py",
+    "data/experiments/exp-20260705-015/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.json",
+    "experiments/cards/exp-20260705-015.md",
+    "experiments/logs/exp-20260705-015.json",
+    "experiments/manifests/exp-20260705-015.json",
+    "experiments/tickets/exp-20260705-015.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-015.md",
+  "causal_components": [
+    "read-only alpha_score_market_regime paper sleeve state ledger",
+    "cash/SPY/QQQ replacement-value attribution",
+    "concentration and activation-readiness blocker",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "alpha_score_market_regime_closed_forward_rv_readiness_v1",
+  "claimed_at": "2026-07-05T17:12:01+00:00",
+  "completed_at": "2026-07-05T20:11:12+00:00",
+  "created_at": "2026-07-05T17:10:48+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2024-12-31",
+      "start": "2023-01-01"
+    },
+    {
+      "end": "2025-12-31",
+      "start": "2024-01-01"
+    },
+    {
+      "end": "2026-06-04",
+      "start": "2025-01-01"
+    }
+  ],
+  "experiment_id": "exp-20260705-015",
+  "experiment_uid": "expuid-84b154aea72046a7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T17:10:48+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "alpha_score_market_regime_forward_rv_readiness"
+  },
+  "hypothesis": "Observed-only alpha: the alpha_score_market_regime default-off paper sleeve state ledger now has resolved position outcomes after exp-20260701-004 repair; the first resolved cohort should show positive replacement value versus cash and ETF comparators before it deserves continued promotion work.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "trade_enabled=false",
+    "ranking unchanged",
+    "sizing unchanged",
+    "exits unchanged",
+    "paper order generation unchanged",
+    "LLM decision boundary unchanged"
+  ],
+  "mechanism_family": "paper_sleeve_forward_replacement_value",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "quant/daily_runner.py",
+    "quant/trading",
+    "quant/paper_trading",
+    "data/daily/intraday"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260531-023",
+    "exp-20260701-004",
+    "exp-20260704-026",
+    "exp-20260613-012",
+    "exp-20260705-004"
+  ],
+  "new_evidence_type": "forward_closed_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "after",
+        "alpha",
+        "before",
+        "cash",
+        "closed",
+        "cohort",
+        "comparators",
+        "continued",
+        "deserves",
+        "etf",
+        "exp",
+        "first",
+        "forward",
+        "has",
+        "it",
+        "ledger",
+        "market",
+        "now",
+        "observed",
+        "only",
+        "outcomes",
+        "position",
+        "positive",
+        "promotion",
+        "readiness",
+        "regime",
+        "repair",
+        "replacement",
+        "resolved",
+        "rv",
+        "score",
+        "should",
+        "show",
+        "sleeve",
+        "state",
+        "value",
+        "versus",
+        "work"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.5058,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_paper_ledger_repair",
+        "reopen_condition": "Closed alpha_score_market_regime paper outcomes with replacement value versus cash/SPY/QQQ or a materially different production-visible PIT source.",
+        "score": 0.5011,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.5,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "regime_state",
+        "family_key": "regime_tagged_forward_scorecard_refresh",
+        "reopen_condition": "Reopen regime soft-tilt activation only after at least 50 tagged forward rows and at least 20 non-risk_on rows exist, or after a new forward/live-pilot policy surface creates materially different rows.",
+        "score": 0.4944,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.4872,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new data source: alpha_score_market_regime paper sleeve state ledger resolved outcomes with replacement values after exp-20260701-004 repair; not SEC FTD, not FINRA, not short-volume, and not a threshold scalar top-N hold-period or notional retune.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "new data source: alpha_score_market_regime paper sleeve state ledger resolved outcomes with replacement values after exp-20260701-004 repair; not SEC FTD, not FINRA, not short-volume, and not a threshold scalar top-N hold-period or notional retune.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "new data source: alpha_score_market_regime paper sleeve state ledger resolved outcomes with replacement values after exp-20260701-004 repair; not SEC FTD, not FINRA, not short-volume, and not a threshold scalar top-N hold-period or notional retune.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "qqq_beta_only",
+      "ticker_concentration",
+      "forward_regime_all_risk_on"
+    ],
+    "confidence_reason": "The accepted helper had standalone historical edge and now has a small set of resolved paper RV rows, but only five rows are expected and prior allocator extension/duplicate-comparator analyses warn against promotion from thin forward evidence.",
+    "recorded_at": "2026-07-05T17:10:10+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_positive_forward_lead_not_activation_ready",
+    "artifact": "data/experiments/exp-20260705-015/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.json",
+    "log": "experiments/logs/exp-20260705-015.json",
+    "summary": {
+      "closed_rows": 5,
+      "replacement_value_vs_cash_sum": 1112.67,
+      "replacement_value_vs_spy_sum": 914.41,
+      "replacement_value_vs_qqq_sum": 651.03,
+      "activation_blockers": [
+        "closed_rows_5_lt_activation_floor_30",
+        "single_positive_cash_ticker_share_0.429_gt_0.40",
+        "all_closed_rows_same_entry_regime"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-015.json",
+  "single_causal_variable": "alpha_score_market_regime_closed_forward_rv_readiness_v1",
+  "status": "observed_only_positive_forward_lead_not_activation_ready",
+  "ticket_file": "experiments/tickets/exp-20260705-015.json",
+  "trial_family": "alpha_score_market_regime_forward_rv_readiness",
+  "trial_variant_id": "closed_rows_cash_spy_qqq_20260705",
+  "alpha_hypothesis": "Observed-only alpha: the alpha_score_market_regime default-off paper sleeve state ledger now has resolved position outcomes after exp-20260701-004 repair; the first resolved cohort should show positive replacement value versus cash and ETF comparators before it deserves continued promotion work.",
+  "implementation_mode": "observed_only_forward_attribution",
+  "new_evidence_axis": "new data source: alpha_score_market_regime paper sleeve state ledger resolved outcomes with replacement values after exp-20260701-004 repair; not SEC FTD, not FINRA, not short-volume, and not a threshold scalar top-N hold-period or notional retune.",
+  "parameters": {
+    "observed_rule": {
+      "min_closed_rows": 5,
+      "min_win_rate_vs_cash_spy_qqq": 0.6,
+      "require_positive_sum_vs_cash_spy_qqq": true,
+      "max_single_positive_cash_ticker_share": 0.5
+    },
+    "activation_rule": {
+      "min_closed_rows": 30,
+      "max_single_positive_cash_ticker_share": 0.4,
+      "require_multiple_entry_regimes": true
+    },
+    "state_file": "data/paper_sleeves/alpha_score_market_regime/state.json",
+    "baseline_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  },
+  "gate1": {
+    "name": "Gate 1 baseline",
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_exists": true,
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Read-only forward attribution; canonical strategy baseline is unchanged."
+  },
+  "gate2": {
+    "name": "Gate 2 field contract",
+    "passed": true,
+    "required_fields": [
+      "ticker",
+      "status",
+      "entry_date",
+      "entry_price",
+      "exit_date",
+      "exit_price",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "replacement_value_status",
+      "trade_enabled"
+    ],
+    "missing_fields_by_ticker": {},
+    "target_price_contract": {
+      "applicable": false,
+      "reason": "This run does not generate backtest signals or alter exit policy; entry_date and replacement-value comparator fields are the contract for the closed paper-ledger rows."
+    },
+    "comparator_ready_rows": 5,
+    "state_file": "data/paper_sleeves/alpha_score_market_regime/state.json"
+  },
+  "gate3": {
+    "name": "Gate 3 survival/sample",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "closed_rows": 5,
+    "comparator_ready_rows": 5,
+    "open_rows": 3,
+    "pending_rows": 1,
+    "note": "No new filter was added, so canonical strategy survival is unchanged."
+  },
+  "gate4": {
+    "name": "Gate 4 observed replacement-value attribution",
+    "passed": true,
+    "observed_lead_checks": {
+      "rule": {
+        "min_closed_rows": 5,
+        "min_win_rate_vs_cash_spy_qqq": 0.6,
+        "require_positive_sum_vs_cash_spy_qqq": true,
+        "max_single_positive_cash_ticker_share": 0.5
+      },
+      "checks": {
+        "min_closed_rows": true,
+        "positive_sum_vs_cash": true,
+        "positive_sum_vs_spy": true,
+        "positive_sum_vs_qqq": true,
+        "win_rate_vs_cash_ge_60pct": true,
+        "win_rate_vs_spy_ge_60pct": true,
+        "win_rate_vs_qqq_ge_60pct": true,
+        "single_positive_cash_ticker_share_le_50pct": true
+      },
+      "passed": true
+    },
+    "activation_readiness": {
+      "rule": {
+        "min_closed_rows": 30,
+        "max_single_positive_cash_ticker_share": 0.4,
+        "require_multiple_entry_regimes": true
+      },
+      "alpha_ready": false,
+      "blockers": [
+        "closed_rows_5_lt_activation_floor_30",
+        "single_positive_cash_ticker_share_0.429_gt_0.40",
+        "all_closed_rows_same_entry_regime"
+      ],
+      "closed_rows": 5,
+      "entry_regime_labels": {
+        "risk_on_trend": 5
+      },
+      "max_single_positive_cash_ticker_share": 0.429404
+    },
+    "no_strategy_behavior_change": true,
+    "accepted_alpha": false
+  },
+  "activation_readiness": {
+    "rule": {
+      "min_closed_rows": 30,
+      "max_single_positive_cash_ticker_share": 0.4,
+      "require_multiple_entry_regimes": true
+    },
+    "alpha_ready": false,
+    "blockers": [
+      "closed_rows_5_lt_activation_floor_30",
+      "single_positive_cash_ticker_share_0.429_gt_0.40",
+      "all_closed_rows_same_entry_regime"
+    ],
+    "closed_rows": 5,
+    "entry_regime_labels": {
+      "risk_on_trend": 5
+    },
+    "max_single_positive_cash_ticker_share": 0.429404
+  },
+  "delta_metrics": {
+    "strategy_expected_value_score_delta": 0.0,
+    "strategy_total_pnl_delta": 0.0,
+    "replacement_value_vs_cash_sum": 1112.67,
+    "replacement_value_vs_spy_sum": 914.41,
+    "replacement_value_vs_qqq_sum": 651.03,
+    "status_note": "Observed paper-ledger attribution only; no before/after strategy replay delta."
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "alters_live_orders": false,
+    "alters_paper_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "trade_enabled": false,
+    "default_off_only": true,
+    "live_ready": false,
+    "reason": "Read-only attribution of existing default-off paper rows; activation remains blocked by sample size and concentration/regime coverage."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.28,
+    "outcome": "success_condition_hit_but_activation_blocked",
+    "surprise": "positive_forward_value_thin_sample",
+    "realized_failure_modes": [
+      "closed_rows_5_lt_activation_floor_30",
+      "single_positive_cash_ticker_share_0.429_gt_0.40",
+      "all_closed_rows_same_entry_regime"
+    ]
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The observed lead passed because four of five closed paper rows were positive versus cash, four beat SPY, and three beat QQQ, with aggregate RV still positive against all three comparators. It is not activation-ready because the evidence is only five closed rows, the largest positive cash contributor is 42.9% of positive cash RV, and every closed row entered in the same risk_on_trend regime.",
+    "alpha_interpretation": "The first alpha_score_market_regime paper cohort is positive versus cash, SPY, and QQQ, so it remains a useful forward lead, but five closed rows are far below activation evidence.",
+    "forbidden_near_neighbor_retry": "Do not retune alpha_score_market_regime thresholds, top-N, hold days, notional scalar, response curve, or ETF comparator choice on these same five rows.",
+    "new_evidence_required": "At least 30 closed alpha_score_market_regime paper rows with cash/SPY/QQQ replacement values, materially lower single-name positive contribution concentration, and entries outside the current all-risk_on_trend cohort; alternatively a genuinely different production-visible PIT source.",
+    "next_new_evidence_required": "Reopen activation only after at least 30 closed alpha_score_market_regime paper rows with cash/SPY/QQQ replacement values, materially lower single-name concentration, and non-risk_on or otherwise different forward regimes; alternatively use a genuinely different PIT source."
+  },
+  "rejection_reason": "not_activation_ready:closed_rows_5_lt_activation_floor_30,single_positive_cash_ticker_share_0.429_gt_0.40,all_closed_rows_same_entry_regime",
+  "next_retry_requires": [
+    "at least 30 closed alpha_score_market_regime paper RV rows",
+    "cash/SPY/QQQ replacement values on the unchanged paper sleeve",
+    "lower single-name positive contribution concentration",
+    "no threshold/top-N/notional/hold-period/response-curve retune on the same rows"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.py",
+    "data/experiments/exp-20260705-015/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.json",
+    "experiments/cards/exp-20260705-015.md",
+    "experiments/logs/exp-20260705-015.json",
+    "experiments/manifests/exp-20260705-015.json",
+    "experiments/tickets/exp-20260705-015.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/alpha_score_market_regime/state.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "docs/backtesting.md",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "experiments/logs/exp-20260701-004.json",
+    "experiments/logs/exp-20260704-026.json",
+    "experiments/logs/exp-20260613-012.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "observed_only_positive_forward_lead_not_activation_ready",
+  "artifact": "data/experiments/exp-20260705-015/exp_20260705_015_alpha_score_market_regime_forward_rv_readiness.json",
+  "log": "experiments/logs/exp-20260705-015.json",
+  "updated_at": "2026-07-05T20:11:12+00:00"
+}

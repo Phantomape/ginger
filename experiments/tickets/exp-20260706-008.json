@@ -1,0 +1,504 @@
+{
+  "acceptance_rule": "Observed-only lead only if evaluable rows stay at 17, climax and non-climax cohorts each have >=5 rows, climax mean cash return and mean SPY excess both exceed non-climax by >=300 bps, climax win rate >=60%, and no single episode contributes >50% of positive climax cash PnL.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+    "data/experiments/exp-20260706-008",
+    "experiments/logs/exp-20260706-008.json",
+    "experiments/cards/exp-20260706-008.md",
+    "experiments/manifests/exp-20260706-008.json",
+    "experiments/tickets/exp-20260706-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260706-008/exp_20260706_008_deep_drawdown_volume_range_capitulation.json",
+  "baseline_result_file": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+  "card_file": "experiments/cards/exp-20260706-008.md",
+  "causal_components": [
+    "fixed exp-20260706-006 first-entry rows",
+    "PIT QQQ trailing volume percentile label",
+    "PIT QQQ trailing daily-range percentile label",
+    "climax vs non-climax cash/SPY attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+    "data/experiments/exp-20260706-008/exp_20260706_008_deep_drawdown_volume_range_capitulation.json",
+    "experiments/cards/exp-20260706-008.md",
+    "experiments/manifests/exp-20260706-008.json",
+    "experiments/tickets/exp-20260706-008.json",
+    "experiments/logs/exp-20260706-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "pit_index_volume_range_capitulation_gate_for_deep_drawdown_first_entries",
+  "claimed_at": "2026-07-06T06:11:14+00:00",
+  "completed_at": "2026-07-06T06:20:37+00:00",
+  "created_at": "2026-07-06T06:11:04+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-07-06",
+      "start": "2000-01-10"
+    }
+  ],
+  "experiment_id": "exp-20260706-008",
+  "experiment_uid": "expuid-41d0adfc22a246b3",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T06:11:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "deep_drawdown_volume_range_capitulation"
+  },
+  "hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows with PIT index volume/range capitulation quality should have materially higher cash and SPY replacement value than non-climax first entries, distinguishing true washouts from bear-trap rebounds.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "ticker=QQQ",
+    "entry/exit/notional/hold/slippage from exp-20260706-006",
+    "no threshold retune after seeing outcomes"
+  ],
+  "log": "experiments/logs/exp-20260706-008.json",
+  "mechanism_family": "deep_drawdown_rebound_capitulation_quality",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/run.py",
+    "live order/ranking/sizing/exits"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260706-003",
+    "exp-20260706-004",
+    "exp-20260706-005",
+    "exp-20260706-006"
+  ],
+  "new_evidence_axis": "New gate shape/data axis versus exp-20260706-003/006: trailing point-in-time QQQ volume and daily-range percentile climax fields from the index OHLCV archive/warehouse, with entry/exit/budget left unchanged.",
+  "new_evidence_type": "new_pit_index_volume_range_capitulation_fields",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "bear",
+        "capitulation",
+        "cash",
+        "climax",
+        "deep",
+        "distinguishing",
+        "drawdown",
+        "entries",
+        "entry",
+        "episode",
+        "first",
+        "from",
+        "gate",
+        "have",
+        "higher",
+        "index",
+        "materially",
+        "non",
+        "observed",
+        "only",
+        "pit",
+        "qqq",
+        "range",
+        "rebound",
+        "rebounds",
+        "replacement",
+        "rows",
+        "should",
+        "spy",
+        "than",
+        "trap",
+        "true",
+        "value",
+        "volume",
+        "washouts"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "deep_drawdown_rebound_first_stabilization_budget",
+        "reopen_condition": "TODO",
+        "score": 0.0632,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "deep_drawdown_episode_etf_rebound_candidate_pool",
+        "reopen_condition": "A legitimate retry needs a genuinely different gate shape declared up front: a predeclared per-episode entry budget (e.g. first stabilization only), or an ex-ante bear-vs-correction conditioning state (e.g. PIT regime classifier risk_off vs chop, or 200d-slope filter) fixed BEFORE replay; or new settled forward rows from a live episode. The pre-2023 index archive (data/non_ohlcv/index_history) is ",
+        "score": 0.0581,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "deep_drawdown_episode_budget_gate_shape",
+        "reopen_condition": "A valid retry needs a predeclared ex-ante bear-vs-correction classifier, genuinely new live/forward episode rows, or a full shared paper helper update that is tested before seeing the new episode outcomes.",
+        "score": 0.05,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_forward_rv_readiness",
+        "reopen_condition": "At least 30 closed alpha_score_market_regime paper rows with cash/SPY/QQQ replacement values, materially lower single-name positive contribution concentration, and entries outside the current all-risk_on_trend cohort; alternatively a genuinely different production-visible PIT source.",
+        "score": 0.0465,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape/data axis versus exp-20260706-003/006: trailing point-in-time QQQ volume and daily-range percentile climax fields from the index OHLCV archive/warehouse, with entry/exit/budget left unchanged.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape/data axis versus exp-20260706-003/006: trailing point-in-time QQQ volume and daily-range percentile climax fields from the index OHLCV archive/warehouse, with entry/exit/budget left unchanged.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape/data axis versus exp-20260706-003/006: trailing point-in-time QQQ volume and daily-range percentile climax fields from the index OHLCV archive/warehouse, with entry/exit/budget left unchanged.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "too_few_climax_rows",
+      "no_spy_excess_lift",
+      "posthoc_capitulation_proxy_not_discriminative",
+      "sample_dominated_by_one_crisis"
+    ],
+    "confidence_reason": "Volume/range capitulation is a genuine new PIT quality axis allowed by exp-20260706-006 closeout, but only 17 historical first-entry episodes make power weak.",
+    "recorded_at": "2026-07-06T06:10:28+00:00"
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "observed_only_rejected_volume_range_capitulation_no_stable_edge",
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "artifact": "data/experiments/exp-20260706-008/exp_20260706_008_deep_drawdown_volume_range_capitulation.json",
+    "log": "experiments/logs/exp-20260706-008.json",
+    "runner": "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+    "gate4": {
+      "passed": false,
+      "observed_only": true,
+      "strategy_rerun_required": false,
+      "accepted_alpha": false,
+      "decision": "observed_only_rejected_volume_range_capitulation_no_stable_edge",
+      "acceptance_rule": {
+        "required_evaluable_rows": 17,
+        "min_climax_rows": 5,
+        "min_non_climax_rows": 5,
+        "min_mean_cash_return_lift": 0.03,
+        "min_mean_spy_excess_lift": 0.03,
+        "min_climax_win_rate": 0.6,
+        "max_single_positive_climax_cash_pnl_share": 0.5
+      },
+      "capitulation_rule": {
+        "ticker": "QQQ",
+        "lookback_sessions": 252,
+        "volume_percentile_min": 0.9,
+        "range_percentile_min": 0.9,
+        "range_metric": "(high - low) / close",
+        "same_day_available": "Signal is generated after the close and enters next open, so same-day volume and range are point-in-time available."
+      },
+      "checks": {
+        "required_evaluable_rows": true,
+        "min_climax_rows": true,
+        "min_non_climax_rows": true,
+        "mean_cash_return_lift": false,
+        "mean_spy_excess_lift": false,
+        "climax_win_rate": false,
+        "positive_pnl_concentration": true
+      },
+      "failed_reasons": [
+        "posthoc_capitulation_proxy_not_discriminative",
+        "no_spy_excess_lift"
+      ],
+      "summary": {
+        "evaluable_closed_rows": 17,
+        "climax_rows": 7,
+        "non_climax_rows": 10,
+        "deltas": {
+          "mean_cash_return_pct_climax_minus_non_climax": 0.015862,
+          "mean_spy_excess_pct_climax_minus_non_climax": 0.016475
+        },
+        "cohorts": {
+          "all_evaluable": {
+            "rows": 17,
+            "win_count": 12,
+            "win_rate": 0.7059,
+            "mean_cash_return_pct": 0.007188,
+            "median_cash_return_pct": 0.007971,
+            "mean_spy_excess_pct": -0.00383,
+            "median_spy_excess_pct": 0.001037,
+            "total_pnl": 1222.02,
+            "positive_pnl_total": 3430.47,
+            "max_single_positive_cash_pnl_share": 0.2252,
+            "episodes": [
+              "2000-01-06",
+              "2000-04-03",
+              "2004-08-05",
+              "2005-04-15",
+              "2006-06-12",
+              "2008-01-07",
+              "2010-05-20",
+              "2011-08-08",
+              "2011-10-03",
+              "2015-08-24",
+              "2016-01-15",
+              "2018-10-29",
+              "2020-02-27",
+              "2020-09-23",
+              "2022-01-21",
+              "2024-08-05",
+              "2025-03-10"
+            ]
+          },
+          "climax": {
+            "rows": 7,
+            "win_count": 4,
+            "win_rate": 0.5714,
+            "mean_cash_return_pct": 0.016519,
+            "median_cash_return_pct": 0.012885,
+            "mean_spy_excess_pct": 0.005862,
+            "median_spy_excess_pct": 0.007166,
+            "total_pnl": 1156.33,
+            "positive_pnl_total": 1682.34,
+            "max_single_positive_cash_pnl_share": 0.4592,
+            "episodes": [
+              "2008-01-07",
+              "2010-05-20",
+              "2011-08-08",
+              "2011-10-03",
+              "2015-08-24",
+              "2020-02-27",
+              "2022-01-21"
+            ]
+          },
+          "non_climax": {
+            "rows": 10,
+            "win_count": 8,
+            "win_rate": 0.8,
+            "mean_cash_return_pct": 0.000657,
+            "median_cash_return_pct": 0.006603,
+            "mean_spy_excess_pct": -0.010613,
+            "median_spy_excess_pct": -0.005228,
+            "total_pnl": 65.69,
+            "positive_pnl_total": 1748.13,
+            "max_single_positive_cash_pnl_share": 0.3283,
+            "episodes": [
+              "2000-01-06",
+              "2000-04-03",
+              "2004-08-05",
+              "2005-04-15",
+              "2006-06-12",
+              "2016-01-15",
+              "2018-10-29",
+              "2020-09-23",
+              "2024-08-05",
+              "2025-03-10"
+            ]
+          }
+        }
+      }
+    },
+    "summary": {
+      "evaluable_closed_rows": 17,
+      "climax_rows": 7,
+      "non_climax_rows": 10,
+      "deltas": {
+        "mean_cash_return_pct_climax_minus_non_climax": 0.015862,
+        "mean_spy_excess_pct_climax_minus_non_climax": 0.016475
+      },
+      "cohorts": {
+        "all_evaluable": {
+          "rows": 17,
+          "win_count": 12,
+          "win_rate": 0.7059,
+          "mean_cash_return_pct": 0.007188,
+          "median_cash_return_pct": 0.007971,
+          "mean_spy_excess_pct": -0.00383,
+          "median_spy_excess_pct": 0.001037,
+          "total_pnl": 1222.02,
+          "positive_pnl_total": 3430.47,
+          "max_single_positive_cash_pnl_share": 0.2252,
+          "episodes": [
+            "2000-01-06",
+            "2000-04-03",
+            "2004-08-05",
+            "2005-04-15",
+            "2006-06-12",
+            "2008-01-07",
+            "2010-05-20",
+            "2011-08-08",
+            "2011-10-03",
+            "2015-08-24",
+            "2016-01-15",
+            "2018-10-29",
+            "2020-02-27",
+            "2020-09-23",
+            "2022-01-21",
+            "2024-08-05",
+            "2025-03-10"
+          ]
+        },
+        "climax": {
+          "rows": 7,
+          "win_count": 4,
+          "win_rate": 0.5714,
+          "mean_cash_return_pct": 0.016519,
+          "median_cash_return_pct": 0.012885,
+          "mean_spy_excess_pct": 0.005862,
+          "median_spy_excess_pct": 0.007166,
+          "total_pnl": 1156.33,
+          "positive_pnl_total": 1682.34,
+          "max_single_positive_cash_pnl_share": 0.4592,
+          "episodes": [
+            "2008-01-07",
+            "2010-05-20",
+            "2011-08-08",
+            "2011-10-03",
+            "2015-08-24",
+            "2020-02-27",
+            "2022-01-21"
+          ]
+        },
+        "non_climax": {
+          "rows": 10,
+          "win_count": 8,
+          "win_rate": 0.8,
+          "mean_cash_return_pct": 0.000657,
+          "median_cash_return_pct": 0.006603,
+          "mean_spy_excess_pct": -0.010613,
+          "median_spy_excess_pct": -0.005228,
+          "total_pnl": 65.69,
+          "positive_pnl_total": 1748.13,
+          "max_single_positive_cash_pnl_share": 0.3283,
+          "episodes": [
+            "2000-01-06",
+            "2000-04-03",
+            "2004-08-05",
+            "2005-04-15",
+            "2006-06-12",
+            "2016-01-15",
+            "2018-10-29",
+            "2020-09-23",
+            "2024-08-05",
+            "2025-03-10"
+          ]
+        }
+      }
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_live_orders": false
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed volume/range climax label did not meet all pre-run cohort and replacement-value requirements.",
+      "forbidden_near_neighbor_retry": "Do not retune volume/range percentile thresholds, use only one of the two fields, add VIX/SPY confirmations, change hold days, or reslice the same 17 first-entry rows by crisis/decade/depth.",
+      "new_evidence_required": "Reopen only with genuinely new settled forward deep-drawdown episodes, a predeclared cross-sectional breadth/capitulation source, or a different ex-ante gate shape fixed before replay.",
+      "realized_failure_mode": "posthoc_capitulation_proxy_not_discriminative,no_spy_excess_lift"
+    },
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_008_deep_drawdown_volume_range_capitulation.py"
+    ],
+    "changed_files": [
+      "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+      "data/experiments/exp-20260706-008/exp_20260706_008_deep_drawdown_volume_range_capitulation.json",
+      "experiments/cards/exp-20260706-008.md",
+      "experiments/manifests/exp-20260706-008.json",
+      "experiments/tickets/exp-20260706-008.json",
+      "experiments/logs/exp-20260706-008.json",
+      "docs/experiment_registry.json"
+    ]
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-008.json",
+  "runner": "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+  "single_causal_variable": "pit_index_volume_range_capitulation_gate_for_deep_drawdown_first_entries",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-008.json",
+  "trial_family": "deep_drawdown_rebound_episode_quality",
+  "trial_variant_id": "qqq_trailing_volume_range_climax_v1",
+  "updated_at": "2026-07-06T06:20:37+00:00"
+}

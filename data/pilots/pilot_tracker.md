@@ -1,4 +1,4 @@
-# Pilot tracker - as of 2026-07-05T03:27:53+00:00
+# Pilot tracker - as of 2026-07-06T03:28:40+00:00
 
 Per-position book: $10,000. Read-only; manual execution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
@@ -8,6 +8,12 @@ Manual stop overlay: cut a held position at -15% from entry (does not change the
 
 - **SELL CRDO** (Fundamental growth + RS): -16.6% from entry 290.11 -> last 241.91
 - **SELL MU** (Fundamental growth + RS): -20.9% from entry 1233.97 -> last 975.56
+
+## [!] Cross-pilot theme concentration (one theme, stacked books)
+
+- **Technology** (sector): 5 positions across 2 pilot(s) (AMD, CRDO, DDOG, MU, WDC) -> $50,000 (56% of actionable exposure)
+- **Industrials** (sector): 3 positions across 1 pilot(s) (AAL, CAT, GE) -> $30,000 (33% of actionable exposure)
+- **Semiconductors** (industry): 3 positions across 1 pilot(s) (AMD, CRDO, MU) -> $30,000 (33% of actionable exposure)
 
 ## Scorecard
 
