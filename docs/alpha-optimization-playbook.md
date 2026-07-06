@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-05.
+Last refreshed: 2026-07-06.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -861,6 +861,24 @@ had zero KEV-flagged trades, and the source remains context-only until a broader
 issuer map or materially more flagged core entries can support a shared-helper
 Gate 4 risk test.
 
+The July 6 batch turned three tempting risk/allocation ideas into wait-for-rows
+surfaces rather than policies. Deep QQQ drawdown rebound has one useful
+artifact: a shared default-off observer with a one-entry-per-episode budget,
+kept `trade_enabled=false`, because full repeated-entry replay lost heavily in
+secular bears while the episode-budget variant was positive but too thin and
+failed SPY-excess support. Do not retune stabilization, 200d, VIX, TLT, volume,
+range, entry-budget, hold, or notional on frozen rows; valid evidence is new
+settled live episodes or a genuinely new ex-ante capitulation/breadth source.
+Sector-concurrency and duplicate-exposure reads did not validate a cross-sleeve
+cap: crowded rows were not a stable loss cohort, and pilot sector concentration
+is now risk reporting, not alpha. Estimate-revision outcome settlement and
+core-risk-intensity heartbeat wiring are accepted measurement repairs; both are
+alpha-enabling only. Reopen estimate-revision and core-risk allocation after
+prospective rows have cash/SPY/QQQ replacement value, not through another
+readiness audit or risk-multiplier threshold sweep. New observer/provenance
+orphan temp cleanup remains blocked by filesystem permission-denied remnants;
+that is operational hygiene, not a new text/event alpha axis.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -928,6 +946,14 @@ collection and settlement, not threshold, rank, notional, hold-day, cooldown, or
 activation-envelope retuning. CISA KEV is not a ready gate; reopen only with a
 broader predeclared issuer map plus materially nonzero KEV-flagged replay trades,
 or with a distinct cybersecurity event source.
+
+July 6 status: accepted repairs improved row collection and health reporting,
+not trade policy. Estimate-revision now settles matched-row outcomes through the
+daily path; core-risk-intensity now writes a heartbeat even when there are zero
+candidates; pilot reports now expose sector/industry concentration across manual
+pilot sleeves. The next valid action is to let those ledgers accumulate closed
+replacement-value rows and use them for attribution, not to retune sector caps,
+risk multiplier stacks, or pilot admission rules.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -1913,6 +1939,35 @@ production-visible field:
   replay trades, so threshold/window/response retunes are frozen. Reopen only
   with a broader predeclared issuer map producing materially nonzero flagged
   baseline trades, or with a distinct cybersecurity incident source;
+- deep-drawdown rebound candidate pools or observers that sweep stabilization
+  day, one-entry budget, 200d correction classifier, VIX panic, TLT rate-relief,
+  volume/range capitulation, hold, cooldown, or notional on the 2000-2026 QQQ
+  replay rows. `exp-20260706-003` rejected repeated-entry rebound because
+  secular-bear re-entry bleed overwhelmed correction gains; `exp-20260706-004`,
+  `005`, `008`, `009`, and `015` did not supply stable quality gates; and
+  `exp-20260706-006` retained only a default-off observer. Reopen with new
+  settled live episodes or a genuinely new ex-ante capitulation/breadth/macro
+  data source fixed before replay;
+- same-sector concurrency, pilot sector concentration, or duplicate-exposure
+  risk caps based only on current default-off forward rows. `exp-20260706-001`
+  accepted reporting only, while `exp-20260706-002` rejected the sector
+  concurrency edge. Reopen with materially more closed cross-sleeve rows, a
+  concrete missed-risk incident requiring a new fixed grouping, or a full shared
+  Gate 1-4 cap policy;
+- core-risk multiplier stack caps or response curves before prospective
+  `core_risk_intensity` rows close with replacement value. `exp-20260706-013`
+  found high-stack canonical entries were not a stable loss-tail cohort, and
+  `exp-20260706-016` only repaired heartbeat state. Reopen with closed forward
+  rows or a full shared production/backtest sizing-cap ablation;
+- estimate-revision candidate-match alpha retries that only audit readiness
+  after `exp-20260706-010`; outcome settlement is now wired, so the next alpha
+  read needs newly matured H3/H5/H10 rows with cash/SPY/QQQ replacement value
+  or a distinct revision data source;
+- observer/provenance atomic-temp cleanup experiments that use stale hidden
+  temp files as an alpha evidence axis. `exp-20260706-014` remained blocked by
+  permission-denied orphan files after recovery attempts. Reopen only for a real
+  cleanup regression or after materially more settled observer/provenance rows
+  support an alpha read;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

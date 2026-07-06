@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-05.
+Last refreshed: 2026-07-06.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -48,6 +48,36 @@ Controls:
 - keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2510.05533>
+
+### Agentic Research Needs Tool Traces And Reproducible Panels
+
+QRAFTI is useful as research-infrastructure guidance rather than a trading
+model: multi-agent quant workflows should expose data access, factor
+construction, code execution, report generation, and reflection as traceable
+tool calls. Ginger already has experiment IDs, tickets, artifacts, and
+generated dashboards; the missing benchmarkable surface is a compact trace
+that says which data panel, factor transform, test, and comparator each agent
+actually used.
+
+Implementable fields:
+
+- `research_agent_trace_id`
+- `panel_dataset_version`
+- `factor_construction_tool_call_hash`
+- `agent_reflection_step_count`
+- `research_report_artifact_hash`
+- `comparator_panel_protocol_id`
+- `tool_call_replay_passed`
+- `agent_research_failure_bucket`
+
+Controls:
+
+- log every data, factor, and code tool call used to create a research claim;
+- require the same panel version, universe, costs, and comparator for replay;
+- treat narrative analysis as provenance, not evidence, until artifacts rerun;
+- prefer small auditable helper functions over opaque generated notebooks.
+
+Source: <https://arxiv.org/abs/2604.18500>
 
 ### Hedge-Fund LLM Forecasting Reviews Are Robustness Checklists
 
@@ -212,6 +242,38 @@ Implementable fields:
 - `constraint_shadow_price_bucket`
 
 Source: <https://link.springer.com/article/10.1007/s41060-026-01066-0>
+
+### Constrained LLM Alpha Search Needs Hard Financial Grammar
+
+PandaAI's useful pattern is not the reported CSI 300 performance; it is the
+system shape. LLM-guided alpha generation is bounded by a formal operator
+grammar, forbidden-rule set, market-regime state, turnover/risk constraints,
+and evidence feedback. Ginger's translation is a safer research loop: let LLMs
+propose symbolic factor candidates only inside a predeclared grammar, reject
+financially toxic factors before simulation, and store the constraint set with
+the replay artifact.
+
+Implementable fields:
+
+- `symbolic_alpha_grammar_version`
+- `llm_alpha_candidate_hash`
+- `forbidden_operator_rule_set_id`
+- `financial_toxicity_reject_reason`
+- `latent_regime_state_id`
+- `dynamic_constraint_penalty_bucket`
+- `alpha_search_mcts_trace_hash`
+- `constraint_feedback_update_id`
+
+Controls:
+
+- freeze grammar, forbidden operators, and cost/risk constraints before search;
+- reject candidates with excessive turnover, leakage, dimensional mismatch, or
+  unstable decay before Gate 1;
+- compare any retained symbolic factor against recency, momentum, volatility,
+  and accepted-helper comparators under the same PIT panel;
+- record failed generated factors so later agents do not rediscover them.
+
+Source: <https://arxiv.org/abs/2606.06823>
 
 ### Verifiable Forecast Actions For LLM Views
 
