@@ -1,0 +1,73 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Accepted measurement repair: added recent estimate-revision outcome catch-up wiring so prior daily ledgers are automatically re-settled as the hot OHLCV warehouse advances; validated 2026-07-05 moved from 0 to 6 H0 closed rows with SPY/QQQ comparators.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "estimate_revision_recent_outcome_catchup_wiring",
+  "component": "quant/estimate_revision_outcomes.py, quant/test_estimate_revision_outcomes.py, quant/run.py, data/non_ohlcv/estimate_revision_outcomes_20260705.jsonl, data/non_ohlcv/estimate_revision_outcome_summary_20260705.json, data/experiments/EXP_ID, experiments/logs/EXP_ID.json, experiments/cards/EXP_ID.md, experiments/tickets/EXP_ID.json, experiments/manifests/EXP_ID.json",
+  "date_range": {},
+  "decision": "accepted_measurement_repair_estimate_revision_outcome_catchup_wiring",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260707-004",
+  "hypothesis": "Wire estimate-revision outcome catch-up into the daily settlement pipeline so recent pending ledgers are automatically re-settled when the hot OHLCV warehouse advances, instead of spending new experiment IDs on hand materialization.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260706-010",
+    "exp-20260706-021"
+  ],
+  "new_evidence_type": "settlement_pipeline_wiring",
+  "next_retry_requires": [
+    "Do not hand-refresh estimate-revision outcome ledgers with new experiment IDs; recent prior-ledger catch-up is now run.py plumbing.",
+    "Next alpha-compliant revision work needs H3/H5/H10 closed replacement rows with cash/SPY/QQQ comparators, materially more non-flat matched rows, or a distinct unsaturated PIT expectation source."
+  ],
+  "notes": "No strategy, ranking, sizing, entry, exit, or orders changed. This is not accepted alpha: all six matched rows remain flat estimate revisions and H1/H3/H5/H10 are still pending; next alpha-compliant revision work needs H3/H5/H10 closed replacement rows or materially more non-flat matched rows.",
+  "parameters": {
+    "locked_variables": [
+      "estimate_revision_recent_outcome_catchup_wiring"
+    ],
+    "single_causal_variable": "estimate_revision_recent_outcome_catchup_wiring"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to hand-refresh estimate-revision outcomes for each new warehouse day. Routine prior-ledger settlement is now wired into run.py via persist_recent_estimate_revision_outcome_catchup.",
+    "new_evidence_required": "Alpha-compliant revision work still needs H3/H5/H10 closed replacement rows with cash/SPY/QQQ comparators, materially more non-flat matched rows, or a distinct unsaturated PIT expectation source.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The outcome helper already rolled a weekend requested entry date to the first available trading bar, but the daily path only settled today's ledger. Adding recent-ledger catch-up lets the matured 2026-07-05 rows settle automatically when warehouse_main_hot advanced to 2026-07-06."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260707-004/before_measurement.json",
+    "data/experiments/exp-20260707-004/after_measurement.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-07T03:15:04+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260707-004"
+}

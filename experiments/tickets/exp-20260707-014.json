@@ -1,0 +1,393 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\pilots\\pilot_scorecard.json",
+  "card_file": "experiments/cards/exp-20260707-014.md",
+  "causal_components": [
+    "pilot_scorecard alert_rule metadata only",
+    "no alert behavior change",
+    "no strategy behavior change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "pilot_cross_pilot_concentration_alert_rule_metadata_v1",
+  "claimed_at": "2026-07-07T14:11:44+00:00",
+  "completed_at": "2026-07-07T14:15:49+00:00",
+  "created_at": "2026-07-07T14:11:11+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-014",
+  "experiment_uid": "expuid-eefd9c83eb6a415e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T14:11:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pilot_concentration_alert_rule_metadata"
+  },
+  "hypothesis": "Pilot governance measurement repair: cross-pilot concentration output currently exports min_positions and min_exposure_share without the boolean operator, making valid three-position sector alerts look contradictory in the scorecard/recommendations artifact; expose the fixed OR rule in metadata without changing alert behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "pilot_cross_pilot_concentration_alert_rule_metadata_v1"
+  ],
+  "mechanism_family": "pilot_scorecard_governance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260707-012",
+    "exp-20260624-010",
+    "exp-20260624-009"
+  ],
+  "new_evidence_type": "measurement_defect_in_current_pilot_scorecard_artifact",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "score": 0.6205,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "novelty_classifier_data_source_coverage",
+        "score": 0.6195,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "score": 0.6195,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "pilot_scorecard",
+      "field_tags": [
+        "alert",
+        "alerts",
+        "artifact",
+        "behavior",
+        "boolean",
+        "changing",
+        "concentration",
+        "contradictory",
+        "cross",
+        "currently",
+        "exports",
+        "expose",
+        "exposure",
+        "governance",
+        "in",
+        "look",
+        "making",
+        "measurement",
+        "metadata",
+        "min",
+        "operator",
+        "or",
+        "output",
+        "pilot",
+        "position",
+        "positions",
+        "recommendations",
+        "repair",
+        "rule",
+        "scorecard",
+        "sector",
+        "share",
+        "three",
+        "valid",
+        "without"
+      ],
+      "gate_shape": "pilot_scorecard_readiness"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "reopen_condition": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+        "score": 0.6205,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "novelty_classifier_data_source_coverage",
+        "reopen_condition": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+        "score": 0.6195,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "reopen_condition": "Reopen only after one active pilot has at least 20 closed rows with positive replacement value versus SPY and QQQ under the unchanged scorecard rule, or after a materially new production-visible pilot data surface creates new rows.",
+        "score": 0.6195,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "pilot_cross_sector_concentration_report",
+        "reopen_condition": "A future incident the report misses (new blind spot) or a validated historical surface thick enough to test a real cross-sleeve exposure cap (see exp-20260705-009 reopen condition).",
+        "score": 0.0444,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.8182,
+        "data_source": "live_drift_reconciliation",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "A valid retry needs a new production drift mismatch, a new warehouse availability regression, or the exit-side moomoo deal-history surface described in docs/live_drift_reconciliation.md.",
+        "score": 0.0273,
+        "status": "has_accepted",
+        "trials": 22
+      }
+    ],
+    "new_evidence_axis": "Current 2026-07-07 pilot_scorecard and pilot_recommendations artifacts show alert=true for 3-position sectors at 42.86% exposure while alert_rule only lists min_positions=3 and min_exposure_share=0.5; code/tests use an OR rule, so the new evidence is a concrete schema/metadata ambiguity in today's production-visible governance artifact, not a readiness or kill-rule rerun.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "pilot_scorecard",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Current 2026-07-07 pilot_scorecard and pilot_recommendations artifacts show alert=true for 3-position sectors at 42.86% exposure while alert_rule only lists min_positions=3 and min_exposure_share=0.5; code/tests use an OR rule, so the new evidence is a concrete schema/metadata ambiguity in today's production-visible governance artifact, not a readiness or kill-rule rerun.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "pilot_scorecard_readiness",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "pilot_scorecard",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "unexpected_snapshot_schema_dependency",
+      "tests_expect_old_metadata",
+      "audit_registry_conflict"
+    ],
+    "confidence_reason": "This is a narrow metadata repair: existing code/tests already encode the intended OR behavior, and today's generated JSON makes that behavior ambiguous to downstream readers.",
+    "recorded_at": "2026-07-07T14:10:30+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_pilot_concentration_rule_metadata",
+    "artifact": "data/experiments/exp-20260707-014/exp_20260707_014_pilot_concentration_alert_rule_metadata.json",
+    "log": "experiments/logs/exp-20260707-014.json",
+    "summary": {
+      "before_alert_rule": {
+        "min_positions": 3,
+        "min_exposure_share": 0.5
+      },
+      "after_alert_rule": {
+        "min_positions": 3,
+        "min_positions_for_exposure_share": 2,
+        "min_exposure_share": 0.5,
+        "operator": "or",
+        "description": "Alert when a known sector/industry has at least min_positions positions, or at least min_positions_for_exposure_share positions and exposure_share >= min_exposure_share."
+      },
+      "alert_count": 2,
+      "under_share_three_position_alert_count": 2,
+      "production_files_regenerated": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-014.json",
+  "single_causal_variable": "pilot_cross_pilot_concentration_alert_rule_metadata_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260707-014.json",
+  "trial_family": "pilot_cross_pilot_concentration_alert_rule_metadata",
+  "trial_variant_id": "explicit_or_rule_metadata_v1",
+  "alpha_hypothesis": "Alpha blocker: pilot scorecard governance is used to decide which default-off paper sleeves remain collectable or killed; ambiguous concentration rule metadata can make valid risk alerts look like false positives and confuse later promotion/kill analysis.",
+  "implementation_mode": "metadata_only_no_alert_behavior_change",
+  "new_evidence_axis": "Current 2026-07-07 pilot_scorecard and pilot_recommendations artifacts show alert=true for 3-position sectors at 42.86% exposure while alert_rule only lists min_positions=3 and min_exposure_share=0.5; code/tests use an OR rule, so the new evidence is a concrete schema/metadata ambiguity in today's production-visible governance artifact, not a readiness or kill-rule rerun.",
+  "calibration": {
+    "actual_success": 1,
+    "predicted_success_probability": 0.9,
+    "brier_score": 0.01,
+    "predicted_failure_modes": [
+      "unexpected_snapshot_schema_dependency",
+      "tests_expect_old_metadata",
+      "audit_registry_conflict"
+    ],
+    "realized_failure_modes": [],
+    "predicted_failure_mode_hit": false
+  },
+  "measurement_checks": {
+    "operator_recorded": true,
+    "exposure_share_floor_recorded": true,
+    "description_recorded": true,
+    "scorecard_alerts_unchanged": true,
+    "recommendation_before_matches_scorecard_before": true,
+    "three_position_under_share_alert_explained": true
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/pilots/pilot_scorecard.json",
+    "note": "Measurement repair only; canonical strategy backtest unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "cross_pilot_concentration.alert_rule.min_positions",
+      "cross_pilot_concentration.alert_rule.min_exposure_share",
+      "cross_pilot_concentration.alert_rule.operator",
+      "cross_pilot_concentration.alert_rule.min_positions_for_exposure_share"
+    ],
+    "entry_date_target_price_relevance": "Not applicable: this repair changes pilot governance metadata, not signal generation or exits."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No trading filter or concentration cap changed."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_pilot_concentration_rule_metadata",
+    "strategy_behavior_changed": false,
+    "measurement_checks": {
+      "operator_recorded": true,
+      "exposure_share_floor_recorded": true,
+      "description_recorded": true,
+      "scorecard_alerts_unchanged": true,
+      "recommendation_before_matches_scorecard_before": true,
+      "three_position_under_share_alert_explained": true
+    },
+    "failed_checks": [],
+    "alert_rows_unchanged": true
+  },
+  "summary": {
+    "before_alert_rule": {
+      "min_positions": 3,
+      "min_exposure_share": 0.5
+    },
+    "after_alert_rule": {
+      "min_positions": 3,
+      "min_positions_for_exposure_share": 2,
+      "min_exposure_share": 0.5,
+      "operator": "or",
+      "description": "Alert when a known sector/industry has at least min_positions positions, or at least min_positions_for_exposure_share positions and exposure_share >= min_exposure_share."
+    },
+    "alert_count": 2,
+    "under_share_three_position_alert_count": 2,
+    "production_files_regenerated": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "exit_rules_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "pilot_alert_behavior_changed": false,
+    "pilot_artifacts_regenerated": false,
+    "parity_note": "The repair only exposes the existing OR rule in generated pilot metadata. It does not change cross-pilot concentration alerts, pilot verdicts, orders, entries, exits, ranking, or sizing."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The code and tests already implemented the intended OR alert semantics, but generated JSON only exposed thresholds and not the connective/operator. Adding metadata removes the apparent contradiction in today's scorecard without changing alerts.",
+    "forbidden_near_neighbor_retry": "Do not reserve another pilot_scorecard readiness, kill-rule, or concentration metadata audit on the same rows unless a new scorecard schema ambiguity or governance mismatch appears.",
+    "new_evidence_required": "A valid retry needs a new production-visible pilot governance artifact whose exported metadata contradicts the actual code path, or a genuinely new pilot data surface."
+  },
+  "next_retry_requires": [
+    "new pilot governance schema ambiguity",
+    "or a production-visible pilot metadata/code mismatch",
+    "or a genuinely new pilot data surface"
+  ],
+  "changed_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "quant/experiments/exp_20260707_014_pilot_concentration_alert_rule_metadata.py",
+    "data/experiments/exp-20260707-014/exp_20260707_014_pilot_concentration_alert_rule_metadata.json",
+    "experiments/cards/exp-20260707-014.md",
+    "experiments/manifests/exp-20260707-014.json",
+    "experiments/logs/exp-20260707-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_recommendations_2026-07-07.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant/experiments/exp_20260707_014_pilot_concentration_alert_rule_metadata.py quant\\pilot_tracker.py quant\\test_pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260707_014_pilot_concentration_alert_rule_metadata.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-07T14:15:49+00:00"
+}

@@ -456,7 +456,14 @@ def _cross_pilot_concentration(recs: list[dict[str, Any]]) -> dict[str, Any]:
         "position_count": len(positions),
         "alert_rule": {
             "min_positions": CONCENTRATION_ALERT_MIN_POSITIONS,
+            "min_positions_for_exposure_share": 2,
             "min_exposure_share": CONCENTRATION_ALERT_MIN_EXPOSURE_SHARE,
+            "operator": "or",
+            "description": (
+                "Alert when a known sector/industry has at least min_positions "
+                "positions, or at least min_positions_for_exposure_share positions "
+                "and exposure_share >= min_exposure_share."
+            ),
         },
         "by_sector": by_sector,
         "by_industry": by_industry,

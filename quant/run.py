@@ -40,7 +40,10 @@ from constants import (
 from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
-from estimate_revision_outcomes import persist_estimate_revision_outcomes
+from estimate_revision_outcomes import (
+    persist_estimate_revision_outcomes,
+    persist_recent_estimate_revision_outcome_catchup,
+)
 from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import core_slot_positions, has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
@@ -1004,11 +1007,42 @@ def _persist_estimate_revision_outcomes_after_quant_signals(
         )
         if isinstance(non_ohlcv_snapshot, dict):
             non_ohlcv_snapshot["estimate_revision_outcomes"] = summary
+        try:
+            catchup_summary = persist_recent_estimate_revision_outcome_catchup(
+                as_of=today_iso,
+                data_dir="data",
+                output_dir="data/non_ohlcv",
+                exclude_dates=(today_iso,),
+            )
+        except Exception as catchup_exc:
+            log.warning(
+                "Post-quant estimate revision outcome catch-up unavailable: %s",
+                catchup_exc,
+            )
+            catchup_summary = {
+                "status": "failed_post_quant_outcome_catchup",
+                "as_of_date": today_iso,
+                "error": str(catchup_exc),
+                "production_impact": {
+                    "shared_policy_changed": False,
+                    "backtester_adapter_changed": False,
+                    "run_adapter_changed": True,
+                    "replay_only": False,
+                    "alters_signal_generation": False,
+                    "alters_candidate_ranking": False,
+                    "alters_sizing": False,
+                    "alters_orders": False,
+                    "scope": "default_off_forward_estimate_revision_outcome_catchup_failed",
+                },
+            }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_outcome_catchup"] = catchup_summary
         log.info(
-            "Estimate revision outcomes settled: matched=%s h3_closed=%s h5_closed=%s",
+            "Estimate revision outcomes settled: matched=%s h3_closed=%s h5_closed=%s catchup_ledgers=%s",
             summary.get("matched_candidate_rows"),
             (summary.get("closed_rows_by_horizon") or {}).get("h3"),
             (summary.get("closed_rows_by_horizon") or {}).get("h5"),
+            catchup_summary.get("refreshed_ledger_count"),
         )
         return summary
     except Exception as e:
@@ -3799,6 +3833,35 @@ def main():
     trend_signals_dict["ohlcv_warehouse"] = ohlcv_warehouse_summary
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
+
+    # exp-20260706-019: standing live-vs-model drift reconciliation (observe-only;
+    # contract in docs/live_drift_reconciliation.md). Answers "is the live book
+    # tracking the model" — the one question replay parity cannot.
+    try:
+        from live_drift_reconciliation import build_live_drift_reconciliation
+
+        live_drift_state = build_live_drift_reconciliation(as_of=today_iso)
+        trend_signals_dict["live_drift_reconciliation"] = live_drift_state
+        drift_alert = live_drift_state.get("alert") or {}
+        if drift_alert.get("trajectory_alert") or drift_alert.get("fill_alert"):
+            log.warning(
+                "Live drift ALERT (%s): consecutive_breach=%s trajectory_alert=%s "
+                "fill_alert=%s mean_fill_drift=%s (see docs/live_drift_reconciliation.md)",
+                drift_alert.get("bucket"),
+                drift_alert.get("consecutive_breach_sessions"),
+                drift_alert.get("trajectory_alert"),
+                drift_alert.get("fill_alert"),
+                drift_alert.get("latest_mean_fill_drift_pct"),
+            )
+        else:
+            log.info(
+                "Live drift reconciliation: %s/%s positions reconciled, status=%s",
+                live_drift_state.get("reconciled_count"),
+                live_drift_state.get("position_count"),
+                live_drift_state.get("status"),
+            )
+    except Exception as e:
+        log.warning(f"Live drift reconciliation failed (observe-only, non-blocking): {e}")
 
     try:
         from sleeve_health import build_sleeve_health_report

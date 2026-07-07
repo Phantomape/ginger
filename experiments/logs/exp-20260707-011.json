@@ -1,0 +1,88 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "hot warehouse current-bar lookup",
+    "empty ticker row fallback",
+    "before/after live drift reconciliation artifact",
+    "targeted regression tests"
+  ],
+  "change_summary": "Accepted measurement repair: live drift reconciliation now reads the hot OHLCV warehouse before stale warehouse surfaces and falls back on empty ticker coverage, removing current missing_entry_bar rows for live sleeve positions without changing orders, ranking, sizing, or exits.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "live_drift_hot_warehouse_current_bar_fallback",
+  "component": "quant/experiments/exp_20260707_011_live_drift_hot_warehouse_coverage.py, data/experiments/exp-20260707-011/exp_20260707_011_live_drift_hot_warehouse_coverage.json, experiments/cards/exp-20260707-011.md, experiments/manifests/exp-20260707-011.json, experiments/tickets/exp-20260707-011.json, experiments/logs/exp-20260707-011.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "reconciled_count_delta": 4,
+    "missing_entry_bar_count_delta": -4,
+    "before_reconciled_count": 7,
+    "after_reconciled_count": 11,
+    "before_missing_entry_bar_count": 4,
+    "after_missing_entry_bar_count": 0,
+    "sleeve_weighted_trajectory_drift_pct_before": -0.128387,
+    "sleeve_weighted_trajectory_drift_pct_after": -0.039698
+  },
+  "experiment_id": "exp-20260707-011",
+  "hypothesis": "Live drift reconciliation is undercounting current sleeve production drift because it reads stale warehouse surfaces while the daily hot OHLCV warehouse already contains entry/as-of bars for new live sleeve tickers.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "production_consistency_fault_recovery",
+  "next_retry_requires": [
+    "Do not reserve another ID to refresh live-drift warehouse coverage for the same current-bar issue; the hot warehouse is now first in the lookup path.",
+    "Reopen only for a new live-vs-model drift mismatch, a concrete warehouse availability regression, or the documented exit-history v2 surface."
+  ],
+  "notes": "Before: 7/11 positions reconciled and 4 sleeve positions were missing_entry_bar because stale warehouses ended before their entry dates or lacked TQQQ. After: 11/11 reconciled; sleeve weighted trajectory drift changed from -0.128387 to -0.039698. Alpha blocker fixed: real-money sleeve drift measurement now matches the daily hot warehouse surface used by current settlement.",
+  "parameters": {
+    "locked_variables": [
+      "live_drift_hot_warehouse_current_bar_fallback"
+    ],
+    "single_causal_variable": "live_drift_hot_warehouse_current_bar_fallback"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun live drift reconciliation coverage as another measurement-repair ID just to pick up current OHLCV bars; the daily hot warehouse is now the first read surface and empty ticker coverage falls through to backups.",
+    "new_evidence_required": "A valid retry needs a new production drift mismatch, a new warehouse availability regression, or the exit-side moomoo deal-history surface described in docs/live_drift_reconciliation.md.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The first live-drift implementation used the stale main/readcopy warehouses even though current daily settlement had already advanced warehouse_main_hot.sqlite. New sleeve tickers GEV, HOOD, SNXX, and TQQQ therefore looked unreconcilable despite valid entry/as-of bars in the hot warehouse."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/live_drift_reconciliation.py",
+    "quant/test_live_drift_reconciliation.py",
+    "quant/experiments/exp_20260707_011_live_drift_hot_warehouse_coverage.py",
+    "data/experiments/exp-20260707-011/exp_20260707_011_live_drift_hot_warehouse_coverage.json",
+    "data/experiments/exp-20260707-011/before_measurement.json",
+    "data/experiments/exp-20260707-011/after_measurement.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-07T11:09:57+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260707-011"
+}

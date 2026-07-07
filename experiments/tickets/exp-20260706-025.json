@@ -1,0 +1,527 @@
+{
+  "acceptance_rule": "Observed-only positive only if daily-MTM aggregate EV and PnL improve, no canonical window EV/PnL regresses, and drawdown drift <= 0.5pp; no strategy activation without shared helper or activation envelope.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.py",
+    "data/experiments/exp-20260706-025/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.json",
+    "experiments/cards/exp-20260706-025.md",
+    "experiments/manifests/exp-20260706-025.json",
+    "experiments/tickets/exp-20260706-025.json",
+    "experiments/logs/exp-20260706-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-025.md",
+  "causal_components": [
+    "consume exp-20260706-022 ranking",
+    "daily mark-to-market equity replay",
+    "accepted core equity comparison",
+    "no source threshold retune",
+    "no strategy behavior change"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "deferred_revenue_demand_acceleration_ranked_portfolio_daily_equity_overlay_v1",
+  "claimed_at": "2026-07-06T23:07:06+00:00",
+  "completed_at": "2026-07-06T23:08:36+00:00",
+  "created_at": "2026-07-06T23:06:58+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-025",
+  "experiment_uid": "expuid-21457de8c7f54dc9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-025",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T23:06:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "portfolio_daily_equity_deferred_revenue_overlay"
+  },
+  "hypothesis": "Portfolio lane: the exp-20260706-022 second-ranked deferred-revenue demand-acceleration candidate family may add value as a fixed 10 percent paper overlay when replayed with true daily mark-to-market equity, without retuning the source or overlay weight.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "deferred_revenue_demand_acceleration_ranked_portfolio_daily_equity_overlay_v1"
+  ],
+  "mechanism_family": "portfolio_covariance_lane",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260706-022",
+    "exp-20260706-023",
+    "exp-20260706-024",
+    "exp-20260615-022"
+  ],
+  "new_evidence_type": "new_ranked_candidate_family_daily_mtm_overlay",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "score": 0.6706,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "portfolio_covariance_lane",
+      "field_tags": [
+        "a",
+        "acceleration",
+        "add",
+        "as",
+        "covariance",
+        "daily",
+        "deferred",
+        "demand",
+        "equity",
+        "exp",
+        "family",
+        "lane",
+        "mark",
+        "market",
+        "may",
+        "or",
+        "overlay",
+        "percent",
+        "portfolio",
+        "ranked",
+        "replayed",
+        "retuning",
+        "revenue",
+        "second",
+        "to",
+        "true",
+        "value",
+        "weight",
+        "when",
+        "without"
+      ],
+      "gate_shape": "portfolio_daily_equity_overlay"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "reopen_condition": "A shared default-off helper or activation-envelope Gate 1-4 that implements a fixed portfolio lane, or materially new ranked candidate families with replayable daily-equity paths.",
+        "score": 0.6706,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "reopen_condition": "A valid next experiment needs a true daily mark-to-market equity replay for the ranked overlay families, or materially new rejected-positive candidate families with replayable trade rows; changing overlay weight, correlation thresholds, or source thresholds is not new evidence.",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.0571,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "reopen_condition": "A valid follow-up needs a selected PIT Companyfacts daily demand surface, structured contract-economics text linked to the same ticker/date, or closed forward replacement-value rows.",
+        "score": 0.0471,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "inventory_to_revenue_leanness_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT inventory-quality evidence such as quarterly inventory turnover where reported, finished-goods vs raw-materials decomposition, days-inventory-outstanding trajectory, or closed forward replacement-value rows. Do not sweep the inventory tag list, inventory/revenue threshold, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or no",
+        "score": 0.0364,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially new ranked candidate family from exp-20260706-022: deferred_revenue_demand_acceleration_candidate_pool has not been consumed by the daily-MTM overlay lane; this uses the fixed recorded ranking and source artifact with no overlay-weight, threshold, top-N, hold-day, cooldown, notional, or correlation retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "portfolio_covariance_lane",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Materially new ranked candidate family from exp-20260706-022: deferred_revenue_demand_acceleration_candidate_pool has not been consumed by the daily-MTM overlay lane; this uses the fixed recorded ranking and source artifact with no overlay-weight, threshold, top-N, hold-day, cooldown, notional, or correlation retune.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially new ranked candidate family from exp-20260706-022: deferred_revenue_demand_acceleration_candidate_pool has not been consumed by the daily-MTM overlay lane; this uses the fixed recorded ranking and source artifact with no overlay-weight, threshold, top-N, hold-day, cooldown, notional, or correlation retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "portfolio_daily_equity_overlay",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "portfolio_covariance_lane",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.27,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "daily_equity_window_regression",
+      "old_thin_regression",
+      "proxy_edge_disappears",
+      "missing_ohlcv_path"
+    ],
+    "confidence_reason": "exp-20260706-022 ranked deferred revenue second on exit-cashflow portfolio delta, but the two prior daily-MTM overlay attempts showed that proxy edge can disappear and window regression is likely.",
+    "recorded_at": "2026-07-06T23:06:21+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_deferred_revenue_demand_acceleration_daily_equity_overlay",
+    "artifact": "data/experiments/exp-20260706-025/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.json",
+    "log": "experiments/logs/exp-20260706-025.json",
+    "summary": {
+      "status": "observed_only_rejected_deferred_revenue_daily_equity_overlay",
+      "aggregate_delta": {
+        "total_pnl": 1262.82,
+        "return_fraction": 0.012628,
+        "sharpe_daily": 0.005278,
+        "expected_value_score": 0.069399,
+        "max_drawdown_pct": 0.000856,
+        "min_day_pnl": -13.04
+      },
+      "failed_reasons": [
+        "daily_equity_window_ev_regression"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-025.json",
+  "single_causal_variable": "deferred_revenue_demand_acceleration_ranked_portfolio_daily_equity_overlay_v1",
+  "status": "observed_only_rejected_deferred_revenue_daily_equity_overlay",
+  "ticket_file": "experiments/tickets/exp-20260706-025.json",
+  "trial_family": "portfolio_covariance_daily_equity_overlay",
+  "trial_variant_id": "deferred_revenue_demand_acceleration_10pct_daily_equity_overlay_v1",
+  "alpha_hypothesis": "capital_allocation / risk_allocation: a rejected candidate source can be portfolio-useful if a small fixed overlay improves aggregate daily-equity EV while drawdown and window stability remain acceptable.",
+  "implementation_mode": "observed_only_daily_equity_replay_no_strategy_change",
+  "new_evidence_axis": "Materially new ranked candidate family from exp-20260706-022: deferred_revenue_demand_acceleration_candidate_pool has not been consumed by the daily-MTM overlay lane; this uses the fixed recorded ranking and source artifact with no overlay-weight, threshold, top-N, hold-day, cooldown, notional, or correlation retune.",
+  "parameters": {
+    "source_ranking_artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "target_source_artifact": "data/experiments/exp-20260615-022/exp_20260615_022_selected_taxonomy_companyfacts_demand.json",
+    "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite",
+    "overlay_weight": 0.1,
+    "portfolio_capital_usd": 100000.0,
+    "acceptance_boundary": "observed-only daily-equity lead only; activation still needs a shared helper / paper behavior and standard Gate 1-4",
+    "source_behavior_changed": false
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "core_window_baselines": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "source_ranking_audit": {
+      "source_artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+      "loaded": true,
+      "target_candidate": "exp-20260615-022",
+      "target_candidate_rank": 2,
+      "target_candidate_family": "deferred_revenue_demand_acceleration_candidate_pool",
+      "target_candidate_core_correlation_exit_cashflow": -0.016462,
+      "target_candidate_proxy_delta": {
+        "expected_value_score_proxy_delta": 8.438853,
+        "max_drawdown_usd_delta": 155.91,
+        "min_day_pnl_delta": -33.21,
+        "total_pnl_delta": 1262.82
+      },
+      "reason_selected": "Second-ranked candidate in the exp-20260706-022 portfolio ranking after exp-20260706-023 consumed the top fixed-asset-turnover row."
+    },
+    "target_source_diagnostics": {
+      "source_artifact": "data/experiments/exp-20260615-022/exp_20260615_022_selected_taxonomy_companyfacts_demand.json",
+      "loaded": true,
+      "required_fields": [
+        "ticker",
+        "entry_date",
+        "entry_price",
+        "exit_date",
+        "exit_price",
+        "paper_notional_usd",
+        "pnl"
+      ],
+      "missing_by_window": {
+        "late_strong": {},
+        "mid_weak": {},
+        "old_thin": {}
+      },
+      "usable_counts": {
+        "late_strong": 40,
+        "mid_weak": 61,
+        "old_thin": 47
+      }
+    },
+    "core_diagnostics": {
+      "window_paths": {
+        "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+      },
+      "missing_by_window": {
+        "late_strong": {},
+        "mid_weak": {},
+        "old_thin": {}
+      },
+      "usable_counts": {
+        "late_strong": 18,
+        "mid_weak": 21,
+        "old_thin": 22
+      }
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "ticker",
+      "entry_date",
+      "entry_price",
+      "exit_date",
+      "exit_price",
+      "pnl",
+      "paper_notional_usd",
+      "shares"
+    ],
+    "missing_ohlcv": {
+      "mid_weak": {
+        "core": {
+          "missing_holding_period_ohlcv": 1
+        },
+        "target": {}
+      }
+    },
+    "blocking_target_missing_ohlcv": {},
+    "nonblocking_core_missing_ohlcv": {
+      "mid_weak": {
+        "missing_holding_period_ohlcv": 1
+      }
+    },
+    "target_cost_residual_abs_max": 14.004979,
+    "target_cost_residual_note": "Residual is applied on the exit date to reconcile the MTM path to artifact PnL after round-trip cost and rounding; it is not a terminal mismatch."
+  },
+  "gate3": {
+    "applicable": false,
+    "filter_added": false,
+    "reason": "No signal filter was added; fixed historical target rows are replayed.",
+    "target_trade_count": 148,
+    "survival_rate": null
+  },
+  "gate4": {
+    "applicable": true,
+    "passed_daily_equity_replay": false,
+    "passed_alpha_activation": false,
+    "failed_reasons": [
+      "daily_equity_window_ev_regression"
+    ],
+    "ev_improved_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "pnl_improved_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "ev_regressed_windows": [
+      "late_strong"
+    ],
+    "pnl_regressed_windows": [],
+    "drawdown_drift": 0.000856,
+    "decision": "observed_only_rejected_deferred_revenue_demand_acceleration_daily_equity_overlay",
+    "activation_note": "Even a positive daily-equity replay remains observed-only because no shared daily paper behavior or live execution envelope was changed in this experiment."
+  },
+  "aggregate_daily_equity": {
+    "core_metrics_daily_mtm_proxy": {
+      "days": 397,
+      "active_days": 314,
+      "total_pnl": 234875.03,
+      "return_fraction": 2.34875,
+      "sharpe_daily": 4.508537,
+      "expected_value_score": 10.589427,
+      "max_drawdown_pct": 0.158873,
+      "min_day_pnl": -6010.66,
+      "positive_active_day_rate": 0.570064
+    },
+    "overlay_metrics_daily_mtm": {
+      "days": 397,
+      "active_days": 396,
+      "total_pnl": 1262.82,
+      "return_fraction": 0.012628,
+      "sharpe_daily": 1.623782,
+      "expected_value_score": 0.020505,
+      "max_drawdown_pct": 0.004208,
+      "min_day_pnl": -124.26,
+      "positive_active_day_rate": 0.537879
+    },
+    "combined_metrics_daily_mtm_proxy": {
+      "days": 397,
+      "active_days": 396,
+      "total_pnl": 236137.85,
+      "return_fraction": 2.361378,
+      "sharpe_daily": 4.513815,
+      "expected_value_score": 10.658826,
+      "max_drawdown_pct": 0.159729,
+      "min_day_pnl": -6023.7,
+      "positive_active_day_rate": 0.585859
+    },
+    "delta_metrics_daily_mtm_proxy": {
+      "total_pnl": 1262.82,
+      "return_fraction": 0.012628,
+      "sharpe_daily": 0.005278,
+      "expected_value_score": 0.069399,
+      "max_drawdown_pct": 0.000856,
+      "min_day_pnl": -13.04
+    },
+    "core_overlay_daily_pnl_correlation": 0.27453,
+    "days": 397
+  },
+  "activation_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "observed_only_replay_no_strategy_or_paper_behavior_change",
+      "core_daily_path_reconstructed_from_saved_trades_not_backtester_equity_curve",
+      "requires_shared_default_off_helper_or_activation_envelope_before_capital"
+    ]
+  },
+  "delta_metrics": {
+    "daily_mtm_proxy": {
+      "total_pnl": 1262.82,
+      "return_fraction": 0.012628,
+      "sharpe_daily": 0.005278,
+      "expected_value_score": 0.069399,
+      "max_drawdown_pct": 0.000856,
+      "min_day_pnl": -13.04
+    },
+    "canonical_strategy_behavior_delta": 0.0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_or_sizing_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "This runner only reads historical artifacts and OHLCV rows. It does not alter production/backtest adapters or any order path."
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected_deferred_revenue_demand_acceleration_daily_equity_overlay",
+    "actual_success": 0,
+    "predicted_success_probability": 0.27,
+    "brier_score": 0.0729,
+    "predicted_failure_modes": [
+      "daily_equity_window_regression",
+      "old_thin_regression",
+      "proxy_edge_disappears",
+      "missing_ohlcv_path"
+    ],
+    "realized_failure_modes": [
+      "daily_equity_window_ev_regression"
+    ],
+    "predicted_failure_mode_hit": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The deferred-revenue demand-acceleration candidate from exp-20260615-022 was consumed from the exp-20260706-022 portfolio ranking and replayed as daily mark-to-market equity. The result is judged on aggregate daily EV, drawdown drift, and window stability, not on deferred-revenue source threshold or notional retunes.",
+    "forbidden_near_neighbor_retry": "Do not rerun this deferred-revenue portfolio overlay by changing overlay weight, demand-growth thresholds, taxonomy, hold days, top-N, correlation cutoffs, or source filters. A legal retry needs materially new ranked candidate families, a new data source, or a shared paper helper / activation-envelope experiment.",
+    "new_evidence_required": "A shared default-off helper or activation-envelope Gate 1-4 that implements a fixed portfolio lane, or materially new ranked candidate families with replayable daily-equity paths."
+  },
+  "rejection_reason": "Daily mark-to-market replay failed the predeclared portfolio-lane gate: daily_equity_window_ev_regression",
+  "next_retry_requires": [
+    "shared default-off helper or activation-envelope Gate 1-4",
+    "materially new portfolio-ranked candidate families or a new data source",
+    "no overlay-weight, threshold, top-N, hold-day, taxonomy, or correlation retune"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.py",
+    "data/experiments/exp-20260706-025/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.json",
+    "experiments/cards/exp-20260706-025.md",
+    "experiments/manifests/exp-20260706-025.json",
+    "experiments/logs/exp-20260706-025.json",
+    "experiments/tickets/exp-20260706-025.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "data/experiments/exp-20260615-022/exp_20260615_022_selected_taxonomy_companyfacts_demand.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "data/warehouse/warehouse_main.sqlite"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "observed_only_rejected_deferred_revenue_demand_acceleration_daily_equity_overlay",
+  "artifact": "data/experiments/exp-20260706-025/exp_20260706_025_portfolio_daily_equity_deferred_revenue_overlay.json",
+  "log": "experiments/logs/exp-20260706-025.json",
+  "updated_at": "2026-07-06T23:08:36+00:00"
+}

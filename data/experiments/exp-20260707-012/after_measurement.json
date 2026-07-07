@@ -1,0 +1,178 @@
+{
+  "accepted": true,
+  "cases": [
+    {
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "current",
+          "graduate",
+          "kill",
+          "pilot",
+          "readiness",
+          "rule",
+          "scorecard"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "label": "kill_readiness",
+      "passed": true,
+      "text": "pilot_scorecard_kill_graduate_readiness current pilot scorecard kill rule readiness"
+    },
+    {
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "current",
+          "graduation",
+          "pilot",
+          "readiness",
+          "recommendations",
+          "scorecard"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "label": "graduation_readiness",
+      "passed": true,
+      "text": "pilot scorecard graduation readiness current pilot recommendations"
+    },
+    {
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "data",
+          "json",
+          "kill",
+          "pilot",
+          "pilots",
+          "recommendations",
+          "scorecard",
+          "verdict"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "label": "recommendations_file",
+      "passed": true,
+      "text": "data/pilots/pilot_recommendations_2026-07-07.json scorecard kill verdict"
+    }
+  ],
+  "changed_variable": "pilot_scorecard_fingerprint_coverage",
+  "decision": "accepted_measurement_repair_pilot_scorecard_fingerprint_coverage",
+  "experiment_id": "exp-20260707-012",
+  "gate_contract": {
+    "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "gate_2_runtime_fields": "Not a signal generator; entry_date and target_price contracts are unchanged.",
+    "gate_3_survival": "Not a signal filter; survival is unchanged.",
+    "gate_4_rule": "Accept repair when focused tests pass and pilot scorecard frozen rows rebuild with a concrete source and gate shape."
+  },
+  "generated_at": "2026-07-07T12:13:31+00:00",
+  "hypothesis": "Pilot scorecard readiness and kill-rule alpha governance remains vulnerable to repeated same-surface probes while experiment_fingerprint classifies pilot_scorecard families as other/other.",
+  "lane": "measurement_repair",
+  "phase": "after",
+  "pilot_frozen_families": [
+    {
+      "accept_rate": 1.0,
+      "accepted": 2,
+      "blocked": 0,
+      "family_key": "novelty_classifier_data_source_coverage",
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "classifier",
+          "coverage",
+          "data",
+          "fingerprint",
+          "keywords",
+          "novelty",
+          "pilot",
+          "scorecard"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "leads": 0,
+      "rejected": 0,
+      "reopen_condition": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+      "representative_exps": [
+        "exp-20260706-020",
+        "exp-20260707-012"
+      ],
+      "status": "has_accepted",
+      "trials": 2
+    },
+    {
+      "accept_rate": 0.0,
+      "accepted": 0,
+      "blocked": 0,
+      "family_key": "pilot_scorecard_forward_graduation_readiness",
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "current",
+          "forward",
+          "graduation",
+          "pilot",
+          "readiness",
+          "scorecard"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "leads": 0,
+      "rejected": 2,
+      "reopen_condition": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+      "representative_exps": [
+        "exp-20260625-007",
+        "exp-20260627-001"
+      ],
+      "status": "frozen_rejected",
+      "trials": 2
+    },
+    {
+      "accept_rate": 0.0,
+      "accepted": 0,
+      "blocked": 0,
+      "family_key": "pilot_scorecard_kill_graduate_readiness",
+      "fingerprint": {
+        "data_source": "pilot_scorecard",
+        "field_tags": [
+          "closed",
+          "graduate",
+          "kill",
+          "pilot",
+          "precommitted",
+          "readiness",
+          "rows",
+          "scorecard"
+        ],
+        "gate_shape": "pilot_scorecard_readiness"
+      },
+      "leads": 0,
+      "rejected": 2,
+      "reopen_condition": "Reopen only after one active pilot has at least 20 closed rows with positive replacement value versus SPY and QQQ under the unchanged scorecard rule, or after a materially new production-visible pilot data surface creates new rows.",
+      "representative_exps": [
+        "exp-20260628-010",
+        "exp-20260702-002"
+      ],
+      "status": "frozen_rejected",
+      "trials": 2
+    }
+  ],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "live_orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "scope": "novelty_guard_measurement_only",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "schema_version": 1,
+  "summary": {
+    "classifier_cases": 3,
+    "classifier_cases_passed": 3,
+    "derived_frozen_family_view_rebuilt": true,
+    "pilot_frozen_rows": 3,
+    "pilot_frozen_rows_passed": 3
+  }
+}

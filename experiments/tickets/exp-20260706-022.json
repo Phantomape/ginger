@@ -1,0 +1,439 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_022_portfolio_covariance_candidate_ranking.py",
+    "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "experiments/cards/exp-20260706-022.md",
+    "experiments/manifests/exp-20260706-022.json",
+    "experiments/tickets/exp-20260706-022.json",
+    "experiments/logs/exp-20260706-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-022.md",
+  "causal_components": [
+    "candidate artifact scan",
+    "frozen-family dedupe",
+    "per-day overlay PnL reconstruction",
+    "accepted-core correlation",
+    "small-weight portfolio delta ranking",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "portfolio_covariance_small_weight_rejected_source_ranking_v1",
+  "claimed_at": "2026-07-06T20:04:18+00:00",
+  "completed_at": "2026-07-06T20:14:41+00:00",
+  "created_at": "2026-07-06T20:04:06+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-022",
+  "experiment_uid": "expuid-6b3d2babedd947fc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T20:04:06+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "portfolio_covariance_candidate_ranking"
+  },
+  "hypothesis": "Portfolio/covariance lane alpha: rejected default-off candidate sources with positive aggregate EV/PnL but Gate-4 comparator or single-window failures may still add portfolio value when evaluated as small-weight, low-correlation overlays against the accepted core daily PnL series.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "portfolio_covariance_small_weight_rejected_source_ranking_v1"
+  ],
+  "mechanism_family": "observed_only_attribution",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-019",
+    "exp-20260706-018"
+  ],
+  "new_evidence_type": "new_gate_shape_portfolio_covariance_lane",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "accepted",
+        "add",
+        "against",
+        "aggregate",
+        "alpha",
+        "as",
+        "but",
+        "comparator",
+        "core",
+        "correlation",
+        "covariance",
+        "daily",
+        "ev",
+        "evaluated",
+        "failures",
+        "gate",
+        "lane",
+        "low",
+        "may",
+        "or",
+        "overlays",
+        "pnl",
+        "portfolio",
+        "positive",
+        "ranking",
+        "rejected",
+        "series",
+        "single",
+        "small",
+        "sources",
+        "still",
+        "value",
+        "weight",
+        "when",
+        "window"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "reopen_condition": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "reopen_condition": null,
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "rolling_corr_peer_shock_core_flow_candidate_pool",
+        "reopen_condition": "A positive replay lead still needs a shared default-off adapter and parity tests before production observation. Live activation would require closed forward replacement-value rows and a separate Gate 1-4 trade adapter.",
+        "score": 0.4695,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_breadth_alignment_component_topup",
+        "reopen_condition": null,
+        "score": 0.469,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: portfolio-level covariance/small-weight overlay evaluation of already-closed rejected candidate-source artifacts; this is not a threshold/top-N/hold/notional retune on any source and does not promote strategy behavior.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: portfolio-level covariance/small-weight overlay evaluation of already-closed rejected candidate-source artifacts; this is not a threshold/top-N/hold/notional retune on any source and does not promote strategy behavior.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: portfolio-level covariance/small-weight overlay evaluation of already-closed rejected candidate-source artifacts; this is not a threshold/top-N/hold/notional retune on any source and does not promote strategy behavior.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "artifact_trade_series_missing",
+      "signals_highly_correlated",
+      "small_weight_drawdown_worse",
+      "too_few_unique_families"
+    ],
+    "confidence_reason": "docs/portfolio_covariance_lane.md documents rejected-but-nonnegative candidates and requires a first observed-only ranking scan; recent default-off artifacts expose target trade rows, but family dedupe, same-window exposure, and closed-cashflow reconstruction may erase the apparent edge.",
+    "recorded_at": "2026-07-06T20:03:29+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_portfolio_covariance_candidate_ranking",
+    "artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "log": "experiments/logs/exp-20260706-022.json",
+    "summary": {
+      "top_candidate": "exp-20260617-006",
+      "top_candidate_family": "fixed_asset_turnover_improvement_candidate_pool",
+      "top_candidate_core_correlation_exit_cashflow": -0.037867,
+      "top_candidate_portfolio_delta_proxy": {
+        "total_pnl_delta": 1301.63,
+        "expected_value_score_proxy_delta": 8.826998,
+        "max_drawdown_usd_delta": 105.56,
+        "min_day_pnl_delta": 0.0
+      },
+      "admissible_after_family_dedupe": 31,
+      "activation_blockers": [
+        "observed_only_ranking_no_strategy_or_paper_behavior_change",
+        "closed_trade_exit_cashflow_proxy_not_daily_mark_to_market",
+        "requires_daily_equity_replay_and_standard_gate4_before_activation"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-022.json",
+  "single_causal_variable": "portfolio_covariance_small_weight_rejected_source_ranking_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260706-022.json",
+  "trial_family": "portfolio_covariance_candidate_ranking",
+  "trial_variant_id": "portfolio_covariance_small_weight_rejected_source_ranking_v1",
+  "alpha_hypothesis": "capital_allocation / risk_allocation: a candidate source rejected by the champion-comparison Gate 4 can still be useful as a low-weight overlay if its closed-trade cashflow series is positive, low-correlation to core, and does not materially worsen drawdown at <=10% overlay weight.",
+  "implementation_mode": "observed_only_scan_no_strategy_change",
+  "new_evidence_axis": "New gate shape: portfolio-level covariance/small-weight overlay evaluation of already-closed rejected candidate-source artifacts; this is not a threshold/top-N/hold/notional retune on any source and does not promote strategy behavior.",
+  "parameters": {
+    "scan_scope": "data/experiments/exp-*/*.json",
+    "admission_rule": "rejected status/decision, aggregate EV and PnL nonnegative, failure reasons limited to window noise or *_not_beaten comparators, target trade list present, >=20 usable trades",
+    "family_dedupe_key": "trial_family or mechanism_family or single_causal_variable",
+    "overlay_weight": 0.1,
+    "portfolio_capital_usd": 100000.0,
+    "cashflow_model": "closed_trade_exit_date_terminal_pnl_proxy",
+    "activation_boundary": "ranking only; no live or paper weight assigned"
+  },
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "core_window_baselines": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "core_trade_diagnostics": {
+      "late_strong": {
+        "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "loaded": true,
+        "raw_trades": 18,
+        "usable_trades": 18,
+        "missing": {}
+      },
+      "mid_weak": {
+        "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "loaded": true,
+        "raw_trades": 21,
+        "usable_trades": 21,
+        "missing": {}
+      },
+      "old_thin": {
+        "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "loaded": true,
+        "raw_trades": 22,
+        "usable_trades": 22,
+        "missing": {}
+      }
+    },
+    "core_usable_trades": 61,
+    "passed": true
+  },
+  "gate2": {
+    "required_candidate_fields": [
+      "exit_date",
+      "pnl"
+    ],
+    "required_core_fields": [
+      "exit_date",
+      "pnl"
+    ],
+    "passed": true,
+    "admissible_missing_trade_fields": {}
+  },
+  "gate3": {
+    "applicable": false,
+    "reason": "artifact ranking scan, not signal generation or filtering",
+    "survival_rate": null,
+    "scanned_artifacts": 2780,
+    "rejected_with_trade_surface": 532,
+    "admissible_before_dedupe": 33,
+    "admissible_after_dedupe": 31
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "reason": "Observed-only ranking uses closed-trade cashflow proxies. A future activation must replay daily equity and run docs/backtesting.md Gate 1-4.",
+    "top_ranked_candidate": "exp-20260617-006"
+  },
+  "scan_summary": {
+    "artifact_paths_scanned": 2780,
+    "rejected_positive_with_trade_surface": 264,
+    "admissible_before_family_dedupe": 33,
+    "admissible_after_family_dedupe": 31,
+    "duplicate_family_drops": [
+      {
+        "family": "deferred_revenue_demand_acceleration_candidate_pool",
+        "kept": "exp-20260615-022",
+        "dropped": "exp-20260615-017",
+        "reason": "lower_family_representative_score"
+      },
+      {
+        "family": "receivables_dso_collection_improvement_candidate_pool",
+        "kept": "exp-20260616-021",
+        "dropped": "exp-20260616-021",
+        "reason": "lower_family_representative_score"
+      }
+    ]
+  },
+  "activation_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "observed_only_ranking_no_strategy_or_paper_behavior_change",
+      "closed_trade_exit_cashflow_proxy_not_daily_mark_to_market",
+      "requires_daily_equity_replay_and_standard_gate4_before_activation"
+    ],
+    "next_consumption_path": "Use this ranking as the candidate queue for a true portfolio-lane daily-equity replay; do not retune source thresholds or assign live notional from this artifact alone."
+  },
+  "delta_metrics": {
+    "top_small_weight_overlay_proxy": {
+      "total_pnl_delta": 1301.63,
+      "expected_value_score_proxy_delta": 8.826998,
+      "max_drawdown_usd_delta": 105.56,
+      "min_day_pnl_delta": 0.0
+    },
+    "canonical_expected_value_score_delta": null,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_or_sizing_changed": false,
+    "daily_snapshot_changed": false,
+    "notes": "This runner only reads existing artifacts and writes the observed-only experiment result."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.25,
+    "outcome": "ranking_created",
+    "prediction_error_note": "Successful as alpha-enabling measurement only; not a strategy acceptance because daily mark-to-market replay is still missing."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The broad artifact scan found many rejected positive sleeves, but the strict lane admission rule removed most because their failures were sample, drawdown, contract, or aggregate-quality problems rather than pure comparator/window noise. The remaining deduped families still show low closed-cashflow correlation to core, which is exactly the portfolio-lane lead this observed-only scan was designed to surface.",
+    "what_worked": "The new gate shape produced a deduped ranking from rejected positive artifacts without touching candidate source behavior.",
+    "limitation": "Closed-trade exit-date cashflows are a coarse proxy and can understate or overstate daily drawdown/correlation.",
+    "forbidden_near_neighbor_retry": "Do not rerun this scan with different overlay weights, correlation thresholds, or source thresholds as a new alpha ID. A valid next ID must consume the ranking in a true daily-equity portfolio replay or add materially new candidate artifacts/families.",
+    "new_evidence_required": "A valid next experiment needs a true daily mark-to-market equity replay for the ranked overlay families, or materially new rejected-positive candidate families with replayable trade rows; changing overlay weight, correlation thresholds, or source thresholds is not new evidence."
+  },
+  "rejection_reason": "Not rejected as a measurement artifact, but not accepted as alpha: ranking is observed-only and lacks daily mark-to-market Gate 4.",
+  "next_retry_requires": [
+    "daily mark-to-market equity reconstruction for ranked overlays",
+    "standard docs/backtesting.md Gate 1-4 replay before any activation",
+    "no threshold/top-N/hold/notional retune on included sources",
+    "materially new candidate families before rerunning the scan itself"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260706_022_portfolio_covariance_candidate_ranking.py",
+    "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "experiments/cards/exp-20260706-022.md",
+    "experiments/manifests/exp-20260706-022.json",
+    "experiments/logs/exp-20260706-022.json",
+    "experiments/tickets/exp-20260706-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "docs/portfolio_covariance_lane.md",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_022_portfolio_covariance_candidate_ranking.py",
+    ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260706_022_portfolio_covariance_candidate_ranking.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "observed_only_portfolio_covariance_candidate_ranking",
+  "artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+  "log": "experiments/logs/exp-20260706-022.json",
+  "updated_at": "2026-07-06T20:14:41+00:00"
+}

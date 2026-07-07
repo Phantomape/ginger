@@ -234,6 +234,17 @@ def test_cross_pilot_concentration_flags_same_theme_across_pilots(monkeypatch) -
     assert pilot_tracker._cross_pilot_overlap(recs) == []
 
     conc = pilot_tracker._cross_pilot_concentration(recs)
+    assert conc["alert_rule"] == {
+        "min_positions": 3,
+        "min_positions_for_exposure_share": 2,
+        "min_exposure_share": 0.5,
+        "operator": "or",
+        "description": (
+            "Alert when a known sector/industry has at least min_positions "
+            "positions, or at least min_positions_for_exposure_share positions "
+            "and exposure_share >= min_exposure_share."
+        ),
+    }
     assert conc["position_count"] == 3
     assert conc["total_actionable_exposure_usd"] == 30000.0
     tech = [g for g in conc["by_sector"] if g["sector"] == "Technology"][0]
@@ -247,6 +258,44 @@ def test_cross_pilot_concentration_flags_same_theme_across_pilots(monkeypatch) -
     semis = [g for g in conc["by_industry"] if g["industry"] == "Semiconductors"][0]
     assert semis["positions"] == 2
     assert semis["alert"] is True
+
+
+def test_cross_pilot_concentration_rule_metadata_explains_three_position_alert(
+    monkeypatch,
+) -> None:
+    themes = {
+        "AMD": ("Technology", "Semiconductors"),
+        "DDOG": ("Technology", "Software - Application"),
+        "WDC": ("Technology", "Computer Hardware"),
+        "AAL": ("Industrials", "Airlines"),
+        "CAT": ("Industrials", "Farm & Heavy Construction Machinery"),
+        "GE": ("Industrials", "Aerospace & Defense"),
+        "MOH": ("Healthcare", "Healthcare Plans"),
+    }
+
+    def fake_lookup(ticker, cache):
+        sector, industry = themes[ticker]
+        return {"ticker": ticker, "sector": sector, "industry": industry, "status": "ok"}
+
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "load_cache", lambda *a, **k: {})
+    monkeypatch.setattr(pilot_tracker.broad_market_sector_map, "lookup_sector", fake_lookup)
+
+    recs = [
+        {"pilot": "allocator_top1", "label": "A", "sleeve": "a",
+         "actionable": [_pos("WDC")]},
+        {"pilot": "fundamental_growth_rs", "label": "B", "sleeve": "b",
+         "actionable": [_pos("AMD"), _pos("DDOG")]},
+        {"pilot": "distribution_absorption", "label": "C", "sleeve": "c",
+         "actionable": [_pos("AAL"), _pos("CAT"), _pos("GE"), _pos("MOH")]},
+    ]
+
+    conc = pilot_tracker._cross_pilot_concentration(recs)
+    tech = [g for g in conc["by_sector"] if g["sector"] == "Technology"][0]
+    assert tech["positions"] == 3
+    assert tech["exposure_share"] == 0.4286
+    assert tech["alert"] is True
+    assert conc["alert_rule"]["operator"] == "or"
+    assert conc["alert_rule"]["min_positions_for_exposure_share"] == 2
 
 
 def test_cross_pilot_concentration_no_alert_when_dispersed(monkeypatch) -> None:

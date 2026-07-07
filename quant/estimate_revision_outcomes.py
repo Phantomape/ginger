@@ -11,7 +11,7 @@ import json
 import math
 import sqlite3
 from collections import Counter, defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from statistics import mean, median
 from typing import Any, Sequence
@@ -124,6 +124,128 @@ def persist_estimate_revision_outcomes(
     _write_jsonl(outcome_path, outcome_rows)
     _write_json(summary_path, summary)
     return summary
+
+
+def persist_recent_estimate_revision_outcome_catchup(
+    *,
+    as_of: str | date,
+    data_dir: str | Path = "data",
+    output_dir: str | Path = "data/non_ohlcv",
+    warehouse_path: str | Path | None = None,
+    horizons: Sequence[int] = DEFAULT_HORIZONS,
+    notional_usd: float = PROXY_NOTIONAL_USD,
+    generated_at: datetime | None = None,
+    run_adapter_changed: bool = True,
+    lookback_days: int = 10,
+    exclude_dates: Sequence[str | date] = (),
+    max_ledgers: int | None = None,
+) -> dict[str, Any]:
+    """Refresh recent estimate-revision outcome ledgers as OHLCV matures.
+
+    Daily runs first create candidate-matched estimate-revision ledgers. Their
+    forward outcomes may close later when the hot warehouse advances, so the
+    settlement pipeline refreshes recent prior ledgers instead of requiring a
+    new manual materialization ID for each day.
+    """
+
+    generated_at = generated_at or datetime.now(timezone.utc)
+    as_of_date = _coerce_date(as_of)
+    output_root = Path(output_dir)
+    warehouse = (
+        Path(warehouse_path)
+        if warehouse_path is not None
+        else Path(data_dir) / "warehouse" / "warehouse_main_hot.sqlite"
+    )
+    min_date = as_of_date - timedelta(days=max(int(lookback_days), 0))
+    excluded = {_coerce_date(item).isoformat() for item in exclude_dates}
+    candidates: list[tuple[date, Path]] = []
+    for ledger_path in output_root.glob("estimate_revision_ledger_*.jsonl"):
+        tag = ledger_path.stem.replace("estimate_revision_ledger_", "", 1)
+        try:
+            ledger_date = datetime.strptime(tag, "%Y%m%d").date()
+        except ValueError:
+            continue
+        if ledger_date > as_of_date or ledger_date < min_date:
+            continue
+        if ledger_date.isoformat() in excluded:
+            continue
+        candidates.append((ledger_date, ledger_path))
+
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    if max_ledgers is not None:
+        candidates = candidates[: max(int(max_ledgers), 0)]
+
+    summaries: list[dict[str, Any]] = []
+    for ledger_date, ledger_path in candidates:
+        tag = ledger_date.strftime("%Y%m%d")
+        summaries.append(
+            persist_estimate_revision_outcomes(
+                as_of=ledger_date,
+                data_dir=data_dir,
+                output_dir=output_root,
+                ledger_path=ledger_path,
+                source_summary_path=output_root / f"estimate_revision_ledger_summary_{tag}.json",
+                warehouse_path=warehouse,
+                horizons=horizons,
+                notional_usd=notional_usd,
+                generated_at=generated_at,
+                run_adapter_changed=run_adapter_changed,
+            )
+        )
+
+    closed_counts: Counter[str] = Counter()
+    pending_counts: Counter[str] = Counter()
+    comparator_counts: Counter[str] = Counter()
+    for summary in summaries:
+        closed_counts.update(
+            {
+                str(key): int(value or 0)
+                for key, value in (summary.get("closed_rows_by_horizon") or {}).items()
+            }
+        )
+        pending_counts.update(
+            {
+                str(key): int(value or 0)
+                for key, value in (summary.get("pending_rows_by_horizon") or {}).items()
+            }
+        )
+        comparator_counts.update(
+            {
+                str(key): int(value or 0)
+                for key, value in (
+                    summary.get("comparator_complete_rows_by_horizon") or {}
+                ).items()
+            }
+        )
+
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "status": "ok" if summaries else "no_recent_ledgers",
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "as_of_date": as_of_date.isoformat(),
+        "data_dir": _path_text(data_dir),
+        "output_dir": _path_text(output_root),
+        "warehouse_path": _path_text(warehouse),
+        "lookback_days": int(lookback_days),
+        "excluded_dates": sorted(excluded),
+        "refreshed_ledger_count": len(summaries),
+        "refreshed_ledger_dates": [summary.get("as_of_date") for summary in summaries],
+        "closed_rows_by_horizon": dict(sorted(closed_counts.items())),
+        "pending_rows_by_horizon": dict(sorted(pending_counts.items())),
+        "comparator_complete_rows_by_horizon": dict(sorted(comparator_counts.items())),
+        "summaries": summaries,
+        "production_impact": {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": bool(run_adapter_changed),
+            "replay_only": False,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "scope": "default_off_forward_estimate_revision_outcome_catchup",
+        },
+    }
 
 
 def _build_outcome_row(

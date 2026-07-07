@@ -20,6 +20,52 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     # gate counts per data_source), and they are not the canonical SEC13F/
     # rs-proxy surfaces even when the joined field comes from those.
     ("kova_snapshot", ("kova",)),
+    # Keep newer source-specific surfaces above their generic parents so the
+    # saturation guards count the actual population under test.
+    ("finra_otc_internalization", (
+        "finra_otc", "finra otc", "otc_internalization", "non_ats", "non-ats", "internalization",
+    )),
+    ("finra_ats_share", (
+        "finra_ats", "finra ats", "ats_share", "weekly_dark_share", "dark_share", "dark share",
+        "dark_pool", "dark pool",
+    )),
+    ("moomoo_short_volume", (
+        "moomoo_short_volume", "moomoo_daily_short_volume", "moomoo daily short volume",
+        "daily_short_volume", "daily short volume", "short_volume_activity", "short volume activity",
+    )),
+    ("moomoo_capital_flow", (
+        "moomoo_capital_flow", "moomoo capital flow", "capital_flow", "capital-flow", "fund_flow",
+        "large_order_flow",
+    )),
+    ("forward_replacement_value", (
+        "forward_replacement", "forward replacement", "forward_replacement_value",
+        "replacement_value", "replacement value", "settled forward", "closed forward",
+        "entry_exhaustion", "entry exhaustion", "entry_regime", "entry regime",
+    )),
+    ("cisa_kev", ("cisa_kev", "cisa", "kev", "known_exploited_vulnerabilities")),
+    ("prediction_market_event", (
+        "prediction_market", "prediction-market", "prediction market", "kalshi", "polymarket",
+        "event_odds", "event odds",
+    )),
+    ("entity_theme_news", ("entity_theme", "entity-theme", "entity theme", "theme_news", "news_theme", "event_theme")),
+    ("live_drift_reconciliation", ("live_drift", "live drift", "fill_drift", "trajectory_drift", "live_reconciliation")),
+    ("pilot_scorecard", (
+        "pilot_scorecard", "pilot scorecard", "pilot_recommendations", "pilot recommendations",
+        "scorecard_kill", "scorecard kill", "kill_rule_readiness", "kill rule readiness",
+        "graduation_readiness", "graduation readiness", "graduate_rule", "graduate rule",
+    )),
+    ("portfolio_covariance_lane", (
+        "portfolio_covariance", "portfolio covariance", "portfolio-lane", "portfolio lane",
+        "daily_equity_overlay", "daily equity overlay", "mark_to_market", "mark-to-market",
+        "daily mark to market", "mtm_overlay", "mtm overlay",
+    )),
+    ("microstructure_viability", (
+        "microstructure_viability", "microstructure viability", "vol_normalized_tick",
+        "vol-normalized tick", "tick_to_atr", "tick-to-atr", "tick_size_atr",
+        "tick size atr", "small_tick", "small tick", "spread_to_atr", "spread-to-atr",
+        "impact_reinforcement", "impact reinforcement",
+    )),
+    ("deep_drawdown", ("deep_drawdown", "deep-drawdown", "deep drawdown", "drawdown_capitulation", "drawdown_breadth", "capitulation_breadth")),
     ("finra_short_interest", ("finra", "short_interest", "shortinterest", "borrow", "days_to_cover", "dtc")),
     ("form4_insider", ("form4", "form_4", "insider")),
     ("sec13f_ownership", ("13f", "sec13f", "sponsorship", "holder")),
@@ -45,6 +91,27 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 ]
 
 _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("microstructure_attribution", (
+        "microstructure_viability", "microstructure viability", "vol_normalized_tick",
+        "vol-normalized tick", "tick_to_atr", "tick-to-atr", "tick_size_atr",
+        "tick size atr", "spread_to_atr", "spread-to-atr",
+    )),
+    ("portfolio_daily_equity_overlay", (
+        "portfolio_covariance", "portfolio covariance", "daily_equity_overlay",
+        "daily equity overlay", "mark_to_market", "mark-to-market",
+        "daily mark to market", "mtm_overlay", "mtm overlay",
+    )),
+    ("forward_attribution", (
+        "forward_attribution", "forward attribution", "forward_replacement",
+        "forward replacement", "replacement_value", "replacement value",
+        "settled forward", "closed forward", "entry_exhaustion", "entry exhaustion",
+    )),
+    ("pilot_scorecard_readiness", (
+        "pilot_scorecard", "pilot scorecard", "pilot_recommendations", "pilot recommendations",
+        "graduation_readiness", "graduation readiness", "kill_rule_readiness",
+        "kill rule readiness", "scorecard_kill", "scorecard kill", "graduate_rule",
+        "graduate rule",
+    )),
     ("allocator_source", ("allocator", "source_priority", "source_extension", "rank")),
     ("notional_scalar", ("notional", "scalar", "support", "top_up", "topup", "cap_release", "position_cap")),
     ("candidate_pool_top1_10d", ("candidate_pool", "candidate", "top1", "candidate_selection")),

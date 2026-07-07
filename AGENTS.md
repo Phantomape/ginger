@@ -59,6 +59,7 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
    | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
    | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
+   | 排名清单消费 | 用同一固定评估配方逐名消费同一 ranked 候选清单，连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一名一 ID 烧完剩余排名（每名"源不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化） | ⚠️ |
 
    强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
    observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；
@@ -159,6 +160,11 @@ data/backtests/backtest_results_*.json
 - 条件保留：明确修复测量偏差、数据缺口或生产执行问题，并标记为 `measurement_repair`。
 - 默认拒绝：主目标下降、风险恶化、只赢单一窗口、多数窗口退化、复杂度上升但证据不足，或无法归因到单一假设。
 
+**棘轮警告**：Gate 4 是冠军挑战赛，每次接受都抬高下次门槛，系统会渐近收敛到
+0-accept——这与市场是否还有残余 edge 无关。仅因 `*_not_beaten` 比较器或单窗口
+噪声被拒、聚合非负的信号，"打不过冠军"不等于"组合无价值"；此类信号的组合级
+评估口径见 `docs/portfolio_covariance_lane.md`（勿在单实验里自创组合验收标准）。
+
 `state_surface_sleeve` 同类阈值、profile、notional scalar 或 capital allocation 调参必须满足 `docs/backtesting.md` 标准多窗口 aggregate EV 提升 > 10%，除非是明确的 measurement repair。
 
 若未通过 Gate 4，必须回滚策略改动并记录失败实验。`pytest` 通过不能替代 Gate 4。
@@ -176,6 +182,11 @@ Default-off paper alpha：
 - positive private replay 只是 lead，必须说明为什么没有 shared-paper-first，以及需要哪个 shared helper / daily parity 工作。
 
 真钱可执行性不是事后补丁。任何声称可能进入 live 的 alpha，必须记录 live-realistic execution envelope：notional / capital cap、流动性和滑点、组合挤出、最大持仓和行业/主题暴露、kill switch、订单语义、失败处理，以及这些约束是否进入 after-measurement。未评估真钱包络的结果只能算 accepted default-off，不算 live-ready。
+
+实盘对账是常驻测量合同，不是一次性实验：`data/live_pilot/live_drift/` 每日对账
+moomoo 实盘持仓与回测模型期望（fill drift / trajectory drift，口径与警戒线见
+`docs/live_drift_reconciliation.md`）。core bucket 触发警戒线时按 measurement_repair
+插队。回测 parity 只证明"回放一致"，本合同回答"实盘是否复现模型"——两者缺一不可。
 
 ---
 

@@ -9,7 +9,10 @@ QUANT_DIR = Path(__file__).resolve().parent
 if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
-from estimate_revision_outcomes import persist_estimate_revision_outcomes  # noqa: E402
+from estimate_revision_outcomes import (  # noqa: E402
+    persist_estimate_revision_outcomes,
+    persist_recent_estimate_revision_outcome_catchup,
+)
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -119,3 +122,57 @@ def test_persist_estimate_revision_outcomes_closes_mature_h3_rows(tmp_path):
     assert rows[0]["h3_replacement_value_vs_cash_usd"] is not None
     assert rows[0]["h3_replacement_value_vs_spy_usd"] is not None
     assert rows[0]["h3_replacement_value_vs_qqq_usd"] is not None
+
+
+def test_recent_estimate_revision_outcome_catchup_refreshes_prior_ledgers(tmp_path):
+    output_dir = tmp_path / "non_ohlcv"
+    ledger_path = output_dir / "estimate_revision_ledger_20260629.jsonl"
+    summary_path = output_dir / "estimate_revision_ledger_summary_20260629.json"
+    warehouse_path = tmp_path / "warehouse" / "warehouse_main_hot.sqlite"
+
+    _write_jsonl(
+        ledger_path,
+        [
+            {
+                "ticker": "BKNG",
+                "as_of_date": "2026-06-29",
+                "estimate_revision_usable": True,
+                "revision_direction_prev": "up",
+                "matched_candidate_today": True,
+                "matched_candidate_count": 1,
+                "matched_selected_signal_count": 0,
+                "matched_signal_sources": ["quant_signals"],
+            }
+        ],
+    )
+    summary_path.write_text(
+        json.dumps({"row_count": 1, "matched_candidate_rows": 1}) + "\n",
+        encoding="utf-8",
+    )
+    _create_warehouse(warehouse_path)
+
+    summary = persist_recent_estimate_revision_outcome_catchup(
+        as_of="2026-07-02",
+        output_dir=output_dir,
+        warehouse_path=warehouse_path,
+        generated_at=datetime(2026, 7, 6, tzinfo=timezone.utc),
+        lookback_days=5,
+        exclude_dates=("2026-07-02",),
+    )
+
+    assert summary["status"] == "ok"
+    assert summary["refreshed_ledger_count"] == 1
+    assert summary["refreshed_ledger_dates"] == ["2026-06-29"]
+    assert summary["closed_rows_by_horizon"]["h3"] == 1
+    assert summary["comparator_complete_rows_by_horizon"]["h3"] == 1
+    assert summary["production_impact"]["alters_orders"] is False
+
+    outcome_path = output_dir / "estimate_revision_outcomes_20260629.jsonl"
+    rows = [
+        json.loads(line)
+        for line in outcome_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(rows) == 1
+    assert rows[0]["ticker"] == "BKNG"
+    assert rows[0]["h3_status"] == "closed"

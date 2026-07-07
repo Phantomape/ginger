@@ -1,0 +1,101 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "keyword collision with existing source order",
+      "tests reveal false-positive classification",
+      "registry closeout audit fails"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Frozen family view had to be rebuilt after the classifier change; otherwise historical family fingerprints kept the old other/generic buckets."
+  },
+  "causal_components": [],
+  "change_summary": "Accepted measurement repair: added specific data_source fingerprints for July novelty-guard surfaces and rebuilt frozen_families so repeated FINRA ATS, Moomoo capital-flow, and entity-theme proposals now hit prior-family guards.",
+  "change_type": "measurement_repair",
+  "changed_variable": "data_source_keyword_map",
+  "component": "scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, quant/experiments, data/experiments, experiments/cards, experiments/manifests, experiments/tickets, experiments/logs, docs/frozen_families.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260706-020",
+  "hypothesis": "Repair July data-source fingerprint coverage so novelty, saturation, observed-only, and routine-materialization guards key deep-drawdown, entity-theme, FINRA OTC, moomoo capital-flow, CISA KEV, and live-drift alpha surfaces instead of the unclassified other bucket.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "novelty_guard_measurement",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_repair_for_guard_coverage_gap_documented_in_AGENTS_section_2_4",
+  "next_retry_requires": [],
+  "notes": "No trading logic, signal generation, ranking, sizing, exits, live orders, or backtest metrics changed. Verification: pytest quant/test_experiment_fingerprint.py; pytest quant/test_create_experiment_ticket.py; experiment runner artifact accepted; build_frozen_families.py; experiment.py audit --lean-strict.",
+  "parameters": {
+    "locked_variables": [
+      "data_source_keyword_coverage_for_july_alpha_surfaces"
+    ],
+    "single_causal_variable": "data_source_keyword_coverage_for_july_alpha_surfaces"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not repeat July source-surface alpha probes merely by changing thresholds or response functions now that the guard keys FINRA ATS/OTC, Moomoo flow, entity-theme, CISA KEV, prediction-market, live-drift, and deep-drawdown sources explicitly.",
+    "new_evidence_required": "Future retries on those surfaces need AGENTS-valid evidence: materially more settled forward rows, a genuinely new data source, or a new gate shape; new observers must add classifier keywords and rebuild docs/frozen_families.jsonl in the same experiment.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Frozen family view had to be rebuilt after the classifier change; otherwise historical family fingerprints kept the old other/generic buckets."
+  },
+  "prediction": {
+    "confidence_reason": "AGENTS names the specific classifier coverage leak and the implementation is deterministic keyword coverage with focused tests.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword collision with existing source order",
+      "tests reveal false-positive classification",
+      "registry closeout audit fails"
+    ],
+    "recorded_at": "2026-07-06T18:06:03+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260706-020/exp_20260706_020_novelty_classifier_july_sources_before.json",
+    "data/experiments/exp-20260706-020/exp_20260706_020_novelty_classifier_july_sources_after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-06T18:12:21+00:00",
+  "trial_family": "novelty_classifier_data_source_coverage",
+  "trial_variant_id": "july_202607_surface_keywords_v1"
+}
