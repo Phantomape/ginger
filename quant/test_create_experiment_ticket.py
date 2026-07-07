@@ -341,6 +341,32 @@ def test_reopen_guard_ignores_measurement_lane(tmp_path):
     assert verdict["blocked"] is False
 
 
+def test_novelty_check_flags_unclassified_data_source(capsys):
+    from create_experiment_ticket import _novelty_check
+
+    args = _args(
+        hypothesis="brand new exotic population nobody has keywords for yet",
+        single_causal_variable="exotic_population_probe",
+        changed_variable="exotic_population_probe",
+        trial_family="exotic_population_probe",
+        mechanism_family="exotic_population_probe",
+        file_slug="exotic_population_probe",
+        lane="alpha_search",
+        change_type="candidate_pool_full_stack",
+        novelty_override=False,
+        saturated_source_override=False,
+        observed_only_override=False,
+        routine_materialization_override=False,
+        enforce_novelty=False,
+        no_enforce_novelty=True,  # warn-only: this test is about the coverage flag
+    )
+    out = _novelty_check(args)
+    assert out is not None
+    assert out["fingerprint"]["data_source"] == "other"
+    assert out["data_source_unclassified"] is True
+    assert "invisible to the saturation" in capsys.readouterr().err
+
+
 def _write_logs(root, payloads):
     log_dir = root / "experiments" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -561,6 +587,47 @@ def test_routine_materialization_guard_window_expires(tmp_path):
     assert verdict["applicable"] is True
     assert verdict["recent_cross_surface_count"] == 0
     assert verdict["blocked"] is False
+
+
+def test_routine_materialization_guard_same_surface_budget_persists(tmp_path):
+    _write_logs(
+        tmp_path,
+        [
+            {
+                "experiment_id": "exp-20260704-020",
+                "status": "accepted_measurement_repair",
+                "hypothesis": "Enrich newly closed supplier-financing forward rows with replacement values",
+                "change_type": "identity_or_measurement_repair",
+            },
+            {
+                "experiment_id": "exp-20260705-020",
+                "status": "accepted_measurement_repair",
+                "hypothesis": "Refresh supplier financing forward ledger replacement values",
+                "change_type": "identity_or_measurement_repair",
+            },
+            {
+                "experiment_id": "exp-20260706-020",
+                "status": "accepted_measurement_repair",
+                "hypothesis": "Materialize supplier-financing settled forward outcomes",
+                "change_type": "identity_or_measurement_repair",
+            },
+        ],
+    )
+
+    verdict = evaluate_routine_materialization_guard(
+        _args(
+            lane="measurement_repair",
+            hypothesis="Enrich newly closed supplier-financing forward rows with replacement values",
+            change_type="identity_or_measurement_repair",
+        ),
+        repo_root=tmp_path,
+        today=datetime.date(2026, 8, 1),
+    )
+
+    assert verdict["applicable"] is True
+    assert verdict["recent_cross_surface_count"] == 0
+    assert verdict["per_source_count"] == 3
+    assert verdict["blocked"] is True
 
 
 def test_routine_materialization_guard_ignores_alpha_full_stack_ticket(tmp_path):

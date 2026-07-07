@@ -433,6 +433,69 @@ def _log_data_source(payload):
         return None
 
 
+_ROUTINE_SURFACE_STOPWORDS = COMMON_SURFACE_TOKENS | {
+    "accepted",
+    "append",
+    "appending",
+    "backfill",
+    "backfilled",
+    "closed",
+    "enrich",
+    "enriched",
+    "enrichment",
+    "fresh",
+    "identity",
+    "ledger",
+    "ledgers",
+    "materialize",
+    "materialized",
+    "materialization",
+    "measurement",
+    "new",
+    "newly",
+    "observation",
+    "observer",
+    "outcome",
+    "outcomes",
+    "refresh",
+    "refreshed",
+    "repair",
+    "replacement",
+    "row",
+    "rows",
+    "settled",
+    "snapshot",
+    "snapshots",
+    "value",
+    "values",
+}
+
+
+def _routine_materialization_surface_tokens(*texts):
+    """Return tokens naming the concrete forward ledger/sleeve surface.
+
+    The routine-materialization guard has two budgets: a recent broad
+    cross-surface budget and a permanent same-surface budget. The fingerprint
+    data_source is too coarse for the permanent budget because every replacement
+    value refresh classifies as ``forward_replacement_value``. Keep only tokens
+    that identify the actual ledger/sleeve being refreshed.
+    """
+    normalized = _normalize_text(" ".join(str(text or "") for text in texts))
+    return {
+        token
+        for token in normalized.split()
+        if len(token) >= 3 and token not in _ROUTINE_SURFACE_STOPWORDS
+    }
+
+
+def _routine_materialization_same_surface(proposal_tokens, log_tokens):
+    if not proposal_tokens or not log_tokens:
+        return False
+    shared = proposal_tokens & log_tokens
+    required = min(2, len(proposal_tokens), len(log_tokens))
+    return len(shared) >= required
+
+
 def evaluate_observed_only_streak_guard(args, proposal_source, repo_root=None):
     """Machine form of the AGENTS.md §2.4 forward-attribution row.
 
@@ -606,7 +669,7 @@ def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
         "recent_experiments": [],
         "rule": (
             "AGENTS.md §2.4 routine delta materialization: after "
-            f"{max_ids} routine forward-ledger materialization IDs (one surface, "
+            f"{max_ids} routine forward-ledger materialization IDs (one concrete surface, "
             f"or same-shape across surfaces within {window_days} days), wire the "
             "materialization into run.py / the settlement pipeline once instead "
             "of reserving further manual IDs. Fault recovery is exempt."
@@ -643,26 +706,29 @@ def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
         if not verdict["routine"] or verdict["fault_recovery"] or verdict["pipeline_wiring"]:
             return result
         result["applicable"] = True
+        proposal_surface_tokens = _routine_materialization_surface_tokens(proposal_text)
+        result["proposal_surface_tokens"] = sorted(proposal_surface_tokens)
 
         import datetime as _dt
 
         current = today or _dt.date.today()
         cutoff = current - _dt.timedelta(days=window_days)
-        try:
-            import experiment_fingerprint as efp
-
-            proposal_source = efp.infer_fingerprint(proposal_text).get("data_source")
-        except Exception:
-            proposal_source = None
 
         per_source = 0
         recent = []
         for id_date_str, payload in _iter_closed_logs(repo_root):
             if not _log_is_routine_materialization(payload):
                 continue
-            if proposal_source and proposal_source != "other":
-                if _log_data_source(payload) == proposal_source:
-                    per_source += 1
+            log_surface_tokens = _routine_materialization_surface_tokens(
+                payload.get("hypothesis") or "",
+                payload.get("change_type") or "",
+                payload.get("change_summary") or "",
+                payload.get("decision") or "",
+            )
+            if _routine_materialization_same_surface(
+                proposal_surface_tokens, log_surface_tokens
+            ):
+                per_source += 1
             try:
                 id_date = _dt.datetime.strptime(id_date_str, "%Y%m%d").date()
             except ValueError:
@@ -783,8 +849,29 @@ def _novelty_check(args):
     except Exception:
         saturation = {"applicable": False, "saturated": False}
 
+    # Classifier-coverage escape (AGENTS.md §2.4): every machine guard keys on
+    # the fingerprint data_source; an unclassified population falls to "other"
+    # and silently bypasses saturation / observed-only / routine counting.
+    # Warn loudly and record it on the ticket so the reserving agent extends
+    # experiment_fingerprint._DATA_SOURCE_KEYWORDS in the same experiment.
+    data_source_unclassified = (
+        alpha_lane and fingerprint.get("data_source") in (None, "", "other")
+    )
+    if data_source_unclassified:
+        print(
+            "[coverage] WARNING: fingerprint data_source is 'other' — this "
+            "population is invisible to the saturation / observed-only / "
+            "routine-materialization guards (they key on data_source). If this "
+            "is a new surface, add a keyword for it to "
+            "scripts/experiment_fingerprint.py _DATA_SOURCE_KEYWORDS in the "
+            "same experiment, or the machine gates on this surface are "
+            "prose-only. See AGENTS.md §2.4 分类器覆盖警告.",
+            file=sys.stderr,
+        )
+
     out = {
         "fingerprint": fingerprint,
+        "data_source_unclassified": data_source_unclassified,
         "warn": bool(result.get("warn")),
         "warn_threshold": result.get("warn_threshold"),
         "nearest": nearest[:5],
@@ -875,7 +962,7 @@ def _novelty_check(args):
         print(
             "[routine-materialization] proposal classifies as routine "
             "forward-ledger delta materialization; prior routine IDs: "
-            f"same-source={routine_guard['per_source_count']}, "
+            f"same-surface={routine_guard['per_source_count']}, "
             f"cross-surface last {routine_guard['window_days']}d="
             f"{routine_guard['recent_cross_surface_count']} "
             f"(block at >= {routine_guard['max_ids']}).",
@@ -886,7 +973,7 @@ def _novelty_check(args):
             "routine-materialization gate blocked this reservation: routine "
             "forward-ledger delta materialization (append/refresh/enrichment) "
             "has already consumed its ID budget ("
-            f"same-source={routine_guard['per_source_count']}, cross-surface "
+            f"same-surface={routine_guard['per_source_count']}, cross-surface "
             f"last {routine_guard['window_days']}d="
             f"{routine_guard['recent_cross_surface_count']}, threshold "
             f"{routine_guard['max_ids']}; recent: "
