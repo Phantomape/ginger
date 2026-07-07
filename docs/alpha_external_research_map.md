@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-06.
+Last refreshed: 2026-07-07.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -451,6 +451,166 @@ Sources:
 
 - <https://arxiv.org/abs/2606.27100>
 - <https://arxiv.org/abs/2605.21504>
+
+### Volatility TSFMs Must Beat Log-HAR And Calibration Baselines
+
+A July 2026 realized-volatility benchmark is a useful check on TSFM enthusiasm:
+pooled losses can favor foundation models, but the advantage concentrates in a
+few outlier assets; asset-averaged comparisons leave only Tiny Time Mixers
+narrowly ahead of a well-specified Log-HAR benchmark across horizons, and
+Mincer-Zarnowitz recalibration shows much of the short-horizon gain is scale
+calibration rather than new volatility information. Ginger should treat
+volatility TSFMs as risk-state context only after they beat Log-HAR, equal-
+weight ensemble, and calibration baselines on the same PIT assets.
+
+Implementable fields:
+
+- `vol_tsfm_model_family`
+- `log_har_loss_ratio`
+- `vol_forecast_calibration_delta`
+- `mzm_recalibrated_gain_bucket`
+- `asset_averaged_loss_rank`
+- `tsfm_loghar_ensemble_flag`
+- `vol_forecast_horizon_bucket`
+- `vol_forecast_execution_context_value`
+
+Controls:
+
+- compare per asset, not only pooled loss across all names;
+- report recalibrated and unrecalibrated loss separately;
+- keep TSFM volatility forecasts as sizing/risk context until after-cost
+  replacement value clears accepted helper comparators;
+- prefer simple Log-HAR plus TSFM ensembles over single-model selection unless
+  walk-forward evidence proves a stable architecture choice.
+
+Source: <https://arxiv.org/abs/2607.05291>
+
+### Look-Ahead Freedom Is A Type Contract
+
+A July 2026 pipeline paper formalizes look-ahead freedom as temporal
+non-interference over a time-indexed information lattice, separating a datum's
+availability time from its reference time and giving a decidable checker for
+value-independent operations such as windowing, joins, vintage reads, and
+agentic retrieval. Ginger's translation is direct: every data surface should
+record availability, reference period, and transformation effects so leakage is
+caught before Gate 1-4, not inferred from suspiciously good results.
+
+Implementable fields:
+
+- `availability_timestamp`
+- `reference_period_end`
+- `temporal_effect_type`
+- `pit_join_contract_id`
+- `vintage_read_version`
+- `agentic_retrieval_asof`
+- `lookahead_typecheck_passed`
+- `leakage_counterexample_id`
+
+Controls:
+
+- fail closed when availability time is missing or value-dependent;
+- type-check joins, rolling windows, resampling, and retrieval before replay;
+- preserve both reference time and availability time in artifacts;
+- treat a silent empirical leak detector as insufficient proof of PIT safety.
+
+Source: <https://arxiv.org/abs/2607.04958>
+
+### Causal Separators Are Portfolio Covariance Inputs, Not Free Alpha
+
+A July 2026 projected-Markowitz paper frames portfolio covariance around a
+declared set of drivers: conditional on the realized path of those drivers,
+returns are mutually independent, creating a diagonal-plus-low-rank conditional
+covariance and a constrained projected Markowitz solution. Ginger's useful
+translation is not to add an optimizer. It is to force portfolio-covariance
+experiments to name the driver separator, report residual idiosyncratic floors,
+and measure whether the projected covariance improves replacement value under
+the existing one-row/day allocator constraints.
+
+Implementable fields:
+
+- `causal_separator_driver_set`
+- `driver_availability_contract`
+- `conditional_covariance_rank`
+- `idiosyncratic_variance_floor`
+- `projected_markowitz_constraint_id`
+- `constraint_shadow_price_bucket`
+- `separator_stability_delta`
+- `projected_covariance_replacement_value`
+
+Controls:
+
+- predeclare drivers and availability timestamps before fitting covariance;
+- compare against sample, shrinkage, PCA, and current accepted allocator
+  baselines;
+- report shadow prices and constraint gaps, not only optimized Sharpe;
+- reject covariance gains that disappear under the actual slot/capital
+  constraints or after turnover/costs.
+
+Source: <https://arxiv.org/abs/2607.05320>
+
+### Overnight And Intraday Tails Need Separate Risk States
+
+Split-session Cluster GARCH work on U.S. equities finds material tail
+heterogeneity between overnight and intraday returns, with sector-level tail
+partitioning most useful in the overnight component and asset-level tail
+heterogeneity improving out-of-sample likelihood and GMV portfolio performance.
+Ginger should not translate this into a new entry signal. The implementable
+surface is a risk/execution context that distinguishes overnight gap risk from
+intraday continuation risk for sizing, stop interpretation, and live-drift
+attribution.
+
+Implementable fields:
+
+- `session_tail_state_bucket`
+- `overnight_tail_shape_bucket`
+- `intraday_tail_shape_bucket`
+- `sector_tail_partition_id`
+- `asset_tail_heterogeneity_score`
+- `gap_risk_execution_bucket`
+- `session_conditional_correlation_bucket`
+- `session_tail_replacement_value`
+
+Controls:
+
+- score overnight and intraday returns separately before using tail states;
+- keep sector-tail partitions PIT and stable across windows;
+- use session-tail fields as sizing/execution diagnostics before any entry or
+  ranking change;
+- compare session-aware risk changes against current drawdown, live-drift, and
+  accepted default-off helper baselines.
+
+Source: <https://arxiv.org/abs/2607.03669>
+
+### Tail Dependence Diagnostics Are Sample-Limited
+
+July 2026 local-Gaussian-correlation work is a useful anti-overfitting warning
+for tail and contagion surfaces. Tail dependence estimates degrade exactly
+where the system wants them most, and the binding constraint is often local
+effective sample size rather than a smarter adaptive bandwidth. Ginger should
+make `effective_n` a first-class field before using any tail-correlation,
+sector-contagion, or cross-sleeve concentration result as a risk policy.
+
+Implementable fields:
+
+- `tail_dependence_protocol_id`
+- `tail_local_effective_n`
+- `tail_correlation_bandwidth_id`
+- `tail_estimator_variance_floor`
+- `tail_resample_stability_bucket`
+- `tail_dependence_regime_bucket`
+- `tail_surface_adaptivity_flag`
+- `tail_policy_replacement_value`
+
+Controls:
+
+- block tail-policy promotion when local effective sample size is too small;
+- report resampling dispersion next to any tail-correlation estimate;
+- treat adaptive estimator gains as diagnostic unless they survive the same
+  windows and replacement-value comparator;
+- prefer forward-row accumulation over threshold or bandwidth retunes when the
+  tail sample is sparse.
+
+Source: <https://arxiv.org/abs/2607.03888>
 
 ### Semantic Retrieval Forecasting Needs Evidence Keys
 
@@ -2483,7 +2643,11 @@ flow and reports that signed order flow predicts contemporaneous and
 one-month-ahead returns, while volume volatility predicts weaker subsequent
 returns. This is directly relevant to Ginger's Moomoo main-flow failures: raw
 inflow labels are too blunt unless they are tied to a PIT impact estimate,
-publication timing, horizon, and costed displacement comparator.
+publication timing, horizon, and costed displacement comparator. A second July
+2026 square-root-impact study adds an execution-control lesson: impact shape is
+not just visible book depth or metaorder size, but the joint presence of order
+splitting and liquidity replenishment. Flow rows therefore need an execution
+mechanism tag before they can support sizing or entry changes.
 
 Implementable fields:
 
@@ -2493,6 +2657,8 @@ Implementable fields:
 - `volume_volatility_bucket`
 - `impact_normalization_horizon`
 - `flow_publication_lag_bucket`
+- `order_splitting_proxy_bucket`
+- `liquidity_replenishment_proxy_bucket`
 - `flow_impact_reversion_context`
 - `flow_after_cost_replacement_value`
 
@@ -2502,10 +2668,14 @@ Controls:
 - lock the horizon before scoring flow rows, especially 10d versus one-month;
 - compare flow rows against cash, SPY/QQQ, and accepted allocator/distribution
   sources after costs;
+- separate flow direction from impact capacity and replenishment context;
 - do not retry raw main-flow thresholds without a new PIT impact or borrow /
   loan-availability field.
 
-Source: <https://arxiv.org/abs/2607.01377>
+Sources:
+
+- <https://arxiv.org/abs/2607.01377>
+- <https://arxiv.org/abs/2607.04280>
 
 ### MACD-Style Signals Need Latent-Drift And Cost Context
 

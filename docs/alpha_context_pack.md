@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1505`
-- Raw records loaded by meta report: `2374`
-- History fingerprint: `16288e0cb7f266a2`
+- Strategy records counted: `1506`
+- Raw records loaded by meta report: `2375`
+- History fingerprint: `2cb85eacf49e2847`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -64,8 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260702-010` `rejected_high_actual_risk_entry_risk_cap`: EV `+0.0000`, PnL `$0.00`, family `entry_risk_allocation`, trial `high_actual_risk_entry_risk_cap`.
-  Lesson: High-risk entries were often winners or too sparse, so cutting them did not clear the >10% EV materiality hurdle. Do not retune the 2% cap, try adjacent risk caps, combine with early-weakness exits, widen stop/target/...
 - `exp-20260702-012` `rejected_sec_event_exposure_top1_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_corporate_event_propagation`, trial `sec_event_exposure_top1_candidate_source`.
   Lesson: The raw exp011 propagation lead did not survive compression into one deployable top-1/day default-off source under the fixed liquidity, ranking, cooldown, next-open, and 10d paper-execution envelope. Do not tune the f...
 - `exp-20260702-015` `rejected_institutional_13f_actual_filing_date_candidate_source`: EV `+0.9664`, PnL `$16,200.41`, family `production_visible_institutional_13f_active_flow_candidate_pool`, trial `institutional_13f_active_flow_historical_candidate_source`.
@@ -88,6 +86,8 @@ facts before changing strategy behavior.
   Lesson: Mapped mega-cap issuers absorb KEV headlines without systematic near-term underperformance, or the flagged sample was too thin/saturated for a deployable gate: thin_vetoed_trade_sample Do not retune the 5-session wind...
 - `exp-20260706-013` `rejected_core_risk_multiplier_stack_loss_tail`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `risk_allocation`.
   Lesson: The high-stack bucket was not a loss-tail cohort: aggregate mean PnL was higher than non-high-stack, and no window showed both lower mean PnL and higher severe-loss rate for high-stack entries. Do not retune boost_cou...
+- `exp-20260706-018` `rejected_finra_otc_internalization_retreat_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_finra_otc_internalization_candidate_pool`, trial `finra_otc_internalization_retreat_candidate_pool`.
+  Lesson: The fixed top-1/publication-day non-ATS internalization-retreat source did not clear the predeclared Gate 4 bar on the canonical windows: window_ev_regression; window_pnl_regression; accepted_compression_ev_not_beaten...
 
 ## Highest-Signal Historical Records
 

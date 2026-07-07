@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-06.
+Last refreshed: 2026-07-07.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -890,6 +890,29 @@ cooldown, or notional on frozen windows. New observer/provenance orphan temp
 cleanup remains blocked by filesystem permission-denied remnants; that is
 operational hygiene, not a new text/event alpha axis.
 
+The July 7 batch mostly rejected "small overlay" rescue attempts and tightened
+measurement contracts. The portfolio covariance lane consumed the July 6
+ranked rejected-source list as fixed 10% daily mark-to-market overlays; FINRA
+short pressure, purchase-obligation, receivables/DSO, industry-breadth repair,
+volatility-curve relief, gap-hold core-flow, distribution-pressure low-beta,
+and peer-earnings-reaction overlays all remained observed-only rejected. Do not
+keep replaying rejected candidate sources as tiny equity overlays unless the
+evidence axis is materially new rows, a new risk model, or a different
+execution envelope that is predeclared. The tick-to-ATR20 microstructure field
+is a useful attribution lead but not a deployable gate: the observed split was
+positive across short-trend artifacts, yet the leave-one-window admission test
+failed after source-specific cutoffs and top-1/day compression. Reopen only
+with richer PIT spread/depth/impact data or prospective replacement rows, not a
+threshold retune. Entity/theme observer row growth also failed to clear the
+replacement-value bar, so source-bundle/news-theme reslices remain frozen until
+materially more settled rows or a genuinely new entity-relation source appears.
+Accepted July 7 repairs are alpha-enabling only: estimate-revision catch-up now
+settles recent ledgers through the daily path, live-drift reconciliation reads
+the hot warehouse, pilot-scorecard fingerprints classify under their own data
+source, and pilot concentration output exposes OR-rule metadata. The next valid
+work is row accumulation, attribution, and parity checks on those repaired
+surfaces, not immediate policy promotion.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -968,6 +991,14 @@ risk multiplier stacks, or pilot admission rules. FINRA weekly ATS rise and
 non-ATS retreat are both historical rejections now; keep them as default-off
 forward ledgers only until settled rows or PIT borrow-fee/utilization evidence
 create a new axis.
+
+July 7 status: estimate-revision, live-drift, pilot-scorecard classification,
+and pilot concentration metadata repairs are accepted plumbing only. The
+portfolio overlay rescue lane and entity/theme row-growth refresh both failed
+to create allocation evidence; tick-to-ATR20 is attribution-only until richer
+microstructure fields or new prospective rows mature. Default next step is
+settled-row collection and comparator-aware attribution, not another overlay,
+threshold, source-bundle, or microstructure gate retune.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has

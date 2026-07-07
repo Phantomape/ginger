@@ -54,6 +54,47 @@ observed-only 并入 forward 观察，不直接给真钱权重。
   序列上没有可测组合增益；批量收尾后若仍全灭，车道整体 park，不做配方变体
   （改 overlay 权重 / 相关阈值属于被禁的 retune）。
 
+## 2026-07-07 车道裁定（exp-20260707-017：PARKED，走上节出路 2）
+
+exp-20260707-017 对 11 个已完成 overlay artifact 做只读联合综合（不重跑任何
+overlay、不调任何源），结论是**执行 park，且不建议再花批量实验跑 rank 14-31**，
+因为当前评估配方在车道自身口径下结构性 0-accept，批量收尾只会物化更多噪声门
+拒绝。量化依据（全表见
+`data/experiments/exp-20260707-017/exp_20260707_017_portfolio_lane_gate_calibration_joint_verdict.json`）：
+
+1. **噪声门**：11 个 overlay 中 10 个聚合 EV delta 为正、11 个聚合 PnL delta
+   为正、drawdown 漂移全部 ≤0.36pp、与冠军日收益相关性 0.06–0.23，但逐窗口
+   零容忍 EV 回归把它们全部拒绝；其中 8 个的拒绝**仅**由噪声级回归触发
+   （|delta| < 该窗口冠军 EV 的 1%，或该窗口 PnL 实际非负；最极端一例
+   exp-20260707-016 old_thin EV delta = −0.0003 且该窗口 PnL +$57）。零容忍
+   三窗口符号检验下，纯噪声 overlay 的通过率也只有 12.5%——所以"前 13 名
+   全灭"**不能**读成对车道假设的强证据：全灭近乎是门保证的，与候选质量无关。
+   这正是本车道立项时要对冲的棘轮，在车道内部被复刻了。
+2. **验收条款联合不可满足**：≤10% 风险预算帽下，实测最好的候选聚合 EV 提升
+   只有 +0.77%（rank-1 fixed-asset turnover），而验收条款要求 >10%。凡
+   standalone EV 明显低于冠军（~10.6 daily-mtm proxy）的候选——即本车道全部
+   准入对象——在 10% 权重下数学上不可能到达该门槛。批量跑完剩余 18 名不改变
+   这个算术。
+
+**reopen 条件**（满足其一才恢复消费；不允许在单实验里自造新口径）：
+
+1. owner 级修订本文档验收条款：(a) 给组合级窗口回归设 materiality 阈值
+   （例如忽略 |EV delta| < 冠军窗口 EV 1% 的回归），且 (b) 把 >10% 聚合 EV
+   门槛换成 ≤10% 权重帽下可达的门槛（例如"聚合 EV delta > 0 且 ≥2/3 窗口
+   非负且 drawdown 漂移 ≤0.5pp"级别）；修订后可用**单个批量实验**按新口径
+   重判全部 31 名（已物化的 11 份 daily-equity 路径可直接复用）；
+2. 出现 standalone 聚合 EV 与冠军同量级（~1x）的新 rejected-positive 候选族，
+   使 ≤10% 权重在数学上可能清过 >10% 门槛；
+3. 某个已有 default-off forward ledger 的排名候选（如 rank-23
+   finra_otc_internalization_retreat）积累实质数量的已结算 forward
+   replacement-value 行，走本文档 observed-only forward 条款评估。
+
+**observed-only forward 关注名单**（本文档验收节本就允许低相关信号
+observed-only 并入 forward 观察；仅记录，不新建 sleeve、不给权重）：
+`peer_earnings_reaction_transfer`（corr 0.060，ΔEV +0.021）、
+`volatility_curve_relief_stock_leadership`（corr 0.178，ΔEV +0.034）、
+`distribution_pressure_low_beta_defensive_leadership`（corr 0.178，ΔEV +0.027）。
+
 ## 顺带记录：研究节奏
 
 结算行按周/月到达，实验按日强制生成——系统超频于自身信息到达率。若把
