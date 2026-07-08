@@ -1,0 +1,225 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260707_023_intraday_structured_news_fingerprint_coverage.py",
+    "data/experiments/exp-20260707-023/before_measurement.json",
+    "data/experiments/exp-20260707-023/after_measurement.json",
+    "data/experiments/exp-20260707-023/exp_20260707_023_intraday_structured_news_fingerprint_coverage.json",
+    "experiments/cards/exp-20260707-023.md",
+    "experiments/manifests/exp-20260707-023.json",
+    "experiments/tickets/exp-20260707-023.json",
+    "experiments/logs/exp-20260707-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260707-023.md",
+  "causal_components": [
+    "experiment_fingerprint data_source keywords",
+    "focused fingerprint regression tests",
+    "frozen family rebuild",
+    "intraday structured-news pending-row measurement artifact"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "intraday_structured_news_data_source_keywords",
+  "claimed_at": "2026-07-07T22:08:13+00:00",
+  "completed_at": "2026-07-07T22:11:50+00:00",
+  "created_at": "2026-07-07T22:08:05+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-023",
+  "experiment_uid": "expuid-295944467e4f4d78",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-023",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T22:08:05+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_structured_news_fingerprint_coverage"
+  },
+  "hypothesis": "Alpha blocker: the new intraday structured-news forward-observation surface is production-visible, but novelty fingerprints currently classify it as ohlcv_relation or data_source=other, so future alpha retries could bypass observer/source saturation guards before settled replacement rows exist.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "intraday_structured_news_fingerprint_coverage_v1"
+  ],
+  "mechanism_family": "novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-013",
+    "exp-20260630-015",
+    "exp-20260630-019",
+    "exp-20260701-010",
+    "exp-20260702-022",
+    "exp-20260704-024"
+  ],
+  "new_evidence_type": "concrete_classifier_miss_on_intraday_structured_news_surface",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "alpha",
+        "as",
+        "before",
+        "blocker",
+        "but",
+        "bypass",
+        "classify",
+        "could",
+        "coverage",
+        "currently",
+        "data",
+        "exist",
+        "fingerprint",
+        "fingerprints",
+        "forward",
+        "future",
+        "guards",
+        "intraday",
+        "is",
+        "it",
+        "new",
+        "news",
+        "novelty",
+        "observation",
+        "observer",
+        "or",
+        "other",
+        "relation",
+        "replacement",
+        "retries",
+        "rows",
+        "saturation",
+        "settled",
+        "so",
+        "structured",
+        "surface"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.5115,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "structured_daily_news_relation_magnitude_forward_value",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows for structured events, a true PIT LLM scorer writing the same evidence-span schema, or historical daily-news coverage spanning the canonical fixed windows.",
+        "score": 0.489,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "intraday_structured_relation_quality_short_horizon_read",
+        "reopen_condition": "Reopen only after materially more timestamped intraday structured observer rows have closed h1/h3 outcomes, or after a true intraday bar execution surface allows same-day post-capture execution that this daily warehouse read cannot test.",
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_post_repair_forward_supply_readiness",
+        "reopen_condition": "Reopen alpha activation only after the post-repair V/CVS cohort or later turn-of-month cohorts close and appear in the shared paper-sleeve replacement-value ledger with cash, SPY, and QQQ comparators.",
+        "score": 0.4678,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+        "score": 0.4674,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260707-023/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260707-023/after_measurement.json",
+    "delta_metrics": {}
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-023.json",
+  "single_causal_variable": "intraday_structured_news_fingerprint_coverage_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260707-023.json",
+  "trial_family": "intraday_structured_news_fingerprint_coverage",
+  "trial_variant_id": "intraday_structured_observer_source_v1"
+}

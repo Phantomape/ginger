@@ -1,0 +1,341 @@
+{
+  "accepted": true,
+  "after": {
+    "accepted": true,
+    "alpha_hypothesis": "Timestamped intraday structured-news target-relation-quality rows may predict next-session/10-session replacement value after enough rows close with cash/SPY/QQQ comparators.",
+    "cases": [
+      {
+        "expected_data_source": "intraday_structured_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "intraday",
+            "news",
+            "observer",
+            "relation",
+            "structured"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "relation_observer_text",
+        "passed": true,
+        "prior_data_source": "ohlcv_relation",
+        "text": "intraday structured news relation observer"
+      },
+      {
+        "expected_data_source": "intraday_structured_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "event",
+            "forward",
+            "intraday",
+            "news",
+            "observation",
+            "structured"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "forward_observation_artifact_name",
+        "passed": true,
+        "prior_data_source": "other",
+        "text": "intraday_news_structured_event forward observation"
+      },
+      {
+        "expected_data_source": "intraday_structured_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "intraday",
+            "news",
+            "relation",
+            "target",
+            "trade"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "trade_news_target_relation_quality",
+        "passed": true,
+        "prior_data_source": "ohlcv_relation",
+        "text": "intraday trade news target relation quality"
+      },
+      {
+        "expected_data_source": "intraday_structured_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "horizon",
+            "intraday",
+            "read",
+            "relation",
+            "short",
+            "structured"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "existing_intraday_quality_family",
+        "passed": true,
+        "prior_data_source": "ohlcv_relation",
+        "text": "intraday structured relation quality short horizon read"
+      }
+    ],
+    "changed_variable": "intraday_structured_news_data_source_keywords",
+    "decision": "accepted_measurement_repair_intraday_structured_news_fingerprint_coverage",
+    "experiment_id": "exp-20260707-023",
+    "gate_contract": {
+      "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "gate_2_runtime_fields": "Observation rows carry entry_date; target_price is explicitly not applicable because this is fixed-horizon attribution, not an orderable signal.",
+      "gate_3_survival": "Not a signal filter; survival is unchanged.",
+      "gate_4_rule": "Accept repair when focused classifier tests pass, the existing intraday structured relation family rebuilds under the specific source, and generic relation/news surfaces do not overclassify."
+    },
+    "generated_at": "2026-07-07T22:16:14+00:00",
+    "hypothesis": "The intraday structured-news observer is a distinct production-visible forward surface, but novelty fingerprints previously mapped it to ohlcv_relation or other.",
+    "intraday_surface_snapshot": {
+      "closed_or_settled_rows": 0,
+      "entry_dates_present": 6,
+      "event_required_fields_ok": true,
+      "event_rows": 6,
+      "events_file_exists": true,
+      "events_path": "data/daily/intraday/structured/intraday_news_structured_events_20260707_1302ET.json",
+      "observation_required_fields_ok": true,
+      "observation_rows": 6,
+      "observations_file_exists": true,
+      "observations_path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260707_1302ET.jsonl",
+      "outcome_status_counts": {
+        "pending_forward_close": 6
+      },
+      "replacement_value_complete_rows": 0,
+      "source_kind": "intraday_trade_news",
+      "target_price_contract": "not_applicable_fixed_horizon_observation; no executable signal or target-price exit",
+      "target_relation_quality_rows": 1
+    },
+    "lane": "measurement_repair",
+    "phase": "after",
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "live_orders_changed": false,
+      "ranking_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": false,
+      "scope": "novelty_guard_measurement_only",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false
+    },
+    "regressions": [
+      {
+        "expected_data_source": "ohlcv_relation",
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "corr",
+            "lag",
+            "lead",
+            "peer",
+            "relation",
+            "rolling"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "generic_ohlcv_relation",
+        "passed": true,
+        "text": "lead_lag peer rolling_corr relation candidate pool"
+      },
+      {
+        "expected_data_source": "entity_theme_news",
+        "fingerprint": {
+          "data_source": "entity_theme_news",
+          "field_tags": [
+            "entity",
+            "news",
+            "observer",
+            "relation",
+            "theme"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "entity_theme_news",
+        "passed": true,
+        "text": "entity-theme news relation observer"
+      },
+      {
+        "expected_data_source": "prediction_market_event",
+        "fingerprint": {
+          "data_source": "prediction_market_event",
+          "field_tags": [
+            "event",
+            "market",
+            "observer",
+            "odds",
+            "prediction"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "prediction_market_event",
+        "passed": true,
+        "text": "prediction-market event odds observer"
+      }
+    ],
+    "reopen_condition": {
+      "blocking_reason": "Alpha activation is blocked because all current intraday structured-news observation rows are pending and have no replacement value.",
+      "current_counts": {
+        "closed_or_settled_rows": 0,
+        "observation_rows": 6,
+        "replacement_value_complete_rows": 0,
+        "target_relation_quality_rows": 1
+      },
+      "reopen_rule": "Reopen alpha only after materially more timestamped intraday structured-news rows close with cash/SPY/QQQ replacement values, or with a genuinely new intraday execution gate shape.",
+      "required_to_reopen": {
+        "closed_or_settled_rows_min": 9,
+        "replacement_value_complete_rows_min": 9,
+        "target_relation_quality_closed_rows_min": 3
+      },
+      "status": "blocked_pending_forward_close",
+      "surface": "intraday_structured_news_forward_observation"
+    },
+    "schema_version": 1,
+    "summary": {
+      "alpha_replacement_value_complete_rows": 0,
+      "alpha_rows_closed_or_settled": 0,
+      "classifier_cases": 4,
+      "classifier_cases_passed": 4,
+      "derived_frozen_family_view_rebuilt": true,
+      "missing_target_frozen_families": [],
+      "regression_cases": 3,
+      "regression_cases_passed": 3,
+      "target_frozen_families": 1,
+      "target_frozen_families_found": 1,
+      "target_frozen_families_passed": 1
+    },
+    "target_frozen_families": [
+      {
+        "accept_rate": 0.0,
+        "accepted": 0,
+        "blocked": 0,
+        "family_key": "intraday_structured_relation_quality_short_horizon_read",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "exp",
+            "horizon",
+            "intraday",
+            "none",
+            "only",
+            "read",
+            "relation",
+            "short",
+            "structured"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 1,
+        "reopen_condition": "Reopen only after materially more timestamped intraday structured observer rows have closed h1/h3 outcomes, or after a true intraday bar execution surface allows same-day post-capture execution that this daily warehouse read cannot test.",
+        "representative_exps": [
+          "exp-20260702-022"
+        ],
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ]
+  },
+  "before": {
+    "alpha_hypothesis": "Timestamped intraday structured-news target-relation-quality rows may carry next-session/10-session replacement value, but the current rows are pending and cannot support Gate 4 alpha attribution yet.",
+    "changed_variable": "intraday_structured_news_data_source_keywords",
+    "experiment_id": "exp-20260707-023",
+    "generated_at": "2026-07-07T22:16:14+00:00",
+    "known_prior_classifier_miss": {
+      "cases": [
+        {
+          "expected_data_source": "intraday_structured_news",
+          "label": "relation_observer_text",
+          "prior_data_source": "ohlcv_relation",
+          "text": "intraday structured news relation observer"
+        },
+        {
+          "expected_data_source": "intraday_structured_news",
+          "label": "forward_observation_artifact_name",
+          "prior_data_source": "other",
+          "text": "intraday_news_structured_event forward observation"
+        },
+        {
+          "expected_data_source": "intraday_structured_news",
+          "label": "trade_news_target_relation_quality",
+          "prior_data_source": "ohlcv_relation",
+          "text": "intraday trade news target relation quality"
+        },
+        {
+          "expected_data_source": "intraday_structured_news",
+          "label": "existing_intraday_quality_family",
+          "prior_data_source": "ohlcv_relation",
+          "text": "intraday structured relation quality short horizon read"
+        }
+      ],
+      "evidence": "Pre-repair checks classified intraday structured-news relation text as ohlcv_relation or other instead of a distinct intraday observer surface."
+    },
+    "phase": "before",
+    "production_impact": "No trading behavior changed in before measurement.",
+    "reservation_fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "alpha",
+        "as",
+        "before",
+        "blocker",
+        "but",
+        "bypass",
+        "classify",
+        "could",
+        "coverage",
+        "currently",
+        "data",
+        "exist",
+        "fingerprint",
+        "fingerprints",
+        "forward",
+        "future",
+        "guards",
+        "intraday",
+        "is",
+        "it",
+        "new",
+        "news",
+        "novelty",
+        "observation",
+        "observer",
+        "or",
+        "other",
+        "relation",
+        "replacement",
+        "retries",
+        "rows",
+        "saturation",
+        "settled",
+        "so",
+        "structured",
+        "surface"
+      ],
+      "gate_shape": "other"
+    },
+    "schema_version": 1,
+    "source": "reservation_and_preflight_classifier_audit"
+  },
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260707_023_intraday_structured_news_fingerprint_coverage.py"
+  ],
+  "decision": "accepted_measurement_repair_intraday_structured_news_fingerprint_coverage",
+  "experiment_id": "exp-20260707-023",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260707_023_intraday_structured_news_fingerprint_coverage.py"
+  ],
+  "timestamp": "2026-07-07T22:16:14+00:00"
+}

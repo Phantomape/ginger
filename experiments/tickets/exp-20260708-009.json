@@ -1,0 +1,2275 @@
+{
+  "acceptance_rule": "Positive lead only if >=30 total liquid events, at least two canonical windows have >=10 events with negative mean 10d net long return and negative same-ticker excess return, and ticker concentration is <=40%; otherwise rejected with no behavior changes.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments",
+    "data/experiments",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-009.md",
+  "causal_components": [],
+  "change_type": "entry_filter",
+  "changed_variable": "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1",
+  "claimed_at": "2026-07-08T06:11:42+00:00",
+  "completed_at": "2026-07-08T06:14:28+00:00",
+  "created_at": "2026-07-08T06:11:09+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-009",
+  "experiment_uid": "expuid-dce5e616aeda4e83",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T06:11:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_item205206_restructuring_impairment_entry_risk"
+  },
+  "hypothesis": "entry_filter/risk_allocation: SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment disclosures are PIT restructuring or asset-deterioration events; liquid tickers with Item 2.05/2.06 should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1"
+  ],
+  "mechanism_family": "free_sec_restructuring_impairment_entry_risk",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260707-019",
+    "exp-20260707-020",
+    "exp-20260708-003"
+  ],
+  "new_evidence_type": "new_gate_shape_sec_8k_item205206_restructuring_impairment",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_disclosure_complexity_quality",
+        "score": 0.6205,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_item_507_vote_result_absorption_candidate_pool",
+        "score": 0.6108,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "family_key": "event_governance_disclosure_quality",
+        "score": 0.6105,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_text_coverage_status_allocation",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_earnings_guidance_nonresponse_semantic_field",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "8k",
+        "a",
+        "allocation",
+        "are",
+        "asset",
+        "cost",
+        "deterioration",
+        "disclosures",
+        "disposal",
+        "entry",
+        "events",
+        "exit",
+        "filter",
+        "gate",
+        "impairment",
+        "item",
+        "item205206",
+        "k",
+        "liquid",
+        "long",
+        "or",
+        "over",
+        "pit",
+        "rather",
+        "restructuring",
+        "risk",
+        "sessions",
+        "should",
+        "supporting",
+        "than",
+        "tickers",
+        "underperform"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "event_disclosure_complexity_quality",
+        "reopen_condition": null,
+        "score": 0.6205,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item_507_vote_result_absorption_candidate_pool",
+        "reopen_condition": "If this fixed Item 5.07 vote-result absorption bundle fails, do not retry by sweeping vote-support thresholds, parser regexes, signal excess, close-location, volume, volatility, ret20, price/ADV, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT governance semantics such as parsed board-seat outcome, shareholder-proposal category, dissident ",
+        "score": 0.6108,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "sec_text_event",
+        "family_key": "event_governance_disclosure_quality",
+        "reopen_condition": null,
+        "score": 0.6105,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_coverage_status_allocation",
+        "reopen_condition": "Do not use SEC text archive missingness as an allocation signal. If this edge is revisited, replace it with a stable production-visible field such as form type, accession-matched text_event_type, or an explicit disclosure-quality bucket and rerun Gate 1-4.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_earnings_guidance_nonresponse_semantic_field",
+        "reopen_condition": "More forward no-guidance earnings-release rows across tickers, or a richer guidance-quality semantic field that separates voluntary non-guidance from temporary uncertainty.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: direct same-ticker SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment next-open 10d entry-risk attribution. Prior NT late-filing, Item 3.01 listing-compliance, and Item 5.02 leadership experiments tested different disclosure items or text semantics, not restructuring/impairment event-risk.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec_text_event",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: direct same-ticker SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment next-open 10d entry-risk attribution. Prior NT late-filing, Item 3.01 listing-compliance, and Item 5.02 leadership experiments tested different disclosure items or text semantics, not restructuring/impairment event-risk.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: direct same-ticker SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment next-open 10d entry-risk attribution. Prior NT late-filing, Item 3.01 listing-compliance, and Item 5.02 leadership experiments tested different disclosure items or text semantics, not restructuring/impairment event-risk.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "liquid_sample_below_min_total",
+      "event_drift_not_negative_in_two_windows",
+      "aggregate_excess_not_negative"
+    ],
+    "confidence_reason": "SEC Item 2.05/2.06 is economically plausible as restructuring/impairment risk, but nearby SEC item-code scouts were thin or unstable.",
+    "recorded_at": "2026-07-08T06:10:16+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "experiment_id": "exp-20260708-009",
+    "timestamp": "2026-07-08T06:14:28Z",
+    "owner": "alpha-explore",
+    "lane": "alpha_search",
+    "status": "rejected",
+    "decision": "rejected_sec_item205206_entry_risk_gate",
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "alpha_ready": false,
+    "hypothesis": "entry_filter/risk_allocation: SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment disclosures are PIT restructuring or asset-deterioration events; liquid tickers with Item 2.05/2.06 should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+    "alpha_hypothesis": "entry_filter/risk_allocation: SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment disclosures are PIT restructuring or asset-deterioration events; liquid tickers with Item 2.05/2.06 should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+    "change_type": "entry_filter",
+    "implementation_mode": "private_replay_scout",
+    "mechanism_family": "free_sec_restructuring_impairment_entry_risk",
+    "trial_family": "sec_8k_item205206_restructuring_impairment_entry_risk",
+    "trial_variant_id": "item205206_next_open_10d_v1",
+    "changed_variable": "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1",
+    "single_causal_variable": "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1",
+    "new_evidence_type": "new_gate_shape_sec_8k_item205206_restructuring_impairment",
+    "new_evidence_axis": "New gate shape: direct same-ticker SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment next-open 10d entry-risk attribution. Prior NT late-filing, Item 3.01 listing-compliance, and Item 5.02 leadership experiments tested different disclosure items or text semantics, not restructuring/impairment event-risk.",
+    "nearby_prior_experiments": [
+      "exp-20260707-019",
+      "exp-20260707-020",
+      "exp-20260708-003"
+    ],
+    "multiple_testing_risk_bucket": "low",
+    "prediction": {
+      "confidence_reason": "SEC Item 2.05/2.06 is economically plausible as restructuring/impairment risk, but nearby SEC item-code scouts were thin or unstable.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "liquid_sample_below_min_total",
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_excess_not_negative"
+      ],
+      "recorded_at": "2026-07-08T06:10:16+00:00",
+      "success_probability": 0.18
+    },
+    "calibration": {
+      "actual_decision": "rejected_sec_item205206_entry_risk_gate",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "liquid_sample_below_min_total",
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_excess_not_negative"
+      ],
+      "realized_failure_modes": [
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_excess_not_negative"
+      ],
+      "predicted_failure_mode_hit": true,
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0
+    },
+    "parameters": {
+      "forms": [
+        "8-K",
+        "8-K/A"
+      ],
+      "item_codes": [
+        "2.05",
+        "2.06"
+      ],
+      "hold_days": 10,
+      "round_trip_cost_pct": 0.0035,
+      "notional_usd": 4000.0,
+      "entry_policy": "next_session_open_after_filing_date",
+      "exit_policy": "close_after_10_trading_sessions",
+      "min_entry_price": 10.0,
+      "min_adv20_usd": 50000000.0,
+      "same_ticker_cooldown_sessions": 10,
+      "support_rule": "Positive lead only if >=30 total liquid events, at least two canonical windows have >=10 events with negative mean 10d net long return and negative same-ticker excess return, and ticker concentration is <=40%. Otherwise rejected; no behavior changes.",
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      }
+    },
+    "pre_run_questions": {
+      "1_alpha_hypothesis": "entry_filter/risk_allocation: SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment disclosures are PIT restructuring or asset-deterioration events; liquid tickers with Item 2.05/2.06 should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+      "2_history_check": {
+        "novelty_gate": "experiment.py new blocked broad SEC event/text neighbors; override was recorded with a legal new gate shape: direct same-ticker Item 2.05/2.06 restructuring and impairment entry-risk attribution.",
+        "exp-20260707-019": "NT late-filing notice entry-risk scout; same SEC event-study recipe but different disclosure-delay form family.",
+        "exp-20260707-020": "Direct Item 3.01 listing-noncompliance entry-risk scout; not restructuring or impairment.",
+        "exp-20260708-003": "Item 5.02 leadership-quality text; not item-code restructuring/impairment event risk."
+      },
+      "3_single_policy_bundle": "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1",
+      "4_success_failure_standard": "Use the predeclared source-validation rule in parameters; this is replay-only, so a positive result would still need a shared helper plus full Gate 4 before any production entry gate.",
+      "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.py"
+    },
+    "gate1": {
+      "baseline_loaded": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_metrics": {
+        "late_strong": {
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        "mid_weak": {
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        "old_thin": {
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      },
+      "accepted_reference": {
+        "expected_value_score_sum": 7.8941,
+        "total_pnl_sum": 234850.99,
+        "trade_count_sum": 61
+      }
+    },
+    "gate2": {
+      "runtime_fields_checked": [
+        "filing_date",
+        "form_type",
+        "item_codes",
+        "matched_item_codes",
+        "ticker",
+        "entry_date",
+        "entry_open",
+        "exit_date",
+        "exit_close",
+        "adv20_usd"
+      ],
+      "missing_entry_date": 0,
+      "missing_exit_date": 0,
+      "target_price_relevance": "No generated strategy signals are emitted; target_price is not consumed by this read-only event study. A later shared entry gate must re-run the normal signal contract checks.",
+      "passed": true
+    },
+    "gate3": {
+      "new_entry_filter_added": false,
+      "signals_generated": null,
+      "signals_survived": null,
+      "survival_rate": null,
+      "note": "Attribution only; no filter applied, so baseline survival is unchanged and Gate 3 is informational.",
+      "passed": true
+    },
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "decision": "rejected_sec_item205206_entry_risk_gate",
+      "failed_reasons": [
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_excess_not_negative"
+      ],
+      "supporting_windows": [
+        "old_thin"
+      ],
+      "aggregate_mean_net_long_return": -4.4e-05,
+      "aggregate_mean_excess_vs_same_ticker_unconditional": 0.003331,
+      "aggregate_total_long_pnl_usd": -18.37,
+      "aggregate_total_risk_gate_avoided_loss_usd": 18.37,
+      "liquid_trade_count": 104,
+      "note": "No before/after strategy behavior changed. The source-validation rule must pass before any shared-helper Gate 4 follow-up."
+    },
+    "data_diagnostics": {
+      "cache_files_scanned": 3222,
+      "parse_errors": 0,
+      "raw_item205206_count": 159,
+      "raw_by_window": {
+        "old_thin": 57,
+        "late_strong": 57,
+        "mid_weak": 45
+      },
+      "raw_by_matched_item_code": {
+        "2.06": 44,
+        "2.05": 131
+      },
+      "raw_unique_tickers": 123,
+      "raw_missing_ticker": 1,
+      "raw_top_item_combos": [
+        [
+          "2.05",
+          28
+        ],
+        [
+          "2.02,2.05,9.01",
+          23
+        ],
+        [
+          "2.05,7.01,9.01",
+          17
+        ],
+        [
+          "2.06",
+          10
+        ],
+        [
+          "2.02,2.05,7.01,9.01",
+          9
+        ],
+        [
+          "2.05,9.01",
+          9
+        ],
+        [
+          "2.06,7.01,9.01",
+          6
+        ],
+        [
+          "2.05,2.06",
+          5
+        ],
+        [
+          "2.02,2.05,8.01,9.01",
+          4
+        ],
+        [
+          "2.05,2.06,9.01",
+          3
+        ]
+      ],
+      "prices_loaded_for_tickers": 122,
+      "rejects": {
+        "adv20_below_floor": 21,
+        "entry_price_below_floor": 30,
+        "adv20_missing": 1,
+        "same_ticker_cooldown": 1,
+        "missing_ticker": 1,
+        "no_price_history": 1
+      },
+      "liquid_trade_count": 104,
+      "liquid_trade_count_by_window": {
+        "old_thin": 37,
+        "mid_weak": 28,
+        "late_strong": 39
+      },
+      "liquid_trade_count_by_form": {
+        "8-K": 95,
+        "8-K/A": 9
+      },
+      "liquid_unique_tickers": 78
+    },
+    "event_study": {
+      "aggregate": {
+        "trade_count": 104,
+        "unique_tickers": 78,
+        "mean_net_long_return": -4.4e-05,
+        "median_net_long_return": -0.001496,
+        "negative_return_share": 0.5,
+        "total_long_pnl_usd": -18.37,
+        "total_risk_gate_avoided_loss_usd": 18.37,
+        "mean_excess_vs_same_ticker_unconditional": 0.003331,
+        "top_ticker_counts": [
+          [
+            "EL",
+            5
+          ],
+          [
+            "IP",
+            3
+          ],
+          [
+            "INTC",
+            3
+          ],
+          [
+            "DOW",
+            3
+          ],
+          [
+            "OC",
+            3
+          ],
+          [
+            "ON",
+            3
+          ],
+          [
+            "BKNG",
+            2
+          ],
+          [
+            "SEDG",
+            2
+          ],
+          [
+            "MCHP",
+            2
+          ],
+          [
+            "GM",
+            2
+          ]
+        ],
+        "max_single_ticker_share": 0.048077,
+        "supporting_windows": [
+          "old_thin"
+        ]
+      },
+      "by_window": {
+        "late_strong": {
+          "trade_count": 39,
+          "unique_tickers": 37,
+          "mean_net_long_return": 0.022668,
+          "median_net_long_return": 0.026676,
+          "negative_return_share": 0.358974,
+          "total_long_pnl_usd": 3536.22,
+          "total_risk_gate_avoided_loss_usd": -3536.22,
+          "mean_excess_vs_same_ticker_unconditional": 0.018379,
+          "top_ticker_counts": [
+            [
+              "KR",
+              2
+            ],
+            [
+              "EL",
+              2
+            ],
+            [
+              "AMAT",
+              1
+            ],
+            [
+              "ALB",
+              1
+            ],
+            [
+              "CE",
+              1
+            ]
+          ],
+          "max_single_ticker_share": 0.051282
+        },
+        "mid_weak": {
+          "trade_count": 28,
+          "unique_tickers": 26,
+          "mean_net_long_return": 0.001946,
+          "median_net_long_return": -0.005038,
+          "negative_return_share": 0.535714,
+          "total_long_pnl_usd": 217.97,
+          "total_risk_gate_avoided_loss_usd": -217.97,
+          "mean_excess_vs_same_ticker_unconditional": -0.004791,
+          "top_ticker_counts": [
+            [
+              "INTC",
+              2
+            ],
+            [
+              "GIS",
+              2
+            ],
+            [
+              "PFE",
+              1
+            ],
+            [
+              "OC",
+              1
+            ],
+            [
+              "CRWD",
+              1
+            ]
+          ],
+          "max_single_ticker_share": 0.071429
+        },
+        "old_thin": {
+          "trade_count": 37,
+          "unique_tickers": 30,
+          "mean_net_long_return": -0.02549,
+          "median_net_long_return": -0.017233,
+          "negative_return_share": 0.621622,
+          "total_long_pnl_usd": -3772.56,
+          "total_risk_gate_avoided_loss_usd": 3772.56,
+          "mean_excess_vs_same_ticker_unconditional": -0.006385,
+          "top_ticker_counts": [
+            [
+              "IP",
+              2
+            ],
+            [
+              "BKNG",
+              2
+            ],
+            [
+              "SEDG",
+              2
+            ],
+            [
+              "MCHP",
+              2
+            ],
+            [
+              "EL",
+              2
+            ]
+          ],
+          "max_single_ticker_share": 0.054054
+        }
+      }
+    },
+    "sample_trades": [
+      {
+        "ticker": "FLG",
+        "cik": "0000910073",
+        "form_type": "8-K",
+        "filing_date": "2024-10-18",
+        "report_date": "2024-10-17",
+        "accepted_at": "2024-10-18T21:10:33.000Z",
+        "accession_number": "0001193125-24-239705",
+        "primary_document": "d608954d8k.htm",
+        "items_raw": "2.05,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000910073.json",
+        "entry_date": "2024-10-21",
+        "exit_date": "2024-11-04",
+        "entry_open": 12.2492,
+        "exit_close": 10.3586,
+        "adv20_usd": 52562426.58,
+        "net_long_return": -0.157846,
+        "long_pnl_usd": -631.38,
+        "risk_gate_avoided_loss_usd": 631.38,
+        "same_ticker_unconditional_net_return_mean": -0.023521,
+        "excess_vs_same_ticker_unconditional": -0.134326
+      },
+      {
+        "ticker": "IP",
+        "cik": "0000051434",
+        "form_type": "8-K",
+        "filing_date": "2024-10-21",
+        "report_date": "2024-10-15",
+        "accepted_at": "2024-10-21T20:25:56.000Z",
+        "accession_number": "0001193125-24-240435",
+        "primary_document": "d855285d8k.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000051434.json",
+        "entry_date": "2024-10-22",
+        "exit_date": "2024-11-05",
+        "entry_open": 44.1505,
+        "exit_close": 54.313,
+        "adv20_usd": 180699318.99,
+        "net_long_return": 0.226677,
+        "long_pnl_usd": 906.71,
+        "risk_gate_avoided_loss_usd": -906.71,
+        "same_ticker_unconditional_net_return_mean": -2.8e-05,
+        "excess_vs_same_ticker_unconditional": 0.226706
+      },
+      {
+        "ticker": "DBX",
+        "cik": "0001467623",
+        "form_type": "8-K",
+        "filing_date": "2024-10-30",
+        "report_date": "2024-10-30",
+        "accepted_at": "2024-10-30T13:00:34.000Z",
+        "accession_number": "0001467623-24-000045",
+        "primary_document": "dbx-20241030.htm",
+        "items_raw": "2.02,2.05,7.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001467623.json",
+        "entry_date": "2024-10-31",
+        "exit_date": "2024-11-14",
+        "entry_open": 26.03,
+        "exit_close": 27.67,
+        "adv20_usd": 62674897.19,
+        "net_long_return": 0.059504,
+        "long_pnl_usd": 238.02,
+        "risk_gate_avoided_loss_usd": -238.02,
+        "same_ticker_unconditional_net_return_mean": 0.008642,
+        "excess_vs_same_ticker_unconditional": 0.050862
+      },
+      {
+        "ticker": "INTC",
+        "cik": "0000050863",
+        "form_type": "8-K",
+        "filing_date": "2024-10-31",
+        "report_date": "2024-10-28",
+        "accepted_at": "2024-10-31T16:07:17.000Z",
+        "accession_number": "0000050863-24-000147",
+        "primary_document": "intc-20241028.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000050863.json",
+        "entry_date": "2024-11-01",
+        "exit_date": "2024-11-15",
+        "entry_open": 23.0,
+        "exit_close": 24.35,
+        "adv20_usd": 1220760627.91,
+        "net_long_return": 0.055196,
+        "long_pnl_usd": 220.78,
+        "risk_gate_avoided_loss_usd": -220.78,
+        "same_ticker_unconditional_net_return_mean": -0.006266,
+        "excess_vs_same_ticker_unconditional": 0.061462
+      },
+      {
+        "ticker": "CTVA",
+        "cik": "0001755672",
+        "form_type": "8-K",
+        "filing_date": "2024-11-06",
+        "report_date": "2024-11-06",
+        "accepted_at": "2024-11-06T16:28:52.000Z",
+        "accession_number": "0001755672-24-000021",
+        "primary_document": "ctva-20241106.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001755672.json",
+        "entry_date": "2024-11-07",
+        "exit_date": "2024-11-21",
+        "entry_open": 57.1255,
+        "exit_close": 59.8439,
+        "adv20_usd": 166777696.61,
+        "net_long_return": 0.044086,
+        "long_pnl_usd": 176.34,
+        "risk_gate_avoided_loss_usd": -176.34,
+        "same_ticker_unconditional_net_return_mean": 0.005264,
+        "excess_vs_same_ticker_unconditional": 0.038823
+      },
+      {
+        "ticker": "BKNG",
+        "cik": "0001075531",
+        "form_type": "8-K",
+        "filing_date": "2024-11-08",
+        "report_date": "2024-11-08",
+        "accepted_at": "2024-11-08T21:26:50.000Z",
+        "accession_number": "0000950157-24-001497",
+        "primary_document": "form8-k.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001075531.json",
+        "entry_date": "2024-11-11",
+        "exit_date": "2024-11-25",
+        "entry_open": 195.2142,
+        "exit_close": 202.0494,
+        "adv20_usd": 1079314285.39,
+        "net_long_return": 0.031514,
+        "long_pnl_usd": 126.06,
+        "risk_gate_avoided_loss_usd": -126.06,
+        "same_ticker_unconditional_net_return_mean": 0.012226,
+        "excess_vs_same_ticker_unconditional": 0.019288
+      },
+      {
+        "ticker": "ENPH",
+        "cik": "0001463101",
+        "form_type": "8-K",
+        "filing_date": "2024-11-08",
+        "report_date": "2024-11-07",
+        "accepted_at": "2024-11-08T21:09:25.000Z",
+        "accession_number": "0001463101-24-000145",
+        "primary_document": "enph-20241107.htm",
+        "items_raw": "2.05,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001463101.json",
+        "entry_date": "2024-11-11",
+        "exit_date": "2024-11-25",
+        "entry_open": 66.24,
+        "exit_close": 71.91,
+        "adv20_usd": 504389166.79,
+        "net_long_return": 0.082098,
+        "long_pnl_usd": 328.39,
+        "risk_gate_avoided_loss_usd": -328.39,
+        "same_ticker_unconditional_net_return_mean": -0.055484,
+        "excess_vs_same_ticker_unconditional": 0.137582
+      },
+      {
+        "ticker": "SEDG",
+        "cik": "0001419612",
+        "form_type": "8-K",
+        "filing_date": "2024-11-27",
+        "report_date": "2024-11-27",
+        "accepted_at": "2024-11-27T11:38:20.000Z",
+        "accession_number": "0001178913-24-003848",
+        "primary_document": "zk2432400.htm",
+        "items_raw": "2.05,9.01",
+        "item_codes": [
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001419612.json",
+        "entry_date": "2024-11-29",
+        "exit_date": "2024-12-13",
+        "entry_open": 14.94,
+        "exit_close": 13.35,
+        "adv20_usd": 93851230.03,
+        "net_long_return": -0.109926,
+        "long_pnl_usd": -439.7,
+        "risk_gate_avoided_loss_usd": 439.7,
+        "same_ticker_unconditional_net_return_mean": -0.016697,
+        "excess_vs_same_ticker_unconditional": -0.093229
+      },
+      {
+        "ticker": "MCHP",
+        "cik": "0000827054",
+        "form_type": "8-K",
+        "filing_date": "2024-12-02",
+        "report_date": "2024-12-02",
+        "accepted_at": "2024-12-02T21:07:38.000Z",
+        "accession_number": "0000827054-24-000225",
+        "primary_document": "mchp-20241202.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000827054.json",
+        "entry_date": "2024-12-03",
+        "exit_date": "2024-12-17",
+        "entry_open": 66.7479,
+        "exit_close": 56.1758,
+        "adv20_usd": 502840819.92,
+        "net_long_return": -0.161889,
+        "long_pnl_usd": -647.55,
+        "risk_gate_avoided_loss_usd": 647.55,
+        "same_ticker_unconditional_net_return_mean": -0.03399,
+        "excess_vs_same_ticker_unconditional": -0.127899
+      },
+      {
+        "ticker": "GM",
+        "cik": "0001467858",
+        "form_type": "8-K",
+        "filing_date": "2024-12-04",
+        "report_date": "2024-12-02",
+        "accepted_at": "2024-12-04T11:31:00.000Z",
+        "accession_number": "0001193125-24-270298",
+        "primary_document": "d902397d8k.htm",
+        "items_raw": "2.06",
+        "item_codes": [
+          "2.06"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001467858.json",
+        "entry_date": "2024-12-05",
+        "exit_date": "2024-12-19",
+        "entry_open": 52.8162,
+        "exit_close": 49.7063,
+        "adv20_usd": 763971459.25,
+        "net_long_return": -0.062381,
+        "long_pnl_usd": -249.52,
+        "risk_gate_avoided_loss_usd": 249.52,
+        "same_ticker_unconditional_net_return_mean": -0.001597,
+        "excess_vs_same_ticker_unconditional": -0.060784
+      },
+      {
+        "ticker": "BKNG",
+        "cik": "0001075531",
+        "form_type": "8-K/A",
+        "filing_date": "2024-12-10",
+        "report_date": "2024-11-08",
+        "accepted_at": "2024-12-10T21:15:47.000Z",
+        "accession_number": "0001075531-24-000051",
+        "primary_document": "bkng-20241108.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001075531.json",
+        "entry_date": "2024-12-11",
+        "exit_date": "2024-12-26",
+        "entry_open": 208.1082,
+        "exit_close": 201.8776,
+        "adv20_usd": 1139596501.21,
+        "net_long_return": -0.033439,
+        "long_pnl_usd": -133.76,
+        "risk_gate_avoided_loss_usd": 133.76,
+        "same_ticker_unconditional_net_return_mean": 0.012226,
+        "excess_vs_same_ticker_unconditional": -0.045665
+      },
+      {
+        "ticker": "TXT",
+        "cik": "0000217346",
+        "form_type": "8-K",
+        "filing_date": "2024-12-18",
+        "report_date": "2024-12-18",
+        "accepted_at": "2024-12-18T13:02:05.000Z",
+        "accession_number": "0000217346-24-000094",
+        "primary_document": "txt-20241218.htm",
+        "items_raw": "2.05,2.06,7.01,8.01",
+        "item_codes": [
+          "2.05",
+          "2.06",
+          "7.01",
+          "8.01"
+        ],
+        "matched_item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000217346.json",
+        "entry_date": "2024-12-19",
+        "exit_date": "2025-01-06",
+        "entry_open": 76.3662,
+        "exit_close": 75.3175,
+        "adv20_usd": 84879856.49,
+        "net_long_return": -0.017233,
+        "long_pnl_usd": -68.93,
+        "risk_gate_avoided_loss_usd": 68.93,
+        "same_ticker_unconditional_net_return_mean": -0.019104,
+        "excess_vs_same_ticker_unconditional": 0.001871
+      },
+      {
+        "ticker": "EL",
+        "cik": "0001001250",
+        "form_type": "8-K/A",
+        "filing_date": "2024-12-20",
+        "report_date": "2024-02-01",
+        "accepted_at": "2024-12-20T21:01:08.000Z",
+        "accession_number": "0001001250-24-000263",
+        "primary_document": "el-20240201.htm",
+        "items_raw": "2.05,9.01",
+        "item_codes": [
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001001250.json",
+        "entry_date": "2024-12-23",
+        "exit_date": "2025-01-08",
+        "entry_open": 72.4215,
+        "exit_close": 72.157,
+        "adv20_usd": 380303107.04,
+        "net_long_return": -0.007152,
+        "long_pnl_usd": -28.61,
+        "risk_gate_avoided_loss_usd": 28.61,
+        "same_ticker_unconditional_net_return_mean": -0.027804,
+        "excess_vs_same_ticker_unconditional": 0.020652
+      },
+      {
+        "ticker": "INGR",
+        "cik": "0001046257",
+        "form_type": "8-K",
+        "filing_date": "2025-01-06",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-01-06T11:24:45.000Z",
+        "accession_number": "0001046257-25-000003",
+        "primary_document": "ingr-20241231.htm",
+        "items_raw": "2.05,2.06",
+        "item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "matched_item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001046257.json",
+        "entry_date": "2025-01-07",
+        "exit_date": "2025-01-23",
+        "entry_open": 129.3232,
+        "exit_close": 132.2055,
+        "adv20_usd": 68385115.82,
+        "net_long_return": 0.018787,
+        "long_pnl_usd": 75.15,
+        "risk_gate_avoided_loss_usd": -75.15,
+        "same_ticker_unconditional_net_return_mean": -0.010553,
+        "excess_vs_same_ticker_unconditional": 0.02934
+      },
+      {
+        "ticker": "SEDG",
+        "cik": "0001419612",
+        "form_type": "8-K",
+        "filing_date": "2025-01-06",
+        "report_date": "2025-01-06",
+        "accepted_at": "2025-01-06T12:11:05.000Z",
+        "accession_number": "0001178913-25-000024",
+        "primary_document": "zk2532513.htm",
+        "items_raw": "2.05,9.01",
+        "item_codes": [
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001419612.json",
+        "entry_date": "2025-01-07",
+        "exit_date": "2025-01-23",
+        "entry_open": 16.8,
+        "exit_close": 13.58,
+        "adv20_usd": 70356956.11,
+        "net_long_return": -0.195167,
+        "long_pnl_usd": -780.67,
+        "risk_gate_avoided_loss_usd": 780.67,
+        "same_ticker_unconditional_net_return_mean": -0.016697,
+        "excess_vs_same_ticker_unconditional": -0.17847
+      },
+      {
+        "ticker": "ABBV",
+        "cik": "0001551152",
+        "form_type": "8-K",
+        "filing_date": "2025-01-10",
+        "report_date": "2025-01-09",
+        "accepted_at": "2025-01-10T13:31:46.000Z",
+        "accession_number": "0001551152-25-000006",
+        "primary_document": "abbv-20250109.htm",
+        "items_raw": "2.06",
+        "item_codes": [
+          "2.06"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001551152.json",
+        "entry_date": "2025-01-13",
+        "exit_date": "2025-01-28",
+        "entry_open": 166.5101,
+        "exit_close": 167.7445,
+        "adv20_usd": 993382057.35,
+        "net_long_return": 0.003913,
+        "long_pnl_usd": 15.65,
+        "risk_gate_avoided_loss_usd": -15.65,
+        "same_ticker_unconditional_net_return_mean": 0.000428,
+        "excess_vs_same_ticker_unconditional": 0.003485
+      },
+      {
+        "ticker": "KSS",
+        "cik": "0000885639",
+        "form_type": "8-K",
+        "filing_date": "2025-01-10",
+        "report_date": "2025-01-09",
+        "accepted_at": "2025-01-10T21:05:44.000Z",
+        "accession_number": "0001193125-25-004437",
+        "primary_document": "d880965d8k.htm",
+        "items_raw": "2.05,7.01",
+        "item_codes": [
+          "2.05",
+          "7.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000885639.json",
+        "entry_date": "2025-01-13",
+        "exit_date": "2025-01-28",
+        "entry_open": 13.0387,
+        "exit_close": 12.8866,
+        "adv20_usd": 115713465.5,
+        "net_long_return": -0.015162,
+        "long_pnl_usd": -60.65,
+        "risk_gate_avoided_loss_usd": 60.65,
+        "same_ticker_unconditional_net_return_mean": -0.073235,
+        "excess_vs_same_ticker_unconditional": 0.058073
+      },
+      {
+        "ticker": "W",
+        "cik": "0001616707",
+        "form_type": "8-K",
+        "filing_date": "2025-01-10",
+        "report_date": "2025-01-10",
+        "accepted_at": "2025-01-10T12:01:54.000Z",
+        "accession_number": "0001616707-25-000003",
+        "primary_document": "w-20250110.htm",
+        "items_raw": "2.05,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001616707.json",
+        "entry_date": "2025-01-13",
+        "exit_date": "2025-01-28",
+        "entry_open": 42.83,
+        "exit_close": 49.12,
+        "adv20_usd": 155943185.91,
+        "net_long_return": 0.14336,
+        "long_pnl_usd": 573.44,
+        "risk_gate_avoided_loss_usd": -573.44,
+        "same_ticker_unconditional_net_return_mean": -0.035024,
+        "excess_vs_same_ticker_unconditional": 0.178384
+      },
+      {
+        "ticker": "ILMN",
+        "cik": "0001110803",
+        "form_type": "8-K/A",
+        "filing_date": "2025-01-14",
+        "report_date": "2023-06-21",
+        "accepted_at": "2025-01-14T21:40:22.000Z",
+        "accession_number": "0001110803-25-000011",
+        "primary_document": "ilmn-20230621.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001110803.json",
+        "entry_date": "2025-01-15",
+        "exit_date": "2025-01-30",
+        "entry_open": 139.01,
+        "exit_close": 133.01,
+        "adv20_usd": 302379591.57,
+        "net_long_return": -0.046662,
+        "long_pnl_usd": -186.65,
+        "risk_gate_avoided_loss_usd": 186.65,
+        "same_ticker_unconditional_net_return_mean": -0.044117,
+        "excess_vs_same_ticker_unconditional": -0.002546
+      },
+      {
+        "ticker": "FBIN",
+        "cik": "0001519751",
+        "form_type": "8-K",
+        "filing_date": "2025-01-22",
+        "report_date": "2025-01-18",
+        "accepted_at": "2025-01-22T14:21:09.000Z",
+        "accession_number": "0000950170-25-007550",
+        "primary_document": "fbin-20250118.htm",
+        "items_raw": "2.05,5.02,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "5.02",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001519751.json",
+        "entry_date": "2025-01-23",
+        "exit_date": "2025-02-06",
+        "entry_open": 71.3786,
+        "exit_close": 67.4522,
+        "adv20_usd": 84504517.43,
+        "net_long_return": -0.058508,
+        "long_pnl_usd": -234.03,
+        "risk_gate_avoided_loss_usd": 234.03,
+        "same_ticker_unconditional_net_return_mean": -0.037976,
+        "excess_vs_same_ticker_unconditional": -0.020532
+      },
+      {
+        "ticker": "DOW",
+        "cik": "0001751788",
+        "form_type": "8-K",
+        "filing_date": "2025-01-30",
+        "report_date": "2025-01-27",
+        "accepted_at": "2025-01-30T11:15:36.000Z",
+        "accession_number": "0001751788-25-000006",
+        "primary_document": "dow-20250127.htm",
+        "items_raw": "2.05,8.01",
+        "item_codes": [
+          "2.05",
+          "8.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001751788.json",
+        "entry_date": "2025-01-31",
+        "exit_date": "2025-02-14",
+        "entry_open": 35.7017,
+        "exit_close": 35.5592,
+        "adv20_usd": 255774475.39,
+        "net_long_return": -0.007492,
+        "long_pnl_usd": -29.97,
+        "risk_gate_avoided_loss_usd": 29.97,
+        "same_ticker_unconditional_net_return_mean": -0.043836,
+        "excess_vs_same_ticker_unconditional": 0.036344
+      },
+      {
+        "ticker": "XYL",
+        "cik": "0001524472",
+        "form_type": "8-K",
+        "filing_date": "2025-01-30",
+        "report_date": "2025-01-28",
+        "accepted_at": "2025-01-30T21:18:06.000Z",
+        "accession_number": "0001524472-25-000006",
+        "primary_document": "xyl-20250128.htm",
+        "items_raw": "2.02,2.05",
+        "item_codes": [
+          "2.02",
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001524472.json",
+        "entry_date": "2025-01-31",
+        "exit_date": "2025-02-14",
+        "entry_open": 118.3202,
+        "exit_close": 127.4202,
+        "adv20_usd": 135217643.07,
+        "net_long_return": 0.07341,
+        "long_pnl_usd": 293.64,
+        "risk_gate_avoided_loss_usd": -293.64,
+        "same_ticker_unconditional_net_return_mean": -0.010979,
+        "excess_vs_same_ticker_unconditional": 0.084389
+      },
+      {
+        "ticker": "EL",
+        "cik": "0001001250",
+        "form_type": "8-K",
+        "filing_date": "2025-02-04",
+        "report_date": "2025-02-03",
+        "accepted_at": "2025-02-04T12:51:39.000Z",
+        "accession_number": "0001001250-25-000009",
+        "primary_document": "el-20250203.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001001250.json",
+        "entry_date": "2025-02-05",
+        "exit_date": "2025-02-20",
+        "entry_open": 67.5921,
+        "exit_close": 69.8843,
+        "adv20_usd": 303765866.86,
+        "net_long_return": 0.030413,
+        "long_pnl_usd": 121.65,
+        "risk_gate_avoided_loss_usd": -121.65,
+        "same_ticker_unconditional_net_return_mean": -0.027804,
+        "excess_vs_same_ticker_unconditional": 0.058217
+      },
+      {
+        "ticker": "WDAY",
+        "cik": "0001327811",
+        "form_type": "8-K",
+        "filing_date": "2025-02-05",
+        "report_date": "2025-02-05",
+        "accepted_at": "2025-02-05T06:08:30.000Z",
+        "accession_number": "0001327811-25-000030",
+        "primary_document": "wday-20250205.htm",
+        "items_raw": "2.02,2.05,2.06,7.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "2.06",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001327811.json",
+        "entry_date": "2025-02-06",
+        "exit_date": "2025-02-21",
+        "entry_open": 276.99,
+        "exit_close": 256.39,
+        "adv20_usd": 549746887.8,
+        "net_long_return": -0.077871,
+        "long_pnl_usd": -311.48,
+        "risk_gate_avoided_loss_usd": 311.48,
+        "same_ticker_unconditional_net_return_mean": -0.000523,
+        "excess_vs_same_ticker_unconditional": -0.077348
+      },
+      {
+        "ticker": "BIO",
+        "cik": "0000012208",
+        "form_type": "8-K",
+        "filing_date": "2025-02-13",
+        "report_date": "2025-02-07",
+        "accepted_at": "2025-02-13T21:28:49.000Z",
+        "accession_number": "0000012208-25-000004",
+        "primary_document": "bio-20250207.htm",
+        "items_raw": "2.02,2.05,8.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "8.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000012208.json",
+        "entry_date": "2025-02-14",
+        "exit_date": "2025-03-03",
+        "entry_open": 301.98,
+        "exit_close": 256.45,
+        "adv20_usd": 61034584.98,
+        "net_long_return": -0.154272,
+        "long_pnl_usd": -617.09,
+        "risk_gate_avoided_loss_usd": 617.09,
+        "same_ticker_unconditional_net_return_mean": -0.025174,
+        "excess_vs_same_ticker_unconditional": -0.129097
+      },
+      {
+        "ticker": "IP",
+        "cik": "0000051434",
+        "form_type": "8-K",
+        "filing_date": "2025-02-13",
+        "report_date": "2025-02-11",
+        "accepted_at": "2025-02-13T21:15:39.000Z",
+        "accession_number": "0001193125-25-026087",
+        "primary_document": "d894584d8k.htm",
+        "items_raw": "2.05,2.06,9.01",
+        "item_codes": [
+          "2.05",
+          "2.06",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000051434.json",
+        "entry_date": "2025-02-14",
+        "exit_date": "2025-03-03",
+        "entry_open": 53.1125,
+        "exit_close": 53.06,
+        "adv20_usd": 869517941.44,
+        "net_long_return": -0.004489,
+        "long_pnl_usd": -17.96,
+        "risk_gate_avoided_loss_usd": 17.96,
+        "same_ticker_unconditional_net_return_mean": -2.8e-05,
+        "excess_vs_same_ticker_unconditional": -0.00446
+      },
+      {
+        "ticker": "OC",
+        "cik": "0001370946",
+        "form_type": "8-K",
+        "filing_date": "2025-02-14",
+        "report_date": "2025-02-13",
+        "accepted_at": "2025-02-14T12:36:03.000Z",
+        "accession_number": "0001370946-25-000070",
+        "primary_document": "oc-20250213.htm",
+        "items_raw": "2.06,5.02,8.01",
+        "item_codes": [
+          "2.06",
+          "5.02",
+          "8.01"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001370946.json",
+        "entry_date": "2025-02-18",
+        "exit_date": "2025-03-04",
+        "entry_open": 173.9989,
+        "exit_close": 139.8653,
+        "adv20_usd": 133892758.66,
+        "net_long_return": -0.199671,
+        "long_pnl_usd": -798.69,
+        "risk_gate_avoided_loss_usd": 798.69,
+        "same_ticker_unconditional_net_return_mean": -0.016178,
+        "excess_vs_same_ticker_unconditional": -0.183493
+      },
+      {
+        "ticker": "LUV",
+        "cik": "0000092380",
+        "form_type": "8-K",
+        "filing_date": "2025-02-18",
+        "report_date": "2025-02-17",
+        "accepted_at": "2025-02-18T11:09:46.000Z",
+        "accession_number": "0001193125-25-028035",
+        "primary_document": "d907526d8k.htm",
+        "items_raw": "2.05,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000092380.json",
+        "entry_date": "2025-02-19",
+        "exit_date": "2025-03-05",
+        "entry_open": 29.0378,
+        "exit_close": 29.1839,
+        "adv20_usd": 275304776.96,
+        "net_long_return": 0.001534,
+        "long_pnl_usd": 6.13,
+        "risk_gate_avoided_loss_usd": -6.13,
+        "same_ticker_unconditional_net_return_mean": -0.005982,
+        "excess_vs_same_ticker_unconditional": 0.007515
+      },
+      {
+        "ticker": "APD",
+        "cik": "0000002969",
+        "form_type": "8-K",
+        "filing_date": "2025-02-24",
+        "report_date": "2025-02-24",
+        "accepted_at": "2025-02-24T21:53:31.000Z",
+        "accession_number": "0001193125-25-033509",
+        "primary_document": "d830166d8k.htm",
+        "items_raw": "2.06,7.01,9.01",
+        "item_codes": [
+          "2.06",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000002969.json",
+        "entry_date": "2025-02-25",
+        "exit_date": "2025-03-11",
+        "entry_open": 299.8262,
+        "exit_close": 288.5301,
+        "adv20_usd": 527877962.29,
+        "net_long_return": -0.041176,
+        "long_pnl_usd": -164.7,
+        "risk_gate_avoided_loss_usd": 164.7,
+        "same_ticker_unconditional_net_return_mean": -0.011369,
+        "excess_vs_same_ticker_unconditional": -0.029806
+      },
+      {
+        "ticker": "ON",
+        "cik": "0001097864",
+        "form_type": "8-K",
+        "filing_date": "2025-02-25",
+        "report_date": "2025-02-24",
+        "accepted_at": "2025-02-25T21:10:12.000Z",
+        "accession_number": "0001193125-25-035138",
+        "primary_document": "d928094d8k.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001097864.json",
+        "entry_date": "2025-02-26",
+        "exit_date": "2025-03-12",
+        "entry_open": 51.0,
+        "exit_close": 42.85,
+        "adv20_usd": 493970634.19,
+        "net_long_return": -0.163304,
+        "long_pnl_usd": -653.22,
+        "risk_gate_avoided_loss_usd": 653.22,
+        "same_ticker_unconditional_net_return_mean": -0.043401,
+        "excess_vs_same_ticker_unconditional": -0.119903
+      },
+      {
+        "ticker": "ADSK",
+        "cik": "0000769397",
+        "form_type": "8-K",
+        "filing_date": "2025-02-27",
+        "report_date": "2025-02-26",
+        "accepted_at": "2025-02-27T21:34:02.000Z",
+        "accession_number": "0000769397-25-000013",
+        "primary_document": "adsk-20250226.htm",
+        "items_raw": "2.02,2.05,5.02,7.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "5.02",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000769397.json",
+        "entry_date": "2025-02-28",
+        "exit_date": "2025-03-14",
+        "entry_open": 279.42,
+        "exit_close": 254.43,
+        "adv20_usd": 448863316.44,
+        "net_long_return": -0.092935,
+        "long_pnl_usd": -371.74,
+        "risk_gate_avoided_loss_usd": 371.74,
+        "same_ticker_unconditional_net_return_mean": -0.00075,
+        "excess_vs_same_ticker_unconditional": -0.092186
+      },
+      {
+        "ticker": "HPQ",
+        "cik": "0000047217",
+        "form_type": "8-K",
+        "filing_date": "2025-02-27",
+        "report_date": "2025-02-27",
+        "accepted_at": "2025-02-27T16:18:12.000Z",
+        "accession_number": "0000047217-25-000023",
+        "primary_document": "hpq-20250227.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000047217.json",
+        "entry_date": "2025-02-28",
+        "exit_date": "2025-03-14",
+        "entry_open": 29.6158,
+        "exit_close": 27.0432,
+        "adv20_usd": 184851208.86,
+        "net_long_return": -0.090366,
+        "long_pnl_usd": -361.46,
+        "risk_gate_avoided_loss_usd": 361.46,
+        "same_ticker_unconditional_net_return_mean": -0.026142,
+        "excess_vs_same_ticker_unconditional": -0.064224
+      },
+      {
+        "ticker": "MCHP",
+        "cik": "0000827054",
+        "form_type": "8-K",
+        "filing_date": "2025-03-03",
+        "report_date": "2025-03-03",
+        "accepted_at": "2025-03-03T11:58:23.000Z",
+        "accession_number": "0000827054-25-000037",
+        "primary_document": "mchp-20250303.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000827054.json",
+        "entry_date": "2025-03-04",
+        "exit_date": "2025-03-18",
+        "entry_open": 56.9373,
+        "exit_close": 52.6262,
+        "adv20_usd": 652830043.42,
+        "net_long_return": -0.079216,
+        "long_pnl_usd": -316.87,
+        "risk_gate_avoided_loss_usd": 316.87,
+        "same_ticker_unconditional_net_return_mean": -0.03399,
+        "excess_vs_same_ticker_unconditional": -0.045226
+      },
+      {
+        "ticker": "HPE",
+        "cik": "0001645590",
+        "form_type": "8-K",
+        "filing_date": "2025-03-06",
+        "report_date": "2025-03-06",
+        "accepted_at": "2025-03-06T21:08:18.000Z",
+        "accession_number": "0001645590-25-000034",
+        "primary_document": "hpe-20250306.htm",
+        "items_raw": "2.02,2.05,7.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001645590.json",
+        "entry_date": "2025-03-07",
+        "exit_date": "2025-03-21",
+        "entry_open": 14.7643,
+        "exit_close": 15.654,
+        "adv20_usd": 233262940.8,
+        "net_long_return": 0.056762,
+        "long_pnl_usd": 227.05,
+        "risk_gate_avoided_loss_usd": -227.05,
+        "same_ticker_unconditional_net_return_mean": -0.01452,
+        "excess_vs_same_ticker_unconditional": 0.071282
+      },
+      {
+        "ticker": "W",
+        "cik": "0001616707",
+        "form_type": "8-K",
+        "filing_date": "2025-03-07",
+        "report_date": "2025-03-07",
+        "accepted_at": "2025-03-07T12:30:40.000Z",
+        "accession_number": "0001616707-25-000028",
+        "primary_document": "w-20250307.htm",
+        "items_raw": "2.05,7.01",
+        "item_codes": [
+          "2.05",
+          "7.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001616707.json",
+        "entry_date": "2025-03-10",
+        "exit_date": "2025-03-24",
+        "entry_open": 34.125,
+        "exit_close": 37.86,
+        "adv20_usd": 194820378.8,
+        "net_long_return": 0.105951,
+        "long_pnl_usd": 423.8,
+        "risk_gate_avoided_loss_usd": -423.8,
+        "same_ticker_unconditional_net_return_mean": -0.035024,
+        "excess_vs_same_ticker_unconditional": 0.140975
+      },
+      {
+        "ticker": "ON",
+        "cik": "0001097864",
+        "form_type": "8-K",
+        "filing_date": "2025-03-18",
+        "report_date": "2025-03-17",
+        "accepted_at": "2025-03-18T21:10:21.000Z",
+        "accession_number": "0001193125-25-056735",
+        "primary_document": "d922410d8k.htm",
+        "items_raw": "2.06",
+        "item_codes": [
+          "2.06"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001097864.json",
+        "entry_date": "2025-03-19",
+        "exit_date": "2025-04-02",
+        "entry_open": 43.61,
+        "exit_close": 40.76,
+        "adv20_usd": 463430473.49,
+        "net_long_return": -0.068852,
+        "long_pnl_usd": -275.41,
+        "risk_gate_avoided_loss_usd": 275.41,
+        "same_ticker_unconditional_net_return_mean": -0.043401,
+        "excess_vs_same_ticker_unconditional": -0.025451
+      },
+      {
+        "ticker": "POST",
+        "cik": "0001530950",
+        "form_type": "8-K",
+        "filing_date": "2025-04-09",
+        "report_date": "2025-03-26",
+        "accepted_at": "2025-04-09T11:01:28.000Z",
+        "accession_number": "0001530950-25-000133",
+        "primary_document": "post-20250326.htm",
+        "items_raw": "2.05,9.01",
+        "item_codes": [
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001530950.json",
+        "entry_date": "2025-04-10",
+        "exit_date": "2025-04-25",
+        "entry_open": 116.05,
+        "exit_close": 112.82,
+        "adv20_usd": 80250992.55,
+        "net_long_return": -0.031333,
+        "long_pnl_usd": -125.33,
+        "risk_gate_avoided_loss_usd": 125.33,
+        "same_ticker_unconditional_net_return_mean": -0.004492,
+        "excess_vs_same_ticker_unconditional": -0.026841
+      },
+      {
+        "ticker": "INTC",
+        "cik": "0000050863",
+        "form_type": "8-K",
+        "filing_date": "2025-04-24",
+        "report_date": "2025-04-24",
+        "accepted_at": "2025-04-24T16:05:05.000Z",
+        "accession_number": "0000050863-25-000070",
+        "primary_document": "intc-20250424.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000050863.json",
+        "entry_date": "2025-04-25",
+        "exit_date": "2025-05-09",
+        "entry_open": 19.73,
+        "exit_close": 21.42,
+        "adv20_usd": 2284790593.96,
+        "net_long_return": 0.082156,
+        "long_pnl_usd": 328.63,
+        "risk_gate_avoided_loss_usd": -328.63,
+        "same_ticker_unconditional_net_return_mean": 0.059536,
+        "excess_vs_same_ticker_unconditional": 0.02262
+      },
+      {
+        "ticker": "PFE",
+        "cik": "0000078003",
+        "form_type": "8-K",
+        "filing_date": "2025-04-29",
+        "report_date": "2025-04-29",
+        "accepted_at": "2025-04-29T12:02:49.000Z",
+        "accession_number": "0000078003-25-000111",
+        "primary_document": "pfe-20250429.htm",
+        "items_raw": "2.02,2.05,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000078003.json",
+        "entry_date": "2025-04-30",
+        "exit_date": "2025-05-14",
+        "entry_open": 22.1959,
+        "exit_close": 20.5817,
+        "adv20_usd": 1212756669.66,
+        "net_long_return": -0.076224,
+        "long_pnl_usd": -304.9,
+        "risk_gate_avoided_loss_usd": 304.9,
+        "same_ticker_unconditional_net_return_mean": 0.003563,
+        "excess_vs_same_ticker_unconditional": -0.079787
+      },
+      {
+        "ticker": "OC",
+        "cik": "0001370946",
+        "form_type": "8-K/A",
+        "filing_date": "2025-04-30",
+        "report_date": "2025-02-13",
+        "accepted_at": "2025-04-30T12:19:39.000Z",
+        "accession_number": "0001370946-25-000163",
+        "primary_document": "oc-20250213.htm",
+        "items_raw": "2.06",
+        "item_codes": [
+          "2.06"
+        ],
+        "matched_item_codes": [
+          "2.06"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001370946.json",
+        "entry_date": "2025-05-01",
+        "exit_date": "2025-05-15",
+        "entry_open": 141.1995,
+        "exit_close": 139.0626,
+        "adv20_usd": 129384936.95,
+        "net_long_return": -0.018634,
+        "long_pnl_usd": -74.54,
+        "risk_gate_avoided_loss_usd": 74.54,
+        "same_ticker_unconditional_net_return_mean": -0.015419,
+        "excess_vs_same_ticker_unconditional": -0.003215
+      },
+      {
+        "ticker": "CRWD",
+        "cik": "0001535527",
+        "form_type": "8-K",
+        "filing_date": "2025-05-07",
+        "report_date": "2025-05-06",
+        "accepted_at": "2025-05-07T10:03:11.000Z",
+        "accession_number": "0001104659-25-045244",
+        "primary_document": "tm2514190d1_8k.htm",
+        "items_raw": "2.02,2.05,7.01,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001535527.json",
+        "entry_date": "2025-05-08",
+        "exit_date": "2025-05-22",
+        "entry_open": 427.485,
+        "exit_close": 444.07,
+        "adv20_usd": 1502602472.76,
+        "net_long_return": 0.035297,
+        "long_pnl_usd": 141.19,
+        "risk_gate_avoided_loss_usd": -141.19,
+        "same_ticker_unconditional_net_return_mean": 0.019253,
+        "excess_vs_same_ticker_unconditional": 0.016044
+      },
+      {
+        "ticker": "SIG",
+        "cik": "0000832988",
+        "form_type": "8-K",
+        "filing_date": "2025-05-16",
+        "report_date": "2025-05-12",
+        "accepted_at": "2025-05-16T20:20:31.000Z",
+        "accession_number": "0000832988-25-000079",
+        "primary_document": "sig-20250512.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000832988.json",
+        "entry_date": "2025-05-19",
+        "exit_date": "2025-06-03",
+        "entry_open": 64.0638,
+        "exit_close": 74.5525,
+        "adv20_usd": 56334264.13,
+        "net_long_return": 0.160224,
+        "long_pnl_usd": 640.89,
+        "risk_gate_avoided_loss_usd": -640.89,
+        "same_ticker_unconditional_net_return_mean": 0.043054,
+        "excess_vs_same_ticker_unconditional": 0.11717
+      },
+      {
+        "ticker": "GIS",
+        "cik": "0000040704",
+        "form_type": "8-K",
+        "filing_date": "2025-05-27",
+        "report_date": "2025-05-20",
+        "accepted_at": "2025-05-27T20:29:41.000Z",
+        "accession_number": "0001193125-25-127594",
+        "primary_document": "d908212d8k.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000040704.json",
+        "entry_date": "2025-05-28",
+        "exit_date": "2025-06-11",
+        "entry_open": 50.9589,
+        "exit_close": 51.3185,
+        "adv20_usd": 242987775.69,
+        "net_long_return": 0.003557,
+        "long_pnl_usd": 14.23,
+        "risk_gate_avoided_loss_usd": -14.23,
+        "same_ticker_unconditional_net_return_mean": -0.015727,
+        "excess_vs_same_ticker_unconditional": 0.019283
+      },
+      {
+        "ticker": "GT",
+        "cik": "0000042582",
+        "form_type": "8-K",
+        "filing_date": "2025-06-05",
+        "report_date": "2025-06-02",
+        "accepted_at": "2025-06-05T20:30:43.000Z",
+        "accession_number": "0001193125-25-135902",
+        "primary_document": "d54903d8k.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000042582.json",
+        "entry_date": "2025-06-06",
+        "exit_date": "2025-06-23",
+        "entry_open": 10.8,
+        "exit_close": 10.15,
+        "adv20_usd": 69410029.54,
+        "net_long_return": -0.063685,
+        "long_pnl_usd": -254.74,
+        "risk_gate_avoided_loss_usd": 254.74,
+        "same_ticker_unconditional_net_return_mean": -0.034764,
+        "excess_vs_same_ticker_unconditional": -0.028921
+      },
+      {
+        "ticker": "LYB",
+        "cik": "0001489393",
+        "form_type": "8-K",
+        "filing_date": "2025-06-05",
+        "report_date": "2025-06-05",
+        "accepted_at": "2025-06-05T10:08:12.000Z",
+        "accession_number": "0001489393-25-000033",
+        "primary_document": "lyb-20250605.htm",
+        "items_raw": "1.01,2.05,7.01,9.01",
+        "item_codes": [
+          "1.01",
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001489393.json",
+        "entry_date": "2025-06-06",
+        "exit_date": "2025-06-23",
+        "entry_open": 52.8837,
+        "exit_close": 53.7842,
+        "adv20_usd": 206442379.29,
+        "net_long_return": 0.013527,
+        "long_pnl_usd": 54.11,
+        "risk_gate_avoided_loss_usd": -54.11,
+        "same_ticker_unconditional_net_return_mean": -0.016536,
+        "excess_vs_same_ticker_unconditional": 0.030064
+      },
+      {
+        "ticker": "GTM",
+        "cik": "0001794515",
+        "form_type": "8-K",
+        "filing_date": "2025-06-09",
+        "report_date": "2025-06-09",
+        "accepted_at": "2025-06-09T20:12:43.000Z",
+        "accession_number": "0001794515-25-000138",
+        "primary_document": "zi-20250609.htm",
+        "items_raw": "2.05,7.01,9.01",
+        "item_codes": [
+          "2.05",
+          "7.01",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001794515.json",
+        "entry_date": "2025-06-10",
+        "exit_date": "2025-06-25",
+        "entry_open": 10.21,
+        "exit_close": 9.74,
+        "adv20_usd": 54140727.55,
+        "net_long_return": -0.049533,
+        "long_pnl_usd": -198.13,
+        "risk_gate_avoided_loss_usd": 198.13,
+        "same_ticker_unconditional_net_return_mean": -0.009628,
+        "excess_vs_same_ticker_unconditional": -0.039906
+      },
+      {
+        "ticker": "WLK",
+        "cik": "0001262823",
+        "form_type": "8-K",
+        "filing_date": "2025-06-17",
+        "report_date": "2025-06-17",
+        "accepted_at": "2025-06-17T10:01:19.000Z",
+        "accession_number": "0001262823-25-000043",
+        "primary_document": "wlk-20250617.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001262823.json",
+        "entry_date": "2025-06-18",
+        "exit_date": "2025-07-03",
+        "entry_open": 71.3386,
+        "exit_close": 79.4927,
+        "adv20_usd": 109937083.26,
+        "net_long_return": 0.110801,
+        "long_pnl_usd": 443.21,
+        "risk_gate_avoided_loss_usd": -443.21,
+        "same_ticker_unconditional_net_return_mean": -0.016446,
+        "excess_vs_same_ticker_unconditional": 0.127247
+      },
+      {
+        "ticker": "JBL",
+        "cik": "0000898293",
+        "form_type": "8-K/A",
+        "filing_date": "2025-06-20",
+        "report_date": "2025-06-13",
+        "accepted_at": "2025-06-20T10:32:25.000Z",
+        "accession_number": "0001193125-25-143162",
+        "primary_document": "d70947d8ka.htm",
+        "items_raw": "2.05",
+        "item_codes": [
+          "2.05"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000898293.json",
+        "entry_date": "2025-06-23",
+        "exit_date": "2025-07-08",
+        "entry_open": 203.8139,
+        "exit_close": 221.5708,
+        "adv20_usd": 302260726.85,
+        "net_long_return": 0.083623,
+        "long_pnl_usd": 334.49,
+        "risk_gate_avoided_loss_usd": -334.49,
+        "same_ticker_unconditional_net_return_mean": 0.031422,
+        "excess_vs_same_ticker_unconditional": 0.0522
+      },
+      {
+        "ticker": "DOW",
+        "cik": "0001751788",
+        "form_type": "8-K",
+        "filing_date": "2025-07-07",
+        "report_date": "2025-06-30",
+        "accepted_at": "2025-07-07T10:03:40.000Z",
+        "accession_number": "0001751788-25-000139",
+        "primary_document": "dow-20250630.htm",
+        "items_raw": "2.05,2.06,8.01",
+        "item_codes": [
+          "2.05",
+          "2.06",
+          "8.01"
+        ],
+        "matched_item_codes": [
+          "2.05",
+          "2.06"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001751788.json",
+        "entry_date": "2025-07-08",
+        "exit_date": "2025-07-22",
+        "entry_open": 26.6004,
+        "exit_close": 28.4723,
+        "adv20_usd": 350922426.48,
+        "net_long_return": 0.066872,
+        "long_pnl_usd": 267.49,
+        "risk_gate_avoided_loss_usd": -267.49,
+        "same_ticker_unconditional_net_return_mean": -0.015114,
+        "excess_vs_same_ticker_unconditional": 0.081986
+      },
+      {
+        "ticker": "SRPT",
+        "cik": "0000873303",
+        "form_type": "8-K",
+        "filing_date": "2025-07-16",
+        "report_date": "2025-07-14",
+        "accepted_at": "2025-07-16T20:11:10.000Z",
+        "accession_number": "0000950170-25-096257",
+        "primary_document": "srpt-20250714.htm",
+        "items_raw": "2.02,2.05,5.02,9.01",
+        "item_codes": [
+          "2.02",
+          "2.05",
+          "5.02",
+          "9.01"
+        ],
+        "matched_item_codes": [
+          "2.05"
+        ],
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000873303.json",
+        "entry_date": "2025-07-17",
+        "exit_date": "2025-07-31",
+        "entry_open": 22.54,
+        "exit_close": 16.42,
+        "adv20_usd": 123141321.5,
+        "net_long_return": -0.275017,
+        "long_pnl_usd": -1100.07,
+        "risk_gate_avoided_loss_usd": 1100.07,
+        "same_ticker_unconditional_net_return_mean": -0.046983,
+        "excess_vs_same_ticker_unconditional": -0.228034
+      }
+    ],
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "paper_orders_changed": false,
+      "live_orders_changed": false,
+      "watchlist_changed": false,
+      "llm_decision_boundary_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "Read-only offline source validation over SEC cached submissions and warehouse OHLCV. No production/backtest behavior changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The direct Item 2.05/2.06 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule.",
+      "forbidden_near_neighbor_retry": "Do not retune price, ADV, hold days, cooldown, same-day ranking, 2.05-vs-2.06 sub-slices, item-combination slices, or response functions on these same cached rows. A long-source inversion also needs a new gate shape.",
+      "new_evidence_required": "A legal retry needs materially new Item 2.05/2.06 rows, text-provenance separating true impairment/restructuring from disposal accounting updates, or a different restructuring data source."
+    },
+    "rejection_reason": "event_drift_not_negative_in_two_windows;aggregate_excess_not_negative",
+    "next_retry_requires": [
+      "materially new Item 2.05/2.06 rows",
+      "or text-provenance separating true impairment/restructuring events",
+      "or a different restructuring data source"
+    ],
+    "before_after_strategy_behavior_changed": false,
+    "changed_files": [
+      "quant/experiments/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.py",
+      "data/experiments/exp-20260708-009/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.json",
+      "experiments/logs/exp-20260708-009.json",
+      "experiments/cards/exp-20260708-009.md",
+      "experiments/manifests/exp-20260708-009.json",
+      "experiments/tickets/exp-20260708-009.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "related_files": [
+      "quant/experiments/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.py",
+      "data/experiments/exp-20260708-009/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.json",
+      "experiments/logs/exp-20260708-009.json",
+      "experiments/cards/exp-20260708-009.md",
+      "experiments/manifests/exp-20260708-009.json",
+      "experiments/tickets/exp-20260708-009.json",
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.py",
+      ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.py",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "anti_js": {
+      "used_javascript": false,
+      "evidence": "Python runner only; no node/js tooling invoked."
+    },
+    "lean_quality_passed": true,
+    "artifact": "data/experiments/exp-20260708-009/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.json",
+    "log": "experiments/logs/exp-20260708-009.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-009.json",
+  "single_causal_variable": "sec_8k_item205206_restructuring_impairment_10d_entry_risk_gate_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260708-009.json",
+  "trial_family": "sec_8k_item205206_restructuring_impairment_entry_risk",
+  "trial_variant_id": "item205206_next_open_10d_v1",
+  "implementation_mode": "private_replay_scout",
+  "new_evidence_axis": "New gate shape: direct same-ticker SEC 8-K Item 2.05 exit/disposal-cost and Item 2.06 impairment next-open 10d entry-risk attribution. Prior NT late-filing, Item 3.01 listing-compliance, and Item 5.02 leadership experiments tested different disclosure items or text semantics, not restructuring/impairment event-risk.",
+  "decision": "rejected_sec_item205206_entry_risk_gate",
+  "artifact": "data/experiments/exp-20260708-009/exp_20260708_009_sec_item205206_restructuring_impairment_entry_risk.json",
+  "log": "experiments/logs/exp-20260708-009.json",
+  "accepted_alpha": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-08T06:14:28+00:00"
+}

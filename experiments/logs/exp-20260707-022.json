@@ -1,0 +1,120 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "keyword_collision_with_sec_text_event",
+      "missed_cover_page_variant",
+      "frozen_rebuild_failure"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Low surprise: frozen_families had multiple SEC filer-status families in data_source=other, and the ordered keyword/test repair rebuilt all target rows with sec_filer_status while generic SEC 8-K text still maps to sec_text_event."
+  },
+  "causal_components": [
+    "experiment_fingerprint data_source keywords",
+    "focused fingerprint regression tests",
+    "frozen family rebuild"
+  ],
+  "change_summary": "Accepted measurement repair: added sec_filer_status data_source fingerprints for SEC 10-K/10-Q cover-page, DEI cover-status, cover-XBRL priority, and filer-status transition families; focused tests and frozen_families rebuild now keep those parked/blocked families out of data_source=other without changing trading behavior.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_periodic_filer_status_data_source_keywords",
+  "component": "scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl, quant/experiments/exp_20260707_022_sec_filer_status_fingerprint_coverage.py, data/experiments/exp-20260707-022, experiments/logs/exp-20260707-022.json, experiments/cards/exp-20260707-022.md, experiments/manifests/exp-20260707-022.json, experiments/tickets/exp-20260707-022.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260707-022",
+  "hypothesis": "Alpha blocker: SEC 10-K/10-Q cover-page and DEI filer-status transition alpha has already been structurally blocked, but the novelty fingerprint still classifies that family as data_source=other, letting future filer-status materialization or status-transition retries bypass data_source saturation guards.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260618-007",
+    "exp-20260626-008",
+    "exp-20260627-015",
+    "exp-20260627-018",
+    "exp-20260706-020",
+    "exp-20260707-012"
+  ],
+  "new_evidence_type": "concrete_classifier_miss_on_sec_filer_status_families",
+  "next_retry_requires": [
+    "Do not reopen SEC cover-page, DEI cover-status, cover-XBRL priority, or filer-status transition classifier coverage merely to confirm the same mapping.",
+    "Reopen this measurement-repair line only if a concrete new SEC filer-status family falls back to data_source=other, or if sec_filer_status causes a demonstrated false-positive collision with generic SEC text/event experiments."
+  ],
+  "notes": "No strategy, entry, exit, ranking, sizing, LLM, paper order, or live order behavior changed. This closes a novelty/saturation guard coverage gap discovered after filer-status alpha was structurally blocked as untradeable in exp-20260627-018.",
+  "parameters": {
+    "locked_variables": [
+      "sec_filer_status_fingerprint_coverage_v1"
+    ],
+    "single_causal_variable": "sec_filer_status_fingerprint_coverage_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another SEC filer-status/DEI/cover-page classifier coverage repair for the same exp-20260618-007..exp-20260627-015 family set; the repaired novelty view now keys those rows to sec_filer_status.",
+    "new_evidence_required": "A valid retry needs a new classifier miss where a SEC filer-status family still lands in other, or evidence that the new sec_filer_status keywords overmatch generic SEC text/event families.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Low surprise: frozen_families had multiple SEC filer-status families in data_source=other, and the ordered keyword/test repair rebuilt all target rows with sec_filer_status while generic SEC 8-K text still maps to sec_text_event."
+  },
+  "prediction": {
+    "confidence_reason": "Current frozen_families has multiple SEC cover-page and DEI filer-status families under data_source=other; a specific ordered keyword entry plus tests should close the guard leak without touching strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword_collision_with_sec_text_event",
+      "missed_cover_page_variant",
+      "frozen_rebuild_failure"
+    ],
+    "recorded_at": "2026-07-07T21:10:28+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260707-022/before_measurement.json",
+    "data/experiments/exp-20260707-022/after_measurement.json",
+    "data/experiments/exp-20260707-022/exp_20260707_022_sec_filer_status_fingerprint_coverage.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/exp_20260707_022_sec_filer_status_fingerprint_coverage.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-07T21:15:09+00:00",
+  "trial_family": "sec_filer_status_fingerprint_coverage",
+  "trial_variant_id": "sec_periodic_cover_dei_status_data_source_v1"
+}

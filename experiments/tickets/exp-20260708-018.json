@@ -1,0 +1,421 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_018_default_off_source_kill_switch_temporal_validation.py",
+    "data/experiments/exp-20260708-018/exp_20260708_018_default_off_source_kill_switch_temporal_validation.json",
+    "experiments/cards/exp-20260708-018.md",
+    "experiments/manifests/exp-20260708-018.json",
+    "experiments/tickets/exp-20260708-018.json",
+    "experiments/logs/exp-20260708-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-018.md",
+  "causal_components": [
+    "forward_replacement_value ledger",
+    "chronological train/holdout split",
+    "fixed exp017 source gate",
+    "no strategy behavior change"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "default_off_source_kill_switch_chronological_holdout_validation_v1",
+  "claimed_at": "2026-07-08T15:06:01+00:00",
+  "completed_at": "2026-07-08T15:09:36+00:00",
+  "created_at": "2026-07-08T15:05:44+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-018",
+  "experiment_uid": "expuid-33ba717fd3244826",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T15:05:44+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "default_off_source_kill_switch_temporal_validation"
+  },
+  "hypothesis": "Observed-only alpha validation: the exp-20260708-017 source-level kill-switch lead should generalize only if sources selected by a fixed chronological training segment continue to have negative cash/SPY/QQQ replacement value in a later holdout segment; otherwise the lead is same-cohort overfit and must not become a shared policy.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "default_off_source_kill_switch_chronological_holdout_validation_v1"
+  ],
+  "mechanism_family": "production_visible_default_off_forward_source_risk_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-017"
+  ],
+  "new_evidence_type": "new_gate_shape_on_settled_forward_replacement_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "observed_only_attribution",
+        "score": 0.648,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.6408,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6393,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "market_state_family_replacement_value_attribution",
+        "score": 0.6314,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_market_forward_maturation",
+        "score": 0.6255,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "a",
+        "allocation",
+        "alpha",
+        "become",
+        "by",
+        "cash",
+        "chronological",
+        "cohort",
+        "continue",
+        "exp",
+        "forward",
+        "generalize",
+        "have",
+        "holdout",
+        "if",
+        "in",
+        "is",
+        "kill",
+        "later",
+        "lead",
+        "level",
+        "must",
+        "negative",
+        "not",
+        "observed",
+        "only",
+        "otherwise",
+        "overfit",
+        "policy",
+        "qqq",
+        "replacement",
+        "risk",
+        "same",
+        "segment",
+        "selected",
+        "should",
+        "sources",
+        "spy",
+        "switch",
+        "temporal",
+        "to",
+        "training",
+        "validation",
+        "value"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.648,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.6408,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6393,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.6314,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "broad_market_forward_maturation",
+        "reopen_condition": "Populate the candidate universe feed, then collect closed 20d replacement-value outcomes versus paper cash or displaced core slots.",
+        "score": 0.6255,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: chronological train/holdout validation of the exp-20260708-017 source-level kill-switch using only earlier settled rows to choose sources before measuring later rows; not a threshold, comparator, source-label, or response-curve retune.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": true,
+      "override_axis_categories": [
+        "new_gate_shape"
+      ],
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 4,
+      "streak_experiments": [
+        "exp-20260708-011",
+        "exp-20260708-012",
+        "exp-20260708-017"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: chronological train/holdout validation of the exp-20260708-017 source-level kill-switch using only earlier settled rows to choose sources before measuring later rows; not a threshold, comparator, source-label, or response-curve retune.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: chronological train/holdout validation of the exp-20260708-017 source-level kill-switch using only earlier settled rows to choose sources before measuring later rows; not a threshold, comparator, source-label, or response-curve retune.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "training_no_kill_sources",
+      "holdout_not_negative",
+      "sample_too_thin",
+      "observed_only_not_policy_ready"
+    ],
+    "confidence_reason": "The prior source-level lead was found on all current forward rows, so a chronological train/holdout validation is a stricter falsification; the likely failure is that early rows are too thin or concentrated to predeclare any source without looking at holdout.",
+    "recorded_at": "2026-07-08T15:05:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_no_train_selected_kill_sources",
+    "artifact": "data/experiments/exp-20260708-018/exp_20260708_018_default_off_source_kill_switch_temporal_validation.json",
+    "log": "experiments/logs/exp-20260708-018.json",
+    "card_file": "experiments/cards/exp-20260708-018.md",
+    "runner": "quant/experiments/exp_20260708_018_default_off_source_kill_switch_temporal_validation.py",
+    "gate4": {
+      "mode": "observed_only_chronological_source_kill_switch_validation",
+      "passed": false,
+      "accepted_alpha": false,
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "training_no_kill_sources"
+      ],
+      "selected_sources_from_train": [],
+      "binding_acceptance_note": "Observed-only validation only. Any executable source kill switch would still need a shared production/backtest policy, Gate 1-4, and live-realistic execution envelope."
+    },
+    "summary": "The all-row source kill-switch lead was not train-selectable: the pre-2026-06-01 segment had 28 complete rows, but every negative source either lacked enough diversified rows or failed the fixed exp017 concentration guard. The later losses cannot be used to predeclare a source halt without look-ahead."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-018.json",
+  "single_causal_variable": "default_off_source_kill_switch_chronological_holdout_validation_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260708-018.json",
+  "trial_family": "default_off_forward_source_level_kill_switch_temporal_validation",
+  "trial_variant_id": "train_before_20260601_holdout_after_20260601_v1",
+  "implementation_mode": "observed_only_temporal_forward_validation",
+  "new_evidence_axis": "New gate shape: chronological train/holdout validation of the exp-20260708-017 source-level kill-switch using only earlier settled rows to choose sources before measuring later rows; not a threshold, comparator, source-label, or response-curve retune.",
+  "decision": "observed_only_rejected_no_train_selected_kill_sources",
+  "artifact": "data/experiments/exp-20260708-018/exp_20260708_018_default_off_source_kill_switch_temporal_validation.json",
+  "log": "experiments/logs/exp-20260708-018.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "available": true,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "missing_or_invalid_fields": {
+      "raw_rows": 74,
+      "complete_enriched_rows": 74,
+      "incomplete_rows": 0
+    },
+    "entry_date_target_price_note": "Forward replacement rows have entry_date/exit_date and comparator outcomes. target_price is not an executable signal dependency for this observed-only validation runner."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 74,
+    "signals_survived": 74,
+    "survival_rate": 1.0,
+    "note": "No executable filter, rank, size, exit, or order rule changed."
+  },
+  "gate4": {
+    "mode": "observed_only_chronological_source_kill_switch_validation",
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "training_no_kill_sources"
+    ],
+    "selected_sources_from_train": [],
+    "binding_acceptance_note": "Observed-only validation only. Any executable source kill switch would still need a shared production/backtest policy, Gate 1-4, and live-realistic execution envelope."
+  },
+  "temporal_validation_summary": {
+    "raw_rows": 74,
+    "complete_enriched_rows": 74,
+    "train_rows": 28,
+    "holdout_rows": 46,
+    "selected_sources_from_train": [],
+    "failed_reasons": [
+      "training_no_kill_sources"
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "read_only_temporal_forward_replacement_validation"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The all-row source kill-switch lead was not train-selectable: the pre-2026-06-01 segment had 28 complete rows, but every negative source either lacked enough diversified rows or failed the fixed exp017 concentration guard. The later losses cannot be used to predeclare a source halt without look-ahead.",
+    "forbidden_near_neighbor_retry": "Do not rerun source kill-switch attribution on the same 74-row ledger by changing split date, min rows, concentration, comparator set, source labels, or response curve.",
+    "new_evidence_required": "A valid retry needs materially more settled forward replacement rows that allow a predeclared train segment to select sources, or a separate shared production/backtest policy Gate 1-4 with an independently specified source-risk state."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260708_018_default_off_source_kill_switch_temporal_validation.py",
+    "data/experiments/exp-20260708-018/exp_20260708_018_default_off_source_kill_switch_temporal_validation.json",
+    "experiments/logs/exp-20260708-018.json",
+    "experiments/cards/exp-20260708-018.md",
+    "experiments/manifests/exp-20260708-018.json",
+    "experiments/tickets/exp-20260708-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/tickets/exp-20260708-018.json",
+    "data/experiments/exp-20260708-017/exp_20260708_017_default_off_forward_source_kill_switch_attribution.json"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "actual_decision": "observed_only_rejected_no_train_selected_kill_sources",
+    "actual_success": 0,
+    "predicted_success_probability": 0.12,
+    "brier_score": 0.0144,
+    "predicted_failure_modes": [
+      "training_no_kill_sources",
+      "holdout_not_negative",
+      "sample_too_thin",
+      "observed_only_not_policy_ready"
+    ],
+    "realized_failure_modes": [
+      "training_no_kill_sources"
+    ],
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "The stricter chronological validation failed before policy work: early settled rows did not select any legal source under the fixed exp017 gate."
+  },
+  "updated_at": "2026-07-08T15:09:36+00:00"
+}

@@ -1,0 +1,454 @@
+{
+  "accepted": true,
+  "after": {
+    "accepted": true,
+    "cases": [
+      {
+        "expected_data_source": "borrow_availability",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "borrow_availability",
+          "field_tags": [
+            "availability",
+            "borrow",
+            "gate",
+            "moomoo",
+            "readiness"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "moomoo_borrow_readiness",
+        "passed": true,
+        "prior_data_source": "finra_short_interest",
+        "text": "moomoo_borrow_availability_readiness_gate"
+      },
+      {
+        "expected_data_source": "borrow_availability",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "borrow_availability",
+          "field_tags": [
+            "availability",
+            "borrow",
+            "collection",
+            "daily",
+            "forward",
+            "non"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "daily_non_ohlcv_borrow_forward_collection",
+        "passed": true,
+        "prior_data_source": "finra_short_interest",
+        "text": "daily_non_ohlcv_borrow_availability_forward_collection"
+      },
+      {
+        "expected_data_source": "borrow_availability",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "borrow_availability",
+          "field_tags": [
+            "available",
+            "pct",
+            "rate",
+            "rows",
+            "sell",
+            "short",
+            "sidecar",
+            "volume"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "borrow_fields",
+        "passed": true,
+        "prior_data_source": "finra_short_interest",
+        "text": "short_sell_rate_pct and short_available_volume sidecar rows"
+      },
+      {
+        "expected_data_source": "ortex_borrow",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "ortex_borrow",
+          "field_tags": [
+            "borrow",
+            "fee",
+            "gate",
+            "ortex",
+            "readiness",
+            "sidecar"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "ortex_borrow_fee",
+        "passed": true,
+        "prior_data_source": "finra_short_interest",
+        "text": "ortex_borrow_fee_sidecar_readiness_gate"
+      },
+      {
+        "expected_data_source": "ortex_borrow",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "ortex_borrow",
+          "field_tags": [
+            "gate",
+            "interest",
+            "ortex",
+            "readiness",
+            "short",
+            "sidecar"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "ortex_short_interest",
+        "passed": true,
+        "prior_data_source": "finra_short_interest",
+        "text": "ortex_short_interest_sidecar_readiness_gate"
+      }
+    ],
+    "changed_variable": "borrow_availability_ortex_data_source_keywords",
+    "decision": "accepted_measurement_repair_borrow_ortex_fingerprint_coverage",
+    "experiment_id": "exp-20260708-001",
+    "gate_contract": {
+      "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "gate_2_runtime_fields": "Not a signal generator; entry_date and target_price contracts are unchanged.",
+      "gate_3_survival": "Not a signal filter; survival is unchanged.",
+      "gate_4_rule": "Accept repair when focused tests pass and target frozen families rebuild into borrow_availability/ortex_borrow without overclassifying generic FINRA short interest."
+    },
+    "generated_at": "2026-07-08T00:20:50+00:00",
+    "hypothesis": "Borrow availability and ORTEX alpha remain parked until populated PIT rows and closed replacement values arrive; this run only fixes their novelty/saturation identity.",
+    "lane": "measurement_repair",
+    "next_reopen_condition": "Borrow/ORTEX alpha still requires populated PIT borrow-fee, utilization, loan-availability, or short-availability rows over the predeclared forward-date floors, then closed replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+    "phase": "after",
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "live_orders_changed": false,
+      "paper_orders_changed": false,
+      "ranking_changed": false,
+      "run_adapter_changed": false,
+      "scope": "novelty_guard_measurement_only",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false
+    },
+    "regressions": [
+      {
+        "expected_data_source": "finra_short_interest",
+        "fingerprint": {
+          "data_source": "finra_short_interest",
+          "field_tags": [
+            "cover",
+            "finra",
+            "interest",
+            "short",
+            "to"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "generic_finra_short_interest",
+        "passed": true,
+        "text": "FINRA short_interest days_to_cover candidate pool"
+      },
+      {
+        "expected_data_source": "finra_short_interest",
+        "fingerprint": {
+          "data_source": "finra_short_interest",
+          "field_tags": [
+            "borrow",
+            "interest",
+            "overlay",
+            "pressure",
+            "short"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "legacy_borrow_pressure_overlay",
+        "passed": true,
+        "text": "short_interest_borrow_pressure_overlay"
+      },
+      {
+        "expected_data_source": "finra_otc_internalization",
+        "fingerprint": {
+          "data_source": "finra_otc_internalization",
+          "field_tags": [
+            "finra",
+            "internalization",
+            "otc",
+            "retreat"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "finra_otc_internalization",
+        "passed": true,
+        "text": "FINRA OTC internalization retreat candidate pool"
+      },
+      {
+        "expected_data_source": "moomoo_short_volume",
+        "fingerprint": {
+          "data_source": "moomoo_short_volume",
+          "field_tags": [
+            "activity",
+            "daily",
+            "helper",
+            "moomoo",
+            "short",
+            "volume"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "moomoo_short_volume",
+        "passed": true,
+        "text": "Moomoo daily short volume activity helper"
+      }
+    ],
+    "schema_version": 1,
+    "summary": {
+      "classifier_cases": 5,
+      "classifier_cases_passed": 5,
+      "derived_frozen_family_view_rebuilt": true,
+      "regression_cases": 4,
+      "regression_cases_passed": 4,
+      "target_frozen_families": 4,
+      "target_frozen_families_found": 4,
+      "target_frozen_families_passed": 4
+    },
+    "target_frozen_families": [
+      {
+        "actual_data_source": "borrow_availability",
+        "expected_data_source": "borrow_availability",
+        "family_key": "daily_non_ohlcv_borrow_availability_forward_collection",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 1.0,
+          "accepted": 1,
+          "blocked": 0,
+          "family_key": "daily_non_ohlcv_borrow_availability_forward_collection",
+          "fingerprint": {
+            "data_source": "borrow_availability",
+            "field_tags": [
+              "availability",
+              "borrow",
+              "collection",
+              "daily",
+              "forward",
+              "non",
+              "sidecar",
+              "snapshot"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "Enable REFRESH_BORROW_AVAILABILITY after OpenD is available and collect at least 20 forward dates with nonzero borrow fields, then run closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+          "representative_exps": [
+            "exp-20260627-002"
+          ],
+          "status": "has_accepted",
+          "trials": 1
+        }
+      },
+      {
+        "actual_data_source": "borrow_availability",
+        "expected_data_source": "borrow_availability",
+        "family_key": "moomoo_borrow_availability_readiness_gate",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 1,
+          "family_key": "moomoo_borrow_availability_readiness_gate",
+          "fingerprint": {
+            "data_source": "borrow_availability",
+            "field_tags": [
+              "audit",
+              "availability",
+              "borrow",
+              "coverage",
+              "entitlement",
+              "gate",
+              "initial",
+              "moomoo",
+              "pit",
+              "readiness"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "A valid retry needs populated short_sell_rate_pct and/or short_available_volume rows over at least 20 forward dates, then closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+          "representative_exps": [
+            "exp-20260625-003"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      },
+      {
+        "actual_data_source": "ortex_borrow",
+        "expected_data_source": "ortex_borrow",
+        "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 1,
+          "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+          "fingerprint": {
+            "data_source": "ortex_borrow",
+            "field_tags": [
+              "aapl",
+              "audit",
+              "borrow",
+              "fee",
+              "gate",
+              "ortex",
+              "payload",
+              "readiness",
+              "sidecar"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 borrow-fee tickers over 20 decision dates, then closed forward replacement-value rows versus cash, SPY, QQQ, and accepted comparators.",
+          "representative_exps": [
+            "exp-20260628-004"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      },
+      {
+        "actual_data_source": "ortex_borrow",
+        "expected_data_source": "ortex_borrow",
+        "family_key": "ortex_short_interest_sidecar_readiness_gate",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 1,
+          "family_key": "ortex_short_interest_sidecar_readiness_gate",
+          "fingerprint": {
+            "data_source": "ortex_borrow",
+            "field_tags": [
+              "audit",
+              "gate",
+              "initial",
+              "interest",
+              "local",
+              "ortex",
+              "payload",
+              "readiness",
+              "short",
+              "sidecar"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+          "representative_exps": [
+            "exp-20260627-023"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      }
+    ]
+  },
+  "before": {
+    "alpha_hypothesis": "Populated PIT borrow fee, utilization, and loan-availability rows may separate durable squeeze candidates from crowded false positives, but future alpha work first needs the novelty guard to distinguish borrow economics from stale FINRA share-count families.",
+    "changed_variable": "borrow_availability_ortex_data_source_keywords",
+    "experiment_id": "exp-20260708-001",
+    "generated_at": "2026-07-08T00:20:50+00:00",
+    "known_prior_classifier_miss": {
+      "evidence": "Before this repair, borrow availability and ORTEX readiness families rebuilt into the generic FINRA short-interest bucket.",
+      "families": [
+        "daily_non_ohlcv_borrow_availability_forward_collection",
+        "moomoo_borrow_availability_readiness_gate",
+        "ortex_borrow_fee_sidecar_readiness_gate",
+        "ortex_short_interest_sidecar_readiness_gate"
+      ],
+      "prior_data_source": "finra_short_interest"
+    },
+    "phase": "before",
+    "production_impact": "No trading behavior changed in before measurement.",
+    "reservation_fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "add",
+        "alpha",
+        "are",
+        "as",
+        "audited",
+        "availability",
+        "axes",
+        "because",
+        "behavior",
+        "blocker",
+        "borrow",
+        "bucket",
+        "but",
+        "changing",
+        "classifies",
+        "coverage",
+        "currently",
+        "data",
+        "distinct",
+        "economics",
+        "families",
+        "fee",
+        "fingerprint",
+        "fingerprints",
+        "finra",
+        "flow",
+        "frozen",
+        "future",
+        "generic",
+        "guard",
+        "interest",
+        "loan",
+        "moomoo",
+        "named",
+        "novelty",
+        "options",
+        "ortex",
+        "owns",
+        "pit",
+        "proposals",
+        "readiness",
+        "reopen",
+        "right",
+        "short",
+        "so",
+        "strategy",
+        "surface",
+        "under",
+        "without",
+        "work"
+      ],
+      "gate_shape": "other"
+    },
+    "schema_version": 1,
+    "source": "reservation_and_frozen_family_audit"
+  },
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260708_001_borrow_ortex_fingerprint_coverage.py"
+  ],
+  "decision": "accepted_measurement_repair_borrow_ortex_fingerprint_coverage",
+  "experiment_id": "exp-20260708-001",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_001_borrow_ortex_fingerprint_coverage.py"
+  ],
+  "timestamp": "2026-07-08T00:20:50+00:00"
+}

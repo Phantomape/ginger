@@ -1,0 +1,475 @@
+{
+  "acceptance_rule": "Accept only if promoted temps parse as valid final artifacts, daily structured observer writes schema-complete event and observation rows for 20260707, strategy baseline metrics are unchanged, and audit remains lean-clean.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.py",
+    "data/experiments/exp-20260708-004/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.json",
+    "experiments/logs/exp-20260708-004.json",
+    "experiments/cards/exp-20260708-004.md",
+    "experiments/manifests/exp-20260708-004.json",
+    "experiments/tickets/exp-20260708-004.json",
+    "docs/experiment_registry.json",
+    "data/daily/news/structured/daily_news_structured_events_20260707.json",
+    "data/daily/news/structured/daily_news_structured_event_observations_20260707.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-004.md",
+  "causal_components": [
+    "orphan atomic temp validation",
+    "targeted 20260707 daily artifact recovery",
+    "daily structured-news observer validation",
+    "zero strategy behavior delta"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "daily_artifact_20260707_orphan_atomic_temp_recovery_v1",
+  "claimed_at": "2026-07-08T03:11:01+00:00",
+  "completed_at": "2026-07-08T03:16:45+00:00",
+  "created_at": "2026-07-08T03:10:26+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-004",
+  "experiment_uid": "expuid-e0d1df8998a14dc3",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T03:10:26+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "daily_artifact_20260707_orphan_atomic_temp_recovery"
+  },
+  "hypothesis": "Alpha blocker: 2026-07-07 daily news/order artifacts were stranded as valid orphan atomic temp files with missing canonical finals, blocking production-visible daily structured-news observation and downstream forward attribution; recover only valid temp payloads and validate observer rows without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "daily_artifact_20260707_orphan_atomic_temp_recovery_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "strategy shared helpers",
+    "backtester adapters",
+    "run trading logic",
+    "ranking/sizing/exits/live orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260628-017",
+    "exp-20260701-003",
+    "exp-20260704-023",
+    "exp-20260705-013",
+    "exp-20260706-014",
+    "exp-20260706-021"
+  ],
+  "new_evidence_type": "fresh_20260707_orphan_atomic_write_artifacts",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "artifact",
+        "artifacts",
+        "as",
+        "atomic",
+        "attribution",
+        "behavior",
+        "blocker",
+        "blocking",
+        "canonical",
+        "changing",
+        "daily",
+        "downstream",
+        "event",
+        "files",
+        "finals",
+        "forward",
+        "llm",
+        "measurement",
+        "missing",
+        "news",
+        "observation",
+        "observer",
+        "only",
+        "order",
+        "orphan",
+        "payloads",
+        "recover",
+        "recovery",
+        "repair",
+        "rows",
+        "scoring",
+        "stranded",
+        "structured",
+        "temp",
+        "trading",
+        "valid",
+        "validate",
+        "were",
+        "without",
+        "write"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.1767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "onclickmedia_options_event_distance_forward_attribution",
+        "reopen_condition": "A valid options retry needs materially more closed forward rows, historical PIT options-chain coverage across canonical windows, or a different production-visible event/cost field that creates new rows rather than reslicing this same small forward sample.",
+        "score": 0.1755,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "sec_ftd_forward_replacement_context_attribution",
+        "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+        "score": 0.1755,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "reopen_condition": "Reopen only after materially more stretched closed forward rows settle under the same fixed helper, or after a genuinely new PIT entry-fragility data source appears.",
+        "score": 0.175,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "True fault recovery: after the later 2026-07-07 daily materialization, multiple dot-prefixed atomic temps exist for news/structured/order artifacts while the canonical finals are missing; this is a new date/surface recovery, not a threshold or response retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "True fault recovery: after the later 2026-07-07 daily materialization, multiple dot-prefixed atomic temps exist for news/structured/order artifacts while the canonical finals are missing; this is a new date/surface recovery, not a threshold or response retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.82,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "temp_payload_invalid",
+      "promote_permission_denied",
+      "structured_observer_zero_rows",
+      "artifact_conflict",
+      "lean_audit_failure"
+    ],
+    "confidence_reason": "Preflight found valid-sized 20260707 temp artifacts and prior shared recovery code/tests already cover daily artifact promotion; the risk is Windows permission denial or invalid temp payloads.",
+    "recorded_at": "2026-07-08T03:09:48+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_daily_artifact_20260707_orphan_atomic_recovery",
+    "artifact": "data/experiments/exp-20260708-004/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.json",
+    "log": "experiments/logs/exp-20260708-004.json",
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "accepted_measurement_repair_daily_artifact_20260707_orphan_atomic_recovery",
+      "measurement_blockers": [],
+      "alpha_blockers": [
+        "structured_news_rows_pending_forward_close",
+        "no_cash_spy_qqq_replacement_values_for_20260707_rows"
+      ],
+      "measurement_repair_only": true,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "valid_missing_temp_count_before": 0,
+      "valid_missing_temp_count_after": 0,
+      "recovered_final_count": 0,
+      "cleaned_temp_count": 0,
+      "skipped_temp_count": 7,
+      "structured_event_rows": 7,
+      "structured_observation_rows": 7,
+      "target_relation_quality_rows": 4
+    },
+    "calibration": {
+      "predicted_success_probability": 0.82,
+      "actual_success": 1,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "temp_payload_invalid",
+        "promote_permission_denied",
+        "structured_observer_zero_rows",
+        "artifact_conflict",
+        "lean_audit_failure"
+      ],
+      "realized_failure_modes": [
+        "structured_news_rows_pending_forward_close",
+        "no_cash_spy_qqq_replacement_values_for_20260707_rows"
+      ],
+      "predicted_failure_mode_hit": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-004.json",
+  "single_causal_variable": "daily_artifact_20260707_orphan_atomic_temp_recovery_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260708-004.json",
+  "trial_family": "daily_artifact_orphan_atomic_write_recovery",
+  "trial_variant_id": "20260707_daily_news_orders_tmp_recovery_v1",
+  "alpha_hypothesis": "Structured daily-news relation-quality events may become LLM event-scoring alpha if the daily observer keeps accumulating point-in-time rows that later close against cash/SPY/QQQ replacement value.",
+  "implementation_mode": "measurement_repair_daily_artifact_orphan_recovery",
+  "decision": "accepted_measurement_repair_daily_artifact_20260707_orphan_atomic_recovery",
+  "artifact": "data/experiments/exp-20260708-004/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.json",
+  "log": "experiments/logs/exp-20260708-004.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "daily_artifact_path",
+      "atomic_temp_final_name",
+      "json_payload_validity",
+      "jsonl_payload_validity",
+      "event_id",
+      "event_date",
+      "ticker",
+      "relation_type",
+      "relation_polarity",
+      "observation_id",
+      "entry_semantics",
+      "target_price",
+      "outcome_status"
+    ],
+    "entry_date_scope": "Forward observations are pending; no executable entry is scheduled.",
+    "target_price_scope": "No target exit is scheduled; target_price is intentionally null."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 7,
+    "signals_survived": 4,
+    "survival_rate": 0.571429,
+    "note": "Measurement rows only; no executable filter, entry, rank, size, exit, or order rule was added."
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_daily_artifact_20260707_orphan_atomic_recovery",
+    "measurement_blockers": [],
+    "alpha_blockers": [
+      "structured_news_rows_pending_forward_close",
+      "no_cash_spy_qqq_replacement_values_for_20260707_rows"
+    ],
+    "measurement_repair_only": true,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "valid_missing_temp_count_before": 0,
+    "valid_missing_temp_count_after": 0,
+    "recovered_final_count": 0,
+    "cleaned_temp_count": 0,
+    "skipped_temp_count": 7,
+    "structured_event_rows": 7,
+    "structured_observation_rows": 7,
+    "target_relation_quality_rows": 4
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "news_archives_changed": true,
+    "orders_artifact_recovered": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_logic_changed": false,
+    "live_orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "measurement_repair_daily_artifact_recovery_only"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The 2026-07-07 daily writer left valid atomic temp payloads but canonical finals were absent. Promoting the temps restored the news/order archive surface, and rerunning the accepted structured observer produced replayable pending rows without touching trading logic.",
+    "forbidden_near_neighbor_retry": "Do not reopen 2026-07-07 daily artifact recovery after these finals exist. Do not slice the structured-news rows by relation/ticker/source or tune a response curve until forward replacement outcomes close.",
+    "new_evidence_required": "Closed cash/SPY/QQQ replacement-value outcomes for 2026-07-07 structured-news rows, materially more settled daily structured rows, or a distinct PIT LLM event-scoring field."
+  },
+  "next_retry_requires": [
+    "closed replacement-value outcomes for 20260707 structured-news rows",
+    "materially more settled daily structured-news rows",
+    "new orphan temps from a later materialization run for any further fault recovery"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.py",
+    "data/experiments/exp-20260708-004/exp_20260708_004_daily_artifact_20260707_orphan_atomic_temp_recovery.json",
+    "experiments/logs/exp-20260708-004.json",
+    "experiments/cards/exp-20260708-004.md",
+    "experiments/manifests/exp-20260708-004.json",
+    "experiments/tickets/exp-20260708-004.json",
+    "docs/experiment_registry.json",
+    "data/daily/news/structured/daily_news_structured_events_20260707.json",
+    "data/daily/news/structured/daily_news_structured_event_observations_20260707.jsonl"
+  ],
+  "related_files": [
+    "quant/stale_artifact_sweep.py",
+    "quant/daily_news_structured_event_snapshot.py",
+    "quant/daily_news_structured_events.py",
+    "quant/test_atomic_write_recovery.py",
+    "experiments/logs/exp-20260701-003.json",
+    "experiments/logs/exp-20260704-023.json",
+    "experiments/logs/exp-20260706-014.json"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.82,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "predicted_failure_modes": [
+      "temp_payload_invalid",
+      "promote_permission_denied",
+      "structured_observer_zero_rows",
+      "artifact_conflict",
+      "lean_audit_failure"
+    ],
+    "realized_failure_modes": [
+      "structured_news_rows_pending_forward_close",
+      "no_cash_spy_qqq_replacement_values_for_20260707_rows"
+    ],
+    "predicted_failure_mode_hit": false
+  },
+  "updated_at": "2026-07-08T03:16:45+00:00"
+}

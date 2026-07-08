@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": null,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": null,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "summary still conflates context rows with closed forward rows",
+      "tests miss replacement-value completeness"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "Current context breadth looked reopen-adjacent by row count, but settled forward progress remains zero."
+  },
+  "causal_components": [],
+  "change_summary": "Form4 sale-overhang context summaries now expose settled forward-row reopen progress separately from raw context-row counts.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "form4_sale_overhang_reopen_progress_summary_v1",
+  "component": "quant/form4_sale_overhang_context.py, quant/test_form4_sale_overhang_context.py, quant/experiments, experiments/logs, data/experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260707-018",
+  "hypothesis": "Form4 sale-overhang alpha remains blocked until closed forward replacement rows mature, but the daily context summary only exposes context-row counts and can be misread as reopen progress; add machine-checkable closed-row progress fields so future alpha retries are gated by settled evidence.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "form4_sale_overhang_forward_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_contract",
+  "next_retry_requires": [
+    "Do not reopen or retune Form4 sale-overhang alpha on context-row counts alone.",
+    "A valid Form4 alpha retry needs at least 25 closed forward rows, at least 8 high-sale-overhang closed rows, complete cash/SPY/QQQ replacement values, and max single-ticker closed-row share <= 40%, unless using a distinct new data source or gate shape."
+  ],
+  "notes": "Measurement repair accepted: latest context has 27 context rows and 14 high-sale context rows, but 0 closed forward rows, so the Form4 alpha lane remains parked until the explicit reopen gate is satisfied.",
+  "parameters": {
+    "locked_variables": [
+      "form4_sale_overhang_reopen_progress_summary_v1"
+    ],
+    "single_causal_variable": "form4_sale_overhang_reopen_progress_summary_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Another Form4 sale-overhang threshold, response-function, or slice retune using the current 27 context rows is forbidden because the latest helper progress shows 0 settled forward rows.",
+    "new_evidence_required": "Materially more settled Form4 sale-overhang forward rows that satisfy the explicit reopen gate, or a distinct new data source/gate shape, before any alpha-lane retry.",
+    "realized_failure_mode": null,
+    "why_result_happened": "Current context breadth looked reopen-adjacent by row count, but settled forward progress remains zero."
+  },
+  "prediction": {
+    "confidence_reason": "Existing summary already carries forward_reopen_gate; this only adds explicit progress counters and tests.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "summary still conflates context rows with closed forward rows",
+      "tests miss replacement-value completeness"
+    ],
+    "recorded_at": "2026-07-07T17:13:34+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260707-018/before_form4_sale_overhang_reopen_progress_summary.json",
+    "data/experiments/exp-20260707-018/after_form4_sale_overhang_reopen_progress_summary.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-07T17:19:17+00:00",
+  "trial_family": "form4_sale_overhang_reopen_governance",
+  "trial_variant_id": "closed_forward_progress_summary"
+}

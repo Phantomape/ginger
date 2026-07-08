@@ -1,0 +1,101 @@
+{
+  "acceptance_rule": "Same docs/backtesting.md three-window Gate 1-4 standard: positive aggregate EV/PnL, no EV/PnL-regressed window, >=20 paper trades across all 3 windows, drawdown drift <=0.5pp, survival >=5%, and concentration guardrails.",
+  "after_aggregate": "data/experiments/exp-20260708-003/sec_item502_leadership_quality_text_after_aggregate.json",
+  "artifact": "experiments/artifacts/exp-20260708-003_sec_item502_leadership_quality_text.md",
+  "before_aggregate": "data/experiments/exp-20260708-003/sec_item502_leadership_quality_text_before_aggregate.json",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "sec_item502_leadership_quality_text_gate_v1",
+  "claimed_at": "2026-07-08T02:11:50+00:00",
+  "completed_at": "2026-07-08T02:28:18+00:00",
+  "created_at": "2026-07-08T02:11:39+00:00",
+  "decision": "rejected_sec_item502_leadership_quality_text",
+  "experiment_id": "exp-20260708-003",
+  "hypothesis": "candidate_pool/full_stack: SEC 8-K Item 5.02 filing-body text that shows clear C-suite appointment or succession clarity, while excluding abrupt departure/resignation risk, may isolate leadership-change events with better next-open 10-session replacement value than the rejected generic Item 5.02 positive-reaction source.",
+  "json": "data/experiments/exp-20260708-003/exp_20260708_003_sec_item502_leadership_quality_text.json",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core universe membership",
+    "core signal generation",
+    "core ranking",
+    "core position sizing",
+    "core exits",
+    "portfolio heat",
+    "slot rules",
+    "LLM/news replay",
+    "watchlists",
+    "live/default orders",
+    "Item 5.02 item-code family",
+    "old exp-20260529-019 OHLCV confirmation thresholds"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260529-019"
+  ],
+  "new_evidence_type": "filing_body_leadership_quality_text_classification",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry Item 5.02 by changing appointment/departure regexes, board-only inclusion, positive-reaction thresholds, RS/close-location/volume filters, top-N, hold, cooldown, or notional on this same text/event cache.",
+    "new_evidence_required": "A legal retry needs prospective closed forward replacement rows, normalized executive-role extraction from primary documents, independent management-change data, or another non-SEC source that identifies leadership quality.",
+    "why_result_happened": "Gate 4 evaluated the fixed text-quality Item 5.02 policy: EV delta -0.0315, PnL delta -449.87, failed ['aggregate_ev_not_positive', 'aggregate_pnl_not_positive', 'window_ev_regression', 'window_pnl_regression', 'target_sample_too_small', 'target_window_coverage_too_small', 'target_concentration_failed']."
+  },
+  "prediction": {
+    "brier_score": 0.0324,
+    "confidence_reason": "Prior Item 5.02 positive-reaction source failed, but its own closeout named CEO/CFO appointment versus resignation and evidence-bound text classification as the legal reopen axis; local text cache has a usable broad Item 5.02 filing-body sample.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "text_quality_subset_too_sparse",
+      "leadership_text_overmatches_departures",
+      "window_regression",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-07-08T02:11:02+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; target_sample_too_small; target_window_coverage_too_small; target_concentration_failed",
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260708-003/sec_item502_leadership_quality_text_before_aggregate.json",
+    "after_result_file": "data/experiments/exp-20260708-003/sec_item502_leadership_quality_text_after_aggregate.json",
+    "delta_metrics": {
+      "expected_value_score": -0.0315,
+      "total_return_pct": -0.0045,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": -449.87
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": -0.0315,
+      "ev_prediction_error": -0.1815,
+      "expected_pnl_delta": 2500.0,
+      "actual_pnl_delta": -449.87,
+      "pnl_prediction_error": -2949.87,
+      "predicted_failure_modes": [
+        "text_quality_subset_too_sparse",
+        "leadership_text_overmatches_departures",
+        "window_regression",
+        "accepted_comparator_not_beaten"
+      ],
+      "realized_failure_mode": "text_quality_subset_too_sparse",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The text gate admitted 17 unique Item 5.02 rows, but old OHLCV confirmations reduced the deployable sample to one trade."
+    }
+  },
+  "single_causal_variable": "sec_item502_leadership_quality_text_gate_v1",
+  "status": "rejected",
+  "summary": "The Item 5.02 leadership-quality text gate did not clear Gate 4. Do not retry nearby Item 5.02 text labels by changing appointment/departure regexes or OHLCV thresholds without forward rows, normalized executive-role extraction, or another genuinely new evidence source.",
+  "title": "SEC Item 5.02 leadership-quality text gate",
+  "trial_family": "sec_item502_leadership_quality_text_candidate_pool",
+  "trial_variant_id": "sec_item502_leadership_quality_text_v1"
+}

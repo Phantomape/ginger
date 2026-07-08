@@ -1,0 +1,459 @@
+{
+  "accepted": true,
+  "after": {
+    "accepted": true,
+    "cases": [
+      {
+        "expected_data_source": "news_event_exposure",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "news_event_exposure",
+          "field_tags": [
+            "daily",
+            "event",
+            "exposure",
+            "news",
+            "observer",
+            "pipeline",
+            "wiring"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "observer_daily_pipeline",
+        "passed": true,
+        "prior_data_source": "other",
+        "text": "news_event_exposure observer daily pipeline wiring"
+      },
+      {
+        "expected_data_source": "news_event_exposure",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "news_event_exposure",
+          "field_tags": [
+            "attribution",
+            "event",
+            "exposure",
+            "news",
+            "order",
+            "second"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "second_order_attribution",
+        "passed": true,
+        "prior_data_source": "other",
+        "text": "news event second-order exposure attribution"
+      },
+      {
+        "expected_data_source": "news_event_exposure",
+        "expected_gate_shape": "candidate_pool_top1_10d",
+        "fingerprint": {
+          "data_source": "news_event_exposure",
+          "field_tags": [
+            "negative",
+            "news",
+            "order",
+            "second"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "negative_top1_candidate_source",
+        "passed": true,
+        "prior_data_source": "other",
+        "text": "news_second_order negative top1 candidate source"
+      }
+    ],
+    "changed_variable": "news_event_exposure_data_source_keywords",
+    "decision": "accepted_measurement_repair_news_event_exposure_fingerprint_coverage",
+    "expected_value_score": 7.8941,
+    "experiment_id": "exp-20260708-016",
+    "gate_contract": {
+      "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "gate_2_runtime_fields": "Not a signal generator; entry_date and target_price contracts are unchanged.",
+      "gate_3_survival": "Not a signal filter; survival is unchanged.",
+      "gate_4_rule": "Accept repair when focused tests pass, rebuilt frozen families key news-event exposure rows to news_event_exposure, and no strategy metrics change."
+    },
+    "generated_at": "2026-07-08T13:17:56+00:00",
+    "hypothesis": "Second-order structured-news exposure alpha tests need a dedicated news_event_exposure source key before novelty and saturation guards can count the population correctly.",
+    "lane": "measurement_repair",
+    "next_reopen_condition": "Do not run another news_event_exposure alias repair unless a concrete family still lands in other. Alpha on this surface still requires closed current/post-replay second-order rows, a distinct PIT relation/economic source, or a new execution gate shape.",
+    "observer_row_audit": {
+      "alpha_admission_note": "No alpha admission was run because current/post-wiring rows have not closed; this experiment only fixes novelty/saturation attribution.",
+      "alpha_admission_ready": false,
+      "manifest_closed_rows": 3671,
+      "manifest_pending_rows": 2352,
+      "manifest_rows": 6023,
+      "max_closed_event_date": "2026-06-22",
+      "post_wiring_closed_rows_event_date_gte_2026_07_02": 0,
+      "scanned_closed_rows": 3671,
+      "scanned_pending_rows": 2352
+    },
+    "phase": "after",
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "live_orders_changed": false,
+      "paper_orders_changed": false,
+      "ranking_changed": false,
+      "run_adapter_changed": false,
+      "scope": "novelty_guard_measurement_only",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false
+    },
+    "regressions": [
+      {
+        "expected_data_source": "entity_theme_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "entity_theme_news",
+          "field_tags": [
+            "entity",
+            "news",
+            "observer",
+            "relation",
+            "theme"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "entity_theme_news",
+        "passed": true,
+        "text": "entity-theme news relation observer"
+      },
+      {
+        "expected_data_source": "intraday_structured_news",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "intraday_structured_news",
+          "field_tags": [
+            "intraday",
+            "news",
+            "observer",
+            "relation",
+            "structured"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "intraday_structured_news",
+        "passed": true,
+        "text": "intraday structured news relation observer"
+      },
+      {
+        "expected_data_source": "ohlcv_relation",
+        "expected_gate_shape": "candidate_pool_top1_10d",
+        "fingerprint": {
+          "data_source": "ohlcv_relation",
+          "field_tags": [
+            "corr",
+            "lag",
+            "lead",
+            "peer",
+            "relation",
+            "rolling"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "ohlcv_relation",
+        "passed": true,
+        "text": "lead_lag peer rolling_corr relation candidate pool"
+      },
+      {
+        "expected_data_source": "other",
+        "expected_gate_shape": "candidate_pool_top1_10d",
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "chain",
+            "order",
+            "second",
+            "supply",
+            "thematic"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "non_news_second_order",
+        "passed": true,
+        "text": "thematic second order supply chain candidate pool"
+      }
+    ],
+    "schema_version": 1,
+    "summary": {
+      "classifier_cases": 3,
+      "classifier_cases_passed": 3,
+      "derived_frozen_family_view_rebuilt": true,
+      "regression_cases": 4,
+      "regression_cases_passed": 4,
+      "target_frozen_families": 4,
+      "target_frozen_families_found": 4,
+      "target_frozen_families_passed": 4
+    },
+    "survival_rate": 0.823171,
+    "target_frozen_families": [
+      {
+        "actual_data_source": "news_event_exposure",
+        "actual_gate_shape": "other",
+        "expected_data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 1.0,
+          "accepted": 1,
+          "blocked": 0,
+          "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+          "fingerprint": {
+            "data_source": "news_event_exposure",
+            "field_tags": [
+              "daily",
+              "event",
+              "exp",
+              "exposure",
+              "news",
+              "observer",
+              "pipeline",
+              "wiring"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+          "representative_exps": [
+            "exp-20260702-026"
+          ],
+          "status": "has_accepted",
+          "trials": 1
+        }
+      },
+      {
+        "actual_data_source": "news_event_exposure",
+        "actual_gate_shape": "other",
+        "expected_data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_attribution",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 0,
+          "family_key": "news_event_second_order_exposure_attribution",
+          "fingerprint": {
+            "data_source": "news_event_exposure",
+            "field_tags": [
+              "attribution",
+              "event",
+              "exp",
+              "exposure",
+              "news",
+              "none",
+              "only",
+              "order",
+              "read",
+              "second"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 2,
+          "reopen_condition": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition.",
+          "representative_exps": [
+            "exp-20260702-021",
+            "exp-20260703-005"
+          ],
+          "status": "frozen_rejected",
+          "trials": 2
+        }
+      },
+      {
+        "actual_data_source": "news_event_exposure",
+        "actual_gate_shape": "other",
+        "expected_data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_observer",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 1.0,
+          "accepted": 1,
+          "blocked": 0,
+          "family_key": "news_event_second_order_exposure_observer",
+          "fingerprint": {
+            "data_source": "news_event_exposure",
+            "field_tags": [
+              "event",
+              "exp",
+              "exposure",
+              "new",
+              "news",
+              "non",
+              "observations",
+              "observer",
+              "order",
+              "second",
+              "surface"
+            ],
+            "gate_shape": "other"
+          },
+          "leads": 0,
+          "rejected": 0,
+          "reopen_condition": "More closed rows per (polarity x relation_type) cell \u2014 target >= 50 per cell \u2014 then one predeclared attribution read reusing the exp-20260702-017 baseline framework.",
+          "representative_exps": [
+            "exp-20260702-020"
+          ],
+          "status": "has_accepted",
+          "trials": 1
+        }
+      },
+      {
+        "actual_data_source": "news_event_exposure",
+        "actual_gate_shape": "candidate_pool_top1_10d",
+        "expected_data_source": "news_event_exposure",
+        "family_key": "news_second_order_exposure_top1_candidate_source",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 0,
+          "family_key": "news_second_order_exposure_top1_candidate_source",
+          "fingerprint": {
+            "data_source": "news_event_exposure",
+            "field_tags": [
+              "exposure",
+              "negative",
+              "news",
+              "order",
+              "polarity",
+              "second"
+            ],
+            "gate_shape": "candidate_pool_top1_10d"
+          },
+          "leads": 0,
+          "rejected": 1,
+          "reopen_condition": "A valid retry needs materially more current closed rows from the daily observer, historical structured-news coverage across all canonical windows, or intraday timestamped execution semantics.",
+          "representative_exps": [
+            "exp-20260703-002"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      }
+    ],
+    "total_pnl": 234850.99,
+    "total_trades": 61
+  },
+  "before": {
+    "changed_variable": "news_event_exposure_data_source_keywords",
+    "expected_value_score": 7.8941,
+    "experiment_id": "exp-20260708-016",
+    "generated_at": "2026-07-08T13:17:56+00:00",
+    "known_prior_classifier_miss": {
+      "evidence": "Before this repair, accepted/rejected news_event_exposure observer families in the novelty view landed in data_source=other, so same-surface alpha probes could escape source-level saturation or collide with unrelated other families.",
+      "pre_repair_nearest_family_sources": [
+        {
+          "family_key": "news_event_second_order_exposure_observer",
+          "pre_repair_data_source": "other",
+          "score": 0.0737,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "family_key": "news_event_second_order_exposure_attribution",
+          "pre_repair_data_source": "other",
+          "score": 0.0632,
+          "status": "frozen_rejected",
+          "trials": 2
+        },
+        {
+          "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+          "pre_repair_data_source": "other",
+          "score": 0.0541,
+          "status": "has_accepted",
+          "trials": 1
+        }
+      ],
+      "target_data_source": "news_event_exposure"
+    },
+    "observer_row_audit": {
+      "alpha_admission_note": "No alpha admission was run because current/post-wiring rows have not closed; this experiment only fixes novelty/saturation attribution.",
+      "alpha_admission_ready": false,
+      "manifest_closed_rows": 3671,
+      "manifest_pending_rows": 2352,
+      "manifest_rows": 6023,
+      "max_closed_event_date": "2026-06-22",
+      "post_wiring_closed_rows_event_date_gte_2026_07_02": 0,
+      "scanned_closed_rows": 3671,
+      "scanned_pending_rows": 2352
+    },
+    "phase": "before",
+    "production_impact": "No trading behavior changed in before measurement.",
+    "reservation_fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "are",
+        "as",
+        "because",
+        "cannot",
+        "correctly",
+        "count",
+        "coverage",
+        "daily",
+        "enabling",
+        "event",
+        "exposure",
+        "families",
+        "fingerprint",
+        "guards",
+        "llm",
+        "news",
+        "not",
+        "novelty",
+        "observed",
+        "observer",
+        "only",
+        "order",
+        "other",
+        "repair",
+        "saturation",
+        "scoring",
+        "second",
+        "still",
+        "structured",
+        "surface",
+        "tests",
+        "trustworthy",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "schema_version": 1,
+    "source": "reservation_and_frozen_family_audit",
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "total_trades": 61
+  },
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260708_016_news_event_exposure_fingerprint_coverage.py",
+    "data/experiments/exp-20260708-016/before_measurement.json",
+    "data/experiments/exp-20260708-016/after_measurement.json",
+    "data/experiments/exp-20260708-016/exp_20260708_016_news_event_exposure_fingerprint_coverage.json",
+    "experiments/logs/exp-20260708-016.json",
+    "experiments/cards/exp-20260708-016.md",
+    "experiments/manifests/exp-20260708-016.json",
+    "experiments/tickets/exp-20260708-016.json"
+  ],
+  "decision": "accepted_measurement_repair_news_event_exposure_fingerprint_coverage",
+  "experiment_id": "exp-20260708-016",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_016_news_event_exposure_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py close --experiment-id exp-20260708-016 --before data\\experiments\\exp-20260708-016\\before_measurement.json --after data\\experiments\\exp-20260708-016\\after_measurement.json --write-registry --status-override accepted",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "timestamp": "2026-07-08T13:17:56+00:00"
+}

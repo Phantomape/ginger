@@ -1,0 +1,139 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "overmatching_generic_finra",
+      "missing_focused_tests",
+      "stale_frozen_family_rebuild"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Low surprise; the expected keyword-ordering repair worked after putting ORTEX before generic loan-availability text."
+  },
+  "causal_components": [
+    "experiment_fingerprint_keywords",
+    "focused_tests",
+    "frozen_family_rebuild",
+    "no_strategy_behavior_change"
+  ],
+  "change_summary": "Accepted measurement repair: split Moomoo borrow-availability and ORTEX borrow readiness fingerprints out of the generic FINRA short-interest novelty bucket; no strategy behavior changed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "borrow_availability_ortex_fingerprint_coverage_v1",
+  "component": "docs/experiment_log.jsonl",
+  "date_range": {},
+  "decision": "accepted_measurement_repair_borrow_ortex_fingerprint_coverage",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260708-001",
+  "hypothesis": "Alpha blocker: PIT borrow fee, loan availability, and ORTEX borrow economics are named reopen axes for frozen FINRA/options/short-flow work, but the novelty guard currently classifies Moomoo borrow-availability and ORTEX readiness families as finra_short_interest because the generic FINRA bucket owns borrow; add distinct data-source fingerprints so future borrow alpha proposals are audited under the right surface without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260625-003",
+    "exp-20260627-002",
+    "exp-20260627-023",
+    "exp-20260628-004",
+    "exp-20260707-022",
+    "exp-20260707-023",
+    "exp-20260707-024"
+  ],
+  "new_evidence_type": "novelty_guard_classifier_repair",
+  "next_retry_requires": [
+    "Do not retry borrow/ORTEX alpha on the same unpopulated readiness rows. Legal continuation still requires populated PIT borrow-fee, utilization, loan-availability, or short-availability rows over the predeclared forward-date floors, then closed replacement-value attribution versus cash, SPY, QQQ, and accepted comparators."
+  ],
+  "notes": "Focused classifier tests passed, docs/frozen_families.jsonl was rebuilt, and target frozen-family rows now classify as borrow_availability or ortex_borrow while legacy FINRA short-interest stays finra_short_interest.",
+  "parameters": {
+    "locked_variables": [
+      "borrow_availability_ortex_fingerprint_coverage_v1"
+    ],
+    "single_causal_variable": "borrow_availability_ortex_fingerprint_coverage_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open another classifier coverage repair for the same Moomoo borrow-availability or ORTEX readiness family set unless a new borrow/ORTEX family demonstrably falls into finra_short_interest/other or the new buckets overmatch unrelated FINRA short-interest rows.",
+    "new_evidence_required": "Borrow/ORTEX alpha remains parked until populated PIT borrow-fee, utilization, loan-availability, or short-availability rows meet the prior forward-date floors and have closed cash/SPY/QQQ replacement-value attribution.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Low surprise; the expected keyword-ordering repair worked after putting ORTEX before generic loan-availability text."
+  },
+  "prediction": {
+    "confidence_reason": "The current frozen-family rows show three borrow/ORTEX readiness families mapped to finra_short_interest; the intended repair is a deterministic keyword ordering/test update.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "overmatching_generic_finra",
+      "missing_focused_tests",
+      "stale_frozen_family_rebuild"
+    ],
+    "recorded_at": "2026-07-08T00:12:54+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260708_001_borrow_ortex_fingerprint_coverage.py",
+    "data/experiments/exp-20260708-001/before_measurement.json",
+    "data/experiments/exp-20260708-001/after_measurement.json",
+    "data/experiments/exp-20260708-001/exp_20260708_001_borrow_ortex_fingerprint_coverage.json"
+  ],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_001_borrow_ortex_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-08T00:17:41+00:00",
+  "trial_family": "borrow_availability_ortex_fingerprint_coverage",
+  "trial_variant_id": "v1"
+}

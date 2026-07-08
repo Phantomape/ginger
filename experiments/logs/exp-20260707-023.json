@@ -1,0 +1,90 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "experiment_fingerprint data_source keywords",
+    "focused fingerprint regression tests",
+    "frozen family rebuild",
+    "intraday structured-news pending-row measurement artifact"
+  ],
+  "change_summary": "Accepted measurement repair: added an intraday_structured_news fingerprint bucket for the production-visible intraday structured-news forward-observation surface; focused tests and frozen_families rebuild now keep intraday structured observer families out of ohlcv_relation/other without changing trading behavior.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "intraday_structured_news_data_source_keywords",
+  "component": "quant/experiments/exp_20260707_023_intraday_structured_news_fingerprint_coverage.py, data/experiments/exp-20260707-023/exp_20260707_023_intraday_structured_news_fingerprint_coverage.json, experiments/cards/exp-20260707-023.md, experiments/manifests/exp-20260707-023.json, experiments/tickets/exp-20260707-023.json, experiments/logs/exp-20260707-023.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260707-023",
+  "hypothesis": "Alpha blocker: the new intraday structured-news forward-observation surface is production-visible, but novelty fingerprints currently classify it as ohlcv_relation or data_source=other, so future alpha retries could bypass observer/source saturation guards before settled replacement rows exist.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260630-013",
+    "exp-20260630-015",
+    "exp-20260630-019",
+    "exp-20260701-010",
+    "exp-20260702-022",
+    "exp-20260704-024"
+  ],
+  "new_evidence_type": "concrete_classifier_miss_on_intraday_structured_news_surface",
+  "next_retry_requires": [
+    "Do not reserve another intraday structured-news fingerprint coverage repair for the same observer/forward-observation family set.",
+    "Do not run intraday structured-news alpha attribution until materially more rows close with cash/SPY/QQQ replacement values.",
+    "A valid retry needs a new classifier miss, a demonstrated keyword collision, materially more settled intraday structured-news rows, or a genuinely new intraday execution gate shape."
+  ],
+  "notes": "No strategy, entry, exit, ranking, sizing, LLM hard decision, paper order, or live order behavior changed. Alpha hypothesis remains blocked until intraday structured-news rows close with cash/SPY/QQQ replacement values.",
+  "parameters": {
+    "locked_variables": [
+      "intraday_structured_news_fingerprint_coverage_v1"
+    ],
+    "single_causal_variable": "intraday_structured_news_fingerprint_coverage_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not repeat this classifier repair for the existing intraday structured event/forward-observation/short-horizon family set; the repaired novelty view now keys those rows to intraday_structured_news.",
+    "new_evidence_required": "A valid retry needs a concrete new intraday structured-news family still landing in other/ohlcv_relation, evidence that intraday_structured_news overmatches a generic relation/news family, at least 9 closed rows with complete cash/SPY/QQQ replacement values including at least 3 target-relation-quality closed rows, or a genuinely new intraday execution gate shape.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Low surprise: preflight showed intraday structured-news texts falling into ohlcv_relation or other, and the ordered keyword repair moved the target families to intraday_structured_news while generic relation/news surfaces still classify correctly."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260707-023/before_measurement.json",
+    "data/experiments/exp-20260707-023/after_measurement.json",
+    "data/experiments/exp-20260707-023/exp_20260707_023_intraday_structured_news_fingerprint_coverage.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/exp_20260707_023_intraday_structured_news_fingerprint_coverage.py",
+    "docs/frozen_families.jsonl",
+    "data/daily/intraday/structured/intraday_news_structured_events_20260707_1302ET.json",
+    "data/daily/intraday/structured/intraday_news_structured_event_observations_20260707_1302ET.jsonl"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-07T22:11:51+00:00",
+  "trial_family": "intraday_structured_news_fingerprint_coverage",
+  "trial_variant_id": "intraday_structured_observer_source_v1"
+}

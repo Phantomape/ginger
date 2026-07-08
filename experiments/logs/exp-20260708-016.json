@@ -1,0 +1,155 @@
+{
+  "accepted": true,
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "alpha_hypothesis": "Second-order structured-news exposure may become a deployable candidate-pool or attribution alpha only after current rows close; this run removes the classifier blocker for that future test.",
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "predicted_failure_modes": [
+      "keyword_order_regression",
+      "broad_news_overmatch",
+      "frozen_family_rebuild_failure"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null
+  },
+  "causal_components": [
+    "news_event_exposure keyword mapping",
+    "regression tests",
+    "frozen-family rebuild audit",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Added a dedicated news_event_exposure fingerprint source key so novelty and saturation guards count second-order structured-news observer, attribution, and top1 candidate-source families together.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260708_016_news_event_exposure_fingerprint_coverage.py",
+    "data/experiments/exp-20260708-016/before_measurement.json",
+    "data/experiments/exp-20260708-016/after_measurement.json",
+    "data/experiments/exp-20260708-016/exp_20260708_016_news_event_exposure_fingerprint_coverage.json",
+    "experiments/logs/exp-20260708-016.json",
+    "experiments/cards/exp-20260708-016.md",
+    "experiments/manifests/exp-20260708-016.json",
+    "experiments/tickets/exp-20260708-016.json"
+  ],
+  "changed_variable": "news_event_exposure_data_source_keywords",
+  "decision": "accepted_measurement_repair_news_event_exposure_fingerprint_coverage",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260708-016",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_note": "No signal-generation path changed; entry_date and target_price contracts are untouched.",
+    "fields": [
+      "news_event_exposure keyword mapping",
+      "experiment_fingerprint.infer_fingerprint",
+      "docs/frozen_families.jsonl"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_classifier_gate",
+    "passed": true
+  },
+  "hypothesis": "Alpha-enabling repair: second-order structured-news exposure alpha tests are not trustworthy while news_event_exposure observer families still fingerprint as other, because novelty and observed-only saturation guards cannot count the surface correctly.",
+  "lean_quality_passed": true,
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-026",
+    "exp-20260707-023",
+    "exp-20260708-015"
+  ],
+  "new_evidence_axis": "Measurement-repair classifier miss: frozen families for news_event_exposure observer and second-order exposure attribution currently land in data_source=other despite an accepted observer surface; fixing the classifier changes novelty accounting only and does not retune alpha rows.",
+  "new_evidence_type": "concrete_classifier_miss_on_news_event_exposure_surface",
+  "observer_row_audit": {
+    "alpha_admission_note": "No alpha admission was run because current/post-wiring rows have not closed; this experiment only fixes novelty/saturation attribution.",
+    "alpha_admission_ready": false,
+    "manifest_closed_rows": 3671,
+    "manifest_pending_rows": 2352,
+    "manifest_rows": 6023,
+    "max_closed_event_date": "2026-06-22",
+    "post_wiring_closed_rows_event_date_gte_2026_07_02": 0,
+    "scanned_closed_rows": 3671,
+    "scanned_pending_rows": 2352
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another measurement-repair ID that only adds more aliases for the same news_event_exposure surface unless a concrete family still fingerprints as other.",
+    "new_evidence_required": "Do not run another news_event_exposure alias repair unless a concrete family still lands in other. Alpha on this surface still requires closed current/post-replay second-order rows, a distinct PIT relation/economic source, or a new execution gate shape.",
+    "why_result_happened": "The repair succeeded because precise news_event_exposure and news_second_order keyword aliases now match before generic relation/news buckets. Rebuilding frozen_families reclassified the existing observer, attribution, and top1 rows to the dedicated source without overmatching entity-theme, intraday structured news, or OHLCV relation cases."
+  },
+  "prediction": {
+    "confidence_reason": "The miss is visible in frozen_families.jsonl and the change is a narrow classifier mapping with nearby precedents for intraday_structured_news and space_catalyst.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword_order_regression",
+      "broad_news_overmatch",
+      "frozen_family_rebuild_failure"
+    ],
+    "recorded_at": "2026-07-08T13:10:22+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "novelty_guard_measurement_only",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "data/experiments/exp-20260708-016/before_measurement.json",
+    "data/experiments/exp-20260708-016/after_measurement.json",
+    "data/experiments/exp-20260708-016/exp_20260708_016_news_event_exposure_fingerprint_coverage.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_016_news_event_exposure_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py close --experiment-id exp-20260708-016 --before data\\experiments\\exp-20260708-016\\before_measurement.json --after data\\experiments\\exp-20260708-016\\after_measurement.json --write-registry --status-override accepted",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "news_event_exposure_fingerprint_coverage_v1",
+  "status": "accepted",
+  "timestamp": "2026-07-08T13:17:56+00:00",
+  "trial_family": "news_event_exposure_fingerprint_coverage",
+  "trial_variant_id": "exp-20260708-016"
+}

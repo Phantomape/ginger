@@ -1,0 +1,254 @@
+{
+  "acceptance_rule": "Accept as measurement repair if representative SEC cover-page/filer-status/DEI texts map to a specific non-other data_source without breaking existing fingerprint mappings, tests pass, and frozen_families rebuild reflects the specific source for prior filer-status families.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260707_022_sec_filer_status_fingerprint_coverage.py",
+    "data/experiments/exp-20260707-022",
+    "experiments/logs/exp-20260707-022.json",
+    "experiments/cards/exp-20260707-022.md",
+    "experiments/manifests/exp-20260707-022.json",
+    "experiments/tickets/exp-20260707-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260707-022.md",
+  "causal_components": [
+    "experiment_fingerprint data_source keywords",
+    "focused fingerprint regression tests",
+    "frozen family rebuild"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_periodic_filer_status_data_source_keywords",
+  "claimed_at": "2026-07-07T21:10:58+00:00",
+  "completed_at": "2026-07-07T21:15:08+00:00",
+  "created_at": "2026-07-07T21:10:47+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-022",
+  "experiment_uid": "expuid-bf480d36facc4f7f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T21:10:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_filer_status_fingerprint_coverage"
+  },
+  "hypothesis": "Alpha blocker: SEC 10-K/10-Q cover-page and DEI filer-status transition alpha has already been structurally blocked, but the novelty fingerprint still classifies that family as data_source=other, letting future filer-status materialization or status-transition retries bypass data_source saturation guards.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_filer_status_fingerprint_coverage_v1"
+  ],
+  "mechanism_family": "novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260618-007",
+    "exp-20260626-008",
+    "exp-20260627-015",
+    "exp-20260627-018",
+    "exp-20260706-020",
+    "exp-20260707-012"
+  ],
+  "new_evidence_type": "concrete_classifier_miss_on_sec_filer_status_families",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "already",
+        "as",
+        "been",
+        "blocked",
+        "blocker",
+        "but",
+        "bypass",
+        "classifies",
+        "cover",
+        "coverage",
+        "data",
+        "dei",
+        "family",
+        "filer",
+        "fingerprint",
+        "future",
+        "guard",
+        "guards",
+        "has",
+        "k",
+        "letting",
+        "materialization",
+        "novelty",
+        "or",
+        "other",
+        "page",
+        "q",
+        "retries",
+        "saturation",
+        "status",
+        "still",
+        "structurally",
+        "that",
+        "transition"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_cover_page_filer_status_upgrade_candidate_pool",
+        "reopen_condition": "Materialize historical 10-K/10-Q cover-page XBRL/text rows keyed by accession_number, accepted_at, usable_trade_date, ticker, and parsed filer-status booleans; then rerun one fixed upgrade/downgrade candidate rule through shared-paper-first.",
+        "score": 0.0541,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "novelty_classifier_data_source_coverage",
+        "reopen_condition": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+        "score": 0.041,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.0357,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "sec_dei_cover_status_shared_parser",
+        "reopen_condition": "Refresh or backfill historical/current 10-K/10-Q text after the cover-document priority repair so rows actually contain R1/inline htm.xml DEI facts, then build one fixed shared default-off status-transition helper before any alpha replay.",
+        "score": 0.0333,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "kova_snapshot",
+        "family_key": "kova_intraday_data_readiness",
+        "reopen_condition": null,
+        "score": 0.03,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Current frozen_families has multiple SEC cover-page and DEI filer-status families under data_source=other; a specific ordered keyword entry plus tests should close the guard leak without touching strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword_collision_with_sec_text_event",
+      "missed_cover_page_variant",
+      "frozen_rebuild_failure"
+    ],
+    "recorded_at": "2026-07-07T21:10:28+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260707-022/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260707-022/after_measurement.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "keyword_collision_with_sec_text_event",
+        "missed_cover_page_variant",
+        "frozen_rebuild_failure"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Low surprise: frozen_families had multiple SEC filer-status families in data_source=other, and the ordered keyword/test repair rebuilt all target rows with sec_filer_status while generic SEC 8-K text still maps to sec_text_event."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-022.json",
+  "single_causal_variable": "sec_filer_status_fingerprint_coverage_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260707-022.json",
+  "trial_family": "sec_filer_status_fingerprint_coverage",
+  "trial_variant_id": "sec_periodic_cover_dei_status_data_source_v1"
+}
