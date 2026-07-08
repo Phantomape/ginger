@@ -13,10 +13,12 @@ Regime classification:
 import logging
 from datetime import datetime, timedelta
 
-import yfinance as yf
 import pandas as pd
 
-from yfinance_bootstrap import configure_yfinance_runtime
+from yfinance_bootstrap import (
+    configure_yfinance_runtime,
+    download_with_rate_limit_retry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +45,9 @@ def _fetch_index(ticker, ma_period=MA_PERIOD):
         end   = datetime.now()
         start = end - timedelta(days=lookback_days)
 
-        data = yf.download(ticker, start=start, end=end, progress=False)
+        data = download_with_rate_limit_retry(
+            ticker, start=start, end=end, progress=False, retry_logger=logger
+        )
 
         if data.empty or len(data) < ma_period:
             logger.warning(f"Insufficient data for {ticker} ({len(data)} rows)")

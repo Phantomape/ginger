@@ -5,6 +5,7 @@ import json
 from form4_sale_overhang_context import (
     latest_form4_sale_overhang_context_for_entry,
     persist_form4_sale_overhang_context,
+    summarize_forward_reopen_progress,
 )
 
 
@@ -89,6 +90,17 @@ def test_form4_sale_overhang_context_is_pit_and_data_only(tmp_path):
     assert summary["rows_written"] == 2
     assert summary["rows_with_high_sale_overhang"] == 1
     assert summary["source_audit"]["source_files_skipped_future"] == 1
+    progress = summary["forward_reopen_progress"]
+    assert progress["context_rows_current"] == 2
+    assert progress["high_sale_overhang_context_rows_current"] == 1
+    assert progress["closed_forward_rows_current"] == 0
+    assert progress["high_sale_overhang_closed_forward_rows_current"] == 0
+    assert progress["replacement_value_complete_closed_rows_current"] == 0
+    assert progress["gate_ready"] is False
+    assert progress["not_ready_reasons"] == [
+        "closed_forward_rows_below_min",
+        "high_sale_overhang_forward_rows_below_min",
+    ]
 
     rows = load_jsonl(tmp_path / "form4_sale_overhang_context_20260629.jsonl")
     by_ticker = {row["ticker"]: row for row in rows}
@@ -113,3 +125,55 @@ def test_form4_sale_overhang_context_is_pit_and_data_only(tmp_path):
     )
     assert missing["eligible_for_forward_outcome_join"] is False
     assert missing["form4_sale_overhang_bucket"] == "no_pit_form4_sale_overhang_context"
+
+
+def test_form4_reopen_progress_requires_closed_complete_replacement_rows():
+    gate = {
+        "closed_forward_rows_min": 3,
+        "high_sale_overhang_forward_rows_min": 1,
+        "single_ticker_share_max": 0.67,
+        "required_replacement_values": ["cash", "SPY", "QQQ"],
+    }
+    rows = [
+        {
+            "ticker": "AAA",
+            "form4_high_sale_overhang": True,
+            "closed_forward_row": True,
+            "cash_replacement_value_10d": 0.01,
+            "spy_replacement_value_10d": 0.02,
+            "qqq_replacement_value_10d": 0.03,
+        },
+        {
+            "ticker": "AAA",
+            "form4_high_sale_overhang": False,
+            "closed_forward_row": True,
+            "cash_replacement_value_10d": -0.01,
+            "spy_replacement_value_10d": -0.02,
+            "qqq_replacement_value_10d": -0.03,
+        },
+        {
+            "ticker": "BBB",
+            "form4_high_sale_overhang": False,
+            "closed_forward_row": True,
+            "cash_replacement_value_10d": 0.04,
+            "spy_replacement_value_10d": 0.05,
+        },
+    ]
+
+    progress = summarize_forward_reopen_progress(rows, gate=gate)
+
+    assert progress["closed_forward_rows_current"] == 3
+    assert progress["high_sale_overhang_closed_forward_rows_current"] == 1
+    assert progress["replacement_value_complete_closed_rows_current"] == 2
+    assert progress["closed_forward_rows_without_required_replacement_values"] == 1
+    assert progress["max_single_ticker_closed_forward_row_share"] == 0.666667
+    assert progress["gate_ready"] is False
+    assert progress["not_ready_reasons"] == [
+        "closed_forward_rows_missing_required_replacement_values"
+    ]
+
+    rows[2]["qqq_replacement_value_10d"] = 0.06
+    ready = summarize_forward_reopen_progress(rows, gate=gate)
+    assert ready["replacement_value_complete_closed_rows_current"] == 3
+    assert ready["gate_ready"] is True
+    assert ready["not_ready_reasons"] == []

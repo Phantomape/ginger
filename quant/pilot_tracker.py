@@ -265,6 +265,12 @@ def _hold_status(row: dict[str, Any]) -> str:
     return "HOLD"
 
 
+def _stop_adjusted_status(status: str, stop_status: str) -> str:
+    if stop_status == "STOP_HIT" and status in {"HOLD", "EXIT_NEXT_SESSION"}:
+        return "EXIT_NOW"
+    return status
+
+
 def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
     entry = _num(_first(row, "entry_price", "entry_raw_open"))
     last = _num(_first(row, "last_price", "decision_close_price"))
@@ -275,8 +281,9 @@ def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
         stop_status = "STOP_HIT"
     else:
         stop_status = "OK"
+    action_status = _stop_adjusted_status(status, stop_status)
     return {
-        "status": status,
+        "status": action_status,
         "ticker": _ticker(row),
         "signal_date": _first(row, "signal_date", "date"),
         "entry_date": _first(row, "entry_date"),
@@ -562,7 +569,11 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
         if not acts and not exits_done:
             L.append("- _no position / no signal today_")
         for a in acts:
-            if a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
+            if a["status"] == "EXIT_NOW" and a.get("stop_status") == "STOP_HIT":
+                L.append("- **SELL (STOP_HIT)** {tk}: manual stop hit at {up}; entry {ep}, last {lp}".format(
+                    tk=a["ticker"], up=f"{a['unrealized_pct']:+.1%}",
+                    ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
+            elif a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
                 L.append("- **SELL ({st})** {tk}: hold elapsed (day {dh}/{hd}); entry {ep}, last {lp}".format(
                     st=a["status"], tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"],
                     ep=_px(a["entry_price"]), lp=_px(a["last_price"])))

@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from data_paths import daily_artifact_glob, resolve_daily_artifact_path
+from data_paths import atomic_write_text, daily_artifact_glob, resolve_daily_artifact_path
 
 SNAPSHOT_RE = re.compile(r"earnings_snapshot_(\d{8})\.json$")
 SCHEMA_VERSION = 2
@@ -405,18 +405,22 @@ def persist_estimate_revision_ledger(
     return summary
 
 
+# Atomic temp+replace, never a truncating open("w") on the final path: on
+# Windows, truncating a file that another process holds memory-mapped fails
+# with ERROR_USER_MAPPED_FILE (OSError Errno 22), which dropped the 2026-07-07
+# daily ledger (exp-20260708-007).
 def write_jsonl(path: str | Path, rows: list[dict[str, Any]]) -> None:
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
+    atomic_write_text(
+        "".join(json.dumps(row, ensure_ascii=False, default=str) + "\n" for row in rows),
+        path,
+    )
 
 
 def write_json(path: str | Path, payload: dict[str, Any]) -> None:
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    atomic_write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False, default=str),
+        path,
+    )
 
 
 def _records_from_quant_signals(

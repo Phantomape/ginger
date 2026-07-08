@@ -37,12 +37,51 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "moomoo_capital_flow", "moomoo capital flow", "capital_flow", "capital-flow", "fund_flow",
         "large_order_flow",
     )),
+    ("crypto_sleeve", (
+        "crypto_sleeve", "crypto sleeve", "btc_spot", "btc spot", "btc/usd", "btc-usd", "btc usd",
+        "bitcoin spot", "crypto_positions", "daily_ema20_ema100_spot_trend",
+    )),
+    ("ortex_borrow", (
+        "ortex", "borrow_fee", "borrow fee", "loan_fee", "loan fee", "utilization",
+    )),
+    ("borrow_availability", (
+        "moomoo_borrow", "moomoo borrow", "borrow_availability", "borrow availability",
+        "loan_availability", "loan availability", "short_sell_rate", "short sell rate",
+        "short_available_volume", "short available volume",
+    )),
+    ("space_catalyst", (
+        "space_catalyst", "space catalyst", "space_catalyst_event_state",
+        "space catalyst event state", "space_catalyst_shadow", "space catalyst shadow",
+        "space_catalyst_event_ledger", "space catalyst event ledger",
+        "space_catalyst_observation_slot", "space catalyst observation slot",
+    )),
     ("forward_replacement_value", (
         "forward_replacement", "forward replacement", "forward_replacement_value",
         "replacement_value", "replacement value", "settled forward", "closed forward",
         "entry_exhaustion", "entry exhaustion", "entry_regime", "entry regime",
     )),
     ("cisa_kev", ("cisa_kev", "cisa", "kev", "known_exploited_vulnerabilities")),
+    ("intraday_structured_news", (
+        "intraday_structured_news", "intraday structured news",
+        "intraday_news_structured", "intraday news structured",
+        "intraday_structured_event", "intraday structured event",
+        "intraday_structured_relation", "intraday structured relation",
+        "intraday_trade_news", "intraday trade news",
+    )),
+    ("intraday_advisory", (
+        "intraday_advisory", "intraday advisory", "intraday_review", "intraday review",
+        "intraday risk review", "risk-review", "shadow_action", "shadow action",
+        "advisory_shadow_action", "advisory shadow action",
+        "primary_advisory_shadow_action", "primary advisory shadow action",
+        "exit advisory", "breached", "approaching",
+    )),
+    ("news_event_exposure", (
+        "news_event_exposure", "news event exposure",
+        "news_event_second_order", "news event second order",
+        "news_second_order", "news second order",
+        "second_order_exposure", "second-order exposure", "second order exposure",
+        "structured-news exposure", "structured news exposure",
+    )),
     ("prediction_market_event", (
         "prediction_market", "prediction-market", "prediction market", "kalshi", "polymarket",
         "event_odds", "event odds",
@@ -70,6 +109,15 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("form4_insider", ("form4", "form_4", "insider")),
     ("sec13f_ownership", ("13f", "sec13f", "sponsorship", "holder")),
     ("filing_timeliness", ("timeliness", "filing_lag", "early_disclosure", "filing_recency", "recency", "disclosure_timing")),
+    ("sec_filer_status", (
+        "filer_status", "filer status", "filer-status", "accelerated_filer", "accelerated filer",
+        "large_accelerated", "large accelerated", "non_accelerated", "non-accelerated",
+        "smaller_reporting", "smaller reporting", "emerging_growth_company",
+        "emerging growth company", "dei_status", "dei status", "dei_cover", "dei cover", "dei_cover_status",
+        "cover_page_filer", "cover page filer", "cover_page_status", "cover page status",
+        "cover_page_materialization", "cover page materialization", "cover_xbrl", "cover xbrl",
+        "periodic_cover", "periodic cover", "entityfilercategory",
+    )),
     ("sec_text_event", ("sec_text", "8k", "item", "filing_text", "contract_economics", "backlog", "rpo", "guidance", "narrative", "complexity", "submissions")),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",

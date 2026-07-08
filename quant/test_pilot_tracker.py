@@ -126,6 +126,44 @@ def test_recommendations_block_new_entries_when_scorecard_kills_pilot() -> None:
     assert rec["skipped"][0]["status"] == "SKIP_pilot_kill_verdict"
 
 
+def test_stop_hit_open_position_is_machine_readable_sell_action() -> None:
+    pilot = {
+        "key": "test_pilot",
+        "label": "Test pilot",
+        "sleeve": "test_sleeve",
+        "max_concurrent": None,
+    }
+    state = {
+        "updated_at": "2026-07-08T00:00:00+00:00",
+        "closed_positions": [],
+        "open_positions": [
+            {
+                "ticker": "STOP",
+                "entry_date": "2026-07-01",
+                "entry_price": 100.0,
+                "last_price": 84.0,
+                "hold_days": 10,
+                "observed_trading_days": 2,
+            },
+        ],
+        "pending_entries": [],
+    }
+
+    card = pilot_tracker._scorecard(pilot, state)
+    rec = pilot_tracker._recommendations(pilot, state, card)
+
+    assert card["verdict"] == "COLLECTING"
+    assert len(rec["actionable"]) == 1
+    row = rec["actionable"][0]
+    assert row["ticker"] == "STOP"
+    assert row["status"] == "EXIT_NOW"
+    assert row["stop_status"] == "STOP_HIT"
+    assert row["days_remaining"] == 8
+
+    alerts = pilot_tracker._stop_alerts([rec])
+    assert [alert["ticker"] for alert in alerts] == ["STOP"]
+
+
 def test_cross_pilot_overlap_includes_verdict_and_status_context() -> None:
     recs = [
         {

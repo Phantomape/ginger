@@ -13,10 +13,12 @@ import os
 from datetime import datetime, timezone
 
 import pandas as pd
-import yfinance as yf
 
 from data_paths import data_artifact_path
-from yfinance_bootstrap import configure_yfinance_runtime
+from yfinance_bootstrap import (
+    configure_yfinance_runtime,
+    download_with_rate_limit_retry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,13 +60,14 @@ def fetch_crypto_ohlcv(symbol="BTC-USD", lookback_days=900):
     configure_yfinance_runtime()
     end = datetime.now(timezone.utc)
     start = end - pd.Timedelta(days=lookback_days)
-    data = yf.download(
+    data = download_with_rate_limit_retry(
         symbol,
         start=start.date().isoformat(),
         end=(end + pd.Timedelta(days=1)).date().isoformat(),
         interval="1d",
         progress=False,
         auto_adjust=False,
+        retry_logger=logger,
     )
     return normalize_crypto_ohlcv(data, symbol=symbol)
 

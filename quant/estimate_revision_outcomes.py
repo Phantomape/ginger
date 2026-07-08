@@ -17,6 +17,7 @@ from statistics import mean, median
 from typing import Any, Sequence
 
 from constants import ROUND_TRIP_COST_PCT
+from data_paths import atomic_write_text
 from fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
 
 
@@ -675,18 +676,20 @@ def _read_json(path: Path, *, default: dict[str, Any]) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else default
 
 
+# Atomic temp+replace, never a truncating open("w") on the final path: on
+# Windows, truncating a file that another process holds memory-mapped fails
+# with ERROR_USER_MAPPED_FILE (OSError Errno 22) — see exp-20260708-007.
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
+    atomic_write_text(
+        "".join(json.dumps(row, ensure_ascii=False, default=str) + "\n" for row in rows),
+        path,
+    )
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    atomic_write_text(
         json.dumps(payload, indent=2, ensure_ascii=False, default=str, sort_keys=True) + "\n",
-        encoding="utf-8",
+        path,
     )
 
 
