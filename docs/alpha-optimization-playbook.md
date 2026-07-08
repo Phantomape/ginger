@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-07.
+Last refreshed: 2026-07-08.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -913,6 +913,24 @@ source, and pilot concentration output exposes OR-rule metadata. The next valid
 work is row accumulation, attribution, and parity checks on those repaired
 surfaces, not immediate policy promotion.
 
+The July 8 batch reinforced the same row-maturation boundary. Most accepted
+work was measurement repair: daily July 7 orphan artifacts were recovered,
+entity-theme daily output was advanced, estimate-revision writes became atomic,
+Yahoo rate-limit retries were hardened, pilot stop-hit rows now expose
+actionable status, and ORTEX / space-catalyst / news-exposure fingerprints now
+have dedicated data-source keys. These are alpha-enabling repairs, not new
+alpha evidence. The alpha reads were mostly negative: SEC Item 5.02 leadership
+clarity, raw Item 2.05/2.06 restructuring/impairment, and text-confirmed
+Item 2.05/2.06 did not produce deployable entry-risk drift; the production
+crypto sleeve did not beat fee-aware BTC buy-and-hold; and fundamental-growth,
+supplier-financing, and accepted-allocator forward packages remained too thin
+or weak for activation. The one useful lead, a source-level default-off
+kill-switch cohort, failed chronological validation because no pre-cutoff
+source qualified for selection. Default next work is forward row collection,
+source/fingerprint guard maintenance, and train-before-test source governance,
+not SEC item/text regex retunes, crypto EMA retunes, or all-row kill-switch
+threshold sweeps.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -999,6 +1017,18 @@ to create allocation evidence; tick-to-ATR20 is attribution-only until richer
 microstructure fields or new prospective rows mature. Default next step is
 settled-row collection and comparator-aware attribution, not another overlay,
 threshold, source-bundle, or microstructure gate retune.
+
+July 8 status: daily artifact recovery, entity-theme recovery,
+estimate-revision atomic writes, yfinance retry handling, pilot stop-hit status,
+and fingerprint coverage repairs restored or protected row collection. They do
+not promote any sleeve. Fundamental-growth RS has only 10 enriched closed rows
+and negative aggregate replacement value; supplier-financing has 5 enriched
+closed rows and sector concentration; accepted allocator/source-consensus has
+6 enriched closed rows. The forward package to wait for is still at least
+watchlist-scale enriched closed cash/SPY/QQQ replacement rows with acceptable
+concentration. The only fresh alpha hypothesis worth carrying forward is a
+train-selected source-level kill switch once enough pre-cutoff rows exist; the
+July 8 all-row lead is not policy-ready.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -2023,6 +2053,40 @@ production-visible field:
   permission-denied orphan files after recovery attempts. Reopen only for a real
   cleanup regression or after materially more settled observer/provenance rows
   support an alpha read;
+- per-rejected-source portfolio overlay consumption from the
+  `exp-20260706-022` ranking list. The July 7 fixed 10% daily-equity overlays
+  were mostly positive in aggregate but rejected or parked because the lane
+  gate is too sensitive to noise-scale window regressions and does not yet
+  identify a deployable portfolio policy. Reopen only with a joint, predeclared
+  portfolio covariance model, materially more settled rows, or a different
+  execution envelope; do not keep consuming the same ranked list one name per
+  experiment;
+- SEC NT late-filing, Item 3.01 listing-compliance, Item 5.02 leadership-text,
+  and Item 2.05/2.06 restructuring/impairment entry-risk gates that only retune
+  item lists, primary-text regexes, price/ADV/liquidity gates, same-day return
+  filters, event age, top-N, hold, cooldown, notional, or response shape. The
+  July 7-8 reads found thin deployable samples, non-negative or positive long
+  drift, concentration, or comparator failure. Reopen only with materially
+  richer event economics, relation/counterparty exposure, restatement/legal
+  outcome provenance, or settled forward replacement rows under a fixed shared
+  helper;
+- default-off source-level kill-switch policies selected from all available
+  forward rows. `exp-20260708-017` is an observed-only lead, but
+  `exp-20260708-018` failed chronological validation because the training
+  segment selected no qualified kill sources. Reopen only after enough
+  pre-cutoff complete rows exist to select sources ex ante, then validate on a
+  later holdout segment with cash/SPY/QQQ replacement value and concentration
+  controls;
+- crypto sleeve EMA/SMA target-policy activation or parameter retunes based on
+  the current saved production snapshots. `exp-20260708-010` failed the
+  observed-only policy checks versus fee-aware BTC buy-and-hold and cash.
+  Reopen only with materially more saved production snapshots, a new execution
+  cost/liquidity surface, or a different predeclared crypto policy family;
+- fingerprint/data-source coverage repairs as alpha evidence. ORTEX,
+  intraday structured news, SEC filer status, pilot scorecard, space catalyst,
+  and news-event exposure classification repairs are accepted guard plumbing.
+  New data surfaces must update `_DATA_SOURCE_KEYWORDS` and tests when built,
+  but the repair itself is not a valid new alpha axis;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

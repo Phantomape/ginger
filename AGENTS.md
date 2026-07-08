@@ -45,10 +45,14 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    同样受 §2.4 饱和治理约束：豁免覆盖"会真正产出新行"的构建，不覆盖对同一面的反复摆弄。
 4. **饱和治理（硬规则）**。统一原理：**在同一证据面上重复动作不产生新证据。** 任何新实验 ID
    必须指向至少一条机器可查的新证据轴：**(a) 新数据源，(b) 新 gate shape，(c) 实质新增的已结
-   算 forward 行**（相对同面上次探针，已结算行数须明显增长——默认 ≥+50% 或达到 park 时声明的
-   reopen 计数；同一天的刷新不算新增）；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
-   标签枚举可被无限满足，基准率不随之改变。换阈值、换响应函数（hard exclusion → 降权 →
-   tilt / notional 缩放）、换切片条件、复述"还没成熟"，都**不算**。各通道的触发阈值与合法出路：
+   算 forward 行**（相对同面上次探针，已结算行数须明显增长——默认 ≥+50% **且绝对新增 ≥10 条**，
+   或达到 park 时声明的 reopen 计数；同一天的刷新不算新增。小样本翻倍不满足本轴：3→6 行满足
+   +50% 但无判力，2026-07-08 同日 3 个 readiness 重审全部 rejected 即此；行数不够时正确动作是
+   一行核对计数、不占 ID）；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
+   标签枚举可被无限满足，基准率不随之改变。**gate shape 指响应/评估结构**（entry 排除 gate、
+   降权 overlay、candidate pool、notional scalar、kill switch 等）；同一源同一配方下换事件子类
+   型 / item code / form type 只是换输入行，**不构成 (b)**。换阈值、换响应函数（hard exclusion →
+   降权 → tilt / notional 缩放）、换切片条件、复述"还没成熟"，都**不算**。各通道的触发阈值与合法出路：
 
    | 通道 | 触发条件（默认阈值） | 禁止 | 合法下一步 | 强制 |
    |---|---|---|---|---|
@@ -59,7 +63,7 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
    | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
    | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
-   | 排名清单消费 | 用同一固定评估配方逐名消费同一 ranked 候选清单，连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一名一 ID 烧完剩余排名（每名"源不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化） | ⚠️ |
+   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型等），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
 
    强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
    observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；

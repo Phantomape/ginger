@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-07.
+Last refreshed: 2026-07-08.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -142,6 +142,156 @@ Controls:
 - treat "more parameters" as model-risk evidence until the placebo clears.
 
 Source: <https://www.ft.com/content/89d88cbf-a92c-43d2-b8af-88ae26529be0>
+
+### Financial Time-Series Foundation Models Need Contamination Audits
+
+Recent financial time-series foundation-model work is useful mainly as a
+benchmarking warning. FinCast reports zero-shot strength across financial
+domains and resolutions, but companion TSFM evaluation work argues that large
+pretraining corpora make train/test and temporal-overlap leakage hard to rule
+out. FinTSB adds the practical benchmark shape Ginger should copy: movement
+pattern diversity, standardized protocol, and market-structure constraints
+such as fees. The local translation is not to import a foundation model into
+selection; it is to add contamination, movement-pattern, and fee-scenario
+metadata around any learned forecast or representation.
+
+Implementable fields:
+
+- `tsfm_model_id`
+- `tsfm_pretraining_corpus_hash`
+- `benchmark_overlap_audit_version`
+- `temporal_overlap_group_id`
+- `movement_pattern_bucket`
+- `resolution_domain_bucket`
+- `market_structure_constraint_version`
+- `transaction_fee_scenario_id`
+- `zero_shot_simple_baseline_delta`
+- `tsfm_costed_replacement_value_delta`
+
+Controls:
+
+- require an overlap/leakage audit before comparing any pretrained model to
+  local PIT rows;
+- benchmark against simple momentum, volatility-scaled momentum, and accepted
+  helper comparators on the exact same decision dates;
+- report performance by movement-pattern bucket and market regime, not only
+  aggregate prediction loss;
+- include fees, tradability, and displacement replacement value before treating
+  a forecast as alpha evidence.
+
+Sources:
+
+- <https://arxiv.org/abs/2508.19609>
+- <https://arxiv.org/abs/2510.13654>
+- <https://arxiv.org/abs/2502.18834>
+
+### Event Graph RAG Belongs In The Relation Evidence Store
+
+FinKario is useful because it treats evolving fundamentals, events, entities,
+and relation triples as a graph-retrieval problem rather than raw sentiment.
+That maps directly to Ginger's repeated relation-alpha boundary: relation
+labels only matter when the actor, object, relation type, timestamp, source
+span, and replacement outcome are stored as replayable rows. The graph should
+feed candidate evidence and source memory; it should not become a discretionary
+LLM trading layer.
+
+Implementable fields:
+
+- `event_graph_version`
+- `event_graph_entity_id`
+- `event_graph_relation_type`
+- `event_graph_relation_confidence_bucket`
+- `event_graph_source_span_hash`
+- `event_graph_update_timestamp`
+- `event_graph_retrieval_stage`
+- `relation_triple_replacement_value_bucket`
+- `graph_rag_missing_relation_reason`
+
+Controls:
+
+- store event and relation triples with source span, extraction prompt/schema,
+  and accepted timestamp;
+- separate issuer-self, peer, customer, supplier, counterparty, and theme
+  propagation relations before scoring;
+- compare graph-retrieved rows against accepted relation/allocator helpers
+  after costs;
+- update relation memory only from information available before the candidate
+  date, and score outcomes only after the horizon matures.
+
+Source: <https://arxiv.org/abs/2508.00961>
+
+### Learned Portfolio Models Need Risk-Cost Significance Packages
+
+Recent deep-learning and reinforcement-learning portfolio papers point to a
+useful evaluation package: temporal state, position sizing, short/long
+constraints, CVaR or drawdown risk, transaction-cost scenarios, statistical
+significance, seed robustness, and breakeven-cost buffers. Ginger should copy
+that package before trusting any learned allocator, source router, or sizing
+overlay. A learned model that improves average return but fails cost, seed, or
+tail checks is diagnostic only.
+
+Implementable fields:
+
+- `learned_allocator_model_id`
+- `temporal_state_encoder_version`
+- `position_sizing_action_space`
+- `short_or_inverse_allowed_flag`
+- `cvar_or_drawdown_constraint_id`
+- `random_seed_robustness_bucket`
+- `statistical_significance_bucket`
+- `breakeven_transaction_cost_bps`
+- `downside_tail_metric_delta`
+- `learned_allocator_replacement_value_delta`
+
+Controls:
+
+- run learned allocators against linear/simple baselines, accepted helpers, and
+  cash/SPY/QQQ displacement on the same rows;
+- report seed sensitivity, tail risk, drawdown, turnover, and cost scenarios
+  next to Sharpe or EV;
+- keep learned output default-off until a deterministic shared helper or
+  frozen model artifact passes Gate 1-4;
+- reject models whose edge disappears under realistic fees or whose advantage
+  is not statistically distinguishable from simple baselines.
+
+Sources:
+
+- <https://arxiv.org/abs/2503.04143>
+- <https://arxiv.org/abs/2603.01820>
+
+### Price-Driven LLM Agents Are Structured Signal Routers
+
+QuantAgent's useful pattern is the decomposition into indicator, pattern,
+trend, and risk specialists over short-horizon structured signals. For Ginger,
+that supports a narrow LLM boundary: the model may summarize or classify
+already-computed microstructure/trend evidence, but code must own entry,
+ranking, sizing, exits, and risk. Any LLM agent output should be logged as a
+traceable view over deterministic fields, then judged by replacement value.
+
+Implementable fields:
+
+- `price_agent_protocol_id`
+- `indicator_view_hash`
+- `pattern_view_hash`
+- `trend_view_hash`
+- `risk_view_hash`
+- `short_horizon_signal_window`
+- `agent_view_disagreement_bucket`
+- `agent_risk_override_attempt_flag`
+- `price_agent_replacement_value_delta`
+
+Controls:
+
+- compute indicators, pattern labels, and risk metrics deterministically before
+  the LLM sees them;
+- preserve the per-agent input/output, disagreement, and final view as
+  replayable evidence rows;
+- fail closed when the agent proposes sizing, exit, or risk changes outside the
+  shared policy schema;
+- compare any agent-assisted row against the same deterministic helper without
+  the LLM view after costs.
+
+Source: <https://arxiv.org/abs/2509.09995>
 
 ### State-Dependent Predictability
 
