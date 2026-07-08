@@ -1,0 +1,677 @@
+{
+  "acceptance_rule": "Observed-only predeclared verdict: positive lead iff policy EV (total_return_pct * sharpe_daily) beats fee-aware BTC buy-and-hold EV in at least 2 of 3 fixed calendar windows (2017-2019, 2020-2022, 2023-2026-07) AND policy max drawdown is lower than buy-and-hold in all 3 windows AND aggregate policy total return is positive; otherwise observed_only_rejected. No production policy, order, or config change either way.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_019_crypto_sleeve_btc_historical_replay.py",
+    "data/experiments/exp-20260708-019/exp_20260708_019_crypto_sleeve_btc_historical_replay.json",
+    "experiments/cards/exp-20260708-019.md",
+    "experiments/manifests/exp-20260708-019.json",
+    "experiments/tickets/exp-20260708-019.json",
+    "experiments/logs/exp-20260708-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/artifacts/exp-20260708-019_crypto_sleeve_btc_historical_replay.md",
+    "data/experiments/exp-20260708-019/btc_usd_daily_closes.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-019.md",
+  "causal_components": [
+    "shared production policy functions",
+    "multi-year BTC daily history",
+    "fee-aware buy-and-hold comparator",
+    "fixed calendar windows",
+    "production hysteresis and fee semantics",
+    "no production behavior change"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "crypto_sleeve_shared_policy_multi_year_btc_historical_replay_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-08T16:17:00+00:00",
+  "created_at": "2026-07-08T16:14:12+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-019",
+  "experiment_uid": "expuid-681312c255374682",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T16:14:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "crypto_sleeve_btc_historical_replay"
+  },
+  "hypothesis": "Observed-only alpha: the production BTC/USD crypto sleeve daily EMA20/EMA100/SMA200 target policy, replayed through the exact shared production policy functions over multi-year BTC-USD daily history (2017-2026 including the 2018 and 2022 bear markets), should add risk-adjusted value versus fee-aware BTC buy-and-hold if the daily trend switch is a real edge rather than a short-sample artifact.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "crypto_sleeve_shared_policy_multi_year_btc_historical_replay_v1"
+  ],
+  "mechanism_family": "production_visible_crypto_sleeve_historical_replay",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-010",
+    "exp-20260607-022",
+    "exp-20260622-023",
+    "exp-20260708-008"
+  ],
+  "new_evidence_type": "new_gate_shape_shared_historical_replay_on_new_btc_history",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "crypto_sleeve",
+      "field_tags": [
+        "a",
+        "add",
+        "adjusted",
+        "alpha",
+        "artifact",
+        "aware",
+        "bear",
+        "btc",
+        "buy",
+        "crypto",
+        "daily",
+        "edge",
+        "ema100",
+        "ema20",
+        "exact",
+        "fee",
+        "functions",
+        "historical",
+        "history",
+        "hold",
+        "if",
+        "including",
+        "is",
+        "markets",
+        "multi",
+        "observed",
+        "only",
+        "over",
+        "policy",
+        "rather",
+        "real",
+        "replayed",
+        "risk",
+        "sample",
+        "short",
+        "should",
+        "sleeve",
+        "sma200",
+        "spot",
+        "switch",
+        "target",
+        "than",
+        "through",
+        "trend",
+        "usd",
+        "value",
+        "versus",
+        "year"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "crypto_sleeve",
+        "family_key": "btc_spot_crypto_sleeve_daily_trend_policy_forward_attribution",
+        "reopen_condition": "A legal retry needs materially more settled production crypto sleeve snapshot rows, a different BTC/crypto data source, or a new gate shape such as shared historical replay before policy changes.",
+        "score": 0.5019,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_short_volume",
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "reopen_condition": "With the broad-universe coverage gap closed, a valid retry needs a materially DIFFERENT signal axis - PIT borrow fee/utilization or loan-availability, options-implied move/skew, or closed forward replacement-value rows from a shared default-off helper - not another threshold or universe-size retune.",
+        "score": 0.0296,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_short_volume",
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially broader archived Moomoo coverage set, PIT borrow fee/utilization or loan-availability data, options/flow confirmation, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.0291,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "risk_allocation_observed_only",
+        "reopen_condition": "A valid retry needs either forward/live outcomes under a predeclared cluster envelope or a shared risk-allocation helper with canonical before/after Gate 1-4 metrics.",
+        "score": 0.0291,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape plus materially new data coverage: shared historical replay of the exact production crypto_sleeve policy functions over roughly nine years of BTC-USD daily bars covering the 2018 and 2022 bear markets, versus exp-20260708-010 which only attributed 66 saved 2026 forward snapshots; this is the legal retry axis explicitly declared in exp-20260708-010 next_retry_requires (a shared historical replay gate shape).",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "crypto_sleeve",
+      "streak": 1,
+      "streak_experiments": [
+        "exp-20260708-010"
+      ]
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape plus materially new data coverage: shared historical replay of the exact production crypto_sleeve policy functions over roughly nine years of BTC-USD daily bars covering the 2018 and 2022 bear markets, versus exp-20260708-010 which only attributed 66 saved 2026 forward snapshots; this is the legal retry axis explicitly declared in exp-20260708-010 next_retry_requires (a shared historical replay gate shape).",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape plus materially new data coverage: shared historical replay of the exact production crypto_sleeve policy functions over roughly nine years of BTC-USD daily bars covering the 2018 and 2022 bear markets, versus exp-20260708-010 which only attributed 66 saved 2026 forward snapshots; this is the legal retry axis explicitly declared in exp-20260708-010 next_retry_requires (a shared historical replay gate shape).",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "crypto_sleeve",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "buy_and_hold_beats_policy_in_bull_windows",
+      "fees_and_whipsaw_consume_edge",
+      "yfinance_history_unavailable",
+      "window_fragility"
+    ],
+    "confidence_reason": "Daily trend filters on BTC historically cut drawdown deeply but often lag buy-and-hold on raw return; the policy plausibly wins risk-adjusted EV in bear-containing windows and loses the 2023-2026 bull window, so the predeclared 2-of-3 window rule is a real coin flip.",
+    "recorded_at": "2026-07-08T16:13:31+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_positive_lead_crypto_sleeve_historical_replay",
+    "artifact": "data/experiments/exp-20260708-019/exp_20260708_019_crypto_sleeve_btc_historical_replay.json",
+    "report": "experiments/artifacts/exp-20260708-019_crypto_sleeve_btc_historical_replay.md",
+    "log": "experiments/logs/exp-20260708-019.json",
+    "runner": "quant/experiments/exp_20260708_019_crypto_sleeve_btc_historical_replay.py",
+    "gate4": {
+      "benchmark": "fee_aware_btc_buy_and_hold_per_window",
+      "acceptance_rule": "positive lead iff policy EV (total_return_pct * sharpe_daily) beats fee-aware buy-and-hold EV in >=2 of 3 fixed windows AND policy max drawdown < buy-and-hold max drawdown in all 3 windows AND aggregate policy total return > 0",
+      "checks": {
+        "all_windows_have_enough_bars": true,
+        "aggregate_has_target_switches": true,
+        "policy_ev_beats_buy_hold_in_2_of_3_windows": true,
+        "policy_drawdown_below_buy_hold_in_all_windows": true,
+        "aggregate_policy_total_return_positive": true
+      },
+      "failed_reasons": [],
+      "ev_winning_windows": [
+        "bull_bear_2017_2019",
+        "covid_cycle_2020_2022"
+      ],
+      "drawdown_winning_windows": [
+        "bull_bear_2017_2019",
+        "covid_cycle_2020_2022",
+        "current_cycle_2023_2026"
+      ],
+      "windows": [
+        {
+          "label": "bull_bear_2017_2019",
+          "bars": 1095,
+          "target_switches": 24,
+          "avg_position_pct": 0.503199,
+          "policy": {
+            "label": "policy",
+            "periods": 1094,
+            "total_return_pct": 9.474328,
+            "expected_value_score": 14.48787,
+            "sharpe_daily": 1.529171,
+            "mean_period_return_pct": 0.002722,
+            "vol_period_return_pct": 0.034006,
+            "max_drawdown_pct": 0.531103,
+            "win_rate": 0.29159,
+            "ending_equity": 10.474328
+          },
+          "buy_hold": {
+            "label": "buy_hold",
+            "periods": 1094,
+            "total_return_pct": 6.135546,
+            "expected_value_score": 7.388494,
+            "sharpe_daily": 1.204211,
+            "mean_period_return_pct": 0.002728,
+            "vol_period_return_pct": 0.043274,
+            "max_drawdown_pct": 0.83399,
+            "win_rate": 0.548446,
+            "ending_equity": 7.135546
+          },
+          "delta_vs_buy_hold": {
+            "total_return_pct": 3.338782,
+            "expected_value_score": 7.099376,
+            "sharpe_daily": 0.32496,
+            "max_drawdown_pct": -0.302887
+          }
+        },
+        {
+          "label": "covid_cycle_2020_2022",
+          "bars": 1096,
+          "target_switches": 39,
+          "avg_position_pct": 0.471142,
+          "policy": {
+            "label": "policy",
+            "periods": 1095,
+            "total_return_pct": 2.185535,
+            "expected_value_score": 2.353822,
+            "sharpe_daily": 1.077,
+            "mean_period_return_pct": 0.001339,
+            "vol_period_return_pct": 0.023755,
+            "max_drawdown_pct": 0.407734,
+            "win_rate": 0.253881,
+            "ending_equity": 3.185535
+          },
+          "buy_hold": {
+            "label": "buy_hold",
+            "periods": 1095,
+            "total_return_pct": 1.275359,
+            "expected_value_score": 0.957204,
+            "sharpe_daily": 0.750537,
+            "mean_period_return_pct": 0.001491,
+            "vol_period_return_pct": 0.037951,
+            "max_drawdown_pct": 0.766346,
+            "win_rate": 0.513242,
+            "ending_equity": 2.275359
+          },
+          "delta_vs_buy_hold": {
+            "total_return_pct": 0.910176,
+            "expected_value_score": 1.396618,
+            "sharpe_daily": 0.326463,
+            "max_drawdown_pct": -0.358612
+          }
+        },
+        {
+          "label": "current_cycle_2023_2026",
+          "bars": 1284,
+          "target_switches": 43,
+          "avg_position_pct": 0.598909,
+          "policy": {
+            "label": "policy",
+            "periods": 1283,
+            "total_return_pct": 1.30201,
+            "expected_value_score": 1.105134,
+            "sharpe_daily": 0.848791,
+            "mean_period_return_pct": 0.000818,
+            "vol_period_return_pct": 0.018406,
+            "max_drawdown_pct": 0.327024,
+            "win_rate": 0.29774,
+            "ending_equity": 2.30201
+          },
+          "buy_hold": {
+            "label": "buy_hold",
+            "periods": 1283,
+            "total_return_pct": 2.769989,
+            "expected_value_score": 2.870141,
+            "sharpe_daily": 1.036156,
+            "mean_period_return_pct": 0.001336,
+            "vol_period_return_pct": 0.024639,
+            "max_drawdown_pct": 0.5306,
+            "win_rate": 0.50039,
+            "ending_equity": 3.769989
+          },
+          "delta_vs_buy_hold": {
+            "total_return_pct": -1.467979,
+            "expected_value_score": -1.765007,
+            "sharpe_daily": -0.187365,
+            "max_drawdown_pct": -0.203576
+          }
+        }
+      ],
+      "aggregate": {
+        "label": "aggregate_2017_2026",
+        "bars": 3475,
+        "target_switches": 106,
+        "avg_position_pct": 0.528152,
+        "policy": {
+          "label": "policy",
+          "periods": 3474,
+          "total_return_pct": 75.80967,
+          "expected_value_score": 88.649733,
+          "sharpe_daily": 1.169372,
+          "mean_period_return_pct": 0.001581,
+          "vol_period_return_pct": 0.025834,
+          "max_drawdown_pct": 0.531103,
+          "win_rate": 0.281808,
+          "ending_equity": 76.80967
+        },
+        "buy_hold": {
+          "label": "buy_hold",
+          "periods": 3474,
+          "total_return_pct": 61.787442,
+          "expected_value_score": 60.669309,
+          "sharpe_daily": 0.981904,
+          "mean_period_return_pct": 0.00183,
+          "vol_period_return_pct": 0.0356,
+          "max_drawdown_pct": 0.83399,
+          "win_rate": 0.52015,
+          "ending_equity": 62.787442
+        },
+        "delta_vs_buy_hold": {
+          "total_return_pct": 14.022228,
+          "expected_value_score": 27.980424,
+          "sharpe_daily": 0.187468,
+          "max_drawdown_pct": -0.302887
+        }
+      },
+      "accepted_alpha": false,
+      "binding_acceptance_note": "Observed-only historical replay attribution of the unchanged production crypto sleeve policy. Either verdict changes no production behavior; a policy change would need its own shared policy experiment."
+    },
+    "summary": "The unchanged production crypto sleeve trend policy beat fee-aware BTC buy-and-hold on the predeclared risk-adjusted window rule over multi-year history; this validates keeping the current sleeve policy but changes nothing by itself."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-019.json",
+  "single_causal_variable": "crypto_sleeve_shared_policy_multi_year_btc_historical_replay_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260708-019.json",
+  "trial_family": "btc_spot_crypto_sleeve_daily_trend_policy_historical_replay",
+  "trial_variant_id": "btc_daily_2017_2026_three_windows_v1",
+  "implementation_mode": "observed_only_shared_policy_historical_replay",
+  "new_evidence_axis": "New gate shape plus materially new data coverage: shared historical replay of the exact production crypto_sleeve policy functions over roughly nine years of BTC-USD daily bars covering the 2018 and 2022 bear markets, versus exp-20260708-010 which only attributed 66 saved 2026 forward snapshots; this is the legal retry axis explicitly declared in exp-20260708-010 next_retry_requires (a shared historical replay gate shape).",
+  "decision": "observed_only_positive_lead_crypto_sleeve_historical_replay",
+  "artifact": "data/experiments/exp-20260708-019/exp_20260708_019_crypto_sleeve_btc_historical_replay.json",
+  "report": "experiments/artifacts/exp-20260708-019_crypto_sleeve_btc_historical_replay.md",
+  "log": "experiments/logs/exp-20260708-019.json",
+  "gate1": {
+    "stock_strategy_baseline": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "available": true
+    },
+    "crypto_baselines": [
+      "fee_aware_btc_buy_and_hold_per_window"
+    ],
+    "note": "No stock strategy behavior changed. The crypto comparator is constructed from the same replayed BTC daily closes."
+  },
+  "gate2": {
+    "required_fields": [
+      "date",
+      "close",
+      "state",
+      "target_position_pct"
+    ],
+    "decision_rows": 4113,
+    "first_decision_date": "2015-04-04",
+    "last_decision_date": "2026-07-07",
+    "entry_date_contract": "not_applicable_crypto_spot_allocation_no_Position_entry",
+    "target_price_contract": "not_applicable_crypto_spot_allocation_no_ATR_exit",
+    "shared_policy_functions": [
+      "quant/crypto_sleeve.py:compute_crypto_indicators",
+      "quant/crypto_sleeve.py:decide_crypto_target"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "no_filter_added": true,
+    "decision_rows": 4113,
+    "window_bar_counts": {
+      "bull_bear_2017_2019": 1095,
+      "covid_cycle_2020_2022": 1096,
+      "current_cycle_2023_2026": 1284
+    },
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "benchmark": "fee_aware_btc_buy_and_hold_per_window",
+    "acceptance_rule": "positive lead iff policy EV (total_return_pct * sharpe_daily) beats fee-aware buy-and-hold EV in >=2 of 3 fixed windows AND policy max drawdown < buy-and-hold max drawdown in all 3 windows AND aggregate policy total return > 0",
+    "checks": {
+      "all_windows_have_enough_bars": true,
+      "aggregate_has_target_switches": true,
+      "policy_ev_beats_buy_hold_in_2_of_3_windows": true,
+      "policy_drawdown_below_buy_hold_in_all_windows": true,
+      "aggregate_policy_total_return_positive": true
+    },
+    "failed_reasons": [],
+    "ev_winning_windows": [
+      "bull_bear_2017_2019",
+      "covid_cycle_2020_2022"
+    ],
+    "drawdown_winning_windows": [
+      "bull_bear_2017_2019",
+      "covid_cycle_2020_2022",
+      "current_cycle_2023_2026"
+    ],
+    "windows": [
+      {
+        "label": "bull_bear_2017_2019",
+        "bars": 1095,
+        "target_switches": 24,
+        "avg_position_pct": 0.503199,
+        "policy": {
+          "label": "policy",
+          "periods": 1094,
+          "total_return_pct": 9.474328,
+          "expected_value_score": 14.48787,
+          "sharpe_daily": 1.529171,
+          "mean_period_return_pct": 0.002722,
+          "vol_period_return_pct": 0.034006,
+          "max_drawdown_pct": 0.531103,
+          "win_rate": 0.29159,
+          "ending_equity": 10.474328
+        },
+        "buy_hold": {
+          "label": "buy_hold",
+          "periods": 1094,
+          "total_return_pct": 6.135546,
+          "expected_value_score": 7.388494,
+          "sharpe_daily": 1.204211,
+          "mean_period_return_pct": 0.002728,
+          "vol_period_return_pct": 0.043274,
+          "max_drawdown_pct": 0.83399,
+          "win_rate": 0.548446,
+          "ending_equity": 7.135546
+        },
+        "delta_vs_buy_hold": {
+          "total_return_pct": 3.338782,
+          "expected_value_score": 7.099376,
+          "sharpe_daily": 0.32496,
+          "max_drawdown_pct": -0.302887
+        }
+      },
+      {
+        "label": "covid_cycle_2020_2022",
+        "bars": 1096,
+        "target_switches": 39,
+        "avg_position_pct": 0.471142,
+        "policy": {
+          "label": "policy",
+          "periods": 1095,
+          "total_return_pct": 2.185535,
+          "expected_value_score": 2.353822,
+          "sharpe_daily": 1.077,
+          "mean_period_return_pct": 0.001339,
+          "vol_period_return_pct": 0.023755,
+          "max_drawdown_pct": 0.407734,
+          "win_rate": 0.253881,
+          "ending_equity": 3.185535
+        },
+        "buy_hold": {
+          "label": "buy_hold",
+          "periods": 1095,
+          "total_return_pct": 1.275359,
+          "expected_value_score": 0.957204,
+          "sharpe_daily": 0.750537,
+          "mean_period_return_pct": 0.001491,
+          "vol_period_return_pct": 0.037951,
+          "max_drawdown_pct": 0.766346,
+          "win_rate": 0.513242,
+          "ending_equity": 2.275359
+        },
+        "delta_vs_buy_hold": {
+          "total_return_pct": 0.910176,
+          "expected_value_score": 1.396618,
+          "sharpe_daily": 0.326463,
+          "max_drawdown_pct": -0.358612
+        }
+      },
+      {
+        "label": "current_cycle_2023_2026",
+        "bars": 1284,
+        "target_switches": 43,
+        "avg_position_pct": 0.598909,
+        "policy": {
+          "label": "policy",
+          "periods": 1283,
+          "total_return_pct": 1.30201,
+          "expected_value_score": 1.105134,
+          "sharpe_daily": 0.848791,
+          "mean_period_return_pct": 0.000818,
+          "vol_period_return_pct": 0.018406,
+          "max_drawdown_pct": 0.327024,
+          "win_rate": 0.29774,
+          "ending_equity": 2.30201
+        },
+        "buy_hold": {
+          "label": "buy_hold",
+          "periods": 1283,
+          "total_return_pct": 2.769989,
+          "expected_value_score": 2.870141,
+          "sharpe_daily": 1.036156,
+          "mean_period_return_pct": 0.001336,
+          "vol_period_return_pct": 0.024639,
+          "max_drawdown_pct": 0.5306,
+          "win_rate": 0.50039,
+          "ending_equity": 3.769989
+        },
+        "delta_vs_buy_hold": {
+          "total_return_pct": -1.467979,
+          "expected_value_score": -1.765007,
+          "sharpe_daily": -0.187365,
+          "max_drawdown_pct": -0.203576
+        }
+      }
+    ],
+    "aggregate": {
+      "label": "aggregate_2017_2026",
+      "bars": 3475,
+      "target_switches": 106,
+      "avg_position_pct": 0.528152,
+      "policy": {
+        "label": "policy",
+        "periods": 3474,
+        "total_return_pct": 75.80967,
+        "expected_value_score": 88.649733,
+        "sharpe_daily": 1.169372,
+        "mean_period_return_pct": 0.001581,
+        "vol_period_return_pct": 0.025834,
+        "max_drawdown_pct": 0.531103,
+        "win_rate": 0.281808,
+        "ending_equity": 76.80967
+      },
+      "buy_hold": {
+        "label": "buy_hold",
+        "periods": 3474,
+        "total_return_pct": 61.787442,
+        "expected_value_score": 60.669309,
+        "sharpe_daily": 0.981904,
+        "mean_period_return_pct": 0.00183,
+        "vol_period_return_pct": 0.0356,
+        "max_drawdown_pct": 0.83399,
+        "win_rate": 0.52015,
+        "ending_equity": 62.787442
+      },
+      "delta_vs_buy_hold": {
+        "total_return_pct": 14.022228,
+        "expected_value_score": 27.980424,
+        "sharpe_daily": 0.187468,
+        "max_drawdown_pct": -0.302887
+      }
+    },
+    "accepted_alpha": false,
+    "binding_acceptance_note": "Observed-only historical replay attribution of the unchanged production crypto sleeve policy. Either verdict changes no production behavior; a policy change would need its own shared policy experiment."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "stock_strategy_changed": false,
+    "alters_stock_orders": false,
+    "alters_crypto_orders": false,
+    "existing_production_crypto_advice_unchanged": true,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only historical replay through the same production policy functions; the production crypto sleeve remains as-is."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The unchanged production crypto sleeve trend policy beat fee-aware BTC buy-and-hold on the predeclared risk-adjusted window rule over multi-year history; this validates keeping the current sleeve policy but changes nothing by itself.",
+    "forbidden_near_neighbor_retry": "Do not retune EMA/SMA spans, target percentages, hysteresis, fee assumptions, window boundaries, or annualization on this same replayed BTC history to flip the verdict.",
+    "new_evidence_required": "A legal follow-up is either a separately predeclared shared policy change with its own Gate 1-4 replay (if the verdict motivates one), a different crypto data source or asset, or materially more settled production crypto sleeve forward snapshots."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260708_019_crypto_sleeve_btc_historical_replay.py",
+    "data/experiments/exp-20260708-019/exp_20260708_019_crypto_sleeve_btc_historical_replay.json",
+    "data/experiments/exp-20260708-019/btc_usd_daily_closes.json",
+    "experiments/logs/exp-20260708-019.json",
+    "experiments/cards/exp-20260708-019.md",
+    "experiments/artifacts/exp-20260708-019_crypto_sleeve_btc_historical_replay.md",
+    "experiments/manifests/exp-20260708-019.json",
+    "experiments/tickets/exp-20260708-019.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260708_019_crypto_sleeve_btc_historical_replay.py",
+    "quant/crypto_sleeve.py",
+    "data/experiments/exp-20260708-019/btc_usd_daily_closes.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-08T16:17:00+00:00"
+}
