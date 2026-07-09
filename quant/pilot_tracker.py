@@ -39,6 +39,11 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+try:
+    import broad_market_sector_map
+except ImportError:  # pragma: no cover - package-style import
+    from quant import broad_market_sector_map
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SLEEVE_DIR = REPO_ROOT / "data" / "paper_sleeves"
@@ -78,6 +83,14 @@ GRADUATE_MAX_BOOK_DD_PCT = 0.15   # realized-curve drawdown ceiling
 # this far below entry so the operator can cut it by hand. Stop-fires should be
 # logged separately so naive-10d vs 10d+stop can be compared later.
 STOP_LOSS_PCT = 0.15              # cut a held position down -15% from entry
+
+# Cross-pilot THEME concentration (exp-20260706-001). Ticker-level overlap
+# missed the 2026-07 semiconductor pile-up (CRDO/MU/WDC/NVMI/INTC across three
+# pilots, all Technology) because no two pilots held the same name. Alert when
+# one sector or industry group carries this many positions, or this share of
+# the total actionable pilot exposure. Report-only; the operator decides.
+CONCENTRATION_ALERT_MIN_POSITIONS = 3
+CONCENTRATION_ALERT_MIN_EXPOSURE_SHARE = 0.5
 
 
 # ---- schema-tolerant field extraction ------------------------------------
@@ -252,6 +265,12 @@ def _hold_status(row: dict[str, Any]) -> str:
     return "HOLD"
 
 
+def _stop_adjusted_status(status: str, stop_status: str) -> str:
+    if stop_status == "STOP_HIT" and status in {"HOLD", "EXIT_NEXT_SESSION"}:
+        return "EXIT_NOW"
+    return status
+
+
 def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
     entry = _num(_first(row, "entry_price", "entry_raw_open"))
     last = _num(_first(row, "last_price", "decision_close_price"))
@@ -262,8 +281,9 @@ def _rec_row(row: dict[str, Any], status: str) -> dict[str, Any]:
         stop_status = "STOP_HIT"
     else:
         stop_status = "OK"
+    action_status = _stop_adjusted_status(status, stop_status)
     return {
-        "status": status,
+        "status": action_status,
         "ticker": _ticker(row),
         "signal_date": _first(row, "signal_date", "date"),
         "entry_date": _first(row, "entry_date"),
@@ -390,6 +410,75 @@ def _cross_pilot_overlap(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return overlaps
 
 
+def _cross_pilot_concentration(recs: list[dict[str, Any]]) -> dict[str, Any]:
+    """Sector/industry exposure across ALL actionable pilot positions.
+
+    Catches stacked theme risk that ticker-level overlap cannot see (three
+    pilots long three different semiconductor names is one bet, not three).
+    """
+    cache = broad_market_sector_map.load_cache()
+    positions: list[dict[str, Any]] = []
+    for r in recs:
+        for a in r["actionable"]:
+            ticker = str(a.get("ticker") or "").upper()
+            lookup = broad_market_sector_map.lookup_sector(ticker, cache)
+            ok = lookup.get("status") == broad_market_sector_map.OK_STATUS
+            positions.append({
+                "ticker": ticker,
+                "pilot": r["pilot"],
+                "status": a.get("status"),
+                "exposure_usd": float(a.get("pilot_notional_usd") or PILOT_NOTIONAL_USD),
+                "sector": (lookup.get("sector") if ok else None) or "UNKNOWN",
+                "industry": (lookup.get("industry") if ok else None) or "UNKNOWN",
+            })
+    total_exposure = sum(p["exposure_usd"] for p in positions)
+
+    def _groups(level: str) -> list[dict[str, Any]]:
+        grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for p in positions:
+            grouped[p[level]].append(p)
+        out = []
+        for key, rows in sorted(grouped.items(), key=lambda kv: -len(kv[1])):
+            exposure = sum(p["exposure_usd"] for p in rows)
+            share = exposure / total_exposure if total_exposure else 0.0
+            alert = key != "UNKNOWN" and (
+                len(rows) >= CONCENTRATION_ALERT_MIN_POSITIONS
+                or (len(rows) >= 2 and share >= CONCENTRATION_ALERT_MIN_EXPOSURE_SHARE)
+            )
+            out.append({
+                level: key,
+                "positions": len(rows),
+                "tickers": sorted({p["ticker"] for p in rows}),
+                "pilots": sorted({p["pilot"] for p in rows}),
+                "exposure_usd": round(exposure, 2),
+                "exposure_share": round(share, 4),
+                "alert": alert,
+            })
+        return out
+
+    by_sector = _groups("sector")
+    by_industry = _groups("industry")
+    return {
+        "total_actionable_exposure_usd": round(total_exposure, 2),
+        "position_count": len(positions),
+        "alert_rule": {
+            "min_positions": CONCENTRATION_ALERT_MIN_POSITIONS,
+            "min_positions_for_exposure_share": 2,
+            "min_exposure_share": CONCENTRATION_ALERT_MIN_EXPOSURE_SHARE,
+            "operator": "or",
+            "description": (
+                "Alert when a known sector/industry has at least min_positions "
+                "positions, or at least min_positions_for_exposure_share positions "
+                "and exposure_share >= min_exposure_share."
+            ),
+        },
+        "by_sector": by_sector,
+        "by_industry": by_industry,
+        "alerts": [g for g in by_sector if g["alert"]]
+        + [g for g in by_industry if g["alert"]],
+    }
+
+
 def _stop_alerts(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Held positions that have breached the manual stop -> cut by hand today."""
     alerts = []
@@ -413,7 +502,8 @@ def _fmt_usd(v: Any) -> str:
 
 def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
                overlaps: list[dict[str, Any]], stop_alerts: list[dict[str, Any]],
-               as_of: str) -> str:
+               as_of: str,
+               concentration: dict[str, Any] | None = None) -> str:
     L = [f"# Pilot tracker - as of {as_of}", "",
          f"Per-position book: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; manual execution.",
          "Graduate/kill rule (pre-committed): >= {} closed AND sum rv_vs_SPY > 0 AND book DD < {:.0%}."
@@ -443,6 +533,18 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
                     blocked=blocked,
                 ))
         L.append("")
+    conc_alerts = (concentration or {}).get("alerts") or []
+    if conc_alerts:
+        L += ["## [!] Cross-pilot theme concentration (one theme, stacked books)", ""]
+        for g in conc_alerts:
+            level = "sector" if "sector" in g else "industry"
+            L.append("- **{key}** ({lv}): {n} positions across {np} pilot(s) "
+                     "({tk}) -> {ex} ({sh:.0%} of actionable exposure)".format(
+                         key=g.get("sector") or g.get("industry"), lv=level,
+                         n=g["positions"], np=len(g["pilots"]),
+                         tk=", ".join(g["tickers"]),
+                         ex=_fmt_usd(g["exposure_usd"]), sh=g["exposure_share"]))
+        L.append("")
     L += ["## Scorecard", "",
          "| pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |",
          "|---|--:|--:|--:|--:|--:|--:|--:|---|"]
@@ -467,7 +569,11 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
         if not acts and not exits_done:
             L.append("- _no position / no signal today_")
         for a in acts:
-            if a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
+            if a["status"] == "EXIT_NOW" and a.get("stop_status") == "STOP_HIT":
+                L.append("- **SELL (STOP_HIT)** {tk}: manual stop hit at {up}; entry {ep}, last {lp}".format(
+                    tk=a["ticker"], up=f"{a['unrealized_pct']:+.1%}",
+                    ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
+            elif a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
                 L.append("- **SELL ({st})** {tk}: hold elapsed (day {dh}/{hd}); entry {ep}, last {lp}".format(
                     st=a["status"], tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"],
                     ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
@@ -521,6 +627,7 @@ def generate(write: bool = True) -> dict[str, Any]:
         recs.append(_recommendations(pilot, state, card))
 
     overlaps = _cross_pilot_overlap(recs)
+    concentration = _cross_pilot_concentration(recs)
     stop_alerts = _stop_alerts(recs)
     scorecard_payload = {
         "as_of": as_of, "per_position_notional_usd": PILOT_NOTIONAL_USD,
@@ -529,12 +636,15 @@ def generate(write: bool = True) -> dict[str, Any]:
                           "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
         "stop_loss_pct": STOP_LOSS_PCT,
         "cross_pilot_overlap": overlaps,
+        "cross_pilot_concentration": concentration,
         "stop_alerts": stop_alerts,
         "scorecards": cards,
     }
     rec_payload = {"as_of": as_of, "cross_pilot_overlap": overlaps,
+                   "cross_pilot_concentration": concentration,
                    "stop_alerts": stop_alerts, "recommendations": recs}
-    md = _render_md(recs, cards, overlaps, stop_alerts, as_of or "latest")
+    md = _render_md(recs, cards, overlaps, stop_alerts, as_of or "latest",
+                    concentration=concentration)
     if write:
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         (OUT_DIR / "pilot_scorecard.json").write_text(json.dumps(scorecard_payload, indent=2), encoding="utf-8")
@@ -542,7 +652,9 @@ def generate(write: bool = True) -> dict[str, Any]:
             json.dumps(rec_payload, indent=2), encoding="utf-8")
         (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
     return {"as_of": as_of, "scorecards": cards, "recommendations": recs,
-            "cross_pilot_overlap": overlaps, "stop_alerts": stop_alerts, "markdown": md}
+            "cross_pilot_overlap": overlaps,
+            "cross_pilot_concentration": concentration,
+            "stop_alerts": stop_alerts, "markdown": md}
 
 
 def main() -> None:

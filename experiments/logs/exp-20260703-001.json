@@ -1,0 +1,191 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Non-listed entity and theme news may transmit to listed exposure tickers, but it needs a daily observer-only source before forward rows can accumulate for a later Gate 1-4 alpha test.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260703-001/exp_20260703_001_entity_theme_news_observer_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "brier_score": 1.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [],
+    "predicted_success_probability": 0.0,
+    "surprise_note": "The wiring stayed isolated from the trade-news path; focused tests covered source manifest, artifact separation, and fail-soft daily behavior."
+  },
+  "causal_components": [
+    "entity/theme source manifest",
+    "observer-only daily fetch",
+    "separate non-OHLCV artifacts",
+    "source diagnostics",
+    "fail-soft run.py integration",
+    "daily wiring tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/entity_theme_news_observer.py",
+    "quant/run.py",
+    "quant/test_entity_theme_news_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260703_001_entity_theme_news_observer_daily_wiring.py",
+    "data/experiments/exp-20260703-001/exp_20260703_001_entity_theme_news_observer_daily_wiring.json",
+    "experiments/logs/exp-20260703-001.json",
+    "experiments/cards/exp-20260703-001.md",
+    "experiments/manifests/exp-20260703-001.json",
+    "experiments/tickets/exp-20260703-001.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "entity_theme_news_observer_daily_pipeline_wiring_v1",
+  "decision": "accepted_measurement_repair_entity_theme_news_observer_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-001",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "entity_theme_query_id",
+      "primary_entity",
+      "theme",
+      "relation_type",
+      "candidate_tickers",
+      "observer_only"
+    ],
+    "passed": true,
+    "wiring_checks": {
+      "failure_test_exists": true,
+      "observer_module_exists": true,
+      "observer_writes_separate_non_ohlcv_artifacts": true,
+      "priority_path_calls_observer": true,
+      "run_helper_defined": true,
+      "run_helper_imports_observer": true,
+      "source_specs_populated": true,
+      "sources_are_not_trade_news_stock_queries": true,
+      "sources_are_observer_only": true,
+      "step8_path_calls_observer": true,
+      "success_test_exists": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, or exit rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Alpha blocker: non-listed entity and theme news propagation alpha cannot be evaluated while daily news collection only fetches ticker-scoped RSS. Add a default-off observer-only entity/theme news daily pipeline that writes separate artifacts without feeding prompts, rankings, sizing, exits, or orders.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260703-001.json",
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260630-005",
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-026"
+  ],
+  "new_evidence_axis": "Observer-only entity/theme RSS source list for non-listed primary entities and sector themes, separate from ticker-scoped Google News rows and not a reslice of existing second-order exposure rows.",
+  "new_evidence_type": "new_entity_theme_news_source_axis",
+  "next_retry_requires": [
+    "closed forward rows generated by the daily entity/theme observer",
+    "or a materially richer entity relation/economic mapping",
+    "or a different non-ticker event source"
+  ],
+  "observer_contract": {
+    "artifact_root": "data/non_ohlcv/entity_theme_news_observer",
+    "candidate_ticker_count": 30,
+    "observer_only": true,
+    "query_ids": [
+      "private_space_launch_contracts",
+      "frontier_ai_private_capex",
+      "ai_export_control_supply_chain",
+      "hyperscaler_power_data_center",
+      "glp1_supply_access",
+      "crypto_market_structure_policy"
+    ],
+    "source_count": 6
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve more experiment IDs to hand-refresh this same observer or reslice its first small daily rows by adjacent entity/theme fields. Let rows accumulate, or add a genuinely new source/relation surface.",
+    "new_evidence_required": "Closed forward rows from this observer, a materially richer entity-relation/economic mapping, or a different non-ticker news source such as PR wire full text or prediction-market event data.",
+    "why_result_happened": "The measurement blocker was a missing daily source axis, not a strategy rule. The fix added a small fixed query manifest, separate artifacts, and fail-soft daily wiring."
+  },
+  "prediction": {},
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "run.py now refreshes a separate observer-only entity/theme news surface after trade-news collection. It does not feed clean_trade_news, prompts, ranking, sizing, exits, or orders.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\entity_theme_news_observer.py quant\\test_run_daily_wiring.py quant\\test_entity_theme_news_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_theme_news_observer.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_001_entity_theme_news_observer_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "entity_theme_news_observer_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T00:16:23.298822+00:00",
+  "trial_family": "entity_theme_news_observer_daily_pipeline_wiring",
+  "trial_variant_id": "entity_theme_news_observer_daily_pipeline_wiring_v1"
+}

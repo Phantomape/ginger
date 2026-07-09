@@ -1,0 +1,416 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_exists": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Deep-drawdown rebound only deserves a default-off paper candidate when each drawdown episode has a fixed one-entry budget; taking only the first stabilization signal per episode should remove long-bear repeated re-entry bleed while preserving correction rebound edge.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+  "before_metrics": {
+    "baseline_exists": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "standard_windows_too_thin",
+      "spy_replacement_not_beaten",
+      "secular_bear_first_signal_still_bad",
+      "posthoc_gate_shape_overfit"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "positive_mean_excess_vs_spy",
+      "min_standard_window_trades",
+      "min_standard_windows_with_trades"
+    ],
+    "surprise_note": "The gate removed the repeated-entry bleed and made cash PnL positive, but it still failed as alpha evidence because SPY excess was negative and canonical-window coverage was too thin."
+  },
+  "causal_components": [
+    "pre2023 index history from exp003",
+    "fixed exp003 drawdown episode trigger and first-stabilization candidate",
+    "one-entry-per-episode budget gate",
+    "cash and SPY replacement comparison",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+    "experiments/cards/exp-20260706-004.md",
+    "experiments/manifests/exp-20260706-004.json",
+    "experiments/tickets/exp-20260706-004.json",
+    "experiments/logs/exp-20260706-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "deep_drawdown_first_stabilization_per_episode_budget_v1",
+  "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+  "delta_metrics": {
+    "first_budget_mean_excess_vs_spy_pct": -0.00383,
+    "first_budget_total_pnl": 1222.02,
+    "first_budget_win_rate": 0.705882,
+    "pnl_delta_vs_exp003_repeated_entry": 21879.22,
+    "strategy_behavior_changed": false,
+    "strategy_expected_value_score_delta": 0.0,
+    "strategy_total_pnl_delta": 0.0,
+    "strategy_trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260706-004",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_exists": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Observed-only replay over exp003 artifact; canonical strategy baseline unchanged.",
+    "passed": true,
+    "source_artifact_exists": true
+  },
+  "gate2": {
+    "fields_checked": [
+      "episode_start_date",
+      "signal_date",
+      "entry_date",
+      "exit_date",
+      "pnl",
+      "pnl_pct_net",
+      "excess_vs_spy_pct"
+    ],
+    "passed": true,
+    "selected_rows": 17,
+    "target_price_relevance": "This run does not create backtest signals or exits; target_price is not consumed."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "acceptance_rule": {
+      "min_full_history_episodes": 8,
+      "min_standard_window_trades": 3,
+      "min_standard_windows_with_trades": 2,
+      "min_win_rate": 0.6,
+      "require_no_standard_window_negative_pnl": true,
+      "require_positive_cash_pnl": true,
+      "require_positive_mean_excess_vs_spy": true
+    },
+    "accepted_alpha": false,
+    "checks": {
+      "min_full_history_episodes": true,
+      "min_standard_window_trades": false,
+      "min_standard_windows_with_trades": false,
+      "no_standard_window_negative_pnl": true,
+      "positive_cash_pnl": true,
+      "positive_mean_excess_vs_spy": false,
+      "win_rate": true
+    },
+    "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+    "failed_reasons": [
+      "positive_mean_excess_vs_spy",
+      "min_standard_window_trades",
+      "min_standard_windows_with_trades"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "strategy_rerun_required": false,
+    "summary": {
+      "delta_vs_exp003_repeated_entry": {
+        "closed_trade_delta": -325,
+        "mean_return_delta": 0.013228,
+        "total_pnl_delta": 21879.22
+      },
+      "first_episode_budget_summary": {
+        "best_return_pct": 0.077246,
+        "closed_trades": 17,
+        "distinct_episodes": 17,
+        "mean_excess_vs_spy_pct": -0.00383,
+        "mean_return_pct": 0.007188,
+        "median_return_pct": 0.007971,
+        "positive_excess_rate": 0.529412,
+        "total_pnl": 1222.02,
+        "win_rate": 0.705882,
+        "worst_return_pct": -0.159207
+      },
+      "source_repeated_entry_summary": {
+        "best_return_pct": 0.176862,
+        "closed_trades": 342,
+        "distinct_episodes": 17,
+        "episodes": [
+          {
+            "episode_start_date": "2000-01-06",
+            "total_pnl": 215.74,
+            "total_return_pct": 0.021574,
+            "trades": 1
+          },
+          {
+            "episode_start_date": "2000-04-03",
+            "total_pnl": -18265.34,
+            "total_return_pct": -1.826534,
+            "trades": 124
+          },
+          {
+            "episode_start_date": "2004-08-05",
+            "total_pnl": 919.37,
+            "total_return_pct": 0.091937,
+            "trades": 10
+          },
+          {
+            "episode_start_date": "2005-04-15",
+            "total_pnl": 481.01,
+            "total_return_pct": 0.048101,
+            "trades": 5
+          },
+          {
+            "episode_start_date": "2006-06-12",
+            "total_pnl": 301.58,
+            "total_return_pct": 0.030158,
+            "trades": 14
+          },
+          {
+            "episode_start_date": "2008-01-07",
+            "total_pnl": -5597.57,
+            "total_return_pct": -0.559757,
+            "trades": 66
+          },
+          {
+            "episode_start_date": "2010-05-20",
+            "total_pnl": -371.81,
+            "total_return_pct": -0.037181,
+            "trades": 13
+          },
+          {
+            "episode_start_date": "2011-08-08",
+            "total_pnl": 697.61,
+            "total_return_pct": 0.069761,
+            "trades": 5
+          },
+          {
+            "episode_start_date": "2011-10-03",
+            "total_pnl": 925.99,
+            "total_return_pct": 0.092599,
+            "trades": 2
+          },
+          {
+            "episode_start_date": "2015-08-24",
+            "total_pnl": 146.27,
+            "total_return_pct": 0.014627,
+            "trades": 7
+          },
+          {
+            "episode_start_date": "2016-01-15",
+            "total_pnl": -92.11,
+            "total_return_pct": -0.009211,
+            "trades": 8
+          },
+          {
+            "episode_start_date": "2018-10-29",
+            "total_pnl": 30.79,
+            "total_return_pct": 0.003079,
+            "trades": 15
+          },
+          {
+            "episode_start_date": "2020-02-27",
+            "total_pnl": 1049.66,
+            "total_return_pct": 0.104966,
+            "trades": 9
+          },
+          {
+            "episode_start_date": "2020-09-23",
+            "total_pnl": 920.64,
+            "total_return_pct": 0.092064,
+            "trades": 3
+          },
+          {
+            "episode_start_date": "2022-01-21",
+            "total_pnl": -2570.74,
+            "total_return_pct": -0.257074,
+            "trades": 51
+          },
+          {
+            "episode_start_date": "2024-08-05",
+            "total_pnl": 576.13,
+            "total_return_pct": 0.057613,
+            "trades": 2
+          },
+          {
+            "episode_start_date": "2025-03-10",
+            "total_pnl": -24.42,
+            "total_return_pct": -0.002442,
+            "trades": 7
+          }
+        ],
+        "mean_return_pct": -0.00604,
+        "median_return_pct": -0.002127,
+        "positive_episode_count": 11,
+        "total_pnl": -20657.2,
+        "win_rate": 0.4766,
+        "worst_return_pct": -0.163712
+      },
+      "standard_windows": {
+        "late_strong": {
+          "best_return_pct": null,
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "mean_excess_vs_spy_pct": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "positive_excess_rate": null,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "worst_return_pct": null
+        },
+        "mid_weak": {
+          "best_return_pct": null,
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "mean_excess_vs_spy_pct": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "positive_excess_rate": null,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "worst_return_pct": null
+        },
+        "old_thin": {
+          "best_return_pct": 0.005234,
+          "closed_trades": 1,
+          "distinct_episodes": 1,
+          "mean_excess_vs_spy_pct": -0.023256,
+          "mean_return_pct": 0.005234,
+          "median_return_pct": 0.005234,
+          "positive_excess_rate": 0.0,
+          "total_pnl": 52.34,
+          "win_rate": 1.0,
+          "worst_return_pct": 0.005234
+        }
+      }
+    }
+  },
+  "hypothesis": "Deep-drawdown rebound only deserves a default-off paper candidate when each drawdown episode has a fixed one-entry budget; taking only the first stabilization signal per episode should remove long-bear repeated re-entry bleed while preserving correction rebound edge.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260706-004.json",
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260706-003"
+  ],
+  "new_evidence_axis": "New gate shape: fixed one-entry budget per deep drawdown episode using only the first stabilization signal, explicitly different from exp-20260706-003 repeated re-entry; no trigger, hold, notional, cooldown, ticker, or threshold retune.",
+  "new_evidence_type": "new_gate_shape_on_existing_index_history",
+  "next_retry_requires": [
+    "predeclared ex-ante bear-vs-correction classifier",
+    "new live or forward settled deep-drawdown episode rows",
+    "or a full shared helper update tested without threshold/entry-budget sweeps"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "acceptance_rule": {
+      "min_full_history_episodes": 8,
+      "min_standard_window_trades": 3,
+      "min_standard_windows_with_trades": 2,
+      "min_win_rate": 0.6,
+      "require_no_standard_window_negative_pnl": true,
+      "require_positive_cash_pnl": true,
+      "require_positive_mean_excess_vs_spy": true
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "gate_shape": "first closed stabilization trade per episode_start_date",
+    "source_artifact": "data/experiments/exp-20260706-003/exp_20260706_003_deep_drawdown_rebound.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune drawdown trigger, reset hysteresis, close-location, hold days, notional, cooldown, or ticker on this same artifact. Do not sweep second/third entry budgets after seeing this result.",
+    "new_evidence_required": "A valid retry needs a predeclared ex-ante bear-vs-correction classifier, genuinely new live/forward episode rows, or a full shared paper helper update that is tested before seeing the new episode outcomes.",
+    "why_result_happened": "The episode budget directly removed the repeated-entry bleed: 342 exp003 trades compressed to 17 first signals and cash PnL improved by more than $21k. It still failed the deployable alpha bar because the first signals did not beat SPY on average and the canonical fixed windows contain only one selected trade."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260706-003 identified repeated re-entry during long bear episodes as the realized failure mechanism, so a one-entry episode budget is the specific new gate shape it allowed; risk remains high because first signals may still be falling knives, SPY excess was weak in the rejected bundle, and canonical windows have few episodes.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "standard_windows_too_thin",
+      "spy_replacement_not_beaten",
+      "secular_bear_first_signal_still_bad",
+      "posthoc_gate_shape_overfit"
+    ],
+    "recorded_at": "2026-07-06T02:11:42+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only analysis over exp003 replay artifact. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "positive_mean_excess_vs_spy;min_standard_window_trades;min_standard_windows_with_trades",
+  "related_files": [
+    "data/experiments/exp-20260706-003/exp_20260706_003_deep_drawdown_rebound.json",
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/experiments/exp_20260706_003_deep_drawdown_rebound.py",
+    "experiments/logs/exp-20260706-003.json",
+    "data/non_ohlcv/index_history/index_daily_pre2023.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "deep_drawdown_first_stabilization_per_episode_budget_v1",
+  "status": "observed_only_rejected",
+  "timestamp": "2026-07-06T02:16:55Z",
+  "trial_family": "deep_drawdown_episode_budget_gate_shape",
+  "trial_variant_id": "first_stabilization_per_episode_v1"
+}

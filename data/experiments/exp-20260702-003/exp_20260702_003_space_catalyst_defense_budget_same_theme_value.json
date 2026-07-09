@@ -1,0 +1,1097 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "anti_js": [
+    "No JavaScript tooling used.",
+    "No browser or live trading adapter used."
+  ],
+  "causal_components": [
+    "semantic_bucket",
+    "forward_replacement_value",
+    "same_theme_benchmark"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260702_003_space_catalyst_defense_budget_same_theme_value.py",
+    "data/experiments/exp-20260702-003/exp_20260702_003_space_catalyst_defense_budget_same_theme_value.json",
+    "experiments/logs/exp-20260702-003.json",
+    "experiments/cards/exp-20260702-003.md",
+    "experiments/manifests/exp-20260702-003.json",
+    "experiments/tickets/exp-20260702-003.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "candidate_pool: require semantic_bucket=defense_budget_theme for Space Catalyst candidates only if same-theme replacement value is positive across mature 10d/20d rows",
+  "created_at": "2026-07-02T02:11:22+00:00",
+  "decision": "rejected_space_catalyst_defense_budget_same_theme_not_incremental",
+  "experiment_id": "exp-20260702-003",
+  "gate1": {
+    "baseline": {
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_strategy_total_pnl": 234850.99,
+      "max_window_drawdown_pct": 0.1119,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "trade_count": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18
+        },
+        {
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21
+        },
+        {
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22
+        }
+      ]
+    },
+    "baseline_loaded": true,
+    "notes": "No before/after strategy backtest was run because this experiment only scores default-off forward observation rows."
+  },
+  "gate2": {
+    "entry_date_present": true,
+    "ledger": "data/paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl",
+    "required_fields": {
+      "closed_decision": 0,
+      "entry_date": 0,
+      "event_id": 0,
+      "horizons": 0,
+      "semantic_bucket": 0,
+      "source_type": 0,
+      "ticker": 0
+    },
+    "runtime_fields_valid": true,
+    "summary": "data/paper_sleeves/space_catalyst/event_state_shadow_summary.json",
+    "target_price_check": "not_applicable: Space event-state forward ledger stores realized horizon outcomes, not target_price forecasts"
+  },
+  "gate3": {
+    "notes": "Latest unique Space event-state rows are deduped from repeated daily shadow snapshots before survival is computed.",
+    "passed": true,
+    "signals_generated": 18,
+    "signals_survived": 18,
+    "survival_rate": 1.0,
+    "survival_rate_floor": 0.05
+  },
+  "gate4": {
+    "acceptance_rule": "Defense-budget rows must have at least 8 mature closed decisions and positive 10d/20d average broad-relative value plus positive average, median, and >50% win-rate same-theme replacement value.",
+    "checks": {
+      "defense_10d_broad_avg_positive": true,
+      "defense_10d_same_theme_avg_positive": false,
+      "defense_10d_same_theme_median_positive": true,
+      "defense_10d_same_theme_win_rate_above_half": false,
+      "defense_20d_broad_avg_positive": true,
+      "defense_20d_same_theme_avg_positive": true,
+      "defense_20d_same_theme_median_positive": false,
+      "defense_20d_same_theme_win_rate_above_half": false,
+      "minimum_defense_rows": true,
+      "minimum_total_closed_rows": true
+    },
+    "evaluation_type": "observed_only_forward_replacement_attribution",
+    "failed_reasons": [
+      "defense_10d_same_theme_avg_positive",
+      "defense_10d_same_theme_win_rate_above_half",
+      "defense_20d_same_theme_median_positive",
+      "defense_20d_same_theme_win_rate_above_half"
+    ],
+    "passed": false,
+    "strategy_delta": {
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_strategy_total_pnl_delta": 0.0,
+      "drawdown_delta": 0.0,
+      "trade_count_delta": 0
+    }
+  },
+  "hypothesis": "Space Catalyst official defense-budget/government-award event rows may contain candidate-pool alpha only if their 10d/20d forward replacement value remains positive versus same-theme alternatives, not just cash and broad ETFs.",
+  "implementation_mode": "observed_only_no_strategy_change",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "live_realistic_execution_envelope": {
+    "capital_cap": null,
+    "failure_handling": "same-theme replacement failure parks this slice",
+    "kill_switch": "no live path",
+    "liquidity_and_slippage": "not evaluated; no production helper promoted",
+    "live_ready": false,
+    "max_positions": null,
+    "notional_cap": null,
+    "order_semantics": "no orders emitted",
+    "sector_theme_exposure": "space theme concentration remains a blocker"
+  },
+  "mechanism_family": "observed_only_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260627-024"
+  ],
+  "new_evidence_axis": "semantic-bucket same-theme replacement-value gate on the repaired Space event-state ledger; no response-function retune or order change",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "materially more closed Space event-state rows",
+    "point-in-time historical Space event replay",
+    "independent same-theme benchmark construction"
+  ],
+  "observed_only_lead": false,
+  "owner": "codex-alpha-explore",
+  "parameters": {
+    "dedupe_key": [
+      "event_id",
+      "ticker",
+      "entry_date"
+    ],
+    "horizons": [
+      "10d",
+      "20d"
+    ],
+    "latest_row_sort": [
+      "asof_date",
+      "logged_at"
+    ],
+    "metrics": {
+      "arkx_relative": "arkx_relative_value",
+      "cash_pnl": "cash_relative_pnl",
+      "qqq_relative": "qqq_relative_value",
+      "same_theme": "same_theme_replacement_value",
+      "spy_relative": "spy_relative_value",
+      "ufo_relative": "ufo_relative_value"
+    },
+    "minimum_defense_rows": 8,
+    "minimum_total_closed_rows": 12,
+    "same_theme_required": true,
+    "tested_bucket": "defense_budget_theme"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun Space Catalyst semantic-bucket slicing, hold retunes, notional retunes, or broad-ETF-only promotion on the same deduped row set.",
+    "new_evidence_required": "Requires materially more closed Space event-state rows, a PIT historical Space replay, or an independent same-theme benchmark construction that changes the opportunity-cost measurement.",
+    "why_result_happened": "Defense-budget Space rows still look good versus cash and broad ETFs, but the effect is not incremental after same-theme opportunity cost: same-theme checks failed on the tested 10d/20d mature rows."
+  },
+  "pre_run_questions": {
+    "alpha_hypothesis": "Space Catalyst official defense-budget/government-award event rows may contain candidate-pool alpha only if their 10d/20d forward replacement value remains positive versus same-theme alternatives, not just cash and broad ETFs.",
+    "alpha_type": "candidate_pool",
+    "prior_work": "exp-20260627-024 repaired the Space event-state ledger and showed broad positive 10d values, but the promotion gate failed same-theme replacement value.",
+    "reproducibility": "Run .\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_003_space_catalyst_defense_budget_same_theme_value.py; it reads the frozen baseline summary and latest Space event-state ledger.",
+    "single_policy_bundle": "Observed-only attribution of defense_budget_theme versus same-theme replacement value; no production candidate routing change.",
+    "success_criteria": "Defense-budget rows must have at least 8 mature closed decisions and positive 10d/20d average broad-relative value plus positive average, median, and >50% win-rate same-theme replacement value."
+  },
+  "prediction": {
+    "confidence_reason": "Prior repaired Space event-state shadow summary showed positive broad 10d returns but failed same-theme replacement; this experiment tests the specific machine-checkable semantic bucket gate before any helper or order change.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "same_theme_opportunity_cost_negative",
+      "sample_too_thin",
+      "theme_beta_confound",
+      "attention_only_confound"
+    ],
+    "success_probability": 0.18
+  },
+  "primary_summary": {
+    "all_closed": {
+      "by_horizon": {
+        "10d": {
+          "arkx_relative": {
+            "avg": 1146.557778,
+            "count": 18,
+            "max": 3761.14,
+            "median": 1131.37,
+            "min": -1669.08,
+            "positive_count": 14,
+            "total": 20638.04,
+            "win_rate": 0.777778
+          },
+          "cash_pnl": {
+            "avg": 1542.270556,
+            "count": 18,
+            "max": 4260.54,
+            "median": 1580.44,
+            "min": -1651.31,
+            "positive_count": 17,
+            "total": 27760.87,
+            "win_rate": 0.944444
+          },
+          "qqq_relative": {
+            "avg": 1030.132778,
+            "count": 18,
+            "max": 3521.94,
+            "median": 1166.51,
+            "min": -2271.97,
+            "positive_count": 14,
+            "total": 18542.39,
+            "win_rate": 0.777778
+          },
+          "same_theme": {
+            "avg": -169.271111,
+            "count": 18,
+            "max": 2332.78,
+            "median": -212.555,
+            "min": -1885.03,
+            "positive_count": 8,
+            "total": -3046.88,
+            "win_rate": 0.444444
+          },
+          "spy_relative": {
+            "avg": 1276.496667,
+            "count": 18,
+            "max": 3923.14,
+            "median": 1357.105,
+            "min": -1969.36,
+            "positive_count": 16,
+            "total": 22976.94,
+            "win_rate": 0.888889
+          },
+          "ufo_relative": {
+            "avg": 429.657222,
+            "count": 18,
+            "max": 3142.85,
+            "median": 321.125,
+            "min": -1354.86,
+            "positive_count": 10,
+            "total": 7733.83,
+            "win_rate": 0.555556
+          }
+        },
+        "20d": {
+          "arkx_relative": {
+            "avg": 2276.328333,
+            "count": 18,
+            "max": 12699.13,
+            "median": 1574.295,
+            "min": -801.09,
+            "positive_count": 13,
+            "total": 40973.91,
+            "win_rate": 0.722222
+          },
+          "cash_pnl": {
+            "avg": 2804.117778,
+            "count": 18,
+            "max": 13622.72,
+            "median": 2040.46,
+            "min": -566.61,
+            "positive_count": 16,
+            "total": 50474.12,
+            "win_rate": 0.888889
+          },
+          "qqq_relative": {
+            "avg": 2135.733333,
+            "count": 18,
+            "max": 12628.33,
+            "median": 1509.24,
+            "min": -871.89,
+            "positive_count": 11,
+            "total": 38443.2,
+            "win_rate": 0.611111
+          },
+          "same_theme": {
+            "avg": 55.338333,
+            "count": 18,
+            "max": 9045.91,
+            "median": -138.295,
+            "min": -4454.31,
+            "positive_count": 9,
+            "total": 996.09,
+            "win_rate": 0.5
+          },
+          "spy_relative": {
+            "avg": 2460.393333,
+            "count": 18,
+            "max": 13127.45,
+            "median": 1689.51,
+            "min": -536.18,
+            "positive_count": 13,
+            "total": 44287.08,
+            "win_rate": 0.722222
+          },
+          "ufo_relative": {
+            "avg": 1124.25,
+            "count": 18,
+            "max": 10700.13,
+            "median": 598.525,
+            "min": -2800.09,
+            "positive_count": 12,
+            "total": 20236.5,
+            "win_rate": 0.666667
+          }
+        }
+      },
+      "event_count": 6,
+      "row_count": 18,
+      "ticker_count": 12,
+      "tickers": [
+        "ARKX",
+        "ASTS",
+        "BKSY",
+        "GSAT",
+        "IRDM",
+        "LUNR",
+        "PL",
+        "RDW",
+        "RKLB",
+        "SATS",
+        "UFO",
+        "VSAT"
+      ]
+    },
+    "by_semantic_bucket": {
+      "attention_only": {
+        "by_horizon": {
+          "10d": {
+            "arkx_relative": {
+              "avg": 964.03,
+              "count": 5,
+              "max": 2557.41,
+              "median": 1043.3,
+              "min": 0.0,
+              "positive_count": 3,
+              "total": 4820.15,
+              "win_rate": 0.6
+            },
+            "cash_pnl": {
+              "avg": 1314.334,
+              "count": 5,
+              "max": 2871.91,
+              "median": 1357.8,
+              "min": 314.5,
+              "positive_count": 5,
+              "total": 6571.67,
+              "win_rate": 1.0
+            },
+            "qqq_relative": {
+              "avg": 1165.826,
+              "count": 5,
+              "max": 2783.19,
+              "median": 1269.08,
+              "min": 165.82,
+              "positive_count": 5,
+              "total": 5829.13,
+              "win_rate": 1.0
+            },
+            "same_theme": {
+              "avg": -598.188,
+              "count": 5,
+              "max": 966.6,
+              "median": -547.51,
+              "min": -1590.81,
+              "positive_count": 1,
+              "total": -2990.94,
+              "win_rate": 0.2
+            },
+            "spy_relative": {
+              "avg": 1188.012,
+              "count": 5,
+              "max": 2763.18,
+              "median": 1249.07,
+              "min": 205.77,
+              "positive_count": 5,
+              "total": 5940.06,
+              "win_rate": 1.0
+            },
+            "ufo_relative": {
+              "avg": -149.726,
+              "count": 5,
+              "max": 1514.11,
+              "median": 0.0,
+              "min": -1219.44,
+              "positive_count": 1,
+              "total": -748.63,
+              "win_rate": 0.2
+            }
+          },
+          "20d": {
+            "arkx_relative": {
+              "avg": 119.91,
+              "count": 5,
+              "max": 766.84,
+              "median": 0.0,
+              "min": -222.77,
+              "positive_count": 2,
+              "total": 599.55,
+              "win_rate": 0.4
+            },
+            "cash_pnl": {
+              "avg": -12.382,
+              "count": 5,
+              "max": 775.58,
+              "median": 8.74,
+              "min": -566.61,
+              "positive_count": 3,
+              "total": -61.91,
+              "win_rate": 0.6
+            },
+            "qqq_relative": {
+              "avg": -22.592,
+              "count": 5,
+              "max": 707.53,
+              "median": -59.31,
+              "min": -490.06,
+              "positive_count": 1,
+              "total": -112.96,
+              "win_rate": 0.2
+            },
+            "same_theme": {
+              "avg": 11.822,
+              "count": 5,
+              "max": 390.68,
+              "median": 167.91,
+              "min": -440.6,
+              "positive_count": 3,
+              "total": 59.11,
+              "win_rate": 0.6
+            },
+            "spy_relative": {
+              "avg": -13.224,
+              "count": 5,
+              "max": 753.89,
+              "median": -12.95,
+              "min": -536.18,
+              "positive_count": 2,
+              "total": -66.12,
+              "win_rate": 0.4
+            },
+            "ufo_relative": {
+              "avg": 175.73,
+              "count": 5,
+              "max": 711.36,
+              "median": 0.0,
+              "min": -55.48,
+              "positive_count": 2,
+              "total": 878.65,
+              "win_rate": 0.4
+            }
+          }
+        },
+        "event_count": 2,
+        "row_count": 5,
+        "ticker_count": 3,
+        "tickers": [
+          "ARKX",
+          "RKLB",
+          "UFO"
+        ]
+      },
+      "defense_budget_theme": {
+        "by_horizon": {
+          "10d": {
+            "arkx_relative": {
+              "avg": 1428.36,
+              "count": 10,
+              "max": 3761.14,
+              "median": 1588.89,
+              "min": -456.67,
+              "positive_count": 9,
+              "total": 14283.6,
+              "win_rate": 0.9
+            },
+            "cash_pnl": {
+              "avg": 1927.76,
+              "count": 10,
+              "max": 4260.54,
+              "median": 2088.29,
+              "min": 42.73,
+              "positive_count": 10,
+              "total": 19277.6,
+              "win_rate": 1.0
+            },
+            "qqq_relative": {
+              "avg": 1189.16,
+              "count": 10,
+              "max": 3521.94,
+              "median": 1349.69,
+              "min": -695.87,
+              "positive_count": 7,
+              "total": 11891.6,
+              "win_rate": 0.7
+            },
+            "same_theme": {
+              "avg": 0.0,
+              "count": 10,
+              "max": 2332.78,
+              "median": 160.53,
+              "min": -1885.03,
+              "positive_count": 5,
+              "total": 0.0,
+              "win_rate": 0.5
+            },
+            "spy_relative": {
+              "avg": 1590.36,
+              "count": 10,
+              "max": 3923.14,
+              "median": 1750.89,
+              "min": -294.67,
+              "positive_count": 9,
+              "total": 15903.6,
+              "win_rate": 0.9
+            },
+            "ufo_relative": {
+              "avg": 810.07,
+              "count": 10,
+              "max": 3142.85,
+              "median": 970.6,
+              "min": -1074.96,
+              "positive_count": 7,
+              "total": 8100.7,
+              "win_rate": 0.7
+            }
+          },
+          "20d": {
+            "arkx_relative": {
+              "avg": 3653.221,
+              "count": 10,
+              "max": 12699.13,
+              "median": 2829.935,
+              "min": -801.09,
+              "positive_count": 8,
+              "total": 36532.21,
+              "win_rate": 0.8
+            },
+            "cash_pnl": {
+              "avg": 4576.811,
+              "count": 10,
+              "max": 13622.72,
+              "median": 3753.525,
+              "min": 122.5,
+              "positive_count": 10,
+              "total": 45768.11,
+              "win_rate": 1.0
+            },
+            "qqq_relative": {
+              "avg": 3582.421,
+              "count": 10,
+              "max": 12628.33,
+              "median": 2759.135,
+              "min": -871.89,
+              "positive_count": 8,
+              "total": 35824.21,
+              "win_rate": 0.8
+            },
+            "same_theme": {
+              "avg": 0.001,
+              "count": 10,
+              "max": 9045.91,
+              "median": -823.285,
+              "min": -4454.31,
+              "positive_count": 4,
+              "total": 0.01,
+              "win_rate": 0.4
+            },
+            "spy_relative": {
+              "avg": 4081.541,
+              "count": 10,
+              "max": 13127.45,
+              "median": 3258.255,
+              "min": -372.77,
+              "positive_count": 8,
+              "total": 40815.41,
+              "win_rate": 0.8
+            },
+            "ufo_relative": {
+              "avg": 1654.221,
+              "count": 10,
+              "max": 10700.13,
+              "median": 830.935,
+              "min": -2800.09,
+              "positive_count": 8,
+              "total": 16542.21,
+              "win_rate": 0.8
+            }
+          }
+        },
+        "event_count": 1,
+        "row_count": 10,
+        "ticker_count": 10,
+        "tickers": [
+          "ASTS",
+          "BKSY",
+          "GSAT",
+          "IRDM",
+          "LUNR",
+          "PL",
+          "RDW",
+          "RKLB",
+          "SATS",
+          "VSAT"
+        ]
+      },
+      "fundamental_contract_regulatory": {
+        "by_horizon": {
+          "10d": {
+            "arkx_relative": {
+              "avg": 511.43,
+              "count": 3,
+              "max": 2557.41,
+              "median": 645.96,
+              "min": -1669.08,
+              "positive_count": 2,
+              "total": 1534.29,
+              "win_rate": 0.666667
+            },
+            "cash_pnl": {
+              "avg": 637.2,
+              "count": 3,
+              "max": 2871.91,
+              "median": 691.0,
+              "min": -1651.31,
+              "positive_count": 2,
+              "total": 1911.6,
+              "win_rate": 0.666667
+            },
+            "qqq_relative": {
+              "avg": 273.886667,
+              "count": 3,
+              "max": 2783.19,
+              "median": 310.44,
+              "min": -2271.97,
+              "positive_count": 2,
+              "total": 821.66,
+              "win_rate": 0.666667
+            },
+            "same_theme": {
+              "avg": -18.646667,
+              "count": 3,
+              "max": 966.6,
+              "median": 200.19,
+              "min": -1222.73,
+              "positive_count": 2,
+              "total": -55.94,
+              "win_rate": 0.666667
+            },
+            "spy_relative": {
+              "avg": 377.76,
+              "count": 3,
+              "max": 2763.18,
+              "median": 339.46,
+              "min": -1969.36,
+              "positive_count": 2,
+              "total": 1133.28,
+              "win_rate": 0.666667
+            },
+            "ufo_relative": {
+              "avg": 127.253333,
+              "count": 3,
+              "max": 1514.11,
+              "median": 222.51,
+              "min": -1354.86,
+              "positive_count": 2,
+              "total": 381.76,
+              "win_rate": 0.666667
+            }
+          },
+          "20d": {
+            "arkx_relative": {
+              "avg": 1280.716667,
+              "count": 3,
+              "max": 2754.82,
+              "median": 766.84,
+              "min": 320.49,
+              "positive_count": 3,
+              "total": 3842.15,
+              "win_rate": 1.0
+            },
+            "cash_pnl": {
+              "avg": 1589.306667,
+              "count": 3,
+              "max": 3411.19,
+              "median": 775.58,
+              "min": 581.15,
+              "positive_count": 3,
+              "total": 4767.92,
+              "win_rate": 1.0
+            },
+            "qqq_relative": {
+              "avg": 910.65,
+              "count": 3,
+              "max": 2329.23,
+              "median": 707.53,
+              "min": -304.81,
+              "positive_count": 2,
+              "total": 2731.95,
+              "win_rate": 0.666667
+            },
+            "same_theme": {
+              "avg": 312.323333,
+              "count": 3,
+              "max": 1630.05,
+              "median": 326.24,
+              "min": -1019.32,
+              "positive_count": 2,
+              "total": 936.97,
+              "win_rate": 0.666667
+            },
+            "spy_relative": {
+              "avg": 1179.263333,
+              "count": 3,
+              "max": 2625.13,
+              "median": 753.89,
+              "min": 158.77,
+              "positive_count": 3,
+              "total": 3537.79,
+              "win_rate": 1.0
+            },
+            "ufo_relative": {
+              "avg": 938.546667,
+              "count": 3,
+              "max": 2371.96,
+              "median": 711.36,
+              "min": -267.68,
+              "positive_count": 2,
+              "total": 2815.64,
+              "win_rate": 0.666667
+            }
+          }
+        },
+        "event_count": 3,
+        "row_count": 3,
+        "ticker_count": 3,
+        "tickers": [
+          "ASTS",
+          "LUNR",
+          "RKLB"
+        ]
+      }
+    },
+    "defense_budget_theme": {
+      "by_horizon": {
+        "10d": {
+          "arkx_relative": {
+            "avg": 1428.36,
+            "count": 10,
+            "max": 3761.14,
+            "median": 1588.89,
+            "min": -456.67,
+            "positive_count": 9,
+            "total": 14283.6,
+            "win_rate": 0.9
+          },
+          "cash_pnl": {
+            "avg": 1927.76,
+            "count": 10,
+            "max": 4260.54,
+            "median": 2088.29,
+            "min": 42.73,
+            "positive_count": 10,
+            "total": 19277.6,
+            "win_rate": 1.0
+          },
+          "qqq_relative": {
+            "avg": 1189.16,
+            "count": 10,
+            "max": 3521.94,
+            "median": 1349.69,
+            "min": -695.87,
+            "positive_count": 7,
+            "total": 11891.6,
+            "win_rate": 0.7
+          },
+          "same_theme": {
+            "avg": 0.0,
+            "count": 10,
+            "max": 2332.78,
+            "median": 160.53,
+            "min": -1885.03,
+            "positive_count": 5,
+            "total": 0.0,
+            "win_rate": 0.5
+          },
+          "spy_relative": {
+            "avg": 1590.36,
+            "count": 10,
+            "max": 3923.14,
+            "median": 1750.89,
+            "min": -294.67,
+            "positive_count": 9,
+            "total": 15903.6,
+            "win_rate": 0.9
+          },
+          "ufo_relative": {
+            "avg": 810.07,
+            "count": 10,
+            "max": 3142.85,
+            "median": 970.6,
+            "min": -1074.96,
+            "positive_count": 7,
+            "total": 8100.7,
+            "win_rate": 0.7
+          }
+        },
+        "20d": {
+          "arkx_relative": {
+            "avg": 3653.221,
+            "count": 10,
+            "max": 12699.13,
+            "median": 2829.935,
+            "min": -801.09,
+            "positive_count": 8,
+            "total": 36532.21,
+            "win_rate": 0.8
+          },
+          "cash_pnl": {
+            "avg": 4576.811,
+            "count": 10,
+            "max": 13622.72,
+            "median": 3753.525,
+            "min": 122.5,
+            "positive_count": 10,
+            "total": 45768.11,
+            "win_rate": 1.0
+          },
+          "qqq_relative": {
+            "avg": 3582.421,
+            "count": 10,
+            "max": 12628.33,
+            "median": 2759.135,
+            "min": -871.89,
+            "positive_count": 8,
+            "total": 35824.21,
+            "win_rate": 0.8
+          },
+          "same_theme": {
+            "avg": 0.001,
+            "count": 10,
+            "max": 9045.91,
+            "median": -823.285,
+            "min": -4454.31,
+            "positive_count": 4,
+            "total": 0.01,
+            "win_rate": 0.4
+          },
+          "spy_relative": {
+            "avg": 4081.541,
+            "count": 10,
+            "max": 13127.45,
+            "median": 3258.255,
+            "min": -372.77,
+            "positive_count": 8,
+            "total": 40815.41,
+            "win_rate": 0.8
+          },
+          "ufo_relative": {
+            "avg": 1654.221,
+            "count": 10,
+            "max": 10700.13,
+            "median": 830.935,
+            "min": -2800.09,
+            "positive_count": 8,
+            "total": 16542.21,
+            "win_rate": 0.8
+          }
+        }
+      },
+      "event_count": 1,
+      "row_count": 10,
+      "ticker_count": 10,
+      "tickers": [
+        "ASTS",
+        "BKSY",
+        "GSAT",
+        "IRDM",
+        "LUNR",
+        "PL",
+        "RDW",
+        "RKLB",
+        "SATS",
+        "VSAT"
+      ]
+    },
+    "latest_unique_rows": 18,
+    "ledger_rows_total": 900,
+    "non_defense": {
+      "by_horizon": {
+        "10d": {
+          "arkx_relative": {
+            "avg": 794.305,
+            "count": 8,
+            "max": 2557.41,
+            "median": 844.63,
+            "min": -1669.08,
+            "positive_count": 5,
+            "total": 6354.44,
+            "win_rate": 0.625
+          },
+          "cash_pnl": {
+            "avg": 1060.40875,
+            "count": 8,
+            "max": 2871.91,
+            "median": 1024.4,
+            "min": -1651.31,
+            "positive_count": 7,
+            "total": 8483.27,
+            "win_rate": 0.875
+          },
+          "qqq_relative": {
+            "avg": 831.34875,
+            "count": 8,
+            "max": 2783.19,
+            "median": 789.76,
+            "min": -2271.97,
+            "positive_count": 7,
+            "total": 6650.79,
+            "win_rate": 0.875
+          },
+          "same_theme": {
+            "avg": -380.86,
+            "count": 8,
+            "max": 966.6,
+            "median": -423.7,
+            "min": -1590.81,
+            "positive_count": 3,
+            "total": -3046.88,
+            "win_rate": 0.375
+          },
+          "spy_relative": {
+            "avg": 884.1675,
+            "count": 8,
+            "max": 2763.18,
+            "median": 794.265,
+            "min": -1969.36,
+            "positive_count": 7,
+            "total": 7073.34,
+            "win_rate": 0.875
+          },
+          "ufo_relative": {
+            "avg": -45.85875,
+            "count": 8,
+            "max": 1514.11,
+            "median": 0.0,
+            "min": -1354.86,
+            "positive_count": 3,
+            "total": -366.87,
+            "win_rate": 0.375
+          }
+        },
+        "20d": {
+          "arkx_relative": {
+            "avg": 555.2125,
+            "count": 8,
+            "max": 2754.82,
+            "median": 187.985,
+            "min": -222.77,
+            "positive_count": 5,
+            "total": 4441.7,
+            "win_rate": 0.625
+          },
+          "cash_pnl": {
+            "avg": 588.25125,
+            "count": 8,
+            "max": 3411.19,
+            "median": 322.685,
+            "min": -566.61,
+            "positive_count": 6,
+            "total": 4706.01,
+            "win_rate": 0.75
+          },
+          "qqq_relative": {
+            "avg": 327.37375,
+            "count": 8,
+            "max": 2329.23,
+            "median": -31.57,
+            "min": -490.06,
+            "positive_count": 3,
+            "total": 2618.99,
+            "win_rate": 0.375
+          },
+          "same_theme": {
+            "avg": 124.51,
+            "count": 8,
+            "max": 1630.05,
+            "median": 247.075,
+            "min": -1019.32,
+            "positive_count": 5,
+            "total": 996.08,
+            "win_rate": 0.625
+          },
+          "spy_relative": {
+            "avg": 433.95875,
+            "count": 8,
+            "max": 2625.13,
+            "median": 100.65,
+            "min": -536.18,
+            "positive_count": 5,
+            "total": 3471.67,
+            "win_rate": 0.625
+          },
+          "ufo_relative": {
+            "avg": 461.78625,
+            "count": 8,
+            "max": 2371.96,
+            "median": 111.385,
+            "min": -267.68,
+            "positive_count": 4,
+            "total": 3694.29,
+            "win_rate": 0.5
+          }
+        }
+      },
+      "event_count": 5,
+      "row_count": 8,
+      "ticker_count": 5,
+      "tickers": [
+        "ARKX",
+        "ASTS",
+        "LUNR",
+        "RKLB",
+        "UFO"
+      ]
+    },
+    "source_latest_asof": "2026-06-30",
+    "source_summary": {
+      "closed_decision_count": 18,
+      "path": "data/paper_sleeves/space_catalyst/event_state_shadow_summary.json",
+      "pending_decision_count": 0,
+      "promotion_gate": {
+        "checks": {
+          "minimum_closed_decisions": true,
+          "official_bucket_has_closed_decision": true,
+          "positive_10d_arkx_relative_value": true,
+          "positive_10d_return": true,
+          "positive_10d_same_theme_value": false,
+          "positive_10d_ufo_relative_value": true
+        },
+        "closed_decision_count": 18,
+        "minimum_closed_decisions": 10,
+        "mode": "observe_only",
+        "official_closed_decision_count": 13,
+        "passed": false,
+        "reason": "insufficient_closed_official_forward_replacement_value"
+      }
+    }
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "defense_10d_same_theme_avg_positive, defense_10d_same_theme_win_rate_above_half, defense_20d_same_theme_median_positive, defense_20d_same_theme_win_rate_above_half",
+  "related_files": [
+    "data/paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl",
+    "data/paper_sleeves/space_catalyst/event_state_shadow_summary.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/experiments/exp_20260627_024_space_catalyst_standard_surface_pending_repair.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_003_space_catalyst_defense_budget_same_theme_value.py"
+  ],
+  "single_causal_variable": "candidate_pool: require semantic_bucket=defense_budget_theme for Space Catalyst candidates only if same-theme replacement value is positive across mature 10d/20d rows",
+  "status": "rejected",
+  "trial_family": "observed_only_attribution",
+  "trial_variant_id": "exp-20260702-003"
+}

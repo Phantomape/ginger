@@ -1,0 +1,1562 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_013_core_risk_multiplier_stack_loss_tail.py",
+    "data/experiments/exp-20260706-013/exp_20260706_013_core_risk_multiplier_stack_loss_tail.json",
+    "experiments/cards/exp-20260706-013.md",
+    "experiments/manifests/exp-20260706-013.json",
+    "experiments/tickets/exp-20260706-013.json",
+    "experiments/logs/exp-20260706-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-013.md",
+  "causal_components": [
+    "canonical replay trade attribution",
+    "pre-entry shared risk multiplier fields",
+    "no strategy behavior change",
+    "gate verdict"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+  "claimed_at": "2026-07-06T11:07:13+00:00",
+  "completed_at": "2026-07-06T11:11:23+00:00",
+  "created_at": "2026-07-06T11:07:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-013",
+  "experiment_uid": "expuid-81cbc9f4d0c141ba",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T11:07:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_risk_multiplier_stack_loss_tail"
+  },
+  "hypothesis": "Core risk-intensity forward observations may identify loss-tail in production-selected entries, but the current evidence must first validate whether high stacked risk multipliers underperform normal-risk selected entries on closed canonical replay trades before any cap or sizing rule is considered.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_risk_multiplier_stack_loss_tail_attribution_v1"
+  ],
+  "mechanism_family": "risk_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-010",
+    "exp-20260630-018"
+  ],
+  "new_evidence_type": "new_preentry_risk_multiplier_stack_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "any",
+        "attribution",
+        "before",
+        "but",
+        "canonical",
+        "cap",
+        "closed",
+        "considered",
+        "core",
+        "current",
+        "entries",
+        "evidence",
+        "first",
+        "forward",
+        "high",
+        "identify",
+        "in",
+        "intensity",
+        "is",
+        "loss",
+        "may",
+        "multiplier",
+        "multipliers",
+        "must",
+        "normal",
+        "observations",
+        "on",
+        "or",
+        "risk",
+        "rule",
+        "selected",
+        "sizing",
+        "stack",
+        "stacked",
+        "tail",
+        "trades",
+        "underperform",
+        "validate",
+        "whether"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "accepted_core_style_factor_tape_risk_attribution",
+        "reopen_condition": "Prospective forward rows tagged by a shared default-off style tape logger, or an independent source such as options/flows that is not merely another ETF-style threshold.",
+        "score": 0.0533,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "accepted_core_13f_crowding_risk_attribution",
+        "reopen_condition": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger.",
+        "score": 0.0511,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+        "reopen_condition": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger.",
+        "score": 0.0511,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "allocator_top1_forward_attribution",
+        "reopen_condition": "Wait for materially more closed allocator_top1 replacement-value rows, or add a daily target_price/closed-outcome ledger that makes Gate 2 and Gate 4 executable.",
+        "score": 0.0465,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_actual_risk_intensity",
+        "reopen_condition": "A valid promotion path needs a shared default-off daily ledger or ablation that records risk-intensity rank before execution, then enough forward closed rows to prove that any incremental ranking/sizing rule improves EV without worse drawdown.",
+        "score": 0.0465,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "high_risk_entries_are_winners",
+      "thin_high_risk_sample",
+      "no_stable_loss_tail"
+    ],
+    "confidence_reason": "The high-actual-risk cap recently failed, but this tests a different PIT field: the stacked risk-multiplier count and specific multiplier provenance recorded before entry, not realized actual-risk threshold retuning; the likely disconfirmer is that high-risk selected trades were intentional winners.",
+    "recorded_at": "2026-07-06T11:06:24+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "experiment_id": "exp-20260706-013",
+    "timestamp": "2026-07-06T11:11:23+00:00",
+    "owner": "alpha-explore",
+    "lane": "alpha_search",
+    "status": "rejected",
+    "decision": "rejected_core_risk_multiplier_stack_loss_tail",
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "alpha_ready": false,
+    "hypothesis": "Core risk-intensity forward observations may identify loss-tail in production-selected entries, but the current evidence must first validate whether high stacked risk multipliers underperform normal-risk selected entries on closed canonical replay trades before any cap or sizing rule is considered.",
+    "alpha_hypothesis": "Core risk-intensity forward observations may identify loss-tail in production-selected entries, but the current evidence must first validate whether high stacked risk multipliers underperform normal-risk selected entries on closed canonical replay trades before any cap or sizing rule is considered.",
+    "change_type": "risk_allocation",
+    "implementation_mode": "private_replay_scout",
+    "mechanism_family": "risk_allocation",
+    "trial_family": "risk_allocation",
+    "trial_variant_id": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+    "changed_variable": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+    "single_causal_variable": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+    "new_evidence_type": "new_preentry_risk_multiplier_stack_attribution",
+    "new_evidence_axis": "Different PIT gate shape from exp-20260702-010: pre-entry count and product of shared risk-multiplier boosts on accepted closed replay trades, not an actual-risk percent cap or stop-distance response curve.",
+    "nearby_prior_experiments": [
+      "exp-20260702-010",
+      "exp-20260630-018"
+    ],
+    "multiple_testing_risk_bucket": "minimal",
+    "causal_components": [
+      "canonical replay trade attribution",
+      "pre-entry shared risk multiplier fields",
+      "no strategy behavior change",
+      "gate verdict"
+    ],
+    "prediction": {
+      "confidence_reason": "The high-actual-risk cap recently failed, but this tests a different PIT field: the stacked risk-multiplier count and specific multiplier provenance recorded before entry, not realized actual-risk threshold retuning; the likely disconfirmer is that high-risk selected trades were intentional winners.",
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "main_failure_modes": [
+        "high_risk_entries_are_winners",
+        "thin_high_risk_sample",
+        "no_stable_loss_tail"
+      ],
+      "recorded_at": "2026-07-06T11:06:24+00:00",
+      "success_probability": 0.22
+    },
+    "calibration": {
+      "actual_decision": "rejected_core_risk_multiplier_stack_loss_tail",
+      "actual_success": 0,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "predicted_failure_modes": [
+        "high_risk_entries_are_winners",
+        "thin_high_risk_sample",
+        "no_stable_loss_tail"
+      ],
+      "realized_failure_modes": [
+        "no_stable_loss_tail",
+        "high_risk_entries_are_winners"
+      ],
+      "predicted_failure_mode_hit": true
+    },
+    "parameters": {
+      "high_stack_rule": {
+        "min_boost_count": 4,
+        "min_boost_product": 2.5,
+        "included_multiplier_keys": "*_risk_multiplier_applied with value != 1.0",
+        "excluded_keys": "max_position_pct caps and non-risk sizing metadata"
+      },
+      "decision_rule": "Observed positive lead only if high-stack sample has at least 9 closed trades and at least 2 canonical windows where high-stack mean PnL is lower than non-high-stack and severe-loss rate is higher. Otherwise reject; no behavior changes either way.",
+      "severe_loss_return_pct": -0.05
+    },
+    "pre_run_questions": {
+      "1_alpha_hypothesis": "Core risk-intensity forward observations may identify loss-tail in production-selected entries, but the current evidence must first validate whether high stacked risk multipliers underperform normal-risk selected entries on closed canonical replay trades before any cap or sizing rule is considered.",
+      "2_history_check": {
+        "novelty_gate": "experiment.py new accepted this without override. Nearest core_actual_risk_intensity was a single attempt; this tests risk-multiplier stack provenance rather than the rejected actual-risk cap.",
+        "exp-20260702-010": "Rejected high actual-risk entry cap; this does not retune the 2% actual-risk threshold.",
+        "exp-20260630-018": "Observed high account-risk cohort lead; this uses canonical closed replay trades and pre-entry sizing multiplier fields."
+      },
+      "3_single_policy_bundle": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+      "4_success_failure_standard": "Predeclared source-validation rule in parameters.decision_rule.",
+      "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_013_core_risk_multiplier_stack_loss_tail.py"
+    },
+    "gate1": {
+      "baseline_loaded": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ],
+      "passed": true
+    },
+    "gate2": {
+      "fields_checked": [
+        "entry_date",
+        "pnl",
+        "pnl_pct_net",
+        "sizing_multipliers",
+        "actual_risk_pct"
+      ],
+      "target_price_relevance": "Closed-trade attribution does not consume target_price or alter exits. The canonical backtester signal contract still owns target_price during replay; this runner reads only completed trade records.",
+      "missing_sizing_multiplier_trade_count": 0,
+      "passed": true
+    },
+    "gate3": {
+      "new_filter_added": false,
+      "note": "Read-only attribution; canonical survival is unchanged.",
+      "minimum_before_survival_rate": 0.7925,
+      "passed": true
+    },
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "decision": "rejected_core_risk_multiplier_stack_loss_tail",
+      "failed_reasons": [
+        "no_stable_loss_tail",
+        "high_risk_entries_are_winners"
+      ],
+      "sample_ready": true,
+      "high_stack_total_trades": 12,
+      "supporting_windows": [],
+      "supporting_window_count": 0,
+      "note": "No before/after strategy behavior changed. A positive lead would still require a separate shared-policy Gate 1-4 sizing or cap experiment."
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    },
+    "after_metrics": {
+      "strategy_behavior_changed": false,
+      "observed_attribution": {
+        "high_stack": {
+          "trade_count": 12,
+          "pnl": {
+            "n": 12,
+            "sum": 88462.33,
+            "mean": 7371.8608,
+            "median": 7625.885,
+            "min": -2973.84,
+            "max": 14956.27,
+            "positive_rate": 0.8333
+          },
+          "return_pct": {
+            "n": 12,
+            "sum": 1.3954,
+            "mean": 0.1163,
+            "median": 0.114,
+            "min": -0.055,
+            "max": 0.2775,
+            "positive_rate": 0.8333
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 1,
+          "severe_loss_rate": 0.0833,
+          "worst_trade": {
+            "window": "old_thin",
+            "ticker": "TRIP",
+            "strategy": "trend_long",
+            "sector": "Consumer Discretionary",
+            "entry_date": "2025-01-24",
+            "exit_date": "2025-02-20",
+            "exit_reason": "stop",
+            "pnl": -2973.84,
+            "pnl_pct_net": -0.055011,
+            "actual_risk_pct": 0.027281,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 5,
+            "boost_count": 5,
+            "haircut_count": 0,
+            "boost_product": 2.731575,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          "by_ticker": {
+            "AAPL": 1,
+            "AMD": 1,
+            "AMZN": 1,
+            "APP": 1,
+            "CAT": 1,
+            "COIN": 2,
+            "DDOG": 1,
+            "LLY": 1,
+            "MU": 1,
+            "NFLX": 1,
+            "TRIP": 1
+          },
+          "by_sector": {
+            "Communication Services": 1,
+            "Consumer Discretionary": 2,
+            "Financials": 2,
+            "Healthcare": 1,
+            "Industrials": 1,
+            "Technology": 5
+          }
+        },
+        "non_high_stack": {
+          "trade_count": 49,
+          "pnl": {
+            "n": 49,
+            "sum": 146388.66,
+            "mean": 2987.5237,
+            "median": 1102.21,
+            "min": -3049.82,
+            "max": 12548.48,
+            "positive_rate": 0.5102
+          },
+          "return_pct": {
+            "n": 49,
+            "sum": 1.7501,
+            "mean": 0.0357,
+            "median": 0.0552,
+            "min": -0.0897,
+            "max": 0.2713,
+            "positive_rate": 0.5102
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 7,
+          "severe_loss_rate": 0.1429,
+          "worst_trade": {
+            "window": "mid_weak",
+            "ticker": "COIN",
+            "strategy": "breakout_long",
+            "sector": "Financials",
+            "entry_date": "2025-07-21",
+            "exit_date": "2025-07-23",
+            "exit_reason": "stop",
+            "pnl": -380.41,
+            "pnl_pct_net": -0.089651,
+            "actual_risk_pct": 0.002518,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 2,
+            "boost_count": 1,
+            "haircut_count": 1,
+            "boost_product": 1.15,
+            "risk_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "boost_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "haircut_multipliers": {
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "high_stack": false
+          },
+          "by_ticker": {
+            "AMD": 3,
+            "AMZN": 1,
+            "APP": 1,
+            "BKNG": 1,
+            "COIN": 1,
+            "CVX": 3,
+            "DDOG": 1,
+            "DIS": 1,
+            "GLD": 4,
+            "GOOG": 2,
+            "GS": 3,
+            "IAU": 2,
+            "ISRG": 2,
+            "IWM": 1,
+            "JPM": 2,
+            "LLY": 1,
+            "MCD": 1,
+            "META": 1,
+            "NFLX": 2,
+            "NOW": 1,
+            "PLTR": 1,
+            "SLV": 5,
+            "SNOW": 1,
+            "TSM": 3,
+            "V": 2,
+            "XOM": 3
+          },
+          "by_sector": {
+            "Commodities": 11,
+            "Communication Services": 3,
+            "Consumer Discretionary": 3,
+            "ETF": 1,
+            "Energy": 6,
+            "Financials": 8,
+            "Healthcare": 3,
+            "Technology": 14
+          }
+        },
+        "supporting_windows": [],
+        "supporting_window_count": 0
+      }
+    },
+    "delta_metrics": {
+      "strategy_expected_value_score_delta": 0.0,
+      "strategy_total_pnl_delta": 0.0,
+      "strategy_trade_count_delta": 0,
+      "high_stack_mean_pnl_minus_non_high": 4384.3371,
+      "supporting_window_count": 0
+    },
+    "window_attribution": {
+      "late_strong": {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "source_path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "baseline_metrics": {
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        "trade_count": 18,
+        "high_stack": {
+          "trade_count": 5,
+          "pnl": {
+            "n": 5,
+            "sum": 37573.62,
+            "mean": 7514.724,
+            "median": 6609.38,
+            "min": 803.13,
+            "max": 14493.45,
+            "positive_rate": 1.0
+          },
+          "return_pct": {
+            "n": 5,
+            "sum": 0.528,
+            "mean": 0.1056,
+            "median": 0.1161,
+            "min": 0.0079,
+            "max": 0.2169,
+            "positive_rate": 1.0
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 0,
+          "severe_loss_rate": 0.0,
+          "worst_trade": {
+            "window": "late_strong",
+            "ticker": "AMD",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2026-04-17",
+            "exit_date": "2026-04-21",
+            "exit_reason": "end_of_backtest",
+            "pnl": 803.13,
+            "pnl_pct_net": 0.00791,
+            "actual_risk_pct": 0.031154,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 7,
+            "boost_count": 7,
+            "haircut_count": 0,
+            "boost_product": 3.144964,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          "by_ticker": {
+            "AMD": 1,
+            "AMZN": 1,
+            "CAT": 1,
+            "LLY": 1,
+            "MU": 1
+          },
+          "by_sector": {
+            "Consumer Discretionary": 1,
+            "Healthcare": 1,
+            "Industrials": 1,
+            "Technology": 2
+          }
+        },
+        "non_high_stack": {
+          "trade_count": 13,
+          "pnl": {
+            "n": 13,
+            "sum": 79499.3,
+            "mean": 6115.3308,
+            "median": 7450.31,
+            "min": -2296.65,
+            "max": 12548.48,
+            "positive_rate": 0.7692
+          },
+          "return_pct": {
+            "n": 13,
+            "sum": 1.0137,
+            "mean": 0.078,
+            "median": 0.0977,
+            "min": -0.0397,
+            "max": 0.2006,
+            "positive_rate": 0.7692
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 0,
+          "severe_loss_rate": 0.0,
+          "worst_trade": {
+            "window": "late_strong",
+            "ticker": "GS",
+            "strategy": "breakout_long",
+            "sector": "Financials",
+            "entry_date": "2026-01-06",
+            "exit_date": "2026-02-02",
+            "exit_reason": "stop",
+            "pnl": -298.79,
+            "pnl_pct_net": -0.039653,
+            "actual_risk_pct": 0.002554,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 2,
+            "boost_count": 1,
+            "haircut_count": 1,
+            "boost_product": 1.15,
+            "risk_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "boost_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "haircut_multipliers": {
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "high_stack": false
+          },
+          "by_ticker": {
+            "CVX": 3,
+            "GLD": 2,
+            "GOOG": 1,
+            "GS": 1,
+            "IAU": 2,
+            "SLV": 1,
+            "XOM": 3
+          },
+          "by_sector": {
+            "Commodities": 5,
+            "Energy": 6,
+            "Financials": 1,
+            "Technology": 1
+          }
+        },
+        "supports_loss_tail": false,
+        "sample_rows_high_stack": [
+          {
+            "window": "late_strong",
+            "ticker": "LLY",
+            "strategy": "breakout_long",
+            "sector": "Healthcare",
+            "entry_date": "2025-11-04",
+            "exit_date": "2025-11-12",
+            "exit_reason": "target",
+            "pnl": 6609.38,
+            "pnl_pct_net": 0.116093,
+            "actual_risk_pct": 0.024961,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.6565,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "late_strong",
+            "ticker": "MU",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2026-01-07",
+            "exit_date": "2026-01-27",
+            "exit_reason": "target",
+            "pnl": 9425.48,
+            "pnl_pct_net": 0.216879,
+            "actual_risk_pct": 0.028833,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 6,
+            "boost_count": 6,
+            "haircut_count": 0,
+            "boost_product": 2.995204,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "late_strong",
+            "ticker": "CAT",
+            "strategy": "breakout_long",
+            "sector": "Industrials",
+            "entry_date": "2026-01-30",
+            "exit_date": "2026-02-10",
+            "exit_reason": "target",
+            "pnl": 14493.45,
+            "pnl_pct_net": 0.134644,
+            "actual_risk_pct": 0.034469,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.6565,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "late_strong",
+            "ticker": "AMZN",
+            "strategy": "breakout_long",
+            "sector": "Consumer Discretionary",
+            "entry_date": "2026-04-10",
+            "exit_date": "2026-04-21",
+            "exit_reason": "end_of_backtest",
+            "pnl": 6242.18,
+            "pnl_pct_net": 0.05245,
+            "actual_risk_pct": 0.026524,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 5,
+            "boost_count": 5,
+            "haircut_count": 0,
+            "boost_product": 2.66805,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "late_strong",
+            "ticker": "AMD",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2026-04-17",
+            "exit_date": "2026-04-21",
+            "exit_reason": "end_of_backtest",
+            "pnl": 803.13,
+            "pnl_pct_net": 0.00791,
+            "actual_risk_pct": 0.031154,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 7,
+            "boost_count": 7,
+            "haircut_count": 0,
+            "boost_product": 3.144964,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          }
+        ]
+      },
+      "mid_weak": {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "source_path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "baseline_metrics": {
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        "trade_count": 21,
+        "high_stack": {
+          "trade_count": 3,
+          "pnl": {
+            "n": 3,
+            "sum": 35345.82,
+            "mean": 11781.94,
+            "median": 12766.98,
+            "min": 8642.39,
+            "max": 13936.45,
+            "positive_rate": 1.0
+          },
+          "return_pct": {
+            "n": 3,
+            "sum": 0.5748,
+            "mean": 0.1916,
+            "median": 0.2266,
+            "min": 0.1047,
+            "max": 0.2435,
+            "positive_rate": 1.0
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 0,
+          "severe_loss_rate": 0.0,
+          "worst_trade": {
+            "window": "mid_weak",
+            "ticker": "AAPL",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2025-08-11",
+            "exit_date": "2025-09-22",
+            "exit_reason": "target",
+            "pnl": 8642.39,
+            "pnl_pct_net": 0.104691,
+            "actual_risk_pct": 0.023145,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.541,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          "by_ticker": {
+            "AAPL": 1,
+            "COIN": 2
+          },
+          "by_sector": {
+            "Financials": 2,
+            "Technology": 1
+          }
+        },
+        "non_high_stack": {
+          "trade_count": 18,
+          "pnl": {
+            "n": 18,
+            "sum": 42764.29,
+            "mean": 2375.7939,
+            "median": -8.69,
+            "min": -765.61,
+            "max": 9398.33,
+            "positive_rate": 0.4444
+          },
+          "return_pct": {
+            "n": 18,
+            "sum": 0.5537,
+            "mean": 0.0308,
+            "median": -0.0142,
+            "min": -0.0897,
+            "max": 0.2713,
+            "positive_rate": 0.4444
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 3,
+          "severe_loss_rate": 0.1667,
+          "worst_trade": {
+            "window": "mid_weak",
+            "ticker": "COIN",
+            "strategy": "breakout_long",
+            "sector": "Financials",
+            "entry_date": "2025-07-21",
+            "exit_date": "2025-07-23",
+            "exit_reason": "stop",
+            "pnl": -380.41,
+            "pnl_pct_net": -0.089651,
+            "actual_risk_pct": 0.002518,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 2,
+            "boost_count": 1,
+            "haircut_count": 1,
+            "boost_product": 1.15,
+            "risk_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "boost_multipliers": {
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "haircut_multipliers": {
+              "breakout_financials_dte_risk_multiplier_applied": 0.25
+            },
+            "high_stack": false
+          },
+          "by_ticker": {
+            "AMD": 3,
+            "APP": 1,
+            "COIN": 1,
+            "DIS": 1,
+            "GLD": 1,
+            "GS": 1,
+            "ISRG": 1,
+            "IWM": 1,
+            "LLY": 1,
+            "META": 1,
+            "PLTR": 1,
+            "SLV": 3,
+            "SNOW": 1,
+            "TSM": 1
+          },
+          "by_sector": {
+            "Commodities": 4,
+            "Communication Services": 1,
+            "ETF": 1,
+            "Financials": 2,
+            "Healthcare": 2,
+            "Technology": 8
+          }
+        },
+        "supports_loss_tail": false,
+        "sample_rows_high_stack": [
+          {
+            "window": "mid_weak",
+            "ticker": "COIN",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_date": "2025-05-14",
+            "exit_date": "2025-06-24",
+            "exit_reason": "target",
+            "pnl": 12766.98,
+            "pnl_pct_net": 0.243473,
+            "actual_risk_pct": 0.032414,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 7,
+            "boost_count": 7,
+            "haircut_count": 0,
+            "boost_product": 3.340747,
+            "risk_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "green_decel_quality_nonconsumer_risk_multiplier_applied": 1.025,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667
+            },
+            "boost_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "ample_slot_stock_rank1_risk_multiplier_applied": 1.05,
+              "green_decel_quality_nonconsumer_risk_multiplier_applied": 1.025,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "mid_weak",
+            "ticker": "COIN",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_date": "2025-06-26",
+            "exit_date": "2025-07-18",
+            "exit_reason": "target",
+            "pnl": 13936.45,
+            "pnl_pct_net": 0.226608,
+            "actual_risk_pct": 0.046415,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 8,
+            "boost_count": 8,
+            "haircut_count": 0,
+            "boost_product": 4.900331,
+            "risk_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "scarce_slot_rank1_risk_multiplier_applied": 1.075,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "trend_price_vs_200ma_extension_risk_multiplier_applied": 1.125,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667
+            },
+            "boost_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "scarce_slot_rank1_risk_multiplier_applied": 1.075,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "trend_price_vs_200ma_extension_risk_multiplier_applied": 1.125,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "mid_weak",
+            "ticker": "AAPL",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2025-08-11",
+            "exit_date": "2025-09-22",
+            "exit_reason": "target",
+            "pnl": 8642.39,
+            "pnl_pct_net": 0.104691,
+            "actual_risk_pct": 0.023145,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.541,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          }
+        ]
+      },
+      "old_thin": {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "source_path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "baseline_metrics": {
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        },
+        "trade_count": 22,
+        "high_stack": {
+          "trade_count": 4,
+          "pnl": {
+            "n": 4,
+            "sum": 15542.89,
+            "mean": 3885.7225,
+            "median": 1780.23,
+            "min": -2973.84,
+            "max": 14956.27,
+            "positive_rate": 0.5
+          },
+          "return_pct": {
+            "n": 4,
+            "sum": 0.2927,
+            "mean": 0.0732,
+            "median": 0.0351,
+            "min": -0.055,
+            "max": 0.2775,
+            "positive_rate": 0.5
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 1,
+          "severe_loss_rate": 0.25,
+          "worst_trade": {
+            "window": "old_thin",
+            "ticker": "TRIP",
+            "strategy": "trend_long",
+            "sector": "Consumer Discretionary",
+            "entry_date": "2025-01-24",
+            "exit_date": "2025-02-20",
+            "exit_reason": "stop",
+            "pnl": -2973.84,
+            "pnl_pct_net": -0.055011,
+            "actual_risk_pct": 0.027281,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 5,
+            "boost_count": 5,
+            "haircut_count": 0,
+            "boost_product": 2.731575,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          "by_ticker": {
+            "APP": 1,
+            "DDOG": 1,
+            "NFLX": 1,
+            "TRIP": 1
+          },
+          "by_sector": {
+            "Communication Services": 1,
+            "Consumer Discretionary": 1,
+            "Technology": 2
+          }
+        },
+        "non_high_stack": {
+          "trade_count": 18,
+          "pnl": {
+            "n": 18,
+            "sum": 24125.07,
+            "mean": 1340.2817,
+            "median": -51.365,
+            "min": -3049.82,
+            "max": 6990.25,
+            "positive_rate": 0.3889
+          },
+          "return_pct": {
+            "n": 18,
+            "sum": 0.1827,
+            "mean": 0.0101,
+            "median": -0.029,
+            "min": -0.0635,
+            "max": 0.1409,
+            "positive_rate": 0.3889
+          },
+          "severe_loss_threshold": -0.05,
+          "severe_loss_count": 4,
+          "severe_loss_rate": 0.2222,
+          "worst_trade": {
+            "window": "old_thin",
+            "ticker": "DDOG",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_date": "2024-11-25",
+            "exit_date": "2024-12-19",
+            "exit_reason": "stop",
+            "pnl": -9.86,
+            "pnl_pct_net": -0.063499,
+            "actual_risk_pct": 7.8e-05,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 3,
+            "boost_count": 0,
+            "haircut_count": 3,
+            "boost_product": 1.0,
+            "risk_multipliers": {
+              "trend_tech_gap_risk_multiplier_applied": 0.25,
+              "trend_tech_near_high_risk_multiplier_applied": 0.25,
+              "trend_tech_dte_risk_multiplier_applied": 0.125
+            },
+            "boost_multipliers": {},
+            "haircut_multipliers": {
+              "trend_tech_gap_risk_multiplier_applied": 0.25,
+              "trend_tech_near_high_risk_multiplier_applied": 0.25,
+              "trend_tech_dte_risk_multiplier_applied": 0.125
+            },
+            "high_stack": false
+          },
+          "by_ticker": {
+            "AMZN": 1,
+            "BKNG": 1,
+            "DDOG": 1,
+            "GLD": 1,
+            "GOOG": 1,
+            "GS": 1,
+            "ISRG": 1,
+            "JPM": 2,
+            "MCD": 1,
+            "NFLX": 2,
+            "NOW": 1,
+            "SLV": 1,
+            "TSM": 2,
+            "V": 2
+          },
+          "by_sector": {
+            "Commodities": 2,
+            "Communication Services": 2,
+            "Consumer Discretionary": 3,
+            "Financials": 5,
+            "Healthcare": 1,
+            "Technology": 5
+          }
+        },
+        "supports_loss_tail": false,
+        "sample_rows_high_stack": [
+          {
+            "window": "old_thin",
+            "ticker": "DDOG",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_date": "2024-10-11",
+            "exit_date": "2024-10-16",
+            "exit_reason": "stop",
+            "pnl": -2177.23,
+            "pnl_pct_net": -0.041708,
+            "actual_risk_pct": 0.024526,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.541,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "old_thin",
+            "ticker": "NFLX",
+            "strategy": "trend_long",
+            "sector": "Communication Services",
+            "entry_date": "2024-10-21",
+            "exit_date": "2024-11-19",
+            "exit_reason": "target",
+            "pnl": 5737.69,
+            "pnl_pct_net": 0.111854,
+            "actual_risk_pct": 0.025275,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 4,
+            "boost_count": 4,
+            "haircut_count": 0,
+            "boost_product": 2.541,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "old_thin",
+            "ticker": "APP",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_date": "2024-11-08",
+            "exit_date": "2024-11-19",
+            "exit_reason": "target",
+            "pnl": 14956.27,
+            "pnl_pct_net": 0.277549,
+            "actual_risk_pct": 0.043223,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 9,
+            "boost_count": 9,
+            "haircut_count": 0,
+            "boost_product": 4.527906,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "trend_price_vs_200ma_extension_risk_multiplier_applied": 1.125,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "price_vs_200ma_extension_risk_multiplier_applied": 1.025,
+              "trend_price_vs_200ma_extension_risk_multiplier_applied": 1.125,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          },
+          {
+            "window": "old_thin",
+            "ticker": "TRIP",
+            "strategy": "trend_long",
+            "sector": "Consumer Discretionary",
+            "entry_date": "2025-01-24",
+            "exit_date": "2025-02-20",
+            "exit_reason": "stop",
+            "pnl": -2973.84,
+            "pnl_pct_net": -0.055011,
+            "actual_risk_pct": 0.027281,
+            "base_risk_pct": 0.01,
+            "risk_multiplier_count": 5,
+            "boost_count": 5,
+            "haircut_count": 0,
+            "boost_product": 2.731575,
+            "risk_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "boost_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "core_confirmed_quality_risk_multiplier_applied": 1.075,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1
+            },
+            "haircut_multipliers": {},
+            "high_stack": true
+          }
+        ]
+      }
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "paper_orders_changed": false,
+      "live_orders_changed": false,
+      "watchlist_changed": false,
+      "llm_decision_boundary_changed": false,
+      "daily_snapshot_exposed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "Read-only attribution over accepted canonical replay artifacts; no production or backtest adapter behavior changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The high-stack bucket was not a loss-tail cohort: aggregate mean PnL was higher than non-high-stack, and no window showed both lower mean PnL and higher severe-loss rate for high-stack entries.",
+      "forbidden_near_neighbor_retry": "Do not retune boost_count, boost_product, actual-risk percent caps, stop distance, target multiple, hold length, or response curve on these same canonical closed trades.",
+      "new_evidence_required": "A legal retry needs prospectively logged core_risk_intensity forward rows with closed replacement value, or a single shared sizing/cap ablation that changes behavior and passes Gate 1-4."
+    },
+    "rejection_reason": "no_stable_loss_tail;high_risk_entries_are_winners",
+    "next_retry_requires": [
+      "closed prospective core_risk_intensity forward rows with replacement value",
+      "or a shared production/backtest sizing-cap ablation with full Gate 1-4"
+    ],
+    "before_after_strategy_behavior_changed": false,
+    "related_files": [
+      "quant/experiments/exp_20260706_013_core_risk_multiplier_stack_loss_tail.py",
+      "data/experiments/exp-20260706-013/exp_20260706_013_core_risk_multiplier_stack_loss_tail.json",
+      "experiments/logs/exp-20260706-013.json",
+      "experiments/cards/exp-20260706-013.md",
+      "experiments/manifests/exp-20260706-013.json",
+      "experiments/tickets/exp-20260706-013.json",
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_013_core_risk_multiplier_stack_loss_tail.py",
+      ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_013_core_risk_multiplier_stack_loss_tail.py",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "anti_js": {
+      "used_javascript": false,
+      "evidence": "Python runner only; no node/js tooling invoked."
+    },
+    "lean_quality_passed": true,
+    "artifact": "data/experiments/exp-20260706-013/exp_20260706_013_core_risk_multiplier_stack_loss_tail.json",
+    "log": "experiments/logs/exp-20260706-013.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-013.json",
+  "single_causal_variable": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-013.json",
+  "trial_family": "risk_allocation",
+  "trial_variant_id": "core_risk_multiplier_stack_loss_tail_attribution_v1",
+  "implementation_mode": "private_replay_scout",
+  "decision": "rejected_core_risk_multiplier_stack_loss_tail",
+  "artifact": "data/experiments/exp-20260706-013/exp_20260706_013_core_risk_multiplier_stack_loss_tail.json",
+  "log": "experiments/logs/exp-20260706-013.json",
+  "accepted_alpha": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-06T11:11:23+00:00"
+}

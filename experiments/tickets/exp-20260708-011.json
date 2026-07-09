@@ -1,0 +1,765 @@
+{
+  "acceptance_rule": "Accept only if fixed sleeve has >=30 closed rows, >=30 enriched cash/SPY/QQQ replacement rows, positive replacement values vs cash/SPY/QQQ, concentration under cap, and forward paper gate passes; otherwise reject/park with next evidence condition.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_*_supplier_financing_debt_relief_forward_readiness_20260707_delta.py",
+    "data/experiments/exp-20260708-*/",
+    "experiments/logs/exp-20260708-*.json",
+    "experiments/cards/exp-20260708-*.md",
+    "experiments/manifests/exp-20260708-*.json",
+    "experiments/tickets/exp-20260708-*.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-011.md",
+  "causal_components": [
+    "accepted supplier_financing_debt_relief shared helper closed rows",
+    "cash/SPY/QQQ replacement-value attribution",
+    "forward activation readiness verdict",
+    "no strategy behavior change"
+  ],
+  "change_type": "forward_replacement_value_attribution",
+  "changed_variable": "supplier_financing_debt_relief_forward_replacement_value_readiness_20260707_delta_v1",
+  "claimed_at": "2026-07-08T08:08:23+00:00",
+  "completed_at": "2026-07-08T08:15:16+00:00",
+  "created_at": "2026-07-08T08:08:07+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-011",
+  "experiment_uid": "expuid-c9c5c9f5ec484617",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T08:08:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "supplier_financing_debt_relief_forward_replacement_value_readiness_20260707_delt"
+  },
+  "hypothesis": "Observed-only alpha: accepted supplier-financing/debt-relief default-off paper sleeve has materially more closed forward rows with complete cash/SPY/QQQ replacement values; test whether the fixed sleeve is activation-ready or should be parked without retuning.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "DPO threshold",
+    "debt-relief threshold",
+    "Companyfacts tags",
+    "entry/exit rules",
+    "notional scalars",
+    "hold days",
+    "risk scaling",
+    "trade_enabled",
+    "live orders"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/supplier_financing_debt_relief_paper_sleeve.py",
+    "quant/run.py",
+    "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+    "data/paper_sleeves/supplier_financing_debt_relief/snapshots.jsonl",
+    "data/paper_sleeves/forward_replacement_value.jsonl"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260620-005",
+    "exp-20260620-007",
+    "exp-20260627-016",
+    "exp-20260704-019",
+    "exp-20260704-020"
+  ],
+  "new_evidence_type": "materially_more_settled_forward_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "observed_only_attribution",
+        "score": 0.66,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "score": 0.6526,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "supplier_financing_debt_relief_forward_replacement_enrichment",
+        "score": 0.6513,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "accepted",
+        "activation",
+        "alpha",
+        "be",
+        "cash",
+        "closed",
+        "complete",
+        "debt",
+        "delta",
+        "financing",
+        "forward",
+        "has",
+        "is",
+        "materially",
+        "more",
+        "observed",
+        "only",
+        "or",
+        "parked",
+        "qqq",
+        "readiness",
+        "ready",
+        "replacement",
+        "retuning",
+        "rows",
+        "should",
+        "sleeve",
+        "spy",
+        "supplier",
+        "test",
+        "value",
+        "values",
+        "whether",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.66,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+        "score": 0.6526,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "supplier_financing_debt_relief_forward_replacement_enrichment",
+        "reopen_condition": "Materially more closed default-off supplier-financing rows, or a new production-visible supplier/payment-term or covenant/refinancing source.",
+        "score": 0.6513,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Since exp-20260704-019, supplier-financing/debt-relief settled rows increased from 3 closed / 1 enriched to 5 closed / 5 enriched cash-SPY-QQQ replacement rows in the same default-off sleeve, satisfying materially more closed/enriched forward rows; no threshold, field, response-function, notional, hold, or activation retune.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 1,
+      "streak_experiments": [
+        "exp-20260708-006"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Since exp-20260704-019, supplier-financing/debt-relief settled rows increased from 3 closed / 1 enriched to 5 closed / 5 enriched cash-SPY-QQQ replacement rows in the same default-off sleeve, satisfying materially more closed/enriched forward rows; no threshold, field, response-function, notional, hold, or activation retune.",
+        "categories": [
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Since exp-20260704-019, supplier-financing/debt-relief settled rows increased from 3 closed / 1 enriched to 5 closed / 5 enriched cash-SPY-QQQ replacement rows in the same default-off sleeve, satisfying materially more closed/enriched forward rows; no threshold, field, response-function, notional, hold, or activation retune.",
+      "categories": [
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.1,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "negative_replacement_value",
+      "technology_concentration",
+      "not_activation_ready"
+    ],
+    "confidence_reason": "The adapter has a real new forward evidence axis after exp-20260704-019, but five closed rows is still far below an activation floor and prior supplier-financing evidence was weak/concentrated.",
+    "recorded_at": "2026-07-08T08:07:28+00:00"
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "rejected_supplier_financing_debt_relief_forward_readiness_20260707_delta",
+    "classification": "early_park_negative_full_replacement_value",
+    "artifact": "data/experiments/exp-20260708-011/exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.json",
+    "log": "experiments/logs/exp-20260708-011.json",
+    "runner": "quant/experiments/exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.py",
+    "gate4": {
+      "passed": false,
+      "accepted_alpha": false,
+      "observed_only": true,
+      "classification": "early_park_negative_full_replacement_value",
+      "decision": "rejected_supplier_financing_debt_relief_forward_readiness_20260707_delta",
+      "activation_ready": false,
+      "watchlist_lead": false,
+      "closed_rows": 5,
+      "enriched_closed_rows": 5,
+      "unique_tickers": 5,
+      "sector_counts": {
+        "Technology": 4,
+        "Industrials": 1
+      },
+      "industry_counts": {
+        "Semiconductors": 3,
+        "Scientific & Technical Instruments": 1,
+        "Electrical Equipment & Parts": 1
+      },
+      "ticker_counts": {
+        "MRVL": 1,
+        "COHR": 1,
+        "MU": 1,
+        "AEIS": 1,
+        "ADI": 1
+      },
+      "max_single_sector_share": 0.8,
+      "axis_summaries": {
+        "replacement_value_vs_cash_usd": {
+          "field": "replacement_value_vs_cash_usd",
+          "n": 5,
+          "sum": -1269.9,
+          "mean": -253.98,
+          "median": -322.19,
+          "min": -400.33,
+          "max": 99.12,
+          "win_count": 1,
+          "loss_count": 4,
+          "win_rate": 0.2
+        },
+        "replacement_value_vs_spy_usd": {
+          "field": "replacement_value_vs_spy_usd",
+          "n": 5,
+          "sum": -1371.71,
+          "mean": -274.34,
+          "median": -327.69,
+          "min": -449.92,
+          "max": 78.09,
+          "win_count": 1,
+          "loss_count": 4,
+          "win_rate": 0.2
+        },
+        "replacement_value_vs_qqq_usd": {
+          "field": "replacement_value_vs_qqq_usd",
+          "n": 5,
+          "sum": -1171.48,
+          "mean": -234.3,
+          "median": -286.58,
+          "min": -354.58,
+          "max": 60.18,
+          "win_count": 1,
+          "loss_count": 4,
+          "win_rate": 0.2
+        }
+      },
+      "failed_reasons": [
+        "closed_rows_below_activation_min:5/30",
+        "enriched_rows_below_activation_min:5/30",
+        "single_sector_share_too_high:0.8>0.6",
+        "shared_forward_paper_gate_not_passed",
+        "replacement_value_vs_cash_usd_aggregate_not_positive",
+        "replacement_value_vs_cash_usd_win_rate_below_50pct",
+        "replacement_value_vs_spy_usd_aggregate_not_positive",
+        "replacement_value_vs_spy_usd_win_rate_below_50pct",
+        "replacement_value_vs_qqq_usd_aggregate_not_positive",
+        "replacement_value_vs_qqq_usd_win_rate_below_50pct"
+      ],
+      "readiness_guard": {
+        "min_activation_enriched_closed_rows": 30,
+        "min_reprobe_enriched_closed_rows": 15,
+        "min_unique_tickers": 5,
+        "max_single_sector_share": 0.6,
+        "min_axis_win_rate": 0.5,
+        "replacement_axes": [
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd",
+          "replacement_value_vs_qqq_usd"
+        ]
+      },
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta_sum": 0.0,
+        "trade_count_delta_sum": 0,
+        "signals_generated_delta_sum": 0,
+        "signals_survived_delta_sum": 0,
+        "note": "Observed-only attribution; strategy behavior is unchanged."
+      },
+      "reopen_condition": "Do not reserve another supplier-financing/debt-relief readiness ID until at least 15 fully enriched closed rows exist and the cohort is no longer Technology-dominated under the fixed 60% max-sector guard, or until a genuinely new supplier/payment-term, covenant, refinancing, borrow, or payment-network source exists. Activation promotion remains blocked until at least 30 enriched closed rows have positive cash/SPY/QQQ replacement value and pass the fixed concentration guard."
+    },
+    "replacement_value_vs_cash_usd_sum": -1269.9,
+    "replacement_value_vs_spy_usd_sum": -1371.71,
+    "replacement_value_vs_qqq_usd_sum": -1171.48,
+    "summary": "The new evidence axis is real: closed/enriched rows moved from 3 closed / 1 enriched to 5 closed / 5 enriched. The alpha did not promote because the sample is still far below the 30-row activation floor, sector concentration is 80% Technology, and aggregate replacement value is negative versus cash, SPY, and QQQ."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-011.json",
+  "single_causal_variable": "supplier_financing_debt_relief_forward_replacement_value_readiness_20260707_delta_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260708-011.json",
+  "trial_family": "supplier_financing_debt_relief_forward_readiness",
+  "trial_variant_id": "20260707_full_enrichment_5_closed_rows_v1",
+  "implementation_mode": "observed_only_default_off_paper_sleeve_readiness_delta",
+  "new_evidence_axis": "Since exp-20260704-019, supplier-financing/debt-relief settled rows increased from 3 closed / 1 enriched to 5 closed / 5 enriched cash-SPY-QQQ replacement rows in the same default-off sleeve, satisfying materially more closed/enriched forward rows; no threshold, field, response-function, notional, hold, or activation retune.",
+  "decision": "rejected_supplier_financing_debt_relief_forward_readiness_20260707_delta",
+  "artifact": "data/experiments/exp-20260708-011/exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.json",
+  "log": "experiments/logs/exp-20260708-011.json",
+  "pre_run_questions": {
+    "alpha_hypothesis": "Observed-only alpha: accepted supplier-financing/debt-relief default-off paper sleeve has materially more closed forward rows with complete cash/SPY/QQQ replacement values; test whether the fixed sleeve is activation-ready or should be parked without retuning.",
+    "history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260620-005",
+        "exp-20260620-007",
+        "exp-20260627-016",
+        "exp-20260704-019",
+        "exp-20260704-020"
+      ],
+      "prior_delta": {
+        "prior_experiment_id": "exp-20260704-019",
+        "prior_log": "experiments/logs/exp-20260704-019.json",
+        "prior_log_exists": true,
+        "prior_decision": "rejected_supplier_financing_debt_relief_new_closed_rows_not_activation_ready",
+        "prior_closed_position_count": 3,
+        "prior_enriched_replacement_rows": 1,
+        "prior_next_retry_requires": "Complete replacement-value enrichment for COHR/MU and materially more closed supplier-financing/debt-relief rows; do not retry adjacent retunes from the same three-row surface."
+      },
+      "novelty_nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "observed_only_attribution",
+          "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+          "score": 0.66,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.375,
+          "data_source": "forward_replacement_value",
+          "family_key": "default_off_forward_replacement_value_activation_readiness",
+          "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+          "score": 0.6526,
+          "status": "has_accepted",
+          "trials": 8
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+          "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+          "score": 0.6513,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "forward_replacement_entry_regime_activation_attribution",
+          "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+          "score": 0.6513,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "supplier_financing_debt_relief_forward_replacement_enrichment",
+          "reopen_condition": "Materially more closed default-off supplier-financing rows, or a new production-visible supplier/payment-term or covenant/refinancing source.",
+          "score": 0.6513,
+          "status": "has_accepted",
+          "trials": 1
+        }
+      ]
+    },
+    "single_policy_bundle": "supplier_financing_debt_relief_forward_replacement_value_readiness_20260707_delta_v1",
+    "acceptance_standard": "Accept only if fixed sleeve has >=30 closed rows, >=30 enriched cash/SPY/QQQ replacement rows, positive replacement values vs cash/SPY/QQQ, concentration under cap, and forward paper gate passes; otherwise reject/park with next evidence condition.",
+    "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "loaded": true,
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_max": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only forward attribution; before and after strategy behavior are identical."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "closed_positions[].entry_date",
+      "closed_positions[].target_price",
+      "closed_positions[].replacement_value_vs_cash_usd",
+      "closed_positions[].replacement_value_vs_spy_usd",
+      "closed_positions[].replacement_value_vs_qqq_usd",
+      "closed_positions[].trade_enabled",
+      "forward_replacement_value.sleeve_key",
+      "latest_snapshot.forward_paper_gate"
+    ],
+    "diagnostics": {
+      "closed_rows": 5,
+      "entry_target_missing": [],
+      "replacement_value_enriched_rows": 5,
+      "ledger_enriched_supplier_rows": 5,
+      "trade_enabled_values": [
+        "False"
+      ]
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, entry, exit, ranking, sizing, or order rule changed."
+  },
+  "gate4": {
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only": true,
+    "classification": "early_park_negative_full_replacement_value",
+    "decision": "rejected_supplier_financing_debt_relief_forward_readiness_20260707_delta",
+    "activation_ready": false,
+    "watchlist_lead": false,
+    "closed_rows": 5,
+    "enriched_closed_rows": 5,
+    "unique_tickers": 5,
+    "sector_counts": {
+      "Technology": 4,
+      "Industrials": 1
+    },
+    "industry_counts": {
+      "Semiconductors": 3,
+      "Scientific & Technical Instruments": 1,
+      "Electrical Equipment & Parts": 1
+    },
+    "ticker_counts": {
+      "MRVL": 1,
+      "COHR": 1,
+      "MU": 1,
+      "AEIS": 1,
+      "ADI": 1
+    },
+    "max_single_sector_share": 0.8,
+    "axis_summaries": {
+      "replacement_value_vs_cash_usd": {
+        "field": "replacement_value_vs_cash_usd",
+        "n": 5,
+        "sum": -1269.9,
+        "mean": -253.98,
+        "median": -322.19,
+        "min": -400.33,
+        "max": 99.12,
+        "win_count": 1,
+        "loss_count": 4,
+        "win_rate": 0.2
+      },
+      "replacement_value_vs_spy_usd": {
+        "field": "replacement_value_vs_spy_usd",
+        "n": 5,
+        "sum": -1371.71,
+        "mean": -274.34,
+        "median": -327.69,
+        "min": -449.92,
+        "max": 78.09,
+        "win_count": 1,
+        "loss_count": 4,
+        "win_rate": 0.2
+      },
+      "replacement_value_vs_qqq_usd": {
+        "field": "replacement_value_vs_qqq_usd",
+        "n": 5,
+        "sum": -1171.48,
+        "mean": -234.3,
+        "median": -286.58,
+        "min": -354.58,
+        "max": 60.18,
+        "win_count": 1,
+        "loss_count": 4,
+        "win_rate": 0.2
+      }
+    },
+    "failed_reasons": [
+      "closed_rows_below_activation_min:5/30",
+      "enriched_rows_below_activation_min:5/30",
+      "single_sector_share_too_high:0.8>0.6",
+      "shared_forward_paper_gate_not_passed",
+      "replacement_value_vs_cash_usd_aggregate_not_positive",
+      "replacement_value_vs_cash_usd_win_rate_below_50pct",
+      "replacement_value_vs_spy_usd_aggregate_not_positive",
+      "replacement_value_vs_spy_usd_win_rate_below_50pct",
+      "replacement_value_vs_qqq_usd_aggregate_not_positive",
+      "replacement_value_vs_qqq_usd_win_rate_below_50pct"
+    ],
+    "readiness_guard": {
+      "min_activation_enriched_closed_rows": 30,
+      "min_reprobe_enriched_closed_rows": 15,
+      "min_unique_tickers": 5,
+      "max_single_sector_share": 0.6,
+      "min_axis_win_rate": 0.5,
+      "replacement_axes": [
+        "replacement_value_vs_cash_usd",
+        "replacement_value_vs_spy_usd",
+        "replacement_value_vs_qqq_usd"
+      ]
+    },
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "trade_count_delta_sum": 0,
+      "signals_generated_delta_sum": 0,
+      "signals_survived_delta_sum": 0,
+      "note": "Observed-only attribution; strategy behavior is unchanged."
+    },
+    "reopen_condition": "Do not reserve another supplier-financing/debt-relief readiness ID until at least 15 fully enriched closed rows exist and the cohort is no longer Technology-dominated under the fixed 60% max-sector guard, or until a genuinely new supplier/payment-term, covenant, refinancing, borrow, or payment-network source exists. Activation promotion remains blocked until at least 30 enriched closed rows have positive cash/SPY/QQQ replacement value and pass the fixed concentration guard."
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta_sum": 0.0,
+    "trade_count_delta_sum": 0,
+    "signals_generated_delta_sum": 0,
+    "signals_survived_delta_sum": 0,
+    "note": "Observed-only attribution; strategy behavior is unchanged.",
+    "prior_closed_position_count": 3,
+    "closed_position_count": 5,
+    "closed_position_count_delta": 2,
+    "prior_enriched_replacement_rows": 1,
+    "enriched_replacement_rows": 5,
+    "enriched_replacement_row_delta": 4,
+    "replacement_value_vs_cash_usd_sum": -1269.9,
+    "replacement_value_vs_spy_usd_sum": -1371.71,
+    "replacement_value_vs_qqq_usd_sum": -1171.48,
+    "open_position_count": 4,
+    "pending_entry_count": 1
+  },
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution over existing default-off paper sleeve state and forward replacement ledger. No helper, adapter, order, or daily snapshot behavior changed."
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.1,
+    "brier_score": 0.01,
+    "predicted_failure_modes": [
+      "sample_too_thin",
+      "negative_replacement_value",
+      "technology_concentration",
+      "not_activation_ready"
+    ],
+    "realized_failure_modes": [
+      "closed_rows_below_activation_min:5/30",
+      "enriched_rows_below_activation_min:5/30",
+      "single_sector_share_too_high:0.8>0.6",
+      "shared_forward_paper_gate_not_passed",
+      "replacement_value_vs_cash_usd_aggregate_not_positive",
+      "replacement_value_vs_cash_usd_win_rate_below_50pct",
+      "replacement_value_vs_spy_usd_aggregate_not_positive",
+      "replacement_value_vs_spy_usd_win_rate_below_50pct",
+      "replacement_value_vs_qqq_usd_aggregate_not_positive",
+      "replacement_value_vs_qqq_usd_win_rate_below_50pct"
+    ],
+    "predicted_failure_mode_hit": true
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The new evidence axis is real: closed/enriched rows moved from 3 closed / 1 enriched to 5 closed / 5 enriched. The alpha did not promote because the sample is still far below the 30-row activation floor, sector concentration is 80% Technology, and aggregate replacement value is negative versus cash, SPY, and QQQ.",
+    "forbidden_near_neighbor_retry": "Do not retune DPO extension, debt-ratio improvement, Companyfacts tags, hard exclusion versus tilt, notional scalar, hold days, or activation thresholds on these same five rows.",
+    "new_evidence_required": "Do not reserve another supplier-financing/debt-relief readiness ID until at least 15 fully enriched closed rows exist and the cohort is no longer Technology-dominated under the fixed 60% max-sector guard, or until a genuinely new supplier/payment-term, covenant, refinancing, borrow, or payment-network source exists. Activation promotion remains blocked until at least 30 enriched closed rows have positive cash/SPY/QQQ replacement value and pass the fixed concentration guard."
+  },
+  "rejection_reason": "closed_rows_below_activation_min:5/30;enriched_rows_below_activation_min:5/30;single_sector_share_too_high:0.8>0.6;shared_forward_paper_gate_not_passed;replacement_value_vs_cash_usd_aggregate_not_positive;replacement_value_vs_cash_usd_win_rate_below_50pct;replacement_value_vs_spy_usd_aggregate_not_positive;replacement_value_vs_spy_usd_win_rate_below_50pct;replacement_value_vs_qqq_usd_aggregate_not_positive;replacement_value_vs_qqq_usd_win_rate_below_50pct",
+  "next_retry_requires": "Do not reserve another supplier-financing/debt-relief readiness ID until at least 15 fully enriched closed rows exist and the cohort is no longer Technology-dominated under the fixed 60% max-sector guard, or until a genuinely new supplier/payment-term, covenant, refinancing, borrow, or payment-network source exists. Activation promotion remains blocked until at least 30 enriched closed rows have positive cash/SPY/QQQ replacement value and pass the fixed concentration guard.",
+  "changed_files": [
+    "quant/experiments/exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.py",
+    "data/experiments/exp-20260708-011/exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.json",
+    "experiments/logs/exp-20260708-011.json",
+    "experiments/cards/exp-20260708-011.md",
+    "experiments/manifests/exp-20260708-011.json",
+    "experiments/tickets/exp-20260708-011.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "related_files": [
+    "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+    "data/paper_sleeves/supplier_financing_debt_relief/snapshots.jsonl",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260704-019.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_011_supplier_financing_debt_relief_forward_readiness_20260707_delta.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python read-only runner only."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-08T08:15:16+00:00"
+}

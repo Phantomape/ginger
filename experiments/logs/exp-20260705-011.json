@@ -1,0 +1,109 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "daily snapshot context fails hard",
+      "context rows alter strategy behavior",
+      "tests reveal unsupported call shape"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "none",
+    "surprise_level": "low",
+    "surprise_note": "Claim initially failed because broad artifact scopes overlapped stale active tickets; narrowed exp-20260705-011 to exact artifact paths before claiming."
+  },
+  "causal_components": [
+    "run.py daily coverage wiring",
+    "fallback snapshot wiring",
+    "data-only Form4 context helper",
+    "tests",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Wired run.py daily non-OHLCV coverage and fallback snapshot path to request the accepted Form4 sale-overhang data-only context logger by default.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1",
+  "component": "quant/run.py, quant/test_run_daily_wiring.py, quant/experiments/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.py, experiments/logs/exp-20260705-011.json, experiments/cards/exp-20260705-011.md, experiments/manifests/exp-20260705-011.json, experiments/tickets/exp-20260705-011.json, data/experiments/exp-20260705-011/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.json, docs/experiment_registry.json, docs/experiment_log.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260705-011",
+  "hypothesis": "Risk allocation: accepted Form4 sale/10b5/officer overhang context may identify loss-tail risk, but the production daily pipeline currently skips the data-only context rows after repeated manual materializations; wire the accepted observer into run.py daily non-OHLCV coverage so future forward rows can settle with cash/SPY/QQQ RV evidence without changing orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_form4_selling_overhang_forward_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "Do not retune Form4 alpha responses on the current row set. A valid Form4 alpha retry requires at least 25 closed shared-helper context rows, at least 8 high-sale-overhang rows, cash/SPY/QQQ replacement values, and max single-ticker share <=40%, or a distinct new data source/gate shape."
+  ],
+  "notes": "Measurement repair only: run adapter data collection changes; no shared policy, backtester adapter, signal generation, ranking, sizing, or orders changed. 20260704 before gap had 655 Form4 transaction rows but skipped sale-overhang context with refresh_form4_context_false. Target tests and runner passed.",
+  "parameters": {
+    "locked_variables": [
+      "form4_sale_overhang_daily_pipeline_context_wiring_v1"
+    ],
+    "single_causal_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not spend another experiment ID manually materializing the same Form4 sale-overhang daily context or retuning Form4 risk responses on the current unclosed row set.",
+    "new_evidence_required": "Use the new run.py daily wiring to collect prospective context rows; reopen alpha response only after the shared helper has at least 25 closed rows, at least 8 high-sale-overhang rows, cash/SPY/QQQ replacement values, and max single-ticker share <=40%, or after a distinct new data source/gate shape.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The accepted Form4 sale-overhang helper was already data-only and fail-soft; production daily wiring simply omitted refresh_form4_context, leaving 20260704 with 655 Form4 transaction rows but no sale-overhang context rows."
+  },
+  "prediction": {
+    "confidence_reason": "Existing accepted helper is already data-only and fail-soft; production run path simply omitted the refresh flag.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily snapshot context fails hard",
+      "context rows alter strategy behavior",
+      "tests reveal unsupported call shape"
+    ],
+    "recorded_at": "2026-07-05T13:16:07+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260705-011/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-05T13:23:26+00:00",
+  "trial_family": "form4_sale_overhang_shared_daily_context_logger",
+  "trial_variant_id": "daily_pipeline_wiring_v1"
+}

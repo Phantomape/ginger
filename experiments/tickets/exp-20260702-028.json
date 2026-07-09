@@ -1,0 +1,246 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+    "experiments/cards/exp-20260702-028.md",
+    "experiments/manifests/exp-20260702-028.json",
+    "experiments/tickets/exp-20260702-028.json",
+    "experiments/logs/exp-20260702-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-028.md",
+  "causal_components": [
+    "fail_soft_daily_pipeline_helper",
+    "current_quarter_sec_corporate_event_refresh",
+    "run_py_default_off_wiring",
+    "wiring_parity_tests",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_corporate_event_stream_daily_pipeline_wiring_v1",
+  "claimed_at": "2026-07-02T23:04:54+00:00",
+  "completed_at": "2026-07-02T23:09:08+00:00",
+  "created_at": "2026-07-02T23:04:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-028",
+  "experiment_uid": "expuid-261693b9531345a7",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-028",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T23:04:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_corporate_event_stream_daily_wiring"
+  },
+  "hypothesis": "Wire the accepted SEC corporate event stream daily refresh into the production daily path so current S-1/F-1/425 event rows accumulate automatically for future issuer-overhang and event-propagation alpha tests without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_corporate_event_stream_daily_pipeline_wiring_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-011",
+    "exp-20260702-012",
+    "exp-20260702-023",
+    "exp-20260702-024",
+    "exp-20260702-027"
+  ],
+  "new_evidence_type": "daily_forward_row_accumulation_wiring",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "accepted",
+        "accumulate",
+        "alpha",
+        "automatically",
+        "behavior",
+        "changing",
+        "corporate",
+        "current",
+        "daily",
+        "event",
+        "f",
+        "future",
+        "into",
+        "issuer",
+        "overhang",
+        "path",
+        "pipeline",
+        "propagation",
+        "refresh",
+        "rows",
+        "s",
+        "so",
+        "stream",
+        "tests",
+        "trading",
+        "wire",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_daily_form_index_s1_f1_425_ingestion",
+        "reopen_condition": "An entity->listed-ticker exposure map plus next-open forward replacement-value rows for event-linked tickers, compared against explicit-ticker control rows and accepted relation comparators.",
+        "score": 0.4932,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_6k_current_operating_guidance_semantic_ledger",
+        "reopen_condition": "Populate historical 6-K/6-KA text bodies, or accumulate at least 20 current daily 6-K rows with closed forward replacement values, then build one shared default-off helper using fixed semantic fields.",
+        "score": 0.4853,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_event_entity_exposure_forward_value",
+        "reopen_condition": "If pursued, the next experiment must be a shared-paper-first helper with one fixed ex-ante selection rule, such as source/date arbitration or relation-priority ranking, then daily default-off exposure rows and comparator-aware Gate 1-4 measurement.",
+        "score": 0.4833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_event_exposure_top1_candidate_source",
+        "reopen_condition": "A valid retry needs a shared helper plus daily default-off snapshot with fresh forward rows, PIT SIC-as-of-filing repair, or a materially new entity relation/economic data source.",
+        "score": 0.4722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_fd_other_event_item8_semantics",
+        "reopen_condition": null,
+        "score": 0.4625,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_sec_corporate_event_stream_daily_wiring",
+    "artifact": "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+    "log": "experiments/logs/exp-20260702-028.json",
+    "runner": "quant/experiments/exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    "gate4": {
+      "mode": "measurement_repair_identity_plus_wiring_gate",
+      "passed": true,
+      "failed_reasons": [],
+      "strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      }
+    },
+    "summary": "The accepted exp-20260702-008 stream already exposed an idempotent ingest_range() API, so daily wiring only needed a current-quarter fail-soft helper plus focused run.py tests."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-028.json",
+  "single_causal_variable": "sec_corporate_event_stream_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-028.json",
+  "trial_family": "sec_corporate_event_stream_daily_pipeline_wiring",
+  "trial_variant_id": "exp-20260702-028",
+  "alpha_hypothesis": "Issuer-overhang and event-propagation alpha can only be retested legally after fresh current SEC corporate-event rows accumulate and close under production-visible daily semantics.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "Production daily path now refreshes the accepted current-quarter SEC S-1/F-1/425 stream; this creates future rows rather than reslicing exp-20260702 historical rows.",
+  "decision": "accepted_measurement_repair_sec_corporate_event_stream_daily_wiring",
+  "artifact": "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+  "log_file": "experiments/logs/exp-20260702-028.json",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    "data/experiments/exp-20260702-028/exp_20260702_028_sec_corporate_event_stream_daily_wiring.json",
+    "experiments/logs/exp-20260702-028.json",
+    "experiments/cards/exp-20260702-028.md",
+    "experiments/manifests/exp-20260702-028.json",
+    "experiments/tickets/exp-20260702-028.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\sec_corporate_event_stream.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_sec_corporate_event_stream.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_028_sec_corporate_event_stream_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Daily run.py now refreshes the append-only SEC corporate-event stream after news observation. The returned manifest is not fed to prompts, orders, ranking, sizing, exits, or core candidates."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted exp-20260702-008 stream already exposed an idempotent ingest_range() API, so daily wiring only needed a current-quarter fail-soft helper plus focused run.py tests.",
+    "forbidden_near_neighbor_retry": "Do not reserve experiment IDs for routine manual SEC corporate event stream refreshes or adjacent S-1/F-1/425 reslices. Let daily rows accumulate, then reopen alpha only with fresh closed rows or parsed offering/deal economics.",
+    "new_evidence_required": "Fresh closed current SEC corporate-event rows, parsed registered-amount/resale/selling-holder/effectiveness fields, or a distinct PIT event relation source. Not another historical theme/form/horizon cut."
+  },
+  "updated_at": "2026-07-02T23:09:08+00:00"
+}

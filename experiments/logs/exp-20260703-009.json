@@ -1,0 +1,223 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+    "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+    "experiments/cards/exp-20260703-009.md",
+    "experiments/manifests/exp-20260703-009.json",
+    "experiments/tickets/exp-20260703-009.json",
+    "experiments/logs/exp-20260703-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "If the peer-substitution sign is stable, a later shared-paper-first experiment can test resolved S-1/F-1 overhang as a default-off peer candidate source or allocator context.",
+  "anti_js": {
+    "evidence": "Python runner, py_compile, and experiment audit only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+  "audit_summary": {
+    "observed_only_lead": false,
+    "peer_edges": 85998,
+    "per_window": {
+      "late_strong": {
+        "median_delta_10d_bp": -28.7,
+        "positive_share": 0.478,
+        "rows": 14642
+      },
+      "mid_weak": {
+        "median_delta_10d_bp": 2.0,
+        "positive_share": 0.501,
+        "rows": 18933
+      },
+      "old_thin": {
+        "median_delta_10d_bp": -6.3,
+        "positive_share": 0.495,
+        "rows": 17442
+      }
+    },
+    "pooled_median_delta_10d_bp": -3.6,
+    "settled_rows": 51115,
+    "source_rows": 5065
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0529,
+    "predicted_failure_modes": [
+      "peer relation too noisy",
+      "sign flips across windows",
+      "issuer overhang already priced",
+      "top ticker concentration",
+      "near-neighbor SEC propagation saturation"
+    ],
+    "predicted_failure_modes_hit": [
+      "peer relation too noisy",
+      "sign flips across windows",
+      "issuer overhang already priced",
+      "near-neighbor SEC propagation saturation"
+    ],
+    "predicted_success_probability": 0.23,
+    "realized_failure_modes": [
+      "not_positive_all_windows",
+      "pooled_positive_delta_below_threshold"
+    ],
+    "surprise_note": "Resolved S-1/F-1 peer substitution did not meet the observed-only lead rule."
+  },
+  "causal_components": [
+    "resolved issuer S-1/F-1 event rows",
+    "entity exposure map peer join",
+    "next-open 10d SPY-excess",
+    "same-peer unconditional baseline",
+    "read-only no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+    "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+    "experiments/cards/exp-20260703-009.md",
+    "experiments/manifests/exp-20260703-009.json",
+    "experiments/tickets/exp-20260703-009.json",
+    "experiments/logs/exp-20260703-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "none_read_only",
+  "decision": "rejected_no_resolved_s1_peer_substitution_edge",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-009",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "event_class",
+      "ticker_status",
+      "form_type",
+      "filed_date",
+      "ticker",
+      "relation_type",
+      "entry_date",
+      "Open/Close warehouse bars"
+    ],
+    "passed": true,
+    "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter or rank rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [
+      "not_positive_all_windows",
+      "pooled_positive_delta_below_threshold"
+    ],
+    "mode": "observed_only_attribution",
+    "observed_only_lead": false,
+    "passed": false
+  },
+  "hypothesis": "Resolved listed-issuer S-1/F-1 overhang may redirect capital into listed SIC/theme peers, so peers should show positive next-open 10d SPY-excess versus same-peer unconditional baselines across canonical windows.",
+  "implementation_mode": "read_only_diagnostic",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260703-009.json",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260702-023",
+    "exp-20260702-024",
+    "exp-20260702-018",
+    "exp-20260702-017"
+  ],
+  "new_evidence_axis": "new target-side relation: resolved listed-issuer S-1/F-1 overhang to listed SIC/theme peers. Prior exp-20260702-023 tested issuer-self overhang; prior peer reads tested private IPO and 425 event classes.",
+  "new_evidence_type": "new_target_side_relation_join",
+  "next_retry_requires": [
+    "registered amount or resale-vs-primary offering fields",
+    "selling-holder or effectiveness-date provenance",
+    "fresh forward rows under a shared helper"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-slice the same resolved S-1/F-1 peer rows by relation type, theme subset, amendment flag, form subtype, horizon, entry lag, ticker-status, density, top-N, hold, cooldown, notional, or response shape.",
+    "new_evidence_required": "A valid retry needs richer offering economics such as registered amount, resale versus primary issuance, selling-holder identity, effectiveness date, prospectus-supplement terms, or fresh forward rows under a shared helper.",
+    "why_result_happened": "Resolved listed-issuer S-1/F-1 overhang did not produce a stable positive peer delta versus same-peer baselines across canonical windows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Resolved listed-issuer S-1/F-1 overhang may redirect capital into listed SIC/theme peers, so peers should show positive next-open 10d SPY-excess versus same-peer unconditional baselines across canonical windows.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260702-023",
+        "exp-20260702-024",
+        "exp-20260702-018",
+        "exp-20260702-017"
+      ],
+      "new_evidence_axis": "target-side peer substitution after resolved listed-issuer S-1/F-1 overhang, not issuer-self overhang or a private-IPO/425 theme-peer rerun",
+      "novelty_gate": "experiment.py new accepted without override."
+    },
+    "3_single_policy_bundle": "Read-only attribution: resolved listed-issuer S-1/F-1 rows, SIC/theme peer targets, next-open 10d SPY-excess versus same-peer unconditional baselines.",
+    "4_success_failure_standard": "lead iff every canonical window median 10d delta is positive, pooled median delta >= 25.0bp, >= 100 settled rows per window, and top ticker share <= 5% in each window",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_009_resolved_s1_peer_substitution.py"
+  },
+  "prediction": {
+    "confidence_reason": "The issuer-self S-1/F-1 overhang read was stable negative and this tests a distinct substitution target-side relation; prior SEC peer propagation was noisy and the same SEC corporate-event surface is heavily explored, so success odds are low.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "peer relation too noisy",
+      "sign flips across windows",
+      "issuer overhang already priced",
+      "top ticker concentration",
+      "near-neighbor SEC propagation saturation"
+    ],
+    "recorded_at": "2026-07-03T09:05:18+00:00",
+    "success_probability": 0.23
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution; no production or backtest behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "not_positive_all_windows;pooled_positive_delta_below_threshold",
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_009_resolved_s1_peer_substitution.py"
+  ],
+  "single_causal_variable": "resolved_s1_f1_issuer_overhang_peer_substitution_10d_spy_excess_v1",
+  "status": "rejected",
+  "timestamp": "2026-07-03T09:13:12Z",
+  "trial_family": "resolved_s1_f1_peer_substitution_attribution",
+  "trial_variant_id": "resolved_s1_f1_peer_substitution_10d_spy_excess_v1"
+}

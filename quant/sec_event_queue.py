@@ -24,6 +24,23 @@ LEADERSHIP_MAX_EXCESS_REACTION = -0.02
 FINANCIAL_REPORT_EVENT_FAMILIES = ("earnings_8k", "periodic_report")
 FINANCIAL_REPORT_T1_EXCLUDED_COHORTS = ("platform_pool",)
 FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY = 0.01
+# Replay-parity cohort derivation (exp-20260704-016). The daily SEC filing
+# events collector never writes a cohort field; the accepted surface
+# (exp-20260510-023/024/027) derived it at analysis time from this static
+# platform pool. Must stay equal to platform_rs20_watch.PLATFORM_POOL
+# (pinned by test_sec_event_queue).
+FINANCIAL_REPORT_PLATFORM_POOL_COHORT_TICKERS = (
+    "META",
+    "NFLX",
+    "GOOG",
+    "AMZN",
+    "SPOT",
+    "DIS",
+    "APP",
+)
+FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION = (
+    "sec_financial_report_platform_pool_cohort_derivation_v1"
+)
 FINANCIAL_REPORT_RS20_RULE_VERSION = "sec_financial_report_pre_entry_rs20_v1"
 FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN = 0.05
 GOVERNANCE_TARGET_CELLS = {
@@ -650,6 +667,15 @@ def qualifies_sec_leadership_change_event(event: dict[str, Any]) -> bool:
     )
 
 
+def derive_financial_report_cohort(ticker: str) -> str:
+    """Replay-parity cohort for rows the daily collector left cohort-less."""
+    return (
+        "platform_pool"
+        if str(ticker or "").upper() in FINANCIAL_REPORT_PLATFORM_POOL_COHORT_TICKERS
+        else "other_equity"
+    )
+
+
 def qualifies_sec_financial_report_t1_event(event: dict[str, Any]) -> bool:
     cohort = str(event.get("cohort") or "")
     t1_excess = event.get("t1_excess_return_vs_spy")
@@ -889,11 +915,16 @@ def build_sec_financial_report_t1_queue(
         if not ticker:
             continue
         family = sec_event_family(row)
+        raw_cohort = str(row.get("cohort") or "").strip()
         event = {
             **row,
             "status": row.get("status") or "ok",
             "ticker": ticker,
             "event_family": family,
+            "cohort": raw_cohort or derive_financial_report_cohort(ticker),
+            "cohort_source": (
+                "row" if raw_cohort else FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION
+            ),
             "item_codes": list(sec_event_item_codes(row)),
             **_financial_report_language_features(
                 row,
@@ -967,6 +998,10 @@ def build_sec_financial_report_t1_queue(
             ),
             "included_event_families": list(FINANCIAL_REPORT_EVENT_FAMILIES),
             "excluded_cohorts": list(FINANCIAL_REPORT_T1_EXCLUDED_COHORTS),
+            "cohort_derivation_rule_version": FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION,
+            "cohort_derivation_platform_pool": list(
+                FINANCIAL_REPORT_PLATFORM_POOL_COHORT_TICKERS
+            ),
             "min_t1_excess_return_vs_spy": FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
             "rs20_rule_version": FINANCIAL_REPORT_RS20_RULE_VERSION,
             "rs20_anchor": "ticker T+1 close before next-session paper entry open",
@@ -1235,6 +1270,7 @@ def _financial_report_t1_candidate_payload(
         "form_base": event.get("form_base"),
         "event_family": event.get("event_family"),
         "cohort": event.get("cohort"),
+        "cohort_source": event.get("cohort_source"),
         "item_codes": event.get("item_codes"),
         "primary_document": event.get("primary_document"),
         "index_url": event.get("index_url"),

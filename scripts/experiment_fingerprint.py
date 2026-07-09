@@ -15,10 +15,140 @@ from typing import Any
 
 # Ordered: first matching source wins. Keep specific before generic.
 _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    # Kova snapshot rows are their own population: probes on the same Kova
+    # current-row batch must share one machine key (the observed-only streak
+    # gate counts per data_source), and they are not the canonical SEC13F/
+    # rs-proxy surfaces even when the joined field comes from those.
+    ("kova_snapshot", ("kova",)),
+    # Keep newer source-specific surfaces above their generic parents so the
+    # saturation guards count the actual population under test.
+    ("finra_otc_internalization", (
+        "finra_otc", "finra otc", "otc_internalization", "non_ats", "non-ats", "internalization",
+    )),
+    ("finra_ats_share", (
+        "finra_ats", "finra ats", "ats_share", "weekly_dark_share", "dark_share", "dark share",
+        "dark_pool", "dark pool",
+    )),
+    ("moomoo_short_volume", (
+        "moomoo_short_volume", "moomoo_daily_short_volume", "moomoo daily short volume",
+        "daily_short_volume", "daily short volume", "short_volume_activity", "short volume activity",
+    )),
+    ("moomoo_capital_flow", (
+        "moomoo_capital_flow", "moomoo capital flow", "capital_flow", "capital-flow", "fund_flow",
+        "large_order_flow",
+    )),
+    ("crypto_sleeve", (
+        "crypto_sleeve", "crypto sleeve", "btc_spot", "btc spot", "btc/usd", "btc-usd", "btc usd",
+        "bitcoin spot", "crypto_positions", "daily_ema20_ema100_spot_trend",
+    )),
+    ("ortex_borrow", (
+        "ortex", "borrow_fee", "borrow fee", "loan_fee", "loan fee", "utilization",
+    )),
+    ("borrow_availability", (
+        "moomoo_borrow", "moomoo borrow", "borrow_availability", "borrow availability",
+        "loan_availability", "loan availability", "short_sell_rate", "short sell rate",
+        "short_available_volume", "short available volume",
+    )),
+    ("space_catalyst", (
+        "space_catalyst", "space catalyst", "space_catalyst_event_state",
+        "space catalyst event state", "space_catalyst_shadow", "space catalyst shadow",
+        "space_catalyst_event_ledger", "space catalyst event ledger",
+        "space_catalyst_observation_slot", "space catalyst observation slot",
+    )),
+    ("chop_forward_observer", (
+        "chop_forward_observer", "chop forward observer",
+        "chop_forward", "chop forward",
+        "forward_chop", "forward chop",
+        "chop-labeled forward", "chop labeled forward",
+        "chop-day forward", "chop day forward",
+        "chop_row", "chop row", "chop rows",
+    )),
+    ("forward_replacement_value", (
+        "forward_replacement", "forward replacement", "forward_replacement_value",
+        "replacement_value", "replacement value", "settled forward", "closed forward",
+        "entry_exhaustion", "entry exhaustion", "entry_regime", "entry regime",
+    )),
+    ("cisa_kev", ("cisa_kev", "cisa", "kev", "known_exploited_vulnerabilities")),
+    ("intraday_structured_news", (
+        "intraday_structured_news", "intraday structured news",
+        "intraday_news_structured", "intraday news structured",
+        "intraday_structured_event", "intraday structured event",
+        "intraday_structured_relation", "intraday structured relation",
+        "intraday_trade_news", "intraday trade news",
+    )),
+    ("intraday_advisory", (
+        "intraday_advisory", "intraday advisory", "intraday_review", "intraday review",
+        "intraday risk review", "risk-review", "shadow_action", "shadow action",
+        "advisory_shadow_action", "advisory shadow action",
+        "primary_advisory_shadow_action", "primary advisory shadow action",
+        "exit advisory", "breached", "approaching",
+    )),
+    ("news_event_exposure", (
+        "news_event_exposure", "news event exposure",
+        "news_event_second_order", "news event second order",
+        "news_second_order", "news second order",
+        "second_order_exposure", "second-order exposure", "second order exposure",
+        "structured-news exposure", "structured news exposure",
+    )),
+    ("prediction_market_event", (
+        "prediction_market", "prediction-market", "prediction market", "kalshi", "polymarket",
+        "event_odds", "event odds",
+    )),
+    ("entity_theme_news", ("entity_theme", "entity-theme", "entity theme", "theme_news", "news_theme", "event_theme")),
+    ("live_drift_reconciliation", ("live_drift", "live drift", "fill_drift", "trajectory_drift", "live_reconciliation")),
+    ("pilot_scorecard", (
+        "pilot_scorecard", "pilot scorecard", "pilot_recommendations", "pilot recommendations",
+        "scorecard_kill", "scorecard kill", "kill_rule_readiness", "kill rule readiness",
+        "graduation_readiness", "graduation readiness", "graduate_rule", "graduate rule",
+    )),
+    ("portfolio_covariance_lane", (
+        "portfolio_covariance", "portfolio covariance", "portfolio-lane", "portfolio lane",
+        "daily_equity_overlay", "daily equity overlay", "mark_to_market", "mark-to-market",
+        "daily mark to market", "mtm_overlay", "mtm overlay",
+    )),
+    ("microstructure_viability", (
+        "microstructure_viability", "microstructure viability", "vol_normalized_tick",
+        "vol-normalized tick", "tick_to_atr", "tick-to-atr", "tick_size_atr",
+        "tick size atr", "small_tick", "small tick", "spread_to_atr", "spread-to-atr",
+        "impact_reinforcement", "impact reinforcement",
+    )),
+    ("core_entry_admission", (
+        "core_entry_admission", "core entry admission", "entry_admission",
+        "entry admission", "admission_gate", "admission gate", "no_entry",
+        "admission_overlay", "admission overlay", "core_admission", "core admission",
+        "no-entry", "no entry", "pre_entry_no_entry", "pre-entry no-entry",
+        "saved_trade_counterfactual", "saved trade counterfactual",
+        "saved-trade counterfactual", "saved_trade_diagnostic",
+        "saved trade diagnostic", "saved-trade diagnostic",
+        "severe_haircut_no_entry", "severe haircut no-entry",
+        "low_vol_quality_core_admission", "low-vol quality core admission",
+        "high_vol_high_beta_admission", "high-vol high-beta admission",
+    )),
+    ("relative_value_spread", (
+        "relative_value_spread", "relative value spread",
+        "chop_pairs_spread", "chop pairs spread",
+        "pair_spread", "pair-spread", "pair spread",
+        "pairs_spread", "pairs-spread", "pairs spread",
+        "pair_zscore", "pair zscore", "pair z-score",
+        "spread_zscore", "spread zscore", "spread z-score",
+        "long_short_spread", "long-short spread", "long short spread",
+        "market_neutral_pair", "market-neutral pair", "market neutral pair",
+        "cointegrated_pair", "cointegrated pair", "cointegration pair",
+    )),
+    ("deep_drawdown", ("deep_drawdown", "deep-drawdown", "deep drawdown", "drawdown_capitulation", "drawdown_breadth", "capitulation_breadth")),
     ("finra_short_interest", ("finra", "short_interest", "shortinterest", "borrow", "days_to_cover", "dtc")),
     ("form4_insider", ("form4", "form_4", "insider")),
     ("sec13f_ownership", ("13f", "sec13f", "sponsorship", "holder")),
     ("filing_timeliness", ("timeliness", "filing_lag", "early_disclosure", "filing_recency", "recency", "disclosure_timing")),
+    ("sec_filer_status", (
+        "filer_status", "filer status", "filer-status", "accelerated_filer", "accelerated filer",
+        "large_accelerated", "large accelerated", "non_accelerated", "non-accelerated",
+        "smaller_reporting", "smaller reporting", "emerging_growth_company",
+        "emerging growth company", "dei_status", "dei status", "dei_cover", "dei cover", "dei_cover_status",
+        "cover_page_filer", "cover page filer", "cover_page_status", "cover page status",
+        "cover_page_materialization", "cover page materialization", "cover_xbrl", "cover xbrl",
+        "periodic_cover", "periodic cover", "entityfilercategory",
+    )),
     ("sec_text_event", ("sec_text", "8k", "item", "filing_text", "contract_economics", "backlog", "rpo", "guidance", "narrative", "complexity", "submissions")),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",
@@ -40,6 +170,54 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 ]
 
 _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("forward_observer", (
+        "chop_forward_observer", "chop forward observer",
+        "forward_observer", "forward observer",
+        "forward-row reopen", "forward row reopen",
+        "forward rows accrue", "forward-row materialization",
+        "forward row materialization",
+    )),
+    ("microstructure_attribution", (
+        "microstructure_viability", "microstructure viability", "vol_normalized_tick",
+        "vol-normalized tick", "tick_to_atr", "tick-to-atr", "tick_size_atr",
+        "tick size atr", "spread_to_atr", "spread-to-atr",
+    )),
+    ("portfolio_daily_equity_overlay", (
+        "portfolio_covariance", "portfolio covariance", "daily_equity_overlay",
+        "daily equity overlay", "mark_to_market", "mark-to-market",
+        "daily mark to market", "mtm_overlay", "mtm overlay",
+    )),
+    ("forward_attribution", (
+        "forward_attribution", "forward attribution", "forward_replacement",
+        "forward replacement", "replacement_value", "replacement value",
+        "settled forward", "closed forward", "entry_exhaustion", "entry exhaustion",
+    )),
+    ("pilot_scorecard_readiness", (
+        "pilot_scorecard", "pilot scorecard", "pilot_recommendations", "pilot recommendations",
+        "graduation_readiness", "graduation readiness", "kill_rule_readiness",
+        "kill rule readiness", "scorecard_kill", "scorecard kill", "graduate_rule",
+        "graduate rule",
+    )),
+    ("entry_admission", (
+        "core_entry_admission", "core entry admission", "entry_admission",
+        "entry admission", "admission_gate", "admission gate", "no_entry",
+        "admission_overlay", "admission overlay", "core_admission", "core admission",
+        "no-entry", "no entry", "pre_entry_no_entry", "pre-entry no-entry",
+        "saved_trade_counterfactual", "saved trade counterfactual",
+        "saved-trade counterfactual", "saved_trade_diagnostic",
+        "saved trade diagnostic", "saved-trade diagnostic",
+    )),
+    ("pair_spread", (
+        "relative_value_spread", "relative value spread",
+        "chop_pairs_spread", "chop pairs spread",
+        "pair_spread", "pair-spread", "pair spread",
+        "pairs_spread", "pairs-spread", "pairs spread",
+        "pair_zscore", "pair zscore", "pair z-score",
+        "spread_zscore", "spread zscore", "spread z-score",
+        "long_short_spread", "long-short spread", "long short spread",
+        "market_neutral_pair", "market-neutral pair", "market neutral pair",
+        "cointegrated_pair", "cointegrated pair", "cointegration pair",
+    )),
     ("allocator_source", ("allocator", "source_priority", "source_extension", "rank")),
     ("notional_scalar", ("notional", "scalar", "support", "top_up", "topup", "cap_release", "position_cap")),
     ("candidate_pool_top1_10d", ("candidate_pool", "candidate", "top1", "candidate_selection")),

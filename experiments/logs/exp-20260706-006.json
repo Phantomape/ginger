@@ -1,0 +1,121 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "thin_sample_t_stat_below_1",
+      "single_trade_tail_dominates",
+      "spy_replacement_not_beaten"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "thin_sample_t_stat_below_1",
+    "surprise_level": "not_scored",
+    "surprise_note": "Predicted 0.25 acceptance and the thin-sample failure mode hit as expected; the informative part is the clean sign flip from removing episode-length exposure while entry quality stayed identical, plus SPY capturing most of the same rebound - the residual QQQ-specific edge is small or zero."
+  },
+  "causal_components": [
+    "max_entries_per_episode config in shared helper",
+    "budget-aware replay",
+    "daily snapshot episode-budget parity",
+    "run.py default-off wiring",
+    "episode artifact"
+  ],
+  "change_summary": "Added max_entries_per_episode to the shared deep-drawdown rebound helper (replay + daily snapshot parity, 9 tests) and replayed the budget=1 bundle over the merged 2000-2026 QQQ series: 17 closed trades / 17 episodes, +$1222 total, 71% win rate, mean +0.72% per 5d trade, t=0.575; mean excess vs SPY same-window -0.44% (SPY rebounds too). Removing the secular-bear re-entry bleed flips the sign vs exp-20260706-003 (-$20657 -> +$1222) but the episode-level sample cannot reach significance by construction. Shipped run.py default-off wiring (trade_enabled=False, BUDGET_CONFIG) so live episodes accumulate settled forward rows; sleeve verified quiet on current tape (QQQ -3.3% from high, no episode).",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation",
+  "component": "quant/experiments/exp_20260706_006_deep_drawdown_rebound_budget.py, data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json, experiments/cards/exp-20260706-006.md, experiments/manifests/exp-20260706-006.json, experiments/tickets/exp-20260706-006.json, experiments/logs/exp-20260706-006.json, docs/experiment_log.jsonl, docs/experiment_registry.json, quant/deep_drawdown_rebound_paper_sleeve.py, quant/test_deep_drawdown_rebound_paper_sleeve.py, quant/run.py, data/paper_sleeves/deep_drawdown_rebound/",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260706-006",
+  "hypothesis": "Per-episode entry budget of one converts the rejected deep-drawdown rebound bundle into a viable forward observer: taking only the FIRST stabilization day per drawdown episode removes the secular-bear re-entry bleed (124 re-entries in 2000-02) that killed exp-20260706-003, leaving a thin-but-positive episode-level rebound subset that only live forward rows can confirm.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260706-003"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Alpha verdict is observed-only: direction positive and mechanism-consistent (budget=1 removes exactly the failure mode that rejected exp-20260706-003), but t=0.575 across 17 episodes and negative SPY-relative excess mean the replay cannot settle deployability. The decisive evidence is prospective: settled forward rows from the next live deep-drawdown episode, which the default-off wiring now collects automatically. Episodic sleeve: expected to fire roughly once every 1-2 years; the sleeve_health fire-rate watch treats quiet stretches as by-design.",
+  "parameters": {
+    "locked_variables": [
+      "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation"
+    ],
+    "single_causal_variable": "deep_drawdown_rebound_first_stabilization_budget_bundle: identical to exp-20260706-003 bundle plus max_entries_per_episode=1; QQQ, -12%/-5% hysteresis, first stabilization day only, next-open entry, 5d hold, $10k paper, trade_enabled=False, default-off run.py wiring for forward accumulation"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the episode budget count (2, 3, ...), trigger/reset thresholds, hold days, close-location cutoff, or notional on the same 2000-2026 QQQ series; do not swap QQQ for SPY/IWM/sector ETFs on the same budget shape; do not re-slice the same 17 first-entry trades by depth/regime/decade and promote a surviving subset.",
+    "new_evidence_required": "Settled forward rows from live deep-drawdown episodes recorded by the new run.py default-off wiring (reopen when >=3 new episodes have settled, i.e. likely years out), or an ex-ante bear-vs-correction conditioning state fixed before replay (different gate shape), or a genuinely new data source for capitulation quality (e.g. PIT breadth/volume climax from the index archive plus warehouse cross-section).",
+    "realized_failure_mode": "thin_sample_t_stat_below_1",
+    "why_result_happened": "Predicted 0.25 acceptance and the thin-sample failure mode hit as expected; the informative part is the clean sign flip from removing episode-length exposure while entry quality stayed identical, plus SPY capturing most of the same rebound - the residual QQQ-specific edge is small or zero."
+  },
+  "prediction": {
+    "confidence_reason": "Recorded exp-20260706-003 artifact already shows the first-trade-per-episode subset: n=17, +$1222 total, 71% win rate, mean +0.72% per 5d trade, but t roughly 0.6 with one -15.9% knife and mean excess vs SPY around -0.4%; this reservation formalizes the budget shape and ships default-off forward wiring because only live episodes can settle the verdict.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample_t_stat_below_1",
+      "single_trade_tail_dominates",
+      "spy_replacement_not_beaten"
+    ],
+    "recorded_at": "2026-07-06T03:33:50+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-07-06T03:38:39+00:00",
+  "trial_family": "deep_drawdown_rebound_first_stabilization_budget",
+  "trial_variant_id": "exp-20260706-006"
+}

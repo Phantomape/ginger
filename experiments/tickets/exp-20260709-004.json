@@ -1,0 +1,518 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/broad_dispersion_features.py",
+    "quant/test_broad_dispersion_features.py",
+    "quant/experiments/exp_20260709_004_broad_dispersion_correlation_regime.py",
+    "data/experiments/exp-20260709-004/exp_20260709_004_broad_dispersion_correlation_regime.json",
+    "experiments/logs/exp-20260709-004.json",
+    "experiments/cards/exp-20260709-004.md",
+    "experiments/manifests/exp-20260709-004.json",
+    "experiments/tickets/exp-20260709-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-004.md",
+  "causal_components": [
+    "liquid_broad_universe_daily_panel",
+    "cross_sectional_dispersion_feature",
+    "avg_pairwise_correlation_identity_feature",
+    "momentum_and_reversal_daily_proxy_spreads",
+    "p_choppy_interaction_attribution"
+  ],
+  "change_type": "strategy_logic",
+  "changed_variable": "broad_dispersion_correlation_regime_axis_v1",
+  "claimed_at": "2026-07-09T03:06:00+00:00",
+  "completed_at": "2026-07-09T03:15:11+00:00",
+  "created_at": "2026-07-09T03:05:49+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-004",
+  "experiment_uid": "expuid-052057cda8ba4290",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T03:05:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_dispersion_correlation_regime"
+  },
+  "hypothesis": "One chop label mixes two structurally different states - dead chop (high average pairwise correlation, low dispersion) and stock-picker chop (stocks trending apart under a flat index). Broad-universe cross-sectional dispersion and average pairwise correlation should separate the daily payoff of momentum vs reversal long-short proxies.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_dispersion_correlation_regime_axis_v1"
+  ],
+  "mechanism_family": "dispersion_correlation_regime_structure",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-023",
+    "exp-20260708-025",
+    "exp-20260615-019",
+    "exp-20260615-023",
+    "exp-20260627-016"
+  ],
+  "new_evidence_type": "new_data_axis_broad_universe_cross_sectional_structure",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "regime_state",
+      "field_tags": [
+        "1d",
+        "20d",
+        "a",
+        "apart",
+        "average",
+        "axis",
+        "by",
+        "chop",
+        "choppy",
+        "claims",
+        "compute",
+        "continuous",
+        "correlation",
+        "cross",
+        "daily",
+        "dead",
+        "decile",
+        "diagnostic",
+        "different",
+        "directional",
+        "dispersion",
+        "dollar",
+        "exp",
+        "feature",
+        "flat",
+        "from",
+        "frozen",
+        "generic",
+        "high",
+        "higher",
+        "index",
+        "interaction",
+        "label",
+        "lead",
+        "liquid",
+        "long",
+        "low",
+        "measurement",
+        "mixes",
+        "momentum",
+        "names",
+        "no",
+        "of",
+        "one",
+        "only",
+        "orders",
+        "over",
+        "owner",
+        "p",
+        "pairwise",
+        "payoff",
+        "per",
+        "picker",
+        "plentiful",
+        "predeclared",
+        "predicts",
+        "priority",
+        "produce",
+        "proxies",
+        "read",
+        "regime",
+        "reported",
+        "reversal",
+        "round",
+        "rule",
+        "sample",
+        "samples",
+        "sectional",
+        "separate",
+        "set",
+        "short",
+        "sizing",
+        "spread",
+        "states",
+        "stays",
+        "stock",
+        "stocks",
+        "stronger",
+        "structurally",
+        "structure",
+        "test",
+        "they",
+        "this",
+        "ticker",
+        "to",
+        "together",
+        "trading",
+        "trend",
+        "two",
+        "verdict",
+        "volume",
+        "warehouse",
+        "weaker",
+        "whether",
+        "while",
+        "widens"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+        "reopen_condition": "If Spearman(ER, PnL) is clearly positive and low-ER mean PnL is negative in the windows with chop samples, promote ER to a shared daily regime artifact and apply the continuous exposure scalar as a portfolio-level soft tilt, validated on forward rows / live-pilot scorecard. Do not tune ER window or exposure floor on frozen windows.",
+        "score": 0.4658,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_fidelity_daily_regime_chop_context",
+        "reopen_condition": "Once exp-20260607-003 releases run.py, pass universe_ohlcv_by_ticker to build_readonly_market_state_context for full-fidelity breadth. Then validate the exposure_scalar soft tilt on forward / live-pilot rows tagged with entry-time regime_chop. Do not tune constants on frozen windows.",
+        "score": 0.462,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "regime_chop_daily_breadth_wiring",
+        "reopen_condition": "Closed forward replacement-value rows carrying entry-time full-fidelity regime_chop tags for a specific default-off sleeve, followed by one fixed regime-conditioned policy test.",
+        "score": 0.462,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "broad_momentum_tail_state_attribution",
+        "reopen_condition": "A retry needs a materially different PIT tail-risk field, forward closed replacement-value rows, or a shared helper that tests the bucket against accepted compression, distribution, and allocator comparators.",
+        "score": 0.4618,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "free_ohlcv_intraindustry_liquidity_leader_lead_lag_candidate_pool",
+        "reopen_condition": "Do not retry this same frozen-window regime re-slice by changing risk_off/chop/on labels or probability thresholds. A valid next step needs closed forward replacement-value rows tagged with entry-time regime, a shared default-off daily/backtest adapter for the source, or a materially different relation provenance such as customer/supplier links or a non-OHLCV relation graph.",
+        "score": 0.4614,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "New evidence axis on two §2.4 grounds: (1) broad-universe cross-sectional structure (dispersion / average pairwise correlation over ~800 liquid names) has never been computed or tested anywhere in the repo - all prior regime features are index-level (SPY trend/vol/drawdown) plus 46-name breadth; (2) new gate shape - daily long-short decile proxy spreads as the outcome variable, giving ~440 daily observations instead of 33 chop days, which no prior experiment used. Measurement-only broadening, trading universe unchanged.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "regime_state",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New evidence axis on two §2.4 grounds: (1) broad-universe cross-sectional structure (dispersion / average pairwise correlation over ~800 liquid names) has never been computed or tested anywhere in the repo - all prior regime features are index-level (SPY trend/vol/drawdown) plus 46-name breadth; (2) new gate shape - daily long-short decile proxy spreads as the outcome variable, giving ~440 daily observations instead of 33 chop days, which no prior experiment used. Measurement-only broadening, trading universe unchanged.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New evidence axis on two §2.4 grounds: (1) broad-universe cross-sectional structure (dispersion / average pairwise correlation over ~800 liquid names) has never been computed or tested anywhere in the repo - all prior regime features are index-level (SPY trend/vol/drawdown) plus 46-name breadth; (2) new gate shape - daily long-short decile proxy spreads as the outcome variable, giving ~440 daily observations instead of 33 chop days, which no prior experiment used. Measurement-only broadening, trading universe unchanged.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "regime_state",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "interactive",
+  "prediction": {
+    "success_probability": 0.4,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "dispersion_and_corr_collinear_with_existing_vol_features",
+      "proxy_spreads_dominated_by_microcap_noise",
+      "signs_not_stable_across_windows",
+      "pchop_interaction_too_weak_to_matter"
+    ],
+    "confidence_reason": "Correlation hurting momentum and dispersion feeding reversal are established results in the dispersion-trading and cross-sectional literature, and the daily-proxy design fixes the sample-size failure of the two prior chop experiments; but liquid-universe filtering and window stability are genuine risks.",
+    "recorded_at": "2026-07-09T03:06:00+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_broad_dispersion_correlation_regime",
+    "artifact": "data/experiments/exp-20260709-004/exp_20260709_004_broad_dispersion_correlation_regime.json",
+    "log": "experiments/logs/exp-20260709-004.json",
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "observed_only_rejected_broad_dispersion_correlation_regime",
+      "measurement_blockers": [],
+      "alpha_blockers": [
+        "no_claim_cleared_predeclared_bar"
+      ],
+      "measurement_repair_only": false,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "panel_shape": [
+        472,
+        8506
+      ],
+      "max_eligible_names_per_day": 800,
+      "daily_observations": 387,
+      "claim_a_pooled_spearman": -0.0365,
+      "claim_a_pooled_t": -0.72,
+      "claim_a_passed": false,
+      "claim_b_pooled_spearman": 0.0479,
+      "claim_b_pooled_t": 0.94,
+      "claim_b_passed": false,
+      "claims_passed": []
+    },
+    "calibration": {
+      "predicted_success_probability": 0.4,
+      "actual_success": 0,
+      "brier_score": 0.16,
+      "predicted_failure_modes": [
+        "dispersion_and_corr_collinear_with_existing_vol_features",
+        "proxy_spreads_dominated_by_microcap_noise",
+        "signs_not_stable_across_windows",
+        "pchop_interaction_too_weak_to_matter"
+      ],
+      "realized_failure_modes": [
+        "signs_not_stable_across_windows"
+      ],
+      "predicted_failure_mode_hit": true
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-004.json",
+  "single_causal_variable": "broad_dispersion_correlation_regime_axis_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260709-004.json",
+  "trial_family": "broad_dispersion_regime_diagnostic",
+  "trial_variant_id": "broad_dispersion_corr_v1",
+  "alpha_hypothesis": "One chop label mixes two structurally different states - dead chop (high average pairwise correlation, low dispersion) and stock-picker chop (stocks trending apart under a flat index). Broad-universe cross-sectional dispersion and average pairwise correlation should separate the daily payoff of momentum vs reversal long-short proxies.",
+  "implementation_mode": "read_only_diagnostic_lead_generation",
+  "decision": "observed_only_rejected_broad_dispersion_correlation_regime",
+  "artifact": "data/experiments/exp-20260709-004/exp_20260709_004_broad_dispersion_correlation_regime.json",
+  "log": "experiments/logs/exp-20260709-004.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "close",
+      "volume",
+      "date",
+      "ticker",
+      "p_choppy_range"
+    ],
+    "entry_date_scope": "No trades and no signal objects; daily proxy spreads only.",
+    "target_price_scope": "Not applicable; read-only diagnostic."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 387,
+    "signals_survived": 387,
+    "survival_rate": 1.0,
+    "note": "Daily observations, not signals; no production filter touched."
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_broad_dispersion_correlation_regime",
+    "measurement_blockers": [],
+    "alpha_blockers": [
+      "no_claim_cleared_predeclared_bar"
+    ],
+    "measurement_repair_only": false,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "panel_shape": [
+      472,
+      8506
+    ],
+    "max_eligible_names_per_day": 800,
+    "daily_observations": 387,
+    "claim_a_pooled_spearman": -0.0365,
+    "claim_a_pooled_t": -0.72,
+    "claim_a_passed": false,
+    "claim_b_pooled_spearman": 0.0479,
+    "claim_b_pooled_t": 0.94,
+    "claim_b_passed": false,
+    "claims_passed": []
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "read_only_broad_universe_regime_diagnostic"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Neither predeclared claim cleared the bar (corr->mom -0.0365 t=-0.72; disp->rev 0.0479 t=0.94); on this liquid panel the cross-sectional axis does not separate daily momentum/reversal payoffs strongly enough to justify a regime-v2 feature.",
+    "forbidden_near_neighbor_retry": "Do not re-run with tweaked liquidity cuts, decile counts, lookbacks, or alternative dispersion definitions on the same frozen windows. If lead: next step is a regime-v2 feature experiment adding dispersion and average-correlation inputs to regime_chop_state, then sleeve-scoped validation on forward rows. If rejected: the cross-sectional axis needs a different outcome variable (for example sleeve forward rows), not a re-slice.",
+    "new_evidence_required": "Forward rows tagged with dispersion/corr state, or a structurally different cross-sectional construct (e.g. sector-level dispersion)."
+  },
+  "next_retry_requires": [
+    "no same-window re-slices of dispersion/corr definitions",
+    "lead -> regime-v2 feature experiment; rejected -> new outcome variable"
+  ],
+  "changed_files": [
+    "quant/broad_dispersion_features.py",
+    "quant/test_broad_dispersion_features.py",
+    "quant/experiments/exp_20260709_004_broad_dispersion_correlation_regime.py",
+    "data/experiments/exp-20260709-004/exp_20260709_004_broad_dispersion_correlation_regime.json",
+    "experiments/logs/exp-20260709-004.json",
+    "experiments/cards/exp-20260709-004.md",
+    "experiments/manifests/exp-20260709-004.json",
+    "experiments/tickets/exp-20260709-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/regime_chop_state.py",
+    "quant/chop_mean_reversion_sleeve.py",
+    "experiments/cards/exp-20260708-025.md"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.4,
+    "actual_success": 0,
+    "brier_score": 0.16,
+    "predicted_failure_modes": [
+      "dispersion_and_corr_collinear_with_existing_vol_features",
+      "proxy_spreads_dominated_by_microcap_noise",
+      "signs_not_stable_across_windows",
+      "pchop_interaction_too_weak_to_matter"
+    ],
+    "realized_failure_modes": [
+      "signs_not_stable_across_windows"
+    ],
+    "predicted_failure_mode_hit": true
+  },
+  "updated_at": "2026-07-09T03:15:11+00:00"
+}

@@ -2,6 +2,8 @@
 
 > 代理进入仓库后的执行入口。这里仅保留长期有效的硬规则和单一真相源索引。具体命令、窗口、历史状态、parity 细节和实验记录放在对应文档中，不在本文件重复维护。
 
+术语约定：**面（surface）** = 一组可归因的候选行 / forward 行及其生成器（一个数据源、观察者或 ledger）；**已结算行** = 结果窗口已走完、可计算 replacement value 的 forward 行（settled / closed 同义）；**证据轴** = novelty gate 能机器核对的"什么是真新的"声明。
+
 ---
 
 ## 1. 身份与目标
@@ -18,7 +20,7 @@ expected_value_score = strategy_total_return_pct * sharpe_daily
 
 - max drawdown 和尾部风险不得显著恶化；
 - trade count 不能低到失去统计意义；
-- survival rate 不得跌破警戒线；
+- survival rate 不得跌破警戒线（Gate 3 口径：< 5% 时禁止继续加过滤器，见 §5）；
 - 策略应跑赢 SPY / QQQ 同窗口 buy-and-hold；
 - 不得引入幽灵规则、过拟合规则或生产 / 回测不一致。
 
@@ -37,60 +39,45 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
 
 1. 默认优先 `alpha_search`。只有直接阻断 alpha 评估或生产一致性的测量问题可以插队。
 2. 每轮至少提出 1 个 `alpha_hypothesis`；若不做 alpha，必须说明哪个阻断项让实验不可信。
-   当 novelty / source-saturation 闸门在某个 scan 源上触发时，**不要反射式 `--novelty-override`
-   重跑一个单字段 full-stack 实验**：这些源的历史命中率已证明是低概率彩票（例如
-   `companyfacts_ratio` 3/84、`sec_text_event` 0/38），换个相邻字段不改变基准率。此时
-   合规的 alpha 假设应转向 forward 行成熟、缺失数据/字段构建，或一个尚未饱和的新源；
-   override 仅在你能命名一条机器可查的全新证据轴（新数据源 / 无前例字段 / 新 gate shape /
-   forward 替换行）时才用，不能用自由文本绕过。
-   **饱和源例外（硬规则）**：当 novelty 闸门对某个 `(gate_shape, data_source)` 单元报告
-   `saturated=True`（默认 ≥12 trials 且 accept_rate ≤5%，如 `companyfacts_ratio` 3/87、
-   `sec_text_event` 0/43）时，同一单元内的"无前例字段"**不再**构成合法证据轴——XBRL/标签
-   枚举可被无限满足，基准率不随之改变。此时 `saturated_source_override` 只在以下三者之一
-   成立时才允许：(a) 真正的新数据源，(b) 新 gate shape，(c) 实质增加的已结算 forward 行；
-   仅在同源同 gate_shape 下换一个新 tag/字段不算，也不得用自由文本 `--new-evidence-axis` 绕过。
-   **响应曲线 retune（硬规则）**：对一个已被拒绝的信号，仅改变响应函数
-   （hard exclusion → 降权 → tilt / notional 缩放）**不构成**"新 gate shape"，与阈值扫描同等
-   冻结；合规重试需换新信号、新源或新的已结算 forward 行。
 3. 禁止连续多轮只做日志、replay、parity、目录整理或文档，而不提出新的 alpha 假设。
-   但 **forward 行埋点（入场期 regime / 替换价值标签）、缺失候选匹配面构建、饱和源以外的
-   新数据源接入，都算 alpha-enabling 工作，不受本条限制**——尤其当 frozen-window 面已饱和、
-   新增证据只能来自 forward 行或新数据时。
-   注意：本豁免只覆盖 forward 行的**埋点 / 构建 / 新数据接入**，不覆盖对**同一批 forward 行
-   反复换条件做 observed-only 归因探测**。后者与 scan 源同样受 source-saturation 闸门约束：
-   当同一 forward / non-OHLCV 面已连续 N 次（默认 N=3）以 "no edge / not allocation_ready"
-   收尾，再换一个相邻条件字段（regime / sleeve health / ticker memory / entry-date breadth …）
-   不算新证据，必须命名一条机器可查的全新证据轴或换面，否则视为饱和重复。
-   特别地：在**同一批 forward 行样本**上，仅仅新接一个 join / 条件字段（即使该字段本身在本面
-   无前例）**不构成** §2 第 2 条意义上的"无前例字段"override 轴——这类 observed-only attribution
-   反复以 "no edge / need materially more closed forward rows" 收尾，共同的绑定约束是 closed
-   forward 行**数量**不足，而非字段维度。此处合规的 override 必须 (a) 实质增加 closed forward 行
-   样本（新成熟行 / 换面），或 (b) 换到一个会产生新行的数据源 / 新 gate shape，不能只在同一批
-   partial 行上换条件再切片。
-   **测量修复治程（硬规则）**：§2 第 3 条对"缺失面构建 / 新数据源接入"的豁免**不是无上限**的。
-   当同一 `(alpha 假设, 数据面)` 已连续 K 次（默认 K=3）以 `accepted_measurement_repair` 或
-   `blocked` 收尾，且**没有产出任何 gate-ready 候选行 / 已结算 forward 行**（即底层历史数据本身
-   无法物化，如 `sec_periodic_historical_dei_status_not_materialized`、`sec_*_text_cache_missing`），
-   必须把该面 **park**：记 `blocked` + 明确 `reopen_condition`（缺哪一份数据、何时/如何回来），
-   不得再开新一轮做增量解析 / 物化 plumbing。豁免覆盖的是**会真正产出新行**的构建，不是反复
-   plumbing 一个永不成熟的面——后者与 scan 源、forward 归因同属饱和重复，只是落在 measurement
-   -repair 通道上，novelty / source-saturation 闸门看不到它。
-   **reopen 条件推进闸门（硬规则）**：当一个面已按上述规则 park 并记下定量 `reopen_condition`
-   （已结算 forward 行数 / ticker 覆盖 / session 数等可计数阈值），在该计数相对 park 时**实际推进**
-   之前，**不得再 reserve 新实验去"审计 / 确认该面是否成熟"**。"仍未达阈值"是日历或覆盖绑定、
-   机械可知的结论，应在启动前历史读取里一行核对（对比当前计数与 park 时计数），不占实验 ID，
-   也不记新的 `blocked` / `observed_only`。只有当计数已朝阈值推进（新成熟行 / 新覆盖到位），或
-   出现 §2.3 意义上会真正产出新行的新源 / 新 gate shape 时，才允许重开。反复每日重开同一 park
-   面复述 "wait for more closed rows / not mature yet" 与 scan 源、forward 归因、measurement
-   plumbing 同属饱和重复，只是换了一身"readiness audit"的外衣。
-   **观察者例行物化治程（硬规则）**：一个已被接受的 default-off observer / forward ledger，其
-   "新一天行的例行 delta 物化"（当日行 append、context materialization、outcome refresh 等，
-   不检验任何新假设）在累计消耗 ≥3 个实验 ID 后，**不得再为同一 observer 的例行日更 reserve
-   新实验 ID**。下一个合法动作是一次性的 measurement repair：把该 append 接入 run.py 日常管道
-   / 调度任务，让例行行自动落盘；此后日更在管道内完成，不占实验 ID、不记 log。§2.3 的豁免
-   覆盖的是**首次构建**会产出新行的面，不是每天手工重跑同一物化脚本——后者是穿着实验外衣的
-   cron 工作，行虽然真实新增，但没有可归因假设。真正的故障恢复（orphan temp、上游格式变更、
-   发布异常）仍按 measurement repair 占 ID，不受本条限制。
+   forward 行埋点、缺失候选匹配面构建、未饱和新数据源接入算 **alpha-enabling 工作**，不受本条
+   限制——尤其当 frozen-window 面已饱和、新增证据只能来自 forward 行或新数据时。但这类工作
+   同样受 §2.4 饱和治理约束：豁免覆盖"会真正产出新行"的构建，不覆盖对同一面的反复摆弄。
+4. **饱和治理（硬规则）**。统一原理：**在同一证据面上重复动作不产生新证据。** 任何新实验 ID
+   必须指向至少一条机器可查的新证据轴：**(a) 新数据源，(b) 新 gate shape，(c) 实质新增的已结
+   算 forward 行**（相对同面上次探针，已结算行数须明显增长——默认 ≥+50% **且绝对新增 ≥10 条**，
+   或达到 park 时声明的 reopen 计数；同一天的刷新不算新增。小样本翻倍不满足本轴：3→6 行满足
+   +50% 但无判力，2026-07-08 同日 3 个 readiness 重审全部 rejected 即此；行数不够时正确动作是
+   一行核对计数、不占 ID）；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
+   标签枚举可被无限满足，基准率不随之改变。**gate shape 指响应/评估结构**（entry 排除 gate、
+   降权 overlay、candidate pool、notional scalar、kill switch 等）；同一源同一配方下换事件子类
+   型 / item code / form type 只是换输入行，**不构成 (b)**。换阈值、换响应函数（hard exclusion →
+   降权 → tilt / notional 缩放）、换切片条件、复述"还没成熟"，都**不算**。各通道的触发阈值与合法出路：
+
+   | 通道 | 触发条件（默认阈值） | 禁止 | 合法下一步 | 强制 |
+   |---|---|---|---|---|
+   | 扫描源饱和 | 同 `(gate_shape, data_source)` ≥12 trials 且 accept ≤5% | 同源换字段/tag 后 override | (a)/(b)/(c) 之一 | ✅ |
+   | 被拒信号 retune | 信号已被 Gate 4 拒绝 | 仅改响应函数或阈值再试 | 换信号 / (a)/(c) | ⚠️* |
+   | forward 行归因 | 同一 data_source 种群连续 3 次 observed-only 收尾 | 再接一个 join / 条件字段再切片（字段"无前例"也不算轴：绑定约束是行数不是维度） | (c) 或换面 / (a)/(b)；override 用 `--observed-only-override` + 合法证据轴 | ✅ |
+   | 测量修复 plumbing | 同一 `(假设, 数据面)` 连续 3 次 `accepted_measurement_repair` / `blocked` 且 0 条 gate-ready 行 | 再开一轮增量解析 / 物化 | park：记 `blocked` + 定量 `reopen_condition` | ⚠️ |
+   | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
+   | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
+   | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
+   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型等），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
+
+   强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
+   observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；
+   \* parked 面上的 retune 措辞会被 reopen guard 拦截。阈值可用
+   `GINGER_OBSERVED_ONLY_MAX_PROBES`、`GINGER_ROUTINE_MATERIALIZATION_MAX_IDS`、
+   `GINGER_ROUTINE_MATERIALIZATION_WINDOW_DAYS` 调整。
+   **分类器覆盖警告**：✅ guard 以 `scripts/experiment_fingerprint.py` 的 data_source 关键词
+   分类为键；未收录的新种群会落到 `other` 并被 guard 直接放行——新建数据面 / observer /
+   种群时必须在同一实验里给 `_DATA_SOURCE_KEYWORDS` 补关键词，否则该面的 ✅ 实际是 ⚠️
+   （案例：2026-07-05/06 deep-drawdown 5 连发与 entity-theme 11 小时 3 连发均因 `other` 逃逸）。
+   **共同例外**：真正的故障恢复（orphan temp、上游格式变更、污染快照、语义相关性缺陷、发布
+   异常）按 measurement repair 占 ID，不计入以上任何阈值。
+   各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查
+   `docs/frozen_families.jsonl`，不在本文件内联维护快照数字。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
 
 ---
@@ -146,7 +133,11 @@ data/backtests/backtest_results_*.json
 策略逻辑改动前必须能回答：
 
 1. 本轮赚钱假设是什么？属于 entry、exit、ranking、capital allocation、risk allocation、LLM event scoring 还是 candidate pool？是否符合 playbook 当前高价值方向？
-2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？用 `experiment.py new` 自带的 novelty gate 回答（近邻检查 `docs/frozen_families.jsonl`，详见 `docs/agent_experiment_protocol.md` §Novelty Check）；被拦截说明撞了 frozen / 已探索 family，必须用 `--novelty-override --new-evidence-axis "<到底什么是真新的>"` 声明全新证据轴（新数据源 / 无前例字段 / 新 gate shape / forward 替换行），否则换假设。禁止用 `--no-enforce-novelty` 或 `GINGER_NOVELTY_GATE=off` 绕过来回避这个问题。
+2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？
+   - 用 `experiment.py new` 自带的 novelty gate 回答（近邻数据 `docs/frozen_families.jsonl`，详见 `docs/agent_experiment_protocol.md` §Novelty Check）。
+   - 被拦截说明撞了 frozen / 已探索 family，默认动作是**换假设**。
+   - 坚持重试必须 `--novelty-override --new-evidence-axis "<到底什么是真新的>"`，且证据轴须满足 §2.4 白名单（新数据源 / 新 gate shape / 实质新增已结算行；未饱和源上还可用无前例字段）。
+   - 禁止用 `--no-enforce-novelty` 或 `GINGER_NOVELTY_GATE=off` 绕过来回避这个问题。
 3. 本次只检验哪一个可归因决策假设 / policy bundle？哪些只是为评估它所需的实现、parity、daily snapshot、ledger、live-realistic execution envelope 或测试？
 4. 成功 / 失败验收标准是什么？是否符合 `docs/backtesting.md`？
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
@@ -162,7 +153,7 @@ data/backtests/backtest_results_*.json
 任何影响买入、卖出、过滤、排序、仓位、风险预算、LLM 决策边界或回测口径的改动，都必须通过 Gate 1-4。具体命令、窗口和指标只看 `docs/backtesting.md`。
 
 - Gate 1：读取或创建同一标准协议下的基线。
-- Gate 2：列出依赖字段并验证运行时真实存在；最低检查 `entry_date` 和 `target_price`。
+- Gate 2：列出依赖字段并验证运行时真实存在；最低检查 `entry_date` 和 `target_price`——这两个是信号合同的哨兵字段：`target_price` 在信号生成时按入场价 + 3.5×ATR 自动计算并驱动 backtester 出场，`entry_date` 是 backtester `Position` 的必需字段（实盘持仓的 entry 信息已由 moomoo 提供，但回测路径仍依赖它）。任一缺失说明信号生成或字段管道已断，不是"可选字段没填"。
 - Gate 3：检查 `signals_generated` / `signals_survived` / `survival_rate`；若 survival rate < 5%，禁止继续加过滤器。
 - Gate 4：同一协议重跑 before/after；默认按 `expected_value_score`、PnL、drawdown、trade count、survival、窗口稳定性和 concentration 判断。
 
@@ -172,6 +163,11 @@ data/backtests/backtest_results_*.json
 - 可保留：主目标小幅提升或近似持平，同时降低复杂度、风险、生产不一致或归因缺陷。
 - 条件保留：明确修复测量偏差、数据缺口或生产执行问题，并标记为 `measurement_repair`。
 - 默认拒绝：主目标下降、风险恶化、只赢单一窗口、多数窗口退化、复杂度上升但证据不足，或无法归因到单一假设。
+
+**棘轮警告**：Gate 4 是冠军挑战赛，每次接受都抬高下次门槛，系统会渐近收敛到
+0-accept——这与市场是否还有残余 edge 无关。仅因 `*_not_beaten` 比较器或单窗口
+噪声被拒、聚合非负的信号，"打不过冠军"不等于"组合无价值"；此类信号的组合级
+评估口径见 `docs/portfolio_covariance_lane.md`（勿在单实验里自创组合验收标准）。
 
 `state_surface_sleeve` 同类阈值、profile、notional scalar 或 capital allocation 调参必须满足 `docs/backtesting.md` 标准多窗口 aggregate EV 提升 > 10%，除非是明确的 measurement repair。
 
@@ -190,6 +186,11 @@ Default-off paper alpha：
 - positive private replay 只是 lead，必须说明为什么没有 shared-paper-first，以及需要哪个 shared helper / daily parity 工作。
 
 真钱可执行性不是事后补丁。任何声称可能进入 live 的 alpha，必须记录 live-realistic execution envelope：notional / capital cap、流动性和滑点、组合挤出、最大持仓和行业/主题暴露、kill switch、订单语义、失败处理，以及这些约束是否进入 after-measurement。未评估真钱包络的结果只能算 accepted default-off，不算 live-ready。
+
+实盘对账是常驻测量合同，不是一次性实验：`data/live_pilot/live_drift/` 每日对账
+moomoo 实盘持仓与回测模型期望（fill drift / trajectory drift，口径与警戒线见
+`docs/live_drift_reconciliation.md`）。core bucket 触发警戒线时按 measurement_repair
+插队。回测 parity 只证明"回放一致"，本合同回答"实盘是否复现模型"——两者缺一不可。
 
 ---
 

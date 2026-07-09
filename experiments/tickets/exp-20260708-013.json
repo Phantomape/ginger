@@ -1,0 +1,368 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/pilot_tracker.py;quant/test_pilot_tracker.py;quant/experiments/exp_20260708_013_pilot_stop_hit_recommendation_status.py;data/experiments/exp-20260708-013/;experiments/logs/exp-20260708-013.json;docs/experiment_registry.json;docs/frozen_families.jsonl;docs/alpha_context_pack.md;docs/current_state_snapshot.md;docs/lessons/"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-013.md",
+  "causal_components": [
+    "pilot_recommendations actionable status only",
+    "manual stop overlay reporting",
+    "no sleeve state mutation",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "pilot_recommendations_stop_hit_action_status_v1",
+  "claimed_at": "2026-07-08T10:06:27+00:00",
+  "completed_at": "2026-07-08T10:10:40+00:00",
+  "created_at": "2026-07-08T10:06:18+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-013",
+  "experiment_uid": "expuid-af570862c8a54923",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T10:06:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pilot_stop_hit_recommendation_status"
+  },
+  "hypothesis": "Repair pilot recommendation stop-hit rows so machine-readable actionable status matches the stop-loss alert and does not masquerade as HOLD.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "pilot_recommendations stop-hit action semantics"
+  ],
+  "mechanism_family": "pilot_scorecard_governance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260707-014",
+    "exp-20260707-012",
+    "exp-20260628-010",
+    "exp-20260702-002"
+  ],
+  "new_evidence_type": "measurement_defect_in_current_pilot_recommendations",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "score": 0.6286,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "score": 0.6148,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "novelty_classifier_data_source_coverage",
+        "score": 0.6138,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "pilot_scorecard",
+      "field_tags": [
+        "action",
+        "actionable",
+        "alert",
+        "as",
+        "does",
+        "hit",
+        "hold",
+        "loss",
+        "machine",
+        "masquerade",
+        "matches",
+        "not",
+        "pilot",
+        "readable",
+        "recommendation",
+        "recommendations",
+        "repair",
+        "rows",
+        "semantics",
+        "so",
+        "status",
+        "stop"
+      ],
+      "gate_shape": "pilot_scorecard_readiness"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "reopen_condition": "Reopen only after one active pilot has at least 20 closed rows with positive replacement value versus SPY and QQQ under the unchanged scorecard rule, or after a materially new production-visible pilot data surface creates new rows.",
+        "score": 0.6286,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "reopen_condition": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+        "score": 0.6148,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "novelty_classifier_data_source_coverage",
+        "reopen_condition": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+        "score": 0.6138,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.0465,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "kova_snapshot",
+        "family_key": "kova_fixed_max_loss_stop_shadow_replay",
+        "reopen_condition": null,
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New 2026-07-08 pilot recommendation row exposes a stop-hit status/action mismatch, distinct from prior concentration metadata and fingerprint repairs.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "pilot_scorecard",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New 2026-07-08 pilot recommendation row exposes a stop-hit status/action mismatch, distinct from prior concentration metadata and fingerprint repairs.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "pilot_scorecard_readiness",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "pilot_scorecard",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.86,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "status_migration_breaks_time_exit_ordering",
+      "stop_alerts_disappear",
+      "existing_hold_rows_relabeled_incorrectly"
+    ],
+    "confidence_reason": "Current payload has WDC stop_status STOP_HIT under status HOLD while Markdown separately says sell; repair is JSON semantics only.",
+    "recorded_at": "2026-07-08T10:05:39+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_pilot_stop_hit_exit_now_status",
+    "artifact": "data/experiments/exp-20260708-013/exp_20260708_013_pilot_stop_hit_recommendation_status.json",
+    "log": "experiments/logs/exp-20260708-013.json",
+    "summary": {
+      "before_actionable_stop_hit_hold_count": 1,
+      "after_actionable_stop_hit_hold_count": 0,
+      "after_actionable_stop_hit_exit_now_count": 1,
+      "stop_alert_count": 1,
+      "production_files_regenerated": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-013.json",
+  "single_causal_variable": "pilot_recommendations_stop_hit_action_status_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260708-013.json",
+  "trial_family": "pilot_recommendations_stop_hit_action_status",
+  "trial_variant_id": "stop_hit_exit_now_v1",
+  "alpha_hypothesis": "Alpha blocker: accepted default-off pilot sleeves are only useful as activation evidence if the manual stop overlay is machine-auditable; a STOP_HIT row labelled HOLD can make live pilot risk review ambiguous.",
+  "implementation_mode": "pilot_reporting_status_semantics_only",
+  "new_evidence_axis": "Current 2026-07-08 pilot_recommendations has WDC in actionable rows with stop_status=STOP_HIT but status=HOLD, while the Markdown separately says STOP_HIT -> SELL. This is a concrete schema/action mismatch, not another pilot graduation or kill-readiness rerun.",
+  "calibration": {
+    "actual_success": 1,
+    "predicted_success_probability": 0.86,
+    "brier_score": 0.0196,
+    "predicted_failure_modes": [
+      "status_migration_breaks_time_exit_ordering",
+      "stop_alerts_disappear",
+      "existing_hold_rows_relabeled_incorrectly"
+    ],
+    "realized_failure_modes": [],
+    "predicted_failure_mode_hit": false
+  },
+  "measurement_checks": {
+    "before_mismatch_detected": true,
+    "stop_hit_hold_rows_removed": true,
+    "stop_hit_rows_are_exit_now": true,
+    "stop_alerts_unchanged": true,
+    "actionable_position_set_unchanged": true,
+    "skipped_rows_unchanged": true,
+    "scorecards_unchanged": true,
+    "concentration_unchanged": true
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/pilots/pilot_recommendations_2026-07-08.json",
+    "note": "Measurement repair only; canonical strategy backtest unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "recommendations.actionable.status",
+      "recommendations.actionable.stop_status",
+      "recommendations.actionable.entry_date",
+      "recommendations.actionable.ticker",
+      "stop_alerts.ticker"
+    ],
+    "entry_date_target_price_relevance": "entry_date remains present on open pilot rows; target_price is not consumed because this is pilot reporting, not signal generation or executable target exits."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No buy filter, sell rule, ranking, sizing, or risk budget changed."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_pilot_stop_hit_exit_now_status",
+    "strategy_behavior_changed": false,
+    "measurement_checks": {
+      "before_mismatch_detected": true,
+      "stop_hit_hold_rows_removed": true,
+      "stop_hit_rows_are_exit_now": true,
+      "stop_alerts_unchanged": true,
+      "actionable_position_set_unchanged": true,
+      "skipped_rows_unchanged": true,
+      "scorecards_unchanged": true,
+      "concentration_unchanged": true
+    },
+    "failed_checks": [],
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "signals_generated": 0,
+      "signals_survived": 0
+    }
+  },
+  "summary": {
+    "before_actionable_stop_hit_hold_count": 1,
+    "after_actionable_stop_hit_hold_count": 0,
+    "after_actionable_stop_hit_exit_now_count": 1,
+    "stop_alert_count": 1,
+    "production_files_regenerated": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "exit_rules_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "watchlist_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "pilot_recommendation_status_changed": true,
+    "pilot_artifacts_regenerated": false,
+    "parity_note": "The repair changes generated pilot recommendation JSON/Markdown status semantics only. It does not mutate sleeve state or change orders, entries, exits, ranking, sizing, verdicts, concentration alerts, or stop-alert detection."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The tracker computed stop_status and emitted a top-level stop_alert, but left the actionable row status at HOLD. Downstream JSON consumers therefore had to join two surfaces to infer the operator action. Mapping STOP_HIT held rows to the existing EXIT_NOW action enum removes that ambiguity.",
+    "forbidden_near_neighbor_retry": "Do not reserve another pilot_scorecard readiness, kill-rule, or stop-status semantics audit on these same 2026-07-08 rows unless a new production-visible governance mismatch appears.",
+    "new_evidence_required": "A valid retry needs a new pilot governance artifact whose machine-readable action contradicts the manual operator instruction, or a genuinely new pilot data surface."
+  },
+  "next_retry_requires": [
+    "new pilot governance schema/action mismatch",
+    "or a production-visible pilot metadata/code contradiction",
+    "or a genuinely new pilot data surface"
+  ],
+  "changed_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "quant/experiments/exp_20260708_013_pilot_stop_hit_recommendation_status.py",
+    "data/experiments/exp-20260708-013/exp_20260708_013_pilot_stop_hit_recommendation_status.json",
+    "experiments/cards/exp-20260708-013.md",
+    "experiments/manifests/exp-20260708-013.json",
+    "experiments/tickets/exp-20260708-013.json",
+    "experiments/logs/exp-20260708-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_recommendations_2026-07-08.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant/experiments/exp_20260708_013_pilot_stop_hit_recommendation_status.py quant\\pilot_tracker.py quant\\test_pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_013_pilot_stop_hit_recommendation_status.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-08T10:10:40+00:00"
+}

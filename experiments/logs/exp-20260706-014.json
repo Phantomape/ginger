@@ -1,0 +1,214 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Observer, prediction-market, and SEC contract-relation alpha reads need freshness and coverage audits over unambiguous final artifacts; stale atomic temps are a measurement blocker, not a trading signal.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_failure_mode_hit": "stale_tmp_remaining_after_recovery",
+    "predicted_success_probability": 0.85,
+    "surprise_note": "New stale temps were present, but every cleanup unlink still failed with WinError 5 access denied."
+  },
+  "causal_components": [
+    "new post-materialization stale-temp inventory",
+    "targeted recover_orphan_atomic_writes cleanup",
+    "permission retry probe",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260706_014_observer_provenance_tmp_recovery_after_materialization.py",
+    "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260705.json",
+    "data/experiments/exp-20260706-014/exp_20260706_014_observer_provenance_tmp_recovery_after_materialization.json",
+    "experiments/logs/exp-20260706-014.json",
+    "experiments/cards/exp-20260706-014.md",
+    "experiments/manifests/exp-20260706-014.json",
+    "experiments/tickets/exp-20260706-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "observer_provenance_new_stale_tmp_cleanup_after_20260705_materialization_v1",
+  "decision": "blocked_new_observer_provenance_tmp_cleanup_incomplete",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260706-014",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Measurement repair only; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "field_reality": {
+      "after_tmp_count": 13,
+      "before_tmp_count": 13,
+      "entry_date_relevance": "not changed; future alpha reads must verify entry_date on their own settled outcome rows",
+      "target_directories": [
+        "data/non_ohlcv/entity_theme_news_observer",
+        "data/non_ohlcv/entity_theme_news_observer/daily",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers",
+        "data/non_ohlcv/entity_theme_news_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer",
+        "data/non_ohlcv/prediction_market_event_observer/daily",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers",
+        "data/non_ohlcv/prediction_market_event_observer/outcome_summaries",
+        "data/non_ohlcv/prediction_market_event_observer/source_stats",
+        "data/non_ohlcv/sec_contract_relation_provenance",
+        "data/non_ohlcv/sec_contract_relation_provenance/daily"
+      ],
+      "target_price_relevance": "not_applicable; cleanup touches observer/provenance artifact hygiene only and schedules no exits or orders"
+    },
+    "fields": [
+      "latest_summary.json",
+      "latest_outcome_summary.json",
+      "outcome_summaries/*.json",
+      "daily observer/provenance json/jsonl",
+      "source_stats/source_manifest json"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, rank, size, exit, or order policy changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "no_stale_tmp_remaining": false,
+      "permission_retry_probe_passed": true,
+      "preflight_found_new_tmp": true,
+      "strategy_behavior_unchanged": true
+    },
+    "failed_checks": [
+      "stale_tmp_remaining_after_recovery"
+    ],
+    "mode": "measurement_repair_new_orphan_atomic_temp_cleanup",
+    "passed": false
+  },
+  "hypothesis": "Alpha-enabling measurement repair: observer/provenance alpha reads require unambiguous final daily and latest-summary artifacts; after the 20260705 materialization, new stale atomic .tmp files reappeared in prediction-market, entity-theme, and SEC contract provenance directories, so recover or clean only those orphan temps without changing any trading policy.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": null,
+  "mechanism_family": "observer_forward_outcome_maturity",
+  "nearby_prior_experiments": [
+    "exp-20260705-010",
+    "exp-20260705-013"
+  ],
+  "new_evidence_axis": "True fault recovery: new stale orphan atomic .tmp files appeared after the later 20260705 observer/provenance materialization run, satisfying exp-20260705-013's reopen condition; this is not a threshold, regex, horizon, notional, rank, or response retune.",
+  "new_evidence_type": "orphan_temp_fault_recovery_after_later_materialization",
+  "next_retry_requires": [
+    "new stale orphan temps after a later materialization run",
+    "or materially more settled observer/provenance replacement-value rows for alpha",
+    "or regression evidence that unlink PermissionError is again silent"
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open another observer/provenance orphan-temp cleanup experiment unless new stale temps appear after a later materialization run or this exact permission branch regresses. Do not use this repair to retune horizons, regexes, thresholds, notional, ranks, or response functions.",
+    "new_evidence_required": "Next alpha work still needs materially more settled observer/provenance replacement-value rows or a genuinely new PIT data source; this repair only restores artifact-hygiene semantics.",
+    "why_result_happened": "Later observer/provenance materialization left dot-prefixed atomic temp residue even though final artifacts existed. The current process can read/write the files but cannot delete the stale temps; cleanup still fails with WinError 5, so the repair is blocked until the temp-file ACL/owner state changes or an external cleanup with delete rights is available."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260705-013 explicitly allows reopening on new stale temps after later materialization; preflight found fresh orphan .tmp residue dated after 20260705 observer/provenance writes, and existing helper already supports safe stale cleanup.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "tmp_files_are_live_recent_writes",
+      "cleanup_helper_scope_mismatch",
+      "permission_locked_tmp_remaining"
+    ],
+    "recorded_at": "2026-07-06T12:10:41+00:00",
+    "success_probability": 0.85
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_ready": false,
+    "parity_note": "Only observer/provenance artifact-hygiene recovery was attempted. No strategy path changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "stale_tmp_remaining_after_recovery",
+  "related_files": [
+    "data/experiments/exp-20260706-014/exp_20260706_014_observer_provenance_tmp_recovery_after_materialization.json",
+    "data/non_ohlcv/entity_theme_news_observer",
+    "data/non_ohlcv/entity_theme_news_observer/daily",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries",
+    "data/non_ohlcv/prediction_market_event_observer",
+    "data/non_ohlcv/prediction_market_event_observer/daily",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers",
+    "data/non_ohlcv/prediction_market_event_observer/outcome_summaries",
+    "data/non_ohlcv/prediction_market_event_observer/source_stats",
+    "data/non_ohlcv/sec_contract_relation_provenance",
+    "data/non_ohlcv/sec_contract_relation_provenance/daily"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\stale_artifact_sweep.py quant\\experiments\\exp_20260706_014_observer_provenance_tmp_recovery_after_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_014_observer_provenance_tmp_recovery_after_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "observer_provenance_new_stale_tmp_cleanup_after_20260705_materialization_v1",
+  "status": "blocked",
+  "summary": {
+    "after_stale_tmp_count": 13,
+    "after_tmp_count": 13,
+    "before_stale_tmp_count": 13,
+    "before_tmp_count": 13,
+    "blocker_note": "All remaining stale temps point at present final artifacts; the blocker is delete permission on the residue, not missing final data.",
+    "failed_checks": [
+      "stale_tmp_remaining_after_recovery"
+    ],
+    "final_artifacts_present_with_residue_count": 13,
+    "permission_retry_probe_passed": true,
+    "target_cleaned_count": 0,
+    "target_recovered_count": 0,
+    "target_skipped_count": 13
+  },
+  "timestamp": "2026-07-06T13:06:23Z",
+  "trial_family": "orphan_atomic_write_temp_recovery",
+  "trial_variant_id": "observer_provenance_tmp_recovery_after_20260705_materialization"
+}

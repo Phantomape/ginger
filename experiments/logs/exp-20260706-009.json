@@ -1,0 +1,352 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_experiment_id": "exp-20260706-006",
+    "baseline_result_file": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "mean_excess_vs_spy_pct": -0.00383,
+    "mean_return_pct": 0.007188,
+    "strategy_behavior_changed": false,
+    "total_pnl": 1222.02,
+    "trade_count": 17,
+    "win_rate": 0.7059
+  },
+  "alpha_hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows should perform better when the signal-day Treasury duration proxy TLT has a positive 20-session return, indicating rate-relief support rather than equity-only falling-knife stress.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260706-009/exp_20260706_009_deep_drawdown_tlt_rate_relief.json",
+  "before_metrics": {
+    "baseline_experiment_id": "exp-20260706-006",
+    "baseline_result_file": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "mean_excess_vs_spy_pct": -0.00383,
+    "mean_return_pct": 0.007188,
+    "strategy_behavior_changed": false,
+    "total_pnl": 1222.02,
+    "trade_count": 17,
+    "win_rate": 0.7059
+  },
+  "calibration": {
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "tlt_context_missing_early_episodes",
+      "no_cash_or_spy_lift",
+      "too_few_rate_relief_rows",
+      "macro_proxy_not_discriminative"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_modes": [
+      "too_few_non_rate_relief_rows",
+      "no_cash_or_spy_lift"
+    ],
+    "surprise_note": "Low surprise if rejected: the ticket predicted weak power from a 17-row sample and missing early TLT history."
+  },
+  "causal_components": [
+    "fixed exp-20260706-006 first-entry rows",
+    "PIT TLT 20-session return sign label",
+    "rate-relief vs no-rate-relief cash/SPY attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_009_deep_drawdown_tlt_rate_relief.py",
+    "data/experiments/exp-20260706-009/exp_20260706_009_deep_drawdown_tlt_rate_relief.json",
+    "experiments/cards/exp-20260706-009.md",
+    "experiments/manifests/exp-20260706-009.json",
+    "experiments/tickets/exp-20260706-009.json",
+    "experiments/logs/exp-20260706-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "tlt_20d_rate_relief_gate_for_deep_drawdown_first_entries",
+  "decision": "observed_only_rejected_tlt_rate_relief_no_stable_edge",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "mean_cash_return_pct_rate_relief_minus_no_relief": -0.00759,
+    "mean_spy_excess_pct_rate_relief_minus_no_relief": 0.004803,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260706-009",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_experiment_id": "exp-20260706-006",
+      "baseline_result_file": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+      "mean_excess_vs_spy_pct": -0.00383,
+      "mean_return_pct": 0.007188,
+      "strategy_behavior_changed": false,
+      "total_pnl": 1222.02,
+      "trade_count": 17,
+      "win_rate": 0.7059
+    },
+    "note": "Observed-only attribution on exp-20260706-006 artifact; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "Read from exp-20260706-006 trade rows.",
+    "fields_checked": [
+      "signal_date",
+      "entry_date",
+      "exit_date",
+      "pnl_pct_net",
+      "excess_vs_spy_pct",
+      "TLT signal-day close",
+      "TLT 20-session prior close"
+    ],
+    "missing_tlt_context_rows": 2,
+    "passed": true,
+    "target_price_relevance": "Not consumed; this run does not generate backtest signals or exits."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Read-only cohort label; no executable filter, ranking, sizing, prompt, exit, or order rule was added.",
+    "passed": true,
+    "signals_generated": 17,
+    "signals_survived": 17,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_rule": {
+      "max_single_positive_rate_relief_cash_pnl_share": 0.5,
+      "min_evaluable_rows": 12,
+      "min_mean_cash_return_lift": 0.02,
+      "min_mean_spy_excess_lift": 0.02,
+      "min_non_rate_relief_rows": 5,
+      "min_rate_relief_rows": 5,
+      "min_rate_relief_win_rate": 0.65
+    },
+    "accepted_alpha": false,
+    "checks": {
+      "mean_cash_return_lift": false,
+      "mean_spy_excess_lift": false,
+      "min_evaluable_rows": true,
+      "min_non_rate_relief_rows": false,
+      "min_rate_relief_rows": true,
+      "positive_pnl_concentration": true,
+      "rate_relief_win_rate": true
+    },
+    "decision": "observed_only_rejected_tlt_rate_relief_no_stable_edge",
+    "failed_reasons": [
+      "too_few_non_rate_relief_rows",
+      "no_cash_or_spy_lift"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "rate_relief_rule": {
+      "pass_rule": "signal-day TLT 20-session total return > 0",
+      "return_lookback_sessions": 20,
+      "same_day_available": "Signal is generated after the close and enters next open, so same-day TLT close is point-in-time available to the diagnostic label.",
+      "ticker": "TLT"
+    },
+    "strategy_rerun_required": false,
+    "summary": {
+      "cohorts": {
+        "all_evaluable": {
+          "episodes": [
+            "2004-08-05",
+            "2005-04-15",
+            "2006-06-12",
+            "2008-01-07",
+            "2010-05-20",
+            "2011-08-08",
+            "2011-10-03",
+            "2015-08-24",
+            "2016-01-15",
+            "2018-10-29",
+            "2020-02-27",
+            "2020-09-23",
+            "2022-01-21",
+            "2024-08-05",
+            "2025-03-10"
+          ],
+          "max_single_positive_cash_pnl_share": 0.2403,
+          "mean_cash_return_pct": 0.017322,
+          "mean_spy_excess_pct": 0.001999,
+          "median_cash_return_pct": 0.007971,
+          "median_spy_excess_pct": 0.001037,
+          "positive_pnl_total": 3214.73,
+          "rows": 15,
+          "total_pnl": 2598.35,
+          "win_count": 11,
+          "win_rate": 0.7333
+        },
+        "missing_tlt_context": {
+          "episodes": [
+            "2000-01-06",
+            "2000-04-03"
+          ],
+          "max_single_positive_cash_pnl_share": 1.0,
+          "mean_cash_return_pct": -0.068816,
+          "mean_spy_excess_pct": -0.047543,
+          "median_cash_return_pct": -0.068816,
+          "median_spy_excess_pct": -0.047543,
+          "positive_pnl_total": 215.74,
+          "rows": 2,
+          "total_pnl": -1376.33,
+          "win_count": 1,
+          "win_rate": 0.5
+        },
+        "no_rate_relief": {
+          "episodes": [
+            "2018-10-29",
+            "2022-01-21"
+          ],
+          "max_single_positive_cash_pnl_share": 0.8933,
+          "mean_cash_return_pct": 0.0239,
+          "mean_spy_excess_pct": -0.002164,
+          "median_cash_return_pct": 0.0239,
+          "median_spy_excess_pct": -0.002164,
+          "positive_pnl_total": 478.01,
+          "rows": 2,
+          "total_pnl": 478.01,
+          "win_count": 2,
+          "win_rate": 1.0
+        },
+        "rate_relief": {
+          "episodes": [
+            "2004-08-05",
+            "2005-04-15",
+            "2006-06-12",
+            "2008-01-07",
+            "2010-05-20",
+            "2011-08-08",
+            "2011-10-03",
+            "2015-08-24",
+            "2016-01-15",
+            "2020-02-27",
+            "2020-09-23",
+            "2024-08-05",
+            "2025-03-10"
+          ],
+          "max_single_positive_cash_pnl_share": 0.2823,
+          "mean_cash_return_pct": 0.01631,
+          "mean_spy_excess_pct": 0.002639,
+          "median_cash_return_pct": 0.007971,
+          "median_spy_excess_pct": 0.001037,
+          "positive_pnl_total": 2736.72,
+          "rows": 13,
+          "total_pnl": 2120.34,
+          "win_count": 9,
+          "win_rate": 0.6923
+        }
+      },
+      "deltas": {
+        "mean_cash_return_pct_rate_relief_minus_no_relief": -0.00759,
+        "mean_spy_excess_pct_rate_relief_minus_no_relief": 0.004803
+      },
+      "evaluable_closed_rows": 15,
+      "missing_tlt_context_rows": 2,
+      "no_rate_relief_rows": 2,
+      "rate_relief_rows": 13
+    }
+  },
+  "hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows should perform better when the signal-day Treasury duration proxy TLT has a positive 20-session return, indicating rate-relief support rather than equity-only falling-knife stress.",
+  "implementation_mode": "read_only_observed_only_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "live_realistic_execution_envelope": {
+    "notes": "No deployable rule was added. Any future use would need a fresh Gate 1-4 shared-policy test.",
+    "notional_or_capital_changed": false,
+    "paper_only": true,
+    "required_for_live": false
+  },
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260706-009.json",
+  "mechanism_family": "deep_drawdown_rebound_macro_regime_quality",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260706-003",
+    "exp-20260706-004",
+    "exp-20260706-005",
+    "exp-20260706-006",
+    "exp-20260706-008"
+  ],
+  "new_evidence_axis": "New PIT macro data source within the deep-drawdown archive: TLT duration proxy 20-session return sign on signal date, not QQQ/SPY trend slope, not QQQ volume/range, not VIX/SPY confirmation, and entry/exit/notional/episode budget remain fixed.",
+  "new_evidence_type": "new_pit_tlt_macro_rate_relief_source",
+  "next_retry_requires": [
+    "genuinely new settled forward deep-drawdown episodes",
+    "a predeclared cross-sectional breadth/capitulation source with adequate historical coverage",
+    "or a different ex-ante macro data source fixed before replay"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "acceptance_rule": {
+      "max_single_positive_rate_relief_cash_pnl_share": 0.5,
+      "min_evaluable_rows": 12,
+      "min_mean_cash_return_lift": 0.02,
+      "min_mean_spy_excess_lift": 0.02,
+      "min_non_rate_relief_rows": 5,
+      "min_rate_relief_rows": 5,
+      "min_rate_relief_win_rate": 0.65
+    },
+    "baseline_artifact": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "point_in_time_note": "Historical TLT adjusted daily bars come from the same local index archive as exp-20260706-003; signal-date close is known after the close before next-open entry.",
+    "rate_relief_rule": {
+      "pass_rule": "signal-day TLT 20-session total return > 0",
+      "return_lookback_sessions": 20,
+      "same_day_available": "Signal is generated after the close and enters next open, so same-day TLT close is point-in-time available to the diagnostic label.",
+      "ticker": "TLT"
+    },
+    "tlt_merged_rows": 6007,
+    "tlt_warehouse_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 20-session TLT lookback, change the sign threshold, add VIX/SPY confirmations, combine with QQQ volume/range fields, change hold days, or reslice the same 17 rows by crisis/decade/depth.",
+    "new_evidence_required": "Reopen only with genuinely new settled forward deep-drawdown episodes, a predeclared cross-sectional breadth/capitulation source with adequate historical coverage, or a different ex-ante macro data source fixed before replay.",
+    "realized_failure_mode": "too_few_non_rate_relief_rows,no_cash_or_spy_lift",
+    "why_result_happened": "The fixed TLT rate-relief label tests whether duration/rate support separates better deep-drawdown first entries without changing the exp-20260706-006 entry/exit/budget contract."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260706-005 explicitly left room for a materially different macro regime source after the QQQ/SPY 200d slope classifier failed; TLT is a distinct PIT duration/rate-relief source already in the archive, but odds are low because the sample is only 17 first-entry rows and 2000 episodes lack TLT coverage.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "tlt_context_missing_early_episodes",
+      "no_cash_or_spy_lift",
+      "too_few_rate_relief_rows",
+      "macro_proxy_not_discriminative"
+    ],
+    "recorded_at": "2026-07-06T07:06:02+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_live_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "too_few_non_rate_relief_rows;no_cash_or_spy_lift",
+  "related_files": [
+    "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "data/non_ohlcv/index_history/index_daily_pre2023.jsonl",
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/experiments/exp_20260706_003_deep_drawdown_rebound.py",
+    "quant/experiments/exp_20260706_006_deep_drawdown_rebound_budget.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_009_deep_drawdown_tlt_rate_relief.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_009_deep_drawdown_tlt_rate_relief.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "tlt_20d_rate_relief_gate_for_deep_drawdown_first_entries",
+  "status": "observed_only_rejected",
+  "timestamp": "2026-07-06T07:10:12+00:00",
+  "trial_family": "deep_drawdown_rebound_episode_quality",
+  "trial_variant_id": "tlt_20d_rate_relief_v1"
+}

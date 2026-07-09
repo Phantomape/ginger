@@ -1,0 +1,276 @@
+{
+  "acceptance_rule": "Accept only if tests show run.py refreshes the estimate revision ledger after quant_signals are persisted, current strategy metrics/orders remain unchanged, and the repair logs matched-candidate capability without threshold/reslice alpha claims.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/test_estimate_revision_ledger.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/manifests",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-010.md",
+  "causal_components": [
+    "run.py post-quant-signal refresh",
+    "non-OHLCV snapshot summary update",
+    "regression test"
+  ],
+  "change_type": "alpha_enabling_forward_ledger_repair",
+  "changed_variable": "estimate_revision_ledger_pipeline_timing",
+  "claimed_at": "2026-07-03T10:09:41+00:00",
+  "completed_at": "2026-07-03T10:15:02+00:00",
+  "created_at": "2026-07-03T10:09:07+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-010",
+  "experiment_uid": "expuid-11041e1e038743bc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T10:09:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_post_quant_signal_ledger_refresh"
+  },
+  "hypothesis": "Alpha-enabling repair: estimate-revision candidate-match alpha cannot be judged if run.py writes the default-off revision ledger before same-day quant_signals exist; add a post-quant-signal ledger refresh so future daily runs produce trustworthy matched candidate rows without changing trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "revision thresholds",
+    "candidate ranking",
+    "position sizing",
+    "exits",
+    "order generation",
+    "universe"
+  ],
+  "mechanism_family": "production_visible_estimate_revision_candidate_match_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "trading rules",
+    "ranking",
+    "sizing",
+    "exits",
+    "live orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260630-021",
+    "exp-20260630-022",
+    "exp-20260701-006",
+    "exp-20260702-005"
+  ],
+  "new_evidence_type": "shared_pipeline_order_repair_not_daily_reslice",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "score": 0.6821,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.75,
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "score": 0.6727,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "estimate_revision_candidate_match_surface_repair",
+        "score": 0.67,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form144_revision_data_readiness",
+        "score": 0.6273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "a",
+        "add",
+        "alpha",
+        "attribution",
+        "be",
+        "before",
+        "behavior",
+        "cannot",
+        "changing",
+        "daily",
+        "enabling",
+        "estimate",
+        "exist",
+        "future",
+        "if",
+        "judged",
+        "ledger",
+        "match",
+        "matched",
+        "post",
+        "produce",
+        "py",
+        "quant",
+        "refresh",
+        "repair",
+        "revision",
+        "rows",
+        "run",
+        "runs",
+        "same",
+        "signal",
+        "signals",
+        "so",
+        "surface",
+        "trading",
+        "trustworthy",
+        "without",
+        "writes"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "reopen_condition": "Next alpha-compliant revision work needs closed replacement-value outcomes for the matched candidate rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation field.",
+        "score": 0.6821,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.75,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "Next alpha-compliant revision work needs h3/h5/h10 settlement for these rows plus materially more matched/non-flat rows, another settled production revision cohort, or a different unsaturated PIT expectation source.",
+        "score": 0.6727,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_surface_repair",
+        "reopen_condition": "Next alpha-compliant revision work needs closed cash/SPY/QQQ replacement-value outcomes for matched rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation source.",
+        "score": 0.67,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.6273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Shared daily-pipeline timing fix after repeated same-day no_daily_signal_match_artifacts_loaded ledgers; this is not a revision threshold/direction/top-N/hold/notional slice and replaces per-date hand recovery.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Shared daily-pipeline timing fix after repeated same-day no_daily_signal_match_artifacts_loaded ledgers; this is not a revision threshold/direction/top-N/hold/notional slice and replaces per-date hand recovery.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2258,
+      "accepts": 7,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 31
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "run.py already comments that current-day quant_signals are written later; prior daily recoveries show the same blocker, so a shared post-signal refresh directly addresses it.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "post-signal hook not reachable",
+      "duplicate ledger writes not reflected in snapshot",
+      "test fixture too brittle"
+    ],
+    "recorded_at": "2026-07-03T10:08:31+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260703-010/before_metrics.json",
+    "after_result_file": "data/experiments/exp-20260703-010/after_metrics.json",
+    "delta_metrics": {
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.75,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "post-signal hook not reachable",
+        "duplicate ledger writes not reflected in snapshot",
+        "test fixture too brittle"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The existing 2026-07-02 quant_signals file was already readable; the zero-match revision ledger was entirely a run.py timing issue."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-010.json",
+  "single_causal_variable": "estimate_revision_post_quant_signal_ledger_refresh_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260703-010.json",
+  "trial_family": "estimate_revision_daily_candidate_match_surface_repair",
+  "trial_variant_id": "estimate_revision_post_quant_signal_ledger_refresh_v1"
+}

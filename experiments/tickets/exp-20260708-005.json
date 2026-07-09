@@ -1,0 +1,378 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv/entity_theme_news_observer/"
+  ],
+  "baseline_result_file": "data/non_ohlcv/entity_theme_news_observer/latest_summary.json",
+  "card_file": "experiments/cards/exp-20260708-005.md",
+  "causal_components": [
+    "validate exact 20260707 entity-theme observer temp",
+    "promote temp to missing daily final",
+    "write recovered latest daily summary",
+    "refresh same-date outcome ledger through restored daily file",
+    "no strategy behavior change"
+  ],
+  "change_type": "observer_forward_row_fault_recovery",
+  "changed_variable": "entity_theme_news_observer_20260707_atomic_recovery_v1",
+  "claimed_at": "2026-07-08T04:17:19+00:00",
+  "completed_at": "2026-07-08T04:22:08+00:00",
+  "created_at": "2026-07-08T04:16:45+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-005",
+  "experiment_uid": "expuid-07e4ff6f28844373",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T04:16:45+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "entity_theme_20260707_atomic_recovery"
+  },
+  "hypothesis": "Entity/theme observer 2026-07-07 daily final is missing while a same-date atomic temp and outcome files exist, causing the latest daily summary to remain stuck on 2026-07-06 and excluding one forward-row collection day from the observer contract.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entity_theme_news_observer_20260707_atomic_recovery_v1"
+  ],
+  "mechanism_family": "observer_forward_row_collection_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-001",
+    "exp-20260705-006",
+    "exp-20260705-007",
+    "exp-20260706-014",
+    "exp-20260707-013"
+  ],
+  "new_evidence_type": "fault_recovery_missing_current_daily_observer_final",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "entity_theme_news",
+      "field_tags": [
+        "a",
+        "atomic",
+        "causing",
+        "collection",
+        "contract",
+        "daily",
+        "date",
+        "entity",
+        "excluding",
+        "exist",
+        "files",
+        "final",
+        "forward",
+        "from",
+        "is",
+        "latest",
+        "missing",
+        "news",
+        "observer",
+        "on",
+        "one",
+        "outcome",
+        "recovery",
+        "remain",
+        "repair",
+        "row",
+        "same",
+        "stuck",
+        "summary",
+        "temp",
+        "theme",
+        "to",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_outcome_daily_wiring",
+        "reopen_condition": "Closed entity/theme observer outcome rows with cash/SPY/QQQ replacement-value separation, richer relation/economic mapping, or a materially different non-ticker event source.",
+        "score": 0.53,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_source_bundle_forward_value",
+        "reopen_condition": "Prospectively accumulated daily entity/theme rows with closed cash/SPY/QQQ replacement value, or a true PIT historical news archive with observation-time availability and the same fixed source manifest.",
+        "score": 0.5167,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed forward rows from this observer, a materially richer entity-relation/economic mapping, or a different non-ticker news source such as PR wire full text or prediction-market event data.",
+        "score": 0.5071,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_corporate_event_exposure_confirmation",
+        "reopen_condition": "A further retry needs additional prospectively accumulated entity/theme rows beyond the 20260705 ledger under this unchanged confirmation contract, a true PIT historical news archive, or a different independent entity-relation source.",
+        "score": 0.491,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_source_bundle_forward_value",
+        "reopen_condition": "A true PIT historical news archive with observation-time availability, or another material batch of prospectively logged daily rows with at least +50% new settled cash/SPY/QQQ replacement-value outcomes under the same fixed manifest.",
+        "score": 0.491,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Fault recovery: current 2026-07-07 entity_theme observer daily final is absent while a same-date atomic temp exists; this is not a source/theme/threshold reslice and directly blocks forward-row collection for that observer date.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "entity_theme_news",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Fault recovery: current 2026-07-07 entity_theme observer daily final is absent while a same-date atomic temp exists; this is not a source/theme/threshold reslice and directly blocks forward-row collection for that observer date.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "entity_theme_news",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.75,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "temp_invalid_json",
+      "temp_not_same_contract",
+      "summary_refresh_missing",
+      "outcome_refresh_no_delta"
+    ],
+    "confidence_reason": "A same-date temp exists with plausible size and outcome files exist, while the final daily observer file is missing and latest_summary still reports 20260706.",
+    "recorded_at": "2026-07-08T04:16:06+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_entity_theme_20260707_daily_recovered",
+    "artifact": "data/experiments/exp-20260708-005/exp_20260708_005_entity_theme_20260707_atomic_recovery.json",
+    "log": "experiments/logs/exp-20260708-005.json",
+    "summary": {
+      "before_final_exists": false,
+      "before_temp_count": 1,
+      "recovered": true,
+      "recovery_action": "promoted_temp_to_final",
+      "recovered_item_count": 517,
+      "after_final_exists": true,
+      "latest_summary_date_before": "20260706",
+      "latest_summary_date_after": "20260707",
+      "latest_summary_status_after": "recovered_from_atomic_temp",
+      "outcome_daily_item_file_count_before": 5,
+      "outcome_daily_item_file_count_after": 6,
+      "outcome_source_item_count_before": 2587,
+      "outcome_source_item_count_after": 3104,
+      "outcome_candidate_rows_before": 15918,
+      "outcome_candidate_rows_after": 19097,
+      "outcome_settled_count_before": 13824,
+      "outcome_settled_count_after": 16569,
+      "failed_checks": []
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-005.json",
+  "single_causal_variable": "entity_theme_news_observer_20260707_atomic_recovery_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260708-005.json",
+  "trial_family": "entity_theme_news_observer_atomic_recovery",
+  "trial_variant_id": "entity_theme_news_observer_20260707_daily_temp_recovery_v1",
+  "alpha_hypothesis": "Forward entity/theme news rows can only become usable alpha evidence after daily observer files and outcome ledgers agree on the same collected dates; this run repairs one missing observer file, not a trading policy.",
+  "new_evidence_axis": "Fault recovery: current 2026-07-07 entity_theme observer daily final is absent while a same-date atomic temp exists; this is not a source/theme/threshold reslice and directly blocks forward-row collection for that observer date.",
+  "gate1": {
+    "passed": true,
+    "baseline_artifacts": {
+      "latest_summary": "data/non_ohlcv/entity_theme_news_observer/latest_summary.json",
+      "outcome_summary": "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260707.json",
+      "canonical_strategy_baseline": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "loaded": true,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "max_drawdown_pct_worst": 0.1119,
+        "window_count": 3
+      }
+    },
+    "note": "Measurement repair only; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields": [
+      "daily observer item final",
+      "latest_summary.date",
+      "daily_item_files",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "field_reality": {
+      "final_daily_file": "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260707.json",
+      "final_daily_exists": true,
+      "latest_summary": "data/non_ohlcv/entity_theme_news_observer/latest_summary.json",
+      "source_stats_same_date_exists": false,
+      "target_price_relevance": "not_applicable_observer_fixed_horizon; this ledger schedules no orders or production exits",
+      "entry_date_relevance": "outcome rows are observer attribution rows; future alpha reads must verify entry/open rows on settled outcomes"
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, rank, size, exit, or order policy changed."
+  },
+  "gate4": {
+    "passed": true,
+    "mode": "measurement_repair_missing_daily_observer_atomic_recovery",
+    "failed_checks": [],
+    "acceptance_checks": {
+      "valid_temp_recovered": true,
+      "latest_summary_updated_to_20260707": true,
+      "outcome_includes_20260707_daily_file": true,
+      "outcome_source_items_increased": true,
+      "strategy_and_trade_flags_unchanged": true
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Restored an observer-only daily artifact and refreshed its observer outcome ledger. No production trading path changed."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.75,
+    "actual_success": 1,
+    "predicted_failure_mode_hit": null,
+    "surprise_note": "The same-date temp was valid and outcome rows increased after including the recovered daily file."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The observer daily item write left a valid temp but no final file, while downstream outcome materialization continued from the previous daily files. Promoting the exact same-date temp restored the missing collection day without touching any strategy policy.",
+    "forbidden_near_neighbor_retry": "Do not open another entity/theme source-bundle, theme, query, ticker, horizon, notional, rank, or response retry from this artifact repair. A future recovery ID needs a new missing-final fault or a shared helper fix; alpha work still needs legal new settled replacement-value evidence.",
+    "new_evidence_required": "Next alpha-compliant entity/theme work needs at least +50% new settled cash/SPY/QQQ replacement-value rows versus the last 13799-row probe, or a genuinely new PIT entity-relation source."
+  },
+  "next_retry_requires": [
+    "new missing-final observer artifact fault",
+    "or shared helper recovery wiring for non_ohlcv observer dirs",
+    "or materially more settled entity/theme replacement-value rows for alpha"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260708_005_entity_theme_20260707_atomic_recovery.py",
+    "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260707.json",
+    "data/non_ohlcv/entity_theme_news_observer/latest_summary.json",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260707.json",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_20260707.jsonl",
+    "data/experiments/exp-20260708-005/exp_20260708_005_entity_theme_20260707_atomic_recovery.json",
+    "experiments/logs/exp-20260708-005.json",
+    "experiments/cards/exp-20260708-005.md",
+    "experiments/manifests/exp-20260708-005.json",
+    "experiments/tickets/exp-20260708-005.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260707.json",
+    "data/non_ohlcv/entity_theme_news_observer/latest_summary.json",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260707.json",
+    "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
+    "data/experiments/exp-20260708-005/exp_20260708_005_entity_theme_20260707_atomic_recovery.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_005_entity_theme_20260707_atomic_recovery.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_005_entity_theme_20260707_atomic_recovery.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_entity_theme_news_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "decision": "accepted_measurement_repair_entity_theme_20260707_daily_recovered",
+  "artifact": "data/experiments/exp-20260708-005/exp_20260708_005_entity_theme_20260707_atomic_recovery.json",
+  "log": "experiments/logs/exp-20260708-005.json",
+  "updated_at": "2026-07-08T04:22:08+00:00"
+}

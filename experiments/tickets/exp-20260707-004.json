@@ -1,0 +1,218 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/estimate_revision_outcomes.py",
+    "quant/test_estimate_revision_outcomes.py",
+    "quant/run.py",
+    "data/non_ohlcv/estimate_revision_outcomes_20260705.jsonl",
+    "data/non_ohlcv/estimate_revision_outcome_summary_20260705.json",
+    "data/experiments/EXP_ID",
+    "experiments/logs/EXP_ID.json",
+    "experiments/cards/EXP_ID.md",
+    "experiments/tickets/EXP_ID.json",
+    "experiments/manifests/EXP_ID.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260707-004.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "estimate_revision_recent_outcome_catchup_wiring",
+  "claimed_at": "2026-07-07T03:11:00+00:00",
+  "completed_at": "2026-07-07T03:15:03+00:00",
+  "created_at": "2026-07-07T03:10:51+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-004",
+  "experiment_uid": "expuid-d701c5bc36674d09",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T03:10:51+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_outcome_catchup_wiring"
+  },
+  "hypothesis": "Wire estimate-revision outcome catch-up into the daily settlement pipeline so recent pending ledgers are automatically re-settled when the hot OHLCV warehouse advances, instead of spending new experiment IDs on hand materialization.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "estimate_revision_recent_outcome_catchup_wiring"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "live_orders",
+    "shared_strategy_policy",
+    "entry_rules",
+    "exit_rules",
+    "ranking",
+    "sizing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260706-010",
+    "exp-20260706-021"
+  ],
+  "new_evidence_type": "settlement_pipeline_wiring",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "advances",
+        "are",
+        "automatically",
+        "catch",
+        "catchup",
+        "daily",
+        "estimate",
+        "experiment",
+        "hand",
+        "hot",
+        "ids",
+        "instead",
+        "into",
+        "ledgers",
+        "materialization",
+        "new",
+        "of",
+        "on",
+        "outcome",
+        "pending",
+        "pipeline",
+        "re",
+        "recent",
+        "revision",
+        "settled",
+        "settlement",
+        "so",
+        "spending",
+        "up",
+        "warehouse",
+        "when",
+        "wire",
+        "wiring"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger_daily_wiring",
+        "reopen_condition": "Next alpha-compliant revision work needs H5/H10 settlement and materially more matched/non-flat rows, another settled production revision cohort, or a distinct unsaturated PIT expectation source.",
+        "score": 0.5085,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.75,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "Next alpha-compliant revision work needs h3/h5/h10 settlement for these rows plus materially more matched/non-flat rows, another settled production revision cohort, or a different unsaturated PIT expectation source.",
+        "score": 0.4976,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface_repair",
+        "reopen_condition": "Closed cash/SPY/QQQ replacement-value outcomes for matched estimate-revision rows, materially more non-flat matched rows, or a different unsaturated PIT expectation field/source.",
+        "score": 0.4881,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_ledger_direction_outcome",
+        "reopen_condition": "A retry needs materially new evidence: at least another settled month of production estimate_revision_ledger rows, a distinct PIT revision field not used here, or a shared default-off helper that passes canonical Gate 1-4 rather than this gross proxy warehouse attribution.",
+        "score": 0.4833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "reopen_condition": "Next alpha-compliant revision work needs closed replacement-value outcomes for the matched candidate rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation field.",
+        "score": 0.4808,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "New run.py/outcome-helper wiring refreshes recent prior estimate-revision ledgers as the warehouse advances; the 2026-07-05 matched rows are a validation target, not a threshold retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "revision_expectation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": true
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New run.py/outcome-helper wiring refreshes recent prior estimate-revision ledgers as the warehouse advances; the 2026-07-05 matched rows are a validation target, not a threshold retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260707-004/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260707-004/after_measurement.json",
+    "delta_metrics": {}
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-004.json",
+  "single_causal_variable": "estimate_revision_recent_outcome_catchup_wiring",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260707-004.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260707-004"
+}

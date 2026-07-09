@@ -1,0 +1,378 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "activation_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "observed_only_attribution_no_strategy_or_paper_behavior_change",
+      "needs_shared_helper_before_any_candidate_pool_use",
+      "needs standard Gate 1-4 before activation"
+    ]
+  },
+  "after_metrics": {
+    "candidate_rows_after_microstructure_join": {
+      "mean_trade_return": 0.01537286,
+      "return_fraction_vs_100k_reference": 0.2631842,
+      "target_trade_count": 428,
+      "total_pnl": 26318.42,
+      "win_rate": 0.509346
+    },
+    "microstructure_attribution": {
+      "aggregate_coarse_minus_small_tick": {
+        "mean_pnl": 11.925845,
+        "mean_return": 0.00298146,
+        "win_rate": -0.077465
+      },
+      "sources_coarse_tick_better": [
+        "breakout_without_2x_volume_precursor",
+        "gap_hold_core_flow_confirmed"
+      ],
+      "windows_coarse_tick_better": [
+        "mid_weak",
+        "old_thin"
+      ]
+    }
+  },
+  "alpha_hypothesis": "ranking / candidate-pool attribution: a fixed entry-time microstructure field can identify which existing short-trend paper candidates deserve future shared-helper work, without changing current entry, exit, ranking, or sizing behavior.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner and pytest only.",
+    "used_javascript": false
+  },
+  "attribution": "<stripped 112KB oversized field; full value retained in the experiment artifact>",
+  "before_metrics": {
+    "candidate_rows_before_microstructure_join": {
+      "mean_trade_return": 0.01537286,
+      "return_fraction_vs_100k_reference": 0.2631842,
+      "target_trade_count": 428,
+      "total_pnl": 26318.42,
+      "win_rate": 0.509346
+    },
+    "strategy_baseline": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "canonical_reference_from_docs": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99
+      },
+      "loaded": true,
+      "top_level_metrics": {}
+    }
+  },
+  "calibration": {
+    "actual_decision": "observed_only_positive_microstructure_tick_viability_attribution",
+    "actual_success": 1,
+    "brier_score": 0.5929,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "field_is_low_volatility_proxy",
+      "window_instability",
+      "missing_entry_atr",
+      "sample_too_thin"
+    ],
+    "predicted_success_probability": 0.23,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "fixed microstructure field",
+    "existing target-trade artifacts",
+    "entry-time ATR20 join",
+    "tertile attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260707_002_microstructure_tick_viability_attribution.py",
+    "data/experiments/exp-20260707-002/exp_20260707_002_microstructure_tick_viability_attribution.json",
+    "experiments/cards/exp-20260707-002.md",
+    "experiments/manifests/exp-20260707-002.json",
+    "experiments/logs/exp-20260707-002.json",
+    "experiments/tickets/exp-20260707-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "vol_normalized_tick_size_short_trend_viability_attribution_v1",
+  "decision": "observed_only_positive_microstructure_tick_viability_attribution",
+  "delta_metrics": {
+    "aggregate_coarse_minus_small_tick": {
+      "mean_pnl": 11.925845,
+      "mean_return": 0.00298146,
+      "win_rate": -0.077465
+    },
+    "orders_changed": false,
+    "strategy_behavior_delta": 0.0
+  },
+  "experiment_id": "exp-20260707-002",
+  "gate1": {
+    "baseline": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "canonical_reference_from_docs": {
+        "aggregate_expected_value_score": 7.8941,
+        "aggregate_total_pnl": 234850.99
+      },
+      "loaded": true,
+      "top_level_metrics": {}
+    },
+    "passed": true,
+    "source_artifacts_loaded": {
+      "field_complete_total": 428,
+      "missing_by_source_window": {
+        "breakout_without_2x_volume_precursor:late_strong": {},
+        "breakout_without_2x_volume_precursor:mid_weak": {},
+        "breakout_without_2x_volume_precursor:old_thin": {},
+        "distribution_day_absorption:late_strong": {},
+        "distribution_day_absorption:mid_weak": {},
+        "distribution_day_absorption:old_thin": {},
+        "gap_hold_core_flow_confirmed:late_strong": {},
+        "gap_hold_core_flow_confirmed:mid_weak": {},
+        "gap_hold_core_flow_confirmed:old_thin": {}
+      },
+      "raw_counts_by_source_window": {
+        "breakout_without_2x_volume_precursor:late_strong": 81,
+        "breakout_without_2x_volume_precursor:mid_weak": 106,
+        "breakout_without_2x_volume_precursor:old_thin": 92,
+        "distribution_day_absorption:late_strong": 40,
+        "distribution_day_absorption:mid_weak": 33,
+        "distribution_day_absorption:old_thin": 40,
+        "gap_hold_core_flow_confirmed:late_strong": 10,
+        "gap_hold_core_flow_confirmed:mid_weak": 14,
+        "gap_hold_core_flow_confirmed:old_thin": 12
+      },
+      "raw_total": 428,
+      "required_fields": [
+        "ticker",
+        "entry_date",
+        "entry_price",
+        "pnl"
+      ],
+      "source_artifacts": [
+        {
+          "experiment_id": "exp-20260611-007",
+          "label": "distribution_day_absorption",
+          "path": "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+          "prior_decision": "accepted_default_off_shared_adapter"
+        },
+        {
+          "experiment_id": "exp-20260609-016",
+          "label": "gap_hold_core_flow_confirmed",
+          "path": "data/experiments/exp-20260609-016/exp_20260609_016_gap_hold_core_flow_confirmed.json",
+          "prior_decision": "rejected_candidate_source"
+        },
+        {
+          "experiment_id": "exp-20260628-019",
+          "label": "breakout_without_2x_volume_precursor",
+          "path": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+          "prior_decision": "rejected_full_stack_candidate_source"
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "enrichment_diagnostics": {
+      "input_rows": 428,
+      "missing_reasons": {},
+      "usable_rate": 1.0,
+      "usable_rows": 428,
+      "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite"
+    },
+    "field_dependencies": [
+      "ticker",
+      "entry_date",
+      "entry_price",
+      "pnl",
+      "pnl_pct_net or paper_notional_usd",
+      "ohlcv high/low/close for 20 sessions before entry_date"
+    ],
+    "load_diagnostics": {
+      "field_complete_total": 428,
+      "missing_by_source_window": {
+        "breakout_without_2x_volume_precursor:late_strong": {},
+        "breakout_without_2x_volume_precursor:mid_weak": {},
+        "breakout_without_2x_volume_precursor:old_thin": {},
+        "distribution_day_absorption:late_strong": {},
+        "distribution_day_absorption:mid_weak": {},
+        "distribution_day_absorption:old_thin": {},
+        "gap_hold_core_flow_confirmed:late_strong": {},
+        "gap_hold_core_flow_confirmed:mid_weak": {},
+        "gap_hold_core_flow_confirmed:old_thin": {}
+      },
+      "raw_counts_by_source_window": {
+        "breakout_without_2x_volume_precursor:late_strong": 81,
+        "breakout_without_2x_volume_precursor:mid_weak": 106,
+        "breakout_without_2x_volume_precursor:old_thin": 92,
+        "distribution_day_absorption:late_strong": 40,
+        "distribution_day_absorption:mid_weak": 33,
+        "distribution_day_absorption:old_thin": 40,
+        "gap_hold_core_flow_confirmed:late_strong": 10,
+        "gap_hold_core_flow_confirmed:mid_weak": 14,
+        "gap_hold_core_flow_confirmed:old_thin": 12
+      },
+      "raw_total": 428,
+      "required_fields": [
+        "ticker",
+        "entry_date",
+        "entry_price",
+        "pnl"
+      ],
+      "source_artifacts": [
+        {
+          "experiment_id": "exp-20260611-007",
+          "label": "distribution_day_absorption",
+          "path": "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+          "prior_decision": "accepted_default_off_shared_adapter"
+        },
+        {
+          "experiment_id": "exp-20260609-016",
+          "label": "gap_hold_core_flow_confirmed",
+          "path": "data/experiments/exp-20260609-016/exp_20260609_016_gap_hold_core_flow_confirmed.json",
+          "prior_decision": "rejected_candidate_source"
+        },
+        {
+          "experiment_id": "exp-20260628-019",
+          "label": "breakout_without_2x_volume_precursor",
+          "path": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+          "prior_decision": "rejected_full_stack_candidate_source"
+        }
+      ]
+    },
+    "microstructure_known_at": "after_prior_close_before_entry_open",
+    "passed": true,
+    "sentinel_entry_date_checked": true,
+    "sentinel_target_price_contract": {
+      "applicable": false,
+      "reason": "This observed-only runner consumes already closed target-trade artifacts and does not regenerate signals or backtester exits; target_price is therefore not used as a strategy signal contract in this attribution."
+    }
+  },
+  "gate3": {
+    "note": "No filter is applied to strategy behavior; survival measures ATR join coverage.",
+    "passed": true,
+    "signals_generated": 428,
+    "signals_survived": 428,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_rule": "Require >=150 usable rows, >=20 per canonical window, aggregate coarse-minus-small tick return delta > 0, and at least two windows plus two source families with positive coarse-minus-small tick return delta.",
+    "aggregate_coarse_minus_small_tick_return": 0.00298146,
+    "decision": "observed_only_positive_microstructure_tick_viability_attribution",
+    "failed_reasons": [],
+    "passed": true,
+    "sources_coarse_tick_better": [
+      "breakout_without_2x_volume_precursor",
+      "gap_hold_core_flow_confirmed"
+    ],
+    "sources_evaluable": [
+      "breakout_without_2x_volume_precursor",
+      "distribution_day_absorption",
+      "gap_hold_core_flow_confirmed"
+    ],
+    "thin_windows": [],
+    "windows_coarse_tick_better": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_evaluable": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ]
+  },
+  "hypothesis": "Short-trend and breakout candidate pools may retain after-cost edge only when a PIT microstructure viability field, vol-normalized tick size from entry-time ATR20, indicates execution is not in the small-tick trend-decay zone.",
+  "implementation_mode": "observed_only_microstructure_attribution_no_strategy_change",
+  "lean_quality_passed": true,
+  "mechanism_family": "microstructure_viability",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260628-019",
+    "exp-20260611-007",
+    "exp-20260609-016",
+    "exp-20260706-022"
+  ],
+  "new_evidence_axis": "New PIT microstructure viability field and gate shape: vol-normalized tick size computed from entry-time ATR20 on fixed target-trade artifacts; no momentum threshold, top-N, hold-day, cooldown, notional, or response retune.",
+  "new_evidence_type": "new_production_visible_microstructure_field",
+  "next_retry_requires": [
+    "PIT spread/depth or cost source",
+    "materially more closed forward rows",
+    "shared default-off helper plus standard Gate 1-4",
+    "no ATR lookback, tertile, threshold, top-N, hold-day, or notional retune"
+  ],
+  "parameters": {
+    "acceptance_boundary": "observed-only attribution lead only; future use requires shared helper and standard Gate 1-4.",
+    "atr_lookback_sessions": 20,
+    "bucket_method": "within-group tertiles by tick_to_atr20",
+    "entry_time_contract": "uses only ohlcv.date < entry_date",
+    "microstructure_field": "vol_normalized_tick_size = 0.01 / ATR20",
+    "source_artifacts": [
+      {
+        "experiment_id": "exp-20260611-007",
+        "label": "distribution_day_absorption",
+        "path": "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+        "prior_decision": "accepted_default_off_shared_adapter"
+      },
+      {
+        "experiment_id": "exp-20260609-016",
+        "label": "gap_hold_core_flow_confirmed",
+        "path": "data/experiments/exp-20260609-016/exp_20260609_016_gap_hold_core_flow_confirmed.json",
+        "prior_decision": "rejected_candidate_source"
+      },
+      {
+        "experiment_id": "exp-20260628-019",
+        "label": "breakout_without_2x_volume_precursor",
+        "path": "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json",
+        "prior_decision": "rejected_full_stack_candidate_source"
+      }
+    ],
+    "strategy_behavior_changed": false,
+    "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun this by changing ATR lookback, tertile cutoffs, momentum thresholds, source top-N, hold days, cooldowns, notional, or response shape on the same artifacts. A legal retry needs a genuinely new microstructure source such as PIT spread/depth, materially more closed forward rows, or a shared helper Gate 1-4 that preserves this exact field contract.",
+    "new_evidence_required": "PIT spread/depth or cost data, materially more settled forward rows, or a shared default-off helper with standard Gate 1-4.",
+    "why_result_happened": "The fixed tick-to-ATR field was joined at entry time across three existing short-trend candidate artifacts. The result is judged only as attribution: aggregate and cross-window coarse-minus-small tick return deltas must agree before the field can be treated as a future lead."
+  },
+  "prediction": {
+    "confidence_reason": "External July 2026 microstructure research says short-trend decay depends on vol-normalized tick size; local OHLCV breakout families are often positive but window-fragile, so a PIT execution-viability field may explain failures without retuning momentum thresholds.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "field_is_low_volatility_proxy",
+      "window_instability",
+      "missing_entry_atr",
+      "sample_too_thin"
+    ],
+    "recorded_at": "2026-07-07T01:08:35+00:00",
+    "success_probability": 0.23
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "This runner reads historical target-trade artifacts and warehouse OHLCV only. It does not alter production/backtest adapters or any order path.",
+    "ranking_or_sizing_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/experiments/exp-20260611-007/exp_20260611_007_distribution_day_absorption_shared_adapter.json",
+    "data/experiments/exp-20260609-016/exp_20260609_016_gap_hold_core_flow_confirmed.json",
+    "data/experiments/exp-20260628-019/exp_20260628_019_breakout_precursor_full_stack.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260707_002_microstructure_tick_viability_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260707_002_microstructure_tick_viability_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "vol_normalized_tick_size_short_trend_viability_attribution_v1",
+  "status": "observed_only_positive_microstructure_viability_lead_not_activation_ready",
+  "timestamp": "2026-07-07T01:15:28+00:00",
+  "trial_family": "vol_normalized_tick_size_short_trend_attribution",
+  "trial_variant_id": "tick_to_atr20_short_trend_candidate_attribution_v1"
+}

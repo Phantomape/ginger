@@ -1,0 +1,553 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_002_sector_concurrency_forward_rv.py",
+    "data/experiments/exp-20260706-002/exp_20260706_002_sector_concurrency_forward_rv.json",
+    "experiments/cards/exp-20260706-002.md",
+    "experiments/manifests/exp-20260706-002.json",
+    "experiments/tickets/exp-20260706-002.json",
+    "experiments/logs/exp-20260706-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-002.md",
+  "causal_components": [
+    "closed paper state extraction",
+    "entry-date sector concurrency labeling",
+    "cash/SPY/QQQ replacement-value comparison",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "default_off_forward_same_sector_concurrency_rv_v1",
+  "claimed_at": "2026-07-06T01:07:19+00:00",
+  "completed_at": "2026-07-06T01:12:32+00:00",
+  "created_at": "2026-07-06T01:07:07+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-002",
+  "experiment_uid": "expuid-3dad210eb29a4159",
+  "gate4": {
+    "passed": false,
+    "observed_only": true,
+    "strategy_rerun_required": false,
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_sector_concurrency_no_stable_edge",
+    "acceptance_rule": {
+      "min_evaluable_closed_rows": 25,
+      "min_crowded_rows": 8,
+      "min_uncrowded_rows": 8,
+      "require_crowded_mean_worse_all_primary_metrics": true,
+      "require_crowded_median_worse_primary_metrics_min": 2,
+      "max_single_ticker_negative_crowded_loss_share": 0.4
+    },
+    "concurrency_rule": {
+      "min_same_sector_active_positions": 3,
+      "min_same_sector_active_notional_share": 0.5
+    },
+    "checks": {
+      "min_evaluable_closed_rows": true,
+      "min_crowded_rows": true,
+      "min_uncrowded_rows": false,
+      "crowded_mean_worse_all_primary_metrics": false,
+      "crowded_median_worse_primary_metrics_min": false,
+      "negative_loss_concentration_passed": true
+    },
+    "failed_reasons": [
+      "min_uncrowded_rows",
+      "crowded_mean_worse_all_primary_metrics",
+      "crowded_median_worse_primary_metrics_min"
+    ],
+    "summary": {
+      "evaluable_closed_rows": 42,
+      "crowded_rows": 35,
+      "uncrowded_rows": 7,
+      "deltas": {
+        "replacement_value_vs_cash_usd": {
+          "mean_crowded_minus_uncrowded": 124.3949,
+          "median_crowded_minus_uncrowded": -92.29
+        },
+        "replacement_value_vs_spy_usd": {
+          "mean_crowded_minus_uncrowded": 190.4443,
+          "median_crowded_minus_uncrowded": 17.41
+        },
+        "replacement_value_vs_qqq_usd": {
+          "mean_crowded_minus_uncrowded": 268.9366,
+          "median_crowded_minus_uncrowded": 239.83
+        }
+      },
+      "negative_loss_concentration": {
+        "negative_loss_total": 26522.77,
+        "max_single_ticker_negative_loss_share": 0.357834,
+        "top_negative_ticker": "COIN",
+        "losses_by_ticker": {
+          "AAPL": 634.83,
+          "AVGO": 3797.89,
+          "BE": 2966.46,
+          "COHR": 322.19,
+          "COIN": 9490.75,
+          "CRDO": 557.4,
+          "DDOG": 1782.06,
+          "LITE": 359.49,
+          "MU": 1852.48,
+          "NOW": 2088.74,
+          "SNOW": 1524.78,
+          "WDC": 1145.7
+        }
+      }
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T01:07:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_concurrency_forward_rv"
+  },
+  "hypothesis": "Observed-only alpha: settled default-off paper rows whose entry date already has same-sector concurrent paper exposure should show worse cash/SPY/QQQ replacement value than uncrowded rows, supporting a future fixed cross-sleeve sector exposure cap.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "default_off_forward_same_sector_concurrency_rv_v1"
+  ],
+  "mechanism_family": "default_off_forward_risk_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260705-009",
+    "exp-20260706-001",
+    "exp-20260705-015"
+  ],
+  "new_evidence_type": "new_gate_shape_on_settled_forward_rows",
+  "next_retry_requires": [
+    "materially more closed default-off paper rows under the unchanged sector-concurrency contract",
+    "a concrete missed-risk incident requiring a different fixed grouping",
+    "or a separate shared-policy Gate 1-4 sector exposure cap test"
+  ],
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "allocation",
+        "alpha",
+        "already",
+        "cap",
+        "cash",
+        "concurrency",
+        "concurrent",
+        "cross",
+        "date",
+        "entry",
+        "exposure",
+        "forward",
+        "future",
+        "has",
+        "observed",
+        "only",
+        "qqq",
+        "replacement",
+        "risk",
+        "rows",
+        "rv",
+        "same",
+        "sector",
+        "settled",
+        "should",
+        "show",
+        "sleeve",
+        "spy",
+        "supporting",
+        "than",
+        "uncrowded",
+        "value",
+        "whose",
+        "worse"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.2,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_open_crowding_paper_allocation",
+        "reopen_condition": "If rejected, do not retry adjacent same-sector support scalars without new forward closed outcomes. Next broad-market data edge should use a distinct field such as industry-level leadership breadth or cost-adjusted replacement value.",
+        "score": 0.1808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "space_forward_replacement_consistency",
+        "reopen_condition": "Do not promote this forward-consistency scalar from the current sample. Revisit only after new closed Space forward rows broaden the multi-event consistency cohort beyond its current support.",
+        "score": 0.1808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.18,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "debt_maturity_cliff_relief_risk_allocation",
+        "reopen_condition": "Need parsed refinancing transaction terms, covenant headroom, credit-rating changes, borrow-cost/availability, or closed forward replacement-value rows before revisiting this debt maturity risk family.",
+        "score": 0.1786,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape on settled forward rows: same-sector concurrent paper exposure at entry date across default-off paper sleeves, distinct from same-ticker duplicate exposure and from report-only live pilot concentration; uses existing closed replacement-value rows without changing thresholds, notional, ranking, exits, or orders.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New gate shape on settled forward rows: same-sector concurrent paper exposure at entry date across default-off paper sleeves, distinct from same-ticker duplicate exposure and from report-only live pilot concentration; uses existing closed replacement-value rows without changing thresholds, notional, ranking, exits, or orders.",
+        "categories": [
+          "new_gate_shape",
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape on settled forward rows: same-sector concurrent paper exposure at entry date across default-off paper sleeves, distinct from same-ticker duplicate exposure and from report-only live pilot concentration; uses existing closed replacement-value rows without changing thresholds, notional, ranking, exits, or orders.",
+      "categories": [
+        "new_gate_shape",
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The fixed sector-concurrency label was tested on all closed default-off paper rows that carried entry dates, sectors, and cash/SPY/QQQ replacement values. The result is only a forward attribution read, not a policy.",
+    "forbidden_near_neighbor_retry": "Do not retune the 3-position or 50% sector-crowding thresholds, switch to adjacent sector/industry buckets, or convert this into a cap/scalar without a separate shared-policy Gate 1-4 test.",
+    "new_evidence_required": "A valid retry needs materially more closed default-off rows under the unchanged sector-concurrency contract, a missed-risk incident with a different fixed grouping, or a full shared-policy Gate 1-4 sector exposure cap test."
+  },
+  "prediction": {
+    "success_probability": 0.24,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "sector_labels_inconsistent",
+      "crowding_not_worse",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Recent duplicate same-ticker cap failed historical validation, but exp-20260706-001 found live pilot sector stacking was invisible to ticker overlap; closed default-off paper rows now carry entry dates, sectors, and cash/SPY/QQQ replacement fields, so this observed-only gate shape is machine-checkable while still low prior.",
+    "recorded_at": "2026-07-06T01:06:29+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_sector_concurrency_no_stable_edge",
+    "artifact": "data/experiments/exp-20260706-002/exp_20260706_002_sector_concurrency_forward_rv.json",
+    "log": "experiments/logs/exp-20260706-002.json",
+    "runner": "quant/experiments/exp_20260706_002_sector_concurrency_forward_rv.py",
+    "gate4": {
+      "passed": false,
+      "observed_only": true,
+      "strategy_rerun_required": false,
+      "accepted_alpha": false,
+      "decision": "observed_only_rejected_sector_concurrency_no_stable_edge",
+      "acceptance_rule": {
+        "min_evaluable_closed_rows": 25,
+        "min_crowded_rows": 8,
+        "min_uncrowded_rows": 8,
+        "require_crowded_mean_worse_all_primary_metrics": true,
+        "require_crowded_median_worse_primary_metrics_min": 2,
+        "max_single_ticker_negative_crowded_loss_share": 0.4
+      },
+      "concurrency_rule": {
+        "min_same_sector_active_positions": 3,
+        "min_same_sector_active_notional_share": 0.5
+      },
+      "checks": {
+        "min_evaluable_closed_rows": true,
+        "min_crowded_rows": true,
+        "min_uncrowded_rows": false,
+        "crowded_mean_worse_all_primary_metrics": false,
+        "crowded_median_worse_primary_metrics_min": false,
+        "negative_loss_concentration_passed": true
+      },
+      "failed_reasons": [
+        "min_uncrowded_rows",
+        "crowded_mean_worse_all_primary_metrics",
+        "crowded_median_worse_primary_metrics_min"
+      ],
+      "summary": {
+        "evaluable_closed_rows": 42,
+        "crowded_rows": 35,
+        "uncrowded_rows": 7,
+        "deltas": {
+          "replacement_value_vs_cash_usd": {
+            "mean_crowded_minus_uncrowded": 124.3949,
+            "median_crowded_minus_uncrowded": -92.29
+          },
+          "replacement_value_vs_spy_usd": {
+            "mean_crowded_minus_uncrowded": 190.4443,
+            "median_crowded_minus_uncrowded": 17.41
+          },
+          "replacement_value_vs_qqq_usd": {
+            "mean_crowded_minus_uncrowded": 268.9366,
+            "median_crowded_minus_uncrowded": 239.83
+          }
+        },
+        "negative_loss_concentration": {
+          "negative_loss_total": 26522.77,
+          "max_single_ticker_negative_loss_share": 0.357834,
+          "top_negative_ticker": "COIN",
+          "losses_by_ticker": {
+            "AAPL": 634.83,
+            "AVGO": 3797.89,
+            "BE": 2966.46,
+            "COHR": 322.19,
+            "COIN": 9490.75,
+            "CRDO": 557.4,
+            "DDOG": 1782.06,
+            "LITE": 359.49,
+            "MU": 1852.48,
+            "NOW": 2088.74,
+            "SNOW": 1524.78,
+            "WDC": 1145.7
+          }
+        }
+      }
+    },
+    "summary": {
+      "evaluable_closed_rows": 42,
+      "crowded_rows": 35,
+      "uncrowded_rows": 7,
+      "deltas": {
+        "replacement_value_vs_cash_usd": {
+          "mean_crowded_minus_uncrowded": 124.3949,
+          "median_crowded_minus_uncrowded": -92.29
+        },
+        "replacement_value_vs_spy_usd": {
+          "mean_crowded_minus_uncrowded": 190.4443,
+          "median_crowded_minus_uncrowded": 17.41
+        },
+        "replacement_value_vs_qqq_usd": {
+          "mean_crowded_minus_uncrowded": 268.9366,
+          "median_crowded_minus_uncrowded": 239.83
+        }
+      },
+      "negative_loss_concentration": {
+        "negative_loss_total": 26522.77,
+        "max_single_ticker_negative_loss_share": 0.357834,
+        "top_negative_ticker": "COIN",
+        "losses_by_ticker": {
+          "AAPL": 634.83,
+          "AVGO": 3797.89,
+          "BE": 2966.46,
+          "COHR": 322.19,
+          "COIN": 9490.75,
+          "CRDO": 557.4,
+          "DDOG": 1782.06,
+          "LITE": 359.49,
+          "MU": 1852.48,
+          "NOW": 2088.74,
+          "SNOW": 1524.78,
+          "WDC": 1145.7
+        }
+      }
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-002.json",
+  "single_causal_variable": "default_off_forward_same_sector_concurrency_rv_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-002.json",
+  "trial_family": "same_sector_forward_concurrency_rv",
+  "trial_variant_id": "sector_concurrency_closed_rows_v1",
+  "alpha_hypothesis": "Observed-only alpha: settled default-off paper rows whose entry date already has same-sector concurrent paper exposure should show worse cash/SPY/QQQ replacement value than uncrowded rows, supporting a future fixed cross-sleeve sector exposure cap.",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "New gate shape on settled forward rows: same-sector concurrent paper exposure at entry date across default-off paper sleeves, distinct from same-ticker duplicate exposure and from report-only live pilot concentration; uses existing closed replacement-value rows without changing thresholds, notional, ranking, exits, or orders.",
+  "decision": "observed_only_rejected_sector_concurrency_no_stable_edge",
+  "artifact": "data/experiments/exp-20260706-002/exp_20260706_002_sector_concurrency_forward_rv.json",
+  "log_file": "experiments/logs/exp-20260706-002.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_exists": true,
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    },
+    "note": "Observed-only attribution; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "entry_date",
+      "exit_date",
+      "ticker",
+      "sector or broad_market_sector_map fallback",
+      "notional",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "diagnostics": {
+      "state_files_seen": 36,
+      "state_files_with_closed": 15,
+      "malformed_state_files": [],
+      "skipped_without_entry_date": 8,
+      "positions_loaded": 118,
+      "closed_positions_loaded": 60
+    },
+    "target_price_relevance": "This run does not generate backtest signals or exits; target_price is not consumed."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only attribution over existing default-off paper state files; no helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "related_files": [
+    "data/paper_sleeves/*/state.json",
+    "data/reference/broad_market_sector_map.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260705-009.json",
+    "experiments/logs/exp-20260706-001.json",
+    "experiments/logs/exp-20260705-015.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260706_002_sector_concurrency_forward_rv.py",
+    "data/experiments/exp-20260706-002/exp_20260706_002_sector_concurrency_forward_rv.json",
+    "experiments/cards/exp-20260706-002.md",
+    "experiments/manifests/exp-20260706-002.json",
+    "experiments/tickets/exp-20260706-002.json",
+    "experiments/logs/exp-20260706-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-06T01:12:32+00:00"
+}

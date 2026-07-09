@@ -1,0 +1,286 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260708-027/exp_20260708_027_external_trend_baseline_batch.json",
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "drawdown_guard_failed",
+      "current_trend_long_not_beaten",
+      "thin_or_concentrated_representative",
+      "no_incremental_external_family"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_modes": {
+      "absolute_time_series_momentum_equal_weight": [
+        "aggregate_pnl_not_above_current_trend_long",
+        "fewer_than_two_windows_beat_trend_long",
+        "drawdown_above_guard"
+      ],
+      "spy_residual_momentum_top5": [
+        "aggregate_pnl_not_above_current_trend_long",
+        "drawdown_above_guard"
+      ]
+    },
+    "surprise_note": "Low surprise: prior Donchian and 12-1 results made another OHLCV-only external trend lead unlikely."
+  },
+  "causal_components": [
+    "residual_momentum_representative",
+    "time_series_momentum_representative",
+    "canonical_window_comparator",
+    "read_only_no_strategy_change",
+    "queue_park_verdict"
+  ],
+  "change_type": "entry_external_baseline_observed_only_replay",
+  "changed_files": [
+    "quant/experiments/exp_20260708_027_external_trend_baseline_batch.py",
+    "data/experiments/exp-20260708-027/exp_20260708_027_external_trend_baseline_batch.json",
+    "experiments/logs/exp-20260708-027.json",
+    "experiments/cards/exp-20260708-027.md",
+    "experiments/manifests/exp-20260708-027.json",
+    "experiments/tickets/exp-20260708-027.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "remaining_external_trend_baseline_batch_v1",
+  "completed_at": "2026-07-08T19:11:00Z",
+  "decision": "observed_only_rejected_external_trend_baseline_batch_queue_parked",
+  "experiment_id": "exp-20260708-027",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "private external residual/time-series momentum batch replay compared to accepted current trend_long by_strategy rows",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "entry fills use monthly rebalance Open after signal-date close",
+    "passed": true,
+    "required_fields": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "private_replay_trade_counts": {
+      "absolute_time_series_momentum_equal_weight": 465,
+      "spy_residual_momentum_top5": 75
+    },
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_rule": "Observed-only batch lead only: at least one fixed representative must beat current trend_long aggregate PnL, win at least two canonical windows versus trend_long, keep max window drawdown <= 16%, have trade_count >= 15, and be positive versus cash. A positive result still requires a shared helper/backtester Gate 1-4 before behavior changes.",
+    "aggregate": {
+      "current_trend_long_total_pnl": 131996.98,
+      "current_trend_long_trade_count": 39,
+      "variants": {
+        "absolute_time_series_momentum_equal_weight": {
+          "current_trend_long_total_pnl": 131996.98,
+          "current_trend_long_trade_count": 39,
+          "diagnostic_expected_value_score": 0.717354,
+          "diagnostic_total_return_pct": 0.429197,
+          "max_window_drawdown_pct": 0.162054,
+          "mean_window_sharpe_daily": 1.671387,
+          "pnl_delta_vs_trend_long": -89077.27,
+          "total_pnl": 42919.71,
+          "trade_count": 465,
+          "win_window_count_vs_trend_long": 0,
+          "win_windows_vs_trend_long": []
+        },
+        "spy_residual_momentum_top5": {
+          "current_trend_long_total_pnl": 131996.98,
+          "current_trend_long_trade_count": 39,
+          "diagnostic_expected_value_score": 2.346661,
+          "diagnostic_total_return_pct": 1.165471,
+          "max_window_drawdown_pct": 0.30416,
+          "mean_window_sharpe_daily": 2.013487,
+          "pnl_delta_vs_trend_long": -15449.83,
+          "total_pnl": 116547.15,
+          "trade_count": 75,
+          "win_window_count_vs_trend_long": 2,
+          "win_windows_vs_trend_long": [
+            "mid_weak",
+            "old_thin"
+          ]
+        }
+      }
+    },
+    "diagnostic_only": true,
+    "failed_reasons_by_variant": {
+      "absolute_time_series_momentum_equal_weight": [
+        "aggregate_pnl_not_above_current_trend_long",
+        "fewer_than_two_windows_beat_trend_long",
+        "drawdown_above_guard",
+        "not_full_gate4_private_external_replay"
+      ],
+      "spy_residual_momentum_top5": [
+        "aggregate_pnl_not_above_current_trend_long",
+        "drawdown_above_guard",
+        "not_full_gate4_private_external_replay"
+      ]
+    },
+    "full_gate4_passed": false,
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "label": "late_strong",
+        "trend_long_total_pnl": 42082.01,
+        "variants": {
+          "absolute_time_series_momentum_equal_weight": {
+            "beats_trend_long_pnl": false,
+            "ev": -3.7e-05,
+            "max_drawdown_pct": 0.162054,
+            "pnl_delta_vs_trend_long": -41831.2,
+            "total_pnl": 250.81,
+            "trade_count": 151
+          },
+          "spy_residual_momentum_top5": {
+            "beats_trend_long_pnl": false,
+            "ev": 0.089907,
+            "max_drawdown_pct": 0.30416,
+            "pnl_delta_vs_trend_long": -28125.84,
+            "total_pnl": 13956.17,
+            "trade_count": 25
+          }
+        }
+      },
+      {
+        "label": "mid_weak",
+        "trend_long_total_pnl": 54981.55,
+        "variants": {
+          "absolute_time_series_momentum_equal_weight": {
+            "beats_trend_long_pnl": false,
+            "ev": 1.18981,
+            "max_drawdown_pct": 0.02627,
+            "pnl_delta_vs_trend_long": -25370.08,
+            "total_pnl": 29611.47,
+            "trade_count": 148
+          },
+          "spy_residual_momentum_top5": {
+            "beats_trend_long_pnl": true,
+            "ev": 2.526307,
+            "max_drawdown_pct": 0.066032,
+            "pnl_delta_vs_trend_long": 10836.15,
+            "total_pnl": 65817.7,
+            "trade_count": 25
+          }
+        }
+      },
+      {
+        "label": "old_thin",
+        "trend_long_total_pnl": 34933.42,
+        "variants": {
+          "absolute_time_series_momentum_equal_weight": {
+            "beats_trend_long_pnl": false,
+            "ev": 0.132007,
+            "max_drawdown_pct": 0.15081,
+            "pnl_delta_vs_trend_long": -21875.99,
+            "total_pnl": 13057.43,
+            "trade_count": 166
+          },
+          "spy_residual_momentum_top5": {
+            "beats_trend_long_pnl": true,
+            "ev": 0.572896,
+            "max_drawdown_pct": 0.178692,
+            "pnl_delta_vs_trend_long": 1839.86,
+            "total_pnl": 36773.28,
+            "trade_count": 25
+          }
+        }
+      }
+    ]
+  },
+  "hypothesis": "Batch external-baseline diagnostic: fixed SPY-residual momentum and absolute time-series momentum representatives should beat the current trend_long comparator on canonical windows if the external trend baseline queue contains a deployable entry family rather than more OHLCV relabeling.",
+  "implementation_mode": "read_only_external_baseline_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-027.json",
+  "mechanism_family": "external_trend_baseline_batch",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260708-022",
+    "exp-20260708-024",
+    "exp-20260708-026"
+  ],
+  "new_evidence_axis": "Batch remaining representatives from the external baseline queue after multiple single-lane rejections: SPY-residual momentum and absolute time-series momentum are different fixed gate shapes from Donchian 55/20, vanilla 12-1 cross-sectional momentum, chop reversion, or low-vol admission; no lookback/top-N/threshold retune is allowed.",
+  "new_evidence_type": "new_gate_shape_batch_remaining_external_baselines",
+  "next_retry_requires": [
+    "park_external_ohlcv_trend_baseline_queue",
+    "reopen_only_with_new_data_source_material_forward_rows_or_shared_helper_required_by_positive_lead",
+    "no_more_single_external_ohlcv_momentum_baseline_ids_from_this_queue"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not consume more single OHLCV external trend baselines from the July 8 plan by changing residual lookback, beta benchmark, time-series positive threshold, top-N, hold days, liquidity floors, universe exclusions, costs, notional, or tie-breaks on the same frozen windows.",
+    "new_evidence_required": "A legal retry needs a genuinely new data source, materially more settled forward replacement-value rows from a fixed shared logger, or a positive batch representative promoted through shared production/backtest Gate 1-4.",
+    "why_result_happened": "Neither fixed remaining external trend representative cleared the predeclared private replay bar versus current trend_long. This finishes the July 8 external OHLCV trend baseline queue without a deployable lead."
+  },
+  "prediction": {
+    "confidence_reason": "Donchian and vanilla 12-1 momentum already failed; a batch test is still worth one ID because residualization and absolute time-series momentum are genuinely different external trend representatives, but the current trend_long comparator is strong and OHLCV-only relabeling has high failure risk.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "drawdown_guard_failed",
+      "current_trend_long_not_beaten",
+      "thin_or_concentrated_representative",
+      "no_incremental_external_family"
+    ],
+    "recorded_at": "2026-07-08T19:04:20+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_external_trend_baseline_batch_replay",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "{\"absolute_time_series_momentum_equal_weight\": [\"aggregate_pnl_not_above_current_trend_long\", \"fewer_than_two_windows_beat_trend_long\", \"drawdown_above_guard\"], \"spy_residual_momentum_top5\": [\"aggregate_pnl_not_above_current_trend_long\", \"drawdown_above_guard\"]}",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-027.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_027_external_trend_baseline_batch.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_027_external_trend_baseline_batch.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "remaining_external_trend_baseline_batch_v1",
+  "status": "observed_only",
+  "trial_family": "remaining_external_trend_baseline_batch",
+  "trial_variant_id": "residual_and_time_series_momentum_v1"
+}

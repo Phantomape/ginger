@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `123`
-- Accepted / rejected: `16` / `100`
-- Accept rate: `13.01%`
-- Sum EV delta: `+71.7916`
-- Sum PnL delta: `$1,426,627.62`
-- Latest: `exp-20260628-001` `rejected_duplicate_sbc_allocator_source_admission_no_new_evidence` with EV `+0.0000` and PnL `$0.00`.
+- Experiments: `124`
+- Accepted / rejected: `16` / `101`
+- Accept rate: `12.90%`
+- Sum EV delta: `+71.7601`
+- Sum PnL delta: `$1,426,177.75`
+- Latest: `exp-20260708-003` `rejected_sec_item502_leadership_quality_text` with EV `-0.0315` and PnL `$-449.87`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260616-016` `rejected_sbc_burden_rank2_allocator_source_extension`: EV `+0.7532`, PnL `$23,673.34`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The SBC burden source did not add enough incremental allocator replacement value after lagged consensus. It either overlapped existing accepted source dates or displaced better lower-rank allocator rows, especially ve...
 - `exp-20260618-021` `rejected_sbc_burden_no_displacement_gap_allocator`: EV `+2.1267`, PnL `$41,141.15`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
   Lesson: Removing displacement was not sufficient. The remaining SBC candidates on empty allocator dates were too low quality, too thin, or failed the accepted allocator comparator, which means the standalone SBC edge mostly o...
 - `exp-20260618-022` `rejected_distribution_no_displacement_gap_allocator`: EV `+2.3061`, PnL `$42,370.24`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The comparator repair was useful measurement work: all 33 rows are now enriched. The alpha/readiness result is still negative because the only moderately populated sleeve is low_deployment_etf with 17 QQQ-only rows, w...
 - `exp-20260628-001` `rejected_duplicate_sbc_allocator_source_admission_no_new_evidence`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_helper_source_priority_allocator_source_extension`.
   Lesson: The claimed source admission was a stale near-neighbor of a known failed allocator experiment, not a new alpha test. Do not retry by changing SBC source rank, SBC/revenue thresholds, revenue/gross-profit floors, fact-...
+- `exp-20260708-003` `rejected_sec_item502_leadership_quality_text`: EV `-0.0315`, PnL `$-449.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `sec_item502_leadership_quality_text_candidate_pool`.
+  Lesson: Gate 4 evaluated the fixed text-quality Item 5.02 policy: EV delta -0.0315, PnL delta -449.87, failed ['aggregate_ev_not_positive', 'aggregate_pnl_not_positive', 'window_ev_regression', 'window_pnl_regression', 'targe...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260621-004` source `experiments/logs/exp-20260621-004.json`.
 - `exp-20260621-006` source `experiments/logs/exp-20260621-006.json`.
 - `exp-20260621-007` source `experiments/logs/exp-20260621-007.json`.
 - `exp-20260621-008` source `experiments/logs/exp-20260621-008.json`.
 - `exp-20260622-013` source `experiments/logs/exp-20260622-013.json`.
 - `exp-20260628-001` source `experiments/logs/exp-20260628-001.json`.
+- `exp-20260708-003` source `experiments/logs/exp-20260708-003.json`.

@@ -1,0 +1,261 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-001.md",
+  "causal_components": [
+    "experiment_fingerprint_keywords",
+    "focused_tests",
+    "frozen_family_rebuild",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "borrow_availability_ortex_fingerprint_coverage_v1",
+  "claimed_at": "2026-07-08T00:14:13+00:00",
+  "completed_at": "2026-07-08T00:17:40+00:00",
+  "created_at": "2026-07-08T00:13:31+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-001",
+  "experiment_uid": "expuid-cebe274d8bdf42fb",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T00:13:31+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "borrow_ortex_fingerprint_coverage"
+  },
+  "hypothesis": "Alpha blocker: PIT borrow fee, loan availability, and ORTEX borrow economics are named reopen axes for frozen FINRA/options/short-flow work, but the novelty guard currently classifies Moomoo borrow-availability and ORTEX readiness families as finra_short_interest because the generic FINRA bucket owns borrow; add distinct data-source fingerprints so future borrow alpha proposals are audited under the right surface without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "borrow_availability_ortex_fingerprint_coverage_v1"
+  ],
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-003",
+    "exp-20260627-002",
+    "exp-20260627-023",
+    "exp-20260628-004",
+    "exp-20260707-022",
+    "exp-20260707-023",
+    "exp-20260707-024"
+  ],
+  "new_evidence_type": "novelty_guard_classifier_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "add",
+        "alpha",
+        "are",
+        "as",
+        "audited",
+        "availability",
+        "axes",
+        "because",
+        "behavior",
+        "blocker",
+        "borrow",
+        "bucket",
+        "but",
+        "changing",
+        "classifies",
+        "coverage",
+        "currently",
+        "data",
+        "distinct",
+        "economics",
+        "families",
+        "fee",
+        "fingerprint",
+        "fingerprints",
+        "finra",
+        "flow",
+        "frozen",
+        "future",
+        "generic",
+        "guard",
+        "interest",
+        "loan",
+        "moomoo",
+        "named",
+        "novelty",
+        "options",
+        "ortex",
+        "owns",
+        "pit",
+        "proposals",
+        "readiness",
+        "reopen",
+        "right",
+        "short",
+        "so",
+        "strategy",
+        "surface",
+        "under",
+        "without",
+        "work"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "moomoo_borrow_availability_readiness_gate",
+        "reopen_condition": "A valid retry needs populated short_sell_rate_pct and/or short_available_volume rows over at least 20 forward dates, then closed forward replacement-value attribution versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4944,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 borrow-fee tickers over 20 decision dates, then closed forward replacement-value rows versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4791,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "ortex_short_interest_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "post_exp20260627_alpha_surface_readiness",
+        "reopen_condition": "Next legal alpha evidence requires materially more closed forward replacement rows, mature estimate-revision 3/5/10d selected/current outcomes, post-exp024 intraday closed rows with primary actions, populated PIT borrow economics, replayable historical 6-K or 10-K/10-Q text/status rows, or a genuinely new production-visible source.",
+        "score": 0.4786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "reopen_guard_surface_identity_repair",
+        "reopen_condition": "If another false positive appears, add a concrete surface-identity regression before changing the guard.",
+        "score": 0.4786,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Concrete classifier miss: frozen_families currently keys moomoo_borrow_availability and ORTEX borrow/readiness surfaces under finra_short_interest; repair is a measurement identity fix, not an alpha retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "finra_short_interest",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Concrete classifier miss: frozen_families currently keys moomoo_borrow_availability and ORTEX borrow/readiness surfaces under finra_short_interest; repair is a measurement identity fix, not an alpha retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The current frozen-family rows show three borrow/ORTEX readiness families mapped to finra_short_interest; the intended repair is a deterministic keyword ordering/test update.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "overmatching_generic_finra",
+      "missing_focused_tests",
+      "stale_frozen_family_rebuild"
+    ],
+    "recorded_at": "2026-07-08T00:12:54+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260708-001/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260708-001/after_measurement.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.86,
+      "brier_score": 0.0196,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "overmatching_generic_finra",
+        "missing_focused_tests",
+        "stale_frozen_family_rebuild"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Low surprise; the expected keyword-ordering repair worked after putting ORTEX before generic loan-availability text."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-001.json",
+  "single_causal_variable": "borrow_availability_ortex_fingerprint_coverage_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260708-001.json",
+  "trial_family": "borrow_availability_ortex_fingerprint_coverage",
+  "trial_variant_id": "v1"
+}

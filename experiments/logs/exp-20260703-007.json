@@ -1,0 +1,183 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Moomoo daily main capital-flow may identify accumulation candidates, but the rejected historical top-1 test needs automatically accumulated forward rows before any new allocation claim.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": null,
+    "surprise_note": "Wiring matched the existing paper-sleeve pattern; tests pin the shared helper call and prompt exclusion."
+  },
+  "causal_components": [
+    "run.py shared helper import",
+    "fail-soft default-off paper sleeve build",
+    "daily quant artifact exposure",
+    "prompt-facing trend_signals exclusion",
+    "wiring tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+    "data/experiments/exp-20260703-007/exp_20260703_007_moomoo_capital_flow_daily_wiring.json",
+    "experiments/logs/exp-20260703-007.json",
+    "experiments/cards/exp-20260703-007.md",
+    "experiments/manifests/exp-20260703-007.json",
+    "experiments/tickets/exp-20260703-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "moomoo_capital_flow_daily_default_off_snapshot_wiring_v1",
+  "decision": "accepted_measurement_repair_moomoo_capital_flow_daily_wiring",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260703-007",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "entry_date",
+      "target_price",
+      "flow_date",
+      "main_in_flow",
+      "main_flow_ratio",
+      "trade_enabled",
+      "moomoo_capital_flow_paper_sleeve"
+    ],
+    "passed": true,
+    "wiring_checks": {
+      "daily_quant_artifact_exposes_snapshot": true,
+      "focused_tests_cover_wiring": true,
+      "helper_call_passes_daily_context": true,
+      "helper_contract_is_default_off": true,
+      "not_added_to_prompt_trend_signals": true,
+      "run_daily_path_calls_shared_helper": true,
+      "run_daily_path_has_empty_fail_soft_snapshot": true,
+      "shared_helper_imported": true
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, prompt, or exit rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "mode": "measurement_repair_identity_plus_wiring_gate",
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Wire the shared Moomoo capital-flow default-off paper helper into run.py daily snapshots so future settled forward rows can accumulate after the rejected historical top-1 test, without changing live orders, ranking, sizing, exits, prompts, or core signals.",
+  "implementation_mode": "shared_default_off_daily_snapshot_wiring",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260703-007.json",
+  "mechanism_family": "moomoo_capital_flow_day_accumulation_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-016",
+    "exp-20260702-019",
+    "exp-20260625-003",
+    "exp-20260625-019",
+    "exp-20260625-024"
+  ],
+  "new_evidence_axis": "Forward row accumulation via run.py daily snapshot for an existing shared Moomoo capital-flow helper. This is not a same-window threshold retune, response-curve retune, or observed-only reslice.",
+  "new_evidence_type": "daily_pipeline_wiring_for_existing_shared_moomoo_capital_flow_helper",
+  "next_retry_requires": [
+    "materially more settled forward rows from automatic daily snapshots",
+    "a genuinely different capital-flow vendor decomposition",
+    "or PIT borrow fee/utilization/availability economics"
+  ],
+  "observer_contract": {
+    "artifact_paths": {
+      "manifest": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+      "rows": "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+      "snapshots": "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl",
+      "state": "data/paper_sleeves/moomoo_capital_flow/state.json"
+    },
+    "default_off": true,
+    "paper_enabled": true,
+    "paper_rule_version": "moomoo_capital_flow_day_main_inflow_top1_v1",
+    "sleeve_name": "MOOMOO_CAPITAL_FLOW_ACCUMULATION_PAPER",
+    "source_rule_version": "moomoo_get_capital_flow_day_archive_v1",
+    "trade_enabled": false
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve IDs for Moomoo capital-flow threshold/ranking/response retunes or daily hand-refreshes on the same rows.",
+    "new_evidence_required": "Materially more closed forward rows from automatic daily snapshots, a genuinely different vendor flow decomposition, or PIT borrow economics.",
+    "why_result_happened": "The shared helper from exp-20260702-019 already carried the state machine, archive refresh, and default-off paper contract; the missing piece was daily run.py exposure so rows can mature."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": true,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "run.py now calls the shared default-off Moomoo capital-flow paper sleeve and stores its snapshot in the daily quant artifact. It is not added to trend_signals_dict, prompts, live ranking, sizing, exits, or orders.",
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -c \"import ast, pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ['quant/run.py','quant/test_run_daily_wiring.py','quant/moomoo_capital_flow_paper_sleeve.py']]\"",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_moomoo_capital_flow_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_007_moomoo_capital_flow_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "moomoo_capital_flow_daily_default_off_snapshot_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T07:27:58.480724+00:00",
+  "trial_family": "moomoo_capital_flow_daily_default_off_snapshot_wiring",
+  "trial_variant_id": "moomoo_capital_flow_daily_wiring_v1"
+}

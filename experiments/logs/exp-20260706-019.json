@@ -1,0 +1,67 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Standing live-vs-model drift reconciliation shipped per docs/live_drift_reconciliation.md: quant/live_drift_reconciliation.py builds a daily ledger (data/live_pilot/live_drift/) comparing every moomoo long position against the backtest fill model (fill_drift, realized vs modeled return, trajectory_drift), bucketed core/sleeve/discretionary_legacy, idempotent per (asof, position_id), with a 10-consecutive-session core-drift alert wired into run.py logging. First live run reconciled 7/11 positions and immediately surfaced real measurement facts: blended avg_cost vs first-fill entry_date fakes +38% fill drift on scaled-in positions (now flagged suspect_multi_fill and excluded from aggregates), 4 positions predate warehouse coverage, and no live position carries a core tag yet. 8 tests. Strategy behavior untouched (observe-only; before==after baseline).",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "live_drift_reconciliation_daily_surface: data/live_pilot/live_drift ledger.jsonl + state.json, idempotent per (asof_date, position_id), wired into run.py after the moomoo open-positions refresh, observe-only",
+  "component": "quant/experiments/exp_20260706_019_live_drift_reconciliation.py, data/experiments/exp-20260706-019/exp_20260706_019_live_drift_reconciliation.json, experiments/cards/exp-20260706-019.md, experiments/manifests/exp-20260706-019.json, experiments/tickets/exp-20260706-019.json, experiments/logs/exp-20260706-019.json, docs/experiment_log.jsonl, docs/experiment_registry.json, quant/live_drift_reconciliation.py, quant/test_live_drift_reconciliation.py, quant/run.py, data/live_pilot/live_drift/, docs/live_drift_reconciliation.md",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260706-019",
+  "hypothesis": "Alpha blocker: the system cannot detect live-vs-model drift of the core stack because no surface reconciles moomoo realized positions against backtest-model expectations; a daily live-drift ledger (fill drift + trajectory drift per position, bucketed core/sleeve/discretionary) makes silent edge or execution decay visible per docs/live_drift_reconciliation.md.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "This closes blindspot #1 from the 2026-07-06 system review: replay parity proves replays match, but nothing watched whether the LIVE book tracks the model. v1 covers open-position fill and trajectory drift; exit-side reconciliation is gated on a materialized moomoo deal-history surface (>=20 closed trades, recorded reopen condition). Known v1.1 calibration item: warehouse adjustment convention vs broker raw fills may add a constant offset; the alert watches consecutive deterioration so a constant offset does not false-fire.",
+  "parameters": {
+    "locked_variables": [
+      "live_drift_reconciliation_daily_surface: data/live_pilot/live_drift ledger.jsonl + state.json, idempotent per (asof_date, position_id), wired into run.py after the moomoo open-positions refresh, observe-only"
+    ],
+    "single_causal_variable": "live_drift_reconciliation_daily_surface: data/live_pilot/live_drift ledger.jsonl + state.json, idempotent per (asof_date, position_id), wired into run.py after the moomoo open-positions refresh, observe-only"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to re-run or re-summarize this daily reconciliation; it is wired into run.py and routine refresh takes no IDs (AGENTS.md routine-delta rule). Do not open a near-neighbor 'audit the drift ledger readiness' ticket while sessions accumulate.",
+    "new_evidence_required": "v1.1: verify warehouse OHLCV adjustment convention vs broker raw fills (constant-offset calibration). v2 reopen: a materialized moomoo deal-history surface with >=20 closed trades enables exit-side realized-vs-modeled reconciliation. Alert semantics become meaningful once core-tagged fills exist and >=10 sessions accumulate.",
+    "realized_failure_mode": null,
+    "why_result_happened": "Expected a plumbing exercise; the first run instead immediately found that the live book is less reconcilable than assumed - blended-cost scale-ins, four positions older than warehouse coverage, and zero core-tagged fills. The instrument justified itself on day one by measuring the measurement gap."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-06T17:12:32+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260706-019"
+}

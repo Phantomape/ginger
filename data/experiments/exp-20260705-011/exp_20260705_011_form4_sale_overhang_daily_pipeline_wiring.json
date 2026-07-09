@@ -1,0 +1,66 @@
+{
+  "alpha_hypothesis": "Risk allocation: PIT Form4 sale, 10b5-1, and officer-sale overhang may flag loss-tail risk, but alpha response remains parked until enough prospective context rows close with cash/SPY/QQQ RV.",
+  "baseline": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "before_gap_snapshot": {
+    "daily_snapshot_path": "data/non_ohlcv/daily_non_ohlcv_snapshot_20260704.json",
+    "daily_snapshot_status": "ok",
+    "date_tag": "20260704",
+    "form4_sale_overhang_context_path_exists": false,
+    "form4_sale_overhang_context_reason": "refresh_form4_context_false",
+    "form4_sale_overhang_context_status": "skipped",
+    "form4_transactions_rows": 655
+  },
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.py",
+    "data/experiments/exp-20260705-011/exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.json"
+  ],
+  "changed_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1",
+  "decision": "accepted_measurement_repair_form4_sale_overhang_daily_pipeline_wiring",
+  "experiment_id": "exp-20260705-011",
+  "gate4": {
+    "reason": "Measurement repair only: the change requests data-only context rows in run.py daily non-OHLCV coverage and does not change entries, exits, ranking, sizing, risk budget, or orders.",
+    "required": false
+  },
+  "generated_at": "2026-07-05T13:20:50+00:00",
+  "lane": "measurement_repair",
+  "post_run_reflection": "Do not retune Form4 alpha responses on the current row set. The next valid Form4 alpha step still requires the shared helper's reopen gate: at least 25 closed rows, at least 8 high-sale-overhang rows, cash/SPY/QQQ replacement values, and max single-ticker share <=40%.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "default_off_form4_sale_overhang_context_daily_collection_only",
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "single_causal_variable": "form4_sale_overhang_daily_pipeline_context_wiring_v1",
+  "verification_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_daily_non_ohlcv_snapshot.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_011_form4_sale_overhang_daily_pipeline_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "wiring_checks": {
+    "all_checks_passed": true,
+    "daily_builder_found": true,
+    "ensure_call_count": 1,
+    "ensure_refresh_form4_context_true": true,
+    "fallback_call_count": 1,
+    "fallback_refresh_form4_context_true": true
+  }
+}

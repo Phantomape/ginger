@@ -1,0 +1,256 @@
+{
+  "acceptance_rule": "Accept as measurement repair if news_event_exposure observer/attribution/top1 families infer data_source=news_event_exposure, generic entity-theme/intraday/ohlcv relation mappings do not regress, frozen families rebuild without other leakage for this surface, and strategy metrics remain identity.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-016.md",
+  "causal_components": [
+    "news_event_exposure keyword mapping",
+    "regression tests",
+    "frozen-family rebuild audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "news_event_exposure_data_source_keywords",
+  "claimed_at": "2026-07-08T13:11:28+00:00",
+  "completed_at": "2026-07-08T13:16:16+00:00",
+  "created_at": "2026-07-08T13:11:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-016",
+  "experiment_uid": "expuid-8df66799092d4fe3",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-016",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T13:11:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_event_exposure_fingerprint_coverage"
+  },
+  "hypothesis": "Alpha-enabling repair: second-order structured-news exposure alpha tests are not trustworthy while news_event_exposure observer families still fingerprint as other, because novelty and observed-only saturation guards cannot count the surface correctly.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "news_event_exposure_fingerprint_coverage_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-026",
+    "exp-20260707-023",
+    "exp-20260708-015"
+  ],
+  "new_evidence_type": "concrete_classifier_miss_on_news_event_exposure_surface",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "are",
+        "as",
+        "because",
+        "cannot",
+        "correctly",
+        "count",
+        "coverage",
+        "daily",
+        "enabling",
+        "event",
+        "exposure",
+        "families",
+        "fingerprint",
+        "guards",
+        "llm",
+        "news",
+        "not",
+        "novelty",
+        "observed",
+        "observer",
+        "only",
+        "order",
+        "other",
+        "repair",
+        "saturation",
+        "scoring",
+        "second",
+        "still",
+        "structured",
+        "surface",
+        "tests",
+        "trustworthy",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "news_event_second_order_exposure_observer",
+        "reopen_condition": "More closed rows per (polarity x relation_type) cell — target >= 50 per cell — then one predeclared attribution read reusing the exp-20260702-017 baseline framework.",
+        "score": 0.0737,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "news_event_second_order_exposure_attribution",
+        "reopen_condition": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition.",
+        "score": 0.0632,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_daily_observation_snapshot",
+        "reopen_condition": "Let daily runs accumulate new forward observations, then close them against cash/SPY/QQQ replacement value; alternatively add a true PIT LLM scorer using the same evidence-span schema or canonical-window daily-news coverage.",
+        "score": 0.0556,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_structured_news",
+        "family_key": "intraday_structured_news_fingerprint_coverage",
+        "reopen_condition": "A valid retry needs a concrete new intraday structured-news family still landing in other/ohlcv_relation, evidence that intraday_structured_news overmatches a generic relation/news family, at least 9 closed rows with complete cash/SPY/QQQ replacement values including at least 3 target-relation-quality closed rows, or a genuinely new intraday execution gate shape.",
+        "score": 0.0541,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+        "score": 0.0541,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Measurement-repair classifier miss: frozen families for news_event_exposure observer and second-order exposure attribution currently land in data_source=other despite an accepted observer surface; fixing the classifier changes novelty accounting only and does not retune alpha rows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Measurement-repair classifier miss: frozen families for news_event_exposure observer and second-order exposure attribution currently land in data_source=other despite an accepted observer surface; fixing the classifier changes novelty accounting only and does not retune alpha rows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The miss is visible in frozen_families.jsonl and the change is a narrow classifier mapping with nearby precedents for intraday_structured_news and space_catalyst.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword_order_regression",
+      "broad_news_overmatch",
+      "frozen_family_rebuild_failure"
+    ],
+    "recorded_at": "2026-07-08T13:10:22+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260708-016/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260708-016/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "keyword_order_regression",
+        "broad_news_overmatch",
+        "frozen_family_rebuild_failure"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The narrow keyword mapping worked as expected and did not overmatch entity-theme, intraday structured-news, or OHLCV relation cases."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-016.json",
+  "single_causal_variable": "news_event_exposure_fingerprint_coverage_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260708-016.json",
+  "trial_family": "news_event_exposure_fingerprint_coverage",
+  "trial_variant_id": "exp-20260708-016"
+}

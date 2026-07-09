@@ -1,24 +1,239 @@
 {
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "The alpha-score market-regime paper sleeve can only produce usable forward replacement-value evidence if its same-day pending queue is idempotent and visible in the daily report.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": false,
+    "predicted_success_probability": null,
+    "surprise_note": "Behavioral probes confirmed the implementation already present in the shared helper and report generator."
+  },
+  "causal_components": [
+    "same-asof pending count guard",
+    "daily_entry_slots capacity cap",
+    "snapshot pending_entries exposure",
+    "daily report pending queue rendering",
+    "default-off no-order contract"
+  ],
+  "change_summary": "Verified same-signal-day pending admission is capped by daily_entry_slots and report rendering uses pending_entries.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/alpha_score_market_regime_paper_sleeve.py",
+    "quant/report_generator.py",
+    "quant/test_alpha_score_market_regime_paper_sleeve.py",
+    "quant/experiments/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+    "data/experiments/exp-20260701-004/exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.json",
+    "experiments/logs/exp-20260701-004.json",
+    "experiments/cards/exp-20260701-004.md",
+    "experiments/manifests/exp-20260701-004.json",
+    "experiments/tickets/exp-20260701-004.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_variable": "idempotent same-day pending admission + report renders true pending queue",
+  "decision": "accepted_measurement_repair_alpha_score_same_day_idempotency_pending_report",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
   "experiment_id": "exp-20260701-004",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "checks": {
+      "first_run_new_pending_count_is_one": true,
+      "first_run_pending_count_is_one": true,
+      "first_run_ticker_is_win": true,
+      "fresh_candidate_not_required": true,
+      "orders_unchanged": true,
+      "pending_notional_rendered": true,
+      "pending_queue_header_rendered": true,
+      "second_run_candidate_is_win2": true,
+      "second_run_new_pending_count_is_zero": true,
+      "second_run_pending_count_stays_one": true,
+      "second_run_pending_queue_stays_win": true,
+      "section_rendered_from_pending_count": true,
+      "stale_pending_signal_date_rendered": true,
+      "stale_pending_ticker_rendered": true,
+      "trade_enabled_false": true,
+      "win2_rejected_by_daily_capacity": true
+    },
+    "entry_date_target_price_note": "The repaired object is a next-open default-off paper pending queue, not an executable signal row; entry_date and target_price remain outside this measurement surface.",
+    "fields": [
+      "pending_entries",
+      "created_asof",
+      "candidate",
+      "notional",
+      "daily_entry_slots",
+      "trade_enabled"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No buy/sell/filter/ranking/sizing rule changed; paper ledger measurement survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [],
+    "idempotency_check": {
+      "as_of": "2026-03-02",
+      "checks": {
+        "first_run_new_pending_count_is_one": true,
+        "first_run_pending_count_is_one": true,
+        "first_run_ticker_is_win": true,
+        "orders_unchanged": true,
+        "second_run_candidate_is_win2": true,
+        "second_run_new_pending_count_is_zero": true,
+        "second_run_pending_count_stays_one": true,
+        "second_run_pending_queue_stays_win": true,
+        "trade_enabled_false": true,
+        "win2_rejected_by_daily_capacity": true
+      },
+      "first": {
+        "candidate_count": 2,
+        "new_pending_count": 1,
+        "pending_count": 1,
+        "pending_tickers": [
+          "WIN"
+        ]
+      },
+      "passed": true,
+      "second": {
+        "candidate_count": 1,
+        "candidate_tickers": [
+          "WIN2"
+        ],
+        "new_pending_count": 0,
+        "pending_count": 1,
+        "pending_tickers": [
+          "WIN"
+        ],
+        "rejected_win2_reasons": [
+          "daily_top1_or_capacity_limit"
+        ]
+      }
+    },
+    "mode": "measurement_repair_behavioral_contract",
+    "passed": true,
+    "report_check": {
+      "checks": {
+        "fresh_candidate_not_required": true,
+        "pending_notional_rendered": true,
+        "pending_queue_header_rendered": true,
+        "section_rendered_from_pending_count": true,
+        "stale_pending_signal_date_rendered": true,
+        "stale_pending_ticker_rendered": true
+      },
+      "passed": true,
+      "report_excerpt": [
+        "ALPHA-SCORE MARKET-REGIME PAPER SLEEVE",
+        "  Candidates: 0  |  Rejected: 0  |  Pending: 1  |  Open: 0  |  Closed today: 0",
+        "  Pending queue (next-open paper buys):",
+        "    CAT: signal 2026-06-30 alpha=0.91 rank_pct=0.04 notional=$4,000 (paper only)"
+      ]
+    },
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Same-signal-day re-runs of the alpha_score_market_regime paper sleeve accumulate multiple pending entries beyond daily_entry_slots, and the daily report renders new-candidates-this-run instead of the actual pending queue, so state.json pending and the report disagree (CAT appears in state pending but not in the 6/30 report).",
+  "implementation_mode": "measurement_repair",
   "lane": "measurement_repair",
-  "change_type": "measurement_repair",
-  "title": "alpha_score_market_regime paper sleeve: same-signal-day idempotency + report renders true pending queue",
-  "trigger": "Operator found CAT listed as rank-1 pending buy in data/paper_sleeves/alpha_score_market_regime/state.json but ABSENT from data/daily/reports/report_20260630.txt; the two disagreed.",
-  "root_cause": {
-    "double_run": "The daily pipeline processed the 2026-06-30 close signal twice (snapshots generated_at 2026-07-01T03:43:40Z and 2026-07-01T05:06:12Z, both asof_date=2026-06-30; identical universe 57 tickers / 53 ranked / identical alpha scores).",
-    "bug_a_non_idempotent_admission": "build_alpha_score_market_regime_paper_sleeve_snapshot computed capacity = min(room, daily_entry_slots) without subtracting pending entries already created for the same as_of. Run 1 captured CAT (rank 1) into pending_entries; run 2 excluded CAT via already_pending_in_paper_sleeve and then granted a FRESH daily slot to the next-ranked candidate GEV. Result: 2 pending entries (CAT+GEV) for one signal day although daily_entry_slots=1.",
-    "bug_b_report_shows_new_candidates_not_pending": "report_generator.generate_daily_report rendered alpha_score_market_regime_paper_sleeve['candidates'] (new-this-run shortlist). On run 2 CAT was excluded from that shortlist (already pending), so a real pending paper buy vanished from the operator-facing report while remaining in state.json pending_entries."
+  "log": "experiments/logs/exp-20260701-004.json",
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260531-021",
+    "exp-20260701-005"
+  ],
+  "new_evidence_axis": "Ledger/report parity repair for an already accepted default-off paper adapter; no new alpha threshold or response curve was tested.",
+  "new_evidence_type": "measurement_repair_for_forward_paper_ledger",
+  "next_retry_requires": [
+    "closed forward paper replacement-value rows emitted after this repair",
+    "a materially different production-visible PIT alpha source",
+    "or an activation-envelope audit after the repaired ledger matures"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune alpha-score regime thresholds, top-decile cutoffs, paper notional, or response curves on this repair. The next alpha step needs closed forward replacement-value rows from the repaired ledger.",
+    "new_evidence_required": "Closed alpha_score_market_regime paper outcomes with replacement value versus cash/SPY/QQQ or a materially different production-visible PIT source.",
+    "why_result_happened": "The sleeve now subtracts already-created same-asof pending entries from daily_entry_slots before admitting new paper entries, and the report renders pending_entries directly. A re-run can still see a valid next-ranked candidate, but it does not grant a fresh daily slot."
   },
-  "disproven_hypothesis": {
-    "data_timing_backfill": "Considered that CAT's score was backfilled late (would make CAT a spurious signal). DISPROVEN: both same-day runs had identical universe size (57/53) and byte-identical alpha scores for GEV/DE/AMD/INTC; CAT ranked #1 stably at alpha_score=0.712875 in the first run. CAT is a legitimate rank-1 candidate; the defect is purely idempotency + reporting, not signal validity."
+  "prediction": null,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "This closes a default-off paper ledger/report parity defect only. The sleeve still emits no live orders and does not alter core signals, ranking, sizing, exits, heat, LLM prompts, or watchlists.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
   },
-  "fix": {
-    "quant/alpha_score_market_regime_paper_sleeve.py": "Subtract pending_for_asof (pending entries whose created_asof == as_of_date) from daily_entry_slots when computing capacity, making same-signal-day re-runs idempotent (pending capped at daily_entry_slots per signal day).",
-    "quant/report_generator.py": "Render an explicit 'Pending queue (next-open paper buys)' block from alpha_score_market_regime_paper_sleeve['pending_entries'] so an entry captured by an earlier same-day run stays visible; report and state.json pending can no longer disagree."
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\alpha_score_market_regime_paper_sleeve.py quant\\report_generator.py quant\\test_alpha_score_market_regime_paper_sleeve.py quant\\experiments\\exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_score_market_regime_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260701_004_alpha_score_sleeve_same_day_idempotency_and_pending_report.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py rebuild-log",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "idempotent same-day pending admission + report renders true pending queue",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-03T11:15:37.178591+00:00",
+  "trial_family": "alpha_score_market_regime_paper_ledger_repair",
+  "trial_variant_id": "same_day_idempotency_and_pending_report_v1",
+  "verification": {
+    "report_pending_queue": true,
+    "runner_self_check": true,
+    "same_day_idempotency": true
   },
-  "test": "quant/test_alpha_score_market_regime_paper_sleeve.py::test_same_signal_day_rerun_is_idempotent_and_does_not_double_admit — two-strong-candidate universe (WIN rank1, WIN2 rank2, top_decile=2); run 1 admits only WIN; re-run keeps WIN2 as a valid candidate but the daily-slot guard rejects it (daily_top1_or_capacity_limit), pending stays [WIN].",
-  "production_impact": "None on live orders. Sleeve is trade_enabled=False, paper-only, alters_orders=False. Change affects paper-sleeve state hygiene and operator report fidelity only; no live buy/sell/rank/size/heat/LLM path touched.",
-  "residual_state_note": "The already-corrupted live state (CAT+GEV both pending for 2026-06-30) is NOT retroactively edited by this repair to avoid racing the scheduled auto-committer; the fix prevents recurrence. Cleaning the stale extra GEV pending is an optional follow-up.",
-  "before_metrics": {"expected_value_score": null, "total_pnl": null, "note": "measurement_repair; no strategy metric before"},
-  "after_metrics": {"expected_value_score": null, "total_pnl": null, "note": "measurement_repair; no strategy metric after"}
+  "write_fallbacks": []
 }

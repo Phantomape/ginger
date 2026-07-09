@@ -1,0 +1,485 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "experiments/cards/exp-20260708-024.md",
+    "experiments/manifests/exp-20260708-024.json",
+    "experiments/tickets/exp-20260708-024.json",
+    "experiments/logs/exp-20260708-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "predicted_success_probability": 0.22,
+    "realized_success": false,
+    "realized_failure_modes": [
+      "momentum_drawdown_above_guard"
+    ]
+  },
+  "card_file": "experiments/cards/exp-20260708-024.md",
+  "causal_components": [
+    "fixed 252-to-21 momentum ranking",
+    "monthly rebalance",
+    "next-open entry",
+    "21-session hold",
+    "5-position cap",
+    "canonical OHLCV snapshots",
+    "no strategy behavior change"
+  ],
+  "change_type": "entry_external_baseline_observed_only_replay",
+  "changed_files": [
+    "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "experiments/logs/exp-20260708-024.json",
+    "experiments/cards/exp-20260708-024.md",
+    "experiments/manifests/exp-20260708-024.json",
+    "experiments/tickets/exp-20260708-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "claimed_at": "2026-07-08T18:05:45+00:00",
+  "completed_at": "2026-07-08T18:11:07+00:00",
+  "created_at": "2026-07-08T18:05:36+00:00",
+  "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-024",
+  "experiment_uid": "expuid-15fa6de655054de2",
+  "gate1": {
+    "baseline_available": true,
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "baseline_protocol": "private external 12-1 monthly momentum replay compared to accepted current trend_long by_strategy rows",
+    "passed": true
+  },
+  "gate2": {
+    "required_fields": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "entry_date_contract": "entry fills use monthly rebalance Open after signal-date close",
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true,
+    "passed": true
+  },
+  "gate3": {
+    "no_filter_added_to_strategy": true,
+    "private_replay_trade_count": 75,
+    "rebalance_count": {
+      "late_strong": 7,
+      "mid_weak": 7,
+      "old_thin": 7
+    },
+    "eligible_candidate_count_sum": {
+      "late_strong": 266,
+      "mid_weak": 266,
+      "old_thin": 266
+    },
+    "passed": true
+  },
+  "gate4": {
+    "diagnostic_only": true,
+    "observed_only_lead": false,
+    "full_gate4_passed": false,
+    "failed_reasons": [
+      "momentum_drawdown_above_guard",
+      "not_full_gate4_private_external_replay"
+    ],
+    "aggregate": {
+      "momentum_total_pnl": 143385.65,
+      "momentum_trade_count": 75,
+      "current_trend_long_total_pnl": 131996.98,
+      "current_trend_long_trade_count": 39,
+      "pnl_delta_vs_trend_long": 11388.67,
+      "momentum_win_window_count_vs_trend_long": 2,
+      "momentum_win_windows_vs_trend_long": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_window_drawdown_pct": 0.294481,
+      "diagnostic_total_return_pct": 1.433857,
+      "mean_window_sharpe_daily": 2.323445,
+      "diagnostic_expected_value_score": 3.331487
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "momentum_total_pnl": 16166.91,
+        "momentum_trade_count": 25,
+        "momentum_ev": 0.111634,
+        "momentum_max_drawdown_pct": 0.294481,
+        "trend_long_total_pnl": 42082.01,
+        "pnl_delta_vs_trend_long": -25915.1,
+        "momentum_beats_trend_pnl": false
+      },
+      {
+        "label": "mid_weak",
+        "momentum_total_pnl": 66480.13,
+        "momentum_trade_count": 25,
+        "momentum_ev": 2.608811,
+        "momentum_max_drawdown_pct": 0.066032,
+        "trend_long_total_pnl": 54981.55,
+        "pnl_delta_vs_trend_long": 11498.58,
+        "momentum_beats_trend_pnl": true
+      },
+      {
+        "label": "old_thin",
+        "momentum_total_pnl": 60738.61,
+        "momentum_trade_count": 25,
+        "momentum_ev": 1.430775,
+        "momentum_max_drawdown_pct": 0.151703,
+        "trend_long_total_pnl": 34933.42,
+        "pnl_delta_vs_trend_long": 25805.19,
+        "momentum_beats_trend_pnl": true
+      }
+    ]
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-024",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T18:05:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cross_sectional_12_1_momentum_external_baseline"
+  },
+  "hypothesis": "External baseline: a fixed 12-1 cross-sectional momentum policy that ranks core-universe stocks by 252-trading-day return excluding the most recent 21 sessions, enters the top five on monthly rebalance dates, and holds for 21 sessions may challenge current trend_long better than local trend thresholds.",
+  "implementation_mode": "read_only_external_baseline_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "cross_sectional_12_1_momentum_monthly_top5_baseline_v1"
+  ],
+  "log": "experiments/logs/exp-20260708-024.json",
+  "mechanism_family": "external_cross_sectional_momentum_baseline",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-022",
+    "exp-20260529-013",
+    "exp-20260601-006"
+  ],
+  "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "cross_sectional_ranking_attribution",
+        "score": 0.6178,
+        "status": "frozen_rejected",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_ample_slot_stock_rank1_topup_extension",
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "a",
+        "baseline",
+        "better",
+        "by",
+        "challenge",
+        "core",
+        "cross",
+        "current",
+        "dates",
+        "enters",
+        "excluding",
+        "external",
+        "five",
+        "holds",
+        "local",
+        "long",
+        "may",
+        "momentum",
+        "monthly",
+        "most",
+        "on",
+        "policy",
+        "ranks",
+        "rebalance",
+        "recent",
+        "return",
+        "sectional",
+        "sessions",
+        "stocks",
+        "than",
+        "that",
+        "thresholds",
+        "top",
+        "top5",
+        "trading",
+        "trend"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": null,
+        "score": 0.6261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.6178,
+        "status": "frozen_rejected",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_ample_slot_stock_rank1_topup_extension",
+        "reopen_condition": null,
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially new component-level ranking field. Do not mine nearby alpha_score risk formulas on the same frozen replay.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_bucket_top_quartile_topup",
+        "reopen_condition": null,
+        "score": 0.4678,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark.",
+    "forbidden_near_neighbor_retry": "Do not rerun 12-1 momentum on these frozen windows by changing 252/21 lookbacks, monthly cadence, top-N, hold days, liquidity floors, universe exclusions, costs, notional, or ranking tie-breaks. That would be a parameter sweep on the same OHLCV momentum surface.",
+    "new_evidence_required": "If positive, next evidence must be a shared helper/backtester Gate 1-4 replay. If negative, move to a different external baseline lane such as PEAD/revision or low-vol/quality admission instead of retuning 12-1 parameters."
+  },
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "momentum_lags_current_trend_long",
+      "old_thin_window_regression",
+      "drawdown_worse",
+      "lookback_coverage_thin",
+      "private_replay_not_production_ready"
+    ],
+    "confidence_reason": "The plan explicitly named 12-1 momentum as the next external baseline after Donchian; it is a distinct academic trend benchmark using only PIT OHLCV, but the current trend_long comparator is strong and the fixed-window core universe may be too concentrated.",
+    "recorded_at": "2026-07-08T18:04:59+00:00"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "read_only_external_12_1_momentum_baseline_replay"
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-024.json"
+  ],
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+    "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "log": "experiments/logs/exp-20260708-024.json",
+    "card_file": "experiments/cards/exp-20260708-024.md",
+    "runner": "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "gate4": {
+      "diagnostic_only": true,
+      "observed_only_lead": false,
+      "full_gate4_passed": false,
+      "failed_reasons": [
+        "momentum_drawdown_above_guard",
+        "not_full_gate4_private_external_replay"
+      ],
+      "aggregate": {
+        "momentum_total_pnl": 143385.65,
+        "momentum_trade_count": 75,
+        "current_trend_long_total_pnl": 131996.98,
+        "current_trend_long_trade_count": 39,
+        "pnl_delta_vs_trend_long": 11388.67,
+        "momentum_win_window_count_vs_trend_long": 2,
+        "momentum_win_windows_vs_trend_long": [
+          "mid_weak",
+          "old_thin"
+        ],
+        "max_window_drawdown_pct": 0.294481,
+        "diagnostic_total_return_pct": 1.433857,
+        "mean_window_sharpe_daily": 2.323445,
+        "diagnostic_expected_value_score": 3.331487
+      },
+      "windows": [
+        {
+          "label": "late_strong",
+          "momentum_total_pnl": 16166.91,
+          "momentum_trade_count": 25,
+          "momentum_ev": 0.111634,
+          "momentum_max_drawdown_pct": 0.294481,
+          "trend_long_total_pnl": 42082.01,
+          "pnl_delta_vs_trend_long": -25915.1,
+          "momentum_beats_trend_pnl": false
+        },
+        {
+          "label": "mid_weak",
+          "momentum_total_pnl": 66480.13,
+          "momentum_trade_count": 25,
+          "momentum_ev": 2.608811,
+          "momentum_max_drawdown_pct": 0.066032,
+          "trend_long_total_pnl": 54981.55,
+          "pnl_delta_vs_trend_long": 11498.58,
+          "momentum_beats_trend_pnl": true
+        },
+        {
+          "label": "old_thin",
+          "momentum_total_pnl": 60738.61,
+          "momentum_trade_count": 25,
+          "momentum_ev": 1.430775,
+          "momentum_max_drawdown_pct": 0.151703,
+          "trend_long_total_pnl": 34933.42,
+          "pnl_delta_vs_trend_long": 25805.19,
+          "momentum_beats_trend_pnl": true
+        }
+      ]
+    },
+    "summary": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-024.json",
+  "single_causal_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260708-024.json",
+  "trial_family": "cross_sectional_12_1_momentum_baseline",
+  "trial_variant_id": "exp-20260708-024",
+  "updated_at": "2026-07-08T18:11:07+00:00"
+}

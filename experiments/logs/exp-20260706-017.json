@@ -1,0 +1,562 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "artifact": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "mean_excess_vs_spy_pct": -0.00383,
+    "mean_return_pct": 0.007188,
+    "note": "Read-only observed attribution; baseline strategy behavior is unchanged.",
+    "source_experiment": "exp-20260706-006",
+    "total_pnl": 1222.02,
+    "trade_count": 17,
+    "win_rate": 0.7059
+  },
+  "alpha_hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows should perform better when signal-day broad-market cross-sectional breadth shows capitulation washout plus initial stabilization, distinguishing durable correction rebounds from fragile bear-market bounces.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only; no node/js tooling invoked.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260706-017/exp_20260706_017_deep_drawdown_breadth_capitulation_quality.json",
+  "before_metrics": {
+    "artifact": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "mean_excess_vs_spy_pct": -0.00383,
+    "mean_return_pct": 0.007188,
+    "note": "Read-only observed attribution; baseline strategy behavior is unchanged.",
+    "source_experiment": "exp-20260706-006",
+    "total_pnl": 1222.02,
+    "trade_count": 17,
+    "win_rate": 0.7059
+  },
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.2,
+    "prediction_main_failure_modes": [
+      "breadth_sample_too_thin",
+      "breadth_rebound_lags_best_entries",
+      "no_spy_excess_lift",
+      "single_episode_concentration"
+    ],
+    "realized_failure_modes": [
+      "min_evaluable_rows",
+      "min_capitulation_rows",
+      "min_non_capitulation_rows",
+      "max_single_positive_capitulation_cash_pnl_share"
+    ]
+  },
+  "causal_components": [
+    "fixed exp-20260706-006 first-entry rows",
+    "PIT broad-OHLCV cross-sectional breadth label",
+    "capitulation-vs-noncapitulation cash/SPY attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_017_deep_drawdown_breadth_capitulation_quality.py",
+    "data/experiments/exp-20260706-017/exp_20260706_017_deep_drawdown_breadth_capitulation_quality.json",
+    "experiments/logs/exp-20260706-017.json",
+    "experiments/cards/exp-20260706-017.md",
+    "experiments/manifests/exp-20260706-017.json",
+    "experiments/tickets/exp-20260706-017.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "broad_market_breadth_capitulation_quality_gate_for_deep_drawdown_first_entries",
+  "decision": "rejected_observed_only_breadth_history_coverage_insufficient",
+  "delta_metrics": {
+    "note": "No executable strategy behavior changed; only cohort attribution was measured.",
+    "strategy_behavior_delta": 0
+  },
+  "experiment_id": "exp-20260706-017",
+  "gate1": {
+    "baseline_metrics": {
+      "artifact": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+      "mean_excess_vs_spy_pct": -0.00383,
+      "mean_return_pct": 0.007188,
+      "note": "Read-only observed attribution; baseline strategy behavior is unchanged.",
+      "source_experiment": "exp-20260706-006",
+      "total_pnl": 1222.02,
+      "trade_count": 17,
+      "win_rate": 0.7059
+    },
+    "baseline_result_file": "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "note": "Observed-only attribution on exp-20260706-006 artifact; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "coverage_by_year": {
+      "2000": {
+        "available": 0,
+        "rows": 2
+      },
+      "2004": {
+        "available": 0,
+        "rows": 1
+      },
+      "2005": {
+        "available": 0,
+        "rows": 1
+      },
+      "2006": {
+        "available": 0,
+        "rows": 1
+      },
+      "2008": {
+        "available": 0,
+        "rows": 1
+      },
+      "2010": {
+        "available": 0,
+        "rows": 1
+      },
+      "2011": {
+        "available": 0,
+        "rows": 2
+      },
+      "2015": {
+        "available": 0,
+        "rows": 1
+      },
+      "2016": {
+        "available": 0,
+        "rows": 1
+      },
+      "2018": {
+        "available": 0,
+        "rows": 1
+      },
+      "2020": {
+        "available": 0,
+        "rows": 2
+      },
+      "2022": {
+        "available": 0,
+        "rows": 1
+      },
+      "2024": {
+        "available": 1,
+        "rows": 1
+      },
+      "2025": {
+        "available": 1,
+        "rows": 1
+      }
+    },
+    "entry_date_contract": "Read from exp-20260706-006 trade rows.",
+    "evaluable_closed_rows": 2,
+    "fields_checked": [
+      "signal_date",
+      "entry_date",
+      "exit_date",
+      "pnl_pct_net",
+      "excess_vs_spy_pct",
+      "broad OHLCV signal-day close",
+      "broad OHLCV 20-session prior close",
+      "broad OHLCV 3-session prior close"
+    ],
+    "missing_breadth_context_rows": 15,
+    "missing_rows": [
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 1,
+        "signal_date": "2000-01-07"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 2,
+        "signal_date": "2000-04-06"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 3,
+        "signal_date": "2004-08-10"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 4,
+        "signal_date": "2005-04-19"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 5,
+        "signal_date": "2006-06-14"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 6,
+        "signal_date": "2008-01-09"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 7,
+        "signal_date": "2010-05-21"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 8,
+        "signal_date": "2011-08-09"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 9,
+        "signal_date": "2011-10-04"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 10,
+        "signal_date": "2015-08-26"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 11,
+        "signal_date": "2016-01-22"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 12,
+        "signal_date": "2018-10-30"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 13,
+        "signal_date": "2020-02-28"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 14,
+        "signal_date": "2020-09-24"
+      },
+      {
+        "available_sessions": 0,
+        "latest_warehouse_session_on_or_before_signal": null,
+        "reason": "insufficient_prior_warehouse_sessions",
+        "row_number": 15,
+        "signal_date": "2022-01-24"
+      }
+    ],
+    "passed": false,
+    "target_price_relevance": "Not consumed; this run does not generate backtest signals or exits.",
+    "total_closed_rows": 17,
+    "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Read-only cohort label; no executable filter, ranking, sizing, prompt, exit, or order rule was added.",
+    "passed": true,
+    "signals_generated": 17,
+    "signals_survived": 17,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_rule": {
+      "max_single_positive_capitulation_cash_pnl_share": 0.5,
+      "min_capitulation_rows": 5,
+      "min_capitulation_win_rate": 0.65,
+      "min_evaluable_rows": 12,
+      "min_mean_cash_return_lift": 0.02,
+      "min_mean_spy_excess_lift": 0.02,
+      "min_non_capitulation_rows": 5
+    },
+    "accepted_alpha": false,
+    "breadth_rule": {
+      "min_common_tickers": 1000,
+      "pass_rule": "share of common broad-OHLCV tickers with signal close above their own 20-session prior close <= 0.40 and share with signal close above their own 3-session prior close >= 0.55",
+      "same_day_available": "Signal is generated after the close and enters next open, so same-day broad OHLCV close is point-in-time available to the diagnostic label.",
+      "source": "data/warehouse/warehouse_main.sqlite::ohlcv",
+      "stabilization_lookback_sessions": 3,
+      "stabilization_share_positive_3d_min": 0.55,
+      "universe": "all tickers with point-in-time OHLCV rows on the signal date",
+      "washout_lookback_sessions": 20,
+      "washout_share_above_20d_close_max": 0.4
+    },
+    "checks": {
+      "max_single_positive_capitulation_cash_pnl_share": {
+        "actual": 1.0,
+        "passed": false,
+        "required": 0.5
+      },
+      "min_capitulation_rows": {
+        "actual": 1,
+        "passed": false,
+        "required": 5
+      },
+      "min_capitulation_win_rate": {
+        "actual": 1.0,
+        "passed": true,
+        "required": 0.65
+      },
+      "min_evaluable_rows": {
+        "actual": 2,
+        "passed": false,
+        "required": 12
+      },
+      "min_mean_cash_return_lift": {
+        "actual": 0.052165,
+        "passed": true,
+        "required": 0.02
+      },
+      "min_mean_spy_excess_lift": {
+        "actual": 0.042981,
+        "passed": true,
+        "required": 0.02
+      },
+      "min_non_capitulation_rows": {
+        "actual": 1,
+        "passed": false,
+        "required": 5
+      }
+    },
+    "decision": "rejected_observed_only_breadth_history_coverage_insufficient",
+    "failed_reasons": [
+      "min_evaluable_rows",
+      "min_capitulation_rows",
+      "min_non_capitulation_rows",
+      "max_single_positive_capitulation_cash_pnl_share"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "strategy_rerun_required": false,
+    "summary": {
+      "capitulation_rows": 1,
+      "cohorts": {
+        "all_baseline_rows": {
+          "largest_positive_cash_pnl_share": 0.225176,
+          "mean_excess_vs_spy_pct": -0.00383,
+          "mean_return_pct": 0.007188,
+          "median_excess_vs_spy_pct": 0.001037,
+          "median_return_pct": 0.007971,
+          "rows": 17,
+          "total_pnl": 1222.02,
+          "win_rate": 0.705882
+        },
+        "all_evaluable": {
+          "largest_positive_cash_pnl_share": 0.916434,
+          "mean_excess_vs_spy_pct": -0.001765,
+          "mean_return_pct": 0.031316,
+          "median_excess_vs_spy_pct": -0.001765,
+          "median_return_pct": 0.031316,
+          "rows": 2,
+          "total_pnl": 626.33,
+          "win_rate": 1.0
+        },
+        "capitulation": {
+          "largest_positive_cash_pnl_share": 1.0,
+          "mean_excess_vs_spy_pct": 0.019725,
+          "mean_return_pct": 0.057399,
+          "median_excess_vs_spy_pct": 0.019725,
+          "median_return_pct": 0.057399,
+          "rows": 1,
+          "total_pnl": 573.99,
+          "win_rate": 1.0
+        },
+        "non_capitulation": {
+          "largest_positive_cash_pnl_share": 1.0,
+          "mean_excess_vs_spy_pct": -0.023256,
+          "mean_return_pct": 0.005234,
+          "median_excess_vs_spy_pct": -0.023256,
+          "median_return_pct": 0.005234,
+          "rows": 1,
+          "total_pnl": 52.34,
+          "win_rate": 1.0
+        }
+      },
+      "coverage_by_year": {
+        "2000": {
+          "available": 0,
+          "rows": 2
+        },
+        "2004": {
+          "available": 0,
+          "rows": 1
+        },
+        "2005": {
+          "available": 0,
+          "rows": 1
+        },
+        "2006": {
+          "available": 0,
+          "rows": 1
+        },
+        "2008": {
+          "available": 0,
+          "rows": 1
+        },
+        "2010": {
+          "available": 0,
+          "rows": 1
+        },
+        "2011": {
+          "available": 0,
+          "rows": 2
+        },
+        "2015": {
+          "available": 0,
+          "rows": 1
+        },
+        "2016": {
+          "available": 0,
+          "rows": 1
+        },
+        "2018": {
+          "available": 0,
+          "rows": 1
+        },
+        "2020": {
+          "available": 0,
+          "rows": 2
+        },
+        "2022": {
+          "available": 0,
+          "rows": 1
+        },
+        "2024": {
+          "available": 1,
+          "rows": 1
+        },
+        "2025": {
+          "available": 1,
+          "rows": 1
+        }
+      },
+      "deltas": {
+        "mean_cash_return_pct_capitulation_minus_non_capitulation": 0.052165,
+        "mean_spy_excess_pct_capitulation_minus_non_capitulation": 0.042981
+      },
+      "evaluable_closed_rows": 2,
+      "missing_breadth_context_rows": 15,
+      "non_capitulation_rows": 1,
+      "total_closed_rows": 17
+    }
+  },
+  "hypothesis": "Observed-only alpha: deep-drawdown first-entry QQQ rebound rows should perform better when signal-day broad-market cross-sectional breadth shows capitulation washout plus initial stabilization, distinguishing durable correction rebounds from fragile bear-market bounces.",
+  "implementation_mode": "observed_only_no_strategy_change",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "live_realistic_execution_envelope": {
+    "notes": "No deployable rule was added. Any future use would need a fresh Gate 1-4 shared-policy test.",
+    "notional_or_capital_changed": false,
+    "paper_only": true,
+    "required_for_live": false
+  },
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260706-017.json",
+  "mechanism_family": "deep_drawdown_rebound_cross_sectional_breadth_capitulation_quality",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260706-003",
+    "exp-20260706-006",
+    "exp-20260706-008",
+    "exp-20260706-009",
+    "exp-20260706-015"
+  ],
+  "new_evidence_axis": "New gate shape versus exp-20260706-006/008/009/015: signal-day cross-sectional breadth/capitulation from the broad OHLCV warehouse across all available symbols, with the first-entry episode budget, entry/exit, notional, and horizons left unchanged.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "PIT broad-market OHLCV or breadth coverage for at least 12 of the 17 exp-20260706-006 signal dates",
+    "or genuinely new settled forward deep-drawdown episodes with the same broad breadth fields",
+    "not threshold/lookback/response-function retunes on the current two-row coverage"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "acceptance_rule": {
+      "max_single_positive_capitulation_cash_pnl_share": 0.5,
+      "min_capitulation_rows": 5,
+      "min_capitulation_win_rate": 0.65,
+      "min_evaluable_rows": 12,
+      "min_mean_cash_return_lift": 0.02,
+      "min_mean_spy_excess_lift": 0.02,
+      "min_non_capitulation_rows": 5
+    },
+    "baseline_experiment_id": "exp-20260706-006",
+    "breadth_rule": {
+      "min_common_tickers": 1000,
+      "pass_rule": "share of common broad-OHLCV tickers with signal close above their own 20-session prior close <= 0.40 and share with signal close above their own 3-session prior close >= 0.55",
+      "same_day_available": "Signal is generated after the close and enters next open, so same-day broad OHLCV close is point-in-time available to the diagnostic label.",
+      "source": "data/warehouse/warehouse_main.sqlite::ohlcv",
+      "stabilization_lookback_sessions": 3,
+      "stabilization_share_positive_3d_min": 0.55,
+      "universe": "all tickers with point-in-time OHLCV rows on the signal date",
+      "washout_lookback_sessions": 20,
+      "washout_share_above_20d_close_max": 0.4
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the breadth thresholds, universe count, lookbacks, same-row crisis buckets, hold days, notional, episode budget, or combine this same under-covered surface with VIX/TLT/QQQ volume-range fields.",
+    "new_evidence_required": "Reopen only after a PIT broad-market OHLCV or breadth source covers at least 12 of the 17 exp-20260706-006 signal dates, or with genuinely new settled forward deep-drawdown episodes that provide the same broad breadth fields.",
+    "realized_failure_mode": "min_evaluable_rows,min_capitulation_rows,min_non_capitulation_rows,max_single_positive_capitulation_cash_pnl_share",
+    "why_result_happened": "The broad OHLCV warehouse currently covers only the 2024/2025 tail of the exp-20260706-006 deep-drawdown rows, so the predeclared cross-sectional breadth gate cannot be judged on the fixed 17-row historical sample."
+  },
+  "prediction": {
+    "confidence_reason": "The deep-drawdown family explicitly allows a predeclared cross-sectional breadth/capitulation source after VIX, TLT, and QQQ volume/range labels failed; the broad warehouse supplies PIT OHLCV breadth across many tickers, but the fixed episode sample is only 17 rows so power is low.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "breadth_sample_too_thin",
+      "breadth_rebound_lags_best_entries",
+      "no_spy_excess_lift",
+      "single_episode_concentration"
+    ],
+    "recorded_at": "2026-07-06T16:08:02+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_live_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "min_evaluable_rows;min_capitulation_rows;min_non_capitulation_rows;max_single_positive_capitulation_cash_pnl_share",
+  "related_files": [
+    "data/experiments/exp-20260706-006/exp_20260706_006_deep_drawdown_rebound_budget.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "quant/experiments/exp_20260706_006_deep_drawdown_rebound_budget.py",
+    "quant/experiments/exp_20260706_008_deep_drawdown_volume_range_capitulation.py",
+    "quant/experiments/exp_20260706_009_deep_drawdown_tlt_rate_relief.py",
+    "quant/experiments/exp_20260706_015_deep_drawdown_vix_panic_quality.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_017_deep_drawdown_breadth_capitulation_quality.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260706_017_deep_drawdown_breadth_capitulation_quality.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "broad_market_breadth_capitulation_quality_gate_for_deep_drawdown_first_entries",
+  "status": "completed",
+  "timestamp": "2026-07-06T16:18:36+00:00",
+  "trial_family": "deep_drawdown_rebound_episode_quality",
+  "trial_variant_id": "broad_ohlcv_share_above_20d_and_3d_stabilization_v1"
+}

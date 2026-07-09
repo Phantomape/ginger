@@ -1,0 +1,568 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_001_sec_ftd_202606a_publication_refresh.py",
+    "data/experiments/exp-20260702-001/exp_20260702_001_sec_ftd_202606a_publication_refresh.json",
+    "experiments/cards/exp-20260702-001.md",
+    "experiments/manifests/exp-20260702-001.json",
+    "experiments/tickets/exp-20260702-001.json",
+    "experiments/logs/exp-20260702-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-001.md",
+  "causal_components": [
+    "SEC FTD 202606a publication-row audit",
+    "source-files status audit",
+    "existing SEC_FTD_FINRA state audit",
+    "baseline identity",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_ftd_202606a_publication_refresh_audit_v1",
+  "claimed_at": "2026-07-02T00:05:19+00:00",
+  "completed_at": "2026-07-02T00:10:02+00:00",
+  "created_at": "2026-07-02T00:05:10+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-001",
+  "experiment_uid": "expuid-c79cf09c7a3b4e69",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T00:05:10+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_ftd_202606a_publication_refresh"
+  },
+  "hypothesis": "Repair and audit the newly published SEC fails-to-deliver 2026-06 first-half archive as an alpha-enabling input for the existing default-off SEC_FTD_FINRA observer, without changing any trading behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_ftd_202606a_publication_refresh_audit_v1"
+  ],
+  "mechanism_family": "production_visible_sec_ftd_finra_forward_context",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260604-027",
+    "exp-20260612-003",
+    "exp-20260625-016"
+  ],
+  "new_evidence_type": "new_publication_date_sec_ftd_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "202606a",
+        "alpha",
+        "an",
+        "any",
+        "archive",
+        "as",
+        "audit",
+        "behavior",
+        "changing",
+        "deliver",
+        "enabling",
+        "existing",
+        "fails",
+        "finra",
+        "first",
+        "ftd",
+        "half",
+        "input",
+        "newly",
+        "observer",
+        "publication",
+        "published",
+        "refresh",
+        "repair",
+        "to",
+        "trading",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "default_off_paper_adapter",
+        "reopen_condition": "Closed forward replacement-value rows, replay-vs-forward parity audit, cash/core displacement comparison, concentration monitoring, and explicit activation experiment before any live order use.",
+        "score": 0.4796,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4742,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.4729,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_ownership_pressure_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4729,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_sec_ftd_202606a_publication_refresh",
+    "artifact": "data/experiments/exp-20260702-001/exp_20260702_001_sec_ftd_202606a_publication_refresh.json",
+    "log": "experiments/logs/exp-20260702-001.json",
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "sec_ftd_rows_total": 13072,
+      "sec_ftd_202606a_rows": 307,
+      "sec_ftd_202606a_ticker_count": 53,
+      "sec_ftd_202606a_total_notional": 1985457978.27,
+      "sec_ftd_finra_pending_entries": 0,
+      "sec_ftd_finra_open_positions": 0,
+      "sec_ftd_finra_closed_positions": 0
+    },
+    "gate1": {
+      "passed": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_expected_value_score_sum": 7.8941,
+      "baseline_total_pnl": 234850.99,
+      "strategy_metrics_unchanged": true
+    },
+    "gate2": {
+      "passed": true,
+      "runtime_fields_checked": [
+        "ticker",
+        "settlement_date",
+        "publication_date",
+        "usable_trade_date",
+        "ftd_shares",
+        "ftd_price",
+        "ftd_notional",
+        "pit_safe",
+        "source_url",
+        "source_files.target_has_network_200",
+        "paper_state.pending_entries",
+        "paper_state.open_positions"
+      ],
+      "sec_ftd_target_rows": 307,
+      "sec_ftd_source_files": {
+        "target_has_network_200": true,
+        "next_half_404_recorded": true,
+        "target_entries": [
+          {
+            "cache_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_ftd\\source_cache\\cnsfails202606a.zip",
+            "matched_rows": 307,
+            "parsed_rows": 58330,
+            "source": "network",
+            "status_code": 200,
+            "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202606a.zip"
+          }
+        ],
+        "next_half_entries": [
+          {
+            "matched_rows": 0,
+            "source": "network",
+            "status_code": 404,
+            "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202606b.zip"
+          }
+        ]
+      },
+      "target_required_field_audit": {
+        "required_fields": [
+          "ticker",
+          "settlement_date",
+          "publication_date",
+          "usable_trade_date",
+          "ftd_shares",
+          "ftd_price",
+          "ftd_notional",
+          "pit_safe",
+          "source_url"
+        ],
+        "all_required_fields_present": true,
+        "missing_counts": {}
+      },
+      "target_price_scope": "Not applicable. This is an archive/data-source audit and no entry, exit, order, or paper position is scheduled.",
+      "entry_date_scope": "Not applicable. The source rows have publication_date and usable_trade_date; no trade entry_date is created here."
+    },
+    "gate3": {
+      "passed": true,
+      "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, paper entry, or order rule changed.",
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "survival_rate_delta": 0.0,
+      "source_rows_audited": 307
+    },
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "decision": "accepted_measurement_repair_sec_ftd_202606a_publication_refresh",
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "entry_changed": false,
+        "exit_changed": false,
+        "paper_order_changed": false,
+        "live_order_changed": false
+      },
+      "failed_reasons": [],
+      "reopen_condition": {
+        "surface": "SEC FTD + FINRA default-off observer",
+        "status": "published_ftd_rows_current_not_alpha_ready",
+        "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+        "current_counts": {
+          "sec_ftd_202606a_rows": 307,
+          "paper_pending_entries": 0,
+          "paper_open_positions": 0,
+          "paper_closed_positions": 0,
+          "latest_snapshot_candidate_count": 0
+        },
+        "required_to_reopen": {
+          "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+          "required_replacement_values": [
+            "cash",
+            "SPY",
+            "QQQ"
+          ],
+          "single_ticker_positive_share_max": 0.4,
+          "top5_positive_share_max": 0.7,
+          "additional_allowed_axis": [
+            "PIT borrow fee",
+            "loan availability",
+            "materially more closed forward rows"
+          ]
+        },
+        "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives."
+      }
+    },
+    "reopen_condition": {
+      "surface": "SEC FTD + FINRA default-off observer",
+      "status": "published_ftd_rows_current_not_alpha_ready",
+      "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+      "current_counts": {
+        "sec_ftd_202606a_rows": 307,
+        "paper_pending_entries": 0,
+        "paper_open_positions": 0,
+        "paper_closed_positions": 0,
+        "latest_snapshot_candidate_count": 0
+      },
+      "required_to_reopen": {
+        "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "single_ticker_positive_share_max": 0.4,
+        "top5_positive_share_max": 0.7,
+        "additional_allowed_axis": [
+          "PIT borrow fee",
+          "loan availability",
+          "materially more closed forward rows"
+        ]
+      },
+      "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-001.json",
+  "single_causal_variable": "sec_ftd_202606a_publication_refresh_audit_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-001.json",
+  "trial_family": "sec_ftd_archive_publication_refresh",
+  "trial_variant_id": "202606a_publication_refresh_v1",
+  "alpha_hypothesis": "Risk/candidate-pool alpha: SEC FTD pressure plus FINRA short-interest confirmation may identify default-off crowding/covering candidates, but it can only be evaluated after publication-date-safe SEC FTD rows are current and later produce closed forward replacement-value outcomes.",
+  "implementation_mode": "archive_refresh_audit",
+  "new_evidence_axis": "New publication-date-safe SEC FTD archive batch cnsfails202606a.zip with usable_trade_date 2026-07-01. This run audits data currency only and does not reslice FTD/FINRA thresholds.",
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Risk/candidate-pool alpha: SEC FTD pressure plus FINRA short-interest confirmation may identify default-off crowding/covering candidates, but it can only be evaluated after publication-date-safe SEC FTD rows are current and later produce closed forward replacement-value outcomes.",
+    "2_history_check": "exp-20260604-027 accepted the default-off SEC FTD + FINRA shared adapter; exp-20260612-003 fixed stale archives; exp-20260625-016 rejected FTD forward context attribution. This run is legal only because SEC published a new 202606a archive batch; it is not a threshold or response retry.",
+    "3_single_policy_bundle": "sec_ftd_202606a_publication_refresh_audit_v1",
+    "4_acceptance_standard": "Accept only as measurement repair if canonical strategy metrics remain unchanged, cnsfails202606a.zip is recorded as network 200, target rows exist with publication_date 2026-07-01 and required fields, no duplicate ticker/settlement/source rows exist, and the existing FTD+FINRA state has no active paper orders caused by this audit.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_001_sec_ftd_202606a_publication_refresh.py"
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl": 234850.99,
+    "strategy_metrics_unchanged": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_checked": [
+      "ticker",
+      "settlement_date",
+      "publication_date",
+      "usable_trade_date",
+      "ftd_shares",
+      "ftd_price",
+      "ftd_notional",
+      "pit_safe",
+      "source_url",
+      "source_files.target_has_network_200",
+      "paper_state.pending_entries",
+      "paper_state.open_positions"
+    ],
+    "sec_ftd_target_rows": 307,
+    "sec_ftd_source_files": {
+      "target_has_network_200": true,
+      "next_half_404_recorded": true,
+      "target_entries": [
+        {
+          "cache_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_ftd\\source_cache\\cnsfails202606a.zip",
+          "matched_rows": 307,
+          "parsed_rows": 58330,
+          "source": "network",
+          "status_code": 200,
+          "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202606a.zip"
+        }
+      ],
+      "next_half_entries": [
+        {
+          "matched_rows": 0,
+          "source": "network",
+          "status_code": 404,
+          "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202606b.zip"
+        }
+      ]
+    },
+    "target_required_field_audit": {
+      "required_fields": [
+        "ticker",
+        "settlement_date",
+        "publication_date",
+        "usable_trade_date",
+        "ftd_shares",
+        "ftd_price",
+        "ftd_notional",
+        "pit_safe",
+        "source_url"
+      ],
+      "all_required_fields_present": true,
+      "missing_counts": {}
+    },
+    "target_price_scope": "Not applicable. This is an archive/data-source audit and no entry, exit, order, or paper position is scheduled.",
+    "entry_date_scope": "Not applicable. The source rows have publication_date and usable_trade_date; no trade entry_date is created here."
+  },
+  "gate3": {
+    "passed": true,
+    "not_applicable_reason": "No signal, filter, ranking, sizing, exit, risk budget, paper entry, or order rule changed.",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0,
+    "source_rows_audited": 307
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "decision": "accepted_measurement_repair_sec_ftd_202606a_publication_refresh",
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "entry_changed": false,
+      "exit_changed": false,
+      "paper_order_changed": false,
+      "live_order_changed": false
+    },
+    "failed_reasons": [],
+    "reopen_condition": {
+      "surface": "SEC FTD + FINRA default-off observer",
+      "status": "published_ftd_rows_current_not_alpha_ready",
+      "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+      "current_counts": {
+        "sec_ftd_202606a_rows": 307,
+        "paper_pending_entries": 0,
+        "paper_open_positions": 0,
+        "paper_closed_positions": 0,
+        "latest_snapshot_candidate_count": 0
+      },
+      "required_to_reopen": {
+        "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "single_ticker_positive_share_max": 0.4,
+        "top5_positive_share_max": 0.7,
+        "additional_allowed_axis": [
+          "PIT borrow fee",
+          "loan availability",
+          "materially more closed forward rows"
+        ]
+      },
+      "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives."
+    }
+  },
+  "reopen_condition": {
+    "surface": "SEC FTD + FINRA default-off observer",
+    "status": "published_ftd_rows_current_not_alpha_ready",
+    "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+    "current_counts": {
+      "sec_ftd_202606a_rows": 307,
+      "paper_pending_entries": 0,
+      "paper_open_positions": 0,
+      "paper_closed_positions": 0,
+      "latest_snapshot_candidate_count": 0
+    },
+    "required_to_reopen": {
+      "closed_sec_ftd_finra_true_trigger_rows_min": 20,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_positive_share_max": 0.4,
+      "top5_positive_share_max": 0.7,
+      "additional_allowed_axis": [
+        "PIT borrow fee",
+        "loan availability",
+        "materially more closed forward rows"
+      ]
+    },
+    "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "risk_budget_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Data audit over an existing archive and existing default-off paper observer. No helper, adapter, threshold, ledger state, or order path was changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The prior staleness repair kept polling SEC FTD files, and the new 2026-06 first-half publication is now present locally. The archive is current, but the accepted FTD+FINRA observer still has no active or closed paper rows, so this is data readiness, not alpha evidence.",
+    "forbidden_near_neighbor_retry": "Do not use this archive refresh to retune FTD share/notional/ADV thresholds, publication-age windows, FINRA confirmation thresholds, candidate top-N, hold days, notional, allocator rank, or response curves.",
+    "new_evidence_required": "A valid FTD+FINRA alpha retry requires materially more closed true trigger rows with cash/SPY/QQQ replacement values, PIT borrow fee or loan-availability fields, or a distinct non-saturated data source."
+  },
+  "next_retry_requires": [
+    "closed SEC_FTD_FINRA true-trigger rows with cash/SPY/QQQ replacement values",
+    "PIT borrow fee or loan-availability data",
+    "a distinct non-saturated data source or gate shape"
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260702_001_sec_ftd_202606a_publication_refresh.py",
+    "data/non_ohlcv/sec_ftd/rows.json",
+    "data/non_ohlcv/sec_ftd/source_files.json",
+    "data/paper_sleeves/sec_ftd_finra/state.json",
+    "data/paper_sleeves/sec_ftd_finra/snapshots.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/sec_ftd_finra_paper_sleeve.py",
+    "experiments/logs/exp-20260604-027.json",
+    "experiments/logs/exp-20260612-003.json",
+    "experiments/logs/exp-20260625-016.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_001_sec_ftd_202606a_publication_refresh.py",
+    "data/experiments/exp-20260702-001/exp_20260702_001_sec_ftd_202606a_publication_refresh.json",
+    "experiments/logs/exp-20260702-001.json",
+    "experiments/cards/exp-20260702-001.md",
+    "experiments/manifests/exp-20260702-001.json",
+    "experiments/tickets/exp-20260702-001.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260702_001_sec_ftd_202606a_publication_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_001_sec_ftd_202606a_publication_refresh.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ftd_finra_archive_refresh.py quant\\test_sec_ftd_finra_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "anti_js": {
+    "used_javascript": false,
+    "strategy_behavior_changed": false,
+    "threshold_scan": false,
+    "response_curve_retune": false,
+    "new_download_attempts": false
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_sec_ftd_202606a_publication_refresh",
+  "artifact": "data/experiments/exp-20260702-001/exp_20260702_001_sec_ftd_202606a_publication_refresh.json",
+  "log": "experiments/logs/exp-20260702-001.json",
+  "updated_at": "2026-07-02T00:10:02+00:00"
+}

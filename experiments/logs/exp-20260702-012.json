@@ -1,0 +1,1682 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+    "experiments/cards/exp-20260702-012.md",
+    "experiments/manifests/exp-20260702-012.json",
+    "experiments/tickets/exp-20260702-012.json",
+    "experiments/logs/exp-20260702-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "candidate_pool/full-stack scout: a fixed SEC corporate-event propagation top-1/day default-off paper source that selects one listed exposure ticker per filing date by event-class priority, relation priority, liquidity, and deterministic tie-break may preserve the exp-20260702-011 observed replacement-value lead after next-open 10d execution and comparator checks.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+  "calibration": {
+    "actual_ev_delta": 0.0846,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": 7514.67,
+    "actual_success": 0,
+    "brier_score": 0.1024,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "predicted_failure_modes": [
+      "selection_compression_loses_edge",
+      "window_instability",
+      "accepted_comparator_not_beaten",
+      "concentration_failed",
+      "price_coverage_missing"
+    ],
+    "predicted_failure_modes_hit": [
+      "window_instability"
+    ],
+    "predicted_success_probability": 0.32,
+    "realized_failure_modes": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_window_coverage_too_small",
+      "accepted_compression_ev_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ]
+  },
+  "causal_components": [
+    "fixed S-1/F-1/425 event stream",
+    "fixed entity exposure map",
+    "fixed top-1/day source rank",
+    "next-open 10d default-off paper replay",
+    "execution envelope disclosure",
+    "full-stack verdict without live/order wiring"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+    "experiments/logs/exp-20260702-012.json",
+    "experiments/cards/exp-20260702-012.md",
+    "experiments/manifests/exp-20260702-012.json",
+    "experiments/tickets/exp-20260702-012.json"
+  ],
+  "changed_variable": "sec_corporate_event_exposure_top1_day_candidate_source_v1",
+  "decision": "rejected_sec_event_exposure_top1_candidate_source",
+  "delta_metrics": {
+    "after_expected_value_score_sum": 7.9787,
+    "after_total_pnl_sum": 242365.66,
+    "baseline_expected_value_score_sum": 7.8941,
+    "baseline_total_pnl_sum": 234850.99,
+    "expected_value_score_delta_pct": 0.010717,
+    "expected_value_score_delta_sum": 0.0846,
+    "max_drawdown_delta_max": 0.0,
+    "target_trade_count_sum": 222,
+    "total_pnl_delta_pct": 0.031998,
+    "total_pnl_delta_sum": 7514.67,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1
+  },
+  "experiment_id": "exp-20260702-012",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.4,
+      "max_concurrent": 10,
+      "max_displacement": 1,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Top-1/day, fixed $4,000 paper notional, 10-trading-session hold, 10-calendar-day same-ticker cooldown, min $10 price and $50M ADV20. No daily helper or live adapter is promoted in this runner.",
+      "order_semantics": "next_open_after_sec_filed_date",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical": {
+      "hard_failures": [
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows"
+      ],
+      "materiality": null,
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": true,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": true,
+          "positive_aggregate_pnl": true,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.5,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.135254
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.6,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.573797
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.35,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.087604
+          }
+        ],
+        "hard_failures": [
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 222,
+          "adjusted_window_count": 2,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak"
+          ],
+          "aggregate_ev_delta": 0.0846,
+          "aggregate_pnl_delta": 7514.67,
+          "max_drawdown_worse": 0.0,
+          "windows_ev_improved": 1.0,
+          "windows_ev_regressed": 1.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 0.35,
+          "max_single_ticker_positive_share": 0.5,
+          "max_top_5_contribution_pct": 0.6,
+          "min_adjusted_trades": 9,
+          "min_adjusted_windows": 2,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 2,
+          "require_tail_concentration_evidence": true,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "gate4_strict_materiality": {
+      "hard_failures": [
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "immaterial_effect"
+      ],
+      "materiality": {
+        "avg_pnl_per_trade_delta": 33.84986486486486,
+        "avg_return_delta_pp": null,
+        "material": false,
+        "min_avg_pnl_per_trade_delta": 500.0,
+        "min_avg_return_delta_pp": 5.0,
+        "warnings": []
+      },
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": true,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": true,
+          "positive_aggregate_pnl": true,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.5,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.135254
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.6,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.573797
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 0.35,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.087604
+          }
+        ],
+        "hard_failures": [
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 222,
+          "adjusted_window_count": 2,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak"
+          ],
+          "aggregate_ev_delta": 0.0846,
+          "aggregate_pnl_delta": 7514.67,
+          "max_drawdown_worse": 0.0,
+          "windows_ev_improved": 1.0,
+          "windows_ev_regressed": 1.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 0.35,
+          "max_single_ticker_positive_share": 0.5,
+          "max_top_5_contribution_pct": 0.6,
+          "min_adjusted_trades": 9,
+          "min_adjusted_windows": 2,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 2,
+          "require_tail_concentration_evidence": true,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "materiality_note": "Strict materiality is recorded for transparency. For candidate sources, the binding materiality standard is beating accepted comparators after costs.",
+    "verdict": {
+      "anti_js": "No JavaScript was used.",
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "complete": true,
+        "kill_switch_drawdown_pct": 0.08,
+        "max_capital_pct": 0.4,
+        "max_concurrent": 10,
+        "max_displacement": 1,
+        "min_dollar_volume": 50000000.0,
+        "missing": [],
+        "notes": "Top-1/day, fixed $4,000 paper notional, 10-trading-session hold, 10-calendar-day same-ticker cooldown, min $10 price and $50M ADV20. No daily helper or live adapter is promoted in this runner.",
+        "order_semantics": "next_open_after_sec_filed_date",
+        "sleeve_drawdown_stop_pct": 0.05,
+        "slippage_bps": 5.0
+      },
+      "gate4": {
+        "accepted_comparators": {
+          "compression": {
+            "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+            "expected_value_score_delta_sum": 0.1608,
+            "experiment_id": "exp-20260608-013",
+            "total_pnl_delta_sum": 2248.98
+          },
+          "distribution": {
+            "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+            "expected_value_score_delta_sum": 0.5286,
+            "experiment_id": "exp-20260611-007",
+            "total_pnl_delta_sum": 10432.91
+          }
+        },
+        "aggregate_ev_delta": 0.0846,
+        "aggregate_pnl_delta": 7514.67,
+        "decision": "rejected_sec_event_exposure_top1_candidate_source",
+        "failed_reasons": [
+          "window_ev_regression",
+          "window_pnl_regression",
+          "fewer_than_two_ev_improved_windows",
+          "target_window_coverage_too_small",
+          "accepted_compression_ev_not_beaten",
+          "accepted_distribution_ev_not_beaten",
+          "accepted_distribution_pnl_not_beaten",
+          "daily_snapshot_not_exposed_for_full_stack_contract"
+        ],
+        "full_stack_contract": {
+          "daily_snapshot_exposed": false,
+          "parity_test_added": false
+        },
+        "max_drawdown_worse": 0.0,
+        "max_drawdown_worse_guardrail": 0.005,
+        "minimum_core_survival_rate": 0.7925,
+        "passed": false,
+        "survival_guard_passed": true,
+        "target_concentration": {
+          "max_single_positive_pnl_share": 0.135254,
+          "max_single_positive_pnl_share_guardrail": 0.5,
+          "passed": true,
+          "positive_pnl_hhi": 0.087604,
+          "positive_pnl_hhi_guardrail": 0.35,
+          "top5_positive_pnl_share": 0.573797
+        },
+        "target_trade_count": 222,
+        "target_trade_count_min": 20,
+        "target_window_count_min": 3,
+        "target_windows": [
+          "late_strong",
+          "mid_weak"
+        ],
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1
+      },
+      "gate4_passed": false,
+      "live_readiness": {
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed",
+          "kill_switch_parity_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "envelope_missing": [],
+        "forward_pnl": null,
+        "kill_switch_parity_passed": false,
+        "min_closed_forward_trades": 30,
+        "ready": false,
+        "replacement_value_passed": false
+      },
+      "live_ready": false,
+      "next_step": "Reject and do not retune this top-1/day propagation source on the same frozen rows. A retry needs a shared daily helper with fresh forward rows, PIT SIC-as-of-filing repair, or a genuinely new relation/economic data source.",
+      "verdict": "reject"
+    },
+    "window_metrics": {
+      "adjusted_trade_count": 222,
+      "adjusted_window_count": 2,
+      "adjusted_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "aggregate_ev_delta": 0.0846,
+      "aggregate_pnl_delta": 7514.67,
+      "avg_pnl_per_trade_delta": 33.84986486486486,
+      "hhi_concentration": 0.087604,
+      "max_drawdown_worse_max": 0.0,
+      "single_ticker_positive_share": 0.135254,
+      "top_5_contribution_pct": 0.573797,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1
+    }
+  },
+  "full_stack_verdict": "reject",
+  "gate1": {
+    "baseline_artifacts": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entity_exposure_map_exists": true,
+    "event_rows_exists": true,
+    "passed": true,
+    "runtime_fields": [
+      "event_accession",
+      "filed_date",
+      "event_class",
+      "entity_exposure_map ticker",
+      "entry_date",
+      "target_price",
+      "avg_dollar_volume_20d"
+    ],
+    "target_price_scope": "not_applicable_fixed_10d_paper_source"
+  },
+  "gate3": {
+    "filter_added": false,
+    "minimum_core_survival_rate": 0.7925,
+    "note": "No core executable filter was added; this is additive default-off paper.",
+    "passed": true
+  },
+  "gate4": {
+    "accepted_comparators": {
+      "compression": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "aggregate_ev_delta": 0.0846,
+    "aggregate_pnl_delta": 7514.67,
+    "decision": "rejected_sec_event_exposure_top1_candidate_source",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_window_coverage_too_small",
+      "accepted_compression_ev_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false
+    },
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.135254,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.087604,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_pnl_share": 0.573797
+    },
+    "target_trade_count": 222,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "candidate_pool/full-stack scout: a fixed SEC corporate-event propagation top-1/day default-off paper source that selects one listed exposure ticker per filing date by event-class priority, relation priority, liquidity, and deterministic tie-break may preserve the exp-20260702-011 observed replacement-value lead after next-open 10d execution and comparator checks.",
+  "implementation_mode": "private_replay_scout_due_unvalidated_top1_shape",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260702-012.json",
+  "mechanism_family": "production_visible_sec_corporate_event_propagation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-009",
+    "exp-20260702-011",
+    "exp-20260630-017"
+  ],
+  "new_evidence_axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+  "new_evidence_type": "new_sec_form_index_entity_exposure_top1_gate_shape",
+  "next_retry_requires": [
+    "A valid retry needs a shared helper plus daily default-off snapshot with fresh forward rows, PIT SIC-as-of-filing repair, or a materially new entity relation/economic data source."
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "entity_rows": "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "event_rows": "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "hot_warehouse": "data/warehouse/warehouse_main_hot.sqlite",
+    "selection_config": {
+      "base_notional_usd": 4000.0,
+      "hold_days": 10,
+      "max_paper_trades_per_day": 1,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_signal_price": 10.0,
+      "rank_rule": "fresh S-1/F-1 IPO registration before 425 merger communication; theme_peer before sic_peer; highest 20d dollar volume; ticker/accession/cik",
+      "same_ticker_cooldown_calendar_days": 10
+    },
+    "sic_index": "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "theme_overlay": "data/non_ohlcv/entity_exposure_map/theme_overlay.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not tune the form set, include IPO amendments, change event-class priority, relation priority, liquidity thresholds, hold days, cooldown, notional, theme overlay, SIC peer cap, or response shape on these same rows.",
+    "new_evidence_required": "A valid retry needs a shared helper plus daily default-off snapshot with fresh forward rows, PIT SIC-as-of-filing repair, or a materially new entity relation/economic data source.",
+    "why_result_happened": "The raw exp011 propagation lead did not survive compression into one deployable top-1/day default-off source under the fixed liquidity, ranking, cooldown, next-open, and 10d paper-execution envelope."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/full-stack scout: a fixed SEC corporate-event propagation top-1/day default-off paper source that selects one listed exposure ticker per filing date by event-class priority, relation priority, liquidity, and deterministic tie-break may preserve the exp-20260702-011 observed replacement-value lead after next-open 10d execution and comparator checks.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260702-008",
+        "exp-20260702-009",
+        "exp-20260702-011",
+        "exp-20260630-017"
+      ],
+      "new_evidence_axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+      "novelty_gate": "experiment.py new required novelty and saturated-source overrides because the tool fingerprinted this as sec_text_event; the recorded axis is a new form-index event stream plus entity-exposure top-1/day gate shape."
+    },
+    "3_single_policy_bundle": "One fixed source-selection bundle: fresh IPO before 425, theme_peer before sic_peer, highest ADV20, one row per date, 10-day hold and 10-calendar-day same-ticker cooldown.",
+    "4_success_failure_standard": {
+      "accepted_comparators": [
+        {
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "experiment_id": "exp-20260608-013",
+          "total_pnl_delta_sum": 2248.98
+        },
+        {
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "expected_value_score_delta_sum": 0.5286,
+          "experiment_id": "exp-20260611-007",
+          "total_pnl_delta_sum": 10432.91
+        }
+      ],
+      "canonical_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_drawdown_worse": 0.005,
+      "max_positive_hhi": 0.35,
+      "max_single_positive_share": 0.5,
+      "min_target_trades": 20,
+      "min_target_windows": 3
+    },
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_012_sec_event_exposure_top1_candidate_source.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260702-011 found a genuine new SEC form-index plus entity-exposure propagation lead across all canonical windows, but compressing many exposure rows into one deployable top-1/day default-off candidate may lose the edge and prior relation/peer attempts were often noisy.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "selection_compression_loses_edge",
+      "window_instability",
+      "accepted_comparator_not_beaten",
+      "concentration_failed",
+      "price_coverage_missing"
+    ],
+    "recorded_at": "2026-07-02T11:04:41+00:00",
+    "success_probability": 0.32
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "default_off_paper_only": true,
+    "entry_rules_changed": false,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.4,
+      "max_concurrent": 10,
+      "max_displacement": 1,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Top-1/day, fixed $4,000 paper notional, 10-trading-session hold, 10-calendar-day same-ticker cooldown, min $10 price and $50M ADV20. No daily helper or live adapter is promoted in this runner.",
+      "order_semantics": "next_open_after_sec_filed_date",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "paper_orders_changed": false,
+    "parity_note": "This is a replay scout for the unvalidated top-1/day compression shape. A positive result would require a shared helper, daily default-off snapshot, and parity test before accepted paper promotion.",
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_helper_promoted": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "uses_entity_exposure_map": true,
+    "uses_hot_warehouse_forward_settlement": true,
+    "uses_sec_corporate_event_stream": true
+  },
+  "rejection_reason": "window_ev_regression;window_pnl_regression;fewer_than_two_ev_improved_windows;target_window_coverage_too_small;accepted_compression_ev_not_beaten;accepted_distribution_ev_not_beaten;accepted_distribution_pnl_not_beaten;daily_snapshot_not_exposed_for_full_stack_contract",
+  "related_files": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260702-012.json",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_012_sec_event_exposure_top1_candidate_source.py"
+  ],
+  "selection_audit": {
+    "candidate_counts_by_window": {
+      "late_strong": 1965,
+      "mid_weak": 2925
+    },
+    "cooldown_skips": 300,
+    "filter_counts": {
+      "adv20_below_min": 3,
+      "missing_ticker_prices": 45650,
+      "no_price_before_signal": 29308,
+      "outside_canonical_windows": 7462,
+      "price_below_min": 291
+    },
+    "filtered_rows_sample": [
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AAPG",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AAPG",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AARD",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AARD",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ABBV",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ABBV",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ABT",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ABT",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ACAD",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ACAD",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ACTU",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ACTU",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ACXP",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ACXP",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ADIL",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ADIL",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ADTX",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ADTX",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AKTS",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AKTS",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AKTX",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AKTX",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ALKS",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ALKS",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ALNY",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ALNY",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ALZN",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ALZN",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AMGN",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "theme_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "theme_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [
+          "biotech_pharma"
+        ],
+        "ticker": "AMGN",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:APUS",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "APUS",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:APVO",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "APVO",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ARTL",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ARTL",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ASBP",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ASBP",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:ASND",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "ASND",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AVLN",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AVLN",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AXSM",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AXSM",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AYTU",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AYTU",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "no_price_before_signal",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AZN",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AZN",
+        "window": "old_thin"
+      },
+      {
+        "event_accession": "0001193125-24-231178",
+        "event_class": "ipo_registration",
+        "filed_date": "2024-10-02",
+        "filtered_reason": "missing_ticker_prices",
+        "form_type": "S-1",
+        "is_amendment": false,
+        "match_bases": [
+          "sic:2834"
+        ],
+        "observation_id": "0001193125-24-231178:0001984086:2024-10-02:AZTR",
+        "overlay_version": "theme_overlay_v1_20260702",
+        "primary_entity_cik": "0001984086",
+        "primary_entity_name": "Septerna, Inc.",
+        "primary_relation_type": "sic_peer",
+        "primary_ticker": "SEPN",
+        "relation_types": [
+          "sic_peer"
+        ],
+        "row_kind": "exposure_candidate",
+        "themes": [],
+        "ticker": "AZTR",
+        "window": "old_thin"
+      }
+    ],
+    "price_metadata": {
+      "exists": true,
+      "immutable_read": true,
+      "missing_requested_ticker_count": 882,
+      "missing_requested_ticker_sample": [
+        "AADX",
+        "AAPG",
+        "AARD",
+        "AAS",
+        "ABAT",
+        "ABIT",
+        "ABPO",
+        "ACCL",
+        "ACOG",
+        "ACON",
+        "ACTU",
+        "ACXP",
+        "ADBT",
+        "ADGM",
+        "ADIL",
+        "ADMQ",
+        "ADNH",
+        "ADTX",
+        "ADUR",
+        "ADVB",
+        "AED",
+        "AEMD",
+        "AERA",
+        "AERO",
+        "AFA"
+      ],
+      "price_ticker_count": 853,
+      "quick_check": "ok",
+      "requested_ticker_count": 1735,
+      "warehouse": "data/warehouse/warehouse_main_hot.sqlite",
+      "warehouse_max_date": "2026-07-01",
+      "warehouse_min_date": "2024-09-20",
+      "warehouse_row_count": 62644,
+      "warehouse_ticker_count": 1346
+    },
+    "ranked_settled_candidates": 4890,
+    "raw_control_rows": 8230,
+    "raw_exposure_rows": 87604,
+    "selected_counts_by_window": {
+      "late_strong": 118,
+      "mid_weak": 104
+    },
+    "selected_top1_rows": 222,
+    "selection_config": {
+      "base_notional_usd": 4000.0,
+      "hold_days": 10,
+      "max_paper_trades_per_day": 1,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "min_signal_price": 10.0,
+      "rank_rule": "fresh S-1/F-1 IPO registration before 425 merger communication; theme_peer before sic_peer; highest 20d dollar volume; ticker/accession/cik",
+      "same_ticker_cooldown_calendar_days": 10
+    },
+    "source_summary": {
+      "control_ticker_count": 1813,
+      "control_window_counts": {
+        "current_forward": 1269,
+        "late_strong": 2858,
+        "mid_weak": 2609,
+        "old_thin": 1494
+      },
+      "event_class_counts": {
+        "ipo_registration": 7057,
+        "merger_communication": 10278
+      },
+      "event_rows": 17335,
+      "events_without_exposures": {
+        "ipo_registration": 365,
+        "merger_communication": 8509
+      },
+      "excluded_ipo_amendment_rows": 4517,
+      "explicit_ticker_control_rows": 8230,
+      "exposure_candidate_rows": 87604,
+      "exposure_ticker_count": 1735,
+      "exposure_window_counts": {
+        "current_forward": 7462,
+        "late_strong": 24626,
+        "mid_weak": 35142,
+        "old_thin": 20374
+      },
+      "selected_event_class_counts": {
+        "ipo_registration": 2540,
+        "merger_communication": 10278
+      }
+    }
+  },
+  "single_causal_variable": "sec_corporate_event_exposure_top1_day_candidate_source_v1",
+  "status": "rejected",
+  "target_trade_summary": {
+    "by_ticker_count": {
+      "AAPL": 2,
+      "AMD": 4,
+      "AMZN": 4,
+      "APLD": 12,
+      "ASTS": 1,
+      "AVGO": 2,
+      "BE": 1,
+      "CEG": 8,
+      "CIFR": 2,
+      "COIN": 13,
+      "CORZ": 1,
+      "CRWV": 3,
+      "DDOG": 7,
+      "DE": 1,
+      "DIS": 3,
+      "GS": 5,
+      "HOOD": 23,
+      "ISRG": 2,
+      "LITE": 2,
+      "LLY": 26,
+      "MA": 10,
+      "MARA": 1,
+      "MCD": 2,
+      "META": 7,
+      "MSFT": 9,
+      "MU": 1,
+      "NVDA": 12,
+      "PLTR": 7,
+      "PWR": 1,
+      "RKLB": 4,
+      "RTX": 3,
+      "SNDK": 1,
+      "SNOW": 17,
+      "SPOT": 1,
+      "TSLA": 9,
+      "V": 15
+    },
+    "by_ticker_pnl": {
+      "AAPL": -385.73,
+      "AMD": 446.41,
+      "AMZN": -351.72,
+      "APLD": 2118.69,
+      "ASTS": -375.55,
+      "AVGO": -88.34,
+      "BE": 892.33,
+      "CEG": -2067.46,
+      "CIFR": -1975.07,
+      "COIN": 1752.6,
+      "CORZ": -243.95,
+      "CRWV": 2271.46,
+      "DDOG": -435.93,
+      "DE": 5.3,
+      "DIS": -232.75,
+      "GS": 642.21,
+      "HOOD": -228.51,
+      "ISRG": -97.14,
+      "LITE": 827.22,
+      "LLY": 808.3,
+      "MA": -14.59,
+      "MARA": 1029.58,
+      "MCD": 152.19,
+      "META": 610.53,
+      "MSFT": -63.97,
+      "MU": -26.18,
+      "NVDA": 606.48,
+      "PLTR": 1271.11,
+      "PWR": -14.5,
+      "RKLB": 2286.56,
+      "RTX": 274.43,
+      "SNDK": -345.01,
+      "SNOW": -1672.46,
+      "SPOT": -172.49,
+      "TSLA": 910.27,
+      "V": -599.65
+    },
+    "by_window_pnl": {
+      "late_strong": -7263.52,
+      "mid_weak": 14778.19,
+      "old_thin": 0
+    },
+    "max_single_positive_pnl_share": 0.135254,
+    "positive_by_ticker_pnl": {
+      "AMD": 446.41,
+      "APLD": 2118.69,
+      "BE": 892.33,
+      "COIN": 1752.6,
+      "CRWV": 2271.46,
+      "DE": 5.3,
+      "GS": 642.21,
+      "LITE": 827.22,
+      "LLY": 808.3,
+      "MARA": 1029.58,
+      "MCD": 152.19,
+      "META": 610.53,
+      "NVDA": 606.48,
+      "PLTR": 1271.11,
+      "RKLB": 2286.56,
+      "RTX": 274.43,
+      "TSLA": 910.27
+    },
+    "positive_pnl_hhi": 0.087604,
+    "total_pnl": 7514.67,
+    "total_trade_count": 222,
+    "windows_with_target_trades": [
+      "late_strong",
+      "mid_weak"
+    ]
+  },
+  "timestamp": "2026-07-02T11:13:42Z",
+  "trial_family": "sec_event_exposure_top1_candidate_source",
+  "trial_variant_id": "fresh_ipo_then_425_theme_then_sic_liquidity_rank_v1",
+  "window_rows": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 4.8425,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "overlay_metric_caveat": "summary_metric_overlay_without_baseline_equity_curve; sharpe and drawdown held at baseline",
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.098065,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 109809.4,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "before": {
+        "expected_value_score": 5.1628,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5146,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "win_rate": 0.8333,
+        "worst_trade_pct": -0.0397
+      },
+      "delta": {
+        "expected_value_score": -0.3203,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.072635,
+        "survival_rate": 0.0,
+        "total_pnl": -7263.52,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "overlay_day_count": 118,
+      "overlay_total_pnl": -7263.52,
+      "raw_candidate_count": 1965,
+      "target_trade_count": 118
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 2.5451,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "overlay_metric_caveat": "summary_metric_overlay_without_baseline_equity_curve; sharpe and drawdown held at baseline",
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.928882,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 92888.3,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "before": {
+        "expected_value_score": 2.1402,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.7811,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.5493,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "delta": {
+        "expected_value_score": 0.4049,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.147782,
+        "survival_rate": 0.0,
+        "total_pnl": 14778.19,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "overlay_day_count": 104,
+      "overlay_total_pnl": 14778.19,
+      "raw_candidate_count": 2925,
+      "target_trade_count": 104
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "overlay_metric_caveat": "summary_metric_overlay_without_baseline_equity_curve; sharpe and drawdown held at baseline",
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      },
+      "before": {
+        "expected_value_score": 0.5911,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "strategy_total_return_pct": 0.3967,
+        "survival_rate": 0.8667,
+        "tail_loss_share": 0.5193,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      },
+      "delta": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "overlay_day_count": 0,
+      "overlay_total_pnl": 0.0,
+      "raw_candidate_count": 0,
+      "target_trade_count": 0
+    }
+  }
+}

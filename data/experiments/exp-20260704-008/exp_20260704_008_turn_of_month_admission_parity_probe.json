@@ -1,0 +1,395 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: accepted turn-of-month paper rows cannot mature if daily observation fails to admit the same calendar labels that the accepted replay admitted.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": null,
+    "surprise_note": "Moderate surprise: the underfire queue pointed at possible drift, and the representative month-end probe isolated the calendar-label gap."
+  },
+  "causal_components": [
+    "accepted historical last-trading-day replay",
+    "daily helper no-calendar versus explicit-calendar comparison",
+    "current forward snapshot calendar-label audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+    "experiments/logs/exp-20260704-008.json",
+    "experiments/cards/exp-20260704-008.md",
+    "experiments/manifests/exp-20260704-008.json",
+    "experiments/tickets/exp-20260704-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "turn_of_month_daily_vs_replay_representative_day_parity_v1",
+  "current_forward_snapshot_audit": {
+    "candidate_samples": [
+      {
+        "asof_date": "2026-07-01",
+        "candidate": {
+          "candidate_score": 0.758177,
+          "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2026-07-01:V",
+          "entry_date": null,
+          "exit_date": null,
+          "month_label": "first_trading_day_1",
+          "pnl": null,
+          "same_ticker_ab_overlap": false,
+          "signal_date": "2026-07-01",
+          "ticker": "V"
+        },
+        "candidate_count": 1,
+        "generated_at": "2026-07-02T03:34:14+00:00",
+        "month_label_distribution": {
+          "first_trading_day_1": 1
+        },
+        "new_pending_count": 1,
+        "raw_candidate_count": 1
+      },
+      {
+        "asof_date": "2026-07-01",
+        "candidate": {
+          "candidate_score": 1.068374,
+          "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2026-07-01:CVS",
+          "entry_date": null,
+          "exit_date": null,
+          "month_label": "first_trading_day_1",
+          "pnl": null,
+          "same_ticker_ab_overlap": false,
+          "signal_date": "2026-07-01",
+          "ticker": "CVS"
+        },
+        "candidate_count": 1,
+        "generated_at": "2026-07-02T05:39:25+00:00",
+        "month_label_distribution": {
+          "first_trading_day_1": 1
+        },
+        "new_pending_count": 1,
+        "raw_candidate_count": 43
+      }
+    ],
+    "first_asof_date": "2026-06-10",
+    "last_asof_date": "2026-07-03",
+    "last_trading_day_labels_seen": 0,
+    "month_label_distribution": {
+      "first_trading_day_1": 2,
+      "first_trading_day_2": 1
+    },
+    "snapshot_file": "data/paper_sleeves/turn_of_month_liquid_leadership/snapshots.jsonl",
+    "snapshot_rows": 38,
+    "state_counts": {
+      "closed_positions": 0,
+      "open_positions": 1,
+      "pending_entries": 1,
+      "skipped_days": 22
+    },
+    "state_file": "data/paper_sleeves/turn_of_month_liquid_leadership/state.json",
+    "totals_deduped_by_asof_max": {
+      "candidate_count": 1,
+      "filled_count": 1,
+      "new_pending_count": 1,
+      "open_position_count": 2,
+      "raw_candidate_count": 43
+    },
+    "unique_asof_dates": 23
+  },
+  "decision": "accepted_measurement_repair_turn_of_month_calendar_parity_drift_identified",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-008",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_scope": "No executable order or target exit is created. The probe compares paper entry_date/exit_date lifecycle fields on accepted default-off rows.",
+    "fields_checked": [
+      "accepted target_trades_by_window",
+      "candidate_month_label",
+      "historical OHLCV rows",
+      "complete trading calendar",
+      "daily snapshot candidate_count/raw_candidate_count",
+      "decision_id",
+      "entry_date",
+      "exit_date"
+    ],
+    "passed": true,
+    "representative_signal_date": "2024-10-31",
+    "representative_window": "old_thin"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "calendar_parity_drift_detected": true,
+    "decision_basis": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds.",
+    "failed_reasons": [],
+    "forward_last_trading_day_labels_seen": 0,
+    "mode": "measurement_repair_turn_of_month_calendar_parity",
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Alpha blocker: turn_of_month_liquid_leadership forward rows may be underfiring because daily production admission semantics drifted from the accepted replay; validate one accepted historical representative day and current forward ledger semantics without changing thresholds or orders.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "log": "experiments/logs/exp-20260704-008.json",
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260609-027",
+    "exp-20260704-006",
+    "exp-20260704-007"
+  ],
+  "new_evidence_axis": "Measurement-only calendar parity evidence for the accepted turn-of-month sleeve named by exp-20260704-006; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+  "new_evidence_type": "representative_day_daily_vs_replay_calendar_parity_probe",
+  "next_retry_requires": [
+    "daily calendar parity repair for last_trading_day labels",
+    "post-repair forward turn-of-month rows with closed cash/SPY/QQQ replacement value",
+    "no frozen-window threshold/notional/hold/cooldown retune"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune month-start/end day counts, leadership thresholds, close-location, volume bounds, volatility bounds, top-N, hold-day, cooldown, notional, or response curves from this underfire span.",
+    "new_evidence_required": "Repair daily calendar parity by passing an explicit trading calendar or known month-end dates into the daily turn-of-month snapshot, then rerun the representative parity probe and accumulate closed forward replacement-value rows. A valid alpha retry also needs true closed forward replacement value or a new PIT flow-beneficiary field.",
+    "why_result_happened": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds."
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": false,
+    "feeds_llm_prompt": false,
+    "live_ready": false,
+    "parity_note": "Read-only parity probe over the existing shared turn-of-month helper and existing paper snapshots. It does not alter live/default orders, rankings, sizing, exits, or paper snapshot generation.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "representative_day_parity": {
+    "accepted_artifact": "data/experiments/exp-20260609-027/exp_20260609_027_turn_of_month_liquid_leadership_shared_adapter.json",
+    "accepted_decisions": [
+      "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI"
+    ],
+    "accepted_tickers": [
+      "MASI"
+    ],
+    "accepted_trades": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": "2024-11-01",
+        "exit_date": "2024-11-14",
+        "month_label": "last_trading_day",
+        "pnl": 435.73,
+        "same_ticker_ab_overlap": false,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "calendar_parity_drift_detected": true,
+    "daily_no_calendar_candidate_count": 0,
+    "daily_no_calendar_candidates": [],
+    "daily_no_calendar_decisions": [],
+    "daily_no_calendar_matches": false,
+    "daily_no_calendar_scan": {
+      "candidate_universe_count": 1245,
+      "daily_entry_slots": 1,
+      "days_with_raw_turn_of_month_candidates": 0,
+      "hold_days": 10,
+      "max_realized_vol_20d": 0.08,
+      "max_ret20": 0.3,
+      "max_ret5": 0.08,
+      "max_volume_ratio_20d": 3.0,
+      "min_avg_dollar_volume_20d": 75000000.0,
+      "min_close_location": 0.7,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": 0.025,
+      "min_ret5": -0.02,
+      "min_ret60_excess_spy": 0.0,
+      "min_signal_return": 0.002,
+      "min_volume_ratio_20d": 0.8,
+      "month_end_label_policy": "explicit_known_month_end_dates_only_fail_closed",
+      "month_label_distribution": {},
+      "paper_notional_usd": 4000.0,
+      "raw_turn_of_month_candidates": 0,
+      "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "same_ticker_cooldown_days": 10,
+      "scanned_trading_days": 1,
+      "turn_of_month_days": 0,
+      "unique_candidate_tickers": 0
+    },
+    "daily_no_calendar_tickers": [],
+    "daily_with_calendar_candidate_count": 1,
+    "daily_with_calendar_candidates": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": null,
+        "exit_date": null,
+        "month_label": "last_trading_day",
+        "pnl": null,
+        "same_ticker_ab_overlap": false,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "daily_with_calendar_decisions": [
+      "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI"
+    ],
+    "daily_with_calendar_matches": true,
+    "daily_with_calendar_scan": {
+      "candidate_universe_count": 1245,
+      "daily_entry_slots": 1,
+      "days_with_raw_turn_of_month_candidates": 1,
+      "hold_days": 10,
+      "max_realized_vol_20d": 0.08,
+      "max_ret20": 0.3,
+      "max_ret5": 0.08,
+      "max_volume_ratio_20d": 3.0,
+      "min_avg_dollar_volume_20d": 75000000.0,
+      "min_close_location": 0.7,
+      "min_price": 10.0,
+      "min_ret20_excess_spy": 0.025,
+      "min_ret5": -0.02,
+      "min_ret60_excess_spy": 0.0,
+      "min_signal_return": 0.002,
+      "min_volume_ratio_20d": 0.8,
+      "month_end_label_policy": "explicit_or_calendar_dates_only",
+      "month_label_distribution": {
+        "last_trading_day": 1
+      },
+      "paper_notional_usd": 4000.0,
+      "raw_turn_of_month_candidates": 6,
+      "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+      "same_ticker_cooldown_days": 10,
+      "scanned_trading_days": 1,
+      "turn_of_month_days": 1,
+      "unique_candidate_tickers": 6
+    },
+    "daily_with_calendar_tickers": [
+      "MASI"
+    ],
+    "historical_audit": {
+      "raw_candidate_count_by_window": {
+        "old_thin": 6
+      },
+      "scan_by_window": {
+        "old_thin": {
+          "candidate_universe_count": 1245,
+          "daily_entry_slots": 1,
+          "days_with_raw_turn_of_month_candidates": 1,
+          "hold_days": 10,
+          "max_realized_vol_20d": 0.08,
+          "max_ret20": 0.3,
+          "max_ret5": 0.08,
+          "max_volume_ratio_20d": 3.0,
+          "min_avg_dollar_volume_20d": 75000000.0,
+          "min_close_location": 0.7,
+          "min_price": 10.0,
+          "min_ret20_excess_spy": 0.025,
+          "min_ret5": -0.02,
+          "min_ret60_excess_spy": 0.0,
+          "min_signal_return": 0.002,
+          "min_volume_ratio_20d": 0.8,
+          "month_end_label_policy": "explicit_or_calendar_dates_only",
+          "month_label_distribution": {
+            "last_trading_day": 1
+          },
+          "paper_notional_usd": 4000.0,
+          "raw_turn_of_month_candidates": 6,
+          "rule_version": "turn_of_month_liquid_leadership_candidate_source_v1",
+          "same_ticker_cooldown_days": 10,
+          "scanned_trading_days": 1,
+          "turn_of_month_days": 1,
+          "unique_candidate_tickers": 6
+        }
+      },
+      "total_selected": 1
+    },
+    "historical_decisions": [
+      "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI"
+    ],
+    "historical_matches_accepted": true,
+    "historical_tickers": [
+      "MASI"
+    ],
+    "historical_trades": [
+      {
+        "candidate_score": 0.721767,
+        "decision_id": "TURN_OF_MONTH_LIQUID_LEADERSHIP_PAPER:turn_of_month_liquid_leadership_candidate_source_v1:2024-10-31:MASI",
+        "entry_date": "2024-11-01",
+        "exit_date": "2024-11-14",
+        "month_label": "last_trading_day",
+        "pnl": 435.73,
+        "same_ticker_ab_overlap": false,
+        "signal_date": "2024-10-31",
+        "ticker": "MASI"
+      }
+    ],
+    "loaded_ohlcv_tickers": 1247,
+    "sector_entry_count": 1246,
+    "selection_reason": "preferred_last_trading_day",
+    "signal_date": "2024-10-31",
+    "window_label": "old_thin"
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "turn_of_month_daily_vs_replay_representative_day_parity_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-04T10:08:27+00:00",
+  "trial_family": "turn_of_month_admission_parity_probe",
+  "trial_variant_id": "turn_of_month_daily_calendar_representative_day_v1",
+  "write_fallbacks": []
+}

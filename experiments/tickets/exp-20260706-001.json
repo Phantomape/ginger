@@ -1,0 +1,563 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_001_pilot_sector_concentration_report.py",
+    "data/experiments/exp-20260706-001/exp_20260706_001_pilot_sector_concentration_report.json",
+    "experiments/cards/exp-20260706-001.md",
+    "experiments/manifests/exp-20260706-001.json",
+    "experiments/tickets/exp-20260706-001.json",
+    "experiments/logs/exp-20260706-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-001.md",
+  "causal_components": [
+    "sector industry lookup via shared broad_market_sector_map",
+    "actionable exposure grouping and predeclared alert thresholds",
+    "scorecard recommendation markdown wiring",
+    "regression tests for pile-up and dispersed books",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "pilot_cross_sector_concentration_report_v1",
+  "claimed_at": "2026-07-06T00:44:29+00:00",
+  "completed_at": "2026-07-06T00:48:52+00:00",
+  "created_at": "2026-07-06T00:44:21+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-001",
+  "experiment_uid": "expuid-437bce8db51d46e9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T00:44:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pilot_sector_concentration_report"
+  },
+  "hypothesis": "Pilot risk blind spot: cross-pilot overlap only checks same-ticker stacking, so the 2026-07 semiconductor pile-up (CRDO/MU/WDC/NVMI/INTC across three pilots, book drawdown -24.4pct) produced an empty cross_pilot_overlap and no warning; adding sector/industry-level exposure concentration to the pilot report makes stacked theme risk visible before it breaches kill ceilings.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "pilot_cross_sector_concentration_report_v1"
+  ],
+  "mechanism_family": "pilot_manual_live_risk_reporting",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-010",
+    "exp-20260705-009"
+  ],
+  "new_evidence_type": "pilot_live_book_theme_concentration_visibility",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "4pct",
+        "across",
+        "adding",
+        "an",
+        "before",
+        "blind",
+        "book",
+        "breaches",
+        "ceilings",
+        "checks",
+        "concentration",
+        "crdo",
+        "cross",
+        "drawdown",
+        "empty",
+        "exposure",
+        "industry",
+        "intc",
+        "it",
+        "kill",
+        "level",
+        "makes",
+        "mu",
+        "no",
+        "nvmi",
+        "only",
+        "overlap",
+        "pile",
+        "pilot",
+        "pilots",
+        "produced",
+        "report",
+        "risk",
+        "same",
+        "sector",
+        "semiconductor",
+        "so",
+        "spot",
+        "stacked",
+        "stacking",
+        "theme",
+        "three",
+        "ticker",
+        "to",
+        "up",
+        "warning",
+        "wdc"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "industry_leadership_no_core_overlap_candidate_pool",
+        "reopen_condition": "If revisited, collect forward paper rows or add an orthogonal production-visible source-quality field. Do not just retune same-industry thresholds or same-day overlap variants on the frozen sample.",
+        "score": 0.032,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "theme_density_core_overlap_displacement",
+        "reopen_condition": "Do not promote theme-density no-core-overlap without forward replacement value rows or a shared default-off adapter parity experiment.",
+        "score": 0.032,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "live_held_book_cluster_concentration_attribution",
+        "reopen_condition": "A retry needs a shared risk-allocation policy with canonical Gate 1-4 before/after windows, or forward/live risk outcomes under a predeclared cluster envelope.",
+        "score": 0.0291,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "duplicate_exposure_cap_policy_sim",
+        "reopen_condition": "A valid retry needs materially more closed forward cross-sleeve duplicate rows plus an independent historical/default-off row surface meeting the duplicate count, group, window, and concentration requirements, or a full shared-policy Gate 1-4 implementation with explicit parity.",
+        "score": 0.0276,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sector_leadership_ticker_crowding_cooldown_paper_sleeve",
+        "reopen_condition": "Forward sector-leadership paper rows or a distinct non-price/event confirmation; do not retune sector-rank, return, or cooldown thresholds on the frozen sample.",
+        "score": 0.0235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "experiment_id": "exp-20260706-001",
+    "timestamp": "2026-07-06T00:48:52+00:00",
+    "owner": "alpha-explore",
+    "lane": "measurement_repair",
+    "status": "accepted_measurement_repair",
+    "decision": "accepted_measurement_repair_pilot_cross_sector_concentration_report",
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "hypothesis": "Pilot risk blind spot: cross-pilot overlap only checks same-ticker stacking, so the 2026-07 semiconductor pile-up (CRDO/MU/WDC/NVMI/INTC across three pilots, book drawdown -24.4pct) produced an empty cross_pilot_overlap and no warning; adding sector/industry-level exposure concentration to the pilot report makes stacked theme risk visible before it breaches kill ceilings.",
+    "change_type": "identity_or_measurement_repair",
+    "mechanism_family": "pilot_manual_live_risk_reporting",
+    "trial_family": "pilot_cross_sector_concentration_report",
+    "trial_variant_id": "pilot_cross_sector_concentration_report_v1",
+    "changed_variable": "pilot_cross_sector_concentration_report_v1",
+    "single_causal_variable": "pilot_cross_sector_concentration_report_v1",
+    "new_evidence_type": "pilot_live_book_theme_concentration_visibility",
+    "nearby_prior_experiments": [
+      "exp-20260624-010",
+      "exp-20260705-009"
+    ],
+    "multiple_testing_risk_bucket": "minimal",
+    "causal_components": [
+      "sector industry lookup via shared broad_market_sector_map",
+      "actionable exposure grouping and predeclared alert thresholds",
+      "scorecard recommendation markdown wiring",
+      "regression tests for pile-up and dispersed books",
+      "no strategy behavior change"
+    ],
+    "prediction": {},
+    "before_evidence": {
+      "cross_pilot_overlap_was": "ticker-level only; empty on 2026-07-05",
+      "missed_event": "fundamental_growth_rs KILL at -24.4% book drawdown while holding AMD/CRDO/MU (all semiconductors) plus WDC/NVMI/INTC exposure in sibling pilots; no report field could express this stacking",
+      "schema_before": "rec/scorecard payloads had no cross_pilot_concentration key"
+    },
+    "after_evidence": {
+      "cross_pilot_concentration": {
+        "total_actionable_exposure_usd": 90000.0,
+        "position_count": 9,
+        "alert_rule": {
+          "min_positions": 3,
+          "min_exposure_share": 0.5
+        },
+        "by_sector": [
+          {
+            "sector": "Technology",
+            "positions": 5,
+            "tickers": [
+              "AMD",
+              "CRDO",
+              "DDOG",
+              "MU",
+              "WDC"
+            ],
+            "pilots": [
+              "allocator_top1",
+              "fundamental_growth_rs"
+            ],
+            "exposure_usd": 50000.0,
+            "exposure_share": 0.5556,
+            "alert": true
+          },
+          {
+            "sector": "Industrials",
+            "positions": 3,
+            "tickers": [
+              "AAL",
+              "CAT",
+              "GE"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 30000.0,
+            "exposure_share": 0.3333,
+            "alert": true
+          },
+          {
+            "sector": "Healthcare",
+            "positions": 1,
+            "tickers": [
+              "MOH"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          }
+        ],
+        "by_industry": [
+          {
+            "industry": "Semiconductors",
+            "positions": 3,
+            "tickers": [
+              "AMD",
+              "CRDO",
+              "MU"
+            ],
+            "pilots": [
+              "fundamental_growth_rs"
+            ],
+            "exposure_usd": 30000.0,
+            "exposure_share": 0.3333,
+            "alert": true
+          },
+          {
+            "industry": "Computer Hardware",
+            "positions": 1,
+            "tickers": [
+              "WDC"
+            ],
+            "pilots": [
+              "allocator_top1"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          },
+          {
+            "industry": "Aerospace & Defense",
+            "positions": 1,
+            "tickers": [
+              "GE"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          },
+          {
+            "industry": "Airlines",
+            "positions": 1,
+            "tickers": [
+              "AAL"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          },
+          {
+            "industry": "Farm & Heavy Construction Machinery",
+            "positions": 1,
+            "tickers": [
+              "CAT"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          },
+          {
+            "industry": "Healthcare Plans",
+            "positions": 1,
+            "tickers": [
+              "MOH"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          },
+          {
+            "industry": "Software - Application",
+            "positions": 1,
+            "tickers": [
+              "DDOG"
+            ],
+            "pilots": [
+              "fundamental_growth_rs"
+            ],
+            "exposure_usd": 10000.0,
+            "exposure_share": 0.1111,
+            "alert": false
+          }
+        ],
+        "alerts": [
+          {
+            "sector": "Technology",
+            "positions": 5,
+            "tickers": [
+              "AMD",
+              "CRDO",
+              "DDOG",
+              "MU",
+              "WDC"
+            ],
+            "pilots": [
+              "allocator_top1",
+              "fundamental_growth_rs"
+            ],
+            "exposure_usd": 50000.0,
+            "exposure_share": 0.5556,
+            "alert": true
+          },
+          {
+            "sector": "Industrials",
+            "positions": 3,
+            "tickers": [
+              "AAL",
+              "CAT",
+              "GE"
+            ],
+            "pilots": [
+              "distribution_absorption"
+            ],
+            "exposure_usd": 30000.0,
+            "exposure_share": 0.3333,
+            "alert": true
+          },
+          {
+            "industry": "Semiconductors",
+            "positions": 3,
+            "tickers": [
+              "AMD",
+              "CRDO",
+              "MU"
+            ],
+            "pilots": [
+              "fundamental_growth_rs"
+            ],
+            "exposure_usd": 30000.0,
+            "exposure_share": 0.3333,
+            "alert": true
+          }
+        ]
+      },
+      "cross_pilot_overlap_still_present": true,
+      "sector_alert_fired_on_live_book": true,
+      "industry_alert_fired_on_live_book": true,
+      "technology_group": {
+        "sector": "Technology",
+        "positions": 5,
+        "tickers": [
+          "AMD",
+          "CRDO",
+          "DDOG",
+          "MU",
+          "WDC"
+        ],
+        "pilots": [
+          "allocator_top1",
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 50000.0,
+        "exposure_share": 0.5556,
+        "alert": true
+      },
+      "semiconductors_group": {
+        "industry": "Semiconductors",
+        "positions": 3,
+        "tickers": [
+          "AMD",
+          "CRDO",
+          "MU"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 30000.0,
+        "exposure_share": 0.3333,
+        "alert": true
+      }
+    },
+    "tests": {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py -q",
+      "result": "6 passed",
+      "new_tests": [
+        "test_cross_pilot_concentration_flags_same_theme_across_pilots",
+        "test_cross_pilot_concentration_no_alert_when_dispersed"
+      ]
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "paper_orders_changed": false,
+      "live_orders_changed": false,
+      "watchlist_changed": false,
+      "llm_decision_boundary_changed": false,
+      "daily_snapshot_exposed": true,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "Report-only observability in the manual pilot tracker; the sleeves, allocator, backtester, and daily orders are untouched. Alert thresholds are predeclared constants; any future automatic de-allocation from this signal is a separate Gate 1-4 experiment."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The shared sector map already covered every pilot ticker, so the missing piece was pure aggregation: on the live 2026-07-05 book the new check flags Technology 5 positions/55.6% across two pilots and Semiconductors 3 positions inside the killed pilot alone -- exactly the stacking that ticker-level overlap reported as empty.",
+      "forbidden_near_neighbor_retry": "Do not iterate alert thresholds (3 positions / 50% share) or add more grouping levels without a concrete missed-risk or false-alarm incident; do not turn this report into an automatic de-allocation rule without a Gate 1-4 experiment.",
+      "new_evidence_required": "A future incident the report misses (new blind spot) or a validated historical surface thick enough to test a real cross-sleeve exposure cap (see exp-20260705-009 reopen condition)."
+    },
+    "rejection_reason": null,
+    "before_after_strategy_behavior_changed": false,
+    "related_files": [
+      "quant/pilot_tracker.py",
+      "quant/test_pilot_tracker.py",
+      "quant/experiments/exp_20260706_001_pilot_sector_concentration_report.py",
+      "data/experiments/exp-20260706-001/exp_20260706_001_pilot_sector_concentration_report.json",
+      "experiments/logs/exp-20260706-001.json",
+      "experiments/cards/exp-20260706-001.md",
+      "experiments/manifests/exp-20260706-001.json",
+      "experiments/tickets/exp-20260706-001.json"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py -q",
+      ".\\.venv\\Scripts\\python.exe -B quant\\pilot_tracker.py",
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260706_001_pilot_sector_concentration_report.py"
+    ],
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "anti_js": {
+      "used_javascript": false,
+      "evidence": "Python runner only; no node/js tooling invoked."
+    },
+    "lean_quality_passed": true,
+    "artifact": "data/experiments/exp-20260706-001/exp_20260706_001_pilot_sector_concentration_report.json",
+    "log": "experiments/logs/exp-20260706-001.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-001.json",
+  "single_causal_variable": "pilot_cross_sector_concentration_report_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260706-001.json",
+  "trial_family": "pilot_cross_sector_concentration_report",
+  "trial_variant_id": "pilot_cross_sector_concentration_report_v1",
+  "decision": "accepted_measurement_repair_pilot_cross_sector_concentration_report",
+  "artifact": "data/experiments/exp-20260706-001/exp_20260706_001_pilot_sector_concentration_report.json",
+  "log": "experiments/logs/exp-20260706-001.json",
+  "accepted_alpha": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-06T00:48:52+00:00"
+}

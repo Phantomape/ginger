@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `43`
-- Accepted / rejected: `13` / `25`
-- Accept rate: `30.23%`
+- Experiments: `44`
+- Accepted / rejected: `13` / `26`
+- Accept rate: `29.55%`
 - Sum EV delta: `+0.4766`
 - Sum PnL delta: `$-91,047.37`
-- Latest: `exp-20260602-003` `accepted_explicit_post_earnings_continuation_policy` with EV `+0.0000` and PnL `$0.00`.
+- Latest: `exp-20260702-003` `rejected_space_catalyst_defense_budget_same_theme_not_incremental` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260515-040` `reject`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `event_or_llm`.
-  Lesson: Gate 4 failed: selected scalar did not improve enough fixed windows without regression.
 - `exp-20260515-043` `reject`: EV `-10.7770`, PnL `$-249,169.13`, family `event_or_llm`, trial `event_or_llm`.
   Lesson: Gate 4 failed: one-slot official Space routing did not improve the fixed three-window protocol without regression.
 - `exp-20260515-045` `reject`: EV `+1.9687`, PnL `$9,120.70`, family `event_or_llm`, trial `event_or_llm`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: Rejected: fresh high-confidence catalyst timing did not clear avg_pnl_lift, avg_return_lift.
 - `exp-20260530-019` `rejected_pre_entry_catalyst_diversity_field`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `pre_entry_catalyst_quality_attribution`.
   Lesson: thin_diverse_sample; avg_pnl_lift_below_threshold; avg_return_lift_below_threshold; window_lift_count_below_threshold
+- `exp-20260702-003` `rejected_space_catalyst_defense_budget_same_theme_not_incremental`: EV `+0.0000`, PnL `$0.00`, family `event_or_llm`, trial `event_or_llm`.
+  Lesson: Defense-budget Space rows still look good versus cash and broad ETFs, but the effect is not incremental after same-theme opportunity cost: same-theme checks failed on the tested 10d/20d mature rows. Do not rerun Space...
 
 ## Retry Discipline
 
@@ -59,16 +59,16 @@ records before making strategy changes.
 - `event_or_llm` / `space_dual_catalyst_source_diversity_trend_scalar`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260516-012, exp-20260516-014`.
 - `event_or_llm` / `broad_market_leadership_candidate_pool_profile`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260519-034`.
   Latest failure: `exp-20260519-034` Best broad-market leadership profile failed one or more Gate 4 replacement-value constraints.
+- `event_or_llm` / `candidate_pool:_require_semantic_bucket=defense_budget_theme_for_space_catalyst_candidates_only_if_same_theme_replacement_value_is_positive_across_mature_10d/20d_rows`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260702-003`.
+  Latest failure: `exp-20260702-003` ['materially more closed Space event-state rows', 'point-in-time historical Space event replay', 'independent same-theme benchmark construction']
 - `event_or_llm` / `candidate_pool_expansion`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260505-009`.
   Latest failure: `exp-20260505-009` Candidate-pool expansion failed the multi-window materiality/stability gate.
-- `event_or_llm` / `companyfacts_context_bucket_layered_on_frozen_sec_negative_reaction_events`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260504-014`.
-  Latest failure: `exp-20260504-014` ['Do not promote or tune this Companyfacts overlay from latest-prior context.', 'Retry only if same-accession or same-day earnings XBRL snapshots become PIT-safe at the event date.', 'A valid retry must compare replac...
 
 ## Recent Raw Records
 
-- `exp-20260519-011` source `experiments/logs/exp-20260519-011.json`.
 - `exp-20260519-034` source `experiments/logs/exp-20260519-034.json`.
 - `exp-20260530-002` source `experiments/logs/exp-20260530-002.json`.
 - `exp-20260530-018` source `experiments/logs/exp-20260530-018.json`.
 - `exp-20260530-019` source `experiments/logs/exp-20260530-019.json`.
 - `exp-20260602-003` source `experiments/logs/exp-20260602-003.json`.
+- `exp-20260702-003` source `experiments/logs/exp-20260702-003.json`.

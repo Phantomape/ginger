@@ -1,0 +1,555 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+    "experiments/cards/exp-20260702-012.md",
+    "experiments/manifests/exp-20260702-012.json",
+    "experiments/tickets/exp-20260702-012.json",
+    "experiments/logs/exp-20260702-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-012.md",
+  "causal_components": [
+    "fixed S-1/F-1/425 event stream",
+    "fixed entity exposure map",
+    "fixed top-1/day source rank",
+    "next-open 10d default-off paper replay",
+    "execution envelope disclosure",
+    "full-stack verdict without live/order wiring"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_corporate_event_exposure_top1_day_candidate_source_v1",
+  "claimed_at": "2026-07-02T11:05:42+00:00",
+  "completed_at": "2026-07-02T11:13:46+00:00",
+  "created_at": "2026-07-02T11:05:20+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-012",
+  "experiment_uid": "expuid-355e084223124090",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-012",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T11:05:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_event_exposure_top1_candidate_source"
+  },
+  "hypothesis": "candidate_pool/full-stack scout: a fixed SEC corporate-event propagation top-1/day default-off paper source that selects one listed exposure ticker per filing date by event-class priority, relation priority, liquidity, and deterministic tie-break may preserve the exp-20260702-011 observed replacement-value lead after next-open 10d execution and comparator checks.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_corporate_event_exposure_top1_day_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_propagation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-009",
+    "exp-20260702-011",
+    "exp-20260630-017"
+  ],
+  "new_evidence_type": "new_sec_form_index_entity_exposure_top1_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "candidate_pool_full_stack",
+        "score": 0.6293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_filing_complexity_change_density_absorption_candidate_pool",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "free_sec_submissions_nt_late_filing_absorption_candidate_pool",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "a",
+        "after",
+        "break",
+        "by",
+        "checks",
+        "class",
+        "comparator",
+        "corporate",
+        "date",
+        "deterministic",
+        "event",
+        "execution",
+        "exp",
+        "exposure",
+        "filing",
+        "full",
+        "lead",
+        "liquidity",
+        "listed",
+        "may",
+        "observed",
+        "one",
+        "per",
+        "preserve",
+        "priority",
+        "propagation",
+        "relation",
+        "replacement",
+        "selects",
+        "stack",
+        "that",
+        "ticker",
+        "tie",
+        "top",
+        "value"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "candidate_pool_full_stack",
+        "reopen_condition": null,
+        "score": 0.6293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sbc_grant_value_backlog_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT grant-value evidence such as closed forward replacement-value rows, option-exercise/vesting context joined to the same issuers, or a production-shared daily snapshot of grant backlog maturation. Do not sweep grant backlog tags, freshness, ratio thresholds, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_filing_complexity_change_density_absorption_candidate_pool",
+        "reopen_condition": "A retry needs materially richer PIT evidence such as named counterparty/value extraction, non-earnings SEC coverage that maps to the tradable universe, or a forward source-utility ledger showing which disclosure complexity buckets beat the displaced candidate after costs.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_nt_late_filing_absorption_candidate_pool",
+        "reopen_condition": "If this fixed NT late-filing absorption bundle fails, do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT delay economics such as explicit issuer reason, auditor/control language, late-period financial restatement linkage, or",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "reopen_condition": "If this fixed corporate-action absorption basket fails, do not retry by sweeping form weights, 8-K/A inclusion, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal/restructuring economics such as cash/stock consideration, bidder/target",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+        "categories": [
+          "new_data_source",
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+      "categories": [
+        "new_data_source",
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": true,
+      "source": "sec_text_event",
+      "trials": 44
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.32,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "selection_compression_loses_edge",
+      "window_instability",
+      "accepted_comparator_not_beaten",
+      "concentration_failed",
+      "price_coverage_missing"
+    ],
+    "confidence_reason": "exp-20260702-011 found a genuine new SEC form-index plus entity-exposure propagation lead across all canonical windows, but compressing many exposure rows into one deployable top-1/day default-off candidate may lose the edge and prior relation/peer attempts were often noisy.",
+    "recorded_at": "2026-07-02T11:04:41+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_sec_event_exposure_top1_candidate_source",
+    "artifact": "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+    "log": "experiments/logs/exp-20260702-012.json",
+    "runner": "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_sec_event_exposure_top1_candidate_source",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "accepted_compression_ev_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten",
+        "daily_snapshot_not_exposed_for_full_stack_contract"
+      ],
+      "aggregate_ev_delta": 0.0846,
+      "aggregate_pnl_delta": 7514.67,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 222,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.135254,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.087604,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_pnl_share": 0.573797
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98
+        },
+        "distribution": {
+          "experiment_id": "exp-20260611-007",
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "expected_value_score_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91
+        }
+      },
+      "full_stack_contract": {
+        "daily_snapshot_exposed": false,
+        "parity_test_added": false
+      }
+    },
+    "full_stack_verdict": "reject",
+    "summary": "The raw exp011 propagation lead did not survive compression into one deployable top-1/day default-off source under the fixed liquidity, ranking, cooldown, next-open, and 10d paper-execution envelope."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-012.json",
+  "single_causal_variable": "sec_corporate_event_exposure_top1_day_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260702-012.json",
+  "trial_family": "sec_event_exposure_top1_candidate_source",
+  "trial_variant_id": "fresh_ipo_then_425_theme_then_sic_liquidity_rank_v1",
+  "alpha_hypothesis": "candidate_pool/full-stack scout: a fixed SEC corporate-event propagation top-1/day default-off paper source that selects one listed exposure ticker per filing date by event-class priority, relation priority, liquidity, and deterministic tie-break may preserve the exp-20260702-011 observed replacement-value lead after next-open 10d execution and comparator checks.",
+  "implementation_mode": "private_replay_scout_due_unvalidated_top1_shape",
+  "new_evidence_axis": "New data source plus new gate shape: form-type-first SEC S-1/F-1/425 corporate-event stream joined to entity-to-listed exposure map, now compressed into the first fixed top-1/day deployable propagation candidate source; this is not the parked SEC FTD/FINRA observer and not a same-field SEC text phrase/field scan.",
+  "decision": "rejected_sec_event_exposure_top1_candidate_source",
+  "artifact": "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+  "log": "experiments/logs/exp-20260702-012.json",
+  "aggregate_expected_value_delta": 0.0846,
+  "aggregate_strategy_total_pnl_delta": 7514.67,
+  "gate1": {
+    "passed": true,
+    "baseline_artifacts": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "strategy_total_return_pct": 0.7811,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "strategy_total_return_pct": 0.3967,
+        "sharpe_daily": 1.49,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "worst_trade_pct": -0.0635,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5193
+      }
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "event_accession",
+      "filed_date",
+      "event_class",
+      "entity_exposure_map ticker",
+      "entry_date",
+      "target_price",
+      "avg_dollar_volume_20d"
+    ],
+    "event_rows_exists": true,
+    "entity_exposure_map_exists": true,
+    "target_price_scope": "not_applicable_fixed_10d_paper_source"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No core executable filter was added; this is additive default-off paper.",
+    "minimum_core_survival_rate": 0.7925
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_sec_event_exposure_top1_candidate_source",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_window_coverage_too_small",
+      "accepted_compression_ev_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract"
+    ],
+    "aggregate_ev_delta": 0.0846,
+    "aggregate_pnl_delta": 7514.67,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 1,
+    "target_trade_count": 222,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.135254,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.087604,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_pnl_share": 0.573797
+    },
+    "accepted_comparators": {
+      "compression": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false
+    }
+  },
+  "full_stack_verdict": "reject",
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "default_off_paper_only": true,
+    "uses_sec_corporate_event_stream": true,
+    "uses_entity_exposure_map": true,
+    "uses_hot_warehouse_forward_settlement": true,
+    "live_realism_evaluated": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "max_capital_pct": 0.4,
+      "min_dollar_volume": 50000000.0,
+      "slippage_bps": 5.0,
+      "max_displacement": 1,
+      "max_concurrent": 10,
+      "order_semantics": "next_open_after_sec_filed_date",
+      "kill_switch_drawdown_pct": 0.08,
+      "sleeve_drawdown_stop_pct": 0.05,
+      "notes": "Top-1/day, fixed $4,000 paper notional, 10-trading-session hold, 10-calendar-day same-ticker cooldown, min $10 price and $50M ADV20. No daily helper or live adapter is promoted in this runner.",
+      "missing": [],
+      "complete": true
+    },
+    "parity_note": "This is a replay scout for the unvalidated top-1/day compression shape. A positive result would require a shared helper, daily default-off snapshot, and parity test before accepted paper promotion."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The raw exp011 propagation lead did not survive compression into one deployable top-1/day default-off source under the fixed liquidity, ranking, cooldown, next-open, and 10d paper-execution envelope.",
+    "forbidden_near_neighbor_retry": "Do not tune the form set, include IPO amendments, change event-class priority, relation priority, liquidity thresholds, hold days, cooldown, notional, theme overlay, SIC peer cap, or response shape on these same rows.",
+    "new_evidence_required": "A valid retry needs a shared helper plus daily default-off snapshot with fresh forward rows, PIT SIC-as-of-filing repair, or a materially new entity relation/economic data source."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260702-012.json",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_012_sec_event_exposure_top1_candidate_source.py",
+    "data/experiments/exp-20260702-012/exp_20260702_012_sec_event_exposure_top1_candidate_source.json",
+    "experiments/logs/exp-20260702-012.json",
+    "experiments/cards/exp-20260702-012.md",
+    "experiments/manifests/exp-20260702-012.json",
+    "experiments/tickets/exp-20260702-012.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T11:13:46+00:00"
+}

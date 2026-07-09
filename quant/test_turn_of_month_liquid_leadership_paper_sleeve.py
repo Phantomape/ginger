@@ -8,6 +8,7 @@ from quant.turn_of_month_liquid_leadership_paper_sleeve import (
     build_turn_of_month_liquid_leadership_historical_trades,
     build_turn_of_month_liquid_leadership_snapshot,
     empty_turn_of_month_liquid_leadership_state,
+    prep_and_build_turn_of_month_liquid_leadership_snapshot,
 )
 
 
@@ -85,6 +86,25 @@ def _returns(kind: str, days: int = 125) -> list[float]:
     raise AssertionError(kind)
 
 
+def _returns_for_signal(kind: str, signal_day: int, days: int = 110) -> list[float]:
+    values = [0.001 for _ in range(days)]
+    if kind == "spy":
+        values[signal_day] = 0.001
+        return values
+    if kind == "leader":
+        for idx in range(signal_day - 65, signal_day):
+            values[idx] = 0.0028
+        values[signal_day] = 0.014
+        values[signal_day + 1 : signal_day + 11] = [0.004] * 10
+        return values
+    if kind == "secondary":
+        for idx in range(signal_day - 65, signal_day):
+            values[idx] = 0.0022
+        values[signal_day] = 0.010
+        return values
+    raise AssertionError(kind)
+
+
 def _ohlcv(days: int = 125) -> dict[str, list[dict]]:
     dates = _business_dates(days)
     signal_day = _signal_index(dates)
@@ -92,6 +112,26 @@ def _ohlcv(days: int = 125) -> dict[str, list[dict]]:
         "SPY": _rows(base=100.0, returns=_returns("spy", days), signal_day=signal_day),
         "LEAD": _rows(base=90.0, returns=_returns("leader", days), signal_day=signal_day),
         "ALT": _rows(base=80.0, returns=_returns("secondary", days), signal_day=signal_day),
+    }
+
+
+def _ohlcv_for_signal(signal_day: int, days: int = 110) -> dict[str, list[dict]]:
+    return {
+        "SPY": _rows(
+            base=100.0,
+            returns=_returns_for_signal("spy", signal_day, days),
+            signal_day=signal_day,
+        ),
+        "LEAD": _rows(
+            base=90.0,
+            returns=_returns_for_signal("leader", signal_day, days),
+            signal_day=signal_day,
+        ),
+        "ALT": _rows(
+            base=80.0,
+            returns=_returns_for_signal("secondary", signal_day, days),
+            signal_day=signal_day,
+        ),
     }
 
 
@@ -190,6 +230,42 @@ def test_daily_snapshot_does_not_infer_month_end_from_truncated_ohlcv() -> None:
     assert fail_closed["candidate_count"] == 0
     assert fail_closed["context_scan"]["turn_of_month_days"] == 0
     assert explicit_month_end["context_scan"]["turn_of_month_days"] == 1
+
+
+def test_daily_prep_marks_actual_last_trading_day_without_future_ohlcv() -> None:
+    dates = _business_dates(110)
+    signal_day = dates.index("2026-03-31")
+    as_of = dates[signal_day]
+    ohlcv = _ohlcv_for_signal(signal_day, days=len(dates))
+    truncated = {ticker: rows[: signal_day + 1] for ticker, rows in ohlcv.items()}
+
+    fail_closed = build_turn_of_month_liquid_leadership_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=truncated,
+        candidate_universe=_universe(),
+        state=empty_turn_of_month_liquid_leadership_state(),
+        persist=False,
+    )
+    repaired = prep_and_build_turn_of_month_liquid_leadership_snapshot(
+        as_of=as_of,
+        broad_market_ohlcv=truncated,
+        broad_market_candidate_universe=_universe(),
+        state=empty_turn_of_month_liquid_leadership_state(),
+        persist=False,
+    )
+
+    assert fail_closed["candidate_count"] == 0
+    assert fail_closed["context_scan"]["turn_of_month_days"] == 0
+    assert repaired["candidate_count"] == 1
+    assert repaired["new_pending_count"] == 1
+    assert repaired["candidates"][0]["ticker"] == "LEAD"
+    assert repaired["candidates"][0]["candidate_month_label"] == "last_trading_day"
+    assert repaired["context_scan"]["month_end_label_policy"] == (
+        "explicit_known_month_end_dates_only_fail_closed"
+    )
+    assert repaired["context_scan"]["month_label_distribution"] == {
+        "last_trading_day": 1
+    }
 
 
 def test_daily_snapshot_advances_pending_to_closed_using_same_fill_model(tmp_path) -> None:

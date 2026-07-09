@@ -5,9 +5,12 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from sec_event_queue import (
+    FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION,
+    FINANCIAL_REPORT_PLATFORM_POOL_COHORT_TICKERS,
     FINANCIAL_REPORT_RS20_MIN_EXCESS_RETURN,
     FINANCIAL_REPORT_RS20_RULE_VERSION,
     FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
+    derive_financial_report_cohort,
     GOVERNANCE_QUEUE_NAME,
     FINANCIAL_REPORT_T1_QUEUE_NAME,
     LEADERSHIP_QUEUE_NAME,
@@ -367,19 +370,27 @@ def test_financial_report_t1_queue_requires_accepted_excess_floor():
     ) is True
 
 
-def test_financial_report_t1_queue_excludes_platform_pool_and_missing_cohort():
+def test_financial_report_t1_queue_excludes_platform_pool_and_derives_missing_cohort():
     platform = _row(
         ticker="PLAT",
         accession_number="0007",
         cohort="platform_pool",
         eight_k_item_codes=["2.02", "9.01"],
     )
+    # The daily collector never writes cohort (exp-20260704-015): rows without
+    # it must derive the replay-parity cohort instead of failing closed.
     missing = _row(
         ticker="MISS",
         accession_number="0008",
         eight_k_item_codes=["2.02", "9.01"],
     )
     missing.pop("cohort")
+    missing_platform = _row(
+        ticker="META",
+        accession_number="0012",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+    missing_platform.pop("cohort")
     allowed = _row(
         ticker="KEEP",
         accession_number="0009",
@@ -388,20 +399,32 @@ def test_financial_report_t1_queue_excludes_platform_pool_and_missing_cohort():
     )
 
     queue = build_sec_financial_report_t1_queue(
-        [platform, missing, allowed],
+        [platform, missing, missing_platform, allowed],
         as_of="2026-05-05",
         ohlcv_by_ticker={
             "PLAT": _ohlcv_rows([100.0, 103.0, 104.0]),
             "MISS": _ohlcv_rows([100.0, 103.0, 104.0]),
+            "META": _ohlcv_rows([100.0, 103.0, 104.0]),
             "KEEP": _ohlcv_rows([100.0, 103.0, 104.0]),
         },
         spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
     )
 
-    assert queue["candidate_count"] == 1
-    assert queue["candidates"][0]["ticker"] == "KEEP"
-    assert queue["candidates"][0]["cohort"] == "other_equity"
+    assert queue["candidate_count"] == 2
+    by_ticker = {candidate["ticker"]: candidate for candidate in queue["candidates"]}
+    assert set(by_ticker) == {"KEEP", "MISS"}
+    assert by_ticker["KEEP"]["cohort"] == "other_equity"
+    assert by_ticker["KEEP"]["cohort_source"] == "row"
+    assert by_ticker["MISS"]["cohort"] == "other_equity"
+    assert (
+        by_ticker["MISS"]["cohort_source"]
+        == FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION
+    )
+    assert queue["parameters"]["cohort_derivation_rule_version"] == (
+        FINANCIAL_REPORT_COHORT_DERIVATION_RULE_VERSION
+    )
 
+    # The qualify rule itself stays fail-closed on a truly missing cohort.
     base_event = {
         "status": "ok",
         "event_family": "earnings_8k",
@@ -411,6 +434,16 @@ def test_financial_report_t1_queue_excludes_platform_pool_and_missing_cohort():
     }
     assert qualifies_sec_financial_report_t1_event({**base_event, "cohort": "platform_pool"}) is False
     assert qualifies_sec_financial_report_t1_event(base_event) is False
+
+
+def test_financial_report_cohort_derivation_matches_platform_rs20_pool():
+    from platform_rs20_watch import PLATFORM_POOL
+
+    assert FINANCIAL_REPORT_PLATFORM_POOL_COHORT_TICKERS == PLATFORM_POOL
+    assert derive_financial_report_cohort("META") == "platform_pool"
+    assert derive_financial_report_cohort("meta") == "platform_pool"
+    assert derive_financial_report_cohort("COIN") == "other_equity"
+    assert derive_financial_report_cohort("") == "other_equity"
 
 
 def test_governance_semantics_and_reaction_buckets_match_frozen_cells():

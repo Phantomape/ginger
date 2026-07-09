@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -71,6 +72,63 @@ def test_recover_promotes_orphan_when_final_missing(tmp_path):
     assert not temp.exists()
 
 
+def test_recover_promotes_with_copy_fallback_when_replace_denied(tmp_path, monkeypatch):
+    temp = _make_orphan_temp(tmp_path, "quant_signals_20260627.json", '{"signals": {"AAPL": 1}}')
+    final = tmp_path / "quant_signals_20260627.json"
+
+    def denied_replace(src, dst):
+        raise PermissionError("replace denied")
+
+    monkeypatch.setattr(sweep.os, "replace", denied_replace)
+    monkeypatch.setattr(sweep.time, "sleep", lambda s: None)
+
+    result = sweep.recover_orphan_atomic_writes(tmp_path, now=FUTURE)
+
+    assert str(final) in result["recovered"]
+    assert final.exists()
+    assert json.loads(final.read_text(encoding="utf-8")) == {"signals": {"AAPL": 1}}
+    assert not temp.exists()
+
+
+def test_recoverable_dirs_cover_all_daily_artifact_dirs():
+    expected_dirs = {
+        f"data/{subdir}" for subdir, _pattern in data_paths.DAILY_ARTIFACTS.values()
+    }
+
+    assert expected_dirs <= set(sweep._RECOVERABLE_DIRS)
+
+
+def test_recover_jsonl_temp_requires_valid_json_lines(tmp_path):
+    temp = _make_orphan_temp(
+        tmp_path,
+        "daily_news_structured_event_observations_20260627.jsonl",
+        '{"ticker": "AAPL"}\n{"ticker": "MSFT"}\n',
+    )
+    final = tmp_path / "daily_news_structured_event_observations_20260627.jsonl"
+
+    result = sweep.recover_orphan_atomic_writes(tmp_path, now=FUTURE)
+
+    assert str(final) in result["recovered"]
+    assert final.exists()
+    assert not temp.exists()
+
+
+def test_recover_skips_invalid_jsonl_temp_without_data_loss(tmp_path):
+    temp = _make_orphan_temp(
+        tmp_path,
+        "daily_news_structured_event_observations_20260627.jsonl",
+        '{"ticker": "AAPL"}\n{bad line}\n',
+    )
+
+    result = sweep.recover_orphan_atomic_writes(tmp_path, now=FUTURE)
+
+    assert not (
+        tmp_path / "daily_news_structured_event_observations_20260627.jsonl"
+    ).exists()
+    assert temp.exists()
+    assert any("invalid" in s["reason"] for s in result["skipped"])
+
+
 def test_recover_cleans_stale_temp_when_final_exists(tmp_path):
     final = tmp_path / "quant_signals_20260627.json"
     final.write_text('{"signals": {"final": true}}', encoding="utf-8")
@@ -82,6 +140,56 @@ def test_recover_cleans_stale_temp_when_final_exists(tmp_path):
     assert not temp.exists()
     # existing final is never overwritten by a stale temp
     assert json.loads(final.read_text(encoding="utf-8")) == {"signals": {"final": True}}
+
+
+def test_recover_cleans_stale_temp_after_permission_retry(tmp_path, monkeypatch):
+    final = tmp_path / "quant_signals_20260627.json"
+    final.write_text('{"signals": {"final": true}}', encoding="utf-8")
+    temp = _make_orphan_temp(tmp_path, "quant_signals_20260627.json", '{"signals": {"stale": true}}')
+    real_unlink = Path.unlink
+    calls = {"unlink": 0, "chmod": [], "sleep": []}
+
+    def flaky_unlink(self, *args, **kwargs):
+        if self == temp:
+            calls["unlink"] += 1
+            if calls["unlink"] == 1:
+                raise PermissionError("[WinError 5] access denied")
+        return real_unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", flaky_unlink)
+    monkeypatch.setattr(sweep, "_make_user_writable", lambda path: calls["chmod"].append(path))
+    monkeypatch.setattr(sweep.time, "sleep", lambda s: calls["sleep"].append(s))
+
+    result = sweep.recover_orphan_atomic_writes(tmp_path, now=FUTURE)
+
+    assert str(temp) in result["cleaned"]
+    assert not temp.exists()
+    assert calls["unlink"] == 2
+    assert calls["chmod"] == [temp]
+    assert calls["sleep"] == [0.05]
+    assert json.loads(final.read_text(encoding="utf-8")) == {"signals": {"final": True}}
+
+
+def test_recover_reports_unlink_failure_without_data_loss(tmp_path, monkeypatch):
+    final = tmp_path / "quant_signals_20260627.json"
+    final.write_text('{"signals": {"final": true}}', encoding="utf-8")
+    temp = _make_orphan_temp(tmp_path, "quant_signals_20260627.json", '{"signals": {"stale": true}}')
+    real_unlink = Path.unlink
+
+    def locked_unlink(self, *args, **kwargs):
+        if self == temp:
+            raise PermissionError("[WinError 5] access denied")
+        return real_unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", locked_unlink)
+    monkeypatch.setattr(sweep.time, "sleep", lambda s: None)
+
+    result = sweep.recover_orphan_atomic_writes(tmp_path, now=FUTURE)
+
+    assert result["cleaned"] == []
+    assert temp.exists()
+    assert json.loads(final.read_text(encoding="utf-8")) == {"signals": {"final": True}}
+    assert any("unlink_failed" in s["reason"] for s in result["skipped"])
 
 
 def test_recover_skips_invalid_temp_without_data_loss(tmp_path):

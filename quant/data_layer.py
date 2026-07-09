@@ -16,7 +16,10 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-from yfinance_bootstrap import configure_yfinance_runtime
+from yfinance_bootstrap import (
+    configure_yfinance_runtime,
+    download_with_rate_limit_retry,
+)
 from operator_input_paths import open_positions_path
 from open_position_schema import account_position_tickers
 from earnings_assets import empty_earnings_data, is_non_earnings_asset
@@ -128,12 +131,13 @@ def get_ohlcv(ticker, lookback_days=400):
         end = datetime.now()
         start = end - timedelta(days=lookback_days)
 
-        data = yf.download(
+        data = download_with_rate_limit_retry(
             ticker,
             start=start,
             end=end,
             progress=False,
             auto_adjust=True,
+            retry_logger=logger,
         )
 
         normalized = _normalize_ohlcv_frame(ticker, data)
@@ -177,7 +181,7 @@ def get_ohlcv_many(tickers, lookback_days=400):
             end = datetime.now()
             start = end - timedelta(days=lookback_days)
             ticker_arg = fetch_tickers if len(fetch_tickers) > 1 else fetch_tickers[0]
-            bulk = yf.download(
+            bulk = download_with_rate_limit_retry(
                 ticker_arg,
                 start=start,
                 end=end,
@@ -185,6 +189,7 @@ def get_ohlcv_many(tickers, lookback_days=400):
                 auto_adjust=True,
                 group_by="ticker",
                 threads=True,
+                retry_logger=logger,
             )
         except Exception as e:
             logger.error("Bulk OHLCV download failed - %s", e)

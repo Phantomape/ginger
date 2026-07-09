@@ -1,0 +1,139 @@
+{
+  "alpha_hypothesis": "If non-ATS wholesaler/internalization flow is the missing venue split, then tickers with unusually high OTC weekly share or notional internalization should separate liquidity-friction/flow-absorption candidates from ATS dark pool false positives once the source is available as a PIT weekly archive.",
+  "artifact": "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.py",
+    "data/experiments/exp-20260704-003/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.json",
+    "experiments/logs/exp-20260704-003.json",
+    "experiments/cards/exp-20260704-003.md",
+    "experiments/manifests/exp-20260704-003.json",
+    "experiments/tickets/exp-20260704-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "finra_otc_weekly_internalization_archive_readiness_v1",
+  "decision": "blocked_finra_otc_w_smbl_archive_not_materialized",
+  "experiment_id": "exp-20260704-003",
+  "gate1": {
+    "baseline_identity": {
+      "exists": true,
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "sha256": "33966aafb7816653089b27d4bb19508f64cafa1522de7aa3e19a16718160959e",
+      "top_level_keys": [
+        "generated_at",
+        "warehouse",
+        "windows"
+      ]
+    },
+    "baseline_reused_without_strategy_mutation": true
+  },
+  "gate2": {
+    "entry_date_target_price_check": "not_applicable_no_trade_rows_created",
+    "reason": "Future full-stack alpha requires a PIT weekly OTC archive. This runner found the source absent locally, so no signal rows were built.",
+    "required_fields_for_future_otc_alpha": [
+      "summaryTypeCode",
+      "issueSymbolIdentifier",
+      "weekStartDate",
+      "initialPublishedDate",
+      "totalWeeklyShareQuantity",
+      "totalWeeklyTradeCount",
+      "totalNotionalSum"
+    ],
+    "runtime_dependencies_present": false
+  },
+  "gate3": {
+    "reason": "blocked before signal generation; no extra filter added",
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": null
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "expected_value_score_delta": 0.0,
+    "failed_reasons": [
+      "no_local_otc_w_smbl_rows",
+      "existing_finra_ats_archive_contains_no_otc_w_smbl_rows",
+      "finra_api_probe_failed",
+      "network_proxy_blocks_finra_api",
+      "otc_archive_not_gate_ready"
+    ],
+    "pnl_delta": 0.0,
+    "ran": false
+  },
+  "hypothesis": "Alpha blocker: FINRA non-ATS OTC weekly internalization is the next legal venue-decomposition alpha surface after exp-20260703-016 ATS dark-share rejection, but the repo must first prove an as-of weekly OTC_W_SMBL archive can be materialized before any candidate-pool or sizing rule is credible.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": false,
+  "log": "experiments/logs/exp-20260704-003.json",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun ATS dark-share threshold/topN/hold/notional retunes, and do not reserve another OTC readiness audit until the local OTC_W_SMBL row count, week count, or network/cache access has actually changed.",
+    "new_evidence_required": "Reopen only after a local PIT FINRA OTC_W_SMBL weekly archive is available with summaryTypeCode, issueSymbolIdentifier, weekStartDate, publication/as-of date, share quantity, trade count, and notional fields for at least 26 published weeks and >=40 Kova candidate tickers, or after network/cache access is restored enough to materialize that archive. Then run a shared-paper-first candidate source with Gate 1-4; do not retune ATS_W_SMBL dark-share thresholds.",
+    "why_result_happened": "The repo has a useful ATS_W_SMBL weekly cache from exp-20260703-016, but no local OTC_W_SMBL archive. The direct FINRA weeklySummary probe failed in this automation environment, so the non-ATS internalization alpha cannot be credibly backtested yet."
+  },
+  "prediction": {
+    "confidence_reason": "Prior ATS experiment found this as the legal sibling source, but local cache checks found only ATS_W_SMBL and the current automation environment appears to block outbound FINRA API calls.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_local_otc_cache",
+      "finra_api_network_blocked",
+      "otc_schema_not_pit_enough",
+      "insufficient_weekly_history"
+    ],
+    "recorded_at": "2026-07-04T02:07:46+00:00",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "default_off_only": true,
+    "live_orders_changed": false,
+    "live_realistic_execution_envelope": "Not evaluated; source is not materialized, so no live or paper candidate rule exists.",
+    "llm_boundary_changed": false,
+    "paper_orders_changed": false,
+    "ranking_sizing_entry_exit_changed": false,
+    "trade_enabled_changed": false
+  },
+  "reopen_condition": "Reopen only after a local PIT FINRA OTC_W_SMBL weekly archive is available with summaryTypeCode, issueSymbolIdentifier, weekStartDate, publication/as-of date, share quantity, trade count, and notional fields for at least 26 published weeks and >=40 Kova candidate tickers, or after network/cache access is restored enough to materialize that archive. Then run a shared-paper-first candidate source with Gate 1-4; do not retune ATS_W_SMBL dark-share thresholds.",
+  "runner": "quant/experiments/exp_20260704_003_finra_otc_weekly_internalization_archive_readiness.py",
+  "single_causal_variable": "finra_otc_weekly_internalization_archive_readiness_v1",
+  "source_audit_summary": {
+    "api_error_type": "ProxyError",
+    "api_ok": false,
+    "ats_rows": {
+      "published_date_count": 97,
+      "row_count": 4739,
+      "sample_tickers": [
+        "AAPL",
+        "AMD",
+        "AMZN",
+        "APP",
+        "AVGO",
+        "BKNG",
+        "CAT",
+        "COHR",
+        "COIN",
+        "CRDO"
+      ],
+      "sample_weeks": [
+        "2024-08-05",
+        "2024-08-12",
+        "2024-08-19",
+        "2024-08-26",
+        "2024-09-02"
+      ],
+      "unique_tickers": 50,
+      "week_count": 97
+    },
+    "otc_rows": {
+      "published_date_count": 0,
+      "row_count": 0,
+      "sample_tickers": [],
+      "sample_weeks": [],
+      "unique_tickers": 0,
+      "week_count": 0
+    }
+  },
+  "status": "blocked",
+  "updated_at": "2026-07-04T02:13:19Z"
+}

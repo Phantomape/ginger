@@ -1,0 +1,1141 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py",
+    "data/experiments/exp-20260707-019/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.json",
+    "experiments/cards/exp-20260707-019.md",
+    "experiments/manifests/exp-20260707-019.json",
+    "experiments/tickets/exp-20260707-019.json",
+    "experiments/logs/exp-20260707-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260707-019.md",
+  "causal_components": [],
+  "change_type": "entry_filter",
+  "changed_variable": "sec_nt_late_filing_notice_10d_entry_risk_gate_v1",
+  "claimed_at": "2026-07-07T18:09:30+00:00",
+  "completed_at": "2026-07-07T18:14:42+00:00",
+  "created_at": "2026-07-07T18:09:22+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-019",
+  "experiment_uid": "expuid-9ad029818ae04fd8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T18:09:22+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_nt_late_filing_notice_entry_risk"
+  },
+  "hypothesis": "entry_filter/risk_allocation: SEC NT 10-K, NT 10-Q, and NT 20-F late-filing notices are PIT disclosure-delay events; liquid tickers with a notice should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_nt_late_filing_notice_10d_entry_risk_gate_v1"
+  ],
+  "mechanism_family": "free_sec_disclosure_timing_entry_risk",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260617-019",
+    "exp-20260617-020",
+    "free_sec_companyfacts_quarterly_timeliness_broad_candidate_pool"
+  ],
+  "new_evidence_type": "new_gate_shape_sec_nt_late_filing_notice",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "companyfacts_filing_timeliness_quality_support",
+        "score": 0.6118,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "fundamental_growth_rs_filing_recency_support",
+        "score": 0.6103,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "filing_timeliness",
+      "field_tags": [
+        "a",
+        "allocation",
+        "are",
+        "delay",
+        "disclosure",
+        "entry",
+        "events",
+        "f",
+        "filing",
+        "filter",
+        "gate",
+        "k",
+        "late",
+        "liquid",
+        "long",
+        "notice",
+        "notices",
+        "nt",
+        "over",
+        "pit",
+        "q",
+        "rather",
+        "risk",
+        "sessions",
+        "should",
+        "supporting",
+        "than",
+        "tickers",
+        "timing",
+        "underperform"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "filing_timeliness",
+        "family_key": "companyfacts_filing_timeliness_quality_support",
+        "reopen_condition": null,
+        "score": 0.6118,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "filing_timeliness",
+        "family_key": "fundamental_growth_rs_filing_recency_support",
+        "reopen_condition": "If accepted, move the same scalar into the shared default-off fundamental_growth_rs paper adapter with production metadata and focused parity tests, then collect forward replacement-value rows before any live activation.",
+        "score": 0.6103,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "filing_timeliness",
+        "family_key": "free_sec_companyfacts_filing_timeliness_broad_candidate_pool",
+        "reopen_condition": "The broad-universe scope caveat has now been tested. If this fixed bundle fails, do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, notional, or broad/core scope. A valid retry needs a materially different disclosure-timing field (quarterly 10-Q timeliness, accelerated-filer-status change, NT",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "filing_timeliness",
+        "family_key": "free_sec_companyfacts_filing_timeliness_candidate_pool",
+        "reopen_condition": "The binding limitation is harness scope, not (yet) signal quality: this scout replays candidates only over the core ~47-name universe, which starves an event-driven source. The genuinely informative next test is the SAME fixed filing-timeliness gate run over the BROAD liquid universe via a candidate_universe=broad_market path (as the accepted SBC/compression/distribution shared sleeves do), where ",
+        "score": 0.4716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "filing_timeliness",
+        "family_key": "free_sec_companyfacts_quarterly_timeliness_broad_candidate_pool",
+        "reopen_condition": "If this fixed quarterly 10-Q bundle fails, do not retry by sweeping earliness-days, current-lag cap, prior same-quarter count, event age, price/ADV liquidity floors, quarter-duration bounds, top-N, hold days, cooldown, or notional. A valid retry needs a materially different disclosure-timing field such as accelerated-filer-status change, NT 10-K/10-Q late-filing notices, segment/customer disclosur",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape on same SEC disclosure domain: NT late-filing notice form types, not early/prompt filing lag thresholds or filing recency; preflight found 990 canonical-window rows across 452 tickers.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "filing_timeliness",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape on same SEC disclosure domain: NT late-filing notice form types, not early/prompt filing lag thresholds or filing recency; preflight found 990 canonical-window rows across 452 tickers.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape on same SEC disclosure domain: NT late-filing notice form types, not early/prompt filing lag thresholds or filing recency; preflight found 990 canonical-window rows across 452 tickers.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "filing_timeliness",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.04,
+    "expected_pnl_delta": 750.0,
+    "main_failure_modes": [
+      "event_drift_not_negative",
+      "tiny_core_overlap",
+      "distressed_microcap_noise",
+      "accepted_comparator_not_beaten"
+    ],
+    "confidence_reason": "Prior filing-timeliness broad early-filing promptness failed, but exp-20260617-020 explicitly listed NT 10-K/10-Q late-filing notices as a materially different disclosure-timing field. Preflight found 990 canonical-window NT rows across 452 tickers; risk is high because many issuers may be illiquid or distressed and a production gate needs deployable overlap.",
+    "recorded_at": "2026-07-07T18:08:45+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "experiment_id": "exp-20260707-019",
+    "timestamp": "2026-07-07T18:14:42Z",
+    "owner": "alpha-explore",
+    "lane": "alpha_search",
+    "status": "rejected",
+    "decision": "rejected_sec_nt_late_filing_entry_risk_gate",
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "alpha_ready": false,
+    "hypothesis": "entry_filter/risk_allocation: SEC NT 10-K, NT 10-Q, and NT 20-F late-filing notices are PIT disclosure-delay events; liquid tickers with a notice should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+    "alpha_hypothesis": "entry_filter/risk_allocation: SEC NT 10-K, NT 10-Q, and NT 20-F late-filing notices are PIT disclosure-delay events; liquid tickers with a notice should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+    "change_type": "entry_filter",
+    "implementation_mode": "private_replay_scout",
+    "mechanism_family": "free_sec_disclosure_timing_entry_risk",
+    "trial_family": "sec_nt_late_filing_notice_entry_risk",
+    "trial_variant_id": "nt_10k_10q_20f_notice_top1_day_10d_v1",
+    "changed_variable": "sec_nt_late_filing_notice_10d_entry_risk_gate_v1",
+    "single_causal_variable": "sec_nt_late_filing_notice_10d_entry_risk_gate_v1",
+    "new_evidence_type": "new_gate_shape_sec_nt_late_filing_notice",
+    "new_evidence_axis": "New gate shape on same SEC disclosure domain: NT late-filing notice form types, not early/prompt filing lag thresholds or filing recency; preflight found 990 canonical-window rows across 452 tickers.",
+    "nearby_prior_experiments": [
+      "exp-20260617-019",
+      "exp-20260617-020",
+      "free_sec_companyfacts_quarterly_timeliness_broad_candidate_pool"
+    ],
+    "multiple_testing_risk_bucket": "minimal",
+    "prediction": {
+      "confidence_reason": "Prior filing-timeliness broad early-filing promptness failed, but exp-20260617-020 explicitly listed NT 10-K/10-Q late-filing notices as a materially different disclosure-timing field. Preflight found 990 canonical-window NT rows across 452 tickers; risk is high because many issuers may be illiquid or distressed and a production gate needs deployable overlap.",
+      "expected_ev_delta": 0.04,
+      "expected_pnl_delta": 750.0,
+      "main_failure_modes": [
+        "event_drift_not_negative",
+        "tiny_core_overlap",
+        "distressed_microcap_noise",
+        "accepted_comparator_not_beaten"
+      ],
+      "recorded_at": "2026-07-07T18:08:45+00:00",
+      "success_probability": 0.18
+    },
+    "calibration": {
+      "actual_decision": "rejected_sec_nt_late_filing_entry_risk_gate",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "event_drift_not_negative",
+        "tiny_core_overlap",
+        "distressed_microcap_noise",
+        "accepted_comparator_not_beaten"
+      ],
+      "realized_failure_modes": [
+        "liquid_sample_below_min_total",
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_long_drift_positive",
+        "aggregate_excess_not_negative"
+      ],
+      "predicted_failure_mode_hit": false,
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0
+    },
+    "parameters": {
+      "forms": [
+        "NT 10-K",
+        "NT 10-K/A",
+        "NT 10-Q",
+        "NT 10-Q/A",
+        "NT 20-F",
+        "NT 20-F/A"
+      ],
+      "hold_days": 10,
+      "round_trip_cost_pct": 0.0035,
+      "notional_usd": 4000.0,
+      "entry_policy": "next_session_open_after_filing_date",
+      "exit_policy": "close_after_10_trading_sessions",
+      "min_entry_price": 10.0,
+      "min_adv20_usd": 50000000.0,
+      "same_ticker_cooldown_sessions": 10,
+      "support_rule": "Positive lead only if >=30 total liquid events, at least two canonical windows have >=10 events with negative mean 10d net long return and negative same-ticker excess return, and ticker concentration is <=40%. Otherwise rejected; no behavior changes.",
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21"
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22"
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22"
+        }
+      }
+    },
+    "pre_run_questions": {
+      "1_alpha_hypothesis": "entry_filter/risk_allocation: SEC NT 10-K, NT 10-Q, and NT 20-F late-filing notices are PIT disclosure-delay events; liquid tickers with a notice should underperform over the next 10 sessions, supporting a default-off entry risk gate rather than a long candidate source.",
+      "2_history_check": {
+        "novelty_gate": "experiment.py new blocked filing-timeliness near-neighbors; override was used with a legal new gate-shape axis: SEC NT late-filing form types, not filing recency or early/prompt lag thresholds.",
+        "exp-20260617-019": "Rejected core annual 10-K early filing promptness; not this NT form-type late-notice gate.",
+        "exp-20260617-020": "Rejected broad annual 10-K early filing promptness and explicitly listed NT 10-K/10-Q late notices as a materially different legal retry.",
+        "quarterly_timeliness_broad": "Rejected quarterly promptness; also listed NT late notices as a different disclosure-timing field."
+      },
+      "3_single_policy_bundle": "sec_nt_late_filing_notice_10d_entry_risk_gate_v1",
+      "4_success_failure_standard": "Use the predeclared source-validation rule in parameters; this is replay-only, so a positive result would still need a shared helper plus full Gate 4 before any production entry gate.",
+      "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py"
+    },
+    "gate1": {
+      "baseline_loaded": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_metrics": {
+        "late_strong": {
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "max_drawdown_pct": 0.0665
+        },
+        "mid_weak": {
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "max_drawdown_pct": 0.1119
+        },
+        "old_thin": {
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "max_drawdown_pct": 0.1001
+        }
+      },
+      "accepted_reference": {
+        "expected_value_score_sum": 7.8941,
+        "total_pnl_sum": 234850.99,
+        "trade_count_sum": 61
+      }
+    },
+    "gate2": {
+      "runtime_fields_checked": [
+        "filing_date",
+        "form_type",
+        "ticker",
+        "entry_date",
+        "entry_open",
+        "exit_date",
+        "exit_close",
+        "adv20_usd"
+      ],
+      "missing_entry_date": 0,
+      "missing_exit_date": 0,
+      "target_price_relevance": "No generated strategy signals are emitted; target_price is not consumed by this read-only event study. A later shared entry gate must re-run the normal signal contract checks.",
+      "passed": true
+    },
+    "gate3": {
+      "new_entry_filter_added": false,
+      "signals_generated": null,
+      "signals_survived": null,
+      "survival_rate": null,
+      "note": "Attribution only; no filter applied, so baseline survival is unchanged and Gate 3 is informational.",
+      "passed": true
+    },
+    "gate4": {
+      "applicable": false,
+      "passed": false,
+      "decision": "rejected_sec_nt_late_filing_entry_risk_gate",
+      "failed_reasons": [
+        "liquid_sample_below_min_total",
+        "event_drift_not_negative_in_two_windows",
+        "aggregate_long_drift_positive",
+        "aggregate_excess_not_negative"
+      ],
+      "supporting_windows": [],
+      "aggregate_mean_net_long_return": 0.057439,
+      "aggregate_mean_excess_vs_same_ticker_unconditional": 0.083379,
+      "aggregate_total_long_pnl_usd": 4824.9,
+      "aggregate_total_risk_gate_avoided_loss_usd": -4824.9,
+      "liquid_trade_count": 21,
+      "note": "No before/after strategy behavior changed. The source-validation rule failed, so no shared-helper Gate 4 follow-up is warranted."
+    },
+    "data_diagnostics": {
+      "cache_files_scanned": 3222,
+      "parse_errors": 0,
+      "raw_nt_notice_count": 990,
+      "raw_by_window": {
+        "old_thin": 334,
+        "late_strong": 324,
+        "mid_weak": 332
+      },
+      "raw_by_form": {
+        "NT 10-Q": 495,
+        "NT 10-K": 372,
+        "NT 20-F": 116,
+        "NT 10-Q/A": 5,
+        "NT 10-K/A": 2
+      },
+      "raw_unique_tickers": 452,
+      "raw_missing_ticker": 86,
+      "prices_loaded_for_tickers": 416,
+      "rejects": {
+        "entry_price_below_floor": 614,
+        "no_price_history": 61,
+        "adv20_below_floor": 160,
+        "adv20_missing": 24,
+        "missing_ticker": 86,
+        "no_next_session_open": 5,
+        "no_10d_exit": 19
+      },
+      "liquid_trade_count": 21,
+      "liquid_trade_count_by_window": {
+        "old_thin": 14,
+        "mid_weak": 4,
+        "late_strong": 3
+      },
+      "liquid_trade_count_by_form": {
+        "NT 10-Q": 12,
+        "NT 10-K": 9
+      },
+      "liquid_unique_tickers": 19
+    },
+    "event_study": {
+      "aggregate": {
+        "trade_count": 21,
+        "unique_tickers": 19,
+        "mean_net_long_return": 0.057439,
+        "median_net_long_return": 0.032036,
+        "negative_return_share": 0.285714,
+        "total_long_pnl_usd": 4824.9,
+        "total_risk_gate_avoided_loss_usd": -4824.9,
+        "mean_excess_vs_same_ticker_unconditional": 0.083379,
+        "top_ticker_counts": [
+          [
+            "RGEN",
+            2
+          ],
+          [
+            "SMCI",
+            2
+          ],
+          [
+            "ADM",
+            1
+          ],
+          [
+            "AGQ",
+            1
+          ],
+          [
+            "FOXO",
+            1
+          ],
+          [
+            "LUNR",
+            1
+          ],
+          [
+            "CLSK",
+            1
+          ],
+          [
+            "DFNS",
+            1
+          ],
+          [
+            "CCI",
+            1
+          ],
+          [
+            "AES",
+            1
+          ]
+        ],
+        "max_single_ticker_share": 0.095238,
+        "supporting_windows": []
+      },
+      "by_window": {
+        "late_strong": {
+          "trade_count": 3,
+          "unique_tickers": 3,
+          "mean_net_long_return": 0.035916,
+          "median_net_long_return": 0.040597,
+          "negative_return_share": 0.333333,
+          "total_long_pnl_usd": 430.99,
+          "total_risk_gate_avoided_loss_usd": -430.99,
+          "mean_excess_vs_same_ticker_unconditional": 0.042502,
+          "top_ticker_counts": [
+            [
+              "KD",
+              1
+            ],
+            [
+              "PRKS",
+              1
+            ],
+            [
+              "KRMN",
+              1
+            ]
+          ],
+          "max_single_ticker_share": 0.333333
+        },
+        "mid_weak": {
+          "trade_count": 4,
+          "unique_tickers": 4,
+          "mean_net_long_return": 0.121922,
+          "median_net_long_return": 0.065397,
+          "negative_return_share": 0.0,
+          "total_long_pnl_usd": 1950.74,
+          "total_risk_gate_avoided_loss_usd": -1950.74,
+          "mean_excess_vs_same_ticker_unconditional": 0.12655,
+          "top_ticker_counts": [
+            [
+              "LSTR",
+              1
+            ],
+            [
+              "KIDZ",
+              1
+            ],
+            [
+              "UPXI",
+              1
+            ],
+            [
+              "GTLB",
+              1
+            ]
+          ],
+          "max_single_ticker_share": 0.25
+        },
+        "old_thin": {
+          "trade_count": 14,
+          "unique_tickers": 12,
+          "mean_net_long_return": 0.043628,
+          "median_net_long_return": 0.024547,
+          "negative_return_share": 0.357143,
+          "total_long_pnl_usd": 2443.17,
+          "total_risk_gate_avoided_loss_usd": -2443.17,
+          "mean_excess_vs_same_ticker_unconditional": 0.079804,
+          "top_ticker_counts": [
+            [
+              "RGEN",
+              2
+            ],
+            [
+              "SMCI",
+              2
+            ],
+            [
+              "ADM",
+              1
+            ],
+            [
+              "AGQ",
+              1
+            ],
+            [
+              "FOXO",
+              1
+            ]
+          ],
+          "max_single_ticker_share": 0.142857
+        }
+      }
+    },
+    "sample_trades": [
+      {
+        "ticker": "ADM",
+        "cik": "0000007084",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-12",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-12T16:36:27.000Z",
+        "accession_number": "0001193125-24-256030",
+        "primary_document": "d826408dnt10q.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000007084.json",
+        "entry_date": "2024-11-13",
+        "exit_date": "2024-11-27",
+        "entry_open": 48.6125,
+        "exit_close": 51.9367,
+        "adv20_usd": 161484777.18,
+        "net_long_return": 0.064881,
+        "long_pnl_usd": 259.52,
+        "risk_gate_avoided_loss_usd": -259.52,
+        "same_ticker_unconditional_net_return_mean": -0.014713,
+        "excess_vs_same_ticker_unconditional": 0.079594
+      },
+      {
+        "ticker": "RGEN",
+        "cik": "0000730272",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-12",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-12T21:22:50.000Z",
+        "accession_number": "0001193125-24-255987",
+        "primary_document": "d850958dnt10q.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000730272.json",
+        "entry_date": "2024-11-13",
+        "exit_date": "2024-11-27",
+        "entry_open": 144.96,
+        "exit_close": 149.99,
+        "adv20_usd": 83786642.25,
+        "net_long_return": 0.031199,
+        "long_pnl_usd": 124.8,
+        "risk_gate_avoided_loss_usd": -124.8,
+        "same_ticker_unconditional_net_return_mean": 0.002786,
+        "excess_vs_same_ticker_unconditional": 0.028414
+      },
+      {
+        "ticker": "AGQ",
+        "cik": "0001415311",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-13",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-13T22:22:57.000Z",
+        "accession_number": "0001193125-24-257377",
+        "primary_document": "d890939dnt10q.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001415311.json",
+        "entry_date": "2024-11-14",
+        "exit_date": "2024-11-29",
+        "entry_open": 37.39,
+        "exit_close": 38.19,
+        "adv20_usd": 100426524.62,
+        "net_long_return": 0.017896,
+        "long_pnl_usd": 71.58,
+        "risk_gate_avoided_loss_usd": -71.58,
+        "same_ticker_unconditional_net_return_mean": -0.001008,
+        "excess_vs_same_ticker_unconditional": 0.018904
+      },
+      {
+        "ticker": "SMCI",
+        "cik": "0001375365",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-13",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-12T21:56:01.000Z",
+        "accession_number": "0001375365-24-000039",
+        "primary_document": "smci-form12bx25nt10xqx2024.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001375365.json",
+        "entry_date": "2024-11-14",
+        "exit_date": "2024-11-29",
+        "entry_open": 17.99,
+        "exit_close": 32.64,
+        "adv20_usd": 2202658396.24,
+        "net_long_return": 0.810841,
+        "long_pnl_usd": 3243.37,
+        "risk_gate_avoided_loss_usd": -3243.37,
+        "same_ticker_unconditional_net_return_mean": 0.023876,
+        "excess_vs_same_ticker_unconditional": 0.786966
+      },
+      {
+        "ticker": "FOXO",
+        "cik": "0001812360",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-14",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-14T21:33:27.000Z",
+        "accession_number": "0001493152-24-045952",
+        "primary_document": "formnt10-q.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001812360.json",
+        "entry_date": "2024-11-15",
+        "exit_date": "2024-12-02",
+        "entry_open": 11.8007,
+        "exit_close": 9.0744,
+        "adv20_usd": 96319771.67,
+        "net_long_return": -0.234529,
+        "long_pnl_usd": -938.11,
+        "risk_gate_avoided_loss_usd": 938.11,
+        "same_ticker_unconditional_net_return_mean": -0.274335,
+        "excess_vs_same_ticker_unconditional": 0.039806
+      },
+      {
+        "ticker": "LUNR",
+        "cik": "0001844452",
+        "form_type": "NT 10-Q",
+        "filing_date": "2024-11-15",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-11-15T02:04:28.000Z",
+        "accession_number": "0001213900-24-098672",
+        "primary_document": "ea0221418-nt10q_intuitive.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001844452.json",
+        "entry_date": "2024-11-18",
+        "exit_date": "2024-12-03",
+        "entry_open": 12.27,
+        "exit_close": 14.15,
+        "adv20_usd": 168781076.2,
+        "net_long_return": 0.149719,
+        "long_pnl_usd": 598.88,
+        "risk_gate_avoided_loss_usd": -598.88,
+        "same_ticker_unconditional_net_return_mean": -0.012104,
+        "excess_vs_same_ticker_unconditional": 0.161823
+      },
+      {
+        "ticker": "CLSK",
+        "cik": "0000827876",
+        "form_type": "NT 10-K",
+        "filing_date": "2024-12-02",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-12-02T22:00:02.000Z",
+        "accession_number": "0000950170-24-132288",
+        "primary_document": "24.12.02_-_plan_b_-_nt_1.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000827876.json",
+        "entry_date": "2024-12-03",
+        "exit_date": "2024-12-17",
+        "entry_open": 13.33,
+        "exit_close": 12.36,
+        "adv20_usd": 577944237.6,
+        "net_long_return": -0.076268,
+        "long_pnl_usd": -305.07,
+        "risk_gate_avoided_loss_usd": 305.07,
+        "same_ticker_unconditional_net_return_mean": -0.052273,
+        "excess_vs_same_ticker_unconditional": -0.023995
+      },
+      {
+        "ticker": "DFNS",
+        "cik": "0001787518",
+        "form_type": "NT 10-K",
+        "filing_date": "2024-12-31",
+        "report_date": "2024-09-30",
+        "accepted_at": "2024-12-31T20:37:01.000Z",
+        "accession_number": "0001213900-24-113937",
+        "primary_document": "ea0226393-nt10k_nukkleus.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001787518.json",
+        "entry_date": "2025-01-02",
+        "exit_date": "2025-01-17",
+        "entry_open": 37.06,
+        "exit_close": 29.5,
+        "adv20_usd": 301790845.7,
+        "net_long_return": -0.207494,
+        "long_pnl_usd": -829.97,
+        "risk_gate_avoided_loss_usd": 829.97,
+        "same_ticker_unconditional_net_return_mean": -0.115811,
+        "excess_vs_same_ticker_unconditional": -0.091683
+      },
+      {
+        "ticker": "SMCI",
+        "cik": "0001375365",
+        "form_type": "NT 10-Q",
+        "filing_date": "2025-02-11",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-02-11T16:28:35.000Z",
+        "accession_number": "0001375365-25-000002",
+        "primary_document": "smci-form12bx25nt10xqx2024.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001375365.json",
+        "entry_date": "2025-02-12",
+        "exit_date": "2025-02-27",
+        "entry_open": 42.3,
+        "exit_close": 42.95,
+        "adv20_usd": 1716484782.51,
+        "net_long_return": 0.011866,
+        "long_pnl_usd": 47.47,
+        "risk_gate_avoided_loss_usd": -47.47,
+        "same_ticker_unconditional_net_return_mean": 0.023876,
+        "excess_vs_same_ticker_unconditional": -0.012009
+      },
+      {
+        "ticker": "CCI",
+        "cik": "0001051470",
+        "form_type": "NT 10-K",
+        "filing_date": "2025-02-25",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-02-25T21:19:16.000Z",
+        "accession_number": "0001051470-25-000029",
+        "primary_document": "form12b-25xcci202410xk.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001051470.json",
+        "entry_date": "2025-02-26",
+        "exit_date": "2025-03-12",
+        "entry_open": 86.4308,
+        "exit_close": 89.5022,
+        "adv20_usd": 206459663.95,
+        "net_long_return": 0.032036,
+        "long_pnl_usd": 128.14,
+        "risk_gate_avoided_loss_usd": -128.14,
+        "same_ticker_unconditional_net_return_mean": -0.005477,
+        "excess_vs_same_ticker_unconditional": 0.037513
+      },
+      {
+        "ticker": "AES",
+        "cik": "0000874761",
+        "form_type": "NT 10-K",
+        "filing_date": "2025-03-03",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-03-03T06:07:48.000Z",
+        "accession_number": "0000950103-25-002789",
+        "primary_document": "dp225705_nt10k.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000874761.json",
+        "entry_date": "2025-03-04",
+        "exit_date": "2025-03-18",
+        "entry_open": 10.5209,
+        "exit_close": 12.072,
+        "adv20_usd": 181226700.35,
+        "net_long_return": 0.143924,
+        "long_pnl_usd": 575.7,
+        "risk_gate_avoided_loss_usd": -575.7,
+        "same_ticker_unconditional_net_return_mean": -0.054286,
+        "excess_vs_same_ticker_unconditional": 0.198211
+      },
+      {
+        "ticker": "BAM",
+        "cik": "0001937926",
+        "form_type": "NT 10-K",
+        "filing_date": "2025-03-03",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-03-03T13:37:13.000Z",
+        "accession_number": "0001104659-25-019527",
+        "primary_document": "tm257846d1_nt10k.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001937926.json",
+        "entry_date": "2025-03-04",
+        "exit_date": "2025-03-18",
+        "entry_open": 52.6628,
+        "exit_close": 46.8629,
+        "adv20_usd": 94793898.58,
+        "net_long_return": -0.113632,
+        "long_pnl_usd": -454.53,
+        "risk_gate_avoided_loss_usd": 454.53,
+        "same_ticker_unconditional_net_return_mean": -0.006267,
+        "excess_vs_same_ticker_unconditional": -0.107366
+      },
+      {
+        "ticker": "RGEN",
+        "cik": "0000730272",
+        "form_type": "NT 10-K",
+        "filing_date": "2025-03-03",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-03-03T21:45:40.000Z",
+        "accession_number": "0001193125-25-044191",
+        "primary_document": "d812625dnt10k.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000730272.json",
+        "entry_date": "2025-03-04",
+        "exit_date": "2025-03-18",
+        "entry_open": 153.62,
+        "exit_close": 144.34,
+        "adv20_usd": 99478995.12,
+        "net_long_return": -0.063909,
+        "long_pnl_usd": -255.64,
+        "risk_gate_avoided_loss_usd": 255.64,
+        "same_ticker_unconditional_net_return_mean": 0.002786,
+        "excess_vs_same_ticker_unconditional": -0.066694
+      },
+      {
+        "ticker": "FLG",
+        "cik": "0000910073",
+        "form_type": "NT 10-K",
+        "filing_date": "2025-03-04",
+        "report_date": "2024-12-31",
+        "accepted_at": "2025-03-04T21:07:49.000Z",
+        "accession_number": "0000910073-25-000041",
+        "primary_document": "nt10-kform12bx25.htm",
+        "window": "old_thin",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000910073.json",
+        "entry_date": "2025-03-05",
+        "exit_date": "2025-03-19",
+        "entry_open": 11.6923,
+        "exit_close": 12.2507,
+        "adv20_usd": 81313440.99,
+        "net_long_return": 0.044257,
+        "long_pnl_usd": 177.03,
+        "risk_gate_avoided_loss_usd": -177.03,
+        "same_ticker_unconditional_net_return_mean": -0.023521,
+        "excess_vs_same_ticker_unconditional": 0.067778
+      },
+      {
+        "ticker": "LSTR",
+        "cik": "0000853816",
+        "form_type": "NT 10-Q",
+        "filing_date": "2025-04-25",
+        "report_date": "2025-03-29",
+        "accepted_at": "2025-04-25T13:46:15.000Z",
+        "accession_number": "0001193125-25-095321",
+        "primary_document": "d920565dnt10q.htm",
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0000853816.json",
+        "entry_date": "2025-04-28",
+        "exit_date": "2025-05-12",
+        "entry_open": 131.194,
+        "exit_close": 139.9007,
+        "adv20_usd": 55649699.71,
+        "net_long_return": 0.062865,
+        "long_pnl_usd": 251.46,
+        "risk_gate_avoided_loss_usd": -251.46,
+        "same_ticker_unconditional_net_return_mean": -0.005888,
+        "excess_vs_same_ticker_unconditional": 0.068753
+      },
+      {
+        "ticker": "KIDZ",
+        "cik": "0002022308",
+        "form_type": "NT 10-Q",
+        "filing_date": "2025-05-15",
+        "report_date": "2025-03-31",
+        "accepted_at": "2025-05-15T21:02:10.000Z",
+        "accession_number": "0001929980-25-000440",
+        "primary_document": "class_nt10q.htm",
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0002022308.json",
+        "entry_date": "2025-05-16",
+        "exit_date": "2025-06-02",
+        "entry_open": 140.0,
+        "exit_close": 186.0,
+        "adv20_usd": 123887433.45,
+        "net_long_return": 0.325071,
+        "long_pnl_usd": 1300.29,
+        "risk_gate_avoided_loss_usd": -1300.29,
+        "same_ticker_unconditional_net_return_mean": 0.089564,
+        "excess_vs_same_ticker_unconditional": 0.235508
+      },
+      {
+        "ticker": "UPXI",
+        "cik": "0001775194",
+        "form_type": "NT 10-Q",
+        "filing_date": "2025-05-16",
+        "report_date": "2025-03-31",
+        "accepted_at": "2025-05-15T21:41:15.000Z",
+        "accession_number": "0001477932-25-003855",
+        "primary_document": "upxi_nt10q.htm",
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001775194.json",
+        "entry_date": "2025-05-19",
+        "exit_date": "2025-06-03",
+        "entry_open": 10.22,
+        "exit_close": 10.95,
+        "adv20_usd": 75353003.54,
+        "net_long_return": 0.067929,
+        "long_pnl_usd": 271.71,
+        "risk_gate_avoided_loss_usd": -271.71,
+        "same_ticker_unconditional_net_return_mean": -0.104867,
+        "excess_vs_same_ticker_unconditional": 0.172795
+      },
+      {
+        "ticker": "GTLB",
+        "cik": "0001653482",
+        "form_type": "NT 10-Q",
+        "filing_date": "2025-06-11",
+        "report_date": "2025-04-30",
+        "accepted_at": "2025-06-10T21:40:46.000Z",
+        "accession_number": "0001628280-25-030548",
+        "primary_document": "form12b-251q26.htm",
+        "window": "mid_weak",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001653482.json",
+        "entry_date": "2025-06-12",
+        "exit_date": "2025-06-27",
+        "entry_open": 43.6,
+        "exit_close": 45.14,
+        "adv20_usd": 225656229.06,
+        "net_long_return": 0.031821,
+        "long_pnl_usd": 127.28,
+        "risk_gate_avoided_loss_usd": -127.28,
+        "same_ticker_unconditional_net_return_mean": 0.002679,
+        "excess_vs_same_ticker_unconditional": 0.029142
+      },
+      {
+        "ticker": "KD",
+        "cik": "0001867072",
+        "form_type": "NT 10-Q",
+        "filing_date": "2026-02-09",
+        "report_date": "2025-12-31",
+        "accepted_at": "2026-02-09T11:43:58.000Z",
+        "accession_number": "0001104659-26-011738",
+        "primary_document": "tm265582d1_nt10q.htm",
+        "window": "late_strong",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001867072.json",
+        "entry_date": "2026-02-10",
+        "exit_date": "2026-02-25",
+        "entry_open": 10.64,
+        "exit_close": 12.1,
+        "adv20_usd": 92646094.17,
+        "net_long_return": 0.133718,
+        "long_pnl_usd": 534.87,
+        "risk_gate_avoided_loss_usd": -534.87,
+        "same_ticker_unconditional_net_return_mean": -0.057028,
+        "excess_vs_same_ticker_unconditional": 0.190746
+      },
+      {
+        "ticker": "PRKS",
+        "cik": "0001564902",
+        "form_type": "NT 10-K",
+        "filing_date": "2026-03-03",
+        "report_date": "2025-12-31",
+        "accepted_at": "2026-03-03T16:16:21.000Z",
+        "accession_number": "0001193125-26-088242",
+        "primary_document": "prks-nt10k-20251231.htm",
+        "window": "late_strong",
+        "source_cache_file": "data/cache/sec/submissions/CIK0001564902.json",
+        "entry_date": "2026-03-04",
+        "exit_date": "2026-03-18",
+        "entry_open": 34.09,
+        "exit_close": 31.94,
+        "adv20_usd": 52093029.62,
+        "net_long_return": -0.066568,
+        "long_pnl_usd": -266.27,
+        "risk_gate_avoided_loss_usd": 266.27,
+        "same_ticker_unconditional_net_return_mean": 0.025765,
+        "excess_vs_same_ticker_unconditional": -0.092334
+      },
+      {
+        "ticker": "KRMN",
+        "cik": "0002040127",
+        "form_type": "NT 10-K",
+        "filing_date": "2026-04-01",
+        "report_date": "2025-12-31",
+        "accepted_at": "2026-04-01T21:13:17.000Z",
+        "accession_number": "0002040127-26-000010",
+        "primary_document": "krmn_10-k_2025_extension.htm",
+        "window": "late_strong",
+        "source_cache_file": "data/cache/sec/submissions/CIK0002040127.json",
+        "entry_date": "2026-04-02",
+        "exit_date": "2026-04-17",
+        "entry_open": 80.05,
+        "exit_close": 83.58,
+        "adv20_usd": 200902995.77,
+        "net_long_return": 0.040597,
+        "long_pnl_usd": 162.39,
+        "risk_gate_avoided_loss_usd": -162.39,
+        "same_ticker_unconditional_net_return_mean": 0.011504,
+        "excess_vs_same_ticker_unconditional": 0.029094
+      }
+    ],
+    "production_impact": {
+      "trade_enabled": false,
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "paper_orders_changed": false,
+      "live_orders_changed": false,
+      "watchlist_changed": false,
+      "llm_decision_boundary_changed": false,
+      "daily_snapshot_exposed": false,
+      "default_off_paper_only": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "parity_note": "Read-only offline source validation over SEC cached submissions and warehouse OHLCV. No production/backtest behavior changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The NT notice surface is dominated by untradeable rows after liquidity gates, and the few liquid events did not behave like entry risk. The 21 deployable events had positive aggregate 10-session long drift, so avoiding them would have destroyed replacement value.",
+      "forbidden_near_neighbor_retry": "Do not retune price, ADV, hold days, cooldown, form subset, same-day ranking, annual-vs-quarterly split, or threshold-like slices on these same cached NT notice rows. Do not reframe the positive long drift as a contrarian long without a new gate shape or materially more settled forward rows.",
+      "new_evidence_required": "A legal retry needs materially new NT notice rows, a genuinely different disclosure-delay field such as accelerated-filer status change with PIT provenance, or a different data source."
+    },
+    "rejection_reason": "liquid_sample_below_min_total;event_drift_not_negative_in_two_windows;aggregate_long_drift_positive;aggregate_excess_not_negative",
+    "next_retry_requires": [
+      "materially new NT notice rows",
+      "or a different disclosure-delay field with PIT provenance",
+      "or a different data source"
+    ],
+    "before_after_strategy_behavior_changed": false,
+    "changed_files": [
+      "quant/experiments/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py",
+      "data/experiments/exp-20260707-019/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.json",
+      "experiments/logs/exp-20260707-019.json",
+      "experiments/cards/exp-20260707-019.md",
+      "experiments/manifests/exp-20260707-019.json",
+      "experiments/tickets/exp-20260707-019.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "related_files": [
+      "quant/experiments/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py",
+      "data/experiments/exp-20260707-019/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.json",
+      "experiments/logs/exp-20260707-019.json",
+      "experiments/cards/exp-20260707-019.md",
+      "experiments/manifests/exp-20260707-019.json",
+      "experiments/tickets/exp-20260707-019.json",
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py",
+      ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260707_019_sec_nt_late_filing_notice_entry_risk.py",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "anti_js": {
+      "used_javascript": false,
+      "evidence": "Python runner only; no node/js tooling invoked."
+    },
+    "lean_quality_passed": true,
+    "artifact": "data/experiments/exp-20260707-019/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.json",
+    "log": "experiments/logs/exp-20260707-019.json"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-019.json",
+  "single_causal_variable": "sec_nt_late_filing_notice_10d_entry_risk_gate_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260707-019.json",
+  "trial_family": "sec_nt_late_filing_notice_entry_risk",
+  "trial_variant_id": "nt_10k_10q_20f_notice_top1_day_10d_v1",
+  "implementation_mode": "private_replay_scout",
+  "decision": "rejected_sec_nt_late_filing_entry_risk_gate",
+  "artifact": "data/experiments/exp-20260707-019/exp_20260707_019_sec_nt_late_filing_notice_entry_risk.json",
+  "log": "experiments/logs/exp-20260707-019.json",
+  "accepted_alpha": false,
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-07T18:14:42+00:00"
+}

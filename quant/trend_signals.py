@@ -10,8 +10,9 @@ import json
 import logging
 import math
 from datetime import datetime, timedelta
-import yfinance as yf
 import pandas as pd
+
+from yfinance_bootstrap import download_with_rate_limit_retry
 
 logger = logging.getLogger(__name__)
 
@@ -72,11 +73,12 @@ def download_ohlcv(ticker, lookback_days=60):
 
         logger.info(f"Downloading data for {ticker} from {start_date.date()} to {end_date.date()}")
 
-        data = yf.download(
+        data = download_with_rate_limit_retry(
             ticker,
             start=start_date,
             end=end_date,
-            progress=False
+            progress=False,
+            retry_logger=logger,
         )
 
         if data.empty:

@@ -1,0 +1,601 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "entry_date_present_count": 34,
+    "expected_value_score_sum": 7.8941,
+    "gate_ready_current_rows": 0,
+    "max_drawdown_pct_worst": 0.1119,
+    "repaired_intraday_observation_rows": 34,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "target_price_applicability_present_count": 34,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Timestamped intraday news relation-quality events can become useful LLM event-scoring alpha only after fixed-contract rows have replayable entry dates and later closed cash/SPY/QQQ replacement values; without entry_date, any current-row alpha read is a measurement artifact.",
+  "alpha_ready": false,
+  "alpha_ready_reason": "Not alpha-ready: this fixes entry_date schema only. Current rows still lack closed cash/SPY/QQQ replacement values.",
+  "artifact": "data/experiments/exp-20260704-024/exp_20260704_024_intraday_structured_news_entry_date_contract.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "current_intraday_observation_rows": 34,
+    "entry_date_present_count": 0,
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "target_price_applicability_present_count": 0,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_intraday_structured_news_entry_date_contract",
+    "actual_success": 1,
+    "brier_score": 0.0784,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "calendar_holiday_logic_wrong",
+      "observation_ids_changed",
+      "target_price_semantics_confused_with_executable_exit",
+      "current_rows_still_lack_replacement_comparators"
+    ],
+    "predicted_success_probability": 0.72,
+    "realized_failure_modes": [],
+    "surprise_note": "Low surprise: the deterministic calendar repair preserved observation IDs and filled entry_date for the current in-memory repaired contract."
+  },
+  "card_file": "experiments/cards/exp-20260704-024.md",
+  "causal_components": [
+    "intraday forward observation next-session entry_date materialization",
+    "fixed-horizon target_price non-applicability schema",
+    "readiness audit for current intraday structured-news rows",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/intraday_news_structured_events.py",
+    "quant/test_intraday_news_structured_events.py",
+    "quant/test_intraday_news_structured_event_snapshot.py",
+    "quant/experiments/exp_20260704_024_intraday_structured_news_entry_date_contract.py",
+    "data/experiments/exp-20260704-024/exp_20260704_024_intraday_structured_news_entry_date_contract.json",
+    "data/experiments/exp-20260704-024/repaired_current_intraday_observations.jsonl",
+    "experiments/logs/exp-20260704-024.json",
+    "experiments/cards/exp-20260704-024.md",
+    "experiments/manifests/exp-20260704-024.json",
+    "experiments/tickets/exp-20260704-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_structured_news_fixed_horizon_entry_date_contract_v1",
+  "current_repair_audit": {
+    "captures": [
+      {
+        "date_tag": "20260629",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 3,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 3
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 3,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 3,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 2,
+          "ticker_date_count": 3
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260629_1301ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 3,
+          "entry_date_values": [
+            "2026-06-30"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 3
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 3,
+          "target_price_applicability_present_count": 3,
+          "target_price_null_count": 3,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 2,
+          "ticker_date_count": 3
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1301ET"
+      },
+      {
+        "date_tag": "20260629",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 3,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 3
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 3,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 3,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 2,
+          "ticker_date_count": 3
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260629_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 3,
+          "entry_date_values": [
+            "2026-06-30"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 3
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 3,
+          "target_price_applicability_present_count": 3,
+          "target_price_null_count": 3,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 2,
+          "ticker_date_count": 3
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      },
+      {
+        "date_tag": "20260630",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 6,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 6
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 6,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 6,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 3,
+          "ticker_date_count": 5
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260630_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 6,
+          "entry_date_values": [
+            "2026-07-01"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 6
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 6,
+          "target_price_applicability_present_count": 6,
+          "target_price_null_count": 6,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 3,
+          "ticker_date_count": 5
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      },
+      {
+        "date_tag": "20260630",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 6,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 6
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 6,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 6,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 3,
+          "ticker_date_count": 5
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260630_1303ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 6,
+          "entry_date_values": [
+            "2026-07-01"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 6
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 6,
+          "target_price_applicability_present_count": 6,
+          "target_price_null_count": 6,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 3,
+          "ticker_date_count": 5
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1303ET"
+      },
+      {
+        "date_tag": "20260701",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 1,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 1
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 1,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 1,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 1
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260701_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 1,
+          "entry_date_values": [
+            "2026-07-02"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 1
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 1,
+          "target_price_applicability_present_count": 1,
+          "target_price_null_count": 1,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 1
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      },
+      {
+        "date_tag": "20260702",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 5,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 5
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260702_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 5,
+          "entry_date_values": [
+            "2026-07-06"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 5,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 5
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      },
+      {
+        "date_tag": "20260703",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 5,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 4
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260703_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 5,
+          "entry_date_values": [
+            "2026-07-06"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 5,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 1,
+          "ticker_date_count": 4
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      },
+      {
+        "date_tag": "20260704",
+        "observation_id_symmetric_difference": 0,
+        "old": {
+          "entry_date_missing_count": 5,
+          "entry_date_present_count": 0,
+          "entry_date_values": [],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 0,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 0,
+          "ticker_date_count": 4
+        },
+        "path": "data/daily/intraday/structured/intraday_news_structured_event_observations_20260704_1302ET.jsonl",
+        "repaired": {
+          "entry_date_missing_count": 0,
+          "entry_date_present_count": 5,
+          "entry_date_values": [
+            "2026-07-06"
+          ],
+          "outcome_status_counts": {
+            "pending_forward_close": 5
+          },
+          "replacement_value_vs_cash_present_count": 0,
+          "row_count": 5,
+          "target_price_applicability_present_count": 5,
+          "target_price_null_count": 5,
+          "target_price_present_count": 0,
+          "target_relation_quality_rows": 0,
+          "ticker_date_count": 4
+        },
+        "row_count_delta": 0,
+        "snapshot_error": null,
+        "time_label": "1302ET"
+      }
+    ],
+    "missing_source_capture_count": 0,
+    "observation_artifact_count": 8,
+    "observation_id_symmetric_difference": 0,
+    "old": {
+      "entry_date_missing_count": 34,
+      "entry_date_present_count": 0,
+      "entry_date_values": [],
+      "outcome_status_counts": {
+        "pending_forward_close": 34
+      },
+      "replacement_value_vs_cash_present_count": 0,
+      "row_count": 34,
+      "target_price_applicability_present_count": 0,
+      "target_price_null_count": 34,
+      "target_price_present_count": 0,
+      "target_relation_quality_rows": 13,
+      "ticker_date_count": 22
+    },
+    "repaired": {
+      "entry_date_missing_count": 0,
+      "entry_date_present_count": 34,
+      "entry_date_values": [
+        "2026-06-30",
+        "2026-07-01",
+        "2026-07-02",
+        "2026-07-06"
+      ],
+      "outcome_status_counts": {
+        "pending_forward_close": 34
+      },
+      "replacement_value_vs_cash_present_count": 0,
+      "row_count": 34,
+      "target_price_applicability_present_count": 34,
+      "target_price_null_count": 34,
+      "target_price_present_count": 0,
+      "target_relation_quality_rows": 13,
+      "ticker_date_count": 22
+    },
+    "row_count_mismatch_capture_count": 0
+  },
+  "decision": "accepted_measurement_repair_intraday_structured_news_entry_date_contract",
+  "delta_metrics": {
+    "entry_date_present_delta": 34,
+    "expected_value_score_delta": 0.0,
+    "observation_id_symmetric_difference": 0,
+    "repaired_replacement_value_vs_cash_present_count": 0,
+    "target_price_applicability_present_delta": 34,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-024",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "observation_id_symmetric_difference": 0,
+    "old_entry_date_present_count": 0,
+    "passed": true,
+    "repaired_entry_date_missing_count": 0,
+    "repaired_entry_date_present_count": 34,
+    "required_fields_checked": [
+      "observation_id",
+      "event_id",
+      "capture_date",
+      "time_label",
+      "ticker",
+      "entry_date",
+      "entry_date_status",
+      "target_price",
+      "target_price_applicability",
+      "outcome_status"
+    ],
+    "target_price_applicability_present_count": 34,
+    "target_price_scope": "target_price remains null by design because this fixed-horizon observer does not schedule target exits or orders; gate readiness should use entry_date plus closed replacement-value comparators."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter/rank/size/exit rule changed; baseline survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "decision": "accepted_measurement_repair_intraday_structured_news_entry_date_contract",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Repair intraday structured-news fixed-horizon forward observation readiness by materializing next-session entry_date and explicit target_price non-applicability, without changing filters, ranking, sizing, exits, orders, prompts, or trade_enabled.",
+  "implementation_mode": "fixed_horizon_forward_observation_schema_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": null,
+  "log": "experiments/logs/exp-20260704-024.json",
+  "mechanism_family": "intraday_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260630-013",
+    "exp-20260702-022",
+    "exp-20260702-025",
+    "exp-20260704-012"
+  ],
+  "new_evidence_axis": "Measurement repair to the accepted intraday structured-news fixed-horizon forward observation contract: materialize planned next-session entry_date and explicit target_price non-applicability.",
+  "new_evidence_type": "fixed_horizon_forward_observation_schema_repair",
+  "next_retry_requires": [
+    "at least 20 closed intraday structured-news rows with entry_date",
+    "cash/SPY/QQQ replacement-value comparators for those rows",
+    "or a distinct PIT intraday provider with validated same-day bars"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "entry_date_policy": "next_us_equity_session_after_capture_date",
+    "forward_observation_rule_version": "intraday_news_structured_event_forward_observation_contract_v1",
+    "repaired_rows_written_to_experiment_artifact_only": true,
+    "strategy_behavior_changed": false,
+    "target_price_policy": "not_applicable_fixed_horizon_observation",
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reslice these intraday structured-news rows by relation, polarity, keyword, ticker, event age, prompt wording, top-N, hold, notional, or response curve. Do not add a synthetic target_price to fixed-horizon observations.",
+    "new_evidence_required": "Reopen intraday structured-news alpha only after production or an experiment-owned outcome ledger has at least 20 rows with entry_date plus closed cash/SPY/QQQ replacement values, or after a distinct PIT intraday provider supplies validated same-day bars. target_price remains non-applicable for this fixed-horizon observer.",
+    "why_result_happened": "The accepted contract already had deterministic next-session entry semantics; it simply failed to materialize the date. Using the existing NYSE session calendar fills all current repaired rows without changing observation IDs. The remaining blocker is closed replacement-value comparators, not target_price."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Timestamped intraday news relation-quality events can become useful LLM event-scoring alpha only after fixed-contract rows have replayable entry dates and later closed cash/SPY/QQQ replacement values; without entry_date, any current-row alpha read is a measurement artifact.",
+    "2_history_check": {
+      "exp-20260630-013": "Accepted the intraday structured-event forward observation contract with next-session semantics but intentionally-null target_price.",
+      "exp-20260702-022": "Rejected h1/h3 intraday structured-news read; do not reslice current rows.",
+      "exp-20260702-025": "Blocked true same-day intraday execution because post-capture bar coverage is absent.",
+      "exp-20260704-012": "Blocked current observer settlement surface and named intraday entry_date/target_price as a readiness issue.",
+      "novelty_gate": "measurement_repair lane; novelty had no blocking near-neighbor."
+    },
+    "3_single_measurement_bundle": "intraday_structured_news_fixed_horizon_entry_date_contract_v1",
+    "4_success_failure_standard": "Accept only if current intraday observation rows rebuild with the same observation IDs and row counts, all repaired rows carry entry_date, target_price stays null with explicit fixed-horizon non-applicability, and strategy metrics stay unchanged.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_024_intraday_structured_news_entry_date_contract.py"
+  },
+  "prediction": {
+    "confidence_reason": "The accepted exp-20260630-013 intraday contract already defines next-session open semantics, and exp-20260704-012 showed the current rows fail readiness because entry_date is null. The repair is deterministic calendar materialization plus explicit fixed-horizon target semantics; main risk is accidentally changing the stable observation IDs or creating a false target-price exit.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "calendar_holiday_logic_wrong",
+      "observation_ids_changed",
+      "target_price_semantics_confused_with_executable_exit",
+      "current_rows_still_lack_replacement_comparators"
+    ],
+    "recorded_at": "2026-07-04T22:06:30+00:00",
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "llm_prompt_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Future intraday structured-news observation snapshots will carry planned entry_date while preserving fixed-horizon, default-off, read-only semantics. No order or target exit is created.",
+    "ranking_sizing_entry_exit_changed": false,
+    "run_adapter_changed": false,
+    "run_intraday_adapter_changed": false,
+    "shared_observer_contract_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "experiments/logs/exp-20260630-013.json",
+    "experiments/logs/exp-20260702-022.json",
+    "experiments/logs/exp-20260702-025.json",
+    "experiments/logs/exp-20260704-012.json",
+    "quant/intraday_news_structured_event_snapshot.py",
+    "data/daily/intraday/structured"
+  ],
+  "repaired_current_observation_ledger": "data/experiments/exp-20260704-024/repaired_current_intraday_observations.jsonl",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\intraday_news_structured_events.py quant\\test_intraday_news_structured_events.py quant\\test_intraday_news_structured_event_snapshot.py quant\\experiments\\exp_20260704_024_intraday_structured_news_entry_date_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_news_structured_events.py quant\\test_intraday_news_structured_event_snapshot.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_024_intraday_structured_news_entry_date_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "revision_manifest_file": "experiments/manifests/exp-20260704-024.json",
+  "runner": "quant/experiments/exp_20260704_024_intraday_structured_news_entry_date_contract.py",
+  "single_causal_variable": "intraday_structured_news_fixed_horizon_entry_date_contract_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-04T22:12:00Z",
+  "trial_family": "intraday_structured_news_forward_observation_contract",
+  "trial_variant_id": "entry_date_contract_v1"
+}

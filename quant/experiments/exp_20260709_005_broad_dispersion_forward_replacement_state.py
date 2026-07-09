@@ -1,0 +1,1106 @@
+"""exp-20260709-005: broad dispersion/correlation on forward rows.
+
+Observed-only alpha attribution. This joins actual closed default-off forward
+replacement rows to broad-universe cross-sectional state at entry time:
+
+- stock-picker state = high broad dispersion and low average pairwise
+  correlation;
+- dead-chop state = low dispersion and/or high average pairwise correlation;
+- outcome = realized replacement value versus cash, SPY, and QQQ.
+
+The runner is read-only with respect to strategy behavior. It does not rank
+candidates, size positions, alter orders, or change live/default signals.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import sqlite3
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Mapping
+
+import numpy as np
+import pandas as pd
+
+EXPERIMENT_ID = "exp-20260709-005"
+OWNER = "alpha-explore"
+LANE = "alpha_search"
+SLUG = "broad_dispersion_forward_replacement_state"
+RUNNER = f"quant/experiments/exp_20260709_005_{SLUG}.py"
+RUNNER_COMMAND = ".\\.venv\\Scripts\\python.exe -B " + RUNNER.replace("/", "\\")
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+QUANT_ROOT = REPO_ROOT / "quant"
+SCRIPTS_ROOT = REPO_ROOT / "scripts"
+for entry in (REPO_ROOT, QUANT_ROOT, SCRIPTS_ROOT):
+    if str(entry) not in sys.path:
+        sys.path.insert(0, str(entry))
+
+from broad_dispersion_features import (  # noqa: E402
+    FEATURES_RULE_VERSION,
+    avg_pairwise_correlation,
+    corr_t_stat,
+    cross_sectional_dispersion,
+    daily_returns,
+    liquidity_mask,
+    spearman,
+)
+from experiment_registry import (  # noqa: E402
+    persist_self_registered_result,
+    save_experiment_log_entry,
+)
+
+DATA_DIR = REPO_ROOT / "data"
+BASELINE_RESULT = (
+    DATA_DIR / "backtests" / "backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+)
+WAREHOUSE_MAIN = DATA_DIR / "warehouse" / "warehouse_main.sqlite"
+WAREHOUSE_HOT = DATA_DIR / "warehouse" / "warehouse_main_hot.sqlite"
+FORWARD_LEDGER = DATA_DIR / "paper_sleeves" / "forward_replacement_value.jsonl"
+
+PANEL_START = "2026-03-01"
+PANEL_END = "2026-07-08"
+MIN_ELIGIBLE_NAMES = 300
+MIN_COVERED_FORWARD_ROWS = 20
+MAX_SINGLE_TICKER_SHARE = 0.60
+MAX_SINGLE_SLEEVE_SHARE = 0.60
+
+OUT_DIR = DATA_DIR / "experiments" / EXPERIMENT_ID
+OUT_JSON = OUT_DIR / f"exp_20260709_005_{SLUG}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+CARD_MD = REPO_ROOT / "experiments" / "cards" / f"{EXPERIMENT_ID}.md"
+MANIFEST_JSON = REPO_ROOT / "experiments" / "manifests" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
+
+HYPOTHESIS = (
+    "Observed-only alpha: actual default-off forward replacement rows should "
+    "have better cash/SPY/QQQ replacement value when entered during "
+    "stock-picker regimes, defined by high broad-universe dispersion and low "
+    "average pairwise correlation, than during dead-chop/high-correlation "
+    "regimes."
+)
+CHANGED_VARIABLE = "broad_dispersion_correlation_forward_replacement_state_v1"
+MECHANISM_FAMILY = "production_visible_default_off_forward_regime_state_attribution"
+TRIAL_FAMILY = "broad_dispersion_corr_forward_replacement_state"
+TRIAL_VARIANT_ID = "quartile_state_forward_rows_v1"
+NEARBY_PRIOR_EXPERIMENTS = [
+    "exp-20260709-004",
+    "exp-20260708-017",
+    "exp-20260708-018",
+]
+CAUSAL_COMPONENTS = [
+    "forward_replacement_value_ledger",
+    "broad_dispersion_corr_state_tag",
+    "predeclared_quartile_and_state_comparison",
+    "no_strategy_behavior_change",
+]
+PREDICTED_FAILURE_MODES = [
+    "feature_coverage_too_thin",
+    "low_deployment_etf_concentration",
+    "no_monotonic_replacement_value",
+    "daily_proxy_not_transferable_to_forward_rows",
+]
+OUTCOME_FIELDS = [
+    "replacement_value_vs_cash_usd",
+    "replacement_value_vs_spy_usd",
+    "replacement_value_vs_qqq_usd",
+]
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def repo_rel(path: str | Path) -> str:
+    value = Path(path)
+    if not value.is_absolute():
+        value = REPO_ROOT / value
+    return value.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+
+
+def safe(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {str(key): safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [safe(item) for item in value]
+    if isinstance(value, Path):
+        return repo_rel(value)
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        value = float(value)
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
+def write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(safe(payload), indent=2, ensure_ascii=True, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def read_json(path: Path, default: Any = None) -> Any:
+    if not path.exists():
+        return default if default is not None else {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return default if default is not None else {}
+
+
+def sha256(path: Path) -> str | None:
+    if not path.exists() or not path.is_file():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def finite_float(value: Any) -> float | None:
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(out):
+        return None
+    return out
+
+
+def round_or_none(value: Any, digits: int = 6) -> float | None:
+    value = finite_float(value)
+    return round(value, digits) if value is not None else None
+
+
+def baseline_metrics() -> dict[str, Any]:
+    payload = read_json(BASELINE_RESULT, {})
+    windows = payload.get("windows") if isinstance(payload, dict) else []
+    if not isinstance(windows, list):
+        windows = []
+    generated = sum(int(row.get("signals_generated") or 0) for row in windows)
+    survived = sum(int(row.get("signals_survived") or 0) for row in windows)
+    drawdowns = [
+        float(row.get("max_drawdown_pct"))
+        for row in windows
+        if row.get("max_drawdown_pct") is not None
+    ]
+    return {
+        "baseline_result_file": repo_rel(BASELINE_RESULT),
+        "window_count": len(windows),
+        "expected_value_score_sum": round(
+            sum(float(row.get("expected_value_score") or 0.0) for row in windows), 4
+        ),
+        "total_pnl": round(sum(float(row.get("total_pnl") or 0.0) for row in windows), 2),
+        "trade_count": sum(int(row.get("trade_count") or 0) for row in windows),
+        "signals_generated": generated,
+        "signals_survived": survived,
+        "survival_rate": round(survived / generated, 6) if generated else None,
+        "max_drawdown_pct_worst": round(max(drawdowns), 4) if drawdowns else None,
+    }
+
+
+def load_forward_rows() -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    if not FORWARD_LEDGER.exists():
+        return rows
+    with FORWARD_LEDGER.open(encoding="utf-8-sig") as handle:
+        for line_no, line in enumerate(handle, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"invalid forward ledger JSON on line {line_no}") from exc
+            status = str(row.get("status") or row.get("replacement_value_status") or "")
+            if status == "enriched":
+                rows.append(row)
+    return rows
+
+
+def load_densest_broad_panel(
+    warehouse_paths: list[Path],
+    start: str,
+    end: str,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+    chunks: list[pd.DataFrame] = []
+    for path in warehouse_paths:
+        if not path.exists():
+            continue
+        source = path.stem
+        con = sqlite3.connect(f"file:{path.resolve().as_posix()}?mode=ro", uri=True)
+        try:
+            chunk = pd.read_sql_query(
+                "select ticker, date, close, volume from ohlcv "
+                "where date >= ? and date <= ? and close > 0",
+                con,
+                params=(start, end),
+            )
+        finally:
+            con.close()
+        if chunk.empty:
+            continue
+        chunk["source"] = source
+        chunks.append(chunk)
+    if not chunks:
+        empty = pd.DataFrame()
+        return empty, empty, {"source_dates": {}, "date_counts": {}}
+
+    rows = pd.concat(chunks, ignore_index=True)
+    rows["ticker"] = rows["ticker"].astype(str).str.upper()
+    rows["date"] = rows["date"].astype(str).str.slice(0, 10)
+    rows["close"] = pd.to_numeric(rows["close"], errors="coerce")
+    rows["volume"] = pd.to_numeric(rows["volume"], errors="coerce").fillna(0.0)
+    rows = rows[rows["close"] > 0].copy()
+
+    counts = (
+        rows.groupby(["date", "source"], as_index=False)["ticker"]
+        .nunique()
+        .rename(columns={"ticker": "ticker_count"})
+    )
+    source_order = {"warehouse_main": 0, "warehouse_main_hot": 1}
+    counts["source_rank"] = counts["source"].map(source_order).fillna(0).astype(int)
+    best = (
+        counts.sort_values(
+            ["date", "ticker_count", "source_rank"],
+            ascending=[True, False, False],
+        )
+        .drop_duplicates("date", keep="first")
+        .drop(columns=["source_rank"])
+    )
+    selected = rows.merge(best[["date", "source"]], on=["date", "source"], how="inner")
+    selected = selected.drop_duplicates(subset=["date", "ticker"], keep="last")
+    selected["dollar"] = selected["close"] * selected["volume"]
+
+    closes = selected.pivot(index="date", columns="ticker", values="close").sort_index()
+    dollar = selected.pivot(index="date", columns="ticker", values="dollar").sort_index()
+    source_by_date = best.set_index("date")["source"].to_dict()
+    date_counts = best.set_index("date")["ticker_count"].astype(int).to_dict()
+    metadata = {
+        "panel_start": start,
+        "panel_end": end,
+        "source_dates": {
+            source: int(count)
+            for source, count in best["source"].value_counts().sort_index().items()
+        },
+        "date_counts": {str(date): int(count) for date, count in date_counts.items()},
+        "source_by_date": {str(date): str(source) for date, source in source_by_date.items()},
+        "panel_shape": [int(closes.shape[0]), int(closes.shape[1])],
+    }
+    return closes, dollar, metadata
+
+
+def feature_frame() -> tuple[pd.DataFrame, dict[str, Any]]:
+    closes, dollar, metadata = load_densest_broad_panel(
+        [WAREHOUSE_MAIN, WAREHOUSE_HOT],
+        PANEL_START,
+        PANEL_END,
+    )
+    if closes.empty:
+        return pd.DataFrame(), metadata
+    mask = liquidity_mask(closes, dollar)
+    returns = daily_returns(closes)
+    dispersion = cross_sectional_dispersion(returns, mask)
+    avg_corr = avg_pairwise_correlation(returns, mask)
+    eligible = mask.sum(axis=1)
+    frame = pd.DataFrame(
+        {
+            "broad_dispersion": dispersion,
+            "avg_pairwise_correlation": avg_corr,
+            "eligible_count": eligible,
+        }
+    )
+    frame["feature_date"] = frame.index.astype(str)
+    frame["warehouse_source"] = frame["feature_date"].map(metadata.get("source_by_date", {}))
+    frame["warehouse_ticker_count"] = frame["feature_date"].map(metadata.get("date_counts", {}))
+    return frame, metadata
+
+
+def missing_required_fields(rows: list[dict[str, Any]]) -> dict[str, int]:
+    required = [
+        "entry_date",
+        "ticker",
+        "sleeve_key",
+        "replacement_value_vs_cash_usd",
+        "replacement_value_vs_spy_usd",
+        "replacement_value_vs_qqq_usd",
+    ]
+    missing: dict[str, int] = {}
+    for field in required:
+        count = sum(1 for row in rows if row.get(field) in (None, ""))
+        if count:
+            missing[field] = count
+    return missing
+
+
+def join_forward_to_features(
+    rows: list[dict[str, Any]],
+    features: pd.DataFrame,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    feature_by_date = features.set_index("feature_date") if not features.empty else pd.DataFrame()
+    joined_rows: list[dict[str, Any]] = []
+    uncovered: list[dict[str, Any]] = []
+    reason_counts: dict[str, int] = {}
+
+    for row in rows:
+        entry_date = str(row.get("entry_date") or "")[:10]
+        reason = None
+        feat = None
+        if not entry_date:
+            reason = "missing_entry_date"
+        elif features.empty or entry_date not in feature_by_date.index:
+            reason = "missing_feature_date"
+        else:
+            feat = feature_by_date.loc[entry_date]
+            dispersion = finite_float(feat.get("broad_dispersion"))
+            corr = finite_float(feat.get("avg_pairwise_correlation"))
+            eligible = int(feat.get("eligible_count") or 0)
+            if eligible < MIN_ELIGIBLE_NAMES:
+                reason = "low_eligible_count"
+            elif dispersion is None or corr is None:
+                reason = "missing_dispersion_or_corr"
+
+        if reason:
+            reason_counts[reason] = reason_counts.get(reason, 0) + 1
+            uncovered.append(
+                {
+                    "entry_date": entry_date,
+                    "ticker": row.get("ticker"),
+                    "sleeve_key": row.get("sleeve_key"),
+                    "reason": reason,
+                    "eligible_count": int(feat.get("eligible_count") or 0) if feat is not None else None,
+                }
+            )
+            continue
+
+        assert feat is not None
+        joined = {
+            "decision_id": row.get("decision_id"),
+            "ticker": str(row.get("ticker") or "").upper(),
+            "sleeve_key": row.get("sleeve_key"),
+            "entry_date": entry_date,
+            "exit_date": row.get("exit_date"),
+            "asof_date": row.get("asof_date"),
+            "notional_usd": round_or_none(row.get("notional_usd"), 2),
+            "replacement_value_vs_cash_usd": round_or_none(
+                row.get("replacement_value_vs_cash_usd"), 4
+            ),
+            "replacement_value_vs_spy_usd": round_or_none(
+                row.get("replacement_value_vs_spy_usd"), 4
+            ),
+            "replacement_value_vs_qqq_usd": round_or_none(
+                row.get("replacement_value_vs_qqq_usd"), 4
+            ),
+            "broad_dispersion": round_or_none(feat.get("broad_dispersion"), 8),
+            "avg_pairwise_correlation": round_or_none(
+                feat.get("avg_pairwise_correlation"), 8
+            ),
+            "eligible_count": int(feat.get("eligible_count") or 0),
+            "warehouse_source": feat.get("warehouse_source"),
+            "warehouse_ticker_count": int(feat.get("warehouse_ticker_count") or 0),
+        }
+        joined_rows.append(joined)
+
+    joined_df = pd.DataFrame(joined_rows)
+    coverage = {
+        "raw_enriched_rows": len(rows),
+        "covered_rows": int(len(joined_df)),
+        "uncovered_rows": len(rows) - int(len(joined_df)),
+        "coverage_rate": round(len(joined_df) / len(rows), 6) if rows else None,
+        "uncovered_reason_counts": reason_counts,
+        "uncovered_examples": uncovered[:15],
+    }
+    return joined_df, coverage
+
+
+def add_stock_picker_score(frame: pd.DataFrame) -> pd.DataFrame:
+    if frame.empty:
+        return frame.copy()
+    out = frame.copy()
+    disp = pd.to_numeric(out["broad_dispersion"], errors="coerce")
+    corr = pd.to_numeric(out["avg_pairwise_correlation"], errors="coerce")
+    disp_std = float(disp.std(ddof=0) or 0.0)
+    corr_std = float(corr.std(ddof=0) or 0.0)
+    disp_z = (disp - float(disp.mean())) / disp_std if disp_std > 0 else disp * 0.0
+    corr_z = (corr - float(corr.mean())) / corr_std if corr_std > 0 else corr * 0.0
+    out["dispersion_z"] = disp_z
+    out["avg_corr_z"] = corr_z
+    out["stock_picker_score"] = disp_z - corr_z
+    if len(out) >= 4:
+        ranked = out["stock_picker_score"].rank(method="first")
+        out["state_quartile"] = pd.qcut(
+            ranked,
+            4,
+            labels=["dead_chop_q1", "low_mid_q2", "high_mid_q3", "stock_picker_q4"],
+        ).astype(str)
+    else:
+        out["state_quartile"] = "insufficient_rows"
+    return out
+
+
+def value_summary(frame: pd.DataFrame, field: str) -> dict[str, Any]:
+    values = pd.to_numeric(frame.get(field, pd.Series(dtype=float)), errors="coerce").dropna()
+    if values.empty:
+        return {
+            "count": 0,
+            "sum_usd": None,
+            "mean_usd": None,
+            "median_usd": None,
+            "win_rate": None,
+            "min_usd": None,
+            "max_usd": None,
+        }
+    return {
+        "count": int(len(values)),
+        "sum_usd": round(float(values.sum()), 2),
+        "mean_usd": round(float(values.mean()), 4),
+        "median_usd": round(float(values.median()), 4),
+        "win_rate": round(float((values > 0).mean()), 6),
+        "min_usd": round(float(values.min()), 4),
+        "max_usd": round(float(values.max()), 4),
+    }
+
+
+def grouped_counts(frame: pd.DataFrame, field: str) -> dict[str, int]:
+    if frame.empty or field not in frame:
+        return {}
+    counts = frame[field].fillna("missing").astype(str).value_counts()
+    return {str(key): int(value) for key, value in counts.sort_index().items()}
+
+
+def concentration(frame: pd.DataFrame) -> dict[str, Any]:
+    n = len(frame)
+    by_ticker = grouped_counts(frame, "ticker")
+    by_sleeve = grouped_counts(frame, "sleeve_key")
+    max_ticker = max(by_ticker.values()) if by_ticker else 0
+    max_sleeve = max(by_sleeve.values()) if by_sleeve else 0
+    return {
+        "by_ticker": by_ticker,
+        "by_sleeve": by_sleeve,
+        "max_single_ticker_count": int(max_ticker),
+        "max_single_ticker_share": round(max_ticker / n, 6) if n else None,
+        "max_single_sleeve_count": int(max_sleeve),
+        "max_single_sleeve_share": round(max_sleeve / n, 6) if n else None,
+    }
+
+
+def summarize_state(frame: pd.DataFrame) -> dict[str, Any]:
+    if frame.empty:
+        return {
+            "state_rows": 0,
+            "state_quartile_counts": {},
+            "comparators": {},
+            "criteria": {},
+        }
+    top = frame[frame["state_quartile"] == "stock_picker_q4"]
+    bottom = frame[frame["state_quartile"] == "dead_chop_q1"]
+
+    comparators: dict[str, Any] = {}
+    top_beats_bottom: list[str] = []
+    top_positive: list[str] = []
+    spearman_positive: list[str] = []
+    for field in OUTCOME_FIELDS:
+        all_summary = value_summary(frame, field)
+        top_summary = value_summary(top, field)
+        bottom_summary = value_summary(bottom, field)
+        top_mean = top_summary["mean_usd"]
+        bottom_mean = bottom_summary["mean_usd"]
+        diff = (
+            round(float(top_mean) - float(bottom_mean), 4)
+            if top_mean is not None and bottom_mean is not None
+            else None
+        )
+        rho = spearman(
+            pd.to_numeric(frame["stock_picker_score"], errors="coerce").tolist(),
+            pd.to_numeric(frame[field], errors="coerce").tolist(),
+        )
+        t_stat = corr_t_stat(rho, int(len(frame)))
+        if diff is not None and diff > 0:
+            top_beats_bottom.append(field)
+        if top_mean is not None and float(top_mean) > 0:
+            top_positive.append(field)
+        if rho is not None and rho > 0:
+            spearman_positive.append(field)
+        comparators[field] = {
+            "all": all_summary,
+            "stock_picker_q4": top_summary,
+            "dead_chop_q1": bottom_summary,
+            "top_minus_bottom_mean_usd": diff,
+            "stock_picker_score_spearman": round_or_none(rho, 6),
+            "stock_picker_score_t_stat": round_or_none(t_stat, 6),
+        }
+
+    conc = concentration(frame)
+    criteria = {
+        "covered_rows_gte_min": int(len(frame)) >= MIN_COVERED_FORWARD_ROWS,
+        "max_ticker_share_lte_guard": (
+            (conc["max_single_ticker_share"] or 1.0) <= MAX_SINGLE_TICKER_SHARE
+        ),
+        "max_sleeve_share_lte_guard": (
+            (conc["max_single_sleeve_share"] or 1.0) <= MAX_SINGLE_SLEEVE_SHARE
+        ),
+        "top_beats_bottom_all_comparators": len(top_beats_bottom) == len(OUTCOME_FIELDS),
+        "top_positive_at_least_two_comparators": len(top_positive) >= 2,
+        "spearman_positive_at_least_two_comparators": len(spearman_positive) >= 2,
+        "top_beats_bottom_fields": top_beats_bottom,
+        "top_positive_fields": top_positive,
+        "spearman_positive_fields": spearman_positive,
+    }
+    return {
+        "state_rows": int(len(frame)),
+        "state_quartile_counts": grouped_counts(frame, "state_quartile"),
+        "entry_date_counts": grouped_counts(frame, "entry_date"),
+        "warehouse_source_counts": grouped_counts(frame, "warehouse_source"),
+        "concentration": conc,
+        "comparators": comparators,
+        "criteria": criteria,
+    }
+
+
+def build_payload() -> dict[str, Any]:
+    ticket = read_json(TICKET_JSON, {})
+    baseline = baseline_metrics()
+    rows = load_forward_rows()
+    missing_fields = missing_required_fields(rows)
+    features, panel_metadata = feature_frame()
+    joined, coverage = join_forward_to_features(rows, features)
+    scored = add_stock_picker_score(joined)
+    state = summarize_state(scored)
+
+    measurement_blockers: list[str] = []
+    if not BASELINE_RESULT.exists() or baseline.get("window_count") != 3:
+        measurement_blockers.append("baseline_missing_or_nonstandard")
+    if not rows:
+        measurement_blockers.append("forward_replacement_ledger_missing_or_empty")
+    if missing_fields:
+        measurement_blockers.append("required_forward_fields_missing")
+    if features.empty:
+        measurement_blockers.append("broad_panel_features_missing")
+    if coverage["covered_rows"] < MIN_COVERED_FORWARD_ROWS:
+        measurement_blockers.append("covered_forward_rows_below_minimum")
+
+    criteria = state.get("criteria", {})
+    lead_passed = bool(criteria) and all(
+        bool(criteria.get(key))
+        for key in [
+            "covered_rows_gte_min",
+            "max_ticker_share_lte_guard",
+            "max_sleeve_share_lte_guard",
+            "top_beats_bottom_all_comparators",
+            "top_positive_at_least_two_comparators",
+            "spearman_positive_at_least_two_comparators",
+        ]
+    )
+
+    measurement_passed = not measurement_blockers
+    if not measurement_passed:
+        status = "blocked"
+        decision = f"blocked_{SLUG}"
+    elif lead_passed:
+        status = "observed_only"
+        decision = f"observed_only_lead_{SLUG}"
+    else:
+        status = "observed_only"
+        decision = f"observed_only_rejected_{SLUG}"
+
+    strategy_delta = {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": False,
+    }
+    feature_date_quality = {}
+    if not features.empty:
+        valid = features[
+            (features["eligible_count"] >= MIN_ELIGIBLE_NAMES)
+            & features["broad_dispersion"].notna()
+            & features["avg_pairwise_correlation"].notna()
+        ]
+        feature_date_quality = {
+            "feature_dates_total": int(len(features)),
+            "feature_dates_usable": int(len(valid)),
+            "max_eligible_names_per_day": int(features["eligible_count"].max()),
+            "median_eligible_names_per_day": round_or_none(features["eligible_count"].median(), 2),
+        }
+
+    delta_metrics = {
+        **strategy_delta,
+        "raw_enriched_forward_rows": coverage["raw_enriched_rows"],
+        "covered_forward_rows": coverage["covered_rows"],
+        "coverage_rate": coverage["coverage_rate"],
+        "uncovered_reason_counts": coverage["uncovered_reason_counts"],
+        "state_quartile_counts": state.get("state_quartile_counts", {}),
+        "lead_passed": lead_passed,
+        "criteria": criteria,
+        "feature_date_quality": feature_date_quality,
+        "panel_shape": panel_metadata.get("panel_shape"),
+        "source_dates": panel_metadata.get("source_dates"),
+    }
+
+    success_probability = float(
+        (ticket.get("prediction") or {}).get("success_probability") or 0.28
+    )
+    actual_success = 1 if lead_passed else 0
+    prediction = {
+        "recorded_at": (ticket.get("prediction") or {}).get("recorded_at")
+        or ticket.get("claimed_at")
+        or ticket.get("created_at"),
+        "success_probability": success_probability,
+        "expected_ev_delta": (ticket.get("prediction") or {}).get("expected_ev_delta"),
+        "expected_pnl_delta": (ticket.get("prediction") or {}).get("expected_pnl_delta"),
+        "main_failure_modes": (ticket.get("prediction") or {}).get("main_failure_modes")
+        or PREDICTED_FAILURE_MODES,
+        "confidence_reason": (ticket.get("prediction") or {}).get("confidence_reason")
+        or (
+            "Forward rows can falsify whether the broad dispersion/correlation "
+            "daily-proxy lead transfers to actual replacement value, but the "
+            "available row count and sleeve concentration make acceptance unlikely."
+        ),
+    }
+    realized_failures = list(measurement_blockers)
+    if measurement_passed and not lead_passed:
+        realized_failures.extend(
+            [
+                "no_monotonic_replacement_value",
+                "daily_proxy_not_transferable_to_forward_rows",
+            ]
+        )
+    if state.get("concentration", {}).get("max_single_sleeve_share", 0) > 0.35:
+        realized_failures.append("low_deployment_etf_concentration_risk_present")
+    calibration = {
+        "predicted_success_probability": success_probability,
+        "actual_success": actual_success,
+        "brier_score": round((success_probability - float(actual_success)) ** 2, 6),
+        "predicted_failure_modes": PREDICTED_FAILURE_MODES,
+        "realized_failure_modes": realized_failures,
+        "predicted_failure_mode_hit": bool(realized_failures),
+    }
+
+    production_impact = {
+        "trade_enabled": False,
+        "shared_policy_changed": False,
+        "backtester_adapter_changed": False,
+        "run_adapter_changed": False,
+        "daily_snapshot_exposed": False,
+        "entry_rules_changed": False,
+        "exit_rules_changed": False,
+        "ranking_changed": False,
+        "sizing_changed": False,
+        "orders_changed": False,
+        "llm_decision_boundary_changed": False,
+        "live_ready": False,
+        "live_realism_evaluated": False,
+        "scope": "read_only_forward_replacement_value_attribution",
+    }
+    files = [
+        RUNNER,
+        repo_rel(OUT_JSON),
+        repo_rel(LOG_JSON),
+        repo_rel(CARD_MD),
+        repo_rel(MANIFEST_JSON),
+        repo_rel(TICKET_JSON),
+        repo_rel(REGISTRY_JSON),
+    ]
+
+    return {
+        "experiment_id": EXPERIMENT_ID,
+        "timestamp": utc_now(),
+        "status": status,
+        "lane": LANE,
+        "owner": OWNER,
+        "decision": decision,
+        "accepted": False,
+        "accepted_alpha": False,
+        "accepted_measurement_repair": False,
+        "alpha_ready": False,
+        "hypothesis": HYPOTHESIS,
+        "alpha_hypothesis": HYPOTHESIS,
+        "change_type": "observed_only_forward_attribution",
+        "implementation_mode": "read_only_observed_forward_attribution",
+        "mechanism_family": MECHANISM_FAMILY,
+        "trial_family": TRIAL_FAMILY,
+        "trial_variant_id": TRIAL_VARIANT_ID,
+        "single_causal_variable": CHANGED_VARIABLE,
+        "changed_variable": CHANGED_VARIABLE,
+        "causal_components": CAUSAL_COMPONENTS,
+        "nearby_prior_experiments": NEARBY_PRIOR_EXPERIMENTS,
+        "multiple_testing_risk_bucket": "moderate",
+        "new_evidence_type": "new_gate_shape_on_settled_forward_replacement_rows",
+        "prediction": prediction,
+        "calibration": calibration,
+        "pre_run_questions": {
+            "1_alpha_hypothesis": HYPOTHESIS,
+            "2_history_check": {
+                "exp-20260709-004": (
+                    "Rejected synthetic daily proxy spreads; this uses actual "
+                    "cash/SPY/QQQ forward replacement value rows."
+                ),
+                "exp-20260708-017": (
+                    "Source kill-switch attribution was positive observed-only; "
+                    "this tests entry-time broad state rather than source labels."
+                ),
+                "exp-20260708-018": (
+                    "Chronological kill-switch validation rejected; this does "
+                    "not train a source selector."
+                ),
+                "novelty_gate": (
+                    "Override accepted as a new gate/outcome shape on settled "
+                    "forward replacement rows."
+                ),
+            },
+            "3_single_measurement_bundle": CHANGED_VARIABLE,
+            "4_success_failure_standard": (
+                "Observed-only lead requires >=20 covered rows, ticker and sleeve "
+                "concentration <=60%, stock-picker q4 beating dead-chop q1 on "
+                "cash/SPY/QQQ mean replacement value, q4 mean >0 for at least "
+                "two comparators, and positive Spearman for at least two comparators."
+            ),
+            "5_reproducibility": RUNNER_COMMAND,
+        },
+        "parameters": {
+            "features_rule_version": FEATURES_RULE_VERSION,
+            "panel_start": PANEL_START,
+            "panel_end": PANEL_END,
+            "min_eligible_names": MIN_ELIGIBLE_NAMES,
+            "min_covered_forward_rows": MIN_COVERED_FORWARD_ROWS,
+            "max_single_ticker_share": MAX_SINGLE_TICKER_SHARE,
+            "max_single_sleeve_share": MAX_SINGLE_SLEEVE_SHARE,
+            "stock_picker_score": "z(broad_dispersion) - z(avg_pairwise_correlation)",
+            "warehouse_merge_rule": (
+                "Choose the densest available warehouse source per date before "
+                "feature computation; this avoids sparse hot rows overwriting "
+                "dense historical rows."
+            ),
+        },
+        "gate1": {
+            "passed": BASELINE_RESULT.exists() and baseline.get("window_count") == 3,
+            "baseline_metrics": baseline,
+        },
+        "gate2": {
+            "passed": not missing_fields and not features.empty and coverage["covered_rows"] >= MIN_COVERED_FORWARD_ROWS,
+            "dependencies_validated": not missing_fields,
+            "fields_checked": [
+                "entry_date",
+                "ticker",
+                "replacement_value_vs_cash_usd",
+                "replacement_value_vs_spy_usd",
+                "replacement_value_vs_qqq_usd",
+                "broad_dispersion",
+                "avg_pairwise_correlation",
+            ],
+            "missing_required_forward_fields": missing_fields,
+            "feature_coverage": coverage,
+            "entry_date_scope": "Forward replacement ledger entry_date joined to same-date broad state.",
+            "target_price_scope": "Not applicable; observed-only closed forward rows, no signal generation.",
+        },
+        "gate3": {
+            "passed": True,
+            "filter_added": False,
+            "signals_generated": len(rows),
+            "signals_survived": len(rows),
+            "survival_rate": 1.0 if rows else None,
+            "feature_covered_rows": coverage["covered_rows"],
+            "note": (
+                "No strategy filter was added. Feature coverage is an observed-only "
+                "analysis limitation, not a production survival filter."
+            ),
+        },
+        "gate4": {
+            "passed": measurement_passed,
+            "accepted_alpha": False,
+            "alpha_ready": False,
+            "decision": decision,
+            "measurement_blockers": measurement_blockers,
+            "alpha_blockers": [] if lead_passed else ["predeclared_forward_state_lead_criteria_not_met"],
+            "measurement_repair_only": False,
+            "strategy_rerun_required": False,
+            "before_after_strategy_delta": strategy_delta,
+            "observed_only_lead_passed": lead_passed,
+        },
+        "before_metrics": baseline,
+        "after_metrics": baseline,
+        "delta_metrics": delta_metrics,
+        "forward_row_coverage": coverage,
+        "panel_metadata": panel_metadata,
+        "state_attribution": state,
+        "analysis_rows": scored.sort_values(
+            ["stock_picker_score", "entry_date"], ascending=[False, True]
+        ).to_dict(orient="records")
+        if not scored.empty
+        else [],
+        "production_impact": production_impact,
+        "post_run_reflection": {
+            "why_result_happened": None,
+            "forbidden_near_neighbor_retry": (
+                "Do not retune broad dispersion/correlation thresholds, z-score "
+                "formula, quartile boundaries, eligible-name floor, or comparator "
+                "subset on the same 74 closed forward rows. That would only "
+                "re-slice the same evidence surface."
+            ),
+            "new_evidence_required": (
+                "A retry needs materially more closed forward replacement rows "
+                "with usable broad-state coverage, or a genuinely different "
+                "entry-time state source/gate shape."
+            ),
+        },
+        "next_retry_requires": [
+            "materially more closed forward replacement rows with broad-state coverage",
+            "or a different entry-time state source/gate shape",
+            "no same-row threshold or comparator retunes",
+        ],
+        "changed_files": files,
+        "related_files": [
+            "quant/broad_dispersion_features.py",
+            "data/paper_sleeves/forward_replacement_value.jsonl",
+            "experiments/cards/exp-20260709-004.md",
+            "experiments/cards/exp-20260708-017.md",
+            "experiments/cards/exp-20260708-018.md",
+        ],
+        "allowed_write_scope": files,
+        "reproduction_commands": [
+            RUNNER_COMMAND,
+            ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_broad_dispersion_features.py -q",
+            ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+        ],
+        "anti_js": {"used_javascript": False, "evidence": "Python runner only."},
+        "lean_quality_passed": measurement_passed,
+        "artifact": repo_rel(OUT_JSON),
+        "log": repo_rel(LOG_JSON),
+        "ticket_before": {
+            "created_at": ticket.get("created_at"),
+            "claimed_at": ticket.get("claimed_at"),
+            "hub_identity": ticket.get("hub_identity"),
+            "novelty": ticket.get("novelty"),
+        },
+    }
+
+
+def finalize_reflection(payload: dict[str, Any]) -> None:
+    coverage = payload["forward_row_coverage"]
+    state = payload["state_attribution"]
+    criteria = state.get("criteria", {})
+    comparator_bits = []
+    for field, summary in state.get("comparators", {}).items():
+        comparator_bits.append(
+            f"{field} q4-q1={summary.get('top_minus_bottom_mean_usd')} "
+            f"rho={summary.get('stock_picker_score_spearman')}"
+        )
+    if payload["gate4"]["observed_only_lead_passed"]:
+        why = (
+            f"The stock-picker state transferred to actual forward rows: "
+            f"{coverage['covered_rows']}/{coverage['raw_enriched_rows']} rows had "
+            f"usable broad-state coverage, concentration guards passed, and "
+            f"predeclared cash/SPY/QQQ quartile and Spearman criteria held. "
+            + "; ".join(comparator_bits)
+        )
+    elif payload["status"] == "blocked":
+        why = (
+            f"The diagnostic was blocked by measurement coverage: "
+            f"{payload['gate4']['measurement_blockers']} with "
+            f"{coverage['covered_rows']}/{coverage['raw_enriched_rows']} covered rows."
+        )
+    else:
+        why = (
+            f"The daily broad dispersion/correlation proxy did not transfer cleanly "
+            f"to actual forward replacement rows. Coverage was "
+            f"{coverage['covered_rows']}/{coverage['raw_enriched_rows']} and lead "
+            f"criteria were {criteria}; comparator evidence was "
+            + "; ".join(comparator_bits)
+            + "."
+        )
+    payload["post_run_reflection"]["why_result_happened"] = why
+
+
+def build_card(payload: dict[str, Any]) -> str:
+    state = payload["state_attribution"]
+    comp = state.get("comparators", {})
+    lines = [
+        f"# {EXPERIMENT_ID}: broad dispersion forward replacement state",
+        "",
+        f"- Status: `{payload['status']}`",
+        f"- Decision: `{payload['decision']}`",
+        f"- Covered forward rows: `{payload['forward_row_coverage']['covered_rows']}` / `{payload['forward_row_coverage']['raw_enriched_rows']}`",
+        f"- Coverage gaps: `{payload['forward_row_coverage']['uncovered_reason_counts']}`",
+        f"- State quartiles: `{state.get('state_quartile_counts', {})}`",
+        f"- Concentration: `{state.get('concentration', {})}`",
+        "- Strategy behavior changed: `false`",
+        "",
+        "## Comparator Evidence",
+        "",
+    ]
+    for field in OUTCOME_FIELDS:
+        summary = comp.get(field, {})
+        lines.append(
+            f"- `{field}` q4 mean `{summary.get('stock_picker_q4', {}).get('mean_usd')}` "
+            f"vs q1 mean `{summary.get('dead_chop_q1', {}).get('mean_usd')}`, "
+            f"diff `{summary.get('top_minus_bottom_mean_usd')}`, "
+            f"Spearman `{summary.get('stock_picker_score_spearman')}`"
+        )
+    lines.extend(
+        [
+            "",
+            "## Why",
+            "",
+            payload["post_run_reflection"]["why_result_happened"] or "",
+            "",
+            "## Boundary",
+            "",
+            payload["post_run_reflection"]["forbidden_near_neighbor_retry"],
+            "",
+            "## Reproduction",
+            "",
+            "```powershell",
+            RUNNER_COMMAND,
+            "```",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def build_manifest(payload: dict[str, Any]) -> dict[str, Any]:
+    files = [
+        REPO_ROOT / RUNNER,
+        OUT_JSON,
+        LOG_JSON,
+        CARD_MD,
+        MANIFEST_JSON,
+        TICKET_JSON,
+        REGISTRY_JSON,
+        BASELINE_RESULT,
+        FORWARD_LEDGER,
+        QUANT_ROOT / "broad_dispersion_features.py",
+    ]
+    return {
+        "experiment_id": EXPERIMENT_ID,
+        "status": payload["status"],
+        "decision": payload["decision"],
+        "artifact": repo_rel(OUT_JSON),
+        "log": repo_rel(LOG_JSON),
+        "card": repo_rel(CARD_MD),
+        "runner": RUNNER,
+        "command": RUNNER_COMMAND,
+        "files": {
+            repo_rel(path): {"exists": path.exists(), "sha256": sha256(path)}
+            for path in files
+        },
+        "changed_files": payload["changed_files"],
+        "updated_at": utc_now(),
+    }
+
+
+def persist(payload: dict[str, Any]) -> None:
+    write_json(OUT_JSON, payload)
+    save_experiment_log_entry(payload, allow_duplicate=True)
+    write_text(CARD_MD, build_card(payload))
+    persist_self_registered_result(
+        REGISTRY_JSON,
+        experiment_id=EXPERIMENT_ID,
+        lane=LANE,
+        prediction=payload["prediction"],
+        result={
+            "accepted": False,
+            "accepted_alpha": False,
+            "accepted_measurement_repair": False,
+            "alpha_ready": False,
+            "decision": payload["decision"],
+            "artifact": repo_rel(OUT_JSON),
+            "log": repo_rel(LOG_JSON),
+            "gate4": payload["gate4"],
+            "delta_metrics": payload["delta_metrics"],
+            "calibration": payload["calibration"],
+        },
+        status=payload["status"],
+        fields={
+            "owner": OWNER,
+            "hypothesis": payload["hypothesis"],
+            "alpha_hypothesis": payload["alpha_hypothesis"],
+            "change_type": payload["change_type"],
+            "implementation_mode": payload["implementation_mode"],
+            "mechanism_family": payload["mechanism_family"],
+            "trial_family": payload["trial_family"],
+            "trial_variant_id": payload["trial_variant_id"],
+            "single_causal_variable": payload["single_causal_variable"],
+            "changed_variable": payload["changed_variable"],
+            "causal_components": payload["causal_components"],
+            "nearby_prior_experiments": payload["nearby_prior_experiments"],
+            "multiple_testing_risk_bucket": payload["multiple_testing_risk_bucket"],
+            "new_evidence_type": payload["new_evidence_type"],
+            "baseline_result_file": repo_rel(BASELINE_RESULT),
+            "decision": payload["decision"],
+            "artifact": repo_rel(OUT_JSON),
+            "log": repo_rel(LOG_JSON),
+            "card_file": repo_rel(CARD_MD),
+            "revision_manifest_file": repo_rel(MANIFEST_JSON),
+            "ticket_file": repo_rel(TICKET_JSON),
+            "gate1": payload["gate1"],
+            "gate2": payload["gate2"],
+            "gate3": payload["gate3"],
+            "gate4": payload["gate4"],
+            "before_metrics": payload["before_metrics"],
+            "after_metrics": payload["after_metrics"],
+            "delta_metrics": payload["delta_metrics"],
+            "production_impact": payload["production_impact"],
+            "post_run_reflection": payload["post_run_reflection"],
+            "next_retry_requires": payload["next_retry_requires"],
+            "changed_files": payload["changed_files"],
+            "related_files": payload["related_files"],
+            "allowed_write_scope": payload["allowed_write_scope"],
+            "lean_quality_passed": payload["lean_quality_passed"],
+            "calibration": payload["calibration"],
+            "hub_identity": payload["ticket_before"].get("hub_identity"),
+            "novelty": payload["ticket_before"].get("novelty"),
+            "claimed_at": payload["ticket_before"].get("claimed_at"),
+        },
+        allow_missing_prediction=True,
+    )
+    write_json(MANIFEST_JSON, build_manifest(payload))
+
+
+def main() -> int:
+    payload = build_payload()
+    finalize_reflection(payload)
+    persist(payload)
+    print(
+        json.dumps(
+            {
+                "experiment_id": EXPERIMENT_ID,
+                "status": payload["status"],
+                "decision": payload["decision"],
+                "delta_metrics": payload["delta_metrics"],
+                "state_attribution": {
+                    "state_quartile_counts": payload["state_attribution"].get(
+                        "state_quartile_counts"
+                    ),
+                    "criteria": payload["state_attribution"].get("criteria"),
+                    "comparators": payload["state_attribution"].get("comparators"),
+                },
+            },
+            indent=2,
+            sort_keys=True,
+            default=str,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

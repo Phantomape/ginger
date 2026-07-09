@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-02.
+Last refreshed: 2026-07-08.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -48,6 +48,36 @@ Controls:
 - keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2510.05533>
+
+### Agentic Research Needs Tool Traces And Reproducible Panels
+
+QRAFTI is useful as research-infrastructure guidance rather than a trading
+model: multi-agent quant workflows should expose data access, factor
+construction, code execution, report generation, and reflection as traceable
+tool calls. Ginger already has experiment IDs, tickets, artifacts, and
+generated dashboards; the missing benchmarkable surface is a compact trace
+that says which data panel, factor transform, test, and comparator each agent
+actually used.
+
+Implementable fields:
+
+- `research_agent_trace_id`
+- `panel_dataset_version`
+- `factor_construction_tool_call_hash`
+- `agent_reflection_step_count`
+- `research_report_artifact_hash`
+- `comparator_panel_protocol_id`
+- `tool_call_replay_passed`
+- `agent_research_failure_bucket`
+
+Controls:
+
+- log every data, factor, and code tool call used to create a research claim;
+- require the same panel version, universe, costs, and comparator for replay;
+- treat narrative analysis as provenance, not evidence, until artifacts rerun;
+- prefer small auditable helper functions over opaque generated notebooks.
+
+Source: <https://arxiv.org/abs/2604.18500>
 
 ### Hedge-Fund LLM Forecasting Reviews Are Robustness Checklists
 
@@ -112,6 +142,156 @@ Controls:
 - treat "more parameters" as model-risk evidence until the placebo clears.
 
 Source: <https://www.ft.com/content/89d88cbf-a92c-43d2-b8af-88ae26529be0>
+
+### Financial Time-Series Foundation Models Need Contamination Audits
+
+Recent financial time-series foundation-model work is useful mainly as a
+benchmarking warning. FinCast reports zero-shot strength across financial
+domains and resolutions, but companion TSFM evaluation work argues that large
+pretraining corpora make train/test and temporal-overlap leakage hard to rule
+out. FinTSB adds the practical benchmark shape Ginger should copy: movement
+pattern diversity, standardized protocol, and market-structure constraints
+such as fees. The local translation is not to import a foundation model into
+selection; it is to add contamination, movement-pattern, and fee-scenario
+metadata around any learned forecast or representation.
+
+Implementable fields:
+
+- `tsfm_model_id`
+- `tsfm_pretraining_corpus_hash`
+- `benchmark_overlap_audit_version`
+- `temporal_overlap_group_id`
+- `movement_pattern_bucket`
+- `resolution_domain_bucket`
+- `market_structure_constraint_version`
+- `transaction_fee_scenario_id`
+- `zero_shot_simple_baseline_delta`
+- `tsfm_costed_replacement_value_delta`
+
+Controls:
+
+- require an overlap/leakage audit before comparing any pretrained model to
+  local PIT rows;
+- benchmark against simple momentum, volatility-scaled momentum, and accepted
+  helper comparators on the exact same decision dates;
+- report performance by movement-pattern bucket and market regime, not only
+  aggregate prediction loss;
+- include fees, tradability, and displacement replacement value before treating
+  a forecast as alpha evidence.
+
+Sources:
+
+- <https://arxiv.org/abs/2508.19609>
+- <https://arxiv.org/abs/2510.13654>
+- <https://arxiv.org/abs/2502.18834>
+
+### Event Graph RAG Belongs In The Relation Evidence Store
+
+FinKario is useful because it treats evolving fundamentals, events, entities,
+and relation triples as a graph-retrieval problem rather than raw sentiment.
+That maps directly to Ginger's repeated relation-alpha boundary: relation
+labels only matter when the actor, object, relation type, timestamp, source
+span, and replacement outcome are stored as replayable rows. The graph should
+feed candidate evidence and source memory; it should not become a discretionary
+LLM trading layer.
+
+Implementable fields:
+
+- `event_graph_version`
+- `event_graph_entity_id`
+- `event_graph_relation_type`
+- `event_graph_relation_confidence_bucket`
+- `event_graph_source_span_hash`
+- `event_graph_update_timestamp`
+- `event_graph_retrieval_stage`
+- `relation_triple_replacement_value_bucket`
+- `graph_rag_missing_relation_reason`
+
+Controls:
+
+- store event and relation triples with source span, extraction prompt/schema,
+  and accepted timestamp;
+- separate issuer-self, peer, customer, supplier, counterparty, and theme
+  propagation relations before scoring;
+- compare graph-retrieved rows against accepted relation/allocator helpers
+  after costs;
+- update relation memory only from information available before the candidate
+  date, and score outcomes only after the horizon matures.
+
+Source: <https://arxiv.org/abs/2508.00961>
+
+### Learned Portfolio Models Need Risk-Cost Significance Packages
+
+Recent deep-learning and reinforcement-learning portfolio papers point to a
+useful evaluation package: temporal state, position sizing, short/long
+constraints, CVaR or drawdown risk, transaction-cost scenarios, statistical
+significance, seed robustness, and breakeven-cost buffers. Ginger should copy
+that package before trusting any learned allocator, source router, or sizing
+overlay. A learned model that improves average return but fails cost, seed, or
+tail checks is diagnostic only.
+
+Implementable fields:
+
+- `learned_allocator_model_id`
+- `temporal_state_encoder_version`
+- `position_sizing_action_space`
+- `short_or_inverse_allowed_flag`
+- `cvar_or_drawdown_constraint_id`
+- `random_seed_robustness_bucket`
+- `statistical_significance_bucket`
+- `breakeven_transaction_cost_bps`
+- `downside_tail_metric_delta`
+- `learned_allocator_replacement_value_delta`
+
+Controls:
+
+- run learned allocators against linear/simple baselines, accepted helpers, and
+  cash/SPY/QQQ displacement on the same rows;
+- report seed sensitivity, tail risk, drawdown, turnover, and cost scenarios
+  next to Sharpe or EV;
+- keep learned output default-off until a deterministic shared helper or
+  frozen model artifact passes Gate 1-4;
+- reject models whose edge disappears under realistic fees or whose advantage
+  is not statistically distinguishable from simple baselines.
+
+Sources:
+
+- <https://arxiv.org/abs/2503.04143>
+- <https://arxiv.org/abs/2603.01820>
+
+### Price-Driven LLM Agents Are Structured Signal Routers
+
+QuantAgent's useful pattern is the decomposition into indicator, pattern,
+trend, and risk specialists over short-horizon structured signals. For Ginger,
+that supports a narrow LLM boundary: the model may summarize or classify
+already-computed microstructure/trend evidence, but code must own entry,
+ranking, sizing, exits, and risk. Any LLM agent output should be logged as a
+traceable view over deterministic fields, then judged by replacement value.
+
+Implementable fields:
+
+- `price_agent_protocol_id`
+- `indicator_view_hash`
+- `pattern_view_hash`
+- `trend_view_hash`
+- `risk_view_hash`
+- `short_horizon_signal_window`
+- `agent_view_disagreement_bucket`
+- `agent_risk_override_attempt_flag`
+- `price_agent_replacement_value_delta`
+
+Controls:
+
+- compute indicators, pattern labels, and risk metrics deterministically before
+  the LLM sees them;
+- preserve the per-agent input/output, disagreement, and final view as
+  replayable evidence rows;
+- fail closed when the agent proposes sizing, exit, or risk changes outside the
+  shared policy schema;
+- compare any agent-assisted row against the same deterministic helper without
+  the LLM view after costs.
+
+Source: <https://arxiv.org/abs/2509.09995>
 
 ### State-Dependent Predictability
 
@@ -212,6 +392,38 @@ Implementable fields:
 - `constraint_shadow_price_bucket`
 
 Source: <https://link.springer.com/article/10.1007/s41060-026-01066-0>
+
+### Constrained LLM Alpha Search Needs Hard Financial Grammar
+
+PandaAI's useful pattern is not the reported CSI 300 performance; it is the
+system shape. LLM-guided alpha generation is bounded by a formal operator
+grammar, forbidden-rule set, market-regime state, turnover/risk constraints,
+and evidence feedback. Ginger's translation is a safer research loop: let LLMs
+propose symbolic factor candidates only inside a predeclared grammar, reject
+financially toxic factors before simulation, and store the constraint set with
+the replay artifact.
+
+Implementable fields:
+
+- `symbolic_alpha_grammar_version`
+- `llm_alpha_candidate_hash`
+- `forbidden_operator_rule_set_id`
+- `financial_toxicity_reject_reason`
+- `latent_regime_state_id`
+- `dynamic_constraint_penalty_bucket`
+- `alpha_search_mcts_trace_hash`
+- `constraint_feedback_update_id`
+
+Controls:
+
+- freeze grammar, forbidden operators, and cost/risk constraints before search;
+- reject candidates with excessive turnover, leakage, dimensional mismatch, or
+  unstable decay before Gate 1;
+- compare any retained symbolic factor against recency, momentum, volatility,
+  and accepted-helper comparators under the same PIT panel;
+- record failed generated factors so later agents do not rediscover them.
+
+Source: <https://arxiv.org/abs/2606.06823>
 
 ### Verifiable Forecast Actions For LLM Views
 
@@ -390,6 +602,202 @@ Sources:
 - <https://arxiv.org/abs/2606.27100>
 - <https://arxiv.org/abs/2605.21504>
 
+### Volatility TSFMs Must Beat Log-HAR And Calibration Baselines
+
+A July 2026 realized-volatility benchmark is a useful check on TSFM enthusiasm:
+pooled losses can favor foundation models, but the advantage concentrates in a
+few outlier assets; asset-averaged comparisons leave only Tiny Time Mixers
+narrowly ahead of a well-specified Log-HAR benchmark across horizons, and
+Mincer-Zarnowitz recalibration shows much of the short-horizon gain is scale
+calibration rather than new volatility information. Ginger should treat
+volatility TSFMs as risk-state context only after they beat Log-HAR, equal-
+weight ensemble, and calibration baselines on the same PIT assets.
+
+Implementable fields:
+
+- `vol_tsfm_model_family`
+- `log_har_loss_ratio`
+- `vol_forecast_calibration_delta`
+- `mzm_recalibrated_gain_bucket`
+- `asset_averaged_loss_rank`
+- `tsfm_loghar_ensemble_flag`
+- `vol_forecast_horizon_bucket`
+- `vol_forecast_execution_context_value`
+
+Controls:
+
+- compare per asset, not only pooled loss across all names;
+- report recalibrated and unrecalibrated loss separately;
+- keep TSFM volatility forecasts as sizing/risk context until after-cost
+  replacement value clears accepted helper comparators;
+- prefer simple Log-HAR plus TSFM ensembles over single-model selection unless
+  walk-forward evidence proves a stable architecture choice.
+
+Source: <https://arxiv.org/abs/2607.05291>
+
+### Look-Ahead Freedom Is A Type Contract
+
+A July 2026 pipeline paper formalizes look-ahead freedom as temporal
+non-interference over a time-indexed information lattice, separating a datum's
+availability time from its reference time and giving a decidable checker for
+value-independent operations such as windowing, joins, vintage reads, and
+agentic retrieval. Ginger's translation is direct: every data surface should
+record availability, reference period, and transformation effects so leakage is
+caught before Gate 1-4, not inferred from suspiciously good results.
+
+Implementable fields:
+
+- `availability_timestamp`
+- `reference_period_end`
+- `temporal_effect_type`
+- `pit_join_contract_id`
+- `vintage_read_version`
+- `agentic_retrieval_asof`
+- `lookahead_typecheck_passed`
+- `leakage_counterexample_id`
+
+Controls:
+
+- fail closed when availability time is missing or value-dependent;
+- type-check joins, rolling windows, resampling, and retrieval before replay;
+- preserve both reference time and availability time in artifacts;
+- treat a silent empirical leak detector as insufficient proof of PIT safety.
+
+Source: <https://arxiv.org/abs/2607.04958>
+
+### Causal Separators Are Portfolio Covariance Inputs, Not Free Alpha
+
+A July 2026 projected-Markowitz paper frames portfolio covariance around a
+declared set of drivers: conditional on the realized path of those drivers,
+returns are mutually independent, creating a diagonal-plus-low-rank conditional
+covariance and a constrained projected Markowitz solution. Ginger's useful
+translation is not to add an optimizer. It is to force portfolio-covariance
+experiments to name the driver separator, report residual idiosyncratic floors,
+and measure whether the projected covariance improves replacement value under
+the existing one-row/day allocator constraints.
+
+Implementable fields:
+
+- `causal_separator_driver_set`
+- `driver_availability_contract`
+- `conditional_covariance_rank`
+- `idiosyncratic_variance_floor`
+- `projected_markowitz_constraint_id`
+- `constraint_shadow_price_bucket`
+- `separator_stability_delta`
+- `projected_covariance_replacement_value`
+
+Controls:
+
+- predeclare drivers and availability timestamps before fitting covariance;
+- compare against sample, shrinkage, PCA, and current accepted allocator
+  baselines;
+- report shadow prices and constraint gaps, not only optimized Sharpe;
+- reject covariance gains that disappear under the actual slot/capital
+  constraints or after turnover/costs.
+
+Source: <https://arxiv.org/abs/2607.05320>
+
+### Overnight And Intraday Tails Need Separate Risk States
+
+Split-session Cluster GARCH work on U.S. equities finds material tail
+heterogeneity between overnight and intraday returns, with sector-level tail
+partitioning most useful in the overnight component and asset-level tail
+heterogeneity improving out-of-sample likelihood and GMV portfolio performance.
+Ginger should not translate this into a new entry signal. The implementable
+surface is a risk/execution context that distinguishes overnight gap risk from
+intraday continuation risk for sizing, stop interpretation, and live-drift
+attribution.
+
+Implementable fields:
+
+- `session_tail_state_bucket`
+- `overnight_tail_shape_bucket`
+- `intraday_tail_shape_bucket`
+- `sector_tail_partition_id`
+- `asset_tail_heterogeneity_score`
+- `gap_risk_execution_bucket`
+- `session_conditional_correlation_bucket`
+- `session_tail_replacement_value`
+
+Controls:
+
+- score overnight and intraday returns separately before using tail states;
+- keep sector-tail partitions PIT and stable across windows;
+- use session-tail fields as sizing/execution diagnostics before any entry or
+  ranking change;
+- compare session-aware risk changes against current drawdown, live-drift, and
+  accepted default-off helper baselines.
+
+Source: <https://arxiv.org/abs/2607.03669>
+
+### Tail Dependence Diagnostics Are Sample-Limited
+
+July 2026 local-Gaussian-correlation work is a useful anti-overfitting warning
+for tail and contagion surfaces. Tail dependence estimates degrade exactly
+where the system wants them most, and the binding constraint is often local
+effective sample size rather than a smarter adaptive bandwidth. Ginger should
+make `effective_n` a first-class field before using any tail-correlation,
+sector-contagion, or cross-sleeve concentration result as a risk policy.
+
+Implementable fields:
+
+- `tail_dependence_protocol_id`
+- `tail_local_effective_n`
+- `tail_correlation_bandwidth_id`
+- `tail_estimator_variance_floor`
+- `tail_resample_stability_bucket`
+- `tail_dependence_regime_bucket`
+- `tail_surface_adaptivity_flag`
+- `tail_policy_replacement_value`
+
+Controls:
+
+- block tail-policy promotion when local effective sample size is too small;
+- report resampling dispersion next to any tail-correlation estimate;
+- treat adaptive estimator gains as diagnostic unless they survive the same
+  windows and replacement-value comparator;
+- prefer forward-row accumulation over threshold or bandwidth retunes when the
+  tail sample is sparse.
+
+Source: <https://arxiv.org/abs/2607.03888>
+
+### Semantic Retrieval Forecasting Needs Evidence Keys
+
+Recent retrieval-augmented time-series work points to a useful middle ground
+between raw nearest-neighbor pattern matching and black-box forecasting. FinSeer
+uses financial-history retrieval tailored to stock forecasting; SERAF adds a
+second semantic retrieval channel because numeric similarity alone can fail
+under non-stationarity. Ginger's translation is narrow: retrieved analogs are
+not trade signals unless the retrieval key is PIT, semantically explainable,
+and scored against the displaced candidate after costs.
+
+Implementable fields:
+
+- `retrieval_forecast_protocol_id`
+- `numeric_pattern_retrieval_key`
+- `semantic_pattern_retrieval_key`
+- `retrieved_analog_asof`
+- `retrieved_analog_future_blind_flag`
+- `retrieval_relation_explanation_bucket`
+- `semantic_numeric_retrieval_agreement_bucket`
+- `retrieval_after_cost_replacement_value`
+
+Controls:
+
+- persist retrieved analog ids, source windows, semantic labels, and as-of
+  timestamps before scoring;
+- compare numeric-only, semantic-only, and joint retrieval against momentum,
+  random-walk, and accepted-helper comparators;
+- forbid retrieval keys that smuggle future return paths or post-event labels;
+- use semantic retrieval first to prioritize forward observation rows, not to
+  change orders or sizing before Gate 1-4.
+
+Sources:
+
+- <https://arxiv.org/abs/2502.05878>
+- <https://arxiv.org/abs/2606.14941>
+
 ### Continuous Style Allocation Beats Discrete Regime Rules
 
 A May 2026 growth-versus-defensive allocation paper is most useful as a risk
@@ -517,6 +925,39 @@ Sources:
 - <https://arxiv.org/abs/2601.04602>
 - <https://www.sciencedirect.com/science/article/pii/S0952197626010080>
 - <https://arxiv.org/abs/2603.05917>
+
+### Supply-Chain Text Propagation Needs PIT Relation Edges
+
+Late-June 2026 research combines annual-report LLM embeddings with supply-chain
+knowledge-graph propagation and reports cross-sectional return predictability
+after momentum, volatility, size, sector-neutral, placebo, and out-of-sample
+checks. The Ginger-compatible lesson is not to deploy a text embedding factor.
+It is to make entity-relation edges first-class, timestamped evidence: a filing
+or news label may matter more when it propagates through a verified
+customer/supplier/economic-exposure graph than when scored only on the issuer.
+
+Implementable fields:
+
+- `supply_chain_edge_source_id`
+- `supply_chain_edge_asof`
+- `supply_chain_relation_type`
+- `supplier_customer_exposure_bucket`
+- `text_embedding_source_accession`
+- `network_propagated_text_signal_bucket`
+- `relation_propagation_placebo_delta`
+- `sector_neutral_relation_delta`
+- `relation_propagated_replacement_value`
+
+Controls:
+
+- use only relation edges known before the candidate decision date;
+- separate issuer text, neighbor text, and propagated text effects;
+- run sector, momentum, volatility, size, and random-edge placebos before
+  counting a propagated signal as alpha;
+- compare against accepted relation adapters and same-theme opportunity cost
+  after costs, not against cash alone.
+
+Source: <https://arxiv.org/abs/2606.29290>
 
 ### Transaction-Cost Trap
 
@@ -897,10 +1338,18 @@ Implementable fields:
 - `rag_missing_source_reason`
 - `rag_contradiction_bucket`
 - `rag_verified_event_field_version`
+- `rag_hard_negative_retriever_version`
+- `rag_program_of_thought_code_hash`
+- `rag_adaptive_complexity_bucket`
+- `rag_cost_budget_bucket`
 
 Controls:
 
 - fail closed when source spans or numeric self-checks are missing;
+- execute arithmetic and period matching through deterministic code, not LLM
+  mental math;
+- route expensive multi-step retrieval only when the task complexity requires
+  it, and log the cost/latency tradeoff;
 - keep retrieval and verification artifacts replayable by timestamp;
 - promote only schema-bound fields with Gate 1-4 evidence.
 
@@ -2304,3 +2753,135 @@ Controls:
   as candidate-pool alpha.
 
 Source: <https://arxiv.org/abs/2505.16336>
+
+### Short-Trend Alpha Needs Microstructure Viability
+
+A July 2026 q-fin study argues that short-horizon trend following degraded
+after 2009 mostly where the volatility-normalized tick size is small: trend
+PnL collapsed in small-tick contracts but survived better in large-tick
+contracts. The Ginger translation is not another momentum threshold. It is to
+treat short-trend, breakout, and compression continuations as execution
+microstructure hypotheses: the same price pattern may be viable only when tick
+size, spread, depth proxy, and impact costs support aggressive execution.
+
+Implementable fields:
+
+- `vol_normalized_tick_size_bucket`
+- `spread_to_atr_bucket`
+- `dollar_depth_proxy_bucket`
+- `trend_signal_speed_bucket`
+- `impact_reinforcement_viability_flag`
+- `small_tick_trend_decay_risk_bucket`
+- `microstructure_cost_scenario_id`
+- `trend_after_cost_replacement_value`
+
+Controls:
+
+- stratify any short-trend or breakout replay by tick/spread/impact buckets;
+- compare against the same accepted helper after realistic next-open and
+  spread costs;
+- treat small-tick positive gross momentum as execution-risk context until
+  after-cost replacement value clears;
+- avoid retuning momentum labels without a new PIT microstructure field.
+
+Source: <https://arxiv.org/abs/2607.01550>
+
+### Order-Flow Impact Is A Liquidity State, Not Raw Flow Alpha
+
+A July 2026 paper estimates Kyle-style price impact from daily equity order
+flow and reports that signed order flow predicts contemporaneous and
+one-month-ahead returns, while volume volatility predicts weaker subsequent
+returns. This is directly relevant to Ginger's Moomoo main-flow failures: raw
+inflow labels are too blunt unless they are tied to a PIT impact estimate,
+publication timing, horizon, and costed displacement comparator. A second July
+2026 square-root-impact study adds an execution-control lesson: impact shape is
+not just visible book depth or metaorder size, but the joint presence of order
+splitting and liquidity replenishment. Flow rows therefore need an execution
+mechanism tag before they can support sizing or entry changes.
+
+Implementable fields:
+
+- `signed_order_flow_bucket`
+- `kyle_lambda_estimator_version`
+- `amihud_impact_bucket`
+- `volume_volatility_bucket`
+- `impact_normalization_horizon`
+- `flow_publication_lag_bucket`
+- `order_splitting_proxy_bucket`
+- `liquidity_replenishment_proxy_bucket`
+- `flow_impact_reversion_context`
+- `flow_after_cost_replacement_value`
+
+Controls:
+
+- estimate impact only from data available before the decision date;
+- lock the horizon before scoring flow rows, especially 10d versus one-month;
+- compare flow rows against cash, SPY/QQQ, and accepted allocator/distribution
+  sources after costs;
+- separate flow direction from impact capacity and replenishment context;
+- do not retry raw main-flow thresholds without a new PIT impact or borrow /
+  loan-availability field.
+
+Sources:
+
+- <https://arxiv.org/abs/2607.01377>
+- <https://arxiv.org/abs/2607.04280>
+
+### MACD-Style Signals Need Latent-Drift And Cost Context
+
+New mathematical-finance work derives MACD-like signals from filtered latent
+drift with fast and slow factors. The useful local lesson is narrow: MACD is a
+state estimator, not an independent alpha license. Any revival of trend
+indicators should log the fast/slow factor spread, signal half-life, and
+execution envelope, then prove incremental replacement value over existing
+trend and accepted default-off helpers.
+
+Implementable fields:
+
+- `latent_drift_filter_version`
+- `fast_slow_ema_spread_bucket`
+- `signal_half_life_bucket`
+- `volterra_correction_bucket`
+- `trend_state_confidence_bucket`
+- `macd_placebo_delta`
+- `latent_drift_after_cost_replacement_value`
+
+Controls:
+
+- compare MACD-style features to simple momentum, current trend helpers, and
+  accepted paper adapters on the same dates;
+- predeclare fast/slow windows and cost assumptions before replay;
+- use the signal first as state/risk context unless Gate 1-4 proves an entry,
+  ranking, or sizing change;
+- do not sweep EMA windows on frozen rows without a new evidence axis.
+
+Source: <https://arxiv.org/abs/2607.01705>
+
+### Factor Models Need Cap-Axis Diagnostics
+
+A July 2026 factor-model diagnostic shows that a low-dimensional model can
+improve the maximum-Sharpe frontier while still leaving pricing errors along
+the market-cap rank axis. Ginger should apply the same idea to broad-universe
+and factor-like candidate pools: a positive aggregate EV or Sharpe is not
+enough if the result is just hidden large-cap / small-cap bridge alpha.
+
+Implementable fields:
+
+- `cap_rank_bucket`
+- `cap_axis_bridge_alpha_curve`
+- `cap_axis_norm`
+- `lead_lag_corrected_cap_alpha`
+- `factor_size_exposure_bucket`
+- `cap_subspace_zero_alpha_passed`
+- `cap_axis_replacement_value_delta`
+
+Controls:
+
+- report candidate performance by market-cap rank bucket before promoting
+  broad factor or universe-expansion sources;
+- compare cap-axis behavior against SPY/QQQ, static size/style alternatives,
+  and accepted default-off comparators;
+- distinguish Sharpe improvement from residual cap-subspace alpha;
+- reject broad sources whose edge vanishes after cap-axis and lead-lag checks.
+
+Source: <https://arxiv.org/abs/2607.01765>

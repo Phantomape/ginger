@@ -1,0 +1,625 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260706-018/exp_20260706_018_finra_otc_internalization_retreat.json",
+    "data/non_ohlcv/finra_otc_weekly/manifest.json",
+    "data/non_ohlcv/finra_otc_weekly/rows.jsonl",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/cards/exp-20260706-018.md",
+    "experiments/logs/exp-20260706-018.json",
+    "experiments/manifests/exp-20260706-018.json",
+    "experiments/tickets/exp-20260706-018.json",
+    "quant/data_paths.py",
+    "quant/experiments/exp_20260706_018_finra_otc_internalization_retreat.py",
+    "quant/finra_otc_internalization_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_finra_otc_internalization_paper_sleeve.py",
+    "quant/test_run_daily_wiring.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-018.md",
+  "causal_components": [
+    "OTC_W_SMBL PIT weekly archive",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "finra_otc_internalization_retreat_quiet_accumulation_candidate_source",
+  "claimed_at": "2026-07-06T16:14:28+00:00",
+  "completed_at": "2026-07-06T16:27:00+00:00",
+  "created_at": "2026-07-06T16:14:18+00:00",
+  "decision": "rejected_finra_otc_internalization_retreat_default_off_candidate_source",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-018",
+  "experiment_uid": "expuid-94e532f915254d9f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T16:14:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_otc_internalization_retreat"
+  },
+  "hypothesis": "candidate_pool/full_stack: FINRA weekly OTC-transparency NON-ATS wholesaler-internalization symbol-level share volume, as a share of consolidated weekly tape volume and published with a fixed multi-week lag, RETREATING versus its trailing 4 published weeks (retail washout / quiet institutional accumulation) under family-standard liquidity and SPY-relative guards, is a deployable top-1-per-publication-day default-off paper source with replacement value on the canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "finra_otc_internalization_retreat_quiet_accumulation_candidate_source"
+  ],
+  "mechanism_family": "production_visible_finra_otc_internalization_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-016",
+    "exp-20260704-003",
+    "exp-20260528-015"
+  ],
+  "new_evidence_type": "new_data_source_and_new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "score": 0.6138,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "score": 0.6136,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "score": 0.6133,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "20d",
+        "a",
+        "accumulation",
+        "add",
+        "ats",
+        "below",
+        "built",
+        "canonical",
+        "consolidated",
+        "finra",
+        "gate",
+        "holds",
+        "institutional",
+        "internalization",
+        "marks",
+        "mean",
+        "negative",
+        "non",
+        "of",
+        "on",
+        "otc",
+        "participation",
+        "publication",
+        "published",
+        "quiet",
+        "relative",
+        "replacement",
+        "retail",
+        "retreat",
+        "retreats",
+        "share",
+        "should",
+        "smbl",
+        "spy",
+        "strength",
+        "summary",
+        "tape",
+        "this",
+        "top",
+        "trailing",
+        "value",
+        "volume",
+        "w",
+        "washout",
+        "week",
+        "weekly",
+        "while",
+        "wholesaler",
+        "whose",
+        "windows"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_ats_weekly_dark_share_candidate_pool",
+        "reopen_condition": "Settled forward rows from the daily default-off snapshot, the non-ATS (OTC wholesaler internalization) weekly summary as a genuinely different venue decomposition with its own gate shape, or PIT borrow/short-side economics joined to the same names.",
+        "score": 0.6308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "fiftytwo_week_high_finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT evidence separating durable and exhausted 52-week-high leaders, such as borrow-cost or availability history, institutional ownership changes, options-implied move/skew, or closed forward replacement-value rows. Pure FINRA or 52-week threshold retunes stay frozen.",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_broad_universe_candidate_pool",
+        "reopen_condition": "With the broad-universe coverage gap closed, a valid retry needs a materially DIFFERENT signal axis - PIT borrow fee/utilization or loan-availability, options-implied move/skew, or closed forward replacement-value rows from a shared default-off helper - not another threshold or universe-size retune.",
+        "score": 0.6138,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_daily_short_volume_imbalance_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially broader archived Moomoo coverage set, PIT borrow fee/utilization or loan-availability data, options/flow confirmation, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.6136,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_three_window_validation",
+        "reopen_condition": "If positive, the next evidence is closed forward replacement-value rows from the shared FINRA/IWM default-off ledger tagged with entry-time borrow-pressure. If negative, a valid retry needs a materially different PIT borrow-cost / hard-to-borrow / loan-availability field, not a days_to_cover, short-change, freshness, RS, top-N, hold, cooldown, or notional retune on these frozen windows.",
+        "score": 0.6133,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "finra_short_interest",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+        "categories": [
+          "new_data_source",
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: FINRA OTC_W_SMBL non-ATS wholesaler internalization weekly summary, never materialized in-repo (exp-20260704-003 blocked solely on server-side API outage; probe 2026-07-06 returns 200 with all required PIT fields, reopen condition advanced). New gate shape: internalization-share RETREAT admission ranked ascending (quiet-retail), inverse of the rejected ATS share-rise shape.",
+      "categories": [
+        "new_data_source",
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2222,
+      "accepts": 4,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 18
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The fixed top-1/publication-day non-ATS internalization-retreat source did not clear the predeclared Gate 4 bar on the canonical windows: window_ev_regression; window_pnl_regression; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+    "forbidden_near_neighbor_retry": "Do not retune retreat ratio, trailing-week count, min ADV/RS guard values, rank tie-breaks, hold days, cooldown, or notional on these same frozen windows; do not re-slice the same archive by tier, notional-per-trade, or trade-count fields as if they were a new axis. Both directions of the FINRA weekly venue decomposition (ATS rise exp-20260703-016, non-ATS retreat this experiment) are now tested.",
+    "new_evidence_required": "Settled forward rows from the daily default-off snapshots of either FINRA weekly sleeve, or PIT borrow/short-side economics joined to the same names; not another venue-share field, direction, or threshold reshape on the same archive."
+  },
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "thin_sample",
+      "window_ev_regression",
+      "not_incremental_vs_accepted_comparators",
+      "publication_lag_kills_edge"
+    ],
+    "confidence_reason": "Different venue population (wholesaler internalization vs ATS dark pools) with inverse gate direction; quiet-participation mechanism has one accepted precedent (exp-20260528-015 low-volume-participation support); but the sibling ATS source was rejected (exp-20260703-016), the FINRA family base rate is low, and the multi-week publication lag may fully stale the signal.",
+    "recorded_at": "2026-07-06T16:13:38+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_finra_otc_internalization_retreat_default_off_candidate_source",
+    "full_stack_verdict": "reject",
+    "artifact": "data/experiments/exp-20260706-018/exp_20260706_018_finra_otc_internalization_retreat.json",
+    "log": "experiments/logs/exp-20260706-018.json",
+    "card": "experiments/cards/exp-20260706-018.md",
+    "aggregate_expected_value_delta": 0.0701,
+    "aggregate_strategy_total_pnl_delta": 2101.88,
+    "accepted": false,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_finra_otc_internalization_retreat_default_off_candidate_source",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.0701,
+      "aggregate_pnl_delta": 2101.88,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 74,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "covered_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "covered_target_window_count_min": 2,
+      "max_drawdown_worse": 0.0014,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7885,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.226235,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.130241,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98
+        },
+        "distribution": {
+          "experiment_id": "exp-20260611-007",
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "expected_value_score_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91
+        }
+      },
+      "source_activation_boundary": {
+        "vendor_history": "FINRA weekly non-ATS OTC summary reaches back years; archive materialized 2026-07-06 from week 2024-08-05 with per-row initialPublishedDate (4,790 rows, 50 tickers)",
+        "old_thin": "fully covered (earliest publication predates the window)",
+        "mid_weak": "fully covered",
+        "late_strong": "fully covered",
+        "note": "Unlike rolling-window vendor feeds, FINRA publications are stable and re-fetchable; initialPublishedDate makes historical replay share the same availability boundary as daily forward use."
+      },
+      "full_stack_contract": {
+        "daily_snapshot_exposed": true,
+        "parity_test_added": true
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.12,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten"
+      ],
+      "brier_score": 0.0144,
+      "actual_ev_delta": 0.0701,
+      "actual_pnl_delta": 2101.88
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "shared_default_off_paper_sleeve",
+      "shared_policy_changed": true,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": true,
+      "replay_only": false,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": true,
+      "parity_test_added": true,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_finra_otc_weekly_archive": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "max_capital_pct": 0.04,
+        "min_dollar_volume": 50000000.0,
+        "slippage_bps": 5.0,
+        "max_displacement": 0,
+        "max_concurrent": 5,
+        "order_semantics": "next_open",
+        "kill_switch_drawdown_pct": 0.08,
+        "sleeve_drawdown_stop_pct": 0.05,
+        "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source refreshes from the free FINRA query API; a dead network degrades to the local archive (weekly cadence tolerates staleness) without touching the ledger.",
+        "missing": [],
+        "complete": true
+      },
+      "parity_note": "One shared candidate rule (quant/finra_otc_internalization_paper_sleeve.py) drives both the historical replay in this runner and the daily default-off snapshot wired into run.py; parity tests cover admission, ranking, PIT publication mapping, same-day idempotency, fill/close lifecycle, and the replay/daily selection agreement. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The fixed top-1/publication-day non-ATS internalization-retreat source did not clear the predeclared Gate 4 bar on the canonical windows: window_ev_regression; window_pnl_regression; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+      "forbidden_near_neighbor_retry": "Do not retune retreat ratio, trailing-week count, min ADV/RS guard values, rank tie-breaks, hold days, cooldown, or notional on these same frozen windows; do not re-slice the same archive by tier, notional-per-trade, or trade-count fields as if they were a new axis. Both directions of the FINRA weekly venue decomposition (ATS rise exp-20260703-016, non-ATS retreat this experiment) are now tested.",
+      "new_evidence_required": "Settled forward rows from the daily default-off snapshots of either FINRA weekly sleeve, or PIT borrow/short-side economics joined to the same names; not another venue-share field, direction, or threshold reshape on the same archive."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-018.json",
+  "single_causal_variable": "finra_otc_internalization_retreat_quiet_accumulation_candidate_source",
+  "status": "rejected",
+  "summary": "The FINRA non-ATS internalization-retreat source failed the predeclared full-stack Gate 4 on the canonical windows; do not retune it on frozen samples.",
+  "ticket_file": "experiments/tickets/exp-20260706-018.json",
+  "trial_family": "finra_otc_internalization_retreat_candidate_pool",
+  "trial_variant_id": "finra_otc_internalization_retreat_top1_v1",
+  "artifact": "data/experiments/exp-20260706-018/exp_20260706_018_finra_otc_internalization_retreat.json",
+  "log": "experiments/logs/exp-20260706-018.json",
+  "aggregate_expected_value_delta": 0.0701,
+  "aggregate_strategy_total_pnl_delta": 2101.88,
+  "gate1": {
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1331,
+        "total_pnl": 77845.53,
+        "strategy_total_return_pct": 0.7785,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1118,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.644,
+        "total_pnl": 42933.82,
+        "strategy_total_return_pct": 0.4293,
+        "sharpe_daily": 1.5,
+        "max_drawdown_pct": 0.095,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "worst_trade_pct": -0.0928,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5948
+      }
+    },
+    "baseline_artifacts": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "passed": true
+  },
+  "gate2": {
+    "runtime_fields": [
+      "entry_date",
+      "exit_date",
+      "entry_price",
+      "exit_price",
+      "week_start_date",
+      "published_date",
+      "otc_share",
+      "baseline_share",
+      "share_retreat_ratio",
+      "avg_dollar_volume_20",
+      "ret20_excess_spy"
+    ],
+    "archive_row_count": 4790,
+    "target_price_scope": "not_applicable_fixed_10d_close_exit_paper_source; core entry_date/target_price fields unchanged in baseline",
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7885,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_delta": 0.0,
+    "passed": true,
+    "note": "Default-off paper overlay only. Core signal generation and survival are unchanged."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_finra_otc_internalization_retreat_default_off_candidate_source",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "aggregate_ev_delta": 0.0701,
+    "aggregate_pnl_delta": 2101.88,
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1,
+    "target_trade_count": 74,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "covered_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "covered_target_window_count_min": 2,
+    "max_drawdown_worse": 0.0014,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7885,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.226235,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.130241,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "accepted_comparators": {
+      "compression": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "source_activation_boundary": {
+      "vendor_history": "FINRA weekly non-ATS OTC summary reaches back years; archive materialized 2026-07-06 from week 2024-08-05 with per-row initialPublishedDate (4,790 rows, 50 tickers)",
+      "old_thin": "fully covered (earliest publication predates the window)",
+      "mid_weak": "fully covered",
+      "late_strong": "fully covered",
+      "note": "Unlike rolling-window vendor feeds, FINRA publications are stable and re-fetchable; initialPublishedDate makes historical replay share the same availability boundary as daily forward use."
+    },
+    "full_stack_contract": {
+      "daily_snapshot_exposed": true,
+      "parity_test_added": true
+    }
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "shared_default_off_paper_sleeve",
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": true,
+    "parity_test_added": true,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "uses_llm": false,
+    "uses_finra_otc_weekly_archive": true,
+    "live_realism_evaluated": true,
+    "live_ready": false,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "max_capital_pct": 0.04,
+      "min_dollar_volume": 50000000.0,
+      "slippage_bps": 5.0,
+      "max_displacement": 0,
+      "max_concurrent": 5,
+      "order_semantics": "next_open",
+      "kill_switch_drawdown_pct": 0.08,
+      "sleeve_drawdown_stop_pct": 0.05,
+      "notes": "Top-1/day, $4,000 fixed default-off paper notional, 10-trading-day close exit, same-day core-overlap exclusion in the daily path. The daily source refreshes from the free FINRA query API; a dead network degrades to the local archive (weekly cadence tolerates staleness) without touching the ledger.",
+      "missing": [],
+      "complete": true
+    },
+    "parity_note": "One shared candidate rule (quant/finra_otc_internalization_paper_sleeve.py) drives both the historical replay in this runner and the daily default-off snapshot wired into run.py; parity tests cover admission, ranking, PIT publication mapping, same-day idempotency, fill/close lifecycle, and the replay/daily selection agreement. No live/default order, ranking, sizing, exit, watchlist, LLM, or news path changes."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-06T16:27:00+00:00"
+}

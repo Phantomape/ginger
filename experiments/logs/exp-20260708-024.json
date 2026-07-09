@@ -1,0 +1,201 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+  "calibration": {
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "momentum_drawdown_above_guard"
+    ],
+    "realized_success": false
+  },
+  "change_type": "entry_external_baseline_observed_only_replay",
+  "changed_files": [
+    "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "experiments/logs/exp-20260708-024.json",
+    "experiments/cards/exp-20260708-024.md",
+    "experiments/manifests/exp-20260708-024.json",
+    "experiments/tickets/exp-20260708-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "completed_at": "2026-07-08T18:11:07Z",
+  "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+  "experiment_id": "exp-20260708-024",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "private external 12-1 monthly momentum replay compared to accepted current trend_long by_strategy rows",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "entry fills use monthly rebalance Open after signal-date close",
+    "passed": true,
+    "required_fields": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "eligible_candidate_count_sum": {
+      "late_strong": 266,
+      "mid_weak": 266,
+      "old_thin": 266
+    },
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "private_replay_trade_count": 75,
+    "rebalance_count": {
+      "late_strong": 7,
+      "mid_weak": 7,
+      "old_thin": 7
+    }
+  },
+  "gate4": {
+    "aggregate": {
+      "current_trend_long_total_pnl": 131996.98,
+      "current_trend_long_trade_count": 39,
+      "diagnostic_expected_value_score": 3.331487,
+      "diagnostic_total_return_pct": 1.433857,
+      "max_window_drawdown_pct": 0.294481,
+      "mean_window_sharpe_daily": 2.323445,
+      "momentum_total_pnl": 143385.65,
+      "momentum_trade_count": 75,
+      "momentum_win_window_count_vs_trend_long": 2,
+      "momentum_win_windows_vs_trend_long": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "pnl_delta_vs_trend_long": 11388.67
+    },
+    "diagnostic_only": true,
+    "failed_reasons": [
+      "momentum_drawdown_above_guard",
+      "not_full_gate4_private_external_replay"
+    ],
+    "full_gate4_passed": false,
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "label": "late_strong",
+        "momentum_beats_trend_pnl": false,
+        "momentum_ev": 0.111634,
+        "momentum_max_drawdown_pct": 0.294481,
+        "momentum_total_pnl": 16166.91,
+        "momentum_trade_count": 25,
+        "pnl_delta_vs_trend_long": -25915.1,
+        "trend_long_total_pnl": 42082.01
+      },
+      {
+        "label": "mid_weak",
+        "momentum_beats_trend_pnl": true,
+        "momentum_ev": 2.608811,
+        "momentum_max_drawdown_pct": 0.066032,
+        "momentum_total_pnl": 66480.13,
+        "momentum_trade_count": 25,
+        "pnl_delta_vs_trend_long": 11498.58,
+        "trend_long_total_pnl": 54981.55
+      },
+      {
+        "label": "old_thin",
+        "momentum_beats_trend_pnl": true,
+        "momentum_ev": 1.430775,
+        "momentum_max_drawdown_pct": 0.151703,
+        "momentum_total_pnl": 60738.61,
+        "momentum_trade_count": 25,
+        "pnl_delta_vs_trend_long": 25805.19,
+        "trend_long_total_pnl": 34933.42
+      }
+    ]
+  },
+  "hypothesis": "External baseline: a fixed 12-1 cross-sectional momentum policy that ranks core-universe stocks by 252-trading-day return excluding the most recent 21 sessions, enters the top five on monthly rebalance dates, and holds for 21 sessions may challenge current trend_long better than local trend thresholds.",
+  "implementation_mode": "read_only_external_baseline_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-024.json",
+  "mechanism_family": "external_cross_sectional_momentum_baseline",
+  "nearby_prior_experiments": [
+    "exp-20260708-022",
+    "exp-20260529-013",
+    "exp-20260601-006"
+  ],
+  "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "different_external_baseline_family_such_as_pead_or_low_vol_quality",
+    "no_12_1_lookback_topn_hold_liquidity_universe_cost_notional_or_tiebreak_retune_on_same_windows"
+  ],
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun 12-1 momentum on these frozen windows by changing 252/21 lookbacks, monthly cadence, top-N, hold days, liquidity floors, universe exclusions, costs, notional, or ranking tie-breaks. That would be a parameter sweep on the same OHLCV momentum surface.",
+    "new_evidence_required": "If positive, next evidence must be a shared helper/backtester Gate 1-4 replay. If negative, move to a different external baseline lane such as PEAD/revision or low-vol/quality admission instead of retuning 12-1 parameters.",
+    "why_result_happened": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark."
+  },
+  "prediction": {
+    "confidence_reason": "The plan explicitly named 12-1 momentum as the next external baseline after Donchian; it is a distinct academic trend benchmark using only PIT OHLCV, but the current trend_long comparator is strong and the fixed-window core universe may be too concentrated.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "momentum_lags_current_trend_long",
+      "old_thin_window_regression",
+      "drawdown_worse",
+      "lookback_coverage_thin",
+      "private_replay_not_production_ready"
+    ],
+    "recorded_at": "2026-07-08T18:04:59+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_external_12_1_momentum_baseline_replay",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "momentum_drawdown_above_guard",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-024.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "status": "observed_only",
+  "trial_family": "cross_sectional_12_1_momentum_baseline",
+  "trial_variant_id": "exp-20260708-024"
+}

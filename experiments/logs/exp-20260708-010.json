@@ -1,0 +1,244 @@
+{
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260708-010/exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.json",
+  "change_type": "risk_allocation",
+  "changed_files": [
+    "quant/experiments/exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.py",
+    "data/experiments/exp-20260708-010/exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.json",
+    "experiments/logs/exp-20260708-010.json",
+    "experiments/cards/exp-20260708-010.md",
+    "experiments/artifacts/exp-20260708-010_crypto_sleeve_forward_snapshot_policy_attribution.md",
+    "experiments/manifests/exp-20260708-010.json",
+    "experiments/tickets/exp-20260708-010.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "changed_variable": "crypto_sleeve_forward_snapshot_policy_attribution_v1",
+  "completed_at": "2026-07-08T07:15:54Z",
+  "decision": "observed_only_rejected_crypto_sleeve_policy_attribution",
+  "experiment_id": "exp-20260708-010",
+  "gate1": {
+    "crypto_baselines": [
+      "fee_aware_btc_buy_and_hold",
+      "cash"
+    ],
+    "note": "No stock strategy behavior changed. The crypto comparator is constructed from the same saved BTC spot closes.",
+    "stock_strategy_baseline": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "entry_date_contract": "not_applicable_crypto_spot_allocation_no_Position_entry",
+    "policy_contract": "daily_ema20_ema100_spot_trend",
+    "present": true,
+    "required_fields": [
+      "crypto_sleeve.snapshot.asof_date",
+      "crypto_sleeve.snapshot.close",
+      "crypto_sleeve.state",
+      "crypto_sleeve.action.target_position_pct"
+    ],
+    "target_price_contract": "not_applicable_crypto_spot_allocation_no_ATR_exit"
+  },
+  "gate3": {
+    "interval_count": 60,
+    "no_filter_added": true,
+    "raw_crypto_snapshot_rows": 65,
+    "state_counts": {
+      "RISK_OFF": 40,
+      "RISK_ON_PARTIAL": 21
+    },
+    "survival_rate": 1.0,
+    "target_position_counts": {
+      "0.0": 40,
+      "0.7": 21
+    },
+    "unique_asof_dates": 61
+  },
+  "gate4": {
+    "benchmark": "fee_aware_btc_buy_and_hold",
+    "buy_hold": {
+      "ending_equity": 0.80569,
+      "expected_value_score": 0.647864,
+      "label": "btc_buy_hold_fee_aware",
+      "max_drawdown_pct": 0.287075,
+      "mean_period_return_pct": -0.003406,
+      "periods": 60,
+      "sharpe_daily": -3.334176,
+      "total_pnl_usd": -2914.65,
+      "total_return_pct": -0.19431,
+      "vol_period_return_pct": 0.019514,
+      "win_rate": 0.4
+    },
+    "by_state": {
+      "RISK_OFF": {
+        "avg_btc_forward_return_pct": -0.003364,
+        "avg_target_position_pct": 0.0,
+        "btc_positive_share": 0.384615,
+        "fee_cost_sum_pct": 0.01029,
+        "interval_count": 39,
+        "policy_return_sum_pct": -0.01029
+      },
+      "RISK_ON_PARTIAL": {
+        "avg_btc_forward_return_pct": -0.003017,
+        "avg_target_position_pct": 0.7,
+        "btc_positive_share": 0.428571,
+        "fee_cost_sum_pct": 0.01029,
+        "interval_count": 21,
+        "policy_return_sum_pct": -0.054639
+      }
+    },
+    "cash": {
+      "ending_equity": 1.0,
+      "expected_value_score": 0.0,
+      "label": "cash",
+      "max_drawdown_pct": 0.0,
+      "mean_period_return_pct": 0.0,
+      "periods": 60,
+      "sharpe_daily": 0.0,
+      "total_pnl_usd": 0.0,
+      "total_return_pct": 0.0,
+      "vol_period_return_pct": 0.0,
+      "win_rate": 0.0
+    },
+    "checks": {
+      "enough_unique_asof_dates": true,
+      "has_target_switch": true,
+      "policy_drawdown_lt_buy_hold": true,
+      "policy_return_gt_cash": false,
+      "policy_sharpe_gt_buy_hold": false,
+      "policy_total_return_nonnegative": false
+    },
+    "delta_vs_buy_hold": {
+      "expected_value_score": -0.420647,
+      "max_drawdown_pct": -0.198301,
+      "sharpe_daily": -0.225314,
+      "total_pnl_usd": 1957.14,
+      "total_return_pct": 0.130476
+    },
+    "failed_reasons": [
+      "policy_total_return_nonnegative",
+      "policy_sharpe_gt_buy_hold",
+      "policy_return_gt_cash"
+    ],
+    "fee_costs": {
+      "buy_hold_fee_cost_pct_sum": 0.0098,
+      "policy_fee_cost_pct_sum": 0.02058,
+      "terminal_policy_liquidation_fee_pct": 0.0
+    },
+    "interval_count": 60,
+    "policy": {
+      "ending_equity": 0.936166,
+      "expected_value_score": 0.227217,
+      "label": "crypto_sleeve_policy_net",
+      "max_drawdown_pct": 0.088774,
+      "mean_period_return_pct": -0.001082,
+      "periods": 60,
+      "sharpe_daily": -3.55949,
+      "total_pnl_usd": -957.51,
+      "total_return_pct": -0.063834,
+      "vol_period_return_pct": 0.005808,
+      "win_rate": 0.116667
+    },
+    "target_switches": 6,
+    "unique_asof_dates": 61
+  },
+  "hypothesis": "Observed-only alpha: the existing production BTC/USD crypto sleeve daily EMA20/EMA100/SMA200 target policy may add risk-adjusted forward value versus BTC buy-and-hold over saved production snapshots without changing stock orders.",
+  "implementation_mode": "observed_only_production_snapshot_forward_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-010.json",
+  "mechanism_family": "production_visible_crypto_sleeve_forward_attribution",
+  "nearby_prior_experiments": [
+    "exp-20260607-022",
+    "exp-20260622-023",
+    "exp-20260708-008"
+  ],
+  "new_evidence_axis": "Saved production crypto_sleeve BTC/USD forward snapshots from 2026-05-02 through 2026-07-06 with later snapshot closes; prior crypto experiments tested crypto-equity stock proxies or yfinance plumbing, not this production spot policy outcome.",
+  "new_evidence_type": "settled_production_forward_crypto_sleeve_snapshots",
+  "next_retry_requires": [
+    "materially more settled production crypto_sleeve rows",
+    "or a different BTC/crypto data source",
+    "or a shared historical replay gate shape"
+  ],
+  "novelty_classifier_after_patch": {
+    "data_source": "crypto_sleeve",
+    "field_tags": [
+      "attribution",
+      "btc",
+      "crypto",
+      "daily",
+      "forward",
+      "policy",
+      "sleeve",
+      "snapshot",
+      "spot",
+      "trend"
+    ],
+    "gate_shape": "forward_attribution"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune EMA/SMA thresholds, target percentages, fee assumptions, benchmark liquidation convention, or sub-slices on this same saved snapshot surface.",
+    "new_evidence_required": "A legal retry needs materially more settled production crypto sleeve snapshot rows, a different BTC/crypto data source, or a new gate shape such as shared historical replay before policy changes.",
+    "why_result_happened": "The fixed crypto sleeve policy did not satisfy all predeclared observed-only checks versus fee-aware BTC buy-and-hold and cash."
+  },
+  "prediction": {
+    "confidence_reason": "This is a production-visible BTC spot surface with real saved forward snapshots, but the sample is short, mostly risk-off, and the fixed policy could miss rebound days.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "risk_off_misses_rebound",
+      "too_few_target_switches",
+      "fees_consume_edge",
+      "buy_and_hold_beats_policy"
+    ],
+    "recorded_at": "2026-07-08T07:07:02+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "alters_crypto_orders": false,
+    "alters_stock_orders": false,
+    "backtester_adapter_changed": false,
+    "existing_production_crypto_advice_unchanged": true,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "novelty_classifier_changed": true,
+    "parity_note": "Read-only offline attribution over saved production quant signal snapshots. The production crypto sleeve remains as-is.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "stock_strategy_changed": false
+  },
+  "rejection_reason": "policy_total_return_nonnegative;policy_sharpe_gt_buy_hold;policy_return_gt_cash",
+  "related_files": [
+    "quant/experiments/exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.py",
+    "data/state/crypto/crypto_positions.json",
+    "data/daily/signals/quant",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "report": "experiments/artifacts/exp-20260708-010_crypto_sleeve_forward_snapshot_policy_attribution.md",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_010_crypto_sleeve_forward_snapshot_policy_attribution.py scripts\\experiment_fingerprint.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "crypto_sleeve_forward_snapshot_policy_attribution_v1",
+  "status": "observed_only",
+  "summary": {
+    "buy_hold_max_drawdown_pct": 0.287075,
+    "buy_hold_sharpe_daily": -3.334176,
+    "buy_hold_total_return_pct": -0.19431,
+    "failed_reasons": [
+      "policy_total_return_nonnegative",
+      "policy_sharpe_gt_buy_hold",
+      "policy_return_gt_cash"
+    ],
+    "policy_max_drawdown_pct": 0.088774,
+    "policy_sharpe_daily": -3.55949,
+    "policy_total_return_pct": -0.063834
+  },
+  "trial_family": "btc_spot_crypto_sleeve_daily_trend_policy_forward_attribution",
+  "trial_variant_id": "saved_quant_signals_20260503_20260707_v1"
+}

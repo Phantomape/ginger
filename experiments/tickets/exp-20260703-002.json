@@ -1,0 +1,502 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_002_news_second_order_negative_top1_candidate_source.py",
+    "data/experiments/exp-20260703-002/exp_20260703_002_news_second_order_negative_top1_candidate_source.json",
+    "experiments/cards/exp-20260703-002.md",
+    "experiments/manifests/exp-20260703-002.json",
+    "experiments/tickets/exp-20260703-002.json",
+    "experiments/logs/exp-20260703-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-002.md",
+  "causal_components": [
+    "second-order exposure ledger",
+    "negative first-order event polarity",
+    "top-1/day deterministic candidate compression",
+    "next-open 10d paper replay",
+    "accepted-comparator check",
+    "execution-envelope disclosure"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "news_second_order_negative_polarity_top1_day_candidate_source_v1",
+  "claimed_at": "2026-07-03T01:07:44+00:00",
+  "completed_at": "2026-07-03T01:12:59+00:00",
+  "created_at": "2026-07-03T01:07:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-002",
+  "experiment_uid": "expuid-43948b6999bd49b9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T01:07:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_second_order_negative_top1_candidate_source"
+  },
+  "hypothesis": "candidate_pool/private replay scout: fixed negative-polarity second-order structured-news exposure rows may form a deployable top-1/day default-off paper candidate source because exp-20260702-021 found inverted negative-over-positive baseline-controlled 10d separation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "news_second_order_negative_polarity_top1_day_candidate_source_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-026",
+    "exp-20260630-005"
+  ],
+  "new_evidence_type": "new_gate_shape_from_second_order_news_exposure_ledger",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "baseline",
+        "because",
+        "controlled",
+        "daily",
+        "deployable",
+        "event",
+        "exp",
+        "exposure",
+        "form",
+        "found",
+        "inverted",
+        "llm",
+        "may",
+        "negative",
+        "news",
+        "order",
+        "over",
+        "polarity",
+        "positive",
+        "private",
+        "rows",
+        "scoring",
+        "second",
+        "separation",
+        "structured",
+        "top"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "nonrepeat_alpha_candidate_readiness",
+        "reopen_condition": "A valid alpha retry needs a daily and historical structured-event helper that writes actor/object/relation/magnitude/provenance rows before decision time, covers all three canonical windows, and can be called by both backtest and production default-off snapshots.",
+        "score": 0.1875,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_sector_event_breadth_peer_transfer_candidate_pool",
+        "reopen_condition": "Forward rows or a materially stronger cross-ticker relation source such as customer/supplier links, audited theme propagation, or multi-season event co-movement.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "thematic_second_order_supply_chain_candidate_pool",
+        "reopen_condition": "Do not retry raw electrical-equipment basket expansion. A valid revisit needs an orthogonal ex-ante discriminator, such as official AI-capex/customer-win event tags or forward pilot replacement-value evidence, before adding these names again.",
+        "score": 0.175,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "sec_6k_companyfacts_structured_financial_growth_candidate_pool",
+        "reopen_condition": "A valid reopen needs historical 6-K filing text cache population, a new machine-checkable 6-K field unavailable in this Companyfacts surface, or mature forward replacement-value rows that prove this specific form-scoped growth signal adds allocation value.",
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "candidate_pool_full_stack",
+        "reopen_condition": null,
+        "score": 0.1729,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape on a new structured-news second-order exposure ledger: fixed negative-polarity top-1/day deployable candidate compression from exp-20260702-020 rows, not an OHLCV relation threshold, not a relation/theme/horizon reslice, and not a same-source keyword scan.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New gate shape on a new structured-news second-order exposure ledger: fixed negative-polarity top-1/day deployable candidate compression from exp-20260702-020 rows, not an OHLCV relation threshold, not a relation/theme/horizon reslice, and not a same-source keyword scan.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape on a new structured-news second-order exposure ledger: fixed negative-polarity top-1/day deployable candidate compression from exp-20260702-020 rows, not an OHLCV relation threshold, not a relation/theme/horizon reslice, and not a same-source keyword scan.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "top1_compression_loses_observed_edge",
+      "window_instability",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "confidence_reason": "The prior read showed large closed-row polarity separation after ticker baseline control, but top-1/day compression is unvalidated and may turn a broad attribution effect into an arbitrary candidate source.",
+    "recorded_at": "2026-07-03T01:06:59+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_news_second_order_negative_top1_candidate_source",
+    "artifact": "data/experiments/exp-20260703-002/exp_20260703_002_news_second_order_negative_top1_candidate_source.json",
+    "log": "experiments/logs/exp-20260703-002.json",
+    "runner": "quant/experiments/exp_20260703_002_news_second_order_negative_top1_candidate_source.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_news_second_order_negative_top1_candidate_source",
+      "economic_gate_passed": false,
+      "failed_reasons": [
+        "fewer_than_two_ev_improved_windows",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "accepted_compression_ev_not_beaten",
+        "accepted_compression_pnl_not_beaten",
+        "accepted_distribution_ev_not_beaten",
+        "accepted_distribution_pnl_not_beaten",
+        "daily_snapshot_not_exposed_for_full_stack_contract",
+        "parity_test_missing_for_full_stack_contract"
+      ],
+      "aggregate_ev_delta": 0.0769,
+      "aggregate_pnl_delta": 1743.5,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 10,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.33857,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.285496,
+        "positive_pnl_hhi_guardrail": 0.35,
+        "top5_positive_pnl_share": 1.0
+      },
+      "accepted_comparators": {
+        "compression": {
+          "experiment_id": "exp-20260608-013",
+          "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+          "expected_value_score_delta_sum": 0.1608,
+          "total_pnl_delta_sum": 2248.98
+        },
+        "distribution": {
+          "experiment_id": "exp-20260611-007",
+          "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+          "expected_value_score_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91
+        }
+      },
+      "full_stack_contract": {
+        "daily_snapshot_exposed": false,
+        "parity_test_added": false
+      }
+    },
+    "full_stack_verdict": "reject",
+    "summary": "The broad baseline-controlled polarity lead did not survive the deployable top-1/day compression and full fixed-window bar: fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract; parity_test_missing_for_full_stack_contract"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-002.json",
+  "single_causal_variable": "news_second_order_negative_polarity_top1_day_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260703-002.json",
+  "trial_family": "news_second_order_exposure_top1_candidate_source",
+  "trial_variant_id": "negative_polarity_top1_day_v1",
+  "alpha_hypothesis": "candidate_pool/private replay scout: fixed negative-polarity second-order structured-news exposure rows may form a deployable top-1/day default-off paper candidate source because exp-20260702-021 found inverted negative-over-positive baseline-controlled 10d separation.",
+  "implementation_mode": "private_replay_scout_due_unvalidated_top1_shape",
+  "new_evidence_axis": "New gate shape on a new structured-news second-order exposure ledger: fixed negative-polarity top-1/day deployable candidate compression from exp-20260702-020 rows, not an OHLCV relation threshold, not a relation/theme/horizon reslice, and not a same-source keyword scan.",
+  "decision": "rejected_news_second_order_negative_top1_candidate_source",
+  "artifact": "data/experiments/exp-20260703-002/exp_20260703_002_news_second_order_negative_top1_candidate_source.json",
+  "log": "experiments/logs/exp-20260703-002.json",
+  "aggregate_expected_value_delta": 0.0769,
+  "aggregate_strategy_total_pnl_delta": 1743.5,
+  "gate1": {
+    "passed": true,
+    "baseline_artifacts": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "strategy_total_return_pct": 0.7811,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "strategy_total_return_pct": 0.3967,
+        "sharpe_daily": 1.49,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "worst_trade_pct": -0.0635,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5193
+      }
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "event_date",
+      "published_at",
+      "event_polarity",
+      "first_order_ticker",
+      "exposure_ticker",
+      "entry_date",
+      "target_price",
+      "avg_dollar_volume_20d"
+    ],
+    "ledger_exists": true,
+    "target_price_scope": "not_applicable_fixed_10d_paper_source"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No core executable filter was added; this is additive default-off paper replay only.",
+    "minimum_core_survival_rate": 0.7925
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_news_second_order_negative_top1_candidate_source",
+    "economic_gate_passed": false,
+    "failed_reasons": [
+      "fewer_than_two_ev_improved_windows",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten",
+      "daily_snapshot_not_exposed_for_full_stack_contract",
+      "parity_test_missing_for_full_stack_contract"
+    ],
+    "aggregate_ev_delta": 0.0769,
+    "aggregate_pnl_delta": 1743.5,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 0,
+    "target_trade_count": 10,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.33857,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.285496,
+      "positive_pnl_hhi_guardrail": 0.35,
+      "top5_positive_pnl_share": 1.0
+    },
+    "accepted_comparators": {
+      "compression": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "full_stack_contract": {
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false
+    }
+  },
+  "full_stack_verdict": "reject",
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "default_off_paper_only": true,
+    "live_realism_evaluated": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "max_capital_pct": 0.25,
+      "min_dollar_volume": 50000000.0,
+      "slippage_bps": 5.0,
+      "max_displacement": 1,
+      "max_concurrent": 10,
+      "order_semantics": "next_open_after_first_order_event_date",
+      "kill_switch_drawdown_pct": 0.08,
+      "sleeve_drawdown_stop_pct": 0.05,
+      "notes": "Private replay scout only. A positive result would require a shared helper and daily default-off snapshot before paper promotion."
+    },
+    "parity_note": "No production or shared paper helper changed; this runner only tests an unvalidated compression shape."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The broad baseline-controlled polarity lead did not survive the deployable top-1/day compression and full fixed-window bar: fewer_than_two_ev_improved_windows; target_sample_too_small; target_window_coverage_too_small; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten; daily_snapshot_not_exposed_for_full_stack_contract; parity_test_missing_for_full_stack_contract",
+    "forbidden_near_neighbor_retry": "Do not re-slice the same second-order ledger by relation type, theme, horizon, event keyword, first-order ticker, liquidity threshold, hold days, cooldown, notional, or response shape on these rows.",
+    "new_evidence_required": "A valid retry needs materially more current closed rows from the daily observer, historical structured-news coverage across all canonical windows, or intraday timestamped execution semantics."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260703_002_news_second_order_negative_top1_candidate_source.py",
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260703-002.json",
+    "data/experiments/exp-20260703-002/exp_20260703_002_news_second_order_negative_top1_candidate_source.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260703_002_news_second_order_negative_top1_candidate_source.py",
+    "data/experiments/exp-20260703-002/exp_20260703_002_news_second_order_negative_top1_candidate_source.json",
+    "experiments/logs/exp-20260703-002.json",
+    "experiments/cards/exp-20260703-002.md",
+    "experiments/manifests/exp-20260703-002.json",
+    "experiments/tickets/exp-20260703-002.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T01:12:59+00:00"
+}

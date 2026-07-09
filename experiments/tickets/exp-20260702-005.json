@@ -1,0 +1,622 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.py",
+    "data/experiments/exp-20260702-005/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.json",
+    "experiments/cards/exp-20260702-005.md",
+    "experiments/manifests/exp-20260702-005.json",
+    "experiments/tickets/exp-20260702-005.json",
+    "experiments/logs/exp-20260702-005.json",
+    "docs/experiment_registry.json",
+    "data/daily/signals/quant/quant_signals_20260701.json",
+    "data/non_ohlcv/estimate_revision_ledger_20260701.jsonl",
+    "data/non_ohlcv/estimate_revision_ledger_summary_20260701.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-005.md",
+  "causal_components": [
+    "atomic_temp_validation",
+    "quant_signal_final_recovery",
+    "estimate_revision_ledger_rerun",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "estimate_revision_20260701_quant_signal_atomic_recovery_v1",
+  "claimed_at": "2026-07-02T04:08:44+00:00",
+  "completed_at": "2026-07-02T04:13:37+00:00",
+  "created_at": "2026-07-02T04:08:36+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-005",
+  "experiment_uid": "expuid-e569073376a94669",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T04:08:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_20260701_quant_signal_recovery"
+  },
+  "hypothesis": "Alpha blocker: the 2026-07-01 estimate-revision candidate-match surface cannot evaluate same-day quant-signal overlap because quant_signals_20260701 only exists as a stranded atomic temp file; recover the final artifact and rerun the ledger to create replayable candidate-match evidence without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "estimate_revision_20260701_quant_signal_atomic_recovery_v1"
+  ],
+  "mechanism_family": "production_visible_estimate_revision_candidate_match_attribution",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260630-021",
+    "exp-20260630-022",
+    "exp-20260701-006"
+  ],
+  "new_evidence_type": "new_daily_quant_signal_artifact_recovery",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "score": 0.67,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.75,
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "score": 0.6522,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form144_revision_data_readiness",
+        "score": 0.6273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "a",
+        "alpha",
+        "artifact",
+        "as",
+        "atomic",
+        "attribution",
+        "because",
+        "behavior",
+        "blocker",
+        "cannot",
+        "changing",
+        "create",
+        "estimate",
+        "evaluate",
+        "evidence",
+        "exists",
+        "file",
+        "final",
+        "ledger",
+        "match",
+        "only",
+        "overlap",
+        "quant",
+        "recover",
+        "recovery",
+        "repair",
+        "replayable",
+        "rerun",
+        "revision",
+        "same",
+        "signal",
+        "signals",
+        "stranded",
+        "strategy",
+        "surface",
+        "temp",
+        "to",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "reopen_condition": "Next alpha-compliant revision work needs closed replacement-value outcomes for the matched candidate rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation field.",
+        "score": 0.67,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.75,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "Next alpha-compliant revision work needs h3/h5/h10 settlement for these rows plus materially more matched/non-flat rows, another settled production revision cohort, or a different unsaturated PIT expectation source.",
+        "score": 0.6522,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.6273,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2,
+      "accepts": 6,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 30
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.74,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "temp_file_invalid",
+      "no_candidate_matches_after_recovery",
+      "ledger_schema_drift",
+      "overwrite_risk_from_existing_untracked_artifact"
+    ],
+    "confidence_reason": "The stranded quant signal temp is large and parseable-looking, while the current 20260701 estimate-revision summary explicitly reports no_daily_signal_match_artifacts_loaded; this should repair measurement but may still produce zero candidate matches.",
+    "recorded_at": "2026-07-02T04:08:02+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_estimate_revision_20260701_quant_signal_recovery",
+    "artifact": "data/experiments/exp-20260702-005/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.json",
+    "log": "experiments/logs/exp-20260702-005.json",
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "accepted_measurement_repair_estimate_revision_20260701_quant_signal_recovery",
+      "measurement_blockers": [],
+      "alpha_blockers": [
+        "closed_forward_replacement_values_absent_for_20260701_rows",
+        "revision_alpha_requires_separate_outcome_experiment"
+      ],
+      "measurement_repair_only": true,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0,
+        "strategy_behavior_changed": false
+      }
+    },
+    "delta_metrics": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "quant_final_created": true,
+      "before_daily_signal_match_record_count": 0,
+      "after_daily_signal_match_record_count": 64,
+      "daily_signal_match_record_count_delta": 64,
+      "before_matched_feature_rows": 0,
+      "after_matched_feature_rows": 59,
+      "before_matched_candidate_rows": 0,
+      "after_matched_candidate_rows": 5,
+      "matched_candidate_rows_delta": 5,
+      "after_usable_matched_candidate_rows": 5,
+      "after_matched_selected_signal_rows": 0
+    },
+    "calibration": {
+      "predicted_success_probability": 0.74,
+      "actual_success": 1,
+      "brier_score": 0.0676,
+      "predicted_failure_modes": [
+        "temp_file_invalid",
+        "no_candidate_matches_after_recovery",
+        "ledger_schema_drift",
+        "overwrite_risk_from_existing_untracked_artifact"
+      ],
+      "realized_failure_modes": [],
+      "predicted_failure_modes_hit": []
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-005.json",
+  "single_causal_variable": "estimate_revision_20260701_quant_signal_atomic_recovery_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-005.json",
+  "trial_family": "estimate_revision_candidate_match_surface_repair",
+  "trial_variant_id": "estimate_revision_20260701_quant_signal_recovery_v1",
+  "alpha_hypothesis": "Estimate-revision direction may have replacement value when it overlaps same-day production-visible candidate rows, but 2026-07-01 cannot be evaluated until the same-day quant signal artifact is canonical and the ledger can load it.",
+  "implementation_mode": "measurement_repair_quant_signal_atomic_recovery",
+  "decision": "accepted_measurement_repair_estimate_revision_20260701_quant_signal_recovery",
+  "artifact": "data/experiments/exp-20260702-005/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.json",
+  "log": "experiments/logs/exp-20260702-005.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "ticker",
+      "as_of_date",
+      "matched_candidate_today",
+      "matched_feature_row_today",
+      "matched_signal_sources",
+      "revision_direction_prev",
+      "estimate_revision_usable",
+      "entry_date_scope",
+      "target_price_scope"
+    ],
+    "quant_temp_candidates": [
+      {
+        "path": "data/daily/signals/quant/.quant_signals_20260701.json.es28wi6p.tmp",
+        "exists": true,
+        "size_bytes": 1956374,
+        "sha256": "bd734846fd06b1518f1659db292b49636c7bbf2327d07d7e43da883d316d1b3f",
+        "canonical_payload_sha256": "2f4fad68ade7810823558397f1705c0f28532792e770aa6f839f1040772dcc3a",
+        "json_valid": true,
+        "json_error": null,
+        "payload_summary": {
+          "top_level_type": "dict",
+          "valid_shape": true,
+          "top_level_keys": [
+            "accepted_helper_source_priority_allocator_paper_sleeve",
+            "accepted_source_consensus_paper_sleeve",
+            "addon_actions",
+            "addon_audit",
+            "ai_infra_aggressive_attribution",
+            "ai_optical_paper_sleeve",
+            "alpha_score_market_regime_paper_sleeve",
+            "broad_market_paper_sleeve",
+            "core_misfit_paper_sleeve",
+            "core_risk_intensity_forward_observation",
+            "crypto_sleeve",
+            "default_off_alpha_attribution",
+            "distribution_day_absorption_leadership_paper_sleeve",
+            "entry_candidate_review",
+            "entry_execution_plan",
+            "entry_filter_audit",
+            "event_sleeve_bundle",
+            "features",
+            "fiftytwo_week_high_proximity_paper_sleeve",
+            "finra_iwm_paper_sleeve",
+            "form4_event_queue",
+            "form4_event_sleeve",
+            "free_data_cross_source_consensus_paper_sleeve",
+            "fundamental_growth_rs_paper_sleeve",
+            "generated_at",
+            "heat_blocked_pilot_signals",
+            "heat_blocked_signals",
+            "industry_relative_laggard_repair_paper_sleeve",
+            "industry_stable_core_flow_paper_sleeve",
+            "low_deployment_etf_overlay",
+            "macro_relief_leadership_paper_sleeve",
+            "market_regime",
+            "market_state_snapshot",
+            "narrow_range_compression_breakout_paper_sleeve",
+            "non_ohlcv_snapshot",
+            "ohlcv_warehouse",
+            "pead_broad_universe_paper_sleeve",
+            "pilot_attribution",
+            "pilot_decision_hashes",
+            "pilot_decision_snapshots",
+            "pilot_entry_execution_plan",
+            "pilot_entry_filter_audit",
+            "pilot_signals",
+            "platform_rs20_watch",
+            "portfolio_heat",
+            "post_earnings_underpriced_drift_paper_sleeve",
+            "revision_surprise_low_extension_paper_sleeve",
+            "rolling_corr_peer_shock_paper_sleeve",
+            "sbc_burden_improvement_paper_sleeve",
+            "sec_10k_forward_watch",
+            "sec_event_queue",
+            "sec_financial_report_event_sleeve",
+            "sec_financial_report_t1_queue",
+            "sec_ftd_finra_paper_sleeve",
+            "sec_governance_event_queue",
+            "sec_governance_event_sleeve",
+            "sec_leadership_event_queue",
+            "sec_leadership_event_sleeve",
+            "sec_negative_event_sleeve",
+            "signals",
+            "space_catalyst_event_ledger",
+            "space_catalyst_observation_slot",
+            "space_catalyst_shadow",
+            "state_surface_queue",
+            "state_surface_sleeve",
+            "strategy_entry_execution_plan",
+            "supplier_financing_debt_relief_paper_sleeve",
+            "turn_of_month_liquid_leadership_paper_sleeve",
+            "universe_governance",
+            "volatility_contraction_paper_sleeve",
+            "volatility_relief_stock_leadership_paper_sleeve",
+            "volume_breadth_breakout_paper_sleeve"
+          ],
+          "list_counts": {
+            "signals": 0,
+            "pilot_signals": 0,
+            "heat_blocked_signals": 0,
+            "heat_blocked_pilot_signals": 0,
+            "entry_execution_plan.deferred_breakout_signals": 0,
+            "entry_execution_plan.slot_sliced_signals": 0,
+            "pilot_entry_execution_plan.pilot_slot_sliced_signals": 0
+          },
+          "candidate_like_row_count": 0,
+          "ticker_count": 0,
+          "top_tickers": {},
+          "date_fields": {
+            "generated_at": "2026-07-01T20:38:51.004881"
+          }
+        }
+      }
+    ],
+    "quant_recovery": {
+      "tmp_path": "data/daily/signals/quant/.quant_signals_20260701.json.es28wi6p.tmp",
+      "final_path": "data/daily/signals/quant/quant_signals_20260701.json",
+      "final_exists_before": false,
+      "final_exists_after": true,
+      "final_sha256_before": null,
+      "final_sha256_after": "bd734846fd06b1518f1659db292b49636c7bbf2327d07d7e43da883d316d1b3f",
+      "tmp_sha256": "bd734846fd06b1518f1659db292b49636c7bbf2327d07d7e43da883d316d1b3f",
+      "recovery_status": "recovered_from_valid_atomic_tmp_copy_fallback",
+      "conflict": false,
+      "write_exception": "PermissionError(13, '拒绝访问。')",
+      "final_payload_matches_tmp_after": true,
+      "recovered": true
+    },
+    "before_signal_match_records_loaded_now": {
+      "record_count": 59,
+      "candidate_record_count": 0,
+      "selected_signal_count": 0,
+      "feature_row_count": 59,
+      "sources": [
+        "trend_signals"
+      ],
+      "record_types": {
+        "feature_row": 59
+      },
+      "candidate_tickers": []
+    },
+    "after_signal_match_records_loaded_now": {
+      "record_count": 64,
+      "candidate_record_count": 5,
+      "selected_signal_count": 0,
+      "feature_row_count": 59,
+      "sources": [
+        "event_sleeve_bundle.candidates",
+        "trend_signals"
+      ],
+      "record_types": {
+        "event_sleeve_candidate": 5,
+        "feature_row": 59
+      },
+      "candidate_tickers": [
+        "BKNG",
+        "DDOG",
+        "DE",
+        "GS",
+        "LITE"
+      ]
+    },
+    "entry_date_scope": "No executable entry is scheduled; ledger rows are forward attribution inputs.",
+    "target_price_scope": "No target exit is scheduled; target_price is not consumed by this repair."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 1244,
+    "signals_survived": 5,
+    "survival_rate": 0.004019,
+    "note": "Measurement rows only; no executable filter, entry, rank, size, exit, or order rule was added."
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_estimate_revision_20260701_quant_signal_recovery",
+    "measurement_blockers": [],
+    "alpha_blockers": [
+      "closed_forward_replacement_values_absent_for_20260701_rows",
+      "revision_alpha_requires_separate_outcome_experiment"
+    ],
+    "measurement_repair_only": true,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "quant_final_created": true,
+    "before_daily_signal_match_record_count": 0,
+    "after_daily_signal_match_record_count": 64,
+    "daily_signal_match_record_count_delta": 64,
+    "before_matched_feature_rows": 0,
+    "after_matched_feature_rows": 59,
+    "before_matched_candidate_rows": 0,
+    "after_matched_candidate_rows": 5,
+    "matched_candidate_rows_delta": 5,
+    "after_usable_matched_candidate_rows": 5,
+    "after_matched_selected_signal_rows": 0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "scope": "experiment_scoped_measurement_repair_only",
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The 2026-07-01 estimate-revision ledger had run before the same-day quant signal artifact was finalized. Restoring the canonical final file allowed the existing ledger helper to load same-day signal records and replace the no-daily-artifact gap with explicit feature/candidate match state.",
+    "forbidden_near_neighbor_retry": "Do not run estimate-revision thresholds, direction gates, top-N, hold, notional, response curves, or observed-only slices from the 2026-07-01 rows until forward replacement outcomes close.",
+    "new_evidence_required": "Next alpha-compliant revision work needs closed cash/SPY/QQQ replacement-value outcomes for matched rows, materially more selected/current non-flat matches, or a different unsaturated PIT expectation source."
+  },
+  "next_retry_requires": [
+    "closed replacement-value outcomes for any matched 2026-07-01 revision rows",
+    "materially more selected/current non-flat estimate-revision matches",
+    "do not rerun this recovery after the final quant artifact exists"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.py",
+    "data/experiments/exp-20260702-005/exp_20260702_005_estimate_revision_20260701_quant_signal_recovery.json",
+    "experiments/cards/exp-20260702-005.md",
+    "experiments/manifests/exp-20260702-005.json",
+    "experiments/tickets/exp-20260702-005.json",
+    "experiments/logs/exp-20260702-005.json",
+    "docs/experiment_registry.json",
+    "data/daily/signals/quant/quant_signals_20260701.json",
+    "data/non_ohlcv/estimate_revision_ledger_20260701.jsonl",
+    "data/non_ohlcv/estimate_revision_ledger_summary_20260701.json"
+  ],
+  "related_files": [
+    "quant/estimate_revision_ledger.py",
+    "scripts/run_estimate_revision_forward_ledger.py",
+    "quant/experiments/exp_20260630_021_estimate_revision_post_quant_signal_match_rerun.py",
+    "quant/experiments/exp_20260701_006_estimate_revision_20260629_h1_outcome_refresh.py",
+    "experiments/logs/exp-20260630-021.json",
+    "experiments/logs/exp-20260630-022.json",
+    "experiments/logs/exp-20260701-006.json"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.74,
+    "actual_success": 1,
+    "brier_score": 0.0676,
+    "predicted_failure_modes": [
+      "temp_file_invalid",
+      "no_candidate_matches_after_recovery",
+      "ledger_schema_drift",
+      "overwrite_risk_from_existing_untracked_artifact"
+    ],
+    "realized_failure_modes": [],
+    "predicted_failure_modes_hit": []
+  },
+  "updated_at": "2026-07-02T04:13:37+00:00"
+}

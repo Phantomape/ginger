@@ -1,0 +1,115 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "keyword_order_collision",
+      "overbroad_pilot_matches",
+      "frozen_family_rebuild_stale"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Low surprise: reservation itself showed source=other gate=other, and the deterministic keyword/test repair rebuilt both pilot_scorecard frozen families with concrete fingerprints."
+  },
+  "causal_components": [
+    "data_source keyword",
+    "gate_shape keyword",
+    "focused fingerprint tests",
+    "frozen family rebuild",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Accepted measurement repair: added pilot_scorecard data_source and pilot_scorecard_readiness gate-shape fingerprints, plus focused tests and rebuilt frozen_families so pilot scorecard readiness/kill retries no longer fall into other/other.",
+  "change_type": "measurement_repair",
+  "changed_variable": "pilot_scorecard_fingerprint_coverage",
+  "component": "quant/experiments/exp_20260707_012_pilot_scorecard_fingerprint_coverage.py, data/experiments/exp-20260707-012/exp_20260707_012_pilot_scorecard_fingerprint_coverage.json, experiments/cards/exp-20260707-012.md, experiments/manifests/exp-20260707-012.json, experiments/tickets/exp-20260707-012.json, experiments/logs/exp-20260707-012.json, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260707-012",
+  "hypothesis": "Pilot scorecard readiness and kill-rule alpha governance remains vulnerable to repeated same-surface probes because experiment_fingerprint still classifies pilot_scorecard families as data_source=other and gate_shape=other.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "novelty_guard_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_repair_for_guard_coverage_gap",
+  "next_retry_requires": [
+    "Do not rerun pilot_scorecard readiness or kill-rule probes just to confirm guard coverage; novelty now maps them to pilot_scorecard/pilot_scorecard_readiness.",
+    "Reopen this measurement-repair line only if a new pilot governance family falls back to data_source=other or gate_shape=other, or if these keywords create a false-positive collision."
+  ],
+  "notes": "No strategy, entry, exit, ranking, sizing, LLM, paper order, or live order behavior changed. This closes a novelty/reopen guard coverage gap discovered while rejecting same-surface pilot scorecard alpha repetition.",
+  "parameters": {
+    "locked_variables": [
+      "pilot_scorecard_fingerprint_coverage"
+    ],
+    "single_causal_variable": "pilot_scorecard_fingerprint_coverage"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another pilot_scorecard readiness/kill audit on the same scorecard rows merely to prove it is still frozen; the repaired novelty check now surfaces the frozen families and reopen conditions.",
+    "new_evidence_required": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Low surprise: reservation itself showed source=other gate=other, and the deterministic keyword/test repair rebuilt both pilot_scorecard frozen families with concrete fingerprints."
+  },
+  "prediction": {
+    "confidence_reason": "AGENTS requires new surfaces to have classifier coverage; frozen_families currently shows pilot_scorecard readiness as other/other, so a deterministic keyword repair with tests should close a concrete novelty-guard leak.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword_order_collision",
+      "overbroad_pilot_matches",
+      "frozen_family_rebuild_stale"
+    ],
+    "recorded_at": "2026-07-07T12:07:29+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260707-012/before_measurement.json",
+    "data/experiments/exp-20260707-012/after_measurement.json",
+    "data/experiments/exp-20260707-012/exp_20260707_012_pilot_scorecard_fingerprint_coverage.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260707_012_pilot_scorecard_fingerprint_coverage.py"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-07T12:10:42+00:00",
+  "trial_family": "novelty_classifier_data_source_coverage",
+  "trial_variant_id": "pilot_scorecard_keywords_v1"
+}

@@ -345,3 +345,43 @@ def test_revision_ledger_keeps_feature_rows_separate_from_candidates(tmp_path):
     assert rows[0]["candidate_match_gap_reason"] == "feature_row_only_no_persisted_candidate_object"
     assert summary["matched_feature_rows"] == 1
     assert summary["matched_candidate_rows"] == 0
+
+
+def test_write_jsonl_survives_concurrent_memory_map_of_destination(tmp_path):
+    # Regression for exp-20260708-007: a truncating open("w") on the final
+    # path raises OSError Errno 22 (ERROR_USER_MAPPED_FILE) on Windows while
+    # another process holds the file memory-mapped, dropping the daily ledger.
+    # The atomic temp+replace writer must ride out a short-lived mapping.
+    import mmap
+    import threading
+    import time
+
+    from estimate_revision_ledger import write_json, write_jsonl
+
+    target = tmp_path / "estimate_revision_ledger_20260707.jsonl"
+    write_jsonl(target, [{"ticker": "OLD"}])
+
+    handle = open(target, "rb")
+    mapping = mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ)
+
+    def _release_after_delay():
+        time.sleep(0.25)
+        mapping.close()
+        handle.close()
+
+    releaser = threading.Thread(target=_release_after_delay)
+    releaser.start()
+    try:
+        write_jsonl(target, [{"ticker": "NEW"}, {"ticker": "NEW2"}])
+    finally:
+        releaser.join()
+
+    lines = target.read_text(encoding="utf-8").splitlines()
+    assert [json.loads(line)["ticker"] for line in lines] == ["NEW", "NEW2"]
+    leftovers = list(tmp_path.glob(".*.tmp"))
+    assert leftovers == []
+
+    write_json(tmp_path / "summary.json", {"row_count": 2})
+    assert json.loads((tmp_path / "summary.json").read_text(encoding="utf-8")) == {
+        "row_count": 2
+    }

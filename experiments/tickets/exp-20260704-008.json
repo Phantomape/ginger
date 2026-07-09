@@ -1,0 +1,291 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+    "experiments/cards/exp-20260704-008.md",
+    "experiments/manifests/exp-20260704-008.json",
+    "experiments/tickets/exp-20260704-008.json",
+    "experiments/logs/exp-20260704-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: accepted turn-of-month paper rows cannot mature if daily observation fails to admit the same calendar labels that the accepted replay admitted.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-008.md",
+  "causal_components": [
+    "accepted historical last-trading-day replay",
+    "daily helper no-calendar versus explicit-calendar comparison",
+    "current forward snapshot calendar-label audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "turn_of_month_daily_vs_replay_representative_day_parity_v1",
+  "claimed_at": "2026-07-04T10:04:41+00:00",
+  "completed_at": "2026-07-04T10:08:35+00:00",
+  "created_at": "2026-07-04T10:04:32+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-008",
+  "experiment_uid": "expuid-600f3924b9a54ab6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T10:04:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "turn_of_month_admission_parity_probe"
+  },
+  "hypothesis": "Alpha blocker: turn_of_month_liquid_leadership forward rows may be underfiring because daily production admission semantics drifted from the accepted replay; validate one accepted historical representative day and current forward ledger semantics without changing thresholds or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "turn_of_month_daily_vs_replay_representative_day_parity_v1"
+  ],
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260609-027",
+    "exp-20260704-006",
+    "exp-20260704-007"
+  ],
+  "new_evidence_axis": "Measurement-only calendar parity evidence for the accepted turn-of-month sleeve named by exp-20260704-006; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+  "new_evidence_type": "representative_day_daily_vs_replay_calendar_parity_probe",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "accepted",
+        "admission",
+        "alpha",
+        "be",
+        "because",
+        "blocker",
+        "changing",
+        "current",
+        "daily",
+        "drifted",
+        "forward",
+        "from",
+        "historical",
+        "leadership",
+        "ledger",
+        "liquid",
+        "may",
+        "month",
+        "of",
+        "one",
+        "or",
+        "orders",
+        "parity",
+        "probe",
+        "representative",
+        "rows",
+        "semantics",
+        "thresholds",
+        "turn",
+        "underfiring",
+        "validate",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_liquid_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new evidence that identifies real month-flow beneficiaries, such as point-in-time ETF rebalance constituent deltas, ownership/flow proxies, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen.",
+        "score": 0.5125,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_liquid_leadership_shared_default_off_adapter",
+        "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger or a genuinely new point-in-time flow beneficiary field, not another threshold retune.",
+        "score": 0.5125,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.4816,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.48,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+        "score": 0.4793,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_turn_of_month_calendar_parity_drift_identified",
+    "artifact": "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+    "log": "experiments/logs/exp-20260704-008.json",
+    "runner": "quant/experiments/exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    "gate4": {
+      "mode": "measurement_repair_turn_of_month_calendar_parity",
+      "passed": true,
+      "accepted_measurement_repair": true,
+      "accepted_alpha": false,
+      "strategy_behavior_changed": false,
+      "failed_reasons": [],
+      "calendar_parity_drift_detected": true,
+      "forward_last_trading_day_labels_seen": 0,
+      "decision_basis": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds."
+    },
+    "summary": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-008.json",
+  "single_causal_variable": "turn_of_month_daily_vs_replay_representative_day_parity_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260704-008.json",
+  "trial_family": "turn_of_month_admission_parity_probe",
+  "trial_variant_id": "turn_of_month_daily_calendar_representative_day_v1",
+  "implementation_mode": "measurement_repair",
+  "decision": "accepted_measurement_repair_turn_of_month_calendar_parity_drift_identified",
+  "artifact": "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+  "log_file": "experiments/logs/exp-20260704-008.json",
+  "changed_files": [
+    "quant/experiments/exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    "data/experiments/exp-20260704-008/exp_20260704_008_turn_of_month_admission_parity_probe.json",
+    "experiments/logs/exp-20260704-008.json",
+    "experiments/cards/exp-20260704-008.md",
+    "experiments/manifests/exp-20260704-008.json",
+    "experiments/tickets/exp-20260704-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_008_turn_of_month_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Read-only parity probe over the existing shared turn-of-month helper and existing paper snapshots. It does not alter live/default orders, rankings, sizing, exits, or paper snapshot generation."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds.",
+    "forbidden_near_neighbor_retry": "Do not retune month-start/end day counts, leadership thresholds, close-location, volume bounds, volatility bounds, top-N, hold-day, cooldown, notional, or response curves from this underfire span.",
+    "new_evidence_required": "Repair daily calendar parity by passing an explicit trading calendar or known month-end dates into the daily turn-of-month snapshot, then rerun the representative parity probe and accumulate closed forward replacement-value rows. A valid alpha retry also needs true closed forward replacement value or a new PIT flow-beneficiary field."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "accepted target_trades_by_window",
+      "candidate_month_label",
+      "historical OHLCV rows",
+      "complete trading calendar",
+      "daily snapshot candidate_count/raw_candidate_count",
+      "decision_id",
+      "entry_date",
+      "exit_date"
+    ],
+    "entry_date_target_price_scope": "No executable order or target exit is created. The probe compares paper entry_date/exit_date lifecycle fields on accepted default-off rows.",
+    "representative_window": "old_thin",
+    "representative_signal_date": "2024-10-31"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity."
+  },
+  "gate4": {
+    "mode": "measurement_repair_turn_of_month_calendar_parity",
+    "passed": true,
+    "accepted_measurement_repair": true,
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "failed_reasons": [],
+    "calendar_parity_drift_detected": true,
+    "forward_last_trading_day_labels_seen": 0,
+    "decision_basis": "The accepted representative month-end trade reproduced through the shared historical helper and through the daily helper only when an explicit trading calendar was supplied. The production-like no-calendar daily call failed closed on the same last-trading-day label, and current forward snapshots show no last_trading_day labels. The underfire gap is therefore a concrete daily calendar-parity measurement defect, not evidence to retune thresholds."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-04T10:08:35+00:00"
+}

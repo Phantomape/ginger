@@ -1,0 +1,103 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "existing tests encode old status",
+      "status summaries consumed by downstream scripts need compatibility"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The prediction-market surface was not a price-surface failure; all pending rows were waiting for the next trading session after the warehouse max date 2026-07-02."
+  },
+  "causal_components": [],
+  "change_summary": "Observer outcome ledgers now split future-entry maturity from true no-entry ticker price gaps for prediction-market and entity-theme alpha observer rows.",
+  "change_type": "observer_outcome_status_semantics_repair",
+  "changed_variable": "Classify observer rows with ticker price history through the observed date but no later bar as future_entry_session_not_reached, while reserving no_entry_bar for true missing ticker price coverage.",
+  "component": "quant/entity_theme_news_observer.py;quant/prediction_market_event_observer.py;quant/test_entity_theme_news_observer.py;quant/test_prediction_market_event_observer.py;data/experiments/<EXP_ID>/",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260705-006",
+  "hypothesis": "Observer alpha forward rows are currently misclassified when the as-of price warehouse has not reached the next trading session; separating future-entry maturity from true no-entry price gaps prevents false price-surface blockers before prediction-market/entity-theme RV attribution.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "observer_forward_outcome_maturity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "semantic_measurement_defect",
+  "next_retry_requires": [],
+  "notes": "Measurement repair only: no ranking, sizing, order, horizon, notional, candidate mapping, or comparator policy changed. Current 20260704 rebuild: prediction_market 3466/3466 old no-entry rows are future-entry maturity; entity_theme old no-entry 104 splits into 78 future-entry and 26 true no-entry gaps. Focused observer tests passed.",
+  "parameters": {
+    "locked_variables": [
+      "candidate mapping",
+      "horizons",
+      "notional",
+      "comparator set",
+      "observer source manifests"
+    ],
+    "single_causal_variable": "Classify observer rows with ticker price history through the observed date but no later bar as future_entry_session_not_reached, while reserving no_entry_bar for true missing ticker price coverage."
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune prediction-market or entity-theme observer thresholds, candidate maps, horizons, or notional based only on the former no-entry bucket; that bucket was a maturity label defect, not evidence of alpha edge.",
+    "new_evidence_required": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The prediction-market surface was not a price-surface failure; all pending rows were waiting for the next trading session after the warehouse max date 2026-07-02."
+  },
+  "prediction": {
+    "confidence_reason": "Both observer ledgers share a small local entry-index status branch and existing tests cover settled/unsettled paths.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "existing tests encode old status",
+      "status summaries consumed by downstream scripts need compatibility"
+    ],
+    "recorded_at": "2026-07-05T07:15:07+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260705-006/observer_entry_status_semantics_before.json",
+    "data/experiments/exp-20260705-006/observer_entry_status_semantics_after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-05T07:19:58+00:00",
+  "trial_family": "observer_no_entry_status_semantics",
+  "trial_variant_id": "20260705_future_entry_status"
+}

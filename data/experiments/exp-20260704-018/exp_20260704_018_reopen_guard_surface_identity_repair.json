@@ -1,0 +1,352 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python reservation guard and pytest only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "causal_components": [
+    "surface_token_matcher",
+    "negative_surface_identity_check",
+    "experiment_new_regression_command",
+    "no_strategy_change"
+  ],
+  "change_summary": "Repaired reopen-condition surface matching so explicit negated aliases such as 'not SEC FTD/FINRA' do not block unrelated alpha tickets, while direct SEC FTD/FINRA tickets still match the parked surface.",
+  "change_type": "reopen_guard_surface_match_repair",
+  "changed_files": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "quant/experiments/exp_20260704_018_reopen_guard_surface_identity_repair.py",
+    "data/experiments/exp-20260704-018/exp_20260704_018_reopen_guard_surface_identity_repair.json",
+    "experiments/logs/exp-20260704-018.json",
+    "experiments/cards/exp-20260704-018.md",
+    "experiments/manifests/exp-20260704-018.json",
+    "experiments/tickets/exp-20260704-018.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_variable": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1",
+  "decision": "accepted_measurement_repair_reopen_guard_surface_identity",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "negated_sec_ftd_finra_match_after": false,
+    "positive_sec_ftd_finra_match_after": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-018",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_requirement": "not_applicable_no_strategy_or_trade_path_change",
+    "fields_checked": [
+      "surface_matches_text negated SEC FTD/FINRA alias",
+      "surface_matches_text positive SEC FTD/FINRA alias",
+      "evaluate_reopen_condition_guard negated regression",
+      "evaluate_reopen_condition_guard positive regression"
+    ],
+    "passed": true,
+    "target_price_requirement": "not_applicable_no_strategy_or_trade_path_change"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No trading filter, entry, exit, ranking, sizing, risk budget, or order rule changed.",
+    "passed": true
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_reopen_guard_surface_identity",
+    "failed_reasons": [],
+    "passed": true
+  },
+  "hypothesis": "The alpha novelty reopen guard falsely maps supplier-financing/debt-relief forward-row tickets to the parked SEC FTD + FINRA observer, blocking legitimate new closed-row evidence before an ID can be reserved.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-001"
+  ],
+  "new_evidence_type": "alpha_reservation_false_positive_blocker",
+  "next_retry_requires": "A new concrete false-positive or false-negative reopen guard example.",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not weaken the parked-surface guard globally. Future repairs should preserve positive matches for actual SEC FTD/FINRA, Form4, Form144, and other structured reopen surfaces.",
+    "new_evidence_required": "If another false positive appears, add a concrete surface-identity regression before changing the guard.",
+    "why_result_happened": "The guard used token overlap over the entire ticket text, including negative evidence-axis clauses. A supplier-financing ticket that said 'not SEC FTD/FINRA' therefore overlapped SEC/FTD/FINRA tokens and was blocked as the unrelated parked observer."
+  },
+  "prediction": {
+    "confidence_reason": "The guard repeatedly reports SEC FTD + FINRA for a supplier-financing/debt-relief ticket, so a surface-identity negative match should be small and testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "over_broad_guard_bypass",
+      "regression_misses_sec_ftd_surface",
+      "alpha_reservation_still_blocked"
+    ],
+    "recorded_at": "2026-07-04T17:09:38+00:00",
+    "success_probability": 0.8
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "exits_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Reservation-time metadata guard only; no alpha policy or execution path changed.",
+    "ranking_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket.py",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_create_experiment_ticket.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_018_reopen_guard_surface_identity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_before": {
+    "acceptance_rule": "Use AGENTS.md Gate 4.",
+    "allowed_write_scope": [
+      "docs/experiment_registry.json"
+    ],
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "card_file": "experiments/cards/exp-20260704-018.md",
+    "causal_components": [
+      "surface_token_matcher",
+      "negative_surface_identity_check",
+      "experiment_new_regression_command",
+      "no_strategy_change"
+    ],
+    "change_type": "reopen_guard_surface_match_repair",
+    "changed_variable": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1",
+    "claimed_at": "2026-07-04T17:10:38+00:00",
+    "completed_at": null,
+    "created_at": "2026-07-04T17:10:16+00:00",
+    "evaluation_windows": [],
+    "experiment_id": "exp-20260704-018",
+    "experiment_uid": "expuid-a7715a24d7dc45e0",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260704-018",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-04T17:10:16+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "reopen_guard_surface_identity_repair"
+    },
+    "hypothesis": "The alpha novelty reopen guard falsely maps supplier-financing/debt-relief forward-row tickets to the parked SEC FTD + FINRA observer, blocking legitimate new closed-row evidence before an ID can be reserved.",
+    "lane": "measurement_repair",
+    "locked_variables": [
+      "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1"
+    ],
+    "mechanism_family": "measurement_repair",
+    "multiple_testing_risk_bucket": "minimal",
+    "must_not_touch": [],
+    "nearby_prior_experiments": [
+      "exp-20260702-001"
+    ],
+    "new_evidence_type": "alpha_reservation_false_positive_blocker",
+    "novelty": {
+      "blocking_matches": [],
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "finra_short_interest",
+        "field_tags": [
+          "alpha",
+          "an",
+          "be",
+          "before",
+          "blocking",
+          "can",
+          "closed",
+          "debt",
+          "evidence",
+          "falsely",
+          "financing",
+          "finra",
+          "forward",
+          "ftd",
+          "guard",
+          "id",
+          "identity",
+          "legitimate",
+          "maps",
+          "measurement",
+          "new",
+          "not",
+          "novelty",
+          "observer",
+          "parked",
+          "reopen",
+          "repair",
+          "reserved",
+          "row",
+          "supplier",
+          "surface",
+          "tickets",
+          "to"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 1.0,
+          "data_source": "finra_short_interest",
+          "family_key": "default_off_paper_adapter",
+          "reopen_condition": "Closed forward replacement-value rows, replay-vs-forward parity audit, cash/core displacement comparison, concentration monitoring, and explicit activation experiment before any live order use.",
+          "score": 0.4742,
+          "status": "has_accepted",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+          "reopen_condition": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained.",
+          "score": 0.4711,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "finra_short_interest",
+          "family_key": "sec_ftd_finra_confirmed_candidate_pool",
+          "reopen_condition": null,
+          "score": 0.4705,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "finra_short_interest",
+          "family_key": "finra_borrow_pressure_candidate_pool",
+          "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+          "score": 0.4695,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "finra_short_interest",
+          "family_key": "post_exp20260627_alpha_surface_readiness",
+          "reopen_condition": "Next legal alpha evidence requires materially more closed forward replacement rows, mature estimate-revision 3/5/10d selected/current outcomes, post-exp024 intraday closed rows with primary actions, populated PIT borrow economics, replayable historical 6-K or 10-K/10-Q text/status rows, or a genuinely new production-visible source.",
+          "score": 0.4695,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "override": false,
+      "reopen_condition_guard": {
+        "applicable": false,
+        "blocked": false,
+        "matched_conditions": [],
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "saturated_source_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "finra_short_interest",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    },
+    "owner": "alpha-explore",
+    "prediction": {
+      "confidence_reason": "The guard repeatedly reports SEC FTD + FINRA for a supplier-financing/debt-relief ticket, so a surface-identity negative match should be small and testable.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "over_broad_guard_bypass",
+        "regression_misses_sec_ftd_surface",
+        "alpha_reservation_still_blocked"
+      ],
+      "recorded_at": "2026-07-04T17:09:38+00:00",
+      "success_probability": 0.8
+    },
+    "prior_trial_count": 0,
+    "result": null,
+    "revision_manifest_file": "experiments/manifests/exp-20260704-018.json",
+    "single_causal_variable": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1",
+    "status": "claimed",
+    "ticket_file": "experiments/tickets/exp-20260704-018.json",
+    "trial_family": "reopen_guard_surface_identity_repair",
+    "trial_variant_id": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1"
+  },
+  "timestamp": "2026-07-04T17:14:22Z",
+  "trial_family": "reopen_guard_surface_identity_repair",
+  "trial_variant_id": "reopen_guard_surface_identity_supplier_financing_not_sec_ftd_finra_v1",
+  "verification": {
+    "focused_pytest_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_create_experiment_ticket.py -q",
+    "focused_pytest_result": "14 passed in 0.23s",
+    "runner_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_018_reopen_guard_surface_identity_repair.py"
+  }
+}

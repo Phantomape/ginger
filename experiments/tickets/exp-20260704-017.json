@@ -1,0 +1,301 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.py",
+    "data/experiments/exp-20260704-017/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.json",
+    "experiments/cards/exp-20260704-017.md",
+    "experiments/manifests/exp-20260704-017.json",
+    "experiments/tickets/exp-20260704-017.json",
+    "experiments/logs/exp-20260704-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/ohlcv_warehouse.py",
+    "quant/test_ohlcv_warehouse.py"
+  ],
+  "alpha_hypothesis": "Alpha-enabling measurement repair: prediction-market, entity-theme, intraday structured-news, and accepted-sleeve forward rows can only mature into settled replacement-value evidence if the shared OHLCV settlement price surface reliably covers recent sessions; this repair unblocks that surface and is a prerequisite for the exp-20260704-012 reopen condition.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260704-017.md",
+  "causal_components": [
+    "warehouse_write_connect_and_commit_bounded_retry_on_transient_disk_io",
+    "warehouse_journal_mode_persist_to_stop_journal_delete_recreate_contention",
+    "overlay_reader_readonly_hot_attach_with_retry",
+    "overlay_reader_explicit_cold_only_fallback_status_table_and_log",
+    "broad_universe_coverage_backfill_after_failed_20260703_write"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/ohlcv_warehouse.py",
+    "quant/test_ohlcv_warehouse.py",
+    "quant/experiments/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.py",
+    "data/experiments/exp-20260704-017/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.json",
+    "experiments/logs/exp-20260704-017.json",
+    "experiments/cards/exp-20260704-017.md",
+    "experiments/manifests/exp-20260704-017.json",
+    "experiments/tickets/exp-20260704-017.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1",
+  "claimed_at": "2026-07-04T16:38:26+00:00",
+  "completed_at": "2026-07-04T16:48:26+00:00",
+  "created_at": "2026-07-04T16:37:56+00:00",
+  "decision": "accepted_measurement_repair_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260704-017",
+  "experiment_uid": "expuid-55a6c6815926486c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260704-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-04T16:37:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1"
+  },
+  "hypothesis": "Hot OHLCV warehouse SQLite disk I/O contention silently breaks both the daily hot-tier write (run.py primary_batch upsert, 2026-07-03 zero rows written) and the shared overlay reader (silent cold-only fallback to the frozen 2026-06-15 edge), starving observer forward rows of a settlement price surface; repairing writer commit retry, read-only hot attach with retry, and explicit fallback reporting restores the settlement surface without changing any signal, ranking, sizing, exit, or order behavior.",
+  "implementation_mode": "shared_warehouse_io_library_repair_plus_coverage_backfill",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1"
+  ],
+  "mechanism_family": "observer_forward_settlement_price_surface",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260628-002",
+    "exp-20260628-017",
+    "exp-20260704-012"
+  ],
+  "new_evidence_type": "shared_warehouse_io_repair_after_blocked_settlement_audit",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "any",
+        "attach",
+        "batch",
+        "behavior",
+        "both",
+        "breaks",
+        "changing",
+        "cold",
+        "commit",
+        "contention",
+        "daily",
+        "disk",
+        "edge",
+        "exit",
+        "explicit",
+        "fallback",
+        "forward",
+        "frozen",
+        "hot",
+        "i",
+        "io",
+        "o",
+        "observer",
+        "of",
+        "only",
+        "or",
+        "order",
+        "overlay",
+        "price",
+        "primary",
+        "py",
+        "ranking",
+        "read",
+        "reader",
+        "readonly",
+        "repair",
+        "repairing",
+        "reporting",
+        "restores",
+        "retry",
+        "rows",
+        "run",
+        "settlement",
+        "signal",
+        "silent",
+        "silently",
+        "sizing",
+        "sqlite",
+        "starving",
+        "surface",
+        "tier",
+        "to",
+        "upsert",
+        "warehouse",
+        "without",
+        "write",
+        "writer",
+        "written",
+        "zero"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.1868,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "entry_day_component_attribution",
+        "reopen_condition": "Use the schema v2 PIT component attribution report before any future component-aware allocation test; do not retry raw expectation_revision, post_earnings_drift, or trend scalars on the frozen canonical windows without new forward evidence or a materially different interaction.",
+        "score": 0.1627,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.1621,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_forward_activation_readiness",
+        "reopen_condition": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor.",
+        "score": 0.1619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.1618,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Measurement repair of the shared warehouse IO layer identified by exp-20260704-012 blocked audit; no threshold, slice, or response-function change on any signal.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Measurement repair of the shared warehouse IO layer identified by exp-20260704-012 blocked audit; no threshold, slice, or response-function change on any signal.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.7,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "yfinance_backfill_unavailable_in_this_environment",
+      "readonly_attach_uri_unsupported",
+      "io_error_not_reproducible_in_test"
+    ],
+    "confidence_reason": "exp-20260704-012 quantified the blocker; exp-20260628-002 already diagnosed the hot journal read blocker; the repair is deterministic library hardening plus a bounded backfill.",
+    "recorded_at": "2026-07-04T16:37:56+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback",
+    "artifact": "data/experiments/exp-20260704-017/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.json",
+    "log": "experiments/logs/exp-20260704-017.json",
+    "runner": "quant/experiments/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.py",
+    "gate4": {
+      "passed": true,
+      "decision_basis": "Identity measurement repair: before/after strategy metrics are the same baseline artifact; acceptance is the live post-repair probe (hot tier attached read-only with no error, overlay coverage through 2026-07-02 for >= 1000 tickers, PERSIST journal on the write path) plus the unit suite.",
+      "after_probe_passed": true
+    },
+    "summary": "The disk I/O errors were Windows file-lock contention on the shared SQLite files, not corruption or disk-full: both tiers pass quick_check and the volume has ~235 GB free. PERSIST journal mode removes the per-commit journal delete/recreate step where the contention surfaced, bounded retries absorb residual transient errors on write connect/commit and hot attach, and the read-only hot attach stops readers from competing for write locks at all. The 2026-07-03 failed write turned out to cost breadth, not the session edge: 2026-07-03 was the observed Independence Day holiday, so the true edge is 2026-07-02, which the hot tier held for only 60 tickers until the post-repair broad refresh restored it for 1,322."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260704-017.json",
+  "single_causal_variable": "hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260704-017.json",
+  "trial_family": "hot_warehouse_sqlite_io_contention_repair",
+  "trial_variant_id": "hot_write_retry_readonly_attach_explicit_fallback_20260704",
+  "new_evidence_axis": "Measurement repair of the shared warehouse IO layer identified by exp-20260704-012 blocked audit; no threshold, slice, or response-function change on any signal.",
+  "artifact": "data/experiments/exp-20260704-017/exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.json",
+  "log_file": "experiments/logs/exp-20260704-017.json",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ohlcv_warehouse.py quant\\test_ohlcv_warehouse_refresh.py quant\\test_forward_replacement_value.py quant\\test_broad_market_universe_feed.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\ohlcv_warehouse_refresh.py --dry-run",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_017_hot_warehouse_disk_io_write_retry_and_readonly_overlay_fallback_reporting_v1.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "production_impact": "Shared library repair visible to every warehouse consumer: daily hot-tier OHLCV writes retry through transient Windows disk I/O contention instead of losing the batch; overlay readers attach the hot tier read-only, retry, and report (log + ohlcv_overlay_status temp table) any cold-only fallback instead of silently serving stale prices. No trading rule, ranking, sizing, exit, order, or LLM decision path changed.",
+  "post_run_reflection": {
+    "why_result_happened": "The disk I/O errors were Windows file-lock contention on the shared SQLite files, not corruption or disk-full: both tiers pass quick_check and the volume has ~235 GB free. PERSIST journal mode removes the per-commit journal delete/recreate step where the contention surfaced, bounded retries absorb residual transient errors on write connect/commit and hot attach, and the read-only hot attach stops readers from competing for write locks at all. The 2026-07-03 failed write turned out to cost breadth, not the session edge: 2026-07-03 was the observed Independence Day holiday, so the true edge is 2026-07-02, which the hot tier held for only 60 tickers until the post-repair broad refresh restored it for 1,322.",
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to re-audit this surface's readiness or to reslice current observer rows while they settle; the remaining exp-20260704-012 reopen conditions are row-count and calendar bound (>=250 settled prediction-market rows; intraday entry_date/target_price wiring is a separate observer contract fix, not a warehouse retune).",
+    "next_new_evidence": "Let daily runs accumulate settled observer rows on the repaired surface; reopen current-observer alpha per the exp-20260704-012 reopen condition once its row counts advance."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "ohlcv_overlay view columns unchanged (ticker/date/OHLCV/source/updated_at)",
+      "overlay_reader_status hot_path/hot_exists/hot_attached/hot_error",
+      "upsert_ohlcv_frames summary keys unchanged"
+    ],
+    "entry_date_target_price_scope": "Not applicable. This runner creates no entries, exits, target prices, paper orders, or live orders; it repairs the shared price-surface IO layer those fields settle against."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity."
+  },
+  "gate4": {
+    "passed": true,
+    "decision_basis": "Identity measurement repair: before/after strategy metrics are the same baseline artifact; acceptance is the live post-repair probe (hot tier attached read-only with no error, overlay coverage through 2026-07-02 for >= 1000 tickers, PERSIST journal on the write path) plus the unit suite.",
+    "after_probe_passed": true
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-04T16:48:26+00:00"
+}

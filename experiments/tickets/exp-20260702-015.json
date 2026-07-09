@@ -1,0 +1,600 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_015_institutional_13f_active_flow_historical_top1.py",
+    "data/experiments/exp-20260702-015/exp_20260702_015_institutional_13f_active_flow_historical_top1.json",
+    "experiments/cards/exp-20260702-015.md",
+    "experiments/manifests/exp-20260702-015.json",
+    "experiments/tickets/exp-20260702-015.json",
+    "experiments/logs/exp-20260702-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-015.md",
+  "causal_components": [
+    "raw institutional Form 13F active-manager classification",
+    "quarter-over-quarter active-holder and active-value flow deltas",
+    "actual max SUBMISSION.FILING_DATE availability control",
+    "fixed liquid leadership OHLCV confirmation",
+    "same-ticker core-overlap exclusion",
+    "next-open 10-session paper replay"
+  ],
+  "change_type": "private_replay_scout_candidate_pool",
+  "changed_variable": "institutional_13f_active_flow_historical_top1_day_candidate_source_v1",
+  "claimed_at": "2026-07-02T14:06:35+00:00",
+  "completed_at": "2026-07-02T14:22:41+00:00",
+  "created_at": "2026-07-02T14:06:19+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-015",
+  "experiment_uid": "expuid-f3f9f984da624f23",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T14:06:19+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "institutional_13f_active_flow_historical_top1"
+  },
+  "hypothesis": "candidate_pool/ranking: a fixed historical institutional Form 13F active-manager ownership-flow top-1/day default-off candidate source may preserve the Kova forward lead across canonical windows when using actual structured-ZIP FILING_DATE availability and next-open 10d execution.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "institutional_13f_active_flow_historical_top1_day_candidate_source_v1"
+  ],
+  "mechanism_family": "production_visible_institutional_13f_active_flow_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260625-009",
+    "exp-20260625-010",
+    "exp-20260625-012",
+    "exp-20260701-009"
+  ],
+  "new_evidence_type": "actual_filing_date_pit_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_active_manager_flow_filing_delay_pit_hardening",
+        "score": 0.6588,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_active_manager_flow_historical_candidate_pool",
+        "score": 0.6516,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_coaccumulation_peer_shock",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_manager_conviction_candidate_pool",
+        "score": 0.6125,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec13f_sector_normalized_ownership_surprise_candidate_pool",
+        "score": 0.6121,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13f_ownership",
+      "field_tags": [
+        "13f",
+        "a",
+        "across",
+        "active",
+        "canonical",
+        "date",
+        "execution",
+        "filing",
+        "flow",
+        "form",
+        "forward",
+        "historical",
+        "institutional",
+        "kova",
+        "lead",
+        "local",
+        "manager",
+        "may",
+        "ownership",
+        "pit",
+        "preserve",
+        "quarterly",
+        "top",
+        "using",
+        "when",
+        "windows",
+        "zip"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_flow_filing_delay_pit_hardening",
+        "reopen_condition": "Need materially more closed 10d forward rows, non-quarterly active-manager flow provenance, populated borrow/loan availability cross-evidence, or shared helper/daily snapshot evidence with exact filing-date/as-of controls.",
+        "score": 0.6588,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_active_manager_flow_historical_candidate_pool",
+        "reopen_condition": "A retry needs shared-helper PIT filing-delay controls, materially more closed 10d forward rows, non-quarterly active-manager flow provenance, or borrow/loan availability cross-evidence.",
+        "score": 0.6516,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_coaccumulation_peer_shock",
+        "reopen_condition": "A valid retry needs non-quarterly ownership/flow evidence, active-manager conviction classification independent of holding count, manager-level alpha attribution, or closed forward replacement-value rows from a shared default-off helper.",
+        "score": 0.62,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_manager_conviction_candidate_pool",
+        "reopen_condition": "Need materially richer manager identity/quality, sector-normalized ownership surprise, independent borrow/options evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.6125,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_sector_normalized_ownership_surprise_candidate_pool",
+        "reopen_condition": "Need materially richer manager identity/quality, sector-normalized ownership surprise with independent borrow/options evidence, or forward replacement-value rows from a shared helper.",
+        "score": 0.6121,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape and historical coverage: raw institutional Form 13F quarterly ZIP ownership-flow features joined to canonical fixed windows; explicitly not the SEC FTD plus FINRA parked observer and not another 2026 forward-row reslice, sponsorship threshold, coownership graph, hold-day, notional, or response-curve retry.",
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [
+        {
+          "blocking_reason": "no_closed_sec_ftd_finra_forward_replacement_rows",
+          "checks_satisfied": false,
+          "experiment_id": "exp-20260702-001",
+          "numeric_checks": [
+            {
+              "current_key": "sec_ftd_202606a_rows",
+              "current_value": 307,
+              "operator": ">=",
+              "passed": true,
+              "required_key": "closed_sec_ftd_finra_true_trigger_rows_min",
+              "threshold": 20
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "single_ticker_positive_share_max",
+              "threshold": 0.4
+            },
+            {
+              "current_key": null,
+              "current_value": null,
+              "operator": "<=",
+              "passed": false,
+              "required_key": "top5_positive_share_max",
+              "threshold": 0.7
+            }
+          ],
+          "reopen_rule": "Do not reserve SEC FTD/FINRA threshold, age, notional, share, top-N, hold, notional, allocator, or response-curve experiments from this archive refresh alone. Reopen only when the unchanged observer has closed replacement-value rows or when a true PIT borrow/loan economics source arrives.",
+          "source_log": "experiments/logs/exp-20260702-001.json",
+          "status": "published_ftd_rows_current_not_alpha_ready",
+          "surface": "SEC FTD + FINRA default-off observer"
+        }
+      ],
+      "new_evidence_axis": {
+        "axis": "New gate shape and historical coverage: raw institutional Form 13F quarterly ZIP ownership-flow features joined to canonical fixed windows; explicitly not the SEC FTD plus FINRA parked observer and not another 2026 forward-row reslice, sponsorship threshold, coownership graph, hold-day, notional, or response-curve retry.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": true,
+      "override_reason": "Declared evidence axis names a new data source or new gate shape.",
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape and historical coverage: raw institutional Form 13F quarterly ZIP ownership-flow features joined to canonical fixed windows; explicitly not the SEC FTD plus FINRA parked observer and not another 2026 forward-row reslice, sponsorship threshold, coownership graph, hold-day, notional, or response-curve retry.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13f_ownership",
+      "trials": 11
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "window_instability",
+      "accepted_comparator_not_beaten",
+      "coverage_too_sparse",
+      "old_thin_13f_lag"
+    ],
+    "confidence_reason": "The 10d forward active-flow lead survived in exp-20260701-009 and uses manager-level ownership-change direction rather than sponsorship level, but previous historical 13F promotion attempts were fragile and quarterly filing lag can dilute canonical windows.",
+    "recorded_at": "2026-07-02T14:05:40+00:00"
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "rejected_institutional_13f_actual_filing_date_candidate_source",
+    "accepted": false,
+    "accepted_alpha": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260702-015/exp_20260702_015_institutional_13f_active_flow_historical_top1.json",
+    "log": "experiments/logs/exp-20260702-015.json",
+    "card": "experiments/cards/exp-20260702-015.md",
+    "aggregate_expected_value_delta": 0.9664,
+    "aggregate_strategy_total_pnl_delta": 16200.41,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_institutional_13f_actual_filing_date_candidate_source",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 0.9664,
+      "aggregate_pnl_delta": 16200.41,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 340,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0285,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7885,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.056653,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.023076,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_allocator_comparator": {
+        "experiment_id": "exp-20260611-005",
+        "decision": "accepted_source_consensus_allocator_extension",
+        "expected_value_score_delta_sum": 2.1849,
+        "total_pnl_delta_sum": 40397.21,
+        "note": "Promotion comparator only. This private SEC13F active-flow scout is lead-only without a shared historical/daily helper even if numeric Gate 4 passes."
+      },
+      "comparator_note": "Comparator is promotion context only, not a private-scout pass/fail rule.",
+      "actual_filing_date_pit": true
+    },
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "actual_gate4_passed": false,
+      "actual_success": 0,
+      "failure_modes_observed": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "brier_score": 0.0484,
+      "expected_ev_delta": 0.1,
+      "actual_ev_delta": 0.9664,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": 16200.41
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "private_replay_scout_no_shared_adapter",
+      "implementation_mode": "private_replay_scout",
+      "private_replay_scout_escape_reason": "This run checks whether the Kova active-flow forward lead has enough historical canonical-window support under actual structured 13F filing dates before any shared helper or daily default-off work.",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_13f": true,
+      "uses_raw_manager_level_sec13f_zip": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": false,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "paper_notional_usd": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "min_avg_dollar_volume_20d": 50000000.0,
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing active-flow 13F pair, OHLCV, next open, or 10-session exit bar rejects the paper candidate",
+        "pit_availability_rule": "max_actual_submission_filing_date_per_structured_13f_zip"
+      },
+      "parity_note": "This experiment changes no production code. It only hardens the private historical replay by requiring each structured 13F window to be available after the maximum FILING_DATE present in its ZIP. A positive result would still need a shared historical/daily default-off helper and parity tests.",
+      "actual_filing_date_pit": true
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The institutional 13F actual-filing-date active-flow candidate pool failed Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high). Do not sweep adjacent active-flow, leadership, top-N, hold, cooldown, or notional thresholds on the same frozen windows.",
+      "outcome_summary": "Aggregate EV delta +0.9664; aggregate PnL delta $+16,200.41; max drawdown drift +0.0285; 340 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry 13F active-holder share, active-value share, active-flow deltas, aggregate sponsorship, coownership network, filing-date offsets, top-N, hold, cooldown, notional, or allocator thresholds on the same frozen windows or same partial forward rows.",
+      "new_evidence_required": "Need materially more closed 10d forward rows, non-quarterly active-manager flow provenance, populated borrow/loan availability cross-evidence, or shared helper/daily snapshot evidence with exact filing-date/as-of controls."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-015.json",
+  "single_causal_variable": "institutional_13f_active_flow_historical_top1_day_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260702-015.json",
+  "trial_family": "institutional_13f_active_flow_historical_candidate_source",
+  "trial_variant_id": "filing_date_pit_top1_day_v1",
+  "implementation_mode": "private_replay_scout",
+  "new_evidence_axis": "New machine-checkable gate shape: raw institutional Form 13F quarterly filing-window ZIP ownership-flow features are joined to canonical fixed windows only after the maximum actual FILING_DATE present in each structured ZIP. This is not the SEC FTD plus FINRA parked observer and not another 2026 forward-row reslice, sponsorship threshold, coownership graph, hold-day, notional, or response-curve retry.",
+  "decision": "rejected_institutional_13f_actual_filing_date_candidate_source",
+  "summary": "The institutional 13F actual-filing-date active-flow candidate pool failed Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high). Do not sweep adjacent active-flow, leadership, top-N, hold, cooldown, or notional thresholds on the same frozen windows.",
+  "artifact": "data/experiments/exp-20260702-015/exp_20260702_015_institutional_13f_active_flow_historical_top1.json",
+  "log": "experiments/logs/exp-20260702-015.json",
+  "aggregate_expected_value_delta": 0.9664,
+  "aggregate_strategy_total_pnl_delta": 16200.41,
+  "gate1": {
+    "baseline_metrics": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "strategy_total_return_pct": 1.1707,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "worst_trade_pct": -0.0397,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5146
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1331,
+        "total_pnl": 77845.53,
+        "strategy_total_return_pct": 0.7785,
+        "sharpe_daily": 2.74,
+        "max_drawdown_pct": 0.1118,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "worst_trade_pct": -0.0897,
+        "max_consecutive_losses": 6,
+        "tail_loss_share": 0.5493
+      },
+      "old_thin": {
+        "expected_value_score": 0.644,
+        "total_pnl": 42933.82,
+        "strategy_total_return_pct": 0.4293,
+        "sharpe_daily": 1.5,
+        "max_drawdown_pct": 0.095,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "worst_trade_pct": -0.0928,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.5948
+      }
+    },
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "raw SEC13F source ZIP manager_cik/manager_name",
+      "raw SEC13F name_of_issuer/value/shares/put_call",
+      "SEC13F active manager unique mapped universe-holding count",
+      "SEC13F active_holder_count and active_value_usd",
+      "SEC13F active_holder_count_delta and active_value_log_delta",
+      "warehouse OHLCV Date/Open/High/Low/Close/Volume",
+      "SPY OHLCV for relative strength",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7885,
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7885,
+      "old_thin": 0.9032
+    },
+    "passed": true,
+    "note": "No core entry filter is added. The 13F active-flow source is additive default-off paper; core signals and survival are unchanged from baseline."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_institutional_13f_actual_filing_date_candidate_source",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "aggregate_ev_delta": 0.9664,
+    "aggregate_pnl_delta": 16200.41,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1,
+    "target_trade_count": 340,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0285,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7885,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.056653,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.023076,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "accepted_allocator_comparator": {
+      "experiment_id": "exp-20260611-005",
+      "decision": "accepted_source_consensus_allocator_extension",
+      "expected_value_score_delta_sum": 2.1849,
+      "total_pnl_delta_sum": 40397.21,
+      "note": "Promotion comparator only. This private SEC13F active-flow scout is lead-only without a shared historical/daily helper even if numeric Gate 4 passes."
+    },
+    "comparator_note": "Comparator is promotion context only, not a private-scout pass/fail rule.",
+    "actual_filing_date_pit": true
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "adapter_status": "private_replay_scout_no_shared_adapter",
+    "implementation_mode": "private_replay_scout",
+    "private_replay_scout_escape_reason": "This run checks whether the Kova active-flow forward lead has enough historical canonical-window support under actual structured 13F filing dates before any shared helper or daily default-off work.",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "default_off_paper_only": true,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_watchlist_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "uses_llm": false,
+    "uses_free_sec_13f": true,
+    "uses_raw_manager_level_sec13f_zip": true,
+    "uses_free_ohlcv": true,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "execution_envelope": {
+      "trade_enabled": false,
+      "paper_notional_usd": 4000.0,
+      "daily_entry_slots": 1,
+      "same_ticker_cooldown_days": 10,
+      "hold_days": 10,
+      "min_avg_dollar_volume_20d": 50000000.0,
+      "order_semantics": "observe-only next-session-open paper entry; no broker order",
+      "portfolio_displacement": "none unless a later shared helper and activation envelope pass",
+      "kill_switch": "trade_enabled remains false; no production adapter changes",
+      "failure_handling": "missing active-flow 13F pair, OHLCV, next open, or 10-session exit bar rejects the paper candidate",
+      "pit_availability_rule": "max_actual_submission_filing_date_per_structured_13f_zip"
+    },
+    "parity_note": "This experiment changes no production code. It only hardens the private historical replay by requiring each structured 13F window to be available after the maximum FILING_DATE present in its ZIP. A positive result would still need a shared historical/daily default-off helper and parity tests.",
+    "actual_filing_date_pit": true
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The institutional 13F actual-filing-date active-flow candidate pool failed Gate 4 (failed: window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high). Do not sweep adjacent active-flow, leadership, top-N, hold, cooldown, or notional thresholds on the same frozen windows.",
+    "outcome_summary": "Aggregate EV delta +0.9664; aggregate PnL delta $+16,200.41; max drawdown drift +0.0285; 340 paper trades.",
+    "forbidden_near_neighbor_retry": "Do not retry 13F active-holder share, active-value share, active-flow deltas, aggregate sponsorship, coownership network, filing-date offsets, top-N, hold, cooldown, notional, or allocator thresholds on the same frozen windows or same partial forward rows.",
+    "new_evidence_required": "Need materially more closed 10d forward rows, non-quarterly active-manager flow provenance, populated borrow/loan availability cross-evidence, or shared helper/daily snapshot evidence with exact filing-date/as-of controls."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260702_015_institutional_13f_active_flow_historical_top1.py",
+    "data/experiments/exp-20260702-015/exp_20260702_015_institutional_13f_active_flow_historical_top1.json",
+    "experiments/logs/exp-20260702-015.json",
+    "experiments/tickets/exp-20260702-015.json",
+    "experiments/cards/exp-20260702-015.md",
+    "experiments/manifests/exp-20260702-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv/sec13f_institutional/source_cache"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_015_institutional_13f_active_flow_historical_top1.py",
+    "data/experiments/exp-20260702-015/exp_20260702_015_institutional_13f_active_flow_historical_top1.json",
+    "experiments/logs/exp-20260702-015.json",
+    "experiments/tickets/exp-20260702-015.json",
+    "experiments/cards/exp-20260702-015.md",
+    "experiments/manifests/exp-20260702-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv/sec13f_institutional/source_cache"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T14:22:41+00:00"
+}

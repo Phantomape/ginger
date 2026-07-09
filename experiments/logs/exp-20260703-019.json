@@ -1,0 +1,337 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": -0.0868,
+  "aggregate_strategy_total_pnl_delta": -2906.71,
+  "anti_js": "No JavaScript was used.",
+  "archive": {
+    "accession_count": 138,
+    "earliest_usable_trade_date": "2024-09-30",
+    "latest_usable_trade_date": "2026-06-29",
+    "relation_bucket_counts": {
+      "credit_or_financing_agreement": 89,
+      "customer_or_revenue_contract": 66,
+      "lease_or_real_estate_agreement": 21,
+      "license_or_collaboration_agreement": 10,
+      "purchase_or_sales_agreement": 71,
+      "supplier_or_supply_contract": 20
+    },
+    "relation_priority": {
+      "credit_or_financing_agreement": 5,
+      "customer_or_revenue_contract": 1,
+      "general_material_agreement": 7,
+      "lease_or_real_estate_agreement": 6,
+      "license_or_collaboration_agreement": 3,
+      "purchase_or_sales_agreement": 4,
+      "supplier_or_supply_contract": 2
+    },
+    "row_count": 277,
+    "rows_path": "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "ticker_count": 27
+  },
+  "artifact": "data/experiments/exp-20260703-019/exp_20260703_019_sec_item101_contract_relation_shared_paper.json",
+  "backtest_protocol": {
+    "execution_model": "Signal uses local relation provenance rows available by usable_trade_date. Paper entry is the first available open on or after that date with entry-fill slippage; exit is the 10th trading-session close with sell slippage and round-trip cost.",
+    "source": "docs/backtesting.md canonical three-window accepted core baseline plus default-off paper overlay from the shared SEC Item 1.01 contract-relation sleeve replay",
+    "windows": {
+      "late_strong": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "baseline": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "baseline_result_file": {
+    "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+  },
+  "calibration": {
+    "actual_ev_delta": -0.0868,
+    "actual_gate4_passed": false,
+    "actual_pnl_delta": -2906.71,
+    "actual_success": 0,
+    "brier_score": 0.1444,
+    "failure_modes_observed": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "predicted_success_probability": 0.38
+  },
+  "card": "experiments/cards/exp-20260703-019.md",
+  "changed_variable": "sec_item101_contract_relation_issuer_self_shared_default_off_top1_10d_v1",
+  "decision": "rejected_sec_item101_contract_relation_default_off_candidate_source",
+  "experiment_id": "exp-20260703-019",
+  "full_stack": {
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.04,
+      "max_concurrent": 5,
+      "max_displacement": 0,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume"
+      ],
+      "notes": "Default-off paper only. The fixed exp-20260703-018 signal had no liquidity gate; live promotion must fill the min_dollar_volume envelope and pass forward replacement-value plus kill-switch parity.",
+      "order_semantics": "next_open_or_first_usable_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "gate4_canonical_status": "blocked",
+    "gate4_strict_materiality_status": "blocked",
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "execution_envelope_incomplete",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [
+        "min_dollar_volume"
+      ],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "materiality_note": "Strict materiality recorded for transparency; the binding standard is the predeclared comparator-beating Gate 4.",
+    "verdict": "reject"
+  },
+  "full_stack_verdict": "reject",
+  "gate4": {
+    "accepted_comparators": {
+      "compression": {
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "expected_value_score_delta_sum": 0.1608,
+        "experiment_id": "exp-20260608-013",
+        "total_pnl_delta_sum": 2248.98
+      },
+      "distribution": {
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      }
+    },
+    "aggregate_ev_delta": -0.0868,
+    "aggregate_pnl_delta": -2906.71,
+    "covered_target_window_count_min": 2,
+    "covered_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "daily_replay_parity_probe": {
+      "as_of": "2025-11-05",
+      "passed": true,
+      "replay_accession": "0001628280-25-049016",
+      "replay_ticker": "BE",
+      "snapshot_accession": "0001628280-25-049016",
+      "snapshot_error": null,
+      "snapshot_new_pending_count": 1,
+      "snapshot_ticker": "BE",
+      "snapshot_trade_enabled": false,
+      "window": "late_strong"
+    },
+    "decision": "rejected_sec_item101_contract_relation_default_off_candidate_source",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_concentration_failed",
+      "accepted_compression_ev_not_beaten",
+      "accepted_compression_pnl_not_beaten",
+      "accepted_distribution_ev_not_beaten",
+      "accepted_distribution_pnl_not_beaten"
+    ],
+    "full_stack_contract": {
+      "daily_snapshot_exposed": true,
+      "parity_test_added": true
+    },
+    "max_drawdown_worse": 0.0014,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7885,
+    "passed": false,
+    "source_activation_boundary": {
+      "new_evidence_axis": "new gate shape and implementation boundary: shared default-off helper and daily snapshot contract for the already fixed exp-20260703-018 top-1/10d rule; no adjacent SEC text field or response retune.",
+      "pit_boundary": "accepted_at mapped to usable_trade_date from the SEC public archive; this is a public-archive PIT proxy and not an EDGAR live timestamp feed.",
+      "rows_path": "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+      "source": "local SEC Item 1.01 contract-relation provenance rows from exp-20260703-017"
+    },
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.776955,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 0.64295,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 27,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "candidate_pool/full_stack: SEC 8-K Item 1.01 issuer-self specific contract-relation rows that passed exp-20260703-018 observed-only replacement checks may be promotable to a shared default-off paper candidate source without changing the fixed top-1/10d policy.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260703-019.json",
+  "mechanism_family": "production_visible_sec_contract_relation_candidate_pool_alpha",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune relation priority, relation buckets, regexes, item codes, top-N, hold days, notional, source priority, or response curves on this same SEC public-archive sample.",
+    "new_evidence_required": "Materially more closed forward rows, a real PIT EDGAR timestamp boundary, or a different non-SEC-text source/gate shape.",
+    "why_result_happened": "The fixed Item 1.01 relation top-1 rule failed the predeclared full-stack Gate 4: aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_concentration_failed; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten"
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "candidate_pool/full_stack: SEC 8-K Item 1.01 issuer-self specific contract-relation rows that passed exp-20260703-018 observed-only replacement checks may be promotable to a shared default-off paper candidate source without changing the fixed top-1/10d policy.",
+    "2_history_check": {
+      "exp-20260703-017": "Accepted measurement repair that materialized the contract-relation provenance rows used here.",
+      "exp-20260703-018": "Observed-only positive lead: 99 settled canonical rows, positive cash/SPY/QQQ replacement means and medians; not accepted alpha because no shared helper or daily default-off promotion existed.",
+      "novelty_gate": "Reservation warned that sec_text_event candidate_pool_top1_10d is saturated; override is limited to the new implementation boundary and gate shape, not a new SEC field/tag sweep."
+    },
+    "3_single_causal_variable": "sec_item101_contract_relation_issuer_self_shared_default_off_top1_10d_v1",
+    "4_acceptance_standard": "docs/backtesting.md canonical windows with shared helper replay: positive aggregate EV/PnL, no EV or PnL regression window, >=2 EV-improved target windows, >=20 target trades, drawdown drift <=0.5pp, survival >=5%, concentration guards, accepted compression/distribution comparators beaten, and full-stack daily/parity contract complete.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260703_019_sec_item101_contract_relation_shared_paper.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260703-018 found a positive fixed top-1/10d replacement-value lead on the newly materialized contract-relation provenance surface; this run changes only the implementation boundary into a shared default-off paper helper plus canonical Gate 4 replay.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "public_archive_pit_caveat",
+      "accepted_comparator_not_beaten",
+      "daily_snapshot_parity_gap",
+      "drawdown_or_concentration"
+    ],
+    "recorded_at": "2026-07-03T19:03:51+00:00",
+    "success_probability": 0.38
+  },
+  "production_impact": {
+    "adapter_status": "shared_default_off_paper_sleeve",
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "default_off_paper_only": true,
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": false,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.04,
+      "max_concurrent": 5,
+      "max_displacement": 0,
+      "min_dollar_volume": null,
+      "missing": [
+        "min_dollar_volume"
+      ],
+      "notes": "Default-off paper only. The fixed exp-20260703-018 signal had no liquidity gate; live promotion must fill the min_dollar_volume envelope and pass forward replacement-value plus kill-switch parity.",
+      "order_semantics": "next_open_or_first_usable_open",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 5.0
+    },
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "parity_note": "quant/sec_item101_contract_relation_paper_sleeve.py is the single shared rule for both this historical replay and the run.py default-off snapshot. It emits no live orders and is intentionally absent from prompt-facing trend_signals_dict.",
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false,
+    "uses_llm": false,
+    "uses_sec_contract_relation_archive": true
+  },
+  "rejection_reason": "aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows; target_concentration_failed; accepted_compression_ev_not_beaten; accepted_compression_pnl_not_beaten; accepted_distribution_ev_not_beaten; accepted_distribution_pnl_not_beaten",
+  "related_files": [
+    "quant/experiments/exp_20260703_019_sec_item101_contract_relation_shared_paper.py",
+    "quant/sec_item101_contract_relation_paper_sleeve.py",
+    "quant/test_sec_item101_contract_relation_paper_sleeve.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/run.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "data/experiments/exp-20260703-019/exp_20260703_019_sec_item101_contract_relation_shared_paper.json",
+    "experiments/logs/exp-20260703-019.json",
+    "experiments/tickets/exp-20260703-019.json",
+    "experiments/cards/exp-20260703-019.md",
+    "experiments/manifests/exp-20260703-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "single_causal_variable": "sec_item101_contract_relation_issuer_self_shared_default_off_top1_10d_v1",
+  "source_activation_boundary": {
+    "new_evidence_axis": "new gate shape and implementation boundary: shared default-off helper and daily snapshot contract for the already fixed exp-20260703-018 top-1/10d rule; no adjacent SEC text field or response retune.",
+    "pit_boundary": "accepted_at mapped to usable_trade_date from the SEC public archive; this is a public-archive PIT proxy and not an EDGAR live timestamp feed.",
+    "rows_path": "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl",
+    "source": "local SEC Item 1.01 contract-relation provenance rows from exp-20260703-017"
+  },
+  "status": "rejected",
+  "timestamp": "2026-07-03T19:23:06+00:00",
+  "trial_family": "sec_item101_contract_relation_issuer_self_shared_default_off",
+  "trial_variant_id": "shared_top1_10d_v1",
+  "windows": [
+    {
+      "expected_value_after": 4.9823,
+      "expected_value_before": 5.1628,
+      "expected_value_delta": -0.1805,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": -1745.36,
+      "target_trade_count": 7
+    },
+    {
+      "expected_value_after": 2.3498,
+      "expected_value_before": 2.1331,
+      "expected_value_delta": 0.2167,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 3745.79,
+      "target_trade_count": 9
+    },
+    {
+      "expected_value_after": 0.521,
+      "expected_value_before": 0.644,
+      "expected_value_delta": -0.123,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": -4907.14,
+      "target_trade_count": 11
+    }
+  ]
+}

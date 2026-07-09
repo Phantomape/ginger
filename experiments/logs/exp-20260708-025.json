@@ -1,0 +1,667 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/chop_pairs_spread_sleeve.py",
+    "quant/test_chop_pairs_spread_sleeve.py",
+    "quant/experiments/exp_20260708_025_chop_pairs_spread_sleeve.py",
+    "data/experiments/exp-20260708-025/exp_20260708_025_chop_pairs_spread_sleeve.json",
+    "experiments/logs/exp-20260708-025.json",
+    "experiments/cards/exp-20260708-025.md",
+    "experiments/manifests/exp-20260708-025.json",
+    "experiments/tickets/exp-20260708-025.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Owner priority 2026-07-08 round 2: chop gives no direction, so trade the axis that does not need one - a LONG-SHORT SPREAD family, the first market-neutral construct in this repo. On chop-labeled days, among core universe equity pairs with trailing 120d correlation >= 0.6, when the 60d-normalized log price ratio stretches beyond 2 sigma, buy the laggard and short the leader in equal notional; exit on convergence below 0.5 sigma or a 10-day timeout.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260708-025/exp_20260708_025_chop_pairs_spread_sleeve.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "chop_day_sample_too_thin",
+      "spread_convergence_slower_than_timeout",
+      "correlation_pairs_unstable_pit",
+      "two_leg_costs_eat_edge",
+      "megacap_pairs_too_cointegrated_to_stretch"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_modes": [
+      "chop_day_sample_too_thin",
+      "pooled_pnl_not_positive",
+      "insufficient_nonnegative_windows"
+    ]
+  },
+  "causal_components": [
+    "chop_day_condition",
+    "pit_trailing_correlation_pair_eligibility",
+    "ratio_zscore_stretch_entry",
+    "convergence_or_timeout_exit",
+    "equal_notional_long_short_paper_accounting",
+    "historical_replay"
+  ],
+  "change_type": "strategy_logic",
+  "changed_files": [
+    "quant/chop_pairs_spread_sleeve.py",
+    "quant/test_chop_pairs_spread_sleeve.py",
+    "quant/experiments/exp_20260708_025_chop_pairs_spread_sleeve.py",
+    "data/experiments/exp-20260708-025/exp_20260708_025_chop_pairs_spread_sleeve.json",
+    "experiments/logs/exp-20260708-025.json",
+    "experiments/cards/exp-20260708-025.md",
+    "experiments/manifests/exp-20260708-025.json",
+    "experiments/tickets/exp-20260708-025.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "chop_pairs_spread_entry_sleeve_v1",
+  "decision": "observed_only_insufficient_chop_sample_chop_pairs_spread_sleeve",
+  "delta_metrics": {
+    "chop_days_by_window": {
+      "late_strong": 26,
+      "mid_weak": 0,
+      "old_thin": 7
+    },
+    "chop_mean_minus_control_mean_usd": 23.47,
+    "conditioning_criterion_bound": true,
+    "evaluable_window_count": 2,
+    "expected_value_score_sum_delta": 0.0,
+    "nonnegative_evaluable_window_count": 1,
+    "pooled_converged_share": 0.5556,
+    "pooled_mean_pnl_usd": -9.42,
+    "pooled_total_pnl_usd": -84.77,
+    "pooled_trade_count": 9,
+    "pooled_win_rate": 0.6667,
+    "risk_on_control_mean_pnl_usd": -32.89,
+    "risk_on_control_trade_count": 74,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260708-025",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_scope": "Paper replay rows carry entry_date per pair; no production signal objects are created.",
+    "fields_checked": [
+      "pair",
+      "long_ticker",
+      "short_ticker",
+      "signal_date",
+      "entry_date",
+      "exit_date",
+      "exit_reason",
+      "entry_zscore",
+      "pair_correlation",
+      "regime_label_at_signal",
+      "p_choppy_at_signal"
+    ],
+    "passed": true,
+    "target_price_scope": "No target_price contract: exits are z-convergence or timeout by design (paper spread)."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Default-off paper sleeve; no filter added to the production chain.",
+    "passed": true,
+    "signals_generated": 9,
+    "signals_survived": 9,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [
+      "chop_day_sample_too_thin",
+      "pooled_pnl_not_positive",
+      "insufficient_nonnegative_windows"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "observed_only_insufficient_chop_sample_chop_pairs_spread_sleeve",
+    "measurement_blockers": [],
+    "measurement_repair_only": false,
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Owner priority 2026-07-08 round 2: chop gives no direction, so trade the axis that does not need one - a LONG-SHORT SPREAD family, the first market-neutral construct in this repo. On chop-labeled days, among core universe equity pairs with trailing 120d correlation >= 0.6, when the 60d-normalized log price ratio stretches beyond 2 sigma, buy the laggard and short the leader in equal notional; exit on convergence below 0.5 sigma or a 10-day timeout.",
+  "implementation_mode": "shared_paper_first_default_off_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-025.json",
+  "mechanism_family": "chop_relative_value_spread",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260708-023",
+    "exp-20260615-019",
+    "exp-20260622-017"
+  ],
+  "new_evidence_type": "new_gate_shape_long_short_spread",
+  "next_retry_requires": [
+    "forward chop-day spread rows from daily wiring (separate ticket if accepted)",
+    "no same-window parameter retunes of chop_pairs_spread_v1"
+  ],
+  "owner": "interactive",
+  "parameters": {
+    "caps": "max 2 new pairs/day, max 3 concurrent pairs, 1 lot/ticker",
+    "cost_caveat": "megacap borrow cost for <=10-day shorts ignored (~0.3%/yr, immaterial at this horizon)",
+    "entry": "chop day AND |z(ln ratio, 60d)| >= 2.0; long cheap / short rich; next-open fills both legs",
+    "excluded_entry_tickers": [
+      "GLD",
+      "IAU",
+      "IWM",
+      "QQQ",
+      "SLV",
+      "SPY",
+      "TQQQ"
+    ],
+    "exit": "|z| <= 0.5 or 10-trading-day timeout; window end force-close flagged",
+    "latest_bar_date": "2026-07-07",
+    "leg_notional_usd": 4000.0,
+    "pair_eligibility": "trailing 120d return corr >= 0.6 on >= 100 overlapping obs (PIT)",
+    "sleeve_rule_version": "chop_pairs_spread_v1",
+    "universe_size": 46,
+    "warehouses": [
+      "data/warehouse/warehouse_main.sqlite",
+      "data/warehouse/warehouse_main_hot.sqlite"
+    ]
+  },
+  "pooled_summary": {
+    "best_trade_usd": 431.73,
+    "converged_exit_count": 5,
+    "converged_share": 0.5556,
+    "forced_window_end_exits": 0,
+    "mean_holding_days": 7.22,
+    "mean_pnl_usd": -9.42,
+    "total_pnl_usd": -84.77,
+    "trade_count": 9,
+    "win_rate": 0.6667,
+    "worst_trade_usd": -517.37
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune corr threshold, z entry/exit, lookbacks, hold days, pair caps, or notional on these frozen windows; do not swap the regime axis. New evidence = forward chop-day paper rows via daily default-off wiring, or a genuinely new data source for pair selection (e.g. fundamental/flow linkage instead of price corr).",
+    "new_evidence_required": "Forward chop-labeled spread rows from daily wiring, or a new non-price pair-linkage source.",
+    "why_result_happened": "Chop-labeled days produced only 9 pooled spreads (< 15); the bundle is frozen and evidence must come from forward chop days, not window re-slicing."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Owner priority 2026-07-08 round 2: chop gives no direction, so trade the axis that does not need one - a LONG-SHORT SPREAD family, the first market-neutral construct in this repo. On chop-labeled days, among core universe equity pairs with trailing 120d correlation >= 0.6, when the 60d-normalized log price ratio stretches beyond 2 sigma, buy the laggard and short the leader in equal notional; exit on convergence below 0.5 sigma or a 10-day timeout.",
+    "2_history_check": {
+      "exp-20260615-019": "Chop is the loss axis for momentum sleeve entries (lead).",
+      "exp-20260622-017": "Core stack is NOT chop-sensitive; chop work must be sleeve-scoped.",
+      "exp-20260708-023": "Single-name long-only reversion in chop REJECTED (1/2 windows, +$2/trade, control beat chop).",
+      "novelty_gate": "Override accepted: first long-short spread gate shape in the repo."
+    },
+    "3_single_measurement_bundle": "chop_pairs_spread_entry_sleeve_v1",
+    "4_success_failure_standard": "Accept only if pooled canonical-window trades >= 15, pooled PnL > 0, >= 2 evaluable windows non-negative, AND chop mean/trade beats the risk_on control mean (control binds at >= 5 trades). Thin sample -> observed_only.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_025_chop_pairs_spread_sleeve.py"
+  },
+  "prediction": {
+    "confidence_reason": "Market-neutral spread reversion is the structurally matching trade for a directionless regime and the chop label is validated; but two-leg costs on 4k notional are heavy, chop days are scarce (33 across canonical windows), and megacap pairs may not stretch enough - genuine exploration, lower prior than round 1.",
+    "expected_ev_delta": 0.5,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "chop_day_sample_too_thin",
+      "spread_convergence_slower_than_timeout",
+      "correlation_pairs_unstable_pit",
+      "two_leg_costs_eat_edge",
+      "megacap_pairs_too_cointegrated_to_stretch"
+    ],
+    "recorded_at": "2026-07-08T18:49:43+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "default_off_paper_replay_only_no_daily_wiring_yet",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "recent_observe": {
+    "end": "2026-07-07",
+    "entry_label_days": 0,
+    "gate_role": "observe_only_diagnostic",
+    "signals_generated": 0,
+    "start": "2026-04-22",
+    "summary": {
+      "best_trade_usd": null,
+      "converged_exit_count": 0,
+      "converged_share": null,
+      "forced_window_end_exits": 0,
+      "mean_holding_days": null,
+      "mean_pnl_usd": null,
+      "total_pnl_usd": 0.0,
+      "trade_count": 0,
+      "win_rate": null,
+      "worst_trade_usd": null
+    },
+    "window": "recent_observe"
+  },
+  "related_files": [
+    "quant/chop_mean_reversion_sleeve.py",
+    "quant/regime_chop_state.py",
+    "experiments/cards/exp-20260708-023.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_025_chop_pairs_spread_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_chop_pairs_spread_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "risk_on_control_windows": [
+    {
+      "entry_label_days": 100,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 33,
+      "summary": {
+        "best_trade_usd": 635.72,
+        "converged_exit_count": 3,
+        "converged_share": 0.15,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 9.65,
+        "mean_pnl_usd": -15.14,
+        "total_pnl_usd": -302.73,
+        "trade_count": 20,
+        "win_rate": 0.4,
+        "worst_trade_usd": -1279.09
+      },
+      "window": "old_thin"
+    },
+    {
+      "entry_label_days": 113,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 189,
+      "summary": {
+        "best_trade_usd": 671.03,
+        "converged_exit_count": 2,
+        "converged_share": 0.0606,
+        "forced_window_end_exits": 1,
+        "mean_holding_days": 9.91,
+        "mean_pnl_usd": -63.49,
+        "total_pnl_usd": -2095.26,
+        "trade_count": 33,
+        "win_rate": 0.3939,
+        "worst_trade_usd": -580.12
+      },
+      "window": "mid_weak"
+    },
+    {
+      "entry_label_days": 76,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 25,
+      "summary": {
+        "best_trade_usd": 904.91,
+        "converged_exit_count": 7,
+        "converged_share": 0.3333,
+        "forced_window_end_exits": 3,
+        "mean_holding_days": 8.0,
+        "mean_pnl_usd": -1.7,
+        "total_pnl_usd": -35.77,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "worst_trade_usd": -623.68
+      },
+      "window": "late_strong"
+    }
+  ],
+  "single_causal_variable": "chop_pairs_spread_entry_sleeve_v1",
+  "status": "observed_only",
+  "ticket_before": {
+    "claimed_at": "2026-07-08T18:49:43+00:00",
+    "created_at": "2026-07-08T18:49:33+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-025",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T18:49:33+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "chop_pairs_spread_sleeve"
+    },
+    "novelty": {
+      "blocking_matches": [
+        {
+          "accept_rate": 0.0,
+          "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+          "score": 0.6154,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "family_key": "event_market_state_context_quality",
+          "score": 0.6101,
+          "status": "has_accepted",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+          "score": 0.61,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "alpha_score_market_regime_external_macro_context",
+          "score": 0.6098,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "state_surface_concentration_context",
+          "score": 0.6098,
+          "status": "frozen_rejected",
+          "trials": 2
+        }
+      ],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "regime_state",
+        "field_tags": [
+          "120d",
+          "60d",
+          "a",
+          "among",
+          "axis",
+          "below",
+          "beyond",
+          "buy",
+          "chop",
+          "construct",
+          "convergence",
+          "core",
+          "correlation",
+          "direction",
+          "does",
+          "entry",
+          "equal",
+          "equity",
+          "ever",
+          "every",
+          "exit",
+          "experiment",
+          "family",
+          "first",
+          "gives",
+          "has",
+          "high",
+          "in",
+          "is",
+          "labeled",
+          "laggard",
+          "leader",
+          "log",
+          "long",
+          "market",
+          "name",
+          "need",
+          "neutral",
+          "no",
+          "normalized",
+          "not",
+          "nothing",
+          "notional",
+          "on",
+          "one",
+          "only",
+          "or",
+          "owner",
+          "pairs",
+          "price",
+          "prior",
+          "priority",
+          "ratio",
+          "relative",
+          "repo",
+          "return",
+          "round",
+          "short",
+          "sigma",
+          "single",
+          "sleeve",
+          "so",
+          "spread",
+          "stretches",
+          "that",
+          "this",
+          "timeout",
+          "trade",
+          "traded",
+          "trailing",
+          "value",
+          "when"
+        ],
+        "gate_shape": "notional_scalar"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "pit_efficiency_ratio_chop_axis_diagnostic",
+          "reopen_condition": "If Spearman(ER, PnL) is clearly positive and low-ER mean PnL is negative in the windows with chop samples, promote ER to a shared daily regime artifact and apply the continuous exposure scalar as a portfolio-level soft tilt, validated on forward rows / live-pilot scorecard. Do not tune ER window or exposure floor on frozen windows.",
+          "score": 0.6154,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "regime_state",
+          "family_key": "event_market_state_context_quality",
+          "reopen_condition": null,
+          "score": 0.6101,
+          "status": "has_accepted",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+          "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+          "score": 0.61,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "alpha_score_market_regime_external_macro_context",
+          "reopen_condition": "If revisiting macro context, first add shared production/backtest VIX ingestion and only then test forward replacement rows. Do not retune VIX thresholds on this frozen sample.",
+          "score": 0.6098,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "regime_state",
+          "family_key": "state_surface_concentration_context",
+          "reopen_condition": "Use the new concentration context field to explain queue concentration before another scalar/profile test.",
+          "score": 0.6098,
+          "status": "frozen_rejected",
+          "trials": 2
+        }
+      ],
+      "new_evidence_axis": "New gate shape: long-short relative-value spread (market-neutral pair construct). The repo has never traded ANY long-short or spread instrument - all prior families including the just-rejected exp-20260708-023 are long-only single-name entries. This is not a threshold or slice retune of any prior family; the trade object itself (a pair spread) is new. OHLCV fingerprint saturation does not apply to a genuinely new gate shape per the whitelist.",
+      "observed_only_streak_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "regime_state",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": true,
+      "reopen_condition_guard": {
+        "applicable": true,
+        "blocked": false,
+        "matched_conditions": [],
+        "new_evidence_axis": {
+          "axis": "New gate shape: long-short relative-value spread (market-neutral pair construct). The repo has never traded ANY long-short or spread instrument - all prior families including the just-rejected exp-20260708-023 are long-only single-name entries. This is not a threshold or slice retune of any prior family; the trade object itself (a pair spread) is new. OHLCV fingerprint saturation does not apply to a genuinely new gate shape per the whitelist.",
+          "categories": [
+            "new_gate_shape"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": "New gate shape: long-short relative-value spread (market-neutral pair construct). The repo has never traded ANY long-short or spread instrument - all prior families including the just-rejected exp-20260708-023 are long-only single-name entries. This is not a threshold or slice retune of any prior family; the trade object itself (a pair spread) is new. OHLCV fingerprint saturation does not apply to a genuinely new gate shape per the whitelist.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "saturated_source_override": true,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": true,
+        "gate_shape": "candidate_pool_top1_10d",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "regime_state",
+        "trials": 8
+      },
+      "warn": true,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-07-08T18:54:52Z",
+  "trial_family": "chop_pairs_spread_candidate_pool",
+  "trial_variant_id": "chop_pairs_spread_v1",
+  "windows": [
+    {
+      "end": "2025-04-22",
+      "entry_label_days": 7,
+      "signals_generated": 5,
+      "start": "2024-10-02",
+      "summary": {
+        "best_trade_usd": 156.84,
+        "converged_exit_count": 2,
+        "converged_share": 0.4,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 8.8,
+        "mean_pnl_usd": -28.68,
+        "total_pnl_usd": -143.42,
+        "trade_count": 5,
+        "win_rate": 0.6,
+        "worst_trade_usd": -226.1
+      },
+      "trading_days": 138,
+      "window": "old_thin"
+    },
+    {
+      "end": "2025-10-22",
+      "entry_label_days": 0,
+      "signals_generated": 0,
+      "start": "2025-04-23",
+      "summary": {
+        "best_trade_usd": null,
+        "converged_exit_count": 0,
+        "converged_share": null,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": null,
+        "mean_pnl_usd": null,
+        "total_pnl_usd": 0.0,
+        "trade_count": 0,
+        "win_rate": null,
+        "worst_trade_usd": null
+      },
+      "trading_days": 127,
+      "window": "mid_weak"
+    },
+    {
+      "end": "2026-04-21",
+      "entry_label_days": 26,
+      "signals_generated": 4,
+      "start": "2025-10-23",
+      "summary": {
+        "best_trade_usd": 431.73,
+        "converged_exit_count": 3,
+        "converged_share": 0.75,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 5.25,
+        "mean_pnl_usd": 14.66,
+        "total_pnl_usd": 58.65,
+        "trade_count": 4,
+        "win_rate": 0.75,
+        "worst_trade_usd": -517.37
+      },
+      "trading_days": 123,
+      "window": "late_strong"
+    }
+  ]
+}

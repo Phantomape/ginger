@@ -1,0 +1,538 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.py",
+    "data/experiments/exp-20260707-001/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.json",
+    "experiments/cards/exp-20260707-001.md",
+    "experiments/manifests/exp-20260707-001.json",
+    "experiments/tickets/exp-20260707-001.json",
+    "experiments/logs/exp-20260707-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260707-001.md",
+  "causal_components": [
+    "consume exp-20260706-022 ranking",
+    "daily mark-to-market equity replay",
+    "accepted core equity comparison",
+    "no FINRA threshold retune",
+    "no strategy behavior change"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "finra_short_pressure_ranked_portfolio_daily_equity_overlay_v1",
+  "claimed_at": "2026-07-07T00:04:53+00:00",
+  "completed_at": "2026-07-07T00:06:02+00:00",
+  "created_at": "2026-07-07T00:04:41+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260707-001",
+  "experiment_uid": "expuid-ca640094d2244a2d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260707-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-07T00:04:41+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "portfolio_daily_equity_finra_short_pressure_overlay"
+  },
+  "hypothesis": "Portfolio lane: the exp-20260706-022 rank-6 FINRA short-pressure rejected candidate family may add value as a fixed 10 percent paper overlay when replayed with true daily mark-to-market equity, without retuning FINRA source rules or overlay weight.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "finra_short_pressure_ranked_portfolio_daily_equity_overlay_v1"
+  ],
+  "mechanism_family": "portfolio_covariance_lane",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260706-022",
+    "exp-20260706-023",
+    "exp-20260706-024",
+    "exp-20260706-025",
+    "exp-20260529-017"
+  ],
+  "new_evidence_type": "new_ranked_candidate_family_daily_mtm_overlay",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "score": 0.6571,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "portfolio_covariance_lane",
+      "field_tags": [
+        "a",
+        "add",
+        "as",
+        "daily",
+        "equity",
+        "exp",
+        "family",
+        "finra",
+        "lane",
+        "mark",
+        "market",
+        "may",
+        "or",
+        "overlay",
+        "percent",
+        "portfolio",
+        "pressure",
+        "rank",
+        "ranked",
+        "rejected",
+        "replayed",
+        "retuning",
+        "rules",
+        "short",
+        "to",
+        "true",
+        "value",
+        "weight",
+        "when",
+        "without"
+      ],
+      "gate_shape": "portfolio_daily_equity_overlay"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "reopen_condition": "A shared default-off helper or activation-envelope Gate 1-4 that implements a fixed portfolio lane, or materially new ranked candidate families with replayable daily-equity paths.",
+        "score": 0.6571,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "reopen_condition": "A valid next experiment needs a true daily mark-to-market equity replay for the ranked overlay families, or materially new rejected-positive candidate families with replayable trade rows; changing overlay weight, correlation thresholds, or source thresholds is not new evidence.",
+        "score": 0.6364,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.0571,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.0444,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_purchase_pressure_event_satellite",
+        "reopen_condition": null,
+        "score": 0.0432,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially new ranked candidate family and data source inside the fixed exp-20260706-022 portfolio ranking: FINRA short-pressure has not been consumed by the daily-MTM overlay lane; no FINRA threshold, top-N, hold-day, cooldown, notional, overlay-weight, or correlation retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "portfolio_covariance_lane",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Materially new ranked candidate family and data source inside the fixed exp-20260706-022 portfolio ranking: FINRA short-pressure has not been consumed by the daily-MTM overlay lane; no FINRA threshold, top-N, hold-day, cooldown, notional, overlay-weight, or correlation retune.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially new ranked candidate family and data source inside the fixed exp-20260706-022 portfolio ranking: FINRA short-pressure has not been consumed by the daily-MTM overlay lane; no FINRA threshold, top-N, hold-day, cooldown, notional, overlay-weight, or correlation retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "portfolio_daily_equity_overlay",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "portfolio_covariance_lane",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.26,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 750.0,
+    "main_failure_modes": [
+      "daily_equity_window_regression",
+      "mid_weak_regression",
+      "proxy_edge_disappears",
+      "missing_ohlcv_path"
+    ],
+    "confidence_reason": "exp-20260706-022 ranked FINRA short pressure sixth with positive rejected-source PnL and near-zero exit-cashflow correlation to core, but the prior daily-MTM overlay attempts showed proxy edge can lose window stability; the original FINRA source also regressed mid_weak.",
+    "recorded_at": "2026-07-07T00:04:05+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+    "artifact": "data/experiments/exp-20260707-001/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.json",
+    "log": "experiments/logs/exp-20260707-001.json",
+    "summary": {
+      "status": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+      "aggregate_delta": {
+        "total_pnl": 763.46,
+        "return_fraction": 0.007635,
+        "sharpe_daily": -0.02408,
+        "expected_value_score": -0.021893,
+        "max_drawdown_pct": 0.003604,
+        "min_day_pnl": -10.17
+      },
+      "failed_reasons": [
+        "aggregate_daily_equity_ev_delta_not_positive",
+        "fewer_than_two_daily_equity_ev_improved_windows",
+        "daily_equity_window_ev_regression",
+        "daily_equity_window_pnl_regression"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260707-001.json",
+  "single_causal_variable": "finra_short_pressure_ranked_portfolio_daily_equity_overlay_v1",
+  "status": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+  "ticket_file": "experiments/tickets/exp-20260707-001.json",
+  "trial_family": "portfolio_covariance_daily_equity_overlay",
+  "trial_variant_id": "finra_short_pressure_10pct_daily_equity_overlay_v1",
+  "alpha_hypothesis": "capital_allocation / risk_allocation: a rejected official FINRA short-pressure candidate source can be portfolio-useful if a small fixed overlay improves aggregate daily-equity EV while drawdown and window stability remain acceptable.",
+  "implementation_mode": "observed_only_daily_equity_replay_no_strategy_change",
+  "new_evidence_axis": "Materially new ranked candidate family and data source inside the fixed exp-20260706-022 portfolio ranking: FINRA short-pressure has not been consumed by the daily-MTM overlay lane; this uses the fixed recorded ranking and source artifact with no FINRA threshold, top-N, hold-day, cooldown, notional, overlay-weight, or correlation retune.",
+  "parameters": {
+    "source_ranking_artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "target_source_artifact": "data/experiments/exp-20260529-017/exp_20260529_017_finra_short_pressure_breakout_candidate_pool.json",
+    "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite",
+    "overlay_weight": 0.1,
+    "portfolio_capital_usd": 100000.0,
+    "acceptance_boundary": "observed-only daily-equity lead only; activation still needs a shared helper / paper behavior and standard Gate 1-4",
+    "source_behavior_changed": false
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "core_window_baselines": {
+      "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    },
+    "source_ranking_audit": {
+      "source_artifact": "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+      "loaded": true,
+      "target_candidate": "exp-20260529-017",
+      "target_candidate_rank": 6,
+      "target_candidate_family": "finra_short_pressure_breakout_candidate_pool",
+      "target_candidate_core_correlation_exit_cashflow": -0.001462,
+      "target_candidate_proxy_delta": {
+        "expected_value_score_proxy_delta": 4.968361,
+        "max_drawdown_usd_delta": 98.84,
+        "min_day_pnl_delta": 0.0,
+        "total_pnl_delta": 763.46
+      },
+      "reason_selected": "Rank-6 official FINRA short-pressure candidate in the exp-20260706-022 portfolio ranking. The higher-ranked Companyfacts and sector-breadth candidates were already consumed by exp-20260706-023..025, and this test does not retune FINRA source rules."
+    },
+    "target_source_diagnostics": {
+      "source_artifact": "data/experiments/exp-20260529-017/exp_20260529_017_finra_short_pressure_breakout_candidate_pool.json",
+      "loaded": true,
+      "required_fields": [
+        "ticker",
+        "entry_date",
+        "entry_price",
+        "exit_date",
+        "exit_price",
+        "paper_notional_usd",
+        "pnl"
+      ],
+      "missing_by_window": {
+        "late_strong": {},
+        "mid_weak": {},
+        "old_thin": {}
+      },
+      "usable_counts": {
+        "late_strong": 22,
+        "mid_weak": 27,
+        "old_thin": 38
+      }
+    },
+    "core_diagnostics": {
+      "window_paths": {
+        "late_strong": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "mid_weak": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "old_thin": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+      },
+      "missing_by_window": {
+        "late_strong": {},
+        "mid_weak": {},
+        "old_thin": {}
+      },
+      "usable_counts": {
+        "late_strong": 18,
+        "mid_weak": 21,
+        "old_thin": 22
+      }
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "ticker",
+      "entry_date",
+      "entry_price",
+      "exit_date",
+      "exit_price",
+      "pnl",
+      "paper_notional_usd",
+      "shares"
+    ],
+    "missing_ohlcv": {
+      "mid_weak": {
+        "core": {
+          "missing_holding_period_ohlcv": 1
+        },
+        "target": {}
+      }
+    },
+    "blocking_target_missing_ohlcv": {},
+    "nonblocking_core_missing_ohlcv": {
+      "mid_weak": {
+        "missing_holding_period_ohlcv": 1
+      }
+    },
+    "target_cost_residual_abs_max": 35.004858,
+    "target_cost_residual_note": "Residual is applied on the exit date to reconcile the MTM path to artifact PnL after round-trip cost and rounding; it is not a terminal mismatch."
+  },
+  "gate3": {
+    "applicable": false,
+    "filter_added": false,
+    "reason": "No signal filter was added; fixed historical target rows are replayed.",
+    "target_trade_count": 87,
+    "survival_rate": null
+  },
+  "gate4": {
+    "applicable": true,
+    "passed_daily_equity_replay": false,
+    "passed_alpha_activation": false,
+    "failed_reasons": [
+      "aggregate_daily_equity_ev_delta_not_positive",
+      "fewer_than_two_daily_equity_ev_improved_windows",
+      "daily_equity_window_ev_regression",
+      "daily_equity_window_pnl_regression"
+    ],
+    "ev_improved_windows": [
+      "old_thin"
+    ],
+    "pnl_improved_windows": [
+      "late_strong",
+      "old_thin"
+    ],
+    "ev_regressed_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "pnl_regressed_windows": [
+      "mid_weak"
+    ],
+    "drawdown_drift": 0.003604,
+    "decision": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+    "activation_note": "Even a positive daily-equity replay remains observed-only because no shared daily paper behavior or live execution envelope was changed in this experiment."
+  },
+  "aggregate_daily_equity": {
+    "core_metrics_daily_mtm_proxy": {
+      "days": 388,
+      "active_days": 314,
+      "total_pnl": 234875.03,
+      "return_fraction": 2.34875,
+      "sharpe_daily": 4.564676,
+      "expected_value_score": 10.721285,
+      "max_drawdown_pct": 0.158873,
+      "min_day_pnl": -6010.66,
+      "positive_active_day_rate": 0.570064
+    },
+    "overlay_metrics_daily_mtm": {
+      "days": 388,
+      "active_days": 301,
+      "total_pnl": 763.46,
+      "return_fraction": 0.007635,
+      "sharpe_daily": 0.575072,
+      "expected_value_score": 0.00439,
+      "max_drawdown_pct": 0.008498,
+      "min_day_pnl": -222.21,
+      "positive_active_day_rate": 0.481728
+    },
+    "combined_metrics_daily_mtm_proxy": {
+      "days": 388,
+      "active_days": 356,
+      "total_pnl": 235638.49,
+      "return_fraction": 2.356385,
+      "sharpe_daily": 4.540596,
+      "expected_value_score": 10.699392,
+      "max_drawdown_pct": 0.162477,
+      "min_day_pnl": -6020.83,
+      "positive_active_day_rate": 0.564607
+    },
+    "delta_metrics_daily_mtm_proxy": {
+      "total_pnl": 763.46,
+      "return_fraction": 0.007635,
+      "sharpe_daily": -0.02408,
+      "expected_value_score": -0.021893,
+      "max_drawdown_pct": 0.003604,
+      "min_day_pnl": -10.17
+    },
+    "core_overlay_daily_pnl_correlation": 0.320722,
+    "days": 388
+  },
+  "activation_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "observed_only_replay_no_strategy_or_paper_behavior_change",
+      "core_daily_path_reconstructed_from_saved_trades_not_backtester_equity_curve",
+      "requires_shared_default_off_helper_or_activation_envelope_before_capital"
+    ]
+  },
+  "delta_metrics": {
+    "daily_mtm_proxy": {
+      "total_pnl": 763.46,
+      "return_fraction": 0.007635,
+      "sharpe_daily": -0.02408,
+      "expected_value_score": -0.021893,
+      "max_drawdown_pct": 0.003604,
+      "min_day_pnl": -10.17
+    },
+    "canonical_strategy_behavior_delta": 0.0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "ranking_or_sizing_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "This runner only reads historical artifacts and OHLCV rows. It does not alter production/backtest adapters or any order path."
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+    "actual_success": 0,
+    "predicted_success_probability": 0.26,
+    "brier_score": 0.0676,
+    "predicted_failure_modes": [
+      "daily_equity_window_regression",
+      "mid_weak_regression",
+      "proxy_edge_disappears",
+      "missing_ohlcv_path"
+    ],
+    "realized_failure_modes": [
+      "aggregate_daily_equity_ev_delta_not_positive",
+      "fewer_than_two_daily_equity_ev_improved_windows",
+      "daily_equity_window_ev_regression",
+      "daily_equity_window_pnl_regression"
+    ],
+    "predicted_failure_mode_hit": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The FINRA short-pressure candidate from exp-20260529-017 was consumed from the exp-20260706-022 portfolio ranking and replayed as daily mark-to-market equity. The result is judged on aggregate daily EV, drawdown drift, and window stability, not on FINRA source thresholds, top-N, hold days, cooldown, or notional.",
+    "forbidden_near_neighbor_retry": "Do not rerun this FINRA portfolio overlay by changing overlay weight, FINRA short-pressure thresholds, breakout confirmation, hold days, top-N, correlation cutoffs, or source filters. A legal retry needs materially new ranked candidate families, a different data source, materially more closed forward rows, or a shared paper helper / activation-envelope experiment.",
+    "new_evidence_required": "A shared default-off helper or activation-envelope Gate 1-4 that implements a fixed portfolio lane, or materially new ranked candidate families with replayable daily-equity paths."
+  },
+  "rejection_reason": "Daily mark-to-market replay failed the predeclared portfolio-lane gate: aggregate_daily_equity_ev_delta_not_positive, fewer_than_two_daily_equity_ev_improved_windows, daily_equity_window_ev_regression, daily_equity_window_pnl_regression",
+  "next_retry_requires": [
+    "shared default-off helper or activation-envelope Gate 1-4",
+    "materially new portfolio-ranked candidate families or a new data source",
+    "no overlay-weight, FINRA threshold, top-N, hold-day, cooldown, or correlation retune"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.py",
+    "data/experiments/exp-20260707-001/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.json",
+    "experiments/cards/exp-20260707-001.md",
+    "experiments/manifests/exp-20260707-001.json",
+    "experiments/logs/exp-20260707-001.json",
+    "experiments/tickets/exp-20260707-001.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260706-022/exp_20260706_022_portfolio_covariance_candidate_ranking.json",
+    "data/experiments/exp-20260529-017/exp_20260529_017_finra_short_pressure_breakout_candidate_pool.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "data/warehouse/warehouse_main.sqlite"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "observed_only_rejected_finra_short_pressure_daily_equity_overlay",
+  "artifact": "data/experiments/exp-20260707-001/exp_20260707_001_portfolio_daily_equity_finra_short_pressure_overlay.json",
+  "log": "experiments/logs/exp-20260707-001.json",
+  "updated_at": "2026-07-07T00:06:02+00:00"
+}

@@ -1,0 +1,285 @@
+{
+  "acceptance_rule": "Accept only if run.py refreshes the options forward candidate ledger after quant_signals are saved, records failure-tolerant default-off production_impact with alters_orders=false, tests cover success/skip/failure contracts, and no live orders/ranking/sizing logic changes.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "data/experiments/<experiment_id>"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-002.md",
+  "causal_components": [
+    "options_chain_snapshot",
+    "quant_signals_candidate_join",
+    "options_forward_candidate_ledger",
+    "outcome_close_summary",
+    "run_py_after_quant_signals_wiring"
+  ],
+  "change_type": "production_visible_options_forward_ledger_daily_wiring",
+  "changed_variable": "options_forward_ledger_daily_pipeline_wiring_v1",
+  "claimed_at": "2026-07-09T01:21:29+00:00",
+  "completed_at": "2026-07-09T01:28:57+00:00",
+  "created_at": "2026-07-09T01:21:15+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-002",
+  "experiment_uid": "expuid-a3583738ae9a40b6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T01:21:15+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_forward_daily_wiring"
+  },
+  "hypothesis": "Alpha blocker: OnclickMedia options demand/structure alpha needs settled forward rows, but options forward candidate ledger and outcome refresh have been manually materialized across multiple IDs; wire a default-off daily refresh into the production daily pipeline without changing orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "onclickmedia_options_forward_ledger_daily_pipeline_wiring_v1"
+  ],
+  "mechanism_family": "options_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-026",
+    "exp-20260629-014",
+    "exp-20260630-003",
+    "exp-20260701-008",
+    "exp-20260702-007"
+  ],
+  "new_evidence_type": "routine_materialization_pipeline_wiring",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.5,
+        "family_key": "regime_tagged_forward_scorecard_refresh",
+        "score": 0.64,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "score": 0.63,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "default_off_forward_entry_exhaustion_tagging",
+        "score": 0.6216,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "default_off_forward_regime_tagging",
+        "score": 0.6211,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "default_off_forward_short_volume_tagging",
+        "score": 0.6205,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "a",
+        "across",
+        "alpha",
+        "been",
+        "blocker",
+        "but",
+        "changing",
+        "daily",
+        "demand",
+        "forward",
+        "have",
+        "ids",
+        "into",
+        "ledger",
+        "manually",
+        "materialized",
+        "measurement",
+        "multiple",
+        "needs",
+        "onclickmedia",
+        "options",
+        "orders",
+        "outcome",
+        "pipeline",
+        "refresh",
+        "repair",
+        "rows",
+        "settled",
+        "structure",
+        "wire",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.5,
+        "data_source": "forward_replacement_value",
+        "family_key": "regime_tagged_forward_scorecard_refresh",
+        "reopen_condition": "Reopen regime soft-tilt activation only after at least 50 tagged forward rows and at least 20 non-risk_on rows exist, or after a new forward/live-pilot policy surface creates materially different rows.",
+        "score": 0.64,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.63,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_entry_exhaustion_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows so the exhaustion extension can be tested as a discriminator of the failed-followthrough cohort with statistical power, or a genuinely new PIT entry-fragility data source, before any tilt-activation test.",
+        "score": 0.6216,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_regime_tagging",
+        "reopen_condition": "Next alpha work needs closed forward replacement rows carrying these entry_regime fields, then a fixed regime-conditioned sleeve/router policy evaluated against replacement value and concentration guards.",
+        "score": 0.6211,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_short_volume_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows per short-volume quintile (the current per-quintile N is single digits and not significance-tested), or a PIT borrow fee / utilization / loan-availability field, before any soft-tilt activation test.",
+        "score": 0.6205,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate-compliant measurement repair: after repeated manual options forward ledger/outcome materialization IDs, wire the existing default-off materialization into run.py/settlement pipeline so future closed rows append without consuming experiment IDs; no new options alpha rule or threshold is tested.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": true
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate-compliant measurement repair: after repeated manual options forward ledger/outcome materialization IDs, wire the existing default-off materialization into run.py/settlement pipeline so future closed rows append without consuming experiment IDs; no new options alpha rule or threshold is tested.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "rg found options chain collection in daily_non_ohlcv_snapshot but no run.py wiring for run_options_forward_ledger; estimate_revision already provides a matching after-quant-signals pattern.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "options_script_not_import_safe",
+      "ledger_duplicate_rows",
+      "missing_ohlcv_snapshot_argument",
+      "run_py_contract_mismatch"
+    ],
+    "recorded_at": "2026-07-09T01:20:39+00:00",
+    "success_probability": 0.72
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260709-002/before_options_forward_daily_wiring.json",
+    "after_result_file": "data/experiments/exp-20260709-002/after_options_forward_daily_wiring.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.72,
+      "brier_score": 0.0784,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "options_script_not_import_safe",
+        "ledger_duplicate_rows",
+        "missing_ohlcv_snapshot_argument",
+        "run_py_contract_mismatch"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": null
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-002.json",
+  "single_causal_variable": "onclickmedia_options_forward_ledger_daily_pipeline_wiring_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260709-002.json",
+  "trial_family": "onclickmedia_options_forward_daily_wiring",
+  "trial_variant_id": "run_py_default_off_wiring_v1"
+}

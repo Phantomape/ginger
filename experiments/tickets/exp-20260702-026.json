@@ -1,0 +1,248 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+    "experiments/cards/exp-20260702-026.md",
+    "experiments/manifests/exp-20260702-026.json",
+    "experiments/tickets/exp-20260702-026.json",
+    "experiments/logs/exp-20260702-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-026.md",
+  "causal_components": [
+    "daily structured-news snapshot",
+    "second-order exposure observer refresh",
+    "fail-soft run.py integration",
+    "daily wiring tests",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "news_event_exposure_observer_daily_pipeline_wiring_v1",
+  "claimed_at": "2026-07-02T21:05:43+00:00",
+  "completed_at": "2026-07-02T21:11:35+00:00",
+  "created_at": "2026-07-02T21:05:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-026",
+  "experiment_uid": "expuid-ba05245768814437",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-026",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T21:05:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_event_exposure_observer_daily_wiring"
+  },
+  "hypothesis": "Wire the accepted second-order structured-news exposure observer into the daily pipeline so current-event rows accumulate automatically for future alpha tests.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "news_event_exposure_observer_daily_pipeline_wiring_v1"
+  ],
+  "mechanism_family": "daily_news_llm_event_scoring_alpha",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-020",
+    "exp-20260702-021",
+    "exp-20260702-022",
+    "exp-20260702-025"
+  ],
+  "new_evidence_type": "daily_pipeline_wiring_for_existing_observer",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "accumulate",
+        "alpha",
+        "automatically",
+        "current",
+        "daily",
+        "event",
+        "exposure",
+        "future",
+        "into",
+        "news",
+        "observer",
+        "order",
+        "pipeline",
+        "rows",
+        "second",
+        "so",
+        "structured",
+        "tests",
+        "wire",
+        "wiring"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_daily_observation_snapshot",
+        "reopen_condition": "Let daily runs accumulate new forward observations, then close them against cash/SPY/QQQ replacement value; alternatively add a true PIT LLM scorer using the same evidence-span schema or canonical-window daily-news coverage.",
+        "score": 0.087,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.08,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_structured_event_forward_observer_wiring",
+        "reopen_condition": "Closed replacement-value outcomes from this fixed observer, or a PIT LLM scorer writing the same evidence-span schema.",
+        "score": 0.0769,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_atomic_recovery",
+        "reopen_condition": "Next alpha work requires closed cash/SPY/QQQ replacement-value outcomes for these and later daily structured observations, or a new PIT LLM event scorer that writes this same evidence schema.",
+        "score": 0.0741,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_evidence_ledger",
+        "reopen_condition": "Closed cash/SPY/QQQ replacement-value outcomes for these structured events, or an LLM scorer that writes the same actor/object/relation/magnitude/evidence schema at decision time.",
+        "score": 0.0667,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.8,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "run_adapter_shape_mismatch",
+      "observer_import_failure",
+      "ledger_idempotency_regression"
+    ],
+    "confidence_reason": "The observer already exists with tests and accepted measurement-repair evidence in exp-20260702-020; the remaining blocker is daily pipeline wiring so future closed rows can mature without manual experiment-ID appends.",
+    "recorded_at": "2026-07-02T21:04:56+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_news_event_exposure_observer_daily_wiring",
+    "artifact": "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+    "log": "experiments/logs/exp-20260702-026.json",
+    "runner": "quant/experiments/exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    "gate4": {
+      "mode": "measurement_repair_identity_plus_wiring_gate",
+      "passed": true,
+      "failed_reasons": [],
+      "strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      }
+    },
+    "summary": "The accepted observer already had a pure run() API and tests, so daily wiring only needed a fail-soft call after the first-order structured-news snapshot."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-026.json",
+  "single_causal_variable": "news_event_exposure_observer_daily_pipeline_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260702-026.json",
+  "trial_family": "news_event_exposure_observer_daily_pipeline_wiring",
+  "trial_variant_id": "exp-20260702-026",
+  "alpha_hypothesis": "Second-order structured-news exposure may become a deployable relation alpha only after current-event rows accumulate and close under the same observer semantics.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "Routine append integration for the accepted second-order observer; not a new relation/theme/horizon reslice.",
+  "decision": "accepted_measurement_repair_news_event_exposure_observer_daily_wiring",
+  "artifact": "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+  "log_file": "experiments/logs/exp-20260702-026.json",
+  "changed_files": [
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    "data/experiments/exp-20260702-026/exp_20260702_026_news_event_exposure_observer_daily_wiring.json",
+    "experiments/logs/exp-20260702-026.json",
+    "experiments/cards/exp-20260702-026.md",
+    "experiments/manifests/exp-20260702-026.json",
+    "experiments/tickets/exp-20260702-026.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\test_run_daily_wiring.py quant\\news_event_exposure_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py quant\\test_news_event_exposure_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_026_news_event_exposure_observer_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Daily run.py now refreshes an append-only observer ledger after the structured-news snapshot. It does not feed prompts, orders, ranking, sizing, exits, or core candidate selection."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted observer already had a pure run() API and tests, so daily wiring only needed a fail-soft call after the first-order structured-news snapshot.",
+    "forbidden_near_neighbor_retry": "Do not reserve future experiment IDs for routine manual refreshes of the same second-order exposure observer. Let the daily pipeline append rows and only reopen alpha after materially more current rows close, or after a genuinely new execution/data surface appears.",
+    "new_evidence_required": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows."
+  },
+  "updated_at": "2026-07-02T21:11:35+00:00"
+}

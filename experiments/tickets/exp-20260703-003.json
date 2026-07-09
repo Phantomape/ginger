@@ -1,0 +1,240 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_003_forward_short_volume_toxic_replacement_value.py",
+    "data/experiments/exp-20260703-003/exp_20260703_003_forward_short_volume_toxic_replacement_value.json",
+    "experiments/cards/exp-20260703-003.md",
+    "experiments/manifests/exp-20260703-003.json",
+    "experiments/tickets/exp-20260703-003.json",
+    "experiments/logs/exp-20260703-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-003.md",
+  "causal_components": [
+    "closed forward replacement ledger",
+    "entry-time PIT short-volume percentile tag",
+    "Q5 toxic versus Q1-Q2 clean comparison",
+    "cash SPY QQQ replacement-value attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "forward_entry_short_volume_toxic_replacement_value_attribution_v2",
+  "claimed_at": "2026-07-03T02:11:35+00:00",
+  "completed_at": "2026-07-03T02:15:31+00:00",
+  "created_at": "2026-07-03T02:11:25+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-003",
+  "experiment_uid": "expuid-1ffa87e676ca464f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T02:11:25+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_short_volume_toxic_replacement_value"
+  },
+  "hypothesis": "Closed forward replacement rows tagged with PIT entry short-volume percentile now have enough additional settled observations to test whether Q5 toxic short-volume remains worse than Q1-Q2 clean rows on cash/SPY/QQQ replacement value, without changing strategy behavior.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "forward_entry_short_volume_toxic_replacement_value_attribution_v2"
+  ],
+  "mechanism_family": "forward_short_volume_replacement_value_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260626-018",
+    "exp-20260627-008",
+    "exp-20260627-026",
+    "exp-20260630-016"
+  ],
+  "new_evidence_type": "materially_more_closed_forward_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "additional",
+        "attribution",
+        "behavior",
+        "cash",
+        "changing",
+        "clean",
+        "closed",
+        "enough",
+        "entry",
+        "forward",
+        "have",
+        "now",
+        "observations",
+        "on",
+        "percentile",
+        "pit",
+        "q1",
+        "q2",
+        "q5",
+        "qqq",
+        "remains",
+        "replacement",
+        "rows",
+        "settled",
+        "short",
+        "spy",
+        "strategy",
+        "tagged",
+        "test",
+        "than",
+        "to",
+        "toxic",
+        "value",
+        "volume",
+        "whether",
+        "without",
+        "worse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "default_off_forward_short_volume_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows per short-volume quintile (the current per-quintile N is single digits and not significance-tested), or a PIT borrow fee / utilization / loan-availability field, before any soft-tilt activation test.",
+        "score": 0.0718,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "forward_replacement_entry_regime_activation_attribution",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags, especially outside QQQ-only low-deployment ETF rows, before any activation-envelope test.",
+        "score": 0.0585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0528,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "reopen_condition": "Materially more closed forward replacement rows tagged by the same shared helper, or a genuinely new PIT entry-fragility data source, before any allocation or activation experiment.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "q5_sample_still_too_thin",
+      "no_cash_spy_qqq_separation",
+      "source_family_confound",
+      "short_volume_effect_already_non_incremental"
+    ],
+    "confidence_reason": "Playbook records short-volume as a real but non-incremental context and explicitly sanctions a soft short-flow forward validation only after more closed rows accumulate; current ledger advanced from 37 tagged rows/Q5 n=7 to 45 tagged rows/Q5 n=9, but sample and source-family confounding remain high-risk.",
+    "recorded_at": "2026-07-03T02:10:50+00:00"
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "observed_only_directional_short_volume_toxic_lead_concentration_failed",
+    "artifact": "data/experiments/exp-20260703-003/exp_20260703_003_forward_short_volume_toxic_replacement_value.json",
+    "log_file": "experiments/logs/exp-20260703-003.json",
+    "lean_quality_passed": true,
+    "summary": {
+      "source_rows": 51,
+      "tagged_rows": 45,
+      "clean_q1q2_rows": 23,
+      "toxic_q5_rows": 9,
+      "middle_q3q4_rows": 13,
+      "toxic_ticker_count": 5,
+      "toxic_sleeve_count": 7,
+      "max_toxic_ticker_share": 0.555556,
+      "max_toxic_sleeve_share": 0.222222,
+      "decision": "observed_only_directional_short_volume_toxic_lead_concentration_failed"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-003.json",
+  "single_causal_variable": "forward_entry_short_volume_toxic_replacement_value_attribution_v2",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260703-003.json",
+  "trial_family": "forward_short_volume_replacement_value_attribution",
+  "trial_variant_id": "toxic_q5_vs_clean_q1q2_more_rows_v2",
+  "alpha_hypothesis": "Closed forward replacement rows tagged with PIT entry short-volume percentile now have enough additional settled observations to test whether Q5 toxic short-volume remains worse than Q1-Q2 clean rows on cash/SPY/QQQ replacement value, without changing strategy behavior.",
+  "implementation_mode": "observed_only_forward_attribution",
+  "new_evidence_axis": "Forward replacement ledger advanced from the playbook-recorded 37 PIT short-volume tagged rows/Q5 n=7 to 45 tagged rows/Q5 n=9; this is an out-of-sample forward-row validation, not a frozen-window short-volume threshold, scalar, source, hold, cooldown, or top-N retry.",
+  "artifact_file": "data/experiments/exp-20260703-003/exp_20260703_003_forward_short_volume_toxic_replacement_value.json",
+  "log_file": "experiments/logs/exp-20260703-003.json",
+  "changed_files": [
+    "quant/experiments/exp_20260703_003_forward_short_volume_toxic_replacement_value.py",
+    "data/experiments/exp-20260703-003/exp_20260703_003_forward_short_volume_toxic_replacement_value.json",
+    "experiments/cards/exp-20260703-003.md",
+    "experiments/manifests/exp-20260703-003.json",
+    "experiments/tickets/exp-20260703-003.json",
+    "experiments/logs/exp-20260703-003.json",
+    "docs/experiment_registry.json"
+  ],
+  "decision": "observed_only_directional_short_volume_toxic_lead_concentration_failed",
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T02:15:31+00:00"
+}

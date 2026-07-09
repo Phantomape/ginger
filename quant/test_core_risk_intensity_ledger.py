@@ -2,6 +2,7 @@ import json
 
 from quant.core_risk_intensity_ledger import (
     RULE_VERSION,
+    SURFACE_CONTRACT,
     append_core_risk_intensity_observation_snapshot,
     build_core_risk_intensity_observation_snapshot,
 )
@@ -80,3 +81,39 @@ def test_append_snapshot_is_idempotent(tmp_path):
     rows = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 2
     assert {row["ticker"] for row in rows} == {"AAA", "BBB"}
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert state["surface_contract"] == SURFACE_CONTRACT
+    assert state["as_of"] == "2026-06-22"
+    assert state["candidate_count"] == 2
+    assert state["rows_seen"] == 2
+    assert state["rows_written"] == 0
+    assert state["rows_skipped_duplicate"] == 2
+    assert state["last_nonempty_as_of"] == "2026-06-22"
+
+
+def test_append_snapshot_persists_state_heartbeat_for_empty_snapshot(tmp_path):
+    first = build_core_risk_intensity_observation_snapshot(
+        as_of="2026-06-22",
+        advisory_signals=[_signal("AAA", 0.02)],
+        selected_signals=[],
+    )
+    empty = build_core_risk_intensity_observation_snapshot(
+        as_of="2026-06-23",
+        advisory_signals=[],
+        selected_signals=[],
+    )
+    ledger = tmp_path / "snapshots.jsonl"
+
+    append_core_risk_intensity_observation_snapshot(first, ledger)
+    result = append_core_risk_intensity_observation_snapshot(empty, ledger)
+
+    assert result["rows_seen"] == 0
+    assert result["rows_written"] == 0
+    assert result["state_written"] is True
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert state["surface_contract"] == SURFACE_CONTRACT
+    assert state["as_of"] == "2026-06-23"
+    assert state["last_run_as_of"] == "2026-06-23"
+    assert state["candidate_count"] == 0
+    assert state["rows_seen"] == 0
+    assert state["last_nonempty_as_of"] == "2026-06-22"

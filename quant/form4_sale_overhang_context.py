@@ -465,8 +465,86 @@ def summarize_context_rows(
         "form4_sale_overhang_bucket_counts": dict(sorted(bucket_counts.items())),
         "min_latest_usable_trade_date": min(usable_days) if usable_days else None,
         "max_latest_usable_trade_date": max(usable_days) if usable_days else None,
+        "forward_reopen_progress": summarize_forward_reopen_progress(rows),
         "source_audit": source_audit,
     }
+
+
+def summarize_forward_reopen_progress(
+    rows: list[dict[str, Any]],
+    *,
+    gate: dict[str, Any] = FORWARD_REOPEN_GATE,
+) -> dict[str, Any]:
+    """Report settled-row progress toward the Form4 alpha reopen gate."""
+
+    closed_rows = [row for row in rows if truthy(row.get("closed_forward_row"))]
+    high_context_rows = [row for row in rows if truthy(row.get("form4_high_sale_overhang"))]
+    high_closed_rows = [
+        row for row in closed_rows if truthy(row.get("form4_high_sale_overhang"))
+    ]
+    complete_closed_rows = [
+        row for row in closed_rows if row_has_required_replacement_values(row, gate)
+    ]
+
+    closed_by_ticker: Counter[str] = Counter(
+        str(row.get("ticker") or "").upper() or "UNKNOWN" for row in closed_rows
+    )
+    max_single_ticker_share = (
+        max(closed_by_ticker.values()) / len(closed_rows) if closed_rows else None
+    )
+
+    closed_min = int(gate.get("closed_forward_rows_min") or 0)
+    high_min = int(gate.get("high_sale_overhang_forward_rows_min") or 0)
+    max_share = finite_float(gate.get("single_ticker_share_max"))
+    not_ready_reasons: list[str] = []
+    if len(closed_rows) < closed_min:
+        not_ready_reasons.append("closed_forward_rows_below_min")
+    if len(high_closed_rows) < high_min:
+        not_ready_reasons.append("high_sale_overhang_forward_rows_below_min")
+    if len(complete_closed_rows) < len(closed_rows):
+        not_ready_reasons.append("closed_forward_rows_missing_required_replacement_values")
+    if (
+        max_share is not None
+        and max_single_ticker_share is not None
+        and max_single_ticker_share > max_share
+    ):
+        not_ready_reasons.append("single_ticker_share_above_max")
+
+    return {
+        "context_rows_current": len(rows),
+        "high_sale_overhang_context_rows_current": len(high_context_rows),
+        "closed_forward_rows_current": len(closed_rows),
+        "high_sale_overhang_closed_forward_rows_current": len(high_closed_rows),
+        "replacement_value_complete_closed_rows_current": len(complete_closed_rows),
+        "closed_forward_rows_without_required_replacement_values": (
+            len(closed_rows) - len(complete_closed_rows)
+        ),
+        "unique_tickers_closed_forward_rows": len(closed_by_ticker),
+        "max_single_ticker_closed_forward_row_share": round_float(
+            max_single_ticker_share,
+            6,
+        ),
+        "gate_ready": not not_ready_reasons,
+        "not_ready_reasons": not_ready_reasons,
+        "gate": gate,
+    }
+
+
+def row_has_required_replacement_values(
+    row: dict[str, Any],
+    gate: dict[str, Any] = FORWARD_REOPEN_GATE,
+) -> bool:
+    required = [str(item).lower() for item in gate.get("required_replacement_values") or []]
+    for benchmark in required:
+        prefix = f"{benchmark}_replacement_value"
+        values = [
+            value
+            for key, value in row.items()
+            if str(key).lower().startswith(prefix)
+        ]
+        if not any(finite_float(value) is not None for value in values):
+            return False
+    return True
 
 
 def sample_context_rows(rows: list[dict[str, Any]], *, limit: int = 8) -> list[dict[str, Any]]:

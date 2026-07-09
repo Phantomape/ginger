@@ -1168,3 +1168,18 @@ def test_update_result_records_prediction_calibration():
     assert calibration["actual_success"] == 1
     assert calibration["calibration_direction"] == "underconfident"
     assert calibration["brier_score"] == 0.64
+
+
+def test_looks_placeholder_word_boundary():
+    from experiment_registry import _looks_placeholder
+
+    # Real prose containing placeholder words as substrings must pass.
+    assert _looks_placeholder(
+        "backfilled pre-2023 index history raises episode count; nonetheless "
+        "the sample stays thin"
+    ) is False
+    # Bare placeholders must still be caught.
+    assert _looks_placeholder("TODO") is True
+    assert _looks_placeholder("fill in later") is True
+    assert _looks_placeholder("none") is True
+    assert _looks_placeholder("") is True

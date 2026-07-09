@@ -1,0 +1,304 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+    "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+    "experiments/cards/exp-20260703-009.md",
+    "experiments/manifests/exp-20260703-009.json",
+    "experiments/tickets/exp-20260703-009.json",
+    "experiments/logs/exp-20260703-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260703-009.md",
+  "causal_components": [
+    "resolved issuer S-1/F-1 event rows",
+    "entity exposure map peer join",
+    "next-open 10d SPY-excess",
+    "same-peer unconditional baseline",
+    "read-only no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "none_read_only",
+  "claimed_at": "2026-07-03T09:06:04+00:00",
+  "completed_at": "2026-07-03T09:13:12+00:00",
+  "created_at": "2026-07-03T09:05:54+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260703-009",
+  "experiment_uid": "expuid-f0d27fb82ac04c03",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260703-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-03T09:05:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "resolved_s1_peer_substitution"
+  },
+  "hypothesis": "Resolved listed-issuer S-1/F-1 overhang may redirect capital into listed SIC/theme peers, so peers should show positive next-open 10d SPY-excess versus same-peer unconditional baselines across canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "resolved_s1_f1_issuer_overhang_peer_substitution_10d_spy_excess_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-023",
+    "exp-20260702-024",
+    "exp-20260702-018",
+    "exp-20260702-017"
+  ],
+  "new_evidence_type": "new_target_side_relation_join",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "across",
+        "baselines",
+        "canonical",
+        "capital",
+        "excess",
+        "f",
+        "f1",
+        "into",
+        "issuer",
+        "listed",
+        "may",
+        "overhang",
+        "peer",
+        "peers",
+        "positive",
+        "redirect",
+        "resolved",
+        "s",
+        "s1",
+        "same",
+        "should",
+        "show",
+        "sic",
+        "so",
+        "spy",
+        "substitution",
+        "theme",
+        "unconditional",
+        "versus",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_425_merger_theme_peer_propagation_attribution",
+        "reopen_condition": "A valid retry needs richer deal economics such as cash/stock consideration, bidder/target role, deal size versus peer float, post-announcement amendment/termination trajectory, or fresh forward rows under a shared helper.",
+        "score": 0.4944,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_industry_peer_shock_candidate_pool",
+        "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger non-price peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_sector_peer_shock_candidate_pool",
+        "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sector_peer_moderate_shock_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+        "score": 0.4833,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_peer_moderate_shock_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger non-price relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.23,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "peer relation too noisy",
+      "sign flips across windows",
+      "issuer overhang already priced",
+      "top ticker concentration",
+      "near-neighbor SEC propagation saturation"
+    ],
+    "confidence_reason": "The issuer-self S-1/F-1 overhang read was stable negative and this tests a distinct substitution target-side relation; prior SEC peer propagation was noisy and the same SEC corporate-event surface is heavily explored, so success odds are low.",
+    "recorded_at": "2026-07-03T09:05:18+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_no_resolved_s1_peer_substitution_edge",
+    "artifact": "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+    "log": "experiments/logs/exp-20260703-009.json",
+    "runner": "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+    "gate4": {
+      "mode": "observed_only_attribution",
+      "passed": false,
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "not_positive_all_windows",
+        "pooled_positive_delta_below_threshold"
+      ]
+    },
+    "summary": "Resolved listed-issuer S-1/F-1 overhang did not produce a stable positive peer delta versus same-peer baselines across canonical windows."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260703-009.json",
+  "single_causal_variable": "resolved_s1_f1_issuer_overhang_peer_substitution_10d_spy_excess_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260703-009.json",
+  "trial_family": "resolved_s1_f1_peer_substitution_attribution",
+  "trial_variant_id": "resolved_s1_f1_peer_substitution_10d_spy_excess_v1",
+  "alpha_hypothesis": "If the peer-substitution sign is stable, a later shared-paper-first experiment can test resolved S-1/F-1 overhang as a default-off peer candidate source or allocator context.",
+  "implementation_mode": "read_only_diagnostic",
+  "new_evidence_axis": "new target-side relation: resolved listed-issuer S-1/F-1 overhang to listed SIC/theme peers. Prior exp-20260702-023 tested issuer-self overhang; prior peer reads tested private IPO and 425 event classes.",
+  "decision": "rejected_no_resolved_s1_peer_substitution_edge",
+  "artifact": "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+  "log": "experiments/logs/exp-20260703-009.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields": [
+      "event_class",
+      "ticker_status",
+      "form_type",
+      "filed_date",
+      "ticker",
+      "relation_type",
+      "entry_date",
+      "Open/Close warehouse bars"
+    ],
+    "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No executable filter or rank rule was added.",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "not_positive_all_windows",
+      "pooled_positive_delta_below_threshold"
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution; no production or backtest behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Resolved listed-issuer S-1/F-1 overhang did not produce a stable positive peer delta versus same-peer baselines across canonical windows.",
+    "forbidden_near_neighbor_retry": "Do not re-slice the same resolved S-1/F-1 peer rows by relation type, theme subset, amendment flag, form subtype, horizon, entry lag, ticker-status, density, top-N, hold, cooldown, notional, or response shape.",
+    "new_evidence_required": "A valid retry needs richer offering economics such as registered amount, resale versus primary issuance, selling-holder identity, effectiveness date, prospectus-supplement terms, or fresh forward rows under a shared helper."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260703_009_resolved_s1_peer_substitution.py",
+    "data/experiments/exp-20260703-009/exp_20260703_009_resolved_s1_peer_substitution.json",
+    "experiments/cards/exp-20260703-009.md",
+    "experiments/manifests/exp-20260703-009.json",
+    "experiments/tickets/exp-20260703-009.json",
+    "experiments/logs/exp-20260703-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-03T09:13:12+00:00"
+}

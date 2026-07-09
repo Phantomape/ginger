@@ -113,8 +113,14 @@ def test_persist_intraday_structured_event_snapshot_writes_artifacts(tmp_path):
     assert "NVDA" not in {row["ticker"] for row in event_payload["rows"]}
     assert {row["outcome_status"] for row in observations} == {"pending_forward_close"}
     assert any(row["target_relation_quality"] is True for row in observations)
-    assert all(row["entry_date"] is None for row in observations)
+    assert {row["entry_date"] for row in observations} == {"2026-06-30"}
+    assert {row["entry_date_status"] for row in observations} == {
+        "planned_next_session_open"
+    }
     assert all(row["target_price"] is None for row in observations)
+    assert {row["target_price_applicability"] for row in observations} == {
+        "not_applicable_fixed_horizon_observation"
+    }
     assert event_payload["trade_enabled"] is False
     assert event_payload["strategy_behavior_changed"] is False
 

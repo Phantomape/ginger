@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import stat
 import time
 from pathlib import Path
 
@@ -171,7 +173,14 @@ def sweep_quietly(repo_root: Path | str = REPO_ROOT) -> int:
 # (the temp holds the only copy of that day's output when the final rename
 # failed), unlike experiment residue which is throwaway. These must be recovered
 # (promote temp -> final) before any cleanup, never blindly deleted.
-_RECOVERABLE_DIRS = (
+try:
+    from data_paths import DAILY_ARTIFACTS as _DAILY_ARTIFACTS
+except Exception:
+    _DAILY_ARTIFACTS = {}
+
+_RECOVERABLE_DIRS = tuple(
+    sorted({f"data/{subdir}" for subdir, _pattern in _DAILY_ARTIFACTS.values()})
+) or (
     "data/daily/signals/quant",
     "data/daily/signals/trend",
     "data/daily/snapshots/earnings",
@@ -188,15 +197,68 @@ def _promote_with_retry(src: Path, dst: Path) -> None:
     """``os.replace`` retried for transient Windows lock errors (local copy of
     the writer's retry; not imported, so this module stays loadable by file path)."""
     delay = 0.05
+    last_exc: PermissionError | None = None
     for attempt in range(6):
         try:
             os.replace(src, dst)
             return
-        except PermissionError:
+        except PermissionError as exc:
+            last_exc = exc
             if attempt == 5:
-                raise
+                break
             time.sleep(delay)
             delay *= 2
+    try:
+        shutil.copyfile(src, dst)
+        try:
+            src.unlink()
+        except OSError:
+            pass
+        return
+    except OSError:
+        if last_exc is not None:
+            raise last_exc
+        raise
+
+
+def _make_user_writable(path: Path) -> None:
+    """Best-effort read-only bit clear before deleting Windows temp residue."""
+    try:
+        mode = path.stat().st_mode
+        path.chmod(mode | stat.S_IWRITE)
+    except OSError:
+        pass
+
+
+def _unlink_with_retry(path: Path) -> None:
+    """Unlink with the same transient Windows-lock tolerance as promotion.
+
+    Stale atomic temps can be read-only or briefly locked by scanners on
+    Windows. Clearing the user-write bit is safe for the temp itself and does
+    not touch the already-present final artifact.
+    """
+    delay = 0.05
+    last_exc: OSError | None = None
+    for attempt in range(6):
+        try:
+            path.unlink()
+            return
+        except FileNotFoundError:
+            return
+        except PermissionError as exc:
+            last_exc = exc
+            _make_user_writable(path)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) != 5:
+                raise
+            last_exc = exc
+            _make_user_writable(path)
+        if attempt == 5:
+            break
+        time.sleep(delay)
+        delay *= 2
+    if last_exc is not None:
+        raise last_exc
 
 
 def _final_name_for_temp(temp_name: str) -> str | None:
@@ -222,6 +284,18 @@ def _temp_payload_is_valid(path: Path, final_name: str) -> bool:
         except ValueError:
             return False
         return isinstance(payload, (dict, list)) and bool(payload)
+    if final_name.endswith(".jsonl"):
+        saw_row = False
+        for line in raw.splitlines():
+            text = line.strip()
+            if not text:
+                continue
+            try:
+                json.loads(text)
+            except ValueError:
+                return False
+            saw_row = True
+        return saw_row
     return True
 
 
@@ -267,8 +341,9 @@ def recover_orphan_atomic_writes(
         if final_path.exists():
             if not dry_run:
                 try:
-                    temp_path.unlink()
-                except OSError:
+                    _unlink_with_retry(temp_path)
+                except OSError as exc:
+                    skipped.append({"path": str(temp_path), "reason": f"unlink_failed:{exc}"})
                     continue
             cleaned.append(str(temp_path))
             continue

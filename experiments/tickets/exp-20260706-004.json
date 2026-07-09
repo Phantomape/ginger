@@ -1,0 +1,899 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+    "experiments/cards/exp-20260706-004.md",
+    "experiments/manifests/exp-20260706-004.json",
+    "experiments/tickets/exp-20260706-004.json",
+    "experiments/logs/exp-20260706-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Deep-drawdown rebound only deserves a default-off paper candidate when each drawdown episode has a fixed one-entry budget; taking only the first stabilization signal per episode should remove long-bear repeated re-entry bleed while preserving correction rebound edge.",
+  "artifact": "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260706-004.md",
+  "causal_components": [
+    "pre2023 index history from exp003",
+    "fixed exp003 drawdown episode trigger and first-stabilization candidate",
+    "one-entry-per-episode budget gate",
+    "cash and SPY replacement comparison",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+    "experiments/cards/exp-20260706-004.md",
+    "experiments/manifests/exp-20260706-004.json",
+    "experiments/tickets/exp-20260706-004.json",
+    "experiments/logs/exp-20260706-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "deep_drawdown_first_stabilization_per_episode_budget_v1",
+  "claimed_at": "2026-07-06T02:12:34+00:00",
+  "completed_at": "2026-07-06T02:16:55+00:00",
+  "created_at": "2026-07-06T02:12:25+00:00",
+  "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260706-004",
+  "experiment_uid": "expuid-cb893068cfaf44fd",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "baseline_exists": true,
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    },
+    "source_artifact_exists": true,
+    "note": "Observed-only replay over exp003 artifact; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "episode_start_date",
+      "signal_date",
+      "entry_date",
+      "exit_date",
+      "pnl",
+      "pnl_pct_net",
+      "excess_vs_spy_pct"
+    ],
+    "selected_rows": 17,
+    "target_price_relevance": "This run does not create backtest signals or exits; target_price is not consumed."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "observed_only": true,
+    "accepted_alpha": false,
+    "strategy_rerun_required": false,
+    "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+    "acceptance_rule": {
+      "min_full_history_episodes": 8,
+      "require_positive_cash_pnl": true,
+      "min_win_rate": 0.6,
+      "require_positive_mean_excess_vs_spy": true,
+      "min_standard_window_trades": 3,
+      "min_standard_windows_with_trades": 2,
+      "require_no_standard_window_negative_pnl": true
+    },
+    "checks": {
+      "min_full_history_episodes": true,
+      "positive_cash_pnl": true,
+      "win_rate": true,
+      "positive_mean_excess_vs_spy": false,
+      "min_standard_window_trades": false,
+      "min_standard_windows_with_trades": false,
+      "no_standard_window_negative_pnl": true
+    },
+    "failed_reasons": [
+      "positive_mean_excess_vs_spy",
+      "min_standard_window_trades",
+      "min_standard_windows_with_trades"
+    ],
+    "summary": {
+      "source_repeated_entry_summary": {
+        "closed_trades": 342,
+        "distinct_episodes": 17,
+        "win_rate": 0.4766,
+        "total_pnl": -20657.2,
+        "mean_return_pct": -0.00604,
+        "median_return_pct": -0.002127,
+        "worst_return_pct": -0.163712,
+        "best_return_pct": 0.176862,
+        "positive_episode_count": 11,
+        "episodes": [
+          {
+            "episode_start_date": "2000-01-06",
+            "trades": 1,
+            "total_pnl": 215.74,
+            "total_return_pct": 0.021574
+          },
+          {
+            "episode_start_date": "2000-04-03",
+            "trades": 124,
+            "total_pnl": -18265.34,
+            "total_return_pct": -1.826534
+          },
+          {
+            "episode_start_date": "2004-08-05",
+            "trades": 10,
+            "total_pnl": 919.37,
+            "total_return_pct": 0.091937
+          },
+          {
+            "episode_start_date": "2005-04-15",
+            "trades": 5,
+            "total_pnl": 481.01,
+            "total_return_pct": 0.048101
+          },
+          {
+            "episode_start_date": "2006-06-12",
+            "trades": 14,
+            "total_pnl": 301.58,
+            "total_return_pct": 0.030158
+          },
+          {
+            "episode_start_date": "2008-01-07",
+            "trades": 66,
+            "total_pnl": -5597.57,
+            "total_return_pct": -0.559757
+          },
+          {
+            "episode_start_date": "2010-05-20",
+            "trades": 13,
+            "total_pnl": -371.81,
+            "total_return_pct": -0.037181
+          },
+          {
+            "episode_start_date": "2011-08-08",
+            "trades": 5,
+            "total_pnl": 697.61,
+            "total_return_pct": 0.069761
+          },
+          {
+            "episode_start_date": "2011-10-03",
+            "trades": 2,
+            "total_pnl": 925.99,
+            "total_return_pct": 0.092599
+          },
+          {
+            "episode_start_date": "2015-08-24",
+            "trades": 7,
+            "total_pnl": 146.27,
+            "total_return_pct": 0.014627
+          },
+          {
+            "episode_start_date": "2016-01-15",
+            "trades": 8,
+            "total_pnl": -92.11,
+            "total_return_pct": -0.009211
+          },
+          {
+            "episode_start_date": "2018-10-29",
+            "trades": 15,
+            "total_pnl": 30.79,
+            "total_return_pct": 0.003079
+          },
+          {
+            "episode_start_date": "2020-02-27",
+            "trades": 9,
+            "total_pnl": 1049.66,
+            "total_return_pct": 0.104966
+          },
+          {
+            "episode_start_date": "2020-09-23",
+            "trades": 3,
+            "total_pnl": 920.64,
+            "total_return_pct": 0.092064
+          },
+          {
+            "episode_start_date": "2022-01-21",
+            "trades": 51,
+            "total_pnl": -2570.74,
+            "total_return_pct": -0.257074
+          },
+          {
+            "episode_start_date": "2024-08-05",
+            "trades": 2,
+            "total_pnl": 576.13,
+            "total_return_pct": 0.057613
+          },
+          {
+            "episode_start_date": "2025-03-10",
+            "trades": 7,
+            "total_pnl": -24.42,
+            "total_return_pct": -0.002442
+          }
+        ]
+      },
+      "first_episode_budget_summary": {
+        "closed_trades": 17,
+        "distinct_episodes": 17,
+        "total_pnl": 1222.02,
+        "win_rate": 0.705882,
+        "mean_return_pct": 0.007188,
+        "median_return_pct": 0.007971,
+        "mean_excess_vs_spy_pct": -0.00383,
+        "positive_excess_rate": 0.529412,
+        "worst_return_pct": -0.159207,
+        "best_return_pct": 0.077246
+      },
+      "delta_vs_exp003_repeated_entry": {
+        "closed_trade_delta": -325,
+        "total_pnl_delta": 21879.22,
+        "mean_return_delta": 0.013228
+      },
+      "standard_windows": {
+        "old_thin": {
+          "closed_trades": 1,
+          "distinct_episodes": 1,
+          "total_pnl": 52.34,
+          "win_rate": 1.0,
+          "mean_return_pct": 0.005234,
+          "median_return_pct": 0.005234,
+          "mean_excess_vs_spy_pct": -0.023256,
+          "positive_excess_rate": 0.0,
+          "worst_return_pct": 0.005234,
+          "best_return_pct": 0.005234
+        },
+        "mid_weak": {
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "mean_excess_vs_spy_pct": null,
+          "positive_excess_rate": null,
+          "worst_return_pct": null,
+          "best_return_pct": null
+        },
+        "late_strong": {
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "mean_excess_vs_spy_pct": null,
+          "positive_excess_rate": null,
+          "worst_return_pct": null,
+          "best_return_pct": null
+        }
+      }
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260706-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-06T02:12:25+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "deep_drawdown_first_episode_budget"
+  },
+  "hypothesis": "Deep-drawdown rebound only deserves a default-off paper candidate when each drawdown episode has a fixed one-entry budget; taking only the first stabilization signal per episode should remove long-bear repeated re-entry bleed while preserving correction rebound edge.",
+  "implementation_mode": "observed_only_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "locked_variables": [
+    "deep_drawdown_first_stabilization_per_episode_budget_v1"
+  ],
+  "log_file": "experiments/logs/exp-20260706-004.json",
+  "mechanism_family": "capitulation_rebound_event_conditioning",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260706-003"
+  ],
+  "new_evidence_axis": "New gate shape: fixed one-entry budget per deep drawdown episode using only the first stabilization signal, explicitly different from exp-20260706-003 repeated re-entry; no trigger, hold, notional, cooldown, ticker, or threshold retune.",
+  "new_evidence_type": "new_gate_shape_on_existing_index_history",
+  "next_retry_requires": [
+    "predeclared ex-ante bear-vs-correction classifier",
+    "new live or forward settled deep-drawdown episode rows",
+    "or a full shared helper update tested without threshold/entry-budget sweeps"
+  ],
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "bear",
+        "bleed",
+        "budget",
+        "capitulation",
+        "conditioning",
+        "correction",
+        "deep",
+        "deserves",
+        "drawdown",
+        "each",
+        "edge",
+        "entry",
+        "episode",
+        "event",
+        "first",
+        "gate",
+        "has",
+        "long",
+        "one",
+        "only",
+        "per",
+        "preserving",
+        "re",
+        "rebound",
+        "remove",
+        "repeated",
+        "shape",
+        "should",
+        "signal",
+        "stabilization",
+        "taking",
+        "when",
+        "while"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "trend_long_entry_latency_default_off_candidate_source",
+        "reopen_condition": "Forward replacement-value rows from a shared logger, or a new catalyst/flow/ownership/borrow field joined before signal.",
+        "score": 0.1716,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_first_hit_leadership_decay",
+        "reopen_condition": null,
+        "score": 0.1705,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_earnings_underpriced_event_plus_one_exclusion",
+        "reopen_condition": "Needs a broader replay-safe post-earnings candidate pool or an independent free-data signal that expands touched trades before promoting any timing exclusion into the shared helper.",
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "external_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1614,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "external_event_candidate_pool_quality",
+        "reopen_condition": null,
+        "score": 0.1614,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new gate shape: fixed one-entry budget per deep drawdown episode using only the first stabilization signal, explicitly different from exp-20260706-003 repeated re-entry; no trigger, hold, notional, cooldown, ticker, or threshold retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "new gate shape: fixed one-entry budget per deep drawdown episode using only the first stabilization signal, explicitly different from exp-20260706-003 repeated re-entry; no trigger, hold, notional, cooldown, ticker, or threshold retune.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new gate shape: fixed one-entry budget per deep drawdown episode using only the first stabilization signal, explicitly different from exp-20260706-003 repeated re-entry; no trigger, hold, notional, cooldown, ticker, or threshold retune.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "why_result_happened": "The episode budget directly removed the repeated-entry bleed: 342 exp003 trades compressed to 17 first signals and cash PnL improved by more than $21k. It still failed the deployable alpha bar because the first signals did not beat SPY on average and the canonical fixed windows contain only one selected trade.",
+    "forbidden_near_neighbor_retry": "Do not retune drawdown trigger, reset hysteresis, close-location, hold days, notional, cooldown, or ticker on this same artifact. Do not sweep second/third entry budgets after seeing this result.",
+    "new_evidence_required": "A valid retry needs a predeclared ex-ante bear-vs-correction classifier, genuinely new live/forward episode rows, or a full shared paper helper update that is tested before seeing the new episode outcomes."
+  },
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "standard_windows_too_thin",
+      "spy_replacement_not_beaten",
+      "secular_bear_first_signal_still_bad",
+      "posthoc_gate_shape_overfit"
+    ],
+    "confidence_reason": "exp-20260706-003 identified repeated re-entry during long bear episodes as the realized failure mechanism, so a one-entry episode budget is the specific new gate shape it allowed; risk remains high because first signals may still be falling knives, SPY excess was weak in the rejected bundle, and canonical windows have few episodes.",
+    "recorded_at": "2026-07-06T02:11:42+00:00"
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only analysis over exp003 replay artifact. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "related_files": [
+    "data/experiments/exp-20260706-003/exp_20260706_003_deep_drawdown_rebound.json",
+    "quant/deep_drawdown_rebound_paper_sleeve.py",
+    "quant/experiments/exp_20260706_003_deep_drawdown_rebound.py",
+    "experiments/logs/exp-20260706-003.json",
+    "data/non_ohlcv/index_history/index_daily_pre2023.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+    "artifact": "data/experiments/exp-20260706-004/exp_20260706_004_deep_drawdown_first_episode_budget.json",
+    "log": "experiments/logs/exp-20260706-004.json",
+    "runner": "quant/experiments/exp_20260706_004_deep_drawdown_first_episode_budget.py",
+    "gate4": {
+      "passed": false,
+      "observed_only": true,
+      "accepted_alpha": false,
+      "strategy_rerun_required": false,
+      "decision": "observed_only_rejected_deep_drawdown_first_episode_budget",
+      "acceptance_rule": {
+        "min_full_history_episodes": 8,
+        "require_positive_cash_pnl": true,
+        "min_win_rate": 0.6,
+        "require_positive_mean_excess_vs_spy": true,
+        "min_standard_window_trades": 3,
+        "min_standard_windows_with_trades": 2,
+        "require_no_standard_window_negative_pnl": true
+      },
+      "checks": {
+        "min_full_history_episodes": true,
+        "positive_cash_pnl": true,
+        "win_rate": true,
+        "positive_mean_excess_vs_spy": false,
+        "min_standard_window_trades": false,
+        "min_standard_windows_with_trades": false,
+        "no_standard_window_negative_pnl": true
+      },
+      "failed_reasons": [
+        "positive_mean_excess_vs_spy",
+        "min_standard_window_trades",
+        "min_standard_windows_with_trades"
+      ],
+      "summary": {
+        "source_repeated_entry_summary": {
+          "closed_trades": 342,
+          "distinct_episodes": 17,
+          "win_rate": 0.4766,
+          "total_pnl": -20657.2,
+          "mean_return_pct": -0.00604,
+          "median_return_pct": -0.002127,
+          "worst_return_pct": -0.163712,
+          "best_return_pct": 0.176862,
+          "positive_episode_count": 11,
+          "episodes": [
+            {
+              "episode_start_date": "2000-01-06",
+              "trades": 1,
+              "total_pnl": 215.74,
+              "total_return_pct": 0.021574
+            },
+            {
+              "episode_start_date": "2000-04-03",
+              "trades": 124,
+              "total_pnl": -18265.34,
+              "total_return_pct": -1.826534
+            },
+            {
+              "episode_start_date": "2004-08-05",
+              "trades": 10,
+              "total_pnl": 919.37,
+              "total_return_pct": 0.091937
+            },
+            {
+              "episode_start_date": "2005-04-15",
+              "trades": 5,
+              "total_pnl": 481.01,
+              "total_return_pct": 0.048101
+            },
+            {
+              "episode_start_date": "2006-06-12",
+              "trades": 14,
+              "total_pnl": 301.58,
+              "total_return_pct": 0.030158
+            },
+            {
+              "episode_start_date": "2008-01-07",
+              "trades": 66,
+              "total_pnl": -5597.57,
+              "total_return_pct": -0.559757
+            },
+            {
+              "episode_start_date": "2010-05-20",
+              "trades": 13,
+              "total_pnl": -371.81,
+              "total_return_pct": -0.037181
+            },
+            {
+              "episode_start_date": "2011-08-08",
+              "trades": 5,
+              "total_pnl": 697.61,
+              "total_return_pct": 0.069761
+            },
+            {
+              "episode_start_date": "2011-10-03",
+              "trades": 2,
+              "total_pnl": 925.99,
+              "total_return_pct": 0.092599
+            },
+            {
+              "episode_start_date": "2015-08-24",
+              "trades": 7,
+              "total_pnl": 146.27,
+              "total_return_pct": 0.014627
+            },
+            {
+              "episode_start_date": "2016-01-15",
+              "trades": 8,
+              "total_pnl": -92.11,
+              "total_return_pct": -0.009211
+            },
+            {
+              "episode_start_date": "2018-10-29",
+              "trades": 15,
+              "total_pnl": 30.79,
+              "total_return_pct": 0.003079
+            },
+            {
+              "episode_start_date": "2020-02-27",
+              "trades": 9,
+              "total_pnl": 1049.66,
+              "total_return_pct": 0.104966
+            },
+            {
+              "episode_start_date": "2020-09-23",
+              "trades": 3,
+              "total_pnl": 920.64,
+              "total_return_pct": 0.092064
+            },
+            {
+              "episode_start_date": "2022-01-21",
+              "trades": 51,
+              "total_pnl": -2570.74,
+              "total_return_pct": -0.257074
+            },
+            {
+              "episode_start_date": "2024-08-05",
+              "trades": 2,
+              "total_pnl": 576.13,
+              "total_return_pct": 0.057613
+            },
+            {
+              "episode_start_date": "2025-03-10",
+              "trades": 7,
+              "total_pnl": -24.42,
+              "total_return_pct": -0.002442
+            }
+          ]
+        },
+        "first_episode_budget_summary": {
+          "closed_trades": 17,
+          "distinct_episodes": 17,
+          "total_pnl": 1222.02,
+          "win_rate": 0.705882,
+          "mean_return_pct": 0.007188,
+          "median_return_pct": 0.007971,
+          "mean_excess_vs_spy_pct": -0.00383,
+          "positive_excess_rate": 0.529412,
+          "worst_return_pct": -0.159207,
+          "best_return_pct": 0.077246
+        },
+        "delta_vs_exp003_repeated_entry": {
+          "closed_trade_delta": -325,
+          "total_pnl_delta": 21879.22,
+          "mean_return_delta": 0.013228
+        },
+        "standard_windows": {
+          "old_thin": {
+            "closed_trades": 1,
+            "distinct_episodes": 1,
+            "total_pnl": 52.34,
+            "win_rate": 1.0,
+            "mean_return_pct": 0.005234,
+            "median_return_pct": 0.005234,
+            "mean_excess_vs_spy_pct": -0.023256,
+            "positive_excess_rate": 0.0,
+            "worst_return_pct": 0.005234,
+            "best_return_pct": 0.005234
+          },
+          "mid_weak": {
+            "closed_trades": 0,
+            "distinct_episodes": 0,
+            "total_pnl": 0.0,
+            "win_rate": null,
+            "mean_return_pct": null,
+            "median_return_pct": null,
+            "mean_excess_vs_spy_pct": null,
+            "positive_excess_rate": null,
+            "worst_return_pct": null,
+            "best_return_pct": null
+          },
+          "late_strong": {
+            "closed_trades": 0,
+            "distinct_episodes": 0,
+            "total_pnl": 0.0,
+            "win_rate": null,
+            "mean_return_pct": null,
+            "median_return_pct": null,
+            "mean_excess_vs_spy_pct": null,
+            "positive_excess_rate": null,
+            "worst_return_pct": null,
+            "best_return_pct": null
+          }
+        }
+      }
+    },
+    "summary": {
+      "source_repeated_entry_summary": {
+        "closed_trades": 342,
+        "distinct_episodes": 17,
+        "win_rate": 0.4766,
+        "total_pnl": -20657.2,
+        "mean_return_pct": -0.00604,
+        "median_return_pct": -0.002127,
+        "worst_return_pct": -0.163712,
+        "best_return_pct": 0.176862,
+        "positive_episode_count": 11,
+        "episodes": [
+          {
+            "episode_start_date": "2000-01-06",
+            "trades": 1,
+            "total_pnl": 215.74,
+            "total_return_pct": 0.021574
+          },
+          {
+            "episode_start_date": "2000-04-03",
+            "trades": 124,
+            "total_pnl": -18265.34,
+            "total_return_pct": -1.826534
+          },
+          {
+            "episode_start_date": "2004-08-05",
+            "trades": 10,
+            "total_pnl": 919.37,
+            "total_return_pct": 0.091937
+          },
+          {
+            "episode_start_date": "2005-04-15",
+            "trades": 5,
+            "total_pnl": 481.01,
+            "total_return_pct": 0.048101
+          },
+          {
+            "episode_start_date": "2006-06-12",
+            "trades": 14,
+            "total_pnl": 301.58,
+            "total_return_pct": 0.030158
+          },
+          {
+            "episode_start_date": "2008-01-07",
+            "trades": 66,
+            "total_pnl": -5597.57,
+            "total_return_pct": -0.559757
+          },
+          {
+            "episode_start_date": "2010-05-20",
+            "trades": 13,
+            "total_pnl": -371.81,
+            "total_return_pct": -0.037181
+          },
+          {
+            "episode_start_date": "2011-08-08",
+            "trades": 5,
+            "total_pnl": 697.61,
+            "total_return_pct": 0.069761
+          },
+          {
+            "episode_start_date": "2011-10-03",
+            "trades": 2,
+            "total_pnl": 925.99,
+            "total_return_pct": 0.092599
+          },
+          {
+            "episode_start_date": "2015-08-24",
+            "trades": 7,
+            "total_pnl": 146.27,
+            "total_return_pct": 0.014627
+          },
+          {
+            "episode_start_date": "2016-01-15",
+            "trades": 8,
+            "total_pnl": -92.11,
+            "total_return_pct": -0.009211
+          },
+          {
+            "episode_start_date": "2018-10-29",
+            "trades": 15,
+            "total_pnl": 30.79,
+            "total_return_pct": 0.003079
+          },
+          {
+            "episode_start_date": "2020-02-27",
+            "trades": 9,
+            "total_pnl": 1049.66,
+            "total_return_pct": 0.104966
+          },
+          {
+            "episode_start_date": "2020-09-23",
+            "trades": 3,
+            "total_pnl": 920.64,
+            "total_return_pct": 0.092064
+          },
+          {
+            "episode_start_date": "2022-01-21",
+            "trades": 51,
+            "total_pnl": -2570.74,
+            "total_return_pct": -0.257074
+          },
+          {
+            "episode_start_date": "2024-08-05",
+            "trades": 2,
+            "total_pnl": 576.13,
+            "total_return_pct": 0.057613
+          },
+          {
+            "episode_start_date": "2025-03-10",
+            "trades": 7,
+            "total_pnl": -24.42,
+            "total_return_pct": -0.002442
+          }
+        ]
+      },
+      "first_episode_budget_summary": {
+        "closed_trades": 17,
+        "distinct_episodes": 17,
+        "total_pnl": 1222.02,
+        "win_rate": 0.705882,
+        "mean_return_pct": 0.007188,
+        "median_return_pct": 0.007971,
+        "mean_excess_vs_spy_pct": -0.00383,
+        "positive_excess_rate": 0.529412,
+        "worst_return_pct": -0.159207,
+        "best_return_pct": 0.077246
+      },
+      "delta_vs_exp003_repeated_entry": {
+        "closed_trade_delta": -325,
+        "total_pnl_delta": 21879.22,
+        "mean_return_delta": 0.013228
+      },
+      "standard_windows": {
+        "old_thin": {
+          "closed_trades": 1,
+          "distinct_episodes": 1,
+          "total_pnl": 52.34,
+          "win_rate": 1.0,
+          "mean_return_pct": 0.005234,
+          "median_return_pct": 0.005234,
+          "mean_excess_vs_spy_pct": -0.023256,
+          "positive_excess_rate": 0.0,
+          "worst_return_pct": 0.005234,
+          "best_return_pct": 0.005234
+        },
+        "mid_weak": {
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "mean_excess_vs_spy_pct": null,
+          "positive_excess_rate": null,
+          "worst_return_pct": null,
+          "best_return_pct": null
+        },
+        "late_strong": {
+          "closed_trades": 0,
+          "distinct_episodes": 0,
+          "total_pnl": 0.0,
+          "win_rate": null,
+          "mean_return_pct": null,
+          "median_return_pct": null,
+          "mean_excess_vs_spy_pct": null,
+          "positive_excess_rate": null,
+          "worst_return_pct": null,
+          "best_return_pct": null
+        }
+      }
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260706-004.json",
+  "single_causal_variable": "deep_drawdown_first_stabilization_per_episode_budget_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260706-004.json",
+  "trial_family": "deep_drawdown_episode_budget_gate_shape",
+  "trial_variant_id": "first_stabilization_per_episode_v1",
+  "updated_at": "2026-07-06T02:16:55+00:00"
+}

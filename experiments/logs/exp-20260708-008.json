@@ -1,0 +1,496 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after": {
+    "behavior": "download_with_rate_limit_retry detects yfinance.shared._ERRORS signatures and retries with exponential backoff under a process-wide sleep budget",
+    "call_site_wiring": {
+      "crypto_sleeve.py": {
+        "direct_yf_download_calls": 0,
+        "retry_wrapper_calls": 1
+      },
+      "data_layer.py": {
+        "direct_yf_download_calls": 0,
+        "retry_wrapper_calls": 2
+      },
+      "regime.py": {
+        "direct_yf_download_calls": 0,
+        "retry_wrapper_calls": 1
+      },
+      "trend_signals.py": {
+        "direct_yf_download_calls": 0,
+        "retry_wrapper_calls": 1
+      }
+    },
+    "simulation": {
+      "after_wrapper_recovered": true,
+      "before_single_attempt_recovered": false,
+      "scenario": "rate limited on attempts 1-2, cleared on attempt 3",
+      "wrapper_attempts": 3,
+      "wrapper_backoff_sleeps_s": [
+        15.0,
+        30.0
+      ]
+    },
+    "tests": {
+      "command": "pytest quant/test_yf_rate_limit_retry.py quant/test_quant.py -k <download/ohlcv/regime/crypto/trend/rate_limit>",
+      "passed": true,
+      "returncode": 0,
+      "tail": [
+        "....................................                                     [100%]",
+        "36 passed, 283 deselected in 1.33s"
+      ]
+    }
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/yfinance_bootstrap.py",
+    "quant/regime.py",
+    "quant/data_layer.py",
+    "quant/trend_signals.py",
+    "quant/crypto_sleeve.py",
+    "quant/test_yf_rate_limit_retry.py",
+    "quant/experiments/exp_20260708_008_yfinance_rate_limit_retry.py",
+    "data/experiments/exp-20260708-008/exp_20260708_008_yfinance_rate_limit_retry.json",
+    "experiments/logs/exp-20260708-008.json",
+    "experiments/cards/exp-20260708-008.md",
+    "experiments/manifests/exp-20260708-008.json",
+    "experiments/tickets/exp-20260708-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "None directly; this restores the reliability of regime/OHLCV inputs that every production decision consumes, so degraded-data days stop silently biasing signals and paper sleeve admission.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260708-008/exp_20260708_008_yfinance_rate_limit_retry.json",
+  "before": {
+    "behavior": "yf.download swallows YFRateLimitError, logs ERROR ['SPY'], returns empty frame; callers treat it as missing data (no retry)",
+    "simulation": {
+      "single_attempt_recovered": false
+    }
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "rate_limit_outlives_retry_budget",
+      "bulk_retry_slows_pipeline_excessively",
+      "yfinance_error_dict_api_drift",
+      "test_regression"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "shared_rate_limit_detection_helper",
+    "exponential_backoff_with_global_sleep_budget",
+    "regime_download_adoption",
+    "data_layer_ohlcv_adoption",
+    "trend_signals_adoption",
+    "crypto_sleeve_adoption",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/yfinance_bootstrap.py",
+    "quant/regime.py",
+    "quant/data_layer.py",
+    "quant/trend_signals.py",
+    "quant/crypto_sleeve.py",
+    "quant/test_yf_rate_limit_retry.py",
+    "quant/experiments/exp_20260708_008_yfinance_rate_limit_retry.py",
+    "data/experiments/exp-20260708-008/exp_20260708_008_yfinance_rate_limit_retry.json",
+    "experiments/logs/exp-20260708-008.json",
+    "experiments/cards/exp-20260708-008.md",
+    "experiments/manifests/exp-20260708-008.json",
+    "experiments/tickets/exp-20260708-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "yfinance_rate_limit_retry_wrapper_v1",
+  "decision": "accepted_measurement_repair_yfinance_rate_limit_retry",
+  "delta_metrics": {
+    "after_wrapper_recovered": true,
+    "before_single_attempt_recovered": false,
+    "daily_call_sites_converted": 5,
+    "direct_yf_download_calls_remaining_daily_modules": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "unit_tests_passed": true,
+    "wrapper_attempts_in_simulation": 3
+  },
+  "experiment_id": "exp-20260708-008",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_scope": "No signal objects are created or altered; entry_date/target_price contracts untouched.",
+    "fields_checked": [
+      "yfinance.shared._ERRORS",
+      "YFRateLimitError signature",
+      "download return frame"
+    ],
+    "passed": true,
+    "target_price_scope": "Not applicable; fetch-reliability repair only."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No filter/entry/rank/size/exit/order rule was added; retry only affects data availability.",
+    "passed": true,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_yfinance_rate_limit_retry",
+    "measurement_blockers": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Measurement repair / fault recovery: Yahoo rate limiting makes yf.download silently return an empty frame, so the daily pipeline treats rate-limited tickers (SPY regime inputs, OHLCV features, trend context, crypto sleeve) as missing data with no retry; add a shared rate-limit-aware retry wrapper in yfinance_bootstrap and adopt it at the daily download call sites without changing strategy behavior.",
+  "implementation_mode": "measurement_repair_shared_fetch_retry_wrapper",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-008.json",
+  "mechanism_family": "production_daily_market_data_fetch_reliability",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260708-007",
+    "exp-20260628-017"
+  ],
+  "new_evidence_type": "fresh_20260707_spy_rate_limit_fetch_failure",
+  "next_retry_requires": [
+    "observed rate-limit data loss on a call site not covered by the wrapper",
+    "rate limiting that outlives the 600s process sleep budget"
+  ],
+  "owner": "interactive",
+  "parameters": {
+    "base_delay_s_default": 15.0,
+    "daily_call_site_modules": [
+      "regime.py",
+      "data_layer.py",
+      "trend_signals.py",
+      "crypto_sleeve.py"
+    ],
+    "max_attempts_default": 4,
+    "rate_limit_signatures": [
+      "YFRateLimitError",
+      "Too Many Requests",
+      "Rate limited"
+    ],
+    "sleep_budget_default_s": 600.0,
+    "sleep_budget_env": "GINGER_YF_RATE_LIMIT_SLEEP_BUDGET_S"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-tune retry counts/delays or re-wrap the same call sites without new evidence of loss; remaining yf.Ticker fundamental paths (earnings/info) keep their negative-cache behavior and only need call_with_rate_limit_retry if rate limits are actually observed there.",
+    "new_evidence_required": "A production run where rate limiting outlives the retry budget (escalate to a session-level throttle or alternate vendor), or observed rate-limit loss on the yf.Ticker fundamentals paths.",
+    "why_result_happened": "yf.download converts per-ticker rate-limit exceptions into an empty result plus a log line, so no caller could retry; the shared wrapper reads yfinance.shared._ERRORS (the only reliable per-call signal) and rides out the limit with bounded backoff."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "None directly; this restores the reliability of regime/OHLCV inputs that every production decision consumes, so degraded-data days stop silently biasing signals and paper sleeve admission.",
+    "2_history_check": {
+      "exp-20260628-017": "Retry-with-backoff for transient Windows rename failures; same remedy class for vendor-side transients.",
+      "exp-20260708-007": "Atomic-write repair on the same daily pipeline; this closes the fetch-side gap.",
+      "novelty_gate": "No strong near-neighbor (fetch reliability family is new)."
+    },
+    "3_single_measurement_bundle": "yfinance_rate_limit_retry_wrapper_v1",
+    "4_success_failure_standard": "Accept only as measurement repair if the wrapper recovers a simulated rate-limited fetch that raw yf.download loses, all four daily modules call the wrapper with no direct yf.download left, unit tests pass, and strategy deltas stay zero.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_008_yfinance_rate_limit_retry.py"
+  },
+  "prediction": {
+    "confidence_reason": "yfinance 1.2.0 exposes per-call shared._ERRORS with YFRateLimitError signatures; retry-with-backoff is the established repo remedy for transient vendor failures and the wrapper is behavior-preserving on success paths.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "rate_limit_outlives_retry_budget",
+      "bulk_retry_slows_pipeline_excessively",
+      "yfinance_error_dict_api_drift",
+      "test_regression"
+    ],
+    "recorded_at": "2026-07-08T05:41:31+00:00",
+    "success_probability": 0.85
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": true,
+    "scope": "measurement_repair_yfinance_rate_limit_retry_only",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/run.py",
+    "quant/yf_negative_cache.py",
+    "quant/yf_no_price_cache.py",
+    "experiments/logs/exp-20260708-007.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_008_yfinance_rate_limit_retry.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_yf_rate_limit_retry.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "yfinance_rate_limit_retry_wrapper_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_before": {
+    "claimed_at": "2026-07-08T05:41:31+00:00",
+    "created_at": "2026-07-08T05:41:20+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-008",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T05:41:20+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "yfinance_rate_limit_retry"
+    },
+    "novelty": {
+      "blocking_matches": [],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "companyfacts_ratio",
+        "field_tags": [
+          "a",
+          "add",
+          "adopt",
+          "all",
+          "an",
+          "as",
+          "at",
+          "aware",
+          "backoff",
+          "behavior",
+          "bootstrap",
+          "budget",
+          "call",
+          "changing",
+          "classification",
+          "context",
+          "crypto",
+          "daily",
+          "data",
+          "degrade",
+          "detects",
+          "download",
+          "empty",
+          "error",
+          "errors",
+          "exception",
+          "exponential",
+          "fault",
+          "features",
+          "fetch",
+          "frame",
+          "in",
+          "it",
+          "limit",
+          "limited",
+          "limiting",
+          "logs",
+          "makes",
+          "many",
+          "market",
+          "measurement",
+          "missing",
+          "no",
+          "pipeline",
+          "process",
+          "qqq",
+          "rate",
+          "recovery",
+          "regime",
+          "reliability",
+          "repair",
+          "requests",
+          "retry",
+          "return",
+          "signatures",
+          "silently",
+          "sites",
+          "sleep",
+          "sleeve",
+          "so",
+          "spy",
+          "strategy",
+          "swallows",
+          "tickers",
+          "too",
+          "treats",
+          "trend",
+          "wide",
+          "without",
+          "wrapper",
+          "yahoo",
+          "yf",
+          "yfinance",
+          "yfratelimiterror"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "nfp_selloff_next_open_risk_action",
+          "reopen_condition": "A robust NFP risk action needs more historical release events or a real PIT surprise/consensus field. Do not retune selloff thresholds, hold days, notional, or QQQ proxy on the same thin sample.",
+          "score": 0.4599,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "factor_residual_idiosyncratic_leadership_candidate_pool",
+          "reopen_condition": "Need materially different PIT flow, ownership, borrow/options, event-quality, or closed forward replacement-value evidence before revisiting broad factor-residual leadership. Do not sweep factor ETF lists, beta lookbacks, residual thresholds, RS/close/volume/volatility guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.455,
+          "status": "frozen_rejected",
+          "trials": 2
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "cash_conversion_quality_low_deployment_candidate_pool",
+          "reopen_condition": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality.",
+          "score": 0.4549,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "cash_conversion_quality_protective_stop_candidate_pool",
+          "reopen_condition": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality. Do not retry by sweeping the protective stop level on the same windows.",
+          "score": 0.4549,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "sec_offering_prospectus_surface_readiness_gate",
+          "reopen_condition": "Reopen only with a materially new machine-checkable axis: closed deal outcome, actual shelf drawdown history, verified lockup or hedging economics, a shared historical/daily prospectus-form helper that changes available rows, or closed forward replacement-value rows.",
+          "score": 0.4548,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "observed_only_streak_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "companyfacts_ratio",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": false,
+      "reopen_condition_guard": {
+        "applicable": false,
+        "blocked": false,
+        "matched_conditions": [],
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "proposal_classification": {
+          "fault_recovery": true,
+          "pipeline_wiring": true,
+          "routine": false
+        },
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "companyfacts_ratio",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-07-08T05:46:40Z",
+  "trial_family": "yfinance_fetch_reliability_repair",
+  "trial_variant_id": "yfinance_rate_limit_retry_v1"
+}

@@ -285,6 +285,67 @@ def test_missing_exact_asof_open_does_not_fill_pending_entry():
     assert snapshot["open_position_count"] == 0
 
 
+def test_fixed_hold_counts_entry_date_as_first_trading_day():
+    ohlcv = _ohlcv()
+    signal_idx = 56
+    event_date = ohlcv["SPY"][55]["date"]
+    state = empty_post_earnings_underpriced_drift_paper_state()
+    config = {"hold_days": 3}
+
+    signal_snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=ohlcv["SPY"][signal_idx]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=state,
+        config=config,
+        persist=False,
+    )
+    assert signal_snapshot["new_pending_count"] == 1
+    state["pending_entries"] = signal_snapshot["pending_entries"]
+
+    entry_snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=ohlcv["SPY"][signal_idx + 1]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=state,
+        config=config,
+        persist=False,
+    )
+    assert entry_snapshot["filled_count"] == 1
+    assert entry_snapshot["open_positions"][0]["observed_trading_days"] == 1
+    state["pending_entries"] = entry_snapshot["pending_entries"]
+    state["open_positions"] = entry_snapshot["open_positions"]
+
+    next_snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=ohlcv["SPY"][signal_idx + 2]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=state,
+        config=config,
+        persist=False,
+    )
+    assert next_snapshot["closed_count_today"] == 0
+    assert next_snapshot["open_positions"][0]["observed_trading_days"] == 2
+    state["pending_entries"] = next_snapshot["pending_entries"]
+    state["open_positions"] = next_snapshot["open_positions"]
+
+    exit_snapshot = build_post_earnings_underpriced_drift_paper_sleeve_snapshot(
+        as_of=ohlcv["SPY"][signal_idx + 3]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=["WIN"],
+        earnings_index=_earnings_index(event_date),
+        state=state,
+        config=config,
+        persist=False,
+    )
+    assert exit_snapshot["closed_count_today"] == 1
+    assert exit_snapshot["closed_positions_today"][0]["exit_date"] == ohlcv["SPY"][signal_idx + 3]["date"]
+    assert exit_snapshot["open_position_count"] == 0
+
+
 def test_default_off_alpha_attribution_includes_post_earnings_surface():
     report = build_default_off_alpha_attribution_report(
         as_of="2026-03-02",

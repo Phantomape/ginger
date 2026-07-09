@@ -12,6 +12,7 @@ import json
 import math
 import re
 from collections import Counter
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -38,6 +39,10 @@ from daily_news_structured_events import (
     ticker_match_block,
 )
 from news_text_sanitizer import annotate_news_item
+try:
+    from us_market_calendar import is_us_equity_session
+except ModuleNotFoundError:  # pragma: no cover - package import fallback
+    from quant.us_market_calendar import is_us_equity_session
 
 
 STRUCTURED_EVENT_RULE_VERSION = "intraday_news_structured_event_ledger_v1"
@@ -74,6 +79,9 @@ REQUIRED_OBSERVATION_FIELDS = [
     "target_relation_quality",
     "entry_semantics",
     "exit_semantics",
+    "entry_date",
+    "entry_date_status",
+    "target_price_applicability",
     "unit_notional_usd",
     "outcome_status",
 ]
@@ -436,9 +444,28 @@ def build_observation_id(event_row: Mapping[str, Any]) -> str:
     )
 
 
+def next_session_after(day: str | date | None) -> str | None:
+    if day is None:
+        return None
+    if isinstance(day, date):
+        current = day
+    else:
+        try:
+            current = datetime.fromisoformat(str(day)[:10]).date()
+        except ValueError:
+            return None
+    cursor = current + timedelta(days=1)
+    for _ in range(14):
+        if is_us_equity_session(cursor):
+            return cursor.isoformat()
+        cursor += timedelta(days=1)
+    return None
+
+
 def make_forward_observation(row: Mapping[str, Any]) -> dict[str, Any]:
     target = is_target_relation_quality(row)
     magnitude = row.get("magnitude") if isinstance(row.get("magnitude"), Mapping) else {}
+    entry_date = next_session_after(row.get("capture_date") or row.get("event_date"))
     return {
         "observation_id": build_observation_id(row),
         "rule_version": FORWARD_OBSERVATION_RULE_VERSION,
@@ -458,8 +485,14 @@ def make_forward_observation(row: Mapping[str, Any]) -> dict[str, Any]:
         "magnitude_qualified": bool(magnitude.get("has_numeric_magnitude")),
         "entry_semantics": ENTRY_SEMANTICS,
         "exit_semantics": EXIT_SEMANTICS,
-        "entry_date": None,
+        "entry_date": entry_date,
+        "entry_date_status": "planned_next_session_open" if entry_date else "unresolved",
         "target_price": None,
+        "target_price_applicability": "not_applicable_fixed_horizon_observation",
+        "target_price_reason": (
+            "Intraday structured-news observations close by fixed 10-session "
+            "attribution horizon; no target-price exit or order is scheduled."
+        ),
         "unit_notional_usd": UNIT_NOTIONAL_USD,
         "outcome_status": "pending_forward_close",
         "forward_5d_return_pct": None,
@@ -531,5 +564,6 @@ __all__ = [
     "iter_intraday_trade_news_files",
     "make_event_rows",
     "make_forward_observation",
+    "next_session_after",
     "safe",
 ]

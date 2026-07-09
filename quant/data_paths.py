@@ -228,6 +228,38 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/sec_ftd_finra/state.json",
         "sec_ftd_finra_paper_state.json",
     ),
+    "finra_ats_weekly_rows": (
+        "non_ohlcv/finra_ats_weekly/rows.jsonl",
+        "finra_ats_weekly_rows.jsonl",
+    ),
+    "finra_ats_weekly_manifest": (
+        "non_ohlcv/finra_ats_weekly/manifest.json",
+        "finra_ats_weekly_manifest.json",
+    ),
+    "finra_ats_share_paper_snapshots": (
+        "paper_sleeves/finra_ats_share/snapshots.jsonl",
+        "finra_ats_share_paper_snapshots.jsonl",
+    ),
+    "finra_ats_share_paper_state": (
+        "paper_sleeves/finra_ats_share/state.json",
+        "finra_ats_share_paper_state.json",
+    ),
+    "finra_otc_weekly_rows": (
+        "non_ohlcv/finra_otc_weekly/rows.jsonl",
+        "finra_otc_weekly_rows.jsonl",
+    ),
+    "finra_otc_weekly_manifest": (
+        "non_ohlcv/finra_otc_weekly/manifest.json",
+        "finra_otc_weekly_manifest.json",
+    ),
+    "finra_otc_internalization_paper_snapshots": (
+        "paper_sleeves/finra_otc_internalization/snapshots.jsonl",
+        "finra_otc_internalization_paper_snapshots.jsonl",
+    ),
+    "finra_otc_internalization_paper_state": (
+        "paper_sleeves/finra_otc_internalization/state.json",
+        "finra_otc_internalization_paper_state.json",
+    ),
     "moomoo_capital_flow_day_rows": (
         "non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
         "moomoo_capital_flow_day_rows.jsonl",

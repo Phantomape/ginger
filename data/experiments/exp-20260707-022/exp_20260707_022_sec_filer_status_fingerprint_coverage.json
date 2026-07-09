@@ -1,0 +1,478 @@
+{
+  "accepted": true,
+  "after": {
+    "accepted": true,
+    "cases": [
+      {
+        "expected_data_source": "sec_filer_status",
+        "expected_gate_shape": "candidate_pool_top1_10d",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "cover",
+            "filer",
+            "page",
+            "status",
+            "upgrade"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "cover_page_candidate_pool",
+        "passed": true,
+        "text": "sec_cover_page_filer_status_upgrade_candidate_pool sec_cover_page_filer_status_upgrade_candidate_source_v1"
+      },
+      {
+        "expected_data_source": "sec_filer_status",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "dei",
+            "historical",
+            "materialization",
+            "periodic",
+            "status"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "historical_dei_materialization",
+        "passed": true,
+        "text": "sec_periodic_historical_dei_status_materialization sec_periodic_historical_dei_status_materialization_v1"
+      },
+      {
+        "expected_data_source": "sec_filer_status",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "checkbox",
+            "cover",
+            "dei",
+            "parser",
+            "status",
+            "table"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "dei_checkbox_parser",
+        "passed": true,
+        "text": "sec_dei_cover_status_checkbox_table_parser sec_dei_cover_status_checkbox_table_parser_v1"
+      },
+      {
+        "expected_data_source": "sec_filer_status",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "cover",
+            "doc",
+            "periodic",
+            "priority",
+            "xbrl"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "cover_xbrl_priority",
+        "passed": true,
+        "text": "sec_periodic_cover_xbrl_doc_priority"
+      }
+    ],
+    "changed_variable": "sec_periodic_filer_status_data_source_keywords",
+    "decision": "accepted_measurement_repair_sec_filer_status_fingerprint_coverage",
+    "experiment_id": "exp-20260707-022",
+    "gate_contract": {
+      "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "gate_2_runtime_fields": "Not a signal generator; entry_date and target_price contracts are unchanged.",
+      "gate_3_survival": "Not a signal filter; survival is unchanged.",
+      "gate_4_rule": "Accept repair when focused tests pass and target frozen families rebuild with sec_filer_status without overclassifying generic SEC text."
+    },
+    "generated_at": "2026-07-07T21:17:11+00:00",
+    "hypothesis": "SEC 10-K/10-Q cover-page and DEI filer-status transition alpha has already been structurally blocked, but the novelty fingerprint still classified that family as data_source=other.",
+    "lane": "measurement_repair",
+    "phase": "after",
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "live_orders_changed": false,
+      "ranking_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": false,
+      "scope": "novelty_guard_measurement_only",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "trade_enabled": false
+    },
+    "regressions": [
+      {
+        "expected_data_source": "sec_text_event",
+        "fingerprint": {
+          "data_source": "sec_text_event",
+          "field_tags": [
+            "entry",
+            "item",
+            "k",
+            "listing",
+            "noncompliance",
+            "risk"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "generic_sec_item_event",
+        "passed": true,
+        "text": "SEC 8-K item 3.01 listing noncompliance entry risk"
+      },
+      {
+        "expected_data_source": "companyfacts_ratio",
+        "fingerprint": {
+          "data_source": "companyfacts_ratio",
+          "field_tags": [
+            "cash",
+            "companyfacts",
+            "flow",
+            "margin"
+          ],
+          "gate_shape": "other"
+        },
+        "label": "companyfacts_ratio",
+        "passed": true,
+        "text": "SEC Companyfacts free cash flow margin quality"
+      },
+      {
+        "expected_data_source": "filing_timeliness",
+        "fingerprint": {
+          "data_source": "filing_timeliness",
+          "field_tags": [
+            "earliness",
+            "filing",
+            "quarterly",
+            "timeliness"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "label": "filing_timeliness",
+        "passed": true,
+        "text": "quarterly filing timeliness earliness candidate pool"
+      }
+    ],
+    "schema_version": 1,
+    "summary": {
+      "classifier_cases": 4,
+      "classifier_cases_passed": 4,
+      "derived_frozen_family_view_rebuilt": true,
+      "missing_target_frozen_families": [],
+      "regression_cases": 3,
+      "regression_cases_passed": 3,
+      "target_frozen_families": 8,
+      "target_frozen_families_found": 8,
+      "target_frozen_families_passed": 8
+    },
+    "target_frozen_families": [
+      {
+        "accept_rate": 0.0,
+        "accepted": 0,
+        "blocked": 1,
+        "family_key": "post_leadlag_nonrepeat_surface_readiness",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "alpha",
+            "filer",
+            "leadlag",
+            "nonrepeat",
+            "post",
+            "readiness",
+            "status",
+            "surface"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Build or acquire historical 10-K/10-Q cover-page text/XBRL by filing acceptance date, extract filer status into a PIT field, then expose it through a shared default-off helper used by both historical replay and daily snapshots.",
+        "representative_exps": [
+          "exp-20260618-007"
+        ],
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "accepted": 0,
+        "blocked": 1,
+        "family_key": "sec_10k_10q_cover_page_materialization_probe",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "10k",
+            "10q",
+            "canonical",
+            "cover",
+            "document",
+            "materialization",
+            "page",
+            "primary",
+            "probe",
+            "text",
+            "window"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Materialize all canonical-window 10-K/10-Q primary-document rows or a compact XBRL-derived cover-page status sidecar keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed filer-status booleans; then run exactly one fixed shared-paper-first status-upgrade rule.",
+        "representative_exps": [
+          "exp-20260626-010"
+        ],
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "accepted": 0,
+        "blocked": 1,
+        "family_key": "sec_cover_page_filer_status_upgrade_candidate_pool",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "cover",
+            "coverage",
+            "filer",
+            "page",
+            "status",
+            "text",
+            "upgrade"
+          ],
+          "gate_shape": "candidate_pool_top1_10d"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Materialize historical 10-K/10-Q cover-page XBRL/text rows keyed by accession_number, accepted_at, usable_trade_date, ticker, and parsed filer-status booleans; then rerun one fixed upgrade/downgrade candidate rule through shared-paper-first.",
+        "representative_exps": [
+          "exp-20260626-008"
+        ],
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "accepted": 1,
+        "blocked": 0,
+        "family_key": "sec_cover_page_status_current_text_parser",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "accession",
+            "cover",
+            "current",
+            "daily",
+            "page",
+            "parser",
+            "probe",
+            "status",
+            "text"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Preserve raw inline XBRL/DEI cover-page facts or distinguishable checked/unchecked tokens for historical and daily 10-K/10-Q accessions, then build one shared default-off status-transition helper before any alpha test.",
+        "representative_exps": [
+          "exp-20260627-005"
+        ],
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "accepted": 1,
+        "blocked": 0,
+        "family_key": "sec_dei_cover_status_checkbox_table_parser",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "10q",
+            "checkbox",
+            "cover",
+            "current",
+            "dei",
+            "mu",
+            "parser",
+            "status",
+            "table"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Backfill or refresh historical 10-K/10-Q text/cache rows so the shared parser produces accepted_at-keyed DEI status rows across canonical windows, then build one fixed shared default-off status-transition helper before alpha replay.",
+        "representative_exps": [
+          "exp-20260627-014"
+        ],
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "accepted": 1,
+        "blocked": 0,
+        "family_key": "sec_dei_cover_status_shared_parser",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "cover",
+            "dei",
+            "parser",
+            "status"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Refresh or backfill historical/current 10-K/10-Q text after the cover-document priority repair so rows actually contain R1/inline htm.xml DEI facts, then build one fixed shared default-off status-transition helper before any alpha replay.",
+        "representative_exps": [
+          "exp-20260627-012"
+        ],
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "accepted": 1,
+        "blocked": 0,
+        "family_key": "sec_periodic_cover_xbrl_doc_priority",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "10q",
+            "budget",
+            "cover",
+            "current",
+            "doc",
+            "document",
+            "fetch",
+            "mu",
+            "periodic",
+            "priority",
+            "xbrl"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Refresh or backfill SEC periodic text after this selector repair, parse R1/inline htm.xml DEI status facts by accession and accepted_at, then build one shared default-off status-transition helper before any alpha replay.",
+        "representative_exps": [
+          "exp-20260627-011"
+        ],
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "accepted": 0,
+        "blocked": 1,
+        "family_key": "sec_periodic_historical_dei_status_materialization",
+        "fingerprint": {
+          "data_source": "sec_filer_status",
+          "field_tags": [
+            "audit",
+            "cache",
+            "current",
+            "dei",
+            "historical",
+            "materialization",
+            "parser",
+            "periodic",
+            "post",
+            "status"
+          ],
+          "gate_shape": "other"
+        },
+        "leads": 0,
+        "rejected": 0,
+        "reopen_condition": "Materialize historical 10-K/10-Q primary/cover XBRL text or a compact DEI sidecar for canonical-window accessions, or accumulate materially more closed forward status rows; then test exactly one shared default-off status-transition helper.",
+        "representative_exps": [
+          "exp-20260627-015"
+        ],
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ]
+  },
+  "before": {
+    "changed_variable": "sec_periodic_filer_status_data_source_keywords",
+    "experiment_id": "exp-20260707-022",
+    "generated_at": "2026-07-07T21:17:11+00:00",
+    "known_prior_classifier_miss": {
+      "data_source": "other",
+      "evidence": "Before this repair, frozen_families had SEC cover-page/DEI/filer-status rows in the catch-all source bucket.",
+      "families": [
+        "post_leadlag_nonrepeat_surface_readiness",
+        "sec_10k_10q_cover_page_materialization_probe",
+        "sec_cover_page_filer_status_upgrade_candidate_pool",
+        "sec_cover_page_status_current_text_parser",
+        "sec_dei_cover_status_checkbox_table_parser",
+        "sec_dei_cover_status_shared_parser",
+        "sec_periodic_cover_xbrl_doc_priority",
+        "sec_periodic_historical_dei_status_materialization"
+      ]
+    },
+    "phase": "before",
+    "production_impact": "No trading behavior changed in before measurement.",
+    "reservation_fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "already",
+        "as",
+        "been",
+        "blocked",
+        "blocker",
+        "but",
+        "bypass",
+        "classifies",
+        "cover",
+        "coverage",
+        "data",
+        "dei",
+        "family",
+        "filer",
+        "fingerprint",
+        "future",
+        "guard",
+        "guards",
+        "has",
+        "k",
+        "letting",
+        "materialization",
+        "novelty",
+        "or",
+        "other",
+        "page",
+        "q",
+        "retries",
+        "saturation",
+        "status",
+        "still",
+        "structurally",
+        "that",
+        "transition"
+      ],
+      "gate_shape": "other"
+    },
+    "schema_version": 1,
+    "source": "reservation_and_frozen_family_audit"
+  },
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "quant/experiments/exp_20260707_022_sec_filer_status_fingerprint_coverage.py"
+  ],
+  "decision": "accepted_measurement_repair_sec_filer_status_fingerprint_coverage",
+  "experiment_id": "exp-20260707-022",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260707_022_sec_filer_status_fingerprint_coverage.py"
+  ],
+  "timestamp": "2026-07-07T21:17:11+00:00"
+}

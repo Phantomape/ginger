@@ -1,0 +1,175 @@
+{
+  "accepted": false,
+  "alpha_hypothesis": "If offering economics are available, larger resale/primary dilution events should explain which resolved S-1/F-1 issuer rows have negative post-filing replacement value.",
+  "artifact": "data/experiments/exp-20260702-024/exp_20260702_024_resolved_s1_offering_economics_sidecar.json",
+  "audit_summary": {
+    "blocked": true,
+    "coverage_by_window": {
+      "late_strong": {
+        "coverage_rate": 0.0,
+        "local_text_or_feature_accessions": 0,
+        "target_rows": 1423,
+        "unique_accessions": 1423
+      },
+      "mid_weak": {
+        "coverage_rate": 0.0,
+        "local_text_or_feature_accessions": 0,
+        "target_rows": 1862,
+        "unique_accessions": 1862
+      },
+      "old_thin": {
+        "coverage_rate": 0.0,
+        "local_text_or_feature_accessions": 0,
+        "target_rows": 1780,
+        "unique_accessions": 1780
+      }
+    },
+    "local_text_or_feature_accessions": 0,
+    "target_rows": 5065,
+    "target_unique_accessions": 5065
+  },
+  "causal_components": [
+    "resolved_ticker_s1_f1_event_rows",
+    "local_sec_filing_text_accession_coverage_audit",
+    "local_sec_filing_features_accession_coverage_audit",
+    "offering_economics_sidecar_readiness_verdict",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260702_024_resolved_s1_offering_economics_sidecar.py",
+    "data/experiments/exp-20260702-024/exp_20260702_024_resolved_s1_offering_economics_sidecar.json",
+    "experiments/cards/exp-20260702-024.md",
+    "experiments/manifests/exp-20260702-024.json",
+    "experiments/tickets/exp-20260702-024.json",
+    "experiments/logs/exp-20260702-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "resolved_s1_f1_offering_economics_sidecar_v1",
+  "decision": "blocked_resolved_s1_f1_offering_economics_text_not_materialized",
+  "experiment_id": "exp-20260702-024",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields": [
+      "accession",
+      "filed_date",
+      "ticker",
+      "local_sec_filing_text",
+      "registered_amount_usd",
+      "resale_vs_primary",
+      "selling_holder",
+      "effectiveness_date_or_prospectus_terms"
+    ],
+    "missing_fields": [
+      "local_sec_filing_text",
+      "registered_amount_usd",
+      "resale_vs_primary",
+      "selling_holder",
+      "effectiveness_date_or_prospectus_terms"
+    ],
+    "note": "Target rows exist, but the local filing-text/features surfaces have zero matching accessions.",
+    "passed": false
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No strategy filter was added; this is a coverage audit.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [
+      "local_s1_f1_filing_text_not_materialized_for_target_accessions",
+      "offering_economics_fields_not_parseable_without_text"
+    ],
+    "mode": "measurement_repair_blocked",
+    "passed": false,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "Replayable offering-economics provenance for resolved S-1/F-1 issuer-overhang rows may be materializable from local SEC filing text/features, allowing the exp-20260702-023 lead to be retested with registered amount or resale-vs-primary fields instead of same-row reslices.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260702-024.json",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260702-023",
+    "exp-20260702-008",
+    "exp-20260629-002"
+  ],
+  "new_evidence_axis": "first coverage audit for offering-economics text/features on the resolved S-1/F-1 issuer-overhang lead; not an attribution reslice",
+  "new_evidence_type": "coverage_audit_for_required_economics_field",
+  "next_retry_requires": [
+    "public-PIT filing text cache for target S-1/F-1 accessions",
+    "registered amount or resale-vs-primary parser with per-window coverage",
+    "selling-holder or effectiveness/prospectus-supplement provenance"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another experiment to confirm this same surface is still missing text/features. Compare current coverage counts to this artifact before reserving. Do not re-slice exp-023 resolved S-1/F-1 rows by amendment flag, form subtype, horizon, entry lag, liquidity, event age, notional, or response shape.",
+    "new_evidence_required": "Reopen only after replayable public-PIT S-1/F-1 filing text or features are materialized for >=100 resolved issuer accessions in each canonical window, and at least one offering-economics field (registered_amount_usd, resale_vs_primary, selling_holder, effectiveness_date, or prospectus_supplement_terms) parses for >=50 rows in each window.",
+    "why_result_happened": "The target SEC corporate-event stream has dense resolved S-1/F-1 rows, but none of the 5,065 target accessions are present in the local sec_filing_text or sec_filing_features surfaces. Offering amount, resale-vs-primary, selling-holder, and effectiveness fields therefore cannot be parsed offline today."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "If offering economics are available, larger resale/primary dilution events should explain which resolved S-1/F-1 issuer rows have negative post-filing replacement value.",
+    "2_history_check": {
+      "nearby_prior_experiments": [
+        "exp-20260702-023",
+        "exp-20260702-008",
+        "exp-20260629-002"
+      ],
+      "new_evidence_axis": "required economics-field coverage audit for the exp-023 lead, not a same-row S-1/F-1 outcome slice",
+      "novelty_gate": "experiment.py new accepted without override."
+    },
+    "3_single_policy_bundle": "Measurement repair only: audit whether local SEC text/features can materialize offering-economics fields for resolved S-1/F-1 issuer rows.",
+    "4_success_failure_standard": "Ready only if >=100 target accessions per canonical window have local text/features and >=50 parsed economics rows per window; otherwise block with a reopen condition.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_024_resolved_s1_offering_economics_sidecar.py"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "parity_note": "Read-only coverage audit; no production or backtest behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "local_s1_f1_offering_economics_text_not_materialized",
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reopen_condition": "Reopen only after replayable public-PIT S-1/F-1 filing text or features are materialized for >=100 resolved issuer accessions in each canonical window, and at least one offering-economics field (registered_amount_usd, resale_vs_primary, selling_holder, effectiveness_date, or prospectus_supplement_terms) parses for >=50 rows in each window.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_024_resolved_s1_offering_economics_sidecar.py"
+  ],
+  "single_causal_variable": "resolved_s1_f1_offering_economics_sidecar_v1",
+  "status": "blocked",
+  "timestamp": "2026-07-02T19:10:13Z",
+  "trial_family": "resolved_s1_f1_offering_economics_sidecar",
+  "trial_variant_id": "resolved_s1_f1_offering_economics_sidecar_v1"
+}

@@ -1,0 +1,336 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_001_narrow_range_compression_admission_parity_probe.py",
+    "data/experiments/exp-20260705-001/exp_20260705_001_narrow_range_compression_admission_parity_probe.json",
+    "experiments/cards/exp-20260705-001.md",
+    "experiments/manifests/exp-20260705-001.json",
+    "experiments/tickets/exp-20260705-001.json",
+    "experiments/logs/exp-20260705-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Forward evidence supply is an alpha bottleneck: accepted narrow-range compression breakout rows cannot mature if daily production observation fails to admit the same compression-breakout candidates that replay admitted.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-001.md",
+  "causal_components": [
+    "accepted historical compression-breakout replay day",
+    "daily snapshot helper with persist false",
+    "daily state advancement through the accepted exit date",
+    "current forward compression-context audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "narrow_range_compression_daily_vs_replay_representative_day_parity_v1",
+  "claimed_at": "2026-07-05T00:06:53+00:00",
+  "completed_at": "2026-07-05T00:11:56+00:00",
+  "created_at": "2026-07-05T00:06:45+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-001",
+  "experiment_uid": "expuid-167ce6f8d42241fe",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T00:06:45+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "narrow_range_compression_admission_parity_probe"
+  },
+  "hypothesis": "Alpha blocker: accepted narrow_range_compression_breakout forward rows cannot mature if daily production observation fails to admit the same compression-breakout candidates that the accepted replay admitted; run a representative-day daily-vs-replay parity probe without changing thresholds, ranking, sizing, exits, orders, or trade_enabled.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "narrow_range_compression_daily_vs_replay_representative_day_parity_v1"
+  ],
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260608-013",
+    "exp-20260704-006",
+    "exp-20260704-007",
+    "exp-20260704-010",
+    "exp-20260704-025"
+  ],
+  "new_evidence_axis": "Measurement-only representative-day parity evidence for the accepted narrow-range compression sleeve newly flagged by exp-20260704-025; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+  "new_evidence_type": "representative_day_daily_vs_replay_compression_parity_probe",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "score": 0.617,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "accepted",
+        "admission",
+        "admit",
+        "admitted",
+        "alpha",
+        "blocker",
+        "breakout",
+        "candidates",
+        "cannot",
+        "changing",
+        "compression",
+        "daily",
+        "enabled",
+        "exits",
+        "fails",
+        "forward",
+        "if",
+        "mature",
+        "narrow",
+        "observation",
+        "or",
+        "orders",
+        "parity",
+        "probe",
+        "range",
+        "ranking",
+        "representative",
+        "rows",
+        "run",
+        "same",
+        "sizing",
+        "sleeve",
+        "supply",
+        "that",
+        "thresholds",
+        "to",
+        "trade",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "reopen_condition": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+        "score": 0.6174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.617,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "reopen_condition": null,
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volatility_relief_admission_parity_probe",
+        "reopen_condition": "Reopen volatility-relief activation only after new forward daily snapshots include actual VIXY relief context passes with closed cash/SPY/QQQ replacement value, or after a concrete daily helper input drift is observed.",
+        "score": 0.5,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_stable_core_flow_admission_parity_probe",
+        "reopen_condition": "Reopen industry-stable core-flow activation only after forward daily snapshots include same-day core-flow-confirmed rows with closed cash, SPY, and QQQ replacement value, or after a concrete daily helper input drift is observed.",
+        "score": 0.4965,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Measurement-only representative-day parity evidence for an accepted default-off sleeve newly flagged by the standing sleeve fire-rate monitor; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Measurement-only representative-day parity evidence for an accepted default-off sleeve newly flagged by the standing sleeve fire-rate monitor; no threshold, notional, top-N, hold, cooldown, or response rule changed.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The accepted helper already exposes shared historical and daily APIs; the main uncertainty is whether current forward zero-fire is true context sparsity or admission drift.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "daily_snapshot_semantics_gap",
+      "current_forward_zero_fire_not_explained_by_context_sparsity",
+      "artifact_input_drift"
+    ],
+    "recorded_at": "2026-07-05T00:06:06+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_narrow_range_compression_admission_parity_confirmed",
+    "artifact": "data/experiments/exp-20260705-001/exp_20260705_001_narrow_range_compression_admission_parity_probe.json",
+    "log": "experiments/logs/exp-20260705-001.json",
+    "runner": "quant/experiments/exp_20260705_001_narrow_range_compression_admission_parity_probe.py",
+    "gate4": {
+      "mode": "measurement_repair_narrow_range_compression_admission_parity",
+      "passed": true,
+      "accepted_measurement_repair": true,
+      "accepted_alpha": false,
+      "strategy_behavior_changed": false,
+      "failed_reasons": [],
+      "representative_parity_passed": true,
+      "current_zero_fire_explained_by_no_compression_context": true,
+      "decision_basis": "The first accepted historical compression-breakout day reproduced through the current shared helper: accepted artifact, one-day historical replay, signal-day daily admission, and daily state advancement matched ticker, decision ID, entry date, exit date, and PnL. Current forward snapshots have no raw compression-breakout contexts, so zero forward admissions are expected under the accepted rule."
+    },
+    "summary": "The first accepted historical compression-breakout day reproduced through the current shared helper: accepted artifact, one-day historical replay, signal-day daily admission, and daily state advancement matched ticker, decision ID, entry date, exit date, and PnL. Current forward snapshots have no raw compression-breakout contexts, so zero forward admissions are expected under the accepted rule."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-001.json",
+  "single_causal_variable": "narrow_range_compression_daily_vs_replay_representative_day_parity_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260705-001.json",
+  "trial_family": "narrow_range_compression_admission_parity_probe",
+  "trial_variant_id": "narrow_range_compression_representative_day_daily_vs_replay_v1",
+  "implementation_mode": "measurement_repair",
+  "decision": "accepted_measurement_repair_narrow_range_compression_admission_parity_confirmed",
+  "artifact": "data/experiments/exp-20260705-001/exp_20260705_001_narrow_range_compression_admission_parity_probe.json",
+  "log_file": "experiments/logs/exp-20260705-001.json",
+  "changed_files": [
+    "quant/experiments/exp_20260705_001_narrow_range_compression_admission_parity_probe.py",
+    "data/experiments/exp-20260705-001/exp_20260705_001_narrow_range_compression_admission_parity_probe.json",
+    "experiments/logs/exp-20260705-001.json",
+    "experiments/cards/exp-20260705-001.md",
+    "experiments/manifests/exp-20260705-001.json",
+    "experiments/tickets/exp-20260705-001.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_001_narrow_range_compression_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_001_narrow_range_compression_admission_parity_probe.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "feeds_llm_prompt": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Read-only parity probe over the existing shared narrow-range compression helper and existing paper snapshots. It does not alter live/default orders, rankings, sizing, exits, or paper snapshot generation."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The first accepted historical compression-breakout day reproduced through the current shared helper: accepted artifact, one-day historical replay, signal-day daily admission, and daily state advancement matched ticker, decision ID, entry date, exit date, and PnL. Current forward snapshots have no raw compression-breakout contexts, so zero forward admissions are expected under the accepted rule.",
+    "forbidden_near_neighbor_retry": "Do not retune range-compression lookback, range-expansion ratio, volume, close-location, ret5/ret20, top-N, hold-day, cooldown, notional, or response curves from this zero-fire forward span.",
+    "new_evidence_required": "Reopen narrow-range compression activation only after forward daily snapshots include raw compression-breakout candidates with closed cash, SPY, and QQQ replacement value, or after a concrete daily helper input drift is observed."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "window_count": 3
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "accepted target_trades_by_window",
+      "historical OHLCV rows",
+      "broad-market sector universe",
+      "same-day baseline A/B entries for overlap metadata",
+      "daily snapshot candidate_count/raw_candidate_count",
+      "decision_id",
+      "entry_date",
+      "exit_date",
+      "pnl"
+    ],
+    "entry_date_target_price_scope": "No executable order or target exit is created. This default-off paper sleeve uses next-open entry and fixed hold exit; the probe checks paper entry_date/exit_date lifecycle fields rather than core signal target_price.",
+    "representative_window": "old_thin",
+    "representative_signal_date": "2024-10-25",
+    "representative_exit_date": "2024-11-08"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter/rank/size/exit rule changed; survival is baseline identity."
+  },
+  "gate4": {
+    "mode": "measurement_repair_narrow_range_compression_admission_parity",
+    "passed": true,
+    "accepted_measurement_repair": true,
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "failed_reasons": [],
+    "representative_parity_passed": true,
+    "current_zero_fire_explained_by_no_compression_context": true,
+    "decision_basis": "The first accepted historical compression-breakout day reproduced through the current shared helper: accepted artifact, one-day historical replay, signal-day daily admission, and daily state advancement matched ticker, decision ID, entry date, exit date, and PnL. Current forward snapshots have no raw compression-breakout contexts, so zero forward admissions are expected under the accepted rule."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-05T00:11:56+00:00"
+}

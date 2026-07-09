@@ -1,0 +1,275 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_measurement": {
+    "actionable_status_counts": {
+      "EXIT_NOW": 1,
+      "HOLD": 6
+    },
+    "actionable_stop_hit_count": 1,
+    "actionable_stop_hit_exit_now_count": 1,
+    "actionable_stop_hit_hold_count": 0,
+    "actionable_stop_hit_rows": [
+      {
+        "candidate_score": 1231.0,
+        "days_held": 5,
+        "days_remaining": 5,
+        "entry_date": "2026-06-30",
+        "entry_price": 632.7562,
+        "exit_date": null,
+        "exit_price": null,
+        "exit_rule": "time exit after 10 trading days held",
+        "hold_days": 10,
+        "label": "Source-priority allocator (TOP-1 only)",
+        "last_price": 532.1,
+        "pilot": "allocator_top1",
+        "pilot_notional_usd": 10000.0,
+        "pilot_pnl_usd": null,
+        "signal_date": "2026-06-15",
+        "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+        "source_priority_rank": 1,
+        "status": "EXIT_NOW",
+        "stop_loss_pct": 0.15,
+        "stop_status": "STOP_HIT",
+        "ticker": "WDC",
+        "unrealized_pct": -0.1591
+      }
+    ],
+    "generated_in_memory_only": true,
+    "stop_alerts": [
+      {
+        "days_held": 5,
+        "entry_price": 632.7562,
+        "hold_days": 10,
+        "last_price": 532.1,
+        "pilot": "Source-priority allocator (TOP-1 only)",
+        "stop_loss_pct": 0.15,
+        "ticker": "WDC",
+        "unrealized_pct": -0.1591
+      }
+    ]
+  },
+  "alpha_hypothesis": "Alpha blocker: accepted default-off pilot sleeves are only useful as activation evidence if the manual stop overlay is machine-auditable; a STOP_HIT row labelled HOLD can make live pilot risk review ambiguous.",
+  "anti_js": {
+    "evidence": "Python only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260708-013/exp_20260708_013_pilot_stop_hit_recommendation_status.json",
+  "before_measurement": {
+    "actionable_status_counts": {
+      "HOLD": 7
+    },
+    "actionable_stop_hit_count": 1,
+    "actionable_stop_hit_hold_count": 1,
+    "actionable_stop_hit_rows": [
+      {
+        "candidate_score": 1231.0,
+        "days_held": 5,
+        "days_remaining": 5,
+        "entry_date": "2026-06-30",
+        "entry_price": 632.7562,
+        "exit_date": null,
+        "exit_price": null,
+        "exit_rule": "time exit after 10 trading days held",
+        "hold_days": 10,
+        "label": "Source-priority allocator (TOP-1 only)",
+        "last_price": 532.1,
+        "pilot": "allocator_top1",
+        "pilot_notional_usd": 10000.0,
+        "pilot_pnl_usd": null,
+        "signal_date": "2026-06-15",
+        "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+        "source_priority_rank": 1,
+        "status": "HOLD",
+        "stop_loss_pct": 0.15,
+        "stop_status": "STOP_HIT",
+        "ticker": "WDC",
+        "unrealized_pct": -0.1591
+      }
+    ],
+    "recommendations_file": "data/pilots/pilot_recommendations_2026-07-08.json",
+    "scorecard_file": "data/pilots/pilot_scorecard.json",
+    "stop_alerts": [
+      {
+        "days_held": 5,
+        "entry_price": 632.7562,
+        "hold_days": 10,
+        "last_price": 532.1,
+        "pilot": "Source-priority allocator (TOP-1 only)",
+        "stop_loss_pct": 0.15,
+        "ticker": "WDC",
+        "unrealized_pct": -0.1591
+      }
+    ]
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "status_migration_breaks_time_exit_ordering",
+      "stop_alerts_disappear",
+      "existing_hold_rows_relabeled_incorrectly"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "pilot_recommendations actionable status only",
+    "manual stop overlay reporting",
+    "no sleeve state mutation",
+    "no strategy behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "quant/experiments/exp_20260708_013_pilot_stop_hit_recommendation_status.py",
+    "data/experiments/exp-20260708-013/exp_20260708_013_pilot_stop_hit_recommendation_status.json",
+    "experiments/cards/exp-20260708-013.md",
+    "experiments/manifests/exp-20260708-013.json",
+    "experiments/tickets/exp-20260708-013.json",
+    "experiments/logs/exp-20260708-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "pilot_recommendations_stop_hit_action_status_v1",
+  "decision": "accepted_measurement_repair_pilot_stop_hit_exit_now_status",
+  "experiment_id": "exp-20260708-013",
+  "failed_checks": [],
+  "gate1": {
+    "baseline_result_file": "data/pilots/pilot_recommendations_2026-07-08.json",
+    "note": "Measurement repair only; canonical strategy backtest unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_relevance": "entry_date remains present on open pilot rows; target_price is not consumed because this is pilot reporting, not signal generation or executable target exits.",
+    "fields_checked": [
+      "recommendations.actionable.status",
+      "recommendations.actionable.stop_status",
+      "recommendations.actionable.entry_date",
+      "recommendations.actionable.ticker",
+      "stop_alerts.ticker"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No buy filter, sell rule, ranking, sizing, or risk budget changed.",
+    "passed": true
+  },
+  "gate4": {
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "signals_generated": 0,
+      "signals_survived": 0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "decision": "accepted_measurement_repair_pilot_stop_hit_exit_now_status",
+    "failed_checks": [],
+    "measurement_checks": {
+      "actionable_position_set_unchanged": true,
+      "before_mismatch_detected": true,
+      "concentration_unchanged": true,
+      "scorecards_unchanged": true,
+      "skipped_rows_unchanged": true,
+      "stop_alerts_unchanged": true,
+      "stop_hit_hold_rows_removed": true,
+      "stop_hit_rows_are_exit_now": true
+    },
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "hypothesis": "Repair pilot recommendation stop-hit rows so machine-readable actionable status matches the stop-loss alert and does not masquerade as HOLD.",
+  "implementation_mode": "pilot_reporting_status_semantics_only",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-013.json",
+  "measurement_checks": {
+    "actionable_position_set_unchanged": true,
+    "before_mismatch_detected": true,
+    "concentration_unchanged": true,
+    "scorecards_unchanged": true,
+    "skipped_rows_unchanged": true,
+    "stop_alerts_unchanged": true,
+    "stop_hit_hold_rows_removed": true,
+    "stop_hit_rows_are_exit_now": true
+  },
+  "mechanism_family": "pilot_scorecard_governance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260707-014",
+    "exp-20260707-012",
+    "exp-20260628-010",
+    "exp-20260702-002"
+  ],
+  "new_evidence_axis": "Current 2026-07-08 pilot_recommendations has WDC in actionable rows with stop_status=STOP_HIT but status=HOLD, while the Markdown separately says STOP_HIT -> SELL. This is a concrete schema/action mismatch, not another pilot graduation or kill-readiness rerun.",
+  "new_evidence_type": "measurement_defect_in_current_pilot_recommendations",
+  "next_retry_requires": [
+    "new pilot governance schema/action mismatch",
+    "or a production-visible pilot metadata/code contradiction",
+    "or a genuinely new pilot data surface"
+  ],
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another pilot_scorecard readiness, kill-rule, or stop-status semantics audit on these same 2026-07-08 rows unless a new production-visible governance mismatch appears.",
+    "new_evidence_required": "A valid retry needs a new pilot governance artifact whose machine-readable action contradicts the manual operator instruction, or a genuinely new pilot data surface.",
+    "why_result_happened": "The tracker computed stop_status and emitted a top-level stop_alert, but left the actionable row status at HOLD. Downstream JSON consumers therefore had to join two surfaces to infer the operator action. Mapping STOP_HIT held rows to the existing EXIT_NOW action enum removes that ambiguity."
+  },
+  "prediction": {
+    "confidence_reason": "Current payload has WDC stop_status STOP_HIT under status HOLD while Markdown separately says sell; repair is JSON semantics only.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "status_migration_breaks_time_exit_ordering",
+      "stop_alerts_disappear",
+      "existing_hold_rows_relabeled_incorrectly"
+    ],
+    "recorded_at": "2026-07-08T10:05:39+00:00",
+    "success_probability": 0.86
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "The repair changes generated pilot recommendation JSON/Markdown status semantics only. It does not mutate sleeve state or change orders, entries, exits, ranking, sizing, verdicts, concentration alerts, or stop-alert detection.",
+    "pilot_artifacts_regenerated": false,
+    "pilot_recommendation_status_changed": true,
+    "ranking_changed": false,
+    "risk_budget_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "watchlist_changed": false
+  },
+  "related_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_recommendations_2026-07-08.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant/experiments/exp_20260708_013_pilot_stop_hit_recommendation_status.py quant\\pilot_tracker.py quant\\test_pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_013_pilot_stop_hit_recommendation_status.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "pilot_recommendations_stop_hit_action_status_v1",
+  "status": "accepted",
+  "summary": {
+    "after_actionable_stop_hit_exit_now_count": 1,
+    "after_actionable_stop_hit_hold_count": 0,
+    "before_actionable_stop_hit_hold_count": 1,
+    "production_files_regenerated": false,
+    "stop_alert_count": 1
+  },
+  "timestamp": "2026-07-08T10:10:40+00:00",
+  "trial_family": "pilot_recommendations_stop_hit_action_status",
+  "trial_variant_id": "stop_hit_exit_now_v1"
+}

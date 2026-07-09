@@ -1,0 +1,393 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.py",
+    "data/experiments/exp-20260705-012/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.json",
+    "experiments/cards/exp-20260705-012.md",
+    "experiments/manifests/exp-20260705-012.json",
+    "experiments/tickets/exp-20260705-012.json",
+    "experiments/logs/exp-20260705-012.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260705-012.md",
+  "causal_components": [
+    "current state/snapshot audit",
+    "post-repair row classification",
+    "shared replacement-value ledger lookup",
+    "no strategy behavior change",
+    "activation blocker recording"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "turn_of_month_post_repair_forward_supply_readiness_v1",
+  "claimed_at": "2026-07-05T15:12:49+00:00",
+  "completed_at": "2026-07-05T15:17:36+00:00",
+  "created_at": "2026-07-05T15:12:38+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260705-012",
+  "experiment_uid": "expuid-f8f23c535c994ac5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260705-012",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-05T15:12:38+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "turn_of_month_post_repair_forward_supply_readiness"
+  },
+  "hypothesis": "Alpha blocker: after the turn-of-month calendar parity repair, the sleeve must show post-repair forward row supply before any activation/readiness judgement; audit the current default-off state for new open/pending/closed rows and block alpha until closed cash/SPY/QQQ replacement values exist, without changing thresholds/ranking/sizing/exits/orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "turn_of_month_post_repair_forward_supply_readiness_v1"
+  ],
+  "mechanism_family": "accepted_default_off_paper_sleeve_forward_supply",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260704-008",
+    "exp-20260704-009",
+    "exp-20260704-025"
+  ],
+  "new_evidence_type": "post_repair_forward_row_supply_readiness",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "score": 0.6077,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "accepted",
+        "activation",
+        "after",
+        "alpha",
+        "any",
+        "audit",
+        "before",
+        "block",
+        "blocker",
+        "calendar",
+        "cash",
+        "changing",
+        "closed",
+        "current",
+        "exist",
+        "exits",
+        "forward",
+        "judgement",
+        "month",
+        "must",
+        "new",
+        "of",
+        "orders",
+        "parity",
+        "pending",
+        "post",
+        "qqq",
+        "ranking",
+        "readiness",
+        "repair",
+        "replacement",
+        "row",
+        "rows",
+        "show",
+        "sizing",
+        "sleeve",
+        "spy",
+        "state",
+        "supply",
+        "thresholds",
+        "turn",
+        "until",
+        "values",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "reopen_condition": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+        "score": 0.6077,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "vbb_rank2_strong_rs_candidate_extension",
+        "reopen_condition": null,
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_daily_calendar_parity_repair",
+        "reopen_condition": "Let future daily snapshots accumulate post-repair turn_of_month rows and closed cash/SPY/QQQ replacement values before any activation or allocation experiment.",
+        "score": 0.5,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_admission_parity_probe",
+        "reopen_condition": "Repair daily calendar parity by passing an explicit trading calendar or known month-end dates into the daily turn-of-month snapshot, then rerun the representative parity probe and accumulate closed forward replacement-value rows. A valid alpha retry also needs true closed forward replacement value or a new PIT flow-beneficiary field.",
+        "score": 0.4917,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Post-repair forward rows now exist in the current turn_of_month state after exp-20260704-009: one open V row and one pending CVS row from 2026-07-01; exp-20260704-009 only repaired representative calendar parity and explicitly required post-repair forward rows before activation.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Post-repair forward rows now exist in the current turn_of_month state after exp-20260704-009: one open V row and one pending CVS row from 2026-07-01; exp-20260704-009 only repaired representative calendar parity and explicitly required post-repair forward rows before activation.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.55,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_post_repair_rows",
+      "closed_rows_absent",
+      "replacement_values_absent",
+      "near_neighbor_readiness_repeat"
+    ],
+    "confidence_reason": "Current state already showed one open and one pending post-repair row during preflight, so row-supply confirmation was likely; activation was expected to remain blocked because the hold window has not produced closed replacement-value rows yet.",
+    "recorded_at": "2026-07-05T15:11:57+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_turn_of_month_post_repair_rows_observed_alpha_blocked",
+    "artifact": "data/experiments/exp-20260705-012/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.json",
+    "log": "experiments/logs/exp-20260705-012.json",
+    "summary": {
+      "post_repair_total_rows": 2,
+      "post_repair_open_rows": 1,
+      "post_repair_pending_rows": 1,
+      "post_repair_closed_rows": 0,
+      "turn_of_month_replacement_value_rows": 0,
+      "turn_of_month_closed_comparator_ready_rows": 0,
+      "latest_snapshot_asof": "2026-07-04",
+      "latest_snapshot_generated_at": "2026-07-05T03:23:08+00:00",
+      "alpha_ready": false,
+      "activation_blockers": [
+        "forward_paper_gate_max_positive_hhi",
+        "forward_paper_gate_max_single_ticker_positive_share",
+        "forward_paper_gate_min_closed_trades",
+        "forward_paper_gate_min_win_rate",
+        "forward_paper_gate_positive_net_pnl",
+        "no_closed_cash_spy_qqq_replacement_value_rows",
+        "no_closed_post_repair_rows"
+      ],
+      "failed_checks": []
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260705-012.json",
+  "single_causal_variable": "turn_of_month_post_repair_forward_supply_readiness_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260705-012.json",
+  "trial_family": "turn_of_month_post_repair_forward_supply_readiness",
+  "trial_variant_id": "turn_of_month_post_calendar_repair_current_rows_20260705",
+  "alpha_hypothesis": "The accepted turn-of-month liquid-leadership paper sleeve remains a plausible month-flow alpha only if daily production evidence can now produce rows and eventually close them against cash, SPY, and QQQ comparators.",
+  "implementation_mode": "read_only_post_repair_forward_supply_readiness_audit",
+  "new_evidence_axis": "Post-repair forward rows now exist in the current turn_of_month state after exp-20260704-009: one open V row and one pending CVS row from 2026-07-01; exp-20260704-009 only repaired representative calendar parity and explicitly required post-repair forward rows before activation.",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "loaded": true,
+      "expected_value_score_sum": 7.8941,
+      "strategy_total_return_pct_sum": 0.0,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119,
+      "window_count": 3
+    },
+    "note": "Measurement/readiness audit only; canonical strategy baseline unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "fields": [
+      "signal_date",
+      "entry_date",
+      "entry_timing",
+      "paper_status",
+      "decision_id",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "field_reality": {
+      "open_or_closed_entry_date_contract_ok": true,
+      "missing_open_or_closed_entry_dates": [],
+      "pending_entry_date_note": "Pending rows intentionally do not have entry_date until the next-session-open fill is observed.",
+      "target_price_relevance": "not_applicable_fixed_hold_default_off_paper_sleeve; this sleeve uses a 10-trading-day paper close, not ATR target-price exits",
+      "replacement_value_ledger_loaded": true,
+      "turn_of_month_replacement_value_rows": 0
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "No executable filter, rank, size, exit, or order policy changed."
+  },
+  "gate4": {
+    "passed": true,
+    "mode": "measurement_repair_post_calendar_repair_forward_supply_readiness",
+    "failed_checks": [],
+    "acceptance_checks": {
+      "post_repair_forward_supply_exists": true,
+      "open_or_closed_entry_date_contract_ok": true,
+      "strategy_behavior_unchanged": true,
+      "alpha_activation_still_blocked_until_closed_rv": true
+    }
+  },
+  "activation_readiness": {
+    "passed": false,
+    "blockers": [
+      "forward_paper_gate_max_positive_hhi",
+      "forward_paper_gate_max_single_ticker_positive_share",
+      "forward_paper_gate_min_closed_trades",
+      "forward_paper_gate_min_win_rate",
+      "forward_paper_gate_positive_net_pnl",
+      "no_closed_cash_spy_qqq_replacement_value_rows",
+      "no_closed_post_repair_rows"
+    ],
+    "minimum_current_requirement": "closed post-repair rows with replacement_value_vs_cash_usd, replacement_value_vs_spy_usd, and replacement_value_vs_qqq_usd",
+    "no_retune_allowed": true
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_total_return_pct_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "parity_note": "Read-only audit of existing default-off state, snapshots, and replacement-value ledger; no production or backtest behavior changed."
+  },
+  "calibration": {
+    "predicted_success_probability": 0.55,
+    "actual_success": 1,
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "Preflight was accurate: the repaired sleeve now has forward row supply, but the row supply is not yet a closed comparator-ready alpha result."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The exp-20260704-009 calendar repair let the daily turn-of-month snapshot retain July month-start rows. The current state now contains V as an open paper position and CVS as a pending entry, but no row has reached the 10-trading-day close or the shared cash/SPY/QQQ replacement-value ledger.",
+    "forbidden_near_neighbor_retry": "Do not retune turn-of-month thresholds, notional, hold days, ranking, cooldowns, or response functions from this result. Do not open another readiness-only turn-of-month audit until there are materially new closed post-repair rows or a genuinely new point-in-time flow-beneficiary data source.",
+    "new_evidence_required": "Reopen alpha activation only after the post-repair V/CVS cohort or later turn-of-month cohorts close and appear in the shared paper-sleeve replacement-value ledger with cash, SPY, and QQQ comparators."
+  },
+  "next_retry_requires": [
+    "closed post-repair turn_of_month rows",
+    "shared paper-sleeve replacement-value rows with cash/SPY/QQQ comparators",
+    "no threshold, notional, ranking, hold-day, cooldown, or response retune"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.py",
+    "data/experiments/exp-20260705-012/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.json",
+    "experiments/cards/exp-20260705-012.md",
+    "experiments/manifests/exp-20260705-012.json",
+    "experiments/tickets/exp-20260705-012.json",
+    "experiments/logs/exp-20260705-012.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/turn_of_month_liquid_leadership/state.json",
+    "data/paper_sleeves/turn_of_month_liquid_leadership/snapshots.jsonl",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "quant/turn_of_month_liquid_leadership_paper_sleeve.py",
+    "quant/run.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "decision": "accepted_measurement_repair_turn_of_month_post_repair_rows_observed_alpha_blocked",
+  "artifact": "data/experiments/exp-20260705-012/exp_20260705_012_turn_of_month_post_repair_forward_supply_readiness.json",
+  "log": "experiments/logs/exp-20260705-012.json",
+  "updated_at": "2026-07-05T15:17:36+00:00"
+}

@@ -1,0 +1,359 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_018_sec_425_merger_theme_peer_propagation.py",
+    "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+    "data/experiments/exp-20260702-018/propagation_rows.jsonl",
+    "experiments/logs/exp-20260702-018.json",
+    "experiments/cards/exp-20260702-018.md",
+    "experiments/manifests/exp-20260702-018.json",
+    "experiments/tickets/exp-20260702-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-018.md",
+  "causal_components": [
+    "merger_communication_425_only",
+    "theme_peer_edges_only",
+    "next_open_entry",
+    "10d_close_exit",
+    "spy_excess_metric",
+    "unconditional_same_window_baseline_control",
+    "read_only_no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "none_read_only",
+  "claimed_at": "2026-07-02T16:04:20+00:00",
+  "completed_at": "2026-07-02T16:08:05+00:00",
+  "created_at": "2026-07-02T16:04:10+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-018",
+  "experiment_uid": "expuid-2d8f4b871daf4f1a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T16:04:10+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_425_merger_theme_peer_propagation"
+  },
+  "hypothesis": "SEC 425 merger communications may propagate 10d SPY-excess impact to listed theme-peer tickers versus each peer ticker's unconditional same-window baseline, with a consistent sign across all three canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sec_425_merger_theme_peer_propagation_10d_spy_excess_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-008",
+    "exp-20260702-009",
+    "exp-20260702-011",
+    "exp-20260702-012",
+    "exp-20260702-017"
+  ],
+  "new_evidence_type": "new_event_class_relation_join",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "a",
+        "across",
+        "all",
+        "attribution",
+        "baseline",
+        "canonical",
+        "communications",
+        "consistent",
+        "corporate",
+        "each",
+        "event",
+        "excess",
+        "impact",
+        "listed",
+        "may",
+        "merger",
+        "peer",
+        "propagate",
+        "propagation",
+        "s",
+        "same",
+        "sign",
+        "spy",
+        "stream",
+        "theme",
+        "three",
+        "ticker",
+        "tickers",
+        "to",
+        "unconditional",
+        "versus",
+        "window",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_peer_theme_propagation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4932,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_fd_other_event_item8_semantics",
+        "reopen_condition": null,
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_guidance_raise_selloff_event_sleeve",
+        "reopen_condition": null,
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "reopen_condition": "If this fixed corporate-action absorption basket fails, do not retry by sweeping form weights, 8-K/A inclusion, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal/restructuring economics such as cash/stock consideration, bidder/target",
+        "score": 0.4605,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "sec_text_event",
+        "family_key": "event_governance_disclosure_quality",
+        "reopen_condition": null,
+        "score": 0.4603,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.28,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "peer moves already priced",
+      "merger class dominated by explicit acquirer target effects",
+      "theme edges noisy",
+      "sign flips across windows"
+    ],
+    "confidence_reason": "425 merger communications are the explicitly allowed new event class after the failed IPO propagation read, and M&A can validate or threaten listed peers, but prior SEC propagation and peer-relation attempts were noisy and top-1 promotion failed.",
+    "recorded_at": "2026-07-02T16:03:31+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_no_sec_425_merger_theme_peer_propagation_edge",
+    "artifact": "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+    "log": "experiments/logs/exp-20260702-018.json",
+    "runner": "quant/experiments/exp_20260702_018_sec_425_merger_theme_peer_propagation.py",
+    "gate4": {
+      "mode": "observed_only_attribution",
+      "passed": false,
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "sign_not_consistent",
+        "pooled_delta_below_threshold"
+      ]
+    },
+    "summary": "425 merger theme-peer rows did not produce a stable enough 10d SPY-excess separation versus same-ticker baselines across canonical windows."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-018.json",
+  "single_causal_variable": "sec_425_merger_theme_peer_propagation_10d_spy_excess_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260702-018.json",
+  "trial_family": "sec_425_merger_theme_peer_propagation_attribution",
+  "trial_variant_id": "425_theme_peer_10d_spy_excess_v1",
+  "alpha_hypothesis": "If a stable sign exists, a later shared-paper-first full-stack experiment can test merger-side propagation as a default-off candidate source or de-allocation context.",
+  "implementation_mode": "read_only_diagnostic",
+  "new_evidence_axis": "425 merger communications are the explicitly allowed new event class after exp-20260702-017 failed on fresh private IPO registrations; this run changes the event class, not the theme, horizon, threshold, or response curve.",
+  "decision": "observed_only_no_sec_425_merger_theme_peer_propagation_edge",
+  "artifact": "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+  "log": "experiments/logs/exp-20260702-018.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields": [
+      "event_class",
+      "form_type",
+      "filed_date",
+      "theme",
+      "ticker",
+      "entry_date",
+      "Open/Close warehouse bars"
+    ],
+    "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No executable filter or rank rule was added.",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "mode": "observed_only_attribution",
+    "passed": false,
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "sign_not_consistent",
+      "pooled_delta_below_threshold"
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "parity_note": "Read-only attribution; no production or backtest behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "425 merger theme-peer rows did not produce a stable enough 10d SPY-excess separation versus same-ticker baselines across canonical windows.",
+    "forbidden_near_neighbor_retry": "Do not re-slice the same 425 rows by theme subset, keyword, horizon, entry lag, ticker-status, density, SIC peers, top-N, hold, cooldown, notional, or response shape. That would be the same source-row attribution surface.",
+    "new_evidence_required": "A valid retry needs richer deal economics such as cash/stock consideration, bidder/target role, deal size versus peer float, post-announcement amendment/termination trajectory, or fresh forward rows under a shared helper."
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+    "data/non_ohlcv/entity_exposure_map/entities.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260702_018_sec_425_merger_theme_peer_propagation.py",
+    "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+    "data/experiments/exp-20260702-018/propagation_rows.jsonl",
+    "experiments/logs/exp-20260702-018.json",
+    "experiments/cards/exp-20260702-018.md",
+    "experiments/manifests/exp-20260702-018.json",
+    "experiments/tickets/exp-20260702-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-02T16:08:05+00:00"
+}

@@ -1,0 +1,352 @@
+{
+  "acceptance_rule": "Accepted measurement repair only if PIT SIC coverage is materialized for SEC event entities; otherwise blocked with exact missing source and reopen condition.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.py",
+    "data/experiments/exp-20260702-013/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.json",
+    "data/experiments/exp-20260702-013/sec_event_pit_sic_audit_sample.jsonl",
+    "experiments/logs/exp-20260702-013.json",
+    "experiments/cards/exp-20260702-013.md",
+    "experiments/manifests/exp-20260702-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/tickets/exp-20260702-013.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260702-013.md",
+  "causal_components": [
+    "sec_corporate_event_stream",
+    "entity_exposure_map_current_sic_boundary",
+    "sec_submissions_cache_schema",
+    "sec_filing_text_accession_cache"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "sec_event_pit_sic_asof_filing_coverage_audit_v1",
+  "claimed_at": "2026-07-02T12:07:46+00:00",
+  "completed_at": "2026-07-02T12:13:34+00:00",
+  "created_at": "2026-07-02T12:07:36+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260702-013",
+  "experiment_uid": "expuid-348e2bc6f5254a35",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260702-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-02T12:07:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_event_pit_sic_asof_filing_audit"
+  },
+  "hypothesis": "SEC corporate-event exposure ranking needs point-in-time SIC peer labels; current submissions SIC can leak post-filing classification state, so local PIT SIC coverage must be measured before another fixed-window alpha retest.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_event_pit_sic_asof_filing_coverage_audit_v1"
+  ],
+  "mechanism_family": "sec_event_entity_exposure",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-012",
+    "exp-20260702-009",
+    "exp-20260702-008"
+  ],
+  "new_evidence_type": "measurement_repair_pit_sic_asof_filing",
+  "novelty": {
+    "blocking_matches": [],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "archived",
+        "asof",
+        "audit",
+        "be",
+        "block",
+        "can",
+        "classifications",
+        "corporate",
+        "coverage",
+        "current",
+        "entity",
+        "event",
+        "exposure",
+        "filing",
+        "header",
+        "in",
+        "labels",
+        "leak",
+        "local",
+        "materialized",
+        "may",
+        "needs",
+        "or",
+        "peer",
+        "pit",
+        "point",
+        "post",
+        "quantify",
+        "ranking",
+        "repair",
+        "retests",
+        "sic",
+        "so",
+        "submissions",
+        "time",
+        "unless"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_10k_10q_text_default_coverage_repair",
+        "reopen_condition": "Run SEC filing-text materialization with the repaired defaults for historical 10-K/10-Q events, parse cover-page filer-status booleans by accession/accepted_at, then rerun one fixed shared-paper-first filer-status transition rule.",
+        "score": 0.4786,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_submissions_current_category_pit_boundary",
+        "reopen_condition": "A valid filer-status retry needs accession-level 10-K/10-Q cover-page or XBRL status rows keyed by accession_number, accepted_at, usable_trade_date, ticker, form, and parsed large_accelerated/accelerated/non_accelerated/smaller_reporting/EGC booleans.",
+        "score": 0.4779,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_nt_late_filing_absorption_candidate_pool",
+        "reopen_condition": "If this fixed NT late-filing absorption bundle fails, do not retry by sweeping NT form lists, signal excess, close-location, volume, volatility, ret20, price/ADV, event-age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT delay economics such as explicit issuer reason, auditor/control language, late-period financial restatement linkage, or",
+        "score": 0.47,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_structured_corporate_action_absorption_basket",
+        "reopen_condition": "If this fixed corporate-action absorption basket fails, do not retry by sweeping form weights, 8-K/A inclusion, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal/restructuring economics such as cash/stock consideration, bidder/target",
+        "score": 0.47,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "free_sec_submissions_business_combination_absorption_candidate_pool",
+        "reopen_condition": "If this fixed business-combination/tender absorption bundle fails, do not retry by sweeping form weights, S-4 amendment inclusion, signal excess, close-location, volume, volatility, ret20, price/ADV, event age, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs materially richer PIT deal economics such as cash/stock consideration, premium/discount, bidder/target r",
+        "score": 0.4603,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "submissions_current_only",
+      "filing_text_cache_missing",
+      "no_historical_sic_field"
+    ],
+    "confidence_reason": "exp-20260702-012 explicitly named PIT SIC-as-of-filing repair as valid next evidence; preflight showed current SIC only and zero exact event filing-text hits.",
+    "recorded_at": "2026-07-02T12:13:34+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "blocked_sec_event_pit_sic_asof_filing_not_materialized_local_cache",
+    "artifact": "data/experiments/exp-20260702-013/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.json",
+    "log": "experiments/logs/exp-20260702-013.json",
+    "runner": "quant/experiments/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.py",
+    "gate4": {
+      "mode": "measurement_repair_identity_plus_coverage_gate",
+      "passed": false,
+      "failed_reasons": [
+        "submissions_cache_current_only_no_historical_sic_field",
+        "sec_event_filing_text_cache_missing_for_accessions",
+        "no_pit_sic_asof_filing_rows_materialized"
+      ],
+      "strategy_behavior_changed": false,
+      "aggregate_expected_value_delta": 0.0,
+      "aggregate_total_pnl_delta": 0.0,
+      "before_after_delta": {
+        "expected_value_score_delta_sum": 0.0,
+        "total_pnl_delta_sum": 0.0,
+        "drawdown_delta": 0.0,
+        "trade_count_delta": 0
+      }
+    },
+    "summary": "The local submissions cache covers many event CIKs, but it is a current-state SEC submissions snapshot. It has current top-level sic/sicDescription and no filings.recent/files SIC history. The local filing_text cache has zero accession matches for this event stream, so header SIC cannot be parsed."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260702-013.json",
+  "single_causal_variable": "sec_event_pit_sic_asof_filing_coverage_audit_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260702-013.json",
+  "trial_family": "sec_event_pit_sic_asof_filing_repair",
+  "trial_variant_id": "v1_local_cache_coverage",
+  "alpha_hypothesis": "Later, separately gated: S-1/F-1/425 corporate events may create replacement value in related listed peers, but only if entity classification edges are point-in-time or replaced by a richer non-SIC relation/economic source.",
+  "new_evidence_axis": "PIT SIC-as-of-filing repair path explicitly left by exp-20260702-012; this does not alter event forms, relation priority, thresholds, response shape, or notional.",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_unchanged": true,
+    "summary": {
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "generated_at": "2026-06-04T22:29:38.821937",
+      "window_count": 3,
+      "aggregate_expected_value_score": 7.8941,
+      "aggregate_total_pnl": 234850.99,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "total_pnl": 117072.92,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "total_pnl": 78110.11,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "total_pnl": 39667.96,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    }
+  },
+  "gate2": {
+    "required_fields_checked": [
+      "event.accession",
+      "event.cik",
+      "event.filed_date",
+      "submission.sic",
+      "submission.sicDescription",
+      "filing_header.STANDARD_INDUSTRIAL_CLASSIFICATION"
+    ],
+    "required_artifacts_present": {
+      "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl": true,
+      "data/non_ohlcv/entity_exposure_map/entities.jsonl": true,
+      "data/cache/sec/submissions": true,
+      "data/cache/sec/filing_text": true
+    },
+    "runtime_field_verdict": "blocked_pit_sic_source_missing"
+  },
+  "gate3": {
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "note": "No signal filtering, ranking, sizing, or orders changed. Event-surface coverage audit only."
+  },
+  "gate4": {
+    "mode": "measurement_repair_identity_plus_coverage_gate",
+    "passed": false,
+    "failed_reasons": [
+      "submissions_cache_current_only_no_historical_sic_field",
+      "sec_event_filing_text_cache_missing_for_accessions",
+      "no_pit_sic_asof_filing_rows_materialized"
+    ],
+    "strategy_behavior_changed": false,
+    "aggregate_expected_value_delta": 0.0,
+    "aggregate_total_pnl_delta": 0.0,
+    "before_after_delta": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "drawdown_delta": 0.0,
+      "trade_count_delta": 0
+    }
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_collector_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "parity_note": "Runner only audits local cache coverage. No shared policy helper, run.py wiring, backtester adapter, daily snapshot, or paper/live order path changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The local submissions cache covers many event CIKs, but it is a current-state SEC submissions snapshot. It has current top-level sic/sicDescription and no filings.recent/files SIC history. The local filing_text cache has zero accession matches for this event stream, so header SIC cannot be parsed.",
+    "forbidden_near_neighbor_retry": "Do not rerun SEC corporate-event exposure by changing form sets, relation priority, event priority, threshold, hold, cooldown, notional, theme overlay, SIC cap, or response shape on the same current-SIC rows. Do not use same-source new tags inside the saturated SEC event family as an override.",
+    "new_evidence_required": "Materially new evidence is accession-level PIT SIC coverage, fresh closed forward rows from shared daily helper, or a new relation/economic source such as deal consideration, supply-chain exposure, borrow economics, or verified issuer-to-listed-peer linkage."
+  },
+  "blocked_reopen_condition": "Reopen SEC corporate-event exposure alpha only after an accession-level source supplies PIT SIC for at least 10,000 of 17,335 event rows (and at least 500 rows in each old_thin, mid_weak, and late_strong window), or after a genuinely new relation/economic source replaces SIC peers. Valid sources are filing header text with STANDARD INDUSTRIAL CLASSIFICATION parsed by accession/accepted_at, or archived submissions snapshots keyed no later than filed_date.",
+  "changed_files": [
+    "quant/experiments/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.py",
+    "data/experiments/exp-20260702-013/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.json",
+    "data/experiments/exp-20260702-013/sec_event_pit_sic_audit_sample.jsonl",
+    "experiments/logs/exp-20260702-013.json",
+    "experiments/cards/exp-20260702-013.md",
+    "experiments/manifests/exp-20260702-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/tickets/exp-20260702-013.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260702_013_sec_event_pit_sic_asof_filing_audit.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "artifact": "data/experiments/exp-20260702-013/exp_20260702_013_sec_event_pit_sic_asof_filing_audit.json",
+  "log_file": "experiments/logs/exp-20260702-013.json",
+  "updated_at": "2026-07-02T12:13:34+00:00"
+}

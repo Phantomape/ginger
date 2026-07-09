@@ -1,0 +1,201 @@
+{
+  "accepted": true,
+  "cases": [
+    {
+      "after_data_source": "deep_drawdown",
+      "before_data_source": "other",
+      "expected_after_data_source": "deep_drawdown",
+      "field_tags": [
+        "capitulation",
+        "deep",
+        "drawdown",
+        "observer",
+        "probe"
+      ],
+      "gate_shape": "other",
+      "label": "deep_drawdown",
+      "passed": true,
+      "text": "deep-drawdown observer capitulation probe"
+    },
+    {
+      "after_data_source": "entity_theme_news",
+      "before_data_source": "other",
+      "expected_after_data_source": "entity_theme_news",
+      "field_tags": [
+        "entity",
+        "news",
+        "observer",
+        "relation",
+        "theme"
+      ],
+      "gate_shape": "other",
+      "label": "entity_theme_news",
+      "passed": true,
+      "text": "entity-theme news relation observer"
+    },
+    {
+      "after_data_source": "finra_otc_internalization",
+      "before_data_source": "finra_short_interest",
+      "expected_after_data_source": "finra_otc_internalization",
+      "field_tags": [
+        "finra",
+        "internalization",
+        "otc",
+        "retreat"
+      ],
+      "gate_shape": "candidate_pool_top1_10d",
+      "label": "finra_otc_internalization",
+      "passed": true,
+      "text": "FINRA OTC internalization retreat candidate pool"
+    },
+    {
+      "after_data_source": "finra_ats_share",
+      "before_data_source": "finra_short_interest",
+      "expected_after_data_source": "finra_ats_share",
+      "field_tags": [
+        "ats",
+        "dark",
+        "finra",
+        "share",
+        "weekly"
+      ],
+      "gate_shape": "candidate_pool_top1_10d",
+      "label": "finra_ats_share",
+      "passed": true,
+      "text": "FINRA ATS weekly dark share candidate pool"
+    },
+    {
+      "after_data_source": "moomoo_capital_flow",
+      "before_data_source": "other",
+      "expected_after_data_source": "moomoo_capital_flow",
+      "field_tags": [
+        "accumulation",
+        "capital",
+        "flow",
+        "moomoo"
+      ],
+      "gate_shape": "other",
+      "label": "moomoo_capital_flow",
+      "passed": true,
+      "text": "Moomoo capital-flow accumulation source"
+    },
+    {
+      "after_data_source": "moomoo_short_volume",
+      "before_data_source": "other",
+      "expected_after_data_source": "moomoo_short_volume",
+      "field_tags": [
+        "activity",
+        "daily",
+        "helper",
+        "moomoo",
+        "short",
+        "volume"
+      ],
+      "gate_shape": "other",
+      "label": "moomoo_short_volume",
+      "passed": true,
+      "text": "Moomoo daily short volume activity helper"
+    },
+    {
+      "after_data_source": "cisa_kev",
+      "before_data_source": "other",
+      "expected_after_data_source": "cisa_kev",
+      "field_tags": [
+        "cisa",
+        "entry",
+        "gate",
+        "kev",
+        "risk"
+      ],
+      "gate_shape": "other",
+      "label": "cisa_kev",
+      "passed": true,
+      "text": "CISA KEV entry risk gate"
+    },
+    {
+      "after_data_source": "live_drift_reconciliation",
+      "before_data_source": "other",
+      "expected_after_data_source": "live_drift_reconciliation",
+      "field_tags": [
+        "drift",
+        "fill",
+        "live",
+        "monitor",
+        "reconciliation"
+      ],
+      "gate_shape": "other",
+      "label": "live_drift_reconciliation",
+      "passed": true,
+      "text": "live drift reconciliation fill drift monitor"
+    },
+    {
+      "after_data_source": "prediction_market_event",
+      "before_data_source": "other",
+      "expected_after_data_source": "prediction_market_event",
+      "field_tags": [
+        "event",
+        "market",
+        "observer",
+        "odds",
+        "prediction"
+      ],
+      "gate_shape": "other",
+      "label": "prediction_market_event",
+      "passed": true,
+      "text": "prediction-market event odds observer"
+    }
+  ],
+  "changed_variable": "data_source_keyword_map",
+  "decision": "accepted_measurement_repair",
+  "derived_views_refreshed": [
+    "docs/frozen_families.jsonl"
+  ],
+  "experiment_id": "exp-20260706-020",
+  "gate_contract": {
+    "gate_1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "gate_2_runtime_fields": "Not a signal generator; entry_date and target_price contracts are unchanged.",
+    "gate_3_survival": "Not a signal filter; signals_generated/signals_survived are unchanged.",
+    "gate_4_rule": "Accept measurement repair if all classifier coverage and regression cases pass."
+  },
+  "generated_at": "2026-07-06T18:11:45.299918+00:00",
+  "hypothesis": "Repair July data-source fingerprint coverage so novelty/saturation guards key recent alpha surfaces by concrete source instead of the unclassified or generic FINRA bucket.",
+  "lane": "measurement_repair",
+  "phase": "after",
+  "post_run_reflection": "Future new data-source observers must add fingerprint keywords in the same experiment that introduces the surface, otherwise guard coverage falls back toward a warn-only manual process.",
+  "production_impact": "No live/default trade behavior changed. The repair only affects experiment novelty, saturation, observed-only, and routine-materialization guard attribution.",
+  "regressions": [
+    {
+      "after_data_source": "finra_short_interest",
+      "expected_after_data_source": "finra_short_interest",
+      "passed": true,
+      "text": "FINRA short_interest days_to_cover candidate pool"
+    },
+    {
+      "after_data_source": "form4_insider",
+      "expected_after_data_source": "form4_insider",
+      "passed": true,
+      "text": "Form 4 insider open-market purchase"
+    },
+    {
+      "after_data_source": "sec13f_ownership",
+      "expected_after_data_source": "sec13f_ownership",
+      "passed": true,
+      "text": "SEC 13F institutional sponsorship holder signal"
+    },
+    {
+      "after_data_source": "companyfacts_ratio",
+      "expected_after_data_source": "companyfacts_ratio",
+      "passed": true,
+      "text": "SEC Companyfacts free cash flow margin quality"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "derived_frozen_family_view_rebuilt": true,
+    "july_cases": 9,
+    "july_cases_passed": 9,
+    "regression_cases": 4,
+    "regression_cases_passed": 4,
+    "unclassified_after_count": 0
+  }
+}

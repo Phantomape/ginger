@@ -1,0 +1,757 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_ready": false,
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "loaded": true,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "alpha_realized_non_activation": [
+      "closed_rows_below_activation_min:3/30",
+      "replacement_rows_below_activation_min:3/30",
+      "non_positive_raw_realized_pnl:-564.36",
+      "non_positive_replacement_vs_cash:-564.36",
+      "non_positive_replacement_vs_spy:-596.39",
+      "non_positive_replacement_vs_qqq:-530.32",
+      "shared_forward_paper_gate_not_passed"
+    ],
+    "brier_score": 0.09,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "warehouse_missing_recent_etf_bars",
+      "notional_derivation_failed",
+      "artifact_rebuild_includes_stale_rows",
+      "readiness_still_negative"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_modes": [],
+    "surprise_note": "COHR and MU enriched mechanically from the repaired warehouse reader; the remaining negative readiness is an alpha conclusion, not a repair failure."
+  },
+  "causal_components": [
+    "supplier-state RV enrichment",
+    "forward RV artifact rebuild",
+    "read-only readiness recheck",
+    "no strategy change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260704_020_supplier_financing_missing_forward_rv_enrichment.py",
+    "data/experiments/exp-20260704-020/exp_20260704_020_supplier_financing_missing_forward_rv_enrichment.json",
+    "experiments/logs/exp-20260704-020.json",
+    "experiments/cards/exp-20260704-020.md",
+    "experiments/manifests/exp-20260704-020.json",
+    "experiments/tickets/exp-20260704-020.json",
+    "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260704-020/forward_replacement_value_before.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "supplier_financing_debt_relief_missing_forward_replacement_enrichment_v1",
+  "classification": "measurement_repair_accepted_alpha_not_activation_ready",
+  "decision": "accepted_measurement_repair_supplier_financing_forward_replacement_enrichment",
+  "delta_metrics": {
+    "closed_missing_replacement_value_after": 0,
+    "closed_missing_replacement_value_before": 2,
+    "closed_missing_replacement_value_repaired": 2,
+    "closed_position_count": 3,
+    "expected_value_score_sum_delta": 0.0,
+    "forward_enriched_matching_rows_after": 3,
+    "forward_enriched_matching_rows_before": 1,
+    "forward_matching_rows_after": 3,
+    "forward_matching_rows_before": 1,
+    "raw_realized_pnl_usd": -564.36,
+    "replacement_value_vs_cash_usd": -564.36,
+    "replacement_value_vs_qqq_usd": -530.32,
+    "replacement_value_vs_spy_usd": -596.39,
+    "rows_updated_this_run": 2,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260704-020",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "loaded": true,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "fields_checked": [
+      "closed_positions.entry_date",
+      "closed_positions.target_price",
+      "closed_positions.pnl",
+      "closed_positions.paper_notional_usd",
+      "closed_positions.replacement_value_vs_cash_usd",
+      "closed_positions.replacement_value_vs_spy_usd",
+      "closed_positions.replacement_value_vs_qqq_usd",
+      "forward_replacement_value.sleeve_key",
+      "forward_replacement_value.status"
+    ],
+    "missing_or_invalid_fields": {
+      "after_missing_replacement_rows": [],
+      "before_missing_replacement_rows": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -322.19,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "COHR",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -341.29,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "MU",
+          "trade_enabled": false
+        }
+      ],
+      "closed_missing_entry_or_target": [],
+      "open_missing_entry_date": []
+    },
+    "passed": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "note": "No executable filter, entry, exit, ranking, sizing, risk, or order rule changed.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_activation_blockers": [
+      "closed_rows_below_activation_min:3/30",
+      "replacement_rows_below_activation_min:3/30",
+      "non_positive_raw_realized_pnl:-564.36",
+      "non_positive_replacement_vs_cash:-564.36",
+      "non_positive_replacement_vs_spy:-596.39",
+      "non_positive_replacement_vs_qqq:-530.32",
+      "shared_forward_paper_gate_not_passed"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "classification": "measurement_repair_accepted_alpha_not_activation_ready",
+    "decision": "accepted_measurement_repair_supplier_financing_forward_replacement_enrichment",
+    "passed": true,
+    "repair_failed_reasons": []
+  },
+  "hypothesis": "Alpha blocker: accepted supplier-financing debt-relief forward readiness cannot be judged while newly closed COHR/MU rows lack cash/SPY/QQQ replacement-value comparators; after the hot warehouse I/O repair, enrich those missing rows from the shared warehouse without changing thresholds, ranking, sizing, exits, orders, or paper selection.",
+  "implementation_mode": "narrow_supplier_state_replacement_value_enrichment",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "observer_forward_settlement_price_surface",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260704-017",
+    "exp-20260704-019"
+  ],
+  "new_evidence_axis": "measurement_repair_after_hot_warehouse_io_fix_for_two_missing_closed_rows",
+  "new_evidence_type": "measurement_repair_after_hot_warehouse_io_fix",
+  "next_retry_requires": [
+    "materially_more_closed_supplier_financing_rows",
+    "or_new_supplier_payment_term_covenant_refinancing_source",
+    "no_threshold_or_response_function_retune_on_same_three_rows"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "archived_previous_forward_replacement_value_file": "data/experiments/exp-20260704-020/forward_replacement_value_before.jsonl",
+    "asof_date": "2026-07-04",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "forward_replacement_value_file": "data/paper_sleeves/forward_replacement_value.jsonl",
+    "min_activation_closed_rows": 30,
+    "state_file": "data/paper_sleeves/supplier_financing_debt_relief/state.json"
+  },
+  "post_run_reflection": {
+    "alpha_interpretation": "Completing the measurement surface made the supplier-financing evidence stricter, not better: 3/30 closed rows are enriched, raw PnL totals -564.36, and replacement totals are -564.36 cash, -596.39 SPY, -530.32 QQQ.",
+    "forbidden_near_neighbor_retry": "Do not retune supplier-financing thresholds or re-run activation on the same three rows. Reopen only with materially more closed rows or a genuinely new supplier/payment/covenant/refinancing source.",
+    "new_evidence_required": "Materially more closed default-off supplier-financing rows, or a new production-visible supplier/payment-term or covenant/refinancing source.",
+    "why_result_happened": "The missing COHR/MU rows already had ticker, entry_date, exit_date, pnl, and notional, and the hot/cold overlay warehouse covers SPY/QQQ bars for their 2026-06-25 to 2026-07-02 holding window."
+  },
+  "pre_run_questions": {
+    "acceptance_standard": "Accept as measurement repair if all closed supplier-financing rows have cash/SPY/QQQ replacement values after enrichment and the shared artifact contains those rows. Treat alpha activation separately and require at least 30 closed enriched rows plus positive cash/SPY/QQQ replacement value.",
+    "alpha_hypothesis": "Alpha blocker: accepted supplier-financing debt-relief forward readiness cannot be judged while newly closed COHR/MU rows lack cash/SPY/QQQ replacement-value comparators; after the hot warehouse I/O repair, enrich those missing rows from the shared warehouse without changing thresholds, ranking, sizing, exits, orders, or paper selection.",
+    "history_check": {
+      "novelty_nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "accepted_helper_source_priority_allocator_source_extension",
+          "reopen_condition": "Retry only with closed forward allocator displacement rows, per-share SBC burden net buybacks, or grant-value normalization evidence that changes the underlying data edge.",
+          "score": 0.6073,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "fundamental_growth_rs_monotonic_rank_validation",
+          "reopen_condition": null,
+          "score": 0.6,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "supplier_financing_debt_relief_forward_maturation",
+          "reopen_condition": "Wait for materially more closed default-off paper rows, or bring in a genuinely new supplier/payment-term, covenant/refinancing, or other production-visible source before revisiting activation.",
+          "score": 0.4908,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "supplier_financing_debt_relief_shared_risk_scaled_adapter",
+          "reopen_condition": "Next useful evidence is closed forward replacement-value rows from the shared default-off ledger, supplier/payment-term provenance, covenant/refinancing context, or kill-switch parity.",
+          "score": 0.474,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "post_reinvestment_nonrepeat_alpha_surface_readiness",
+          "reopen_condition": null,
+          "score": 0.4735,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "prior": {
+        "prior_closed_position_count": 3,
+        "prior_decision": "rejected_supplier_financing_debt_relief_new_closed_rows_not_activation_ready",
+        "prior_enriched_replacement_rows": 1,
+        "prior_experiment_id": "exp-20260704-019",
+        "prior_forward_matching_rows": 1,
+        "prior_log": "experiments/logs/exp-20260704-019.json",
+        "prior_log_exists": true,
+        "prior_missing_replacement_count": 2,
+        "prior_next_retry_requires": "Complete replacement-value enrichment for COHR/MU and materially more closed supplier-financing/debt-relief rows; do not retry adjacent retunes from the same three-row surface."
+      }
+    },
+    "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_020_supplier_financing_missing_forward_rv_enrichment.py",
+    "single_policy_bundle": "supplier_financing_debt_relief_missing_forward_replacement_enrichment_v1"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Only closed default-off supplier state rows and the shared forward replacement-value artifact changed; no executable policy or live order path changed.",
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/forward_replacement_value.py",
+    "quant/test_forward_replacement_value.py",
+    "experiments/logs/exp-20260704-019.json",
+    "experiments/logs/exp-20260704-017.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260704_020_supplier_financing_missing_forward_rv_enrichment.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_forward_replacement_value.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "supplier_financing_debt_relief_missing_forward_replacement_enrichment_v1",
+  "status": "accepted",
+  "supplier_financing_debt_relief_repair": {
+    "after_forward_replacement": {
+      "enriched_matching_rows": 3,
+      "ledger_exists": true,
+      "ledger_file": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "matching_rows": 3,
+      "replacement_value_vs_cash_usd": -564.36,
+      "replacement_value_vs_qqq_usd": -530.32,
+      "replacement_value_vs_spy_usd": -596.39,
+      "sample_matches": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-22:MRVL",
+          "entry_date": "2026-06-23",
+          "exit_date": "2026-06-30",
+          "replacement_value_vs_cash_usd": 99.12,
+          "replacement_value_vs_qqq_usd": 60.18,
+          "replacement_value_vs_spy_usd": 78.09,
+          "status": "enriched",
+          "ticker": "MRVL"
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "replacement_value_vs_cash_usd": -322.19,
+          "replacement_value_vs_qqq_usd": -285.7,
+          "replacement_value_vs_spy_usd": -327.69,
+          "status": "enriched",
+          "ticker": "COHR"
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "replacement_value_vs_cash_usd": -341.29,
+          "replacement_value_vs_qqq_usd": -304.8,
+          "replacement_value_vs_spy_usd": -346.79,
+          "status": "enriched",
+          "ticker": "MU"
+        }
+      ],
+      "status_counts": {
+        "enriched": 3
+      },
+      "tickers": [
+        "COHR",
+        "MRVL",
+        "MU"
+      ],
+      "total_rows": 53
+    },
+    "after_state": {
+      "closed_missing_entry_or_target": [],
+      "closed_missing_replacement_rows": [],
+      "closed_missing_replacement_value_count": 0,
+      "closed_position_count": 3,
+      "closed_positions": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-22:MRVL",
+          "entry_date": "2026-06-23",
+          "exit_date": "2026-06-30",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": 99.12,
+          "replacement_value_status": "enriched",
+          "replacement_value_vs_cash_usd": 99.12,
+          "replacement_value_vs_qqq_usd": 60.18,
+          "replacement_value_vs_spy_usd": 78.09,
+          "signal_date": "2026-06-22",
+          "target_price_present": true,
+          "ticker": "MRVL",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -322.19,
+          "replacement_value_status": "enriched",
+          "replacement_value_vs_cash_usd": -322.19,
+          "replacement_value_vs_qqq_usd": -285.7,
+          "replacement_value_vs_spy_usd": -327.69,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "COHR",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -341.29,
+          "replacement_value_status": "enriched",
+          "replacement_value_vs_cash_usd": -341.29,
+          "replacement_value_vs_qqq_usd": -304.8,
+          "replacement_value_vs_spy_usd": -346.79,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "MU",
+          "trade_enabled": false
+        }
+      ],
+      "closed_replacement_value_count": 3,
+      "closed_sector_counts": {
+        "Technology": 3
+      },
+      "forward_paper_gate": {
+        "closed_trade_count": 3,
+        "min_closed_trades": 30,
+        "net_pnl": -564.36,
+        "passed": false,
+        "reasons": [
+          "closed_trades_below_min:3/30",
+          "net_pnl_not_positive",
+          "win_rate_below_min",
+          "single_ticker_positive_share_too_high",
+          "positive_pnl_hhi_too_high"
+        ],
+        "status": "blocked",
+        "win_rate": 0.3333
+      },
+      "latest_snapshot_asof_date": "2026-07-03",
+      "open_missing_entry_date": [],
+      "open_position_count": 5,
+      "pending_entry_count": 0,
+      "raw_realized_pnl_usd": -564.36,
+      "replacement_value_vs_cash_usd": -564.36,
+      "replacement_value_vs_qqq_usd": -530.32,
+      "replacement_value_vs_spy_usd": -596.39,
+      "replacement_win_rate": 0.3333,
+      "snapshot_count": 22,
+      "snapshot_exists": true,
+      "snapshot_file": "data/paper_sleeves/supplier_financing_debt_relief/snapshots.jsonl",
+      "state_exists": true,
+      "state_file": "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+      "state_updated_at": "2026-07-04T03:40:33+00:00",
+      "ticker_counts": {
+        "ADI": 1,
+        "AEIS": 1,
+        "COHR": 1,
+        "CSCO": 1,
+        "JBTM": 1,
+        "MKC": 1,
+        "MRVL": 1,
+        "MU": 1
+      },
+      "trade_enabled_values": [
+        "False"
+      ]
+    },
+    "before_forward_replacement": {
+      "enriched_matching_rows": 1,
+      "ledger_exists": true,
+      "ledger_file": "data/paper_sleeves/forward_replacement_value.jsonl",
+      "matching_rows": 1,
+      "replacement_value_vs_cash_usd": 99.12,
+      "replacement_value_vs_qqq_usd": 60.18,
+      "replacement_value_vs_spy_usd": 78.09,
+      "sample_matches": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-22:MRVL",
+          "entry_date": "2026-06-23",
+          "exit_date": "2026-06-30",
+          "replacement_value_vs_cash_usd": 99.12,
+          "replacement_value_vs_qqq_usd": 60.18,
+          "replacement_value_vs_spy_usd": 78.09,
+          "status": "enriched",
+          "ticker": "MRVL"
+        }
+      ],
+      "status_counts": {
+        "enriched": 1
+      },
+      "tickers": [
+        "MRVL"
+      ],
+      "total_rows": 51
+    },
+    "before_state": {
+      "closed_missing_entry_or_target": [],
+      "closed_missing_replacement_rows": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -322.19,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "COHR",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -341.29,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "MU",
+          "trade_enabled": false
+        }
+      ],
+      "closed_missing_replacement_value_count": 2,
+      "closed_position_count": 3,
+      "closed_positions": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-22:MRVL",
+          "entry_date": "2026-06-23",
+          "exit_date": "2026-06-30",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": 99.12,
+          "replacement_value_status": "enriched",
+          "replacement_value_vs_cash_usd": 99.12,
+          "replacement_value_vs_qqq_usd": 60.18,
+          "replacement_value_vs_spy_usd": 78.09,
+          "signal_date": "2026-06-22",
+          "target_price_present": true,
+          "ticker": "MRVL",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -322.19,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "COHR",
+          "trade_enabled": false
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "hold_days": 10,
+          "paper_notional_usd": 1600.0,
+          "pnl": -341.29,
+          "replacement_value_status": null,
+          "replacement_value_vs_cash_usd": null,
+          "replacement_value_vs_qqq_usd": null,
+          "replacement_value_vs_spy_usd": null,
+          "signal_date": "2026-06-24",
+          "target_price_present": true,
+          "ticker": "MU",
+          "trade_enabled": false
+        }
+      ],
+      "closed_replacement_value_count": 1,
+      "closed_sector_counts": {
+        "Technology": 3
+      },
+      "forward_paper_gate": {
+        "closed_trade_count": 3,
+        "min_closed_trades": 30,
+        "net_pnl": -564.36,
+        "passed": false,
+        "reasons": [
+          "closed_trades_below_min:3/30",
+          "net_pnl_not_positive",
+          "win_rate_below_min",
+          "single_ticker_positive_share_too_high",
+          "positive_pnl_hhi_too_high"
+        ],
+        "status": "blocked",
+        "win_rate": 0.3333
+      },
+      "latest_snapshot_asof_date": "2026-07-03",
+      "open_missing_entry_date": [],
+      "open_position_count": 5,
+      "pending_entry_count": 0,
+      "raw_realized_pnl_usd": -564.36,
+      "replacement_value_vs_cash_usd": 99.12,
+      "replacement_value_vs_qqq_usd": 60.18,
+      "replacement_value_vs_spy_usd": 78.09,
+      "replacement_win_rate": 1.0,
+      "snapshot_count": 22,
+      "snapshot_exists": true,
+      "snapshot_file": "data/paper_sleeves/supplier_financing_debt_relief/snapshots.jsonl",
+      "state_exists": true,
+      "state_file": "data/paper_sleeves/supplier_financing_debt_relief/state.json",
+      "state_updated_at": "2026-07-04T03:40:33+00:00",
+      "ticker_counts": {
+        "ADI": 1,
+        "AEIS": 1,
+        "COHR": 1,
+        "CSCO": 1,
+        "JBTM": 1,
+        "MKC": 1,
+        "MRVL": 1,
+        "MU": 1
+      },
+      "trade_enabled_values": [
+        "False"
+      ]
+    },
+    "prior": {
+      "prior_closed_position_count": 3,
+      "prior_decision": "rejected_supplier_financing_debt_relief_new_closed_rows_not_activation_ready",
+      "prior_enriched_replacement_rows": 1,
+      "prior_experiment_id": "exp-20260704-019",
+      "prior_forward_matching_rows": 1,
+      "prior_log": "experiments/logs/exp-20260704-019.json",
+      "prior_log_exists": true,
+      "prior_missing_replacement_count": 2,
+      "prior_next_retry_requires": "Complete replacement-value enrichment for COHR/MU and materially more closed supplier-financing/debt-relief rows; do not retry adjacent retunes from the same three-row surface."
+    },
+    "repair": {
+      "artifact_summary": {
+        "artifact_path": "D:\\Github\\ginger\\data\\paper_sleeves\\forward_replacement_value.jsonl",
+        "previous_rows": 51,
+        "previous_rows_not_in_current_state": [],
+        "rows_by_entry_regime_label": {
+          "risk_on_trend": 53
+        },
+        "rows_by_entry_short_volume_quintile": {
+          "Q1": 12,
+          "Q2": 12,
+          "Q3": 6,
+          "Q4": 8,
+          "Q5": 9
+        },
+        "rows_by_sleeve": {
+          "accepted_helper_source_priority_allocator": 1,
+          "alpha_score_market_regime": 5,
+          "broad_market": 1,
+          "free_data_cross_source_consensus": 4,
+          "fundamental_growth_rs": 8,
+          "low_deployment_etf": 17,
+          "sec_governance": 2,
+          "sec_leadership": 1,
+          "sec_negative": 2,
+          "state_surface": 3,
+          "supplier_financing_debt_relief": 3,
+          "volatility_contraction": 2,
+          "volume_breadth_breakout": 4
+        },
+        "rows_by_status": {
+          "enriched": 53
+        },
+        "rows_entry_short_volume_toxic": 9,
+        "rows_with_entry_regime": 53,
+        "rows_with_entry_short_volume": 47,
+        "rows_written": 53,
+        "skipped_missing_replacement": [
+          {
+            "decision_id": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER:accepted_helper_source_priority_top1_with_lagged_consensus_allocation_v1:2026-06-16:DDOG:lagged_cross_source_consensus",
+            "entry_date": "2026-06-18",
+            "exit_date": "2026-07-02",
+            "sleeve_key": "accepted_helper_source_priority_allocator",
+            "ticker": "DDOG"
+          },
+          {
+            "decision_id": "ACCEPTED_SOURCE_CONSENSUS_PAPER:accepted_source_consensus_shared_v1:2026-06-15:WDC",
+            "entry_date": "2026-06-16",
+            "exit_date": "2026-07-02",
+            "sleeve_key": "accepted_source_consensus",
+            "ticker": "WDC"
+          }
+        ],
+        "status": "ok"
+      },
+      "rows_updated_this_run": 2,
+      "state_changed": true,
+      "updated_records": [
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:COHR",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "replacement_value_vs_cash_usd": -322.19,
+          "replacement_value_vs_qqq_usd": -285.7,
+          "replacement_value_vs_spy_usd": -327.69,
+          "status": "enriched",
+          "ticker": "COHR"
+        },
+        {
+          "decision_id": "SUPPLIER_FINANCING_DEBT_RELIEF_RISK_SCALED_PAPER:raw_sec_companyfacts_supplier_financing_debt_relief_intersection_candidate_source_v1:supplier_financing_debt_relief_vol_liquidity_risk_scaled_notional_v1:2026-06-24:MU",
+          "entry_date": "2026-06-25",
+          "exit_date": "2026-07-02",
+          "replacement_value_vs_cash_usd": -341.29,
+          "replacement_value_vs_qqq_usd": -304.8,
+          "replacement_value_vs_spy_usd": -346.79,
+          "status": "enriched",
+          "ticker": "MU"
+        }
+      ],
+      "warehouse_inputs": {
+        "comparator_bar_counts": {
+          "QQQ": 713,
+          "SPY": 713
+        },
+        "comparator_tickers": [
+          "QQQ",
+          "SPY"
+        ],
+        "entry_exhaustion_tickers": 3,
+        "regime_spy_bars": 713,
+        "short_volume_symbols": 51
+      },
+      "write_fallbacks": [
+        "data/paper_sleeves/supplier_financing_debt_relief/state.json: atomic fallback: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\supplier_financing_debt_relief\\\\.state.json.u6yeppc1.tmp' -> 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\supplier_financing_debt_relief\\\\state.json'",
+        "data/paper_sleeves/forward_replacement_value.jsonl: atomic fallback: [WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\.forward_replacement_value.jsonl.olj0amp0.tmp' -> 'D:\\\\Github\\\\ginger\\\\data\\\\paper_sleeves\\\\forward_replacement_value.jsonl'"
+      ]
+    }
+  },
+  "timestamp": "2026-07-04T18:14:51Z",
+  "trial_family": "supplier_financing_debt_relief_forward_replacement_enrichment",
+  "trial_variant_id": "supplier_financing_debt_relief_cohr_mu_missing_rv_20260704"
+}

@@ -18,7 +18,8 @@ just atomic files, the same idiom as ticket reservation. Tool:
   in *other* sessions/machines, use the session-management channel, not files.
 - Listening is **polling** (1s), so latency is ~1s, not instant.
 - Both participants must be alive and looping. An agent that exits cannot be
-  talked to.
+  talked to. **Exception:** `dispatch` (below) removes the "both already
+  alive" requirement by spawning the peer itself.
 
 ## Where messages live
 
@@ -49,7 +50,43 @@ python scripts/agent_mailbox.py recv --channel C --me A --timeout 60
 # Read the whole conversation in order; list channels
 python scripts/agent_mailbox.py transcript --channel C
 python scripts/agent_mailbox.py list
+
+# One-sided trigger: send the opener AND spawn codex to join the channel.
+python scripts/agent_mailbox.py dispatch --channel C --me A --task '<brief>' `
+    --peer codex --rounds 3
 ```
+
+## Dispatch — start a conversation when the peer is not running
+
+`dispatch` makes the mailbox usable one-sided: the caller (e.g. a Claude
+session without network access) both **sends the opener** and **launches the
+peer** as a background `codex exec` process, so web-research or other
+codex-capability tasks can be delegated on demand.
+
+What it does:
+
+1. sends `--task` as the opener message from `--me` (speaks-first side);
+2. auto-discovers a working codex binary (`--version` probe; the npm
+   `codex.CMD` wrapper is broken on this machine, so it falls back to the
+   desktop app's bundled CLI under `~\.codex\`), or takes `--codex-exe`;
+3. spawns `codex exec --sandbox danger-full-access "<bootstrap prompt>"`
+   detached, cwd = repo root, stdout/stderr appended to
+   `data/agent_mailbox/<channel>/.<peer>-exec.log`, pid in `.<peer>-exec.pid`;
+4. the bootstrap prompt tells the peer to join listen-first under the name
+   `--peer`, answer with SHORT pointer messages whose bodies live under
+   `data/agent_mailbox/<channel>/attachments/`, never touch tracked files,
+   never commit, never reserve experiment ids, and finish with a message
+   containing `DONE` within `--rounds` turns.
+
+After dispatching, the caller just runs the normal speaks-first recipe
+(`recv`, `send`, `recv`, …). `recv` timeouts (exit 2) are expected while the
+peer is thinking — re-run the same `recv`. If the peer never replies, check
+the exec log; the spawned process dies with its own session, it is not a
+persistent daemon.
+
+Trust note: `danger-full-access` is required for network research on this
+machine; only dispatch task briefs you would be comfortable running yourself,
+and keep the no-tracked-writes / no-commit rules in every brief.
 
 `recv` returns the lowest-sequence message past your cursor that you did **not**
 send (optionally filtered to `--peer`), advances your cursor, and prints the

@@ -1,0 +1,262 @@
+{
+  "acceptance_rule": "accepted_measurement_repair if the regenerated 2026-06-29 estimate-revision ledger loads same-day signal artifacts and matched_candidate_rows increases from 0 to >0 while production_impact keeps alters_orders/ranking/sizing false; otherwise blocked with exact missing dependency.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260630_021_estimate_revision_post_quant_signal_match_rerun.py",
+    "data/experiments/exp-20260630-021/exp_20260630_021_estimate_revision_post_quant_signal_match_rerun.json",
+    "data/non_ohlcv/estimate_revision_ledger_20260629.jsonl",
+    "data/non_ohlcv/estimate_revision_ledger_summary_20260629.json",
+    "experiments/logs/exp-20260630-021.json",
+    "experiments/cards/exp-20260630-021.md",
+    "experiments/manifests/exp-20260630-021.json",
+    "experiments/tickets/exp-20260630-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260630-021.md",
+  "causal_components": [
+    "post_quant_signal_artifact_presence",
+    "existing_estimate_revision_matcher",
+    "ledger_regeneration_no_strategy_change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "estimate_revision_post_quant_signal_match_rerun_v1",
+  "claimed_at": "2026-06-30T22:12:56+00:00",
+  "completed_at": "2026-06-30T22:14:38+00:00",
+  "created_at": "2026-06-30T22:12:02+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260630-021",
+  "experiment_uid": "expuid-22a9be0a3913466d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260630-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-30T22:12:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_post_quant_signal_match_rerun"
+  },
+  "hypothesis": "Alpha-enabling repair: estimate-revision candidate-match attribution is only testable when the daily revision ledger is generated after same-day quant/trend signal artifacts exist; rerunning the 2026-06-29 ledger after quant_signals_20260629 landed should produce real matched candidate rows without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "estimate_revision_post_quant_signal_match_rerun_v1"
+  ],
+  "mechanism_family": "estimate_revision_candidate_match_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260624-012",
+    "exp-20260625-002",
+    "exp-20260625-017",
+    "exp-20260628-017"
+  ],
+  "new_evidence_type": "post_quant_signal_artifact_match_surface",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "score": 0.6649,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form144_revision_data_readiness",
+        "score": 0.6381,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "score": 0.6372,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "after",
+        "alpha",
+        "artifacts",
+        "attribution",
+        "behavior",
+        "changing",
+        "daily",
+        "enabling",
+        "estimate",
+        "exist",
+        "generated",
+        "is",
+        "landed",
+        "ledger",
+        "match",
+        "matched",
+        "measurement",
+        "only",
+        "post",
+        "produce",
+        "quant",
+        "real",
+        "repair",
+        "rerun",
+        "rerunning",
+        "revision",
+        "rows",
+        "same",
+        "should",
+        "signal",
+        "signals",
+        "strategy",
+        "surface",
+        "testable",
+        "trend",
+        "when",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_daily_candidate_match_surface",
+        "reopen_condition": "Next alpha-compliant revision work needs closed forward outcomes for selected/current overlaps or a different unsaturated data source.",
+        "score": 0.6649,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.6381,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "A valid alpha retry needs materially more selected/current non-flat matches with closed 3/5/10d replacement values, another settled month of production revision rows, or a different unsaturated PIT expectation source.",
+        "score": 0.6372,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6195,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Same-day quant_signals_20260629 artifact became available after the previous estimate-revision ledger generation, creating new machine-checkable candidate-match rows rather than a threshold or condition reslice.",
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "saturated_source_axis": {
+      "axis": "Same-day quant_signals_20260629 artifact became available after the previous estimate-revision ledger generation, creating new machine-checkable candidate-match rows rather than a threshold or condition reslice.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.1111,
+      "accepts": 3,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 27
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "confidence_reason": "Pre-flight load_daily_signal_match_records now sees 65 same-day signal records and 5 candidate records for 2026-06-29, while the current summary was generated before quant_signals_20260629 existed.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "quant_signal_payload_shape_not_candidate",
+      "ledger_rerun_still_zero_matches",
+      "artifact_ordering_not_repaired"
+    ],
+    "recorded_at": "2026-06-30T22:11:29+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.8,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "quant_signal_payload_shape_not_candidate",
+        "ledger_rerun_still_zero_matches",
+        "artifact_ordering_not_repaired"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Low surprise: pre-flight loader already saw 65 same-day signal records; the repair confirmed the dependency-ordering issue."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260630-021.json",
+  "single_causal_variable": "estimate_revision_post_quant_signal_match_rerun_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260630-021.json",
+  "trial_family": "estimate_revision_daily_candidate_match_surface",
+  "trial_variant_id": "post_quant_signal_20260629_match_rerun_v1"
+}
