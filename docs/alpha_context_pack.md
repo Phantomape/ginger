@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1512`
-- Raw records loaded by meta report: `4834`
-- History fingerprint: `d798eddfa942e25b`
+- Strategy records counted: `1514`
+- Raw records loaded by meta report: `4850`
+- History fingerprint: `2061a4bdd0f58964`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -42,8 +42,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
   Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5706`: experiments `338`, accept `25.44%`, sum EV `+82.5806`, sum PnL `$1,481,333.24`.
-  Reason: 16/338 records have sample >= 10; 322/338 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5704`: experiments `339`, accept `25.37%`, sum EV `+82.5806`, sum PnL `$1,481,333.24`.
+  Reason: 17/339 records have sample >= 10; 323/339 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `candidate_pool_full_stack` priority `0.5655`: experiments `26`, accept `23.08%`, sum EV `+5.5598`, sum PnL `$103,177.10`.
   Reason: 20/26 records show multi-window evidence; 4/26 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260703-019` `rejected_sec_item101_contract_relation_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_contract_relation_candidate_pool_alpha`, trial `sec_item101_contract_relation_issuer_self_shared_default_off`.
-  Lesson: The fixed Item 1.01 relation top-1 rule failed the predeclared full-stack Gate 4: aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_windows;...
-- `exp-20260704-001` `rejected_sec_item101_contract_relation_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_sec_contract_relation_candidate_pool_alpha`, trial `sec_item101_contract_economic_terms_shared_default_off`.
-  Lesson: The fixed amount_or_duration Item 1.01 policy failed the predeclared full-stack Gate 4: aggregate_ev_not_positive; aggregate_pnl_not_positive; window_ev_regression; window_pnl_regression; fewer_than_two_ev_improved_wi...
 - `exp-20260705-009` `rejected_duplicate_exposure_cap_historical_validation_failed`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `duplicate_exposure_cap_policy_sim`.
   Lesson: The forward ledger can support a cross-sleeve cap simulation, but the independent historical accepted-paper surface is still too thin or concentrated to validate a default-off duplicate exposure policy. Do not retune...
 - `exp-20260705-014` `rejected_cisa_kev_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `external_event_entry_risk_gate`, trial `cisa_kev_mapped_issuer_entry_risk_window`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The direct Item 2.05/2.06 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule. Do not retune price, ADV, hold days, cooldown, same-...
 - `exp-20260708-014` `rejected_sec_item205206_text_provenance_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `free_sec_restructuring_impairment_entry_risk`, trial `sec_8k_item205206_text_provenance_entry_risk`.
   Lesson: The text-provenance Item 2.05/2.06 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule. Do not retune text regexes, price, ADV, hol...
+- `exp-20260708-020` `rejected_crypto_vol_target_overlay_policy_candidate`: EV `+0.0000`, PnL `$0.00`, family `production_visible_crypto_sleeve_policy`, trial `btc_spot_crypto_sleeve_realized_vol_target_overlay`.
+  Lesson: The volatility target overlay did not beat the current crypto policy under the predeclared multi-window rule: overlay_ev_beats_current_in_2_of_3_windows;overlay_aggregate_ev_beats_current Do not retune vol lookback, t...
+- `exp-20260708-023` `rejected_chop_regime_mean_reversion_sleeve`: EV `+0.0000`, PnL `$0.00`, family `chop_regime_mean_reversion`, trial `chop_regime_mean_reversion_candidate_pool`.
+  Lesson: Reversion entries on chop days closed 41 trades with 82.13 USD vs SPY replacement 1024.1; the mirror trade did not clear the predeclared bar on the frozen windows. Do not retune RSI threshold, SMA windows, hold days,...
 
 ## Highest-Signal Historical Records
 

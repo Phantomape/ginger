@@ -18,8 +18,8 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
   },
   "candidates_with_eps_estimate_delta_7d": 18,
   "closed_forward_outcomes": {
-    "10d": 42,
-    "20d": 32,
+    "10d": 43,
+    "20d": 33,
     "5d": 43
   },
   "expectation_join_status_counts": {
@@ -51,7 +51,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 | Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 7 | 1.5016% |
+| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 8 | 1.3937% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
 | C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
@@ -83,7 +83,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 
 | Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |
 |---|---:|---:|---:|---:|---:|
-| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 7 | 1.5016% |
+| A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 8 | 1.3937% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
 | C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
@@ -116,21 +116,21 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
       "passed": true
     },
     {
-      "bucket_a_avg_return": 0.015016,
+      "bucket_a_avg_return": 0.013937,
       "comparison_avg_return": null,
       "comparison_bucket": "B_positive_expectation_only",
       "horizon": "10d",
       "passed": false
     },
     {
-      "bucket_a_avg_return": 0.015016,
+      "bucket_a_avg_return": 0.013937,
       "comparison_avg_return": -0.091422,
       "comparison_bucket": "C_residual_leader_only",
       "horizon": "10d",
       "passed": true
     },
     {
-      "bucket_a_avg_return": 0.015016,
+      "bucket_a_avg_return": 0.013937,
       "comparison_avg_return": -0.017556,
       "comparison_bucket": "D_neither",
       "horizon": "10d",
