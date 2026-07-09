@@ -29,6 +29,9 @@ import experiment_fingerprint as fp  # noqa: E402
         ("space_catalyst event state shadow ledger", "space_catalyst"),
         ("space catalyst observation slot forward supply", "space_catalyst"),
         ("space_catalyst_event_ledger closed decision attribution", "space_catalyst"),
+        ("chop_forward_observer daily wiring", "chop_forward_observer"),
+        ("future chop forward-row reopen checks", "chop_forward_observer"),
+        ("chop-labeled forward rows accrue", "chop_forward_observer"),
         ("CISA KEV entry risk gate", "cisa_kev"),
         ("live drift reconciliation fill drift monitor", "live_drift_reconciliation"),
         ("prediction-market event odds observer", "prediction_market_event"),
@@ -43,6 +46,11 @@ import experiment_fingerprint as fp  # noqa: E402
         ("news_second_order negative top1 candidate source", "news_event_exposure"),
         ("portfolio covariance daily mark-to-market overlay", "portfolio_covariance_lane"),
         ("vol_normalized_tick size microstructure viability attribution", "microstructure_viability"),
+        ("core_entry_admission_gate severe haircut no-entry saved trade diagnostic", "core_entry_admission"),
+        ("core high-vol high-beta admission overlay saved-trade counterfactual", "core_entry_admission"),
+        ("chop pair-spread long-short market-neutral zscore entry sleeve", "relative_value_spread"),
+        ("relative_value_spread pair_zscore spread entry probe", "relative_value_spread"),
+        ("cointegrated pair spread sleeve", "relative_value_spread"),
         ("forward replacement value entry_exhaustion attribution", "forward_replacement_value"),
         ("pilot_scorecard kill graduate readiness", "pilot_scorecard"),
         ("SEC cover-page filer-status upgrade candidate pool", "sec_filer_status"),
@@ -92,6 +100,24 @@ def test_space_catalyst_precedes_generic_forward_replacement_value():
     assert fingerprint["gate_shape"] == "forward_attribution"
 
 
+def test_chop_forward_observer_precedes_core_admission_and_regime_chop():
+    fingerprint = fp.infer_fingerprint(
+        "Repair novelty fingerprint coverage so chop forward observer wiring "
+        "and future chop forward-row reopen checks classify away from "
+        "core_entry_admission / entry_admission."
+    )
+
+    assert fingerprint["data_source"] == "chop_forward_observer"
+    assert fingerprint["gate_shape"] == "forward_observer"
+
+
+def test_chop_forward_observer_does_not_capture_other_chop_surfaces():
+    assert fp.infer_fingerprint(
+        "chop pair-spread long-short market-neutral zscore entry sleeve"
+    )["data_source"] == "relative_value_spread"
+    assert fp.infer_fingerprint("regime chop daily breadth wiring")["data_source"] == "regime_state"
+
+
 def test_intraday_structured_news_precedes_generic_relation_and_news_sources():
     assert fp.infer_fingerprint("intraday structured news relation observer")["data_source"] == "intraday_structured_news"
     assert fp.infer_fingerprint("entity-theme news relation observer")["data_source"] == "entity_theme_news"
@@ -130,6 +156,53 @@ def test_portfolio_covariance_daily_equity_gate_shape():
 def test_microstructure_viability_attribution_gate_shape():
     fingerprint = fp.infer_fingerprint(
         "tick_to_atr vol_normalized_tick microstructure viability attribution"
+    )
+
+    assert fingerprint["data_source"] == "microstructure_viability"
+    assert fingerprint["gate_shape"] == "microstructure_attribution"
+
+
+def test_core_entry_admission_gate_shape_and_source():
+    fingerprint = fp.infer_fingerprint(
+        "core_entry_admission_gate saved-trade counterfactual severe haircut "
+        "pre-entry no-entry admission diagnostic"
+    )
+
+    assert fingerprint["data_source"] == "core_entry_admission"
+    assert fingerprint["gate_shape"] == "entry_admission"
+
+
+def test_core_entry_admission_precedes_generic_ohlcv_momentum():
+    fingerprint = fp.infer_fingerprint(
+        "core high-vol high-beta admission overlay for crowded momentum entries"
+    )
+
+    assert fingerprint["data_source"] == "core_entry_admission"
+    assert fingerprint["gate_shape"] == "entry_admission"
+
+
+def test_microstructure_admission_still_uses_microstructure_source():
+    fingerprint = fp.infer_fingerprint(
+        "microstructure tick_to_atr admission gate vol_normalized_tick"
+    )
+
+    assert fingerprint["data_source"] == "microstructure_viability"
+    assert fingerprint["gate_shape"] == "microstructure_attribution"
+
+
+def test_pair_spread_surface_precedes_generic_chop_and_notional():
+    fingerprint = fp.infer_fingerprint(
+        "chop pair-spread long-short market-neutral zscore entry sleeve "
+        "with notional cap"
+    )
+
+    assert fingerprint["data_source"] == "relative_value_spread"
+    assert fingerprint["gate_shape"] == "pair_spread"
+
+
+def test_microstructure_spread_to_atr_is_not_pair_spread():
+    fingerprint = fp.infer_fingerprint(
+        "microstructure spread_to_atr tick_to_atr viability attribution"
     )
 
     assert fingerprint["data_source"] == "microstructure_viability"

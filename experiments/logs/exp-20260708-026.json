@@ -1,0 +1,240 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+  "calibration": {
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl"
+    ],
+    "realized_success": false
+  },
+  "change_type": "entry_admission_observed_only_counterfactual",
+  "changed_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+    "data/experiments/exp-20260708-026/before_measurement.json",
+    "data/experiments/exp-20260708-026/after_measurement.json",
+    "experiments/logs/exp-20260708-026.json",
+    "experiments/cards/exp-20260708-026.md",
+    "experiments/manifests/exp-20260708-026.json",
+    "experiments/tickets/exp-20260708-026.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+  "completed_at": "2026-07-08T18:59:07Z",
+  "decision": "observed_only_rejected_low_vol_quality_core_admission_overlay",
+  "experiment_id": "exp-20260708-026",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "current accepted core stack plus saved canonical warehouse window trades",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "note": "This diagnostic consumes saved trade rows and PIT OHLCV snapshots. It verifies the fields used by the attribution; target_price remains a signal-generation sentinel for any future shared-helper promotion.",
+    "passed": true,
+    "required_ohlcv_fields": [
+      "Date",
+      "Close"
+    ],
+    "required_saved_trade_fields": [
+      "ticker",
+      "entry_date",
+      "strategy",
+      "pnl"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "baseline_signals_generated": {
+      "late_strong": 51,
+      "mid_weak": 53,
+      "old_thin": 60
+    },
+    "baseline_signals_survived": {
+      "late_strong": 41,
+      "mid_weak": 42,
+      "old_thin": 52
+    },
+    "baseline_survival_rate": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    },
+    "diagnostic_trade_survival_not_signal_survival": true,
+    "feature_evaluable_trade_count": 61,
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "remaining_saved_trades_after_diagnostic_block": 53
+  },
+  "gate4": {
+    "aggregate": {
+      "additive_counterfactual_total_pnl": 194535.55,
+      "additive_pnl_delta": -40315.44,
+      "baseline_total_pnl": 234850.99,
+      "baseline_trade_count": 61,
+      "blocked_pnl_sum": 40315.44,
+      "blocked_strategy_counts": {
+        "breakout_long": 3,
+        "trend_long": 5
+      },
+      "blocked_strategy_pnl": {
+        "breakout_long": 9848.2,
+        "trend_long": 30467.24
+      },
+      "blocked_ticker_counts": {
+        "AMD": 3,
+        "APP": 2,
+        "COIN": 2,
+        "MU": 1
+      },
+      "blocked_ticker_pnl": {
+        "AMD": 1145.07,
+        "APP": 17358.32,
+        "COIN": 12386.57,
+        "MU": 9425.48
+      },
+      "blocked_trade_count": 8,
+      "feature_evaluable_rate": 1.0,
+      "feature_evaluable_trade_count": 61,
+      "improved_window_count": 0,
+      "improved_windows": [],
+      "max_single_ticker_blocked_count_share": 0.375,
+      "max_single_window_abs_delta_share": 0.3753,
+      "remaining_trade_count": 53,
+      "window_abs_delta_share": {
+        "late_strong": 0.2537,
+        "mid_weak": 0.3753,
+        "old_thin": 0.371
+      }
+    },
+    "diagnostic_only": true,
+    "failed_reasons": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl",
+      "not_full_gate4_saved_trade_counterfactual"
+    ],
+    "full_gate4_passed": false,
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "additive_counterfactual_total_pnl": 106844.31,
+        "additive_pnl_delta": -10228.61,
+        "baseline_total_pnl": 117072.92,
+        "blocked_pnl_sum": 10228.61,
+        "blocked_trade_count": 2,
+        "feature_evaluable_trade_count": 18,
+        "improves_additive_pnl": false,
+        "label": "late_strong"
+      },
+      {
+        "additive_counterfactual_total_pnl": 62979.55,
+        "additive_pnl_delta": -15130.56,
+        "baseline_total_pnl": 78110.11,
+        "blocked_pnl_sum": 15130.56,
+        "blocked_trade_count": 5,
+        "feature_evaluable_trade_count": 21,
+        "improves_additive_pnl": false,
+        "label": "mid_weak"
+      },
+      {
+        "additive_counterfactual_total_pnl": 24711.69,
+        "additive_pnl_delta": -14956.27,
+        "baseline_total_pnl": 39667.96,
+        "blocked_pnl_sum": 14956.27,
+        "blocked_trade_count": 1,
+        "feature_evaluable_trade_count": 22,
+        "improves_additive_pnl": false,
+        "label": "old_thin"
+      }
+    ]
+  },
+  "hypothesis": "A fixed low-volatility/quality admission overlay should reveal whether current core trades with both entry-time 60-session realized volatility and 60-session SPY beta in the same-day top quintile are lower-quality crowded momentum entries that should be blocked before entry rather than merely sized or stopped after entry.",
+  "implementation_mode": "read_only_saved_trade_counterfactual",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-026.json",
+  "mechanism_family": "core_low_vol_quality_admission_overlay",
+  "nearby_prior_experiments": [
+    "exp-20260606-015",
+    "exp-20260611-019",
+    "exp-20260708-021",
+    "exp-20260708-024"
+  ],
+  "new_evidence_axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-vol and SPY-beta ranks; not a low-vol candidate-pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "different_admission_field_or_external_baseline_family",
+    "no_low_vol_beta_lookback_threshold_universe_strategy_or_window_retune_on_same_saved_trades"
+  ],
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun this same saved-trade diagnostic by changing the 60-session lookback, 80th-percentile thresholds, beta/vol rank formula, ticker universe exclusions, strategy scope, or window slices. Those are retunes on the same OHLCV momentum surface.",
+    "new_evidence_required": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+    "why_result_happened": "The fixed high-vol/high-beta diagnostic did not clear the predeclared observed-only lead criteria. In this sample, broad top-quintile volatility plus top-quintile beta is not sufficient by itself to justify a core no-entry rule."
+  },
+  "prediction": {
+    "confidence_reason": "Prior low-vol/defensive candidate pools often failed by deleting convex winners, but the user asked for ways to avoid bad core contexts before stops. This fixed admission diagnostic tests that boundary without retuning existing strategy thresholds.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "high_vol_high_beta_contains_best_winners",
+      "too_few_blocked_trades",
+      "one_window_concentration",
+      "private_counterfactual_ignores_slot_replacement"
+    ],
+    "recorded_at": "2026-07-08T18:51:24+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_saved_trade_additive_counterfactual",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "blocked_trades_not_negative_aggregate_pnl;fewer_than_two_windows_improve_additive_pnl",
+  "related_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-026.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+  "status": "observed_only",
+  "trial_family": "core_high_vol_high_beta_admission_overlay",
+  "trial_variant_id": "exp-20260708-026"
+}

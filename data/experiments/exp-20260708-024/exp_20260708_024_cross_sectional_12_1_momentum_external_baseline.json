@@ -1,0 +1,3708 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "experiments/cards/exp-20260708-024.md",
+    "experiments/manifests/exp-20260708-024.json",
+    "experiments/tickets/exp-20260708-024.json",
+    "experiments/logs/exp-20260708-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "momentum_drawdown_above_guard"
+    ],
+    "realized_success": false
+  },
+  "card_file": "experiments/cards/exp-20260708-024.md",
+  "causal_components": [
+    "fixed 252-to-21 momentum ranking",
+    "monthly rebalance",
+    "next-open entry",
+    "21-session hold",
+    "5-position cap",
+    "canonical OHLCV snapshots",
+    "no strategy behavior change"
+  ],
+  "change_type": "entry_external_baseline_observed_only_replay",
+  "changed_files": [
+    "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "experiments/logs/exp-20260708-024.json",
+    "experiments/cards/exp-20260708-024.md",
+    "experiments/manifests/exp-20260708-024.json",
+    "experiments/tickets/exp-20260708-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "completed_at": "2026-07-08T18:11:07Z",
+  "config": {
+    "acceptance_rule": "Observed-only external baseline lead only: fixed 12-1 monthly momentum replay must beat current trend_long aggregate PnL and win at least two canonical windows versus trend_long while keeping max drawdown <= 16% and trade count >= 15. A positive result still requires shared helper/backtester Gate 1-4 before behavior changes.",
+    "annualization_days": 252,
+    "diagnostic_only": true,
+    "hold_days": 21,
+    "initial_capital": 100000.0,
+    "lookback_days": 252,
+    "max_acceptable_window_drawdown_pct": 0.16,
+    "max_positions": 5,
+    "min_avg_dollar_volume_20d": 20000000.0,
+    "min_price": 5.0,
+    "min_trade_count_for_lead": 15,
+    "min_trend_win_windows": 2,
+    "position_notional": 20000.0,
+    "round_trip_cost_pct": 0.0035,
+    "skip_recent_days": 21,
+    "top_n": 5
+  },
+  "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+  "experiment_id": "exp-20260708-024",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "private external 12-1 monthly momentum replay compared to accepted current trend_long by_strategy rows",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "entry fills use monthly rebalance Open after signal-date close",
+    "passed": true,
+    "required_fields": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "eligible_candidate_count_sum": {
+      "late_strong": 266,
+      "mid_weak": 266,
+      "old_thin": 266
+    },
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "private_replay_trade_count": 75,
+    "rebalance_count": {
+      "late_strong": 7,
+      "mid_weak": 7,
+      "old_thin": 7
+    }
+  },
+  "gate4": {
+    "acceptance_rule": "Observed-only external baseline lead only: fixed 12-1 monthly momentum replay must beat current trend_long aggregate PnL and win at least two canonical windows versus trend_long while keeping max drawdown <= 16% and trade count >= 15. A positive result still requires shared helper/backtester Gate 1-4 before behavior changes.",
+    "aggregate": {
+      "current_trend_long_total_pnl": 131996.98,
+      "current_trend_long_trade_count": 39,
+      "diagnostic_expected_value_score": 3.331487,
+      "diagnostic_total_return_pct": 1.433857,
+      "max_window_drawdown_pct": 0.294481,
+      "mean_window_sharpe_daily": 2.323445,
+      "momentum_total_pnl": 143385.65,
+      "momentum_trade_count": 75,
+      "momentum_win_window_count_vs_trend_long": 2,
+      "momentum_win_windows_vs_trend_long": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "pnl_delta_vs_trend_long": 11388.67
+    },
+    "diagnostic_only": true,
+    "failed_reasons": [
+      "momentum_drawdown_above_guard",
+      "not_full_gate4_private_external_replay"
+    ],
+    "full_gate4_passed": false,
+    "not_recomputed_in_shared_backtester": [
+      "production candidate generation",
+      "slot displacement against core positions",
+      "daily paper state",
+      "live order semantics"
+    ],
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "closed_trades": [
+          {
+            "avg_dollar_volume_20d": 3953517078.34,
+            "entry_date": "2025-10-23",
+            "entry_notional": 19629.4,
+            "entry_price": 560.84,
+            "exit_date": "2025-11-21",
+            "exit_price": 520.26,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1420.3,
+            "momentum_12_1": 3.484093,
+            "pnl": -1489.0,
+            "pnl_pct_net": -0.075856,
+            "round_trip_cost": 68.7,
+            "shares": 35,
+            "signal_date": "2025-10-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 887982843.25,
+            "entry_date": "2025-10-23",
+            "entry_notional": 19877.9,
+            "entry_price": 136.15,
+            "exit_date": "2025-11-21",
+            "exit_price": 133.49,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -388.36,
+            "momentum_12_1": 3.348968,
+            "pnl": -457.93,
+            "pnl_pct_net": -0.023037,
+            "round_trip_cost": 69.57,
+            "shares": 146,
+            "signal_date": "2025-10-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 8691237519.77,
+            "entry_date": "2025-10-23",
+            "entry_notional": 19825.29,
+            "entry_price": 175.445,
+            "exit_date": "2025-11-21",
+            "exit_price": 154.85,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2327.24,
+            "momentum_12_1": 3.248313,
+            "pnl": -2396.62,
+            "pnl_pct_net": -0.120887,
+            "round_trip_cost": 69.39,
+            "shares": 113,
+            "signal_date": "2025-10-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 38283699443.17,
+            "entry_date": "2025-10-23",
+            "entry_notional": 19740.0,
+            "entry_price": 420.0,
+            "exit_date": "2025-11-21",
+            "exit_price": 391.09,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1358.77,
+            "momentum_12_1": 0.929542,
+            "pnl": -1427.86,
+            "pnl_pct_net": -0.072333,
+            "round_trip_cost": 69.09,
+            "shares": 47,
+            "signal_date": "2025-10-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "TSLA"
+          },
+          {
+            "avg_dollar_volume_20d": 7195511488.65,
+            "entry_date": "2025-10-23",
+            "entry_notional": 19664.25,
+            "entry_price": 339.0387,
+            "exit_date": "2025-11-21",
+            "exit_price": 338.8395,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -11.55,
+            "momentum_12_1": 0.902631,
+            "pnl": -80.38,
+            "pnl_pct_net": -0.004088,
+            "round_trip_cost": 68.82,
+            "shares": 58,
+            "signal_date": "2025-10-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "AVGO"
+          },
+          {
+            "avg_dollar_volume_20d": 969988279.0,
+            "entry_date": "2025-12-01",
+            "entry_notional": 19954.55,
+            "entry_price": 172.022,
+            "exit_date": "2025-12-31",
+            "exit_price": 143.89,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -3263.31,
+            "momentum_12_1": 2.643935,
+            "pnl": -3333.15,
+            "pnl_pct_net": -0.167037,
+            "round_trip_cost": 69.84,
+            "shares": 116,
+            "signal_date": "2025-11-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 11133665107.48,
+            "entry_date": "2025-12-01",
+            "entry_notional": 19965.0,
+            "entry_price": 165.0,
+            "exit_date": "2025-12-31",
+            "exit_price": 177.75,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1542.75,
+            "momentum_12_1": 2.075174,
+            "pnl": 1472.87,
+            "pnl_pct_net": 0.073773,
+            "round_trip_cost": 69.88,
+            "shares": 121,
+            "signal_date": "2025-11-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 8050403752.07,
+            "entry_date": "2025-12-01",
+            "entry_notional": 19663.55,
+            "entry_price": 393.271,
+            "exit_date": "2025-12-31",
+            "exit_price": 345.3755,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2394.77,
+            "momentum_12_1": 1.364795,
+            "pnl": -2463.59,
+            "pnl_pct_net": -0.125287,
+            "round_trip_cost": 68.82,
+            "shares": 50,
+            "signal_date": "2025-11-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "AVGO"
+          },
+          {
+            "avg_dollar_volume_20d": 6369472988.11,
+            "entry_date": "2025-12-01",
+            "entry_notional": 19960.49,
+            "entry_price": 232.0987,
+            "exit_date": "2025-12-31",
+            "exit_price": 285.2902,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 4574.47,
+            "momentum_12_1": 1.17818,
+            "pnl": 4504.6,
+            "pnl_pct_net": 0.225676,
+            "round_trip_cost": 69.86,
+            "shares": 86,
+            "signal_date": "2025-11-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "MU"
+          },
+          {
+            "avg_dollar_volume_20d": 2731022644.33,
+            "entry_date": "2025-12-01",
+            "entry_notional": 19996.42,
+            "entry_price": 588.13,
+            "exit_date": "2025-12-31",
+            "exit_price": 673.82,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2913.46,
+            "momentum_12_1": 0.975031,
+            "pnl": 2843.47,
+            "pnl_pct_net": 0.142199,
+            "round_trip_cost": 69.99,
+            "shares": 34,
+            "signal_date": "2025-11-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 6966055626.15,
+            "entry_date": "2026-01-02",
+            "entry_notional": 19765.41,
+            "entry_price": 295.0061,
+            "exit_date": "2026-02-03",
+            "exit_price": 419.2639,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 8325.27,
+            "momentum_12_1": 1.724405,
+            "pnl": 8256.09,
+            "pnl_pct_net": 0.417704,
+            "round_trip_cost": 69.18,
+            "shares": 67,
+            "signal_date": "2025-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "MU"
+          },
+          {
+            "avg_dollar_volume_20d": 811193725.2,
+            "entry_date": "2026-01-02",
+            "entry_notional": 19885.6,
+            "entry_price": 148.4,
+            "exit_date": "2026-02-03",
+            "exit_price": 111.31,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -4970.06,
+            "momentum_12_1": 1.469765,
+            "pnl": -5039.66,
+            "pnl_pct_net": -0.253433,
+            "round_trip_cost": 69.6,
+            "shares": 134,
+            "signal_date": "2025-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 6447695679.88,
+            "entry_date": "2026-01-02",
+            "entry_notional": 19943.0,
+            "entry_price": 181.3,
+            "exit_date": "2026-02-03",
+            "exit_price": 157.88,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2576.2,
+            "momentum_12_1": 1.117982,
+            "pnl": -2646.0,
+            "pnl_pct_net": -0.132678,
+            "round_trip_cost": 69.8,
+            "shares": 110,
+            "signal_date": "2025-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 2325827357.04,
+            "entry_date": "2026-01-02",
+            "entry_notional": 19817.73,
+            "entry_price": 683.37,
+            "exit_date": "2026-02-03",
+            "exit_price": 461.79,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -6425.82,
+            "momentum_12_1": 0.860519,
+            "pnl": -6495.18,
+            "pnl_pct_net": -0.327746,
+            "round_trip_cost": 69.36,
+            "shares": 29,
+            "signal_date": "2025-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 5635895869.92,
+            "entry_date": "2026-01-02",
+            "entry_notional": 19919.9,
+            "entry_price": 218.9,
+            "exit_date": "2026-02-03",
+            "exit_price": 242.11,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2112.11,
+            "momentum_12_1": 0.755412,
+            "pnl": 2042.39,
+            "pnl_pct_net": 0.10253,
+            "round_trip_cost": 69.72,
+            "shares": 91,
+            "signal_date": "2025-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "AMD"
+          },
+          {
+            "avg_dollar_volume_20d": 14735334642.21,
+            "entry_date": "2026-03-02",
+            "entry_notional": 19663.77,
+            "entry_price": 401.3014,
+            "exit_date": "2026-03-31",
+            "exit_price": 337.84,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -3109.61,
+            "momentum_12_1": 3.469415,
+            "pnl": -3178.43,
+            "pnl_pct_net": -0.161639,
+            "round_trip_cost": 68.82,
+            "shares": 49,
+            "signal_date": "2026-02-27",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "MU"
+          },
+          {
+            "avg_dollar_volume_20d": 9064105196.37,
+            "entry_date": "2026-03-02",
+            "entry_notional": 19966.55,
+            "entry_price": 193.85,
+            "exit_date": "2026-03-31",
+            "exit_price": 203.43,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 986.74,
+            "momentum_12_1": 1.413023,
+            "pnl": 916.86,
+            "pnl_pct_net": 0.04592,
+            "round_trip_cost": 69.88,
+            "shares": 103,
+            "signal_date": "2026-02-27",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "AMD"
+          },
+          {
+            "avg_dollar_volume_20d": 850659265.8,
+            "entry_date": "2026-03-02",
+            "entry_notional": 19989.25,
+            "entry_price": 108.05,
+            "exit_date": "2026-03-31",
+            "exit_price": 93.87,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2623.3,
+            "momentum_12_1": 1.115516,
+            "pnl": -2693.26,
+            "pnl_pct_net": -0.134736,
+            "round_trip_cost": 69.96,
+            "shares": 185,
+            "signal_date": "2026-02-27",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 8185822537.96,
+            "entry_date": "2026-03-02",
+            "entry_notional": 19981.61,
+            "entry_price": 302.7517,
+            "exit_date": "2026-03-31",
+            "exit_price": 286.86,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1048.85,
+            "momentum_12_1": 0.932393,
+            "pnl": -1118.79,
+            "pnl_pct_net": -0.055991,
+            "round_trip_cost": 69.94,
+            "shares": 66,
+            "signal_date": "2026-02-27",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "GOOG"
+          },
+          {
+            "avg_dollar_volume_20d": 2508918884.04,
+            "entry_date": "2026-03-02",
+            "entry_notional": 19766.6,
+            "entry_price": 732.0962,
+            "exit_date": "2026-03-31",
+            "exit_price": 707.1138,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -674.52,
+            "momentum_12_1": 0.903589,
+            "pnl": -743.71,
+            "pnl_pct_net": -0.037624,
+            "round_trip_cost": 69.18,
+            "shares": 27,
+            "signal_date": "2026-02-27",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CAT"
+          },
+          {
+            "avg_dollar_volume_20d": 18956487312.91,
+            "entry_date": "2026-04-01",
+            "entry_notional": 19887.87,
+            "entry_price": 348.91,
+            "exit_date": "2026-04-21",
+            "exit_price": 449.38,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 5726.79,
+            "momentum_12_1": 3.681394,
+            "pnl": 5657.18,
+            "pnl_pct_net": 0.284454,
+            "round_trip_cost": 69.61,
+            "shares": 57,
+            "signal_date": "2026-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "MU"
+          },
+          {
+            "avg_dollar_volume_20d": 773768837.79,
+            "entry_date": "2026-04-01",
+            "entry_notional": 19944.45,
+            "entry_price": 96.35,
+            "exit_date": "2026-04-21",
+            "exit_price": 183.32,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 18002.79,
+            "momentum_12_1": 1.819551,
+            "pnl": 17932.99,
+            "pnl_pct_net": 0.899147,
+            "round_trip_cost": 69.81,
+            "shares": 207,
+            "signal_date": "2026-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1882886059.56,
+            "entry_date": "2026-04-01",
+            "entry_notional": 19456.96,
+            "entry_price": 720.6281,
+            "exit_date": "2026-04-21",
+            "exit_price": 800.45,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2155.19,
+            "momentum_12_1": 1.313299,
+            "pnl": 2087.09,
+            "pnl_pct_net": 0.107267,
+            "round_trip_cost": 68.1,
+            "shares": 27,
+            "signal_date": "2026-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CAT"
+          },
+          {
+            "avg_dollar_volume_20d": 4900880736.25,
+            "entry_date": "2026-04-01",
+            "entry_notional": 19946.2,
+            "entry_price": 343.9,
+            "exit_date": "2026-04-21",
+            "exit_price": 368.08,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1402.44,
+            "momentum_12_1": 1.254957,
+            "pnl": 1332.63,
+            "pnl_pct_net": 0.066811,
+            "round_trip_cost": 69.81,
+            "shares": 58,
+            "signal_date": "2026-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "TSM"
+          },
+          {
+            "avg_dollar_volume_20d": 6119035801.2,
+            "entry_date": "2026-04-01",
+            "entry_notional": 19718.64,
+            "entry_price": 289.98,
+            "exit_date": "2026-04-21",
+            "exit_price": 330.47,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2753.32,
+            "momentum_12_1": 0.968491,
+            "pnl": 2684.3,
+            "pnl_pct_net": 0.13613,
+            "round_trip_cost": 69.02,
+            "shares": 68,
+            "signal_date": "2026-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "GOOG"
+          }
+        ],
+        "comparison_vs_trend_long": {
+          "momentum_beats_trend_pnl": false,
+          "pnl_delta": -25915.1
+        },
+        "core_result": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "current_trend_long": {
+          "avg_R": 2.952,
+          "avg_pnl_pct_net": 0.1105,
+          "losses": 1,
+          "profit_factor": 19.053,
+          "total_pnl_usd": 42082.01,
+          "trade_count": 6,
+          "win_rate": 0.8333,
+          "wins": 5
+        },
+        "end": "2026-04-21",
+        "equity_curve_tail": [
+          {
+            "date": "2026-04-15",
+            "equity": 113627.0,
+            "open_positions": 5,
+            "realized_pnl": -13527.28
+          },
+          {
+            "date": "2026-04-16",
+            "equity": 111004.06,
+            "open_positions": 5,
+            "realized_pnl": -13527.28
+          },
+          {
+            "date": "2026-04-17",
+            "equity": 112703.4,
+            "open_positions": 5,
+            "realized_pnl": -13527.28
+          },
+          {
+            "date": "2026-04-20",
+            "equity": 114812.17,
+            "open_positions": 5,
+            "realized_pnl": -13527.28
+          },
+          {
+            "date": "2026-04-21",
+            "equity": 116166.91,
+            "open_positions": 0,
+            "realized_pnl": 16166.91
+          }
+        ],
+        "label": "late_strong",
+        "momentum_metrics": {
+          "ending_equity": 116166.91,
+          "expected_value_score": 0.111634,
+          "label": "cross_sectional_12_1_momentum",
+          "max_drawdown_pct": 0.294481,
+          "sharpe_daily": 0.690511,
+          "total_return_pct": 0.161669,
+          "trading_days": 123
+        },
+        "momentum_trade_summary": {
+          "avg_pnl": 646.68,
+          "largest_loser": -6495.18,
+          "largest_winner": 17932.99,
+          "losses": 14,
+          "total_pnl": 16166.91,
+          "trade_count": 25,
+          "win_rate": 0.44,
+          "wins": 11
+        },
+        "rebalance_dates": [
+          "2025-10-23",
+          "2025-11-03",
+          "2025-12-01",
+          "2026-01-02",
+          "2026-02-02",
+          "2026-03-02",
+          "2026-04-01"
+        ],
+        "rebalance_summaries": [
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-10-23",
+            "opened": [
+              "APP",
+              "CRDO",
+              "PLTR",
+              "TSLA",
+              "AVGO"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-10-18",
+                "momentum_12_1": 3.484093,
+                "signal_date": "2025-10-22",
+                "skip_end_date": "2025-09-23",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-10-18",
+                "momentum_12_1": 3.348968,
+                "signal_date": "2025-10-22",
+                "skip_end_date": "2025-09-23",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-10-18",
+                "momentum_12_1": 3.248313,
+                "signal_date": "2025-10-22",
+                "skip_end_date": "2025-09-23",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-10-18",
+                "momentum_12_1": 0.929542,
+                "signal_date": "2025-10-22",
+                "skip_end_date": "2025-09-23",
+                "ticker": "TSLA"
+              },
+              {
+                "base_date": "2024-10-18",
+                "momentum_12_1": 0.902631,
+                "signal_date": "2025-10-22",
+                "skip_end_date": "2025-09-23",
+                "ticker": "AVGO"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-11-03",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2024-10-29",
+                "momentum_12_1": 3.163143,
+                "signal_date": "2025-10-31",
+                "skip_end_date": "2025-10-02",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-10-29",
+                "momentum_12_1": 2.969113,
+                "signal_date": "2025-10-31",
+                "skip_end_date": "2025-10-02",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-10-29",
+                "momentum_12_1": 2.588249,
+                "signal_date": "2025-10-31",
+                "skip_end_date": "2025-10-02",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-10-29",
+                "momentum_12_1": 1.031759,
+                "signal_date": "2025-10-31",
+                "skip_end_date": "2025-10-02",
+                "ticker": "SNOW"
+              },
+              {
+                "base_date": "2024-10-29",
+                "momentum_12_1": 0.905249,
+                "signal_date": "2025-10-31",
+                "skip_end_date": "2025-10-02",
+                "ticker": "AVGO"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-12-01",
+            "opened": [
+              "CRDO",
+              "PLTR",
+              "AVGO",
+              "MU",
+              "APP"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-11-25",
+                "momentum_12_1": 2.643935,
+                "signal_date": "2025-11-28",
+                "skip_end_date": "2025-10-29",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-11-25",
+                "momentum_12_1": 2.075174,
+                "signal_date": "2025-11-28",
+                "skip_end_date": "2025-10-29",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-11-25",
+                "momentum_12_1": 1.364795,
+                "signal_date": "2025-11-28",
+                "skip_end_date": "2025-10-29",
+                "ticker": "AVGO"
+              },
+              {
+                "base_date": "2024-11-25",
+                "momentum_12_1": 1.17818,
+                "signal_date": "2025-11-28",
+                "skip_end_date": "2025-10-29",
+                "ticker": "MU"
+              },
+              {
+                "base_date": "2024-11-25",
+                "momentum_12_1": 0.975031,
+                "signal_date": "2025-11-28",
+                "skip_end_date": "2025-10-29",
+                "ticker": "APP"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2026-01-02",
+            "opened": [
+              "MU",
+              "CRDO",
+              "PLTR",
+              "APP",
+              "AMD"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-12-27",
+                "momentum_12_1": 1.724405,
+                "signal_date": "2025-12-31",
+                "skip_end_date": "2025-12-01",
+                "ticker": "MU"
+              },
+              {
+                "base_date": "2024-12-27",
+                "momentum_12_1": 1.469765,
+                "signal_date": "2025-12-31",
+                "skip_end_date": "2025-12-01",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-12-27",
+                "momentum_12_1": 1.117982,
+                "signal_date": "2025-12-31",
+                "skip_end_date": "2025-12-01",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-12-27",
+                "momentum_12_1": 0.860519,
+                "signal_date": "2025-12-31",
+                "skip_end_date": "2025-12-01",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-12-27",
+                "momentum_12_1": 0.755412,
+                "signal_date": "2025-12-31",
+                "skip_end_date": "2025-12-01",
+                "ticker": "AMD"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2026-02-02",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2025-01-29",
+                "momentum_12_1": 2.298383,
+                "signal_date": "2026-01-30",
+                "skip_end_date": "2025-12-30",
+                "ticker": "MU"
+              },
+              {
+                "base_date": "2025-01-29",
+                "momentum_12_1": 1.465045,
+                "signal_date": "2026-01-30",
+                "skip_end_date": "2025-12-30",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2025-01-29",
+                "momentum_12_1": 1.267302,
+                "signal_date": "2026-01-30",
+                "skip_end_date": "2025-12-30",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2025-01-29",
+                "momentum_12_1": 0.893623,
+                "signal_date": "2026-01-30",
+                "skip_end_date": "2025-12-30",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2025-01-29",
+                "momentum_12_1": 0.835023,
+                "signal_date": "2026-01-30",
+                "skip_end_date": "2025-12-30",
+                "ticker": "AMD"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2026-03-02",
+            "opened": [
+              "MU",
+              "AMD",
+              "CRDO",
+              "GOOG",
+              "CAT"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2025-02-26",
+                "momentum_12_1": 3.469415,
+                "signal_date": "2026-02-27",
+                "skip_end_date": "2026-01-28",
+                "ticker": "MU"
+              },
+              {
+                "base_date": "2025-02-26",
+                "momentum_12_1": 1.413023,
+                "signal_date": "2026-02-27",
+                "skip_end_date": "2026-01-28",
+                "ticker": "AMD"
+              },
+              {
+                "base_date": "2025-02-26",
+                "momentum_12_1": 1.115516,
+                "signal_date": "2026-02-27",
+                "skip_end_date": "2026-01-28",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2025-02-26",
+                "momentum_12_1": 0.932393,
+                "signal_date": "2026-02-27",
+                "skip_end_date": "2026-01-28",
+                "ticker": "GOOG"
+              },
+              {
+                "base_date": "2025-02-26",
+                "momentum_12_1": 0.903589,
+                "signal_date": "2026-02-27",
+                "skip_end_date": "2026-01-28",
+                "ticker": "CAT"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2026-04-01",
+            "opened": [
+              "MU",
+              "CRDO",
+              "CAT",
+              "TSM",
+              "GOOG"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2025-03-28",
+                "momentum_12_1": 3.681394,
+                "signal_date": "2026-03-31",
+                "skip_end_date": "2026-03-02",
+                "ticker": "MU"
+              },
+              {
+                "base_date": "2025-03-28",
+                "momentum_12_1": 1.819551,
+                "signal_date": "2026-03-31",
+                "skip_end_date": "2026-03-02",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2025-03-28",
+                "momentum_12_1": 1.313299,
+                "signal_date": "2026-03-31",
+                "skip_end_date": "2026-03-02",
+                "ticker": "CAT"
+              },
+              {
+                "base_date": "2025-03-28",
+                "momentum_12_1": 1.254957,
+                "signal_date": "2026-03-31",
+                "skip_end_date": "2026-03-02",
+                "ticker": "TSM"
+              },
+              {
+                "base_date": "2025-03-28",
+                "momentum_12_1": 0.968491,
+                "signal_date": "2026-03-31",
+                "skip_end_date": "2026-03-02",
+                "ticker": "GOOG"
+              }
+            ]
+          }
+        ],
+        "signal_diagnostics": {
+          "candidate_open_count": 25,
+          "eligible_candidate_count_sum": 266,
+          "rebalance_count": 7,
+          "reject_counts": {}
+        },
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "universe": {
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "BE",
+            "GLD",
+            "IAU",
+            "IEF",
+            "INTC",
+            "IWM",
+            "LITE",
+            "QQQ",
+            "SLV",
+            "SNXX",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "added_tickers": [
+              "BE",
+              "INTC",
+              "LITE",
+              "SNXX"
+            ],
+            "created_at": "2026-04-22T00:07:24.416406",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2026-04-26",
+            "download_start": "2024-09-18",
+            "merge_policy": "preserve all existing old snapshot OHLCV rows; add only tickers missing from old snapshot",
+            "merged_from": [
+              "data\\ohlcv_snapshot_20251023_20260421.json",
+              "data\\ohlcv_snapshot_20251023_20260421_with_pilot_refreshed.json"
+            ],
+            "ticker_count": 56,
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BE",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "INTC",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LITE",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SNXX",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      },
+      {
+        "closed_trades": [
+          {
+            "avg_dollar_volume_20d": 2578123081.7,
+            "entry_date": "2025-04-23",
+            "entry_notional": 19929.39,
+            "entry_price": 255.505,
+            "exit_date": "2025-05-22",
+            "exit_price": 351.47,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 7485.27,
+            "momentum_12_1": 3.560412,
+            "pnl": 7415.52,
+            "pnl_pct_net": 0.372089,
+            "round_trip_cost": 69.75,
+            "shares": 78,
+            "signal_date": "2025-04-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 9601899238.46,
+            "entry_date": "2025-04-23",
+            "entry_notional": 19969.72,
+            "entry_price": 98.86,
+            "exit_date": "2025-05-22",
+            "exit_price": 122.29,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 4732.86,
+            "momentum_12_1": 3.30478,
+            "pnl": 4662.97,
+            "pnl_pct_net": 0.233502,
+            "round_trip_cost": 69.89,
+            "shares": 202,
+            "signal_date": "2025-04-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 183738015.21,
+            "entry_date": "2025-04-23",
+            "entry_notional": 19962.6,
+            "entry_price": 40.74,
+            "exit_date": "2025-05-22",
+            "exit_price": 60.78,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 9819.6,
+            "momentum_12_1": 1.575876,
+            "pnl": 9749.73,
+            "pnl_pct_net": 0.4884,
+            "round_trip_cost": 69.87,
+            "shares": 490,
+            "signal_date": "2025-04-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1377218234.96,
+            "entry_date": "2025-04-23",
+            "entry_notional": 19520.0,
+            "entry_price": 610.0,
+            "exit_date": "2025-05-22",
+            "exit_price": 636.75,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 856.0,
+            "momentum_12_1": 1.074481,
+            "pnl": 787.68,
+            "pnl_pct_net": 0.040352,
+            "round_trip_cost": 68.32,
+            "shares": 32,
+            "signal_date": "2025-04-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 36947123372.96,
+            "entry_date": "2025-04-23",
+            "entry_notional": 19879.08,
+            "entry_price": 254.86,
+            "exit_date": "2025-05-22",
+            "exit_price": 341.04,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 6722.04,
+            "momentum_12_1": 0.658841,
+            "pnl": 6652.46,
+            "pnl_pct_net": 0.334646,
+            "round_trip_cost": 69.58,
+            "shares": 78,
+            "signal_date": "2025-04-22",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "TSLA"
+          },
+          {
+            "avg_dollar_volume_20d": 12021296837.61,
+            "entry_date": "2025-06-02",
+            "entry_notional": 19978.12,
+            "entry_price": 131.435,
+            "exit_date": "2025-07-02",
+            "exit_price": 132.12,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 104.12,
+            "momentum_12_1": 4.626604,
+            "pnl": 34.2,
+            "pnl_pct_net": 0.001712,
+            "round_trip_cost": 69.92,
+            "shares": 152,
+            "signal_date": "2025-05-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 2498515151.4,
+            "entry_date": "2025-06-02",
+            "entry_notional": 19615.5,
+            "entry_price": 392.31,
+            "exit_date": "2025-07-02",
+            "exit_price": 336.0,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2815.5,
+            "momentum_12_1": 2.235732,
+            "pnl": -2884.15,
+            "pnl_pct_net": -0.147034,
+            "round_trip_cost": 68.65,
+            "shares": 50,
+            "signal_date": "2025-05-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 213763478.29,
+            "entry_date": "2025-06-02",
+            "entry_notional": 19989.72,
+            "entry_price": 60.21,
+            "exit_date": "2025-07-02",
+            "exit_price": 89.37,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 9681.12,
+            "momentum_12_1": 1.0767,
+            "pnl": 9611.16,
+            "pnl_pct_net": 0.480805,
+            "round_trip_cost": 69.96,
+            "shares": 332,
+            "signal_date": "2025-05-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1405716297.84,
+            "entry_date": "2025-06-02",
+            "entry_notional": 19800.0,
+            "entry_price": 660.0,
+            "exit_date": "2025-07-02",
+            "exit_price": 709.5,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1485.0,
+            "momentum_12_1": 0.978729,
+            "pnl": 1415.7,
+            "pnl_pct_net": 0.0715,
+            "round_trip_cost": 69.3,
+            "shares": 30,
+            "signal_date": "2025-05-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 4175806612.46,
+            "entry_date": "2025-06-02",
+            "entry_notional": 19939.92,
+            "entry_price": 120.12,
+            "exit_date": "2025-07-02",
+            "exit_price": 128.486,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1388.75,
+            "momentum_12_1": 0.74379,
+            "pnl": 1318.96,
+            "pnl_pct_net": 0.066147,
+            "round_trip_cost": 69.79,
+            "shares": 166,
+            "signal_date": "2025-05-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "NFLX"
+          },
+          {
+            "avg_dollar_volume_20d": 8177893818.4,
+            "entry_date": "2025-08-01",
+            "entry_notional": 19846.4,
+            "entry_price": 155.05,
+            "exit_date": "2025-09-02",
+            "exit_price": 157.09,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 261.12,
+            "momentum_12_1": 3.825701,
+            "pnl": 191.66,
+            "pnl_pct_net": 0.009657,
+            "round_trip_cost": 69.46,
+            "shares": 128,
+            "signal_date": "2025-07-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 1450321220.88,
+            "entry_date": "2025-08-01",
+            "entry_notional": 19627.92,
+            "entry_price": 377.46,
+            "exit_date": "2025-09-02",
+            "exit_price": 481.73,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 5422.04,
+            "momentum_12_1": 3.381132,
+            "pnl": 5353.34,
+            "pnl_pct_net": 0.272741,
+            "round_trip_cost": 68.7,
+            "shares": 52,
+            "signal_date": "2025-07-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 453214205.14,
+            "entry_date": "2025-08-01",
+            "entry_notional": 19935.72,
+            "entry_price": 105.48,
+            "exit_date": "2025-09-02",
+            "exit_price": 124.27,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 3551.31,
+            "momentum_12_1": 2.19905,
+            "pnl": 3481.53,
+            "pnl_pct_net": 0.174638,
+            "round_trip_cost": 69.78,
+            "shares": 189,
+            "signal_date": "2025-07-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1640492990.72,
+            "entry_date": "2025-08-01",
+            "entry_notional": 19904.0,
+            "entry_price": 622.0,
+            "exit_date": "2025-09-02",
+            "exit_price": 689.62,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2163.84,
+            "momentum_12_1": 1.231266,
+            "pnl": 2094.18,
+            "pnl_pct_net": 0.105214,
+            "round_trip_cost": 69.66,
+            "shares": 32,
+            "signal_date": "2025-07-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 4810787957.99,
+            "entry_date": "2025-08-01",
+            "entry_notional": 19887.47,
+            "entry_price": 116.301,
+            "exit_date": "2025-09-02",
+            "exit_price": 121.411,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 873.81,
+            "momentum_12_1": 1.06329,
+            "pnl": 804.2,
+            "pnl_pct_net": 0.040438,
+            "round_trip_cost": 69.61,
+            "shares": 171,
+            "signal_date": "2025-07-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "NFLX"
+          },
+          {
+            "avg_dollar_volume_20d": 14068926917.31,
+            "entry_date": "2025-09-02",
+            "entry_notional": 19958.4,
+            "entry_price": 151.2,
+            "exit_date": "2025-10-01",
+            "exit_price": 184.95,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 4455.0,
+            "momentum_12_1": 4.134566,
+            "pnl": 4385.15,
+            "pnl_pct_net": 0.219714,
+            "round_trip_cost": 69.85,
+            "shares": 132,
+            "signal_date": "2025-08-29",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 2812370209.78,
+            "entry_date": "2025-09-02",
+            "entry_notional": 19952.0,
+            "entry_price": 464.0,
+            "exit_date": "2025-10-01",
+            "exit_price": 704.09,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 10323.87,
+            "momentum_12_1": 3.326689,
+            "pnl": 10254.04,
+            "pnl_pct_net": 0.513935,
+            "round_trip_cost": 69.83,
+            "shares": 43,
+            "signal_date": "2025-08-29",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 445924014.59,
+            "entry_date": "2025-09-02",
+            "entry_notional": 19993.24,
+            "entry_price": 121.91,
+            "exit_date": "2025-10-01",
+            "exit_price": 144.91,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 3772.0,
+            "momentum_12_1": 2.152911,
+            "pnl": 3702.02,
+            "pnl_pct_net": 0.185164,
+            "round_trip_cost": 69.98,
+            "shares": 164,
+            "signal_date": "2025-08-29",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1506979622.88,
+            "entry_date": "2025-09-02",
+            "entry_notional": 19890.0,
+            "entry_price": 234.0,
+            "exit_date": "2025-10-01",
+            "exit_price": 230.55,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -293.25,
+            "momentum_12_1": 0.934395,
+            "pnl": -362.86,
+            "pnl_pct_net": -0.018244,
+            "round_trip_cost": 69.61,
+            "shares": 85,
+            "signal_date": "2025-08-29",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SNOW"
+          },
+          {
+            "avg_dollar_volume_20d": 3227716727.31,
+            "entry_date": "2025-09-02",
+            "entry_notional": 19798.02,
+            "entry_price": 299.97,
+            "exit_date": "2025-10-01",
+            "exit_price": 346.17,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 3049.2,
+            "momentum_12_1": 0.904992,
+            "pnl": 2979.91,
+            "pnl_pct_net": 0.150515,
+            "round_trip_cost": 69.29,
+            "shares": 66,
+            "signal_date": "2025-08-29",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "COIN"
+          },
+          {
+            "avg_dollar_volume_20d": 9812795587.92,
+            "entry_date": "2025-10-01",
+            "entry_notional": 19945.2,
+            "entry_price": 181.32,
+            "exit_date": "2025-10-22",
+            "exit_price": 175.49,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -641.3,
+            "momentum_12_1": 3.22399,
+            "pnl": -711.11,
+            "pnl_pct_net": -0.035653,
+            "round_trip_cost": 69.81,
+            "shares": 110,
+            "signal_date": "2025-09-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 973235680.06,
+            "entry_date": "2025-10-01",
+            "entry_notional": 19978.26,
+            "entry_price": 144.77,
+            "exit_date": "2025-10-22",
+            "exit_price": 137.2,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1044.66,
+            "momentum_12_1": 2.940282,
+            "pnl": -1114.58,
+            "pnl_pct_net": -0.05579,
+            "round_trip_cost": 69.92,
+            "shares": 138,
+            "signal_date": "2025-09-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 6935202188.97,
+            "entry_date": "2025-10-01",
+            "entry_notional": 19300.55,
+            "entry_price": 714.835,
+            "exit_date": "2025-10-22",
+            "exit_price": 564.82,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -4050.41,
+            "momentum_12_1": 2.735191,
+            "pnl": -4117.96,
+            "pnl_pct_net": -0.21336,
+            "round_trip_cost": 67.55,
+            "shares": 27,
+            "signal_date": "2025-09-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 1103480321.22,
+            "entry_date": "2025-10-01",
+            "entry_notional": 19925.32,
+            "entry_price": 223.88,
+            "exit_date": "2025-10-22",
+            "exit_price": 241.67,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1583.31,
+            "momentum_12_1": 1.121611,
+            "pnl": 1513.57,
+            "pnl_pct_net": 0.075962,
+            "round_trip_cost": 69.74,
+            "shares": 89,
+            "signal_date": "2025-09-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SNOW"
+          },
+          {
+            "avg_dollar_volume_20d": 1039232174.85,
+            "entry_date": "2025-10-01",
+            "entry_notional": 19586.0,
+            "entry_price": 699.5,
+            "exit_date": "2025-10-22",
+            "exit_price": 675.62,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -668.64,
+            "momentum_12_1": 0.798396,
+            "pnl": -737.19,
+            "pnl_pct_net": -0.037639,
+            "round_trip_cost": 68.55,
+            "shares": 28,
+            "signal_date": "2025-09-30",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          }
+        ],
+        "comparison_vs_trend_long": {
+          "momentum_beats_trend_pnl": true,
+          "pnl_delta": 11498.58
+        },
+        "core_result": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "current_trend_long": {
+          "avg_R": 1.316,
+          "avg_pnl_pct_net": 0.0742,
+          "losses": 6,
+          "profit_factor": 4.442,
+          "total_pnl_usd": 54981.55,
+          "trade_count": 14,
+          "win_rate": 0.5714,
+          "wins": 8
+        },
+        "end": "2025-10-22",
+        "equity_curve_tail": [
+          {
+            "date": "2025-10-16",
+            "equity": 167669.99,
+            "open_positions": 5,
+            "realized_pnl": 71647.4
+          },
+          {
+            "date": "2025-10-17",
+            "equity": 168736.54,
+            "open_positions": 5,
+            "realized_pnl": 71647.4
+          },
+          {
+            "date": "2025-10-20",
+            "equity": 169875.9,
+            "open_positions": 5,
+            "realized_pnl": 71647.4
+          },
+          {
+            "date": "2025-10-21",
+            "equity": 169022.07,
+            "open_positions": 5,
+            "realized_pnl": 71647.4
+          },
+          {
+            "date": "2025-10-22",
+            "equity": 166480.13,
+            "open_positions": 0,
+            "realized_pnl": 66480.13
+          }
+        ],
+        "label": "mid_weak",
+        "momentum_metrics": {
+          "ending_equity": 166480.13,
+          "expected_value_score": 2.608811,
+          "label": "cross_sectional_12_1_momentum",
+          "max_drawdown_pct": 0.066032,
+          "sharpe_daily": 3.924197,
+          "total_return_pct": 0.664801,
+          "trading_days": 127
+        },
+        "momentum_trade_summary": {
+          "avg_pnl": 2659.21,
+          "largest_loser": -4117.96,
+          "largest_winner": 10254.04,
+          "losses": 6,
+          "total_pnl": 66480.13,
+          "trade_count": 25,
+          "win_rate": 0.76,
+          "wins": 19
+        },
+        "rebalance_dates": [
+          "2025-04-23",
+          "2025-05-01",
+          "2025-06-02",
+          "2025-07-01",
+          "2025-08-01",
+          "2025-09-02",
+          "2025-10-01"
+        ],
+        "rebalance_summaries": [
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-04-23",
+            "opened": [
+              "APP",
+              "PLTR",
+              "CRDO",
+              "SPOT",
+              "TSLA"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-04-18",
+                "momentum_12_1": 3.560412,
+                "signal_date": "2025-04-22",
+                "skip_end_date": "2025-03-21",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-04-18",
+                "momentum_12_1": 3.30478,
+                "signal_date": "2025-04-22",
+                "skip_end_date": "2025-03-21",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-04-18",
+                "momentum_12_1": 1.575876,
+                "signal_date": "2025-04-22",
+                "skip_end_date": "2025-03-21",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-04-18",
+                "momentum_12_1": 1.074481,
+                "signal_date": "2025-04-22",
+                "skip_end_date": "2025-03-21",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-04-18",
+                "momentum_12_1": 0.658841,
+                "signal_date": "2025-04-22",
+                "skip_end_date": "2025-03-21",
+                "ticker": "TSLA"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-05-01",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2024-04-26",
+                "momentum_12_1": 2.74778,
+                "signal_date": "2025-04-30",
+                "skip_end_date": "2025-03-31",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-04-26",
+                "momentum_12_1": 2.589407,
+                "signal_date": "2025-04-30",
+                "skip_end_date": "2025-03-31",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-04-26",
+                "momentum_12_1": 1.163793,
+                "signal_date": "2025-04-30",
+                "skip_end_date": "2025-03-31",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-04-26",
+                "momentum_12_1": 0.899341,
+                "signal_date": "2025-04-30",
+                "skip_end_date": "2025-03-31",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-04-26",
+                "momentum_12_1": 0.661583,
+                "signal_date": "2025-04-30",
+                "skip_end_date": "2025-03-31",
+                "ticker": "NFLX"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-06-02",
+            "opened": [
+              "PLTR",
+              "APP",
+              "CRDO",
+              "SPOT",
+              "NFLX"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-05-28",
+                "momentum_12_1": 4.626604,
+                "signal_date": "2025-05-30",
+                "skip_end_date": "2025-04-30",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-05-28",
+                "momentum_12_1": 2.235732,
+                "signal_date": "2025-05-30",
+                "skip_end_date": "2025-04-30",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-05-28",
+                "momentum_12_1": 1.0767,
+                "signal_date": "2025-05-30",
+                "skip_end_date": "2025-04-30",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-05-28",
+                "momentum_12_1": 0.978729,
+                "signal_date": "2025-05-30",
+                "skip_end_date": "2025-04-30",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-05-28",
+                "momentum_12_1": 0.74379,
+                "signal_date": "2025-05-30",
+                "skip_end_date": "2025-04-30",
+                "ticker": "NFLX"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-07-01",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2024-06-26",
+                "momentum_12_1": 4.075519,
+                "signal_date": "2025-06-30",
+                "skip_end_date": "2025-05-29",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-06-26",
+                "momentum_12_1": 3.77423,
+                "signal_date": "2025-06-30",
+                "skip_end_date": "2025-05-29",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-06-26",
+                "momentum_12_1": 1.148435,
+                "signal_date": "2025-06-30",
+                "skip_end_date": "2025-05-29",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-06-26",
+                "momentum_12_1": 0.996081,
+                "signal_date": "2025-06-30",
+                "skip_end_date": "2025-05-29",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-06-26",
+                "momentum_12_1": 0.825279,
+                "signal_date": "2025-06-30",
+                "skip_end_date": "2025-05-29",
+                "ticker": "TSLA"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-08-01",
+            "opened": [
+              "PLTR",
+              "APP",
+              "CRDO",
+              "SPOT",
+              "NFLX"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-07-29",
+                "momentum_12_1": 3.825701,
+                "signal_date": "2025-07-31",
+                "skip_end_date": "2025-07-01",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-07-29",
+                "momentum_12_1": 3.381132,
+                "signal_date": "2025-07-31",
+                "skip_end_date": "2025-07-01",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-07-29",
+                "momentum_12_1": 2.19905,
+                "signal_date": "2025-07-31",
+                "skip_end_date": "2025-07-01",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-07-29",
+                "momentum_12_1": 1.231266,
+                "signal_date": "2025-07-31",
+                "skip_end_date": "2025-07-01",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-07-29",
+                "momentum_12_1": 1.06329,
+                "signal_date": "2025-07-31",
+                "skip_end_date": "2025-07-01",
+                "ticker": "NFLX"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-09-02",
+            "opened": [
+              "PLTR",
+              "APP",
+              "CRDO",
+              "SNOW",
+              "COIN"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-08-27",
+                "momentum_12_1": 4.134566,
+                "signal_date": "2025-08-29",
+                "skip_end_date": "2025-07-31",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-08-27",
+                "momentum_12_1": 3.326689,
+                "signal_date": "2025-08-29",
+                "skip_end_date": "2025-07-31",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-08-27",
+                "momentum_12_1": 2.152911,
+                "signal_date": "2025-08-29",
+                "skip_end_date": "2025-07-31",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-08-27",
+                "momentum_12_1": 0.934395,
+                "signal_date": "2025-08-29",
+                "skip_end_date": "2025-07-31",
+                "ticker": "SNOW"
+              },
+              {
+                "base_date": "2024-08-27",
+                "momentum_12_1": 0.904992,
+                "signal_date": "2025-08-29",
+                "skip_end_date": "2025-07-31",
+                "ticker": "COIN"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-10-01",
+            "opened": [
+              "PLTR",
+              "CRDO",
+              "APP",
+              "SNOW",
+              "SPOT"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-09-26",
+                "momentum_12_1": 3.22399,
+                "signal_date": "2025-09-30",
+                "skip_end_date": "2025-08-29",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-09-26",
+                "momentum_12_1": 2.940282,
+                "signal_date": "2025-09-30",
+                "skip_end_date": "2025-08-29",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-09-26",
+                "momentum_12_1": 2.735191,
+                "signal_date": "2025-09-30",
+                "skip_end_date": "2025-08-29",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-09-26",
+                "momentum_12_1": 1.121611,
+                "signal_date": "2025-09-30",
+                "skip_end_date": "2025-08-29",
+                "ticker": "SNOW"
+              },
+              {
+                "base_date": "2024-09-26",
+                "momentum_12_1": 0.798396,
+                "signal_date": "2025-09-30",
+                "skip_end_date": "2025-08-29",
+                "ticker": "SPOT"
+              }
+            ]
+          }
+        ],
+        "signal_diagnostics": {
+          "candidate_open_count": 25,
+          "eligible_candidate_count_sum": 266,
+          "rebalance_count": 7,
+          "reject_counts": {}
+        },
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "universe": {
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "GLD",
+            "IAU",
+            "IEF",
+            "IWM",
+            "QQQ",
+            "SLV",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "created_at": "2026-04-22T11:17:29.367830",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2025-10-27",
+            "download_start": "2024-03-19",
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      },
+      {
+        "closed_trades": [
+          {
+            "avg_dollar_volume_20d": 35090100199.91,
+            "entry_date": "2024-10-02",
+            "entry_notional": 19903.35,
+            "entry_price": 116.3939,
+            "exit_date": "2024-10-31",
+            "exit_price": 132.7074,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2789.61,
+            "momentum_12_1": 1.744797,
+            "pnl": 2719.95,
+            "pnl_pct_net": 0.136658,
+            "round_trip_cost": 69.66,
+            "shares": 171,
+            "signal_date": "2024-10-01",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "NVDA"
+          },
+          {
+            "avg_dollar_volume_20d": 1312400788.91,
+            "entry_date": "2024-10-02",
+            "entry_notional": 19889.66,
+            "entry_price": 163.03,
+            "exit_date": "2024-10-31",
+            "exit_price": 179.25,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1978.84,
+            "momentum_12_1": 1.442195,
+            "pnl": 1909.23,
+            "pnl_pct_net": 0.095991,
+            "round_trip_cost": 69.61,
+            "shares": 122,
+            "signal_date": "2024-10-01",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "COIN"
+          },
+          {
+            "avg_dollar_volume_20d": 624923962.92,
+            "entry_date": "2024-10-02",
+            "entry_notional": 19996.9,
+            "entry_price": 129.85,
+            "exit_date": "2024-10-31",
+            "exit_price": 169.39,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 6089.16,
+            "momentum_12_1": 1.324074,
+            "pnl": 6019.17,
+            "pnl_pct_net": 0.301005,
+            "round_trip_cost": 69.99,
+            "shares": 154,
+            "signal_date": "2024-10-01",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 86273891.38,
+            "entry_date": "2024-10-02",
+            "entry_notional": 19983.32,
+            "entry_price": 29.96,
+            "exit_date": "2024-10-31",
+            "exit_price": 37.7,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 5162.58,
+            "momentum_12_1": 1.28918,
+            "pnl": 5092.64,
+            "pnl_pct_net": 0.254845,
+            "round_trip_cost": 69.94,
+            "shares": 667,
+            "signal_date": "2024-10-01",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 524454941.11,
+            "entry_date": "2024-10-02",
+            "entry_notional": 19846.38,
+            "entry_price": 374.46,
+            "exit_date": "2024-10-31",
+            "exit_price": 385.1,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 563.92,
+            "momentum_12_1": 1.217279,
+            "pnl": 494.46,
+            "pnl_pct_net": 0.024914,
+            "round_trip_cost": 69.46,
+            "shares": 53,
+            "signal_date": "2024-10-01",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 540073654.47,
+            "entry_date": "2024-11-01",
+            "entry_notional": 19852.24,
+            "entry_price": 171.14,
+            "exit_date": "2024-12-03",
+            "exit_price": 366.55,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 22667.56,
+            "momentum_12_1": 2.60483,
+            "pnl": 22598.08,
+            "pnl_pct_net": 1.138314,
+            "round_trip_cost": 69.48,
+            "shares": 116,
+            "signal_date": "2024-10-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 32790473564.64,
+            "entry_date": "2024-11-01",
+            "entry_notional": 19927.7,
+            "entry_price": 134.6466,
+            "exit_date": "2024-12-03",
+            "exit_price": 140.2044,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 822.55,
+            "momentum_12_1": 1.915301,
+            "pnl": 752.81,
+            "pnl_pct_net": 0.037777,
+            "round_trip_cost": 69.75,
+            "shares": 148,
+            "signal_date": "2024-10-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "NVDA"
+          },
+          {
+            "avg_dollar_volume_20d": 1971059825.57,
+            "entry_date": "2024-11-01",
+            "entry_notional": 19958.68,
+            "entry_price": 41.93,
+            "exit_date": "2024-12-03",
+            "exit_price": 70.96,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 13818.28,
+            "momentum_12_1": 1.533108,
+            "pnl": 13748.42,
+            "pnl_pct_net": 0.688844,
+            "round_trip_cost": 69.86,
+            "shares": 476,
+            "signal_date": "2024-10-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 495749543.69,
+            "entry_date": "2024-11-01",
+            "entry_notional": 19890.52,
+            "entry_price": 382.51,
+            "exit_date": "2024-12-03",
+            "exit_price": 493.32,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 5762.12,
+            "momentum_12_1": 1.274521,
+            "pnl": 5692.5,
+            "pnl_pct_net": 0.286192,
+            "round_trip_cost": 69.62,
+            "shares": 52,
+            "signal_date": "2024-10-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 828741940.09,
+            "entry_date": "2024-11-01",
+            "entry_notional": 19865.26,
+            "entry_price": 171.2523,
+            "exit_date": "2024-12-03",
+            "exit_price": 179.1428,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 915.3,
+            "momentum_12_1": 1.16253,
+            "pnl": 845.77,
+            "pnl_pct_net": 0.042575,
+            "round_trip_cost": 69.53,
+            "shares": 116,
+            "signal_date": "2024-10-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "GE"
+          },
+          {
+            "avg_dollar_volume_20d": 2073989313.62,
+            "entry_date": "2025-01-02",
+            "entry_notional": 19863.6,
+            "entry_price": 331.06,
+            "exit_date": "2025-02-04",
+            "exit_price": 380.26,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2952.0,
+            "momentum_12_1": 7.450439,
+            "pnl": 2882.48,
+            "pnl_pct_net": 0.145114,
+            "round_trip_cost": 69.52,
+            "shares": 60,
+            "signal_date": "2024-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 7325822476.73,
+            "entry_date": "2025-01-02",
+            "entry_notional": 19964.4,
+            "entry_price": 76.2,
+            "exit_date": "2025-02-04",
+            "exit_price": 103.83,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 7239.06,
+            "momentum_12_1": 2.906814,
+            "pnl": 7169.19,
+            "pnl_pct_net": 0.359099,
+            "round_trip_cost": 69.88,
+            "shares": 262,
+            "signal_date": "2024-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 26715564302.14,
+            "entry_date": "2025-01-02",
+            "entry_notional": 19985.45,
+            "entry_price": 135.9555,
+            "exit_date": "2025-02-04",
+            "exit_price": 118.6111,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2549.62,
+            "momentum_12_1": 1.792288,
+            "pnl": -2619.56,
+            "pnl_pct_net": -0.131074,
+            "round_trip_cost": 69.95,
+            "shares": 147,
+            "signal_date": "2024-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "NVDA"
+          },
+          {
+            "avg_dollar_volume_20d": 863606779.27,
+            "entry_date": "2025-01-02",
+            "entry_notional": 19825.52,
+            "entry_price": 450.58,
+            "exit_date": "2025-02-04",
+            "exit_price": 621.77,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 7532.36,
+            "momentum_12_1": 1.538236,
+            "pnl": 7462.97,
+            "pnl_pct_net": 0.376433,
+            "round_trip_cost": 69.39,
+            "shares": 44,
+            "signal_date": "2024-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 340498278.73,
+            "entry_date": "2025-01-02",
+            "entry_notional": 19980.06,
+            "entry_price": 68.66,
+            "exit_date": "2025-02-04",
+            "exit_price": 76.25,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2208.69,
+            "momentum_12_1": 1.514638,
+            "pnl": 2138.76,
+            "pnl_pct_net": 0.107045,
+            "round_trip_cost": 69.93,
+            "shares": 291,
+            "signal_date": "2024-12-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 3471987350.16,
+            "entry_date": "2025-03-03",
+            "entry_notional": 19963.68,
+            "entry_price": 350.24,
+            "exit_date": "2025-04-01",
+            "exit_price": 282.7,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -3849.78,
+            "momentum_12_1": 5.042223,
+            "pnl": -3919.65,
+            "pnl_pct_net": -0.196339,
+            "round_trip_cost": 69.87,
+            "shares": 57,
+            "signal_date": "2025-02-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 12417951639.64,
+            "entry_date": "2025-03-03",
+            "entry_notional": 19923.75,
+            "entry_price": 88.55,
+            "exit_date": "2025-04-01",
+            "exit_price": 84.68,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -870.75,
+            "momentum_12_1": 2.251529,
+            "pnl": -940.48,
+            "pnl_pct_net": -0.047204,
+            "round_trip_cost": 69.73,
+            "shares": 225,
+            "signal_date": "2025-02-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 372264252.74,
+            "entry_date": "2025-03-03",
+            "entry_notional": 19993.6,
+            "entry_price": 56.8,
+            "exit_date": "2025-04-01",
+            "exit_price": 41.72,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -5308.16,
+            "momentum_12_1": 1.669846,
+            "pnl": -5378.14,
+            "pnl_pct_net": -0.268993,
+            "round_trip_cost": 69.98,
+            "shares": 352,
+            "signal_date": "2025-02-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1528985345.78,
+            "entry_date": "2025-03-03",
+            "entry_notional": 19539.2,
+            "entry_price": 610.6,
+            "exit_date": "2025-04-01",
+            "exit_price": 551.73,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1883.84,
+            "momentum_12_1": 1.129595,
+            "pnl": -1952.23,
+            "pnl_pct_net": -0.099913,
+            "round_trip_cost": 68.39,
+            "shares": 32,
+            "signal_date": "2025-02-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 28362860262.54,
+            "entry_date": "2025-03-03",
+            "entry_notional": 19822.44,
+            "entry_price": 300.34,
+            "exit_date": "2025-04-01",
+            "exit_price": 268.46,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -2104.08,
+            "momentum_12_1": 0.94813,
+            "pnl": -2173.46,
+            "pnl_pct_net": -0.109646,
+            "round_trip_cost": 69.38,
+            "shares": 66,
+            "signal_date": "2025-02-28",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "TSLA"
+          },
+          {
+            "avg_dollar_volume_20d": 3149676115.72,
+            "entry_date": "2025-04-01",
+            "entry_notional": 19816.5,
+            "entry_price": 264.22,
+            "exit_date": "2025-04-22",
+            "exit_price": 237.71,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1988.25,
+            "momentum_12_1": 3.730467,
+            "pnl": -2057.61,
+            "pnl_pct_net": -0.103833,
+            "round_trip_cost": 69.36,
+            "shares": 75,
+            "signal_date": "2025-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "APP"
+          },
+          {
+            "avg_dollar_volume_20d": 8984039789.74,
+            "entry_date": "2025-04-01",
+            "entry_notional": 19965.82,
+            "entry_price": 83.89,
+            "exit_date": "2025-04-22",
+            "exit_price": 93.99,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 2403.8,
+            "momentum_12_1": 2.464708,
+            "pnl": 2333.92,
+            "pnl_pct_net": 0.116896,
+            "round_trip_cost": 69.88,
+            "shares": 238,
+            "signal_date": "2025-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "PLTR"
+          },
+          {
+            "avg_dollar_volume_20d": 295769362.63,
+            "entry_date": "2025-04-01",
+            "entry_notional": 20000.0,
+            "entry_price": 40.0,
+            "exit_date": "2025-04-22",
+            "exit_price": 37.02,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1490.0,
+            "momentum_12_1": 1.60283,
+            "pnl": -1560.0,
+            "pnl_pct_net": -0.078,
+            "round_trip_cost": 70.0,
+            "shares": 500,
+            "signal_date": "2025-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "CRDO"
+          },
+          {
+            "avg_dollar_volume_20d": 1587080553.39,
+            "entry_date": "2025-04-01",
+            "entry_notional": 19699.2,
+            "entry_price": 547.2,
+            "exit_date": "2025-04-22",
+            "exit_price": 590.39,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": 1554.84,
+            "momentum_12_1": 1.336702,
+            "pnl": 1485.89,
+            "pnl_pct_net": 0.075429,
+            "round_trip_cost": 68.95,
+            "shares": 36,
+            "signal_date": "2025-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "SPOT"
+          },
+          {
+            "avg_dollar_volume_20d": 33118797505.32,
+            "entry_date": "2025-04-01",
+            "entry_notional": 19785.0,
+            "entry_price": 263.8,
+            "exit_date": "2025-04-22",
+            "exit_price": 237.97,
+            "exit_reason": "fixed_21_session_close",
+            "gross_pnl": -1937.25,
+            "momentum_12_1": 0.629205,
+            "pnl": -2006.5,
+            "pnl_pct_net": -0.101415,
+            "round_trip_cost": 69.25,
+            "shares": 75,
+            "signal_date": "2025-03-31",
+            "strategy": "cross_sectional_12_1_momentum",
+            "ticker": "TSLA"
+          }
+        ],
+        "comparison_vs_trend_long": {
+          "momentum_beats_trend_pnl": true,
+          "pnl_delta": 25805.19
+        },
+        "core_result": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "current_trend_long": {
+          "avg_R": 0.538,
+          "avg_pnl_pct_net": 0.0252,
+          "losses": 11,
+          "profit_factor": 1.985,
+          "total_pnl_usd": 34933.42,
+          "trade_count": 19,
+          "win_rate": 0.4211,
+          "wins": 8
+        },
+        "end": "2025-04-22",
+        "equity_curve_tail": [
+          {
+            "date": "2025-04-15",
+            "equity": 164360.13,
+            "open_positions": 5,
+            "realized_pnl": 62542.91
+          },
+          {
+            "date": "2025-04-16",
+            "equity": 159823.89,
+            "open_positions": 5,
+            "realized_pnl": 62542.91
+          },
+          {
+            "date": "2025-04-17",
+            "equity": 160553.28,
+            "open_positions": 5,
+            "realized_pnl": 62542.91
+          },
+          {
+            "date": "2025-04-21",
+            "equity": 156606.56,
+            "open_positions": 5,
+            "realized_pnl": 62542.91
+          },
+          {
+            "date": "2025-04-22",
+            "equity": 160738.61,
+            "open_positions": 0,
+            "realized_pnl": 60738.61
+          }
+        ],
+        "label": "old_thin",
+        "momentum_metrics": {
+          "ending_equity": 160738.61,
+          "expected_value_score": 1.430775,
+          "label": "cross_sectional_12_1_momentum",
+          "max_drawdown_pct": 0.151703,
+          "sharpe_daily": 2.355627,
+          "total_return_pct": 0.607386,
+          "trading_days": 138
+        },
+        "momentum_trade_summary": {
+          "avg_pnl": 2429.54,
+          "largest_loser": -5378.14,
+          "largest_winner": 22598.08,
+          "losses": 9,
+          "total_pnl": 60738.61,
+          "trade_count": 25,
+          "win_rate": 0.64,
+          "wins": 16
+        },
+        "rebalance_dates": [
+          "2024-10-02",
+          "2024-11-01",
+          "2024-12-02",
+          "2025-01-02",
+          "2025-02-03",
+          "2025-03-03",
+          "2025-04-01"
+        ],
+        "rebalance_summaries": [
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2024-10-02",
+            "opened": [
+              "NVDA",
+              "COIN",
+              "APP",
+              "CRDO",
+              "SPOT"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2023-09-29",
+                "momentum_12_1": 1.744797,
+                "signal_date": "2024-10-01",
+                "skip_end_date": "2024-08-30",
+                "ticker": "NVDA"
+              },
+              {
+                "base_date": "2023-09-29",
+                "momentum_12_1": 1.442195,
+                "signal_date": "2024-10-01",
+                "skip_end_date": "2024-08-30",
+                "ticker": "COIN"
+              },
+              {
+                "base_date": "2023-09-29",
+                "momentum_12_1": 1.324074,
+                "signal_date": "2024-10-01",
+                "skip_end_date": "2024-08-30",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2023-09-29",
+                "momentum_12_1": 1.28918,
+                "signal_date": "2024-10-01",
+                "skip_end_date": "2024-08-30",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2023-09-29",
+                "momentum_12_1": 1.217279,
+                "signal_date": "2024-10-01",
+                "skip_end_date": "2024-08-30",
+                "ticker": "SPOT"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2024-11-01",
+            "opened": [
+              "APP",
+              "NVDA",
+              "PLTR",
+              "SPOT",
+              "GE"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2023-10-31",
+                "momentum_12_1": 2.60483,
+                "signal_date": "2024-10-31",
+                "skip_end_date": "2024-10-02",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2023-10-31",
+                "momentum_12_1": 1.915301,
+                "signal_date": "2024-10-31",
+                "skip_end_date": "2024-10-02",
+                "ticker": "NVDA"
+              },
+              {
+                "base_date": "2023-10-31",
+                "momentum_12_1": 1.533108,
+                "signal_date": "2024-10-31",
+                "skip_end_date": "2024-10-02",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2023-10-31",
+                "momentum_12_1": 1.274521,
+                "signal_date": "2024-10-31",
+                "skip_end_date": "2024-10-02",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2023-10-31",
+                "momentum_12_1": 1.16253,
+                "signal_date": "2024-10-31",
+                "skip_end_date": "2024-10-02",
+                "ticker": "GE"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2024-12-02",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2023-11-29",
+                "momentum_12_1": 3.397899,
+                "signal_date": "2024-11-29",
+                "skip_end_date": "2024-10-30",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2023-11-29",
+                "momentum_12_1": 1.89535,
+                "signal_date": "2024-11-29",
+                "skip_end_date": "2024-10-30",
+                "ticker": "NVDA"
+              },
+              {
+                "base_date": "2023-11-29",
+                "momentum_12_1": 1.202117,
+                "signal_date": "2024-11-29",
+                "skip_end_date": "2024-10-30",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2023-11-29",
+                "momentum_12_1": 1.161264,
+                "signal_date": "2024-11-29",
+                "skip_end_date": "2024-10-30",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2023-11-29",
+                "momentum_12_1": 1.084675,
+                "signal_date": "2024-11-29",
+                "skip_end_date": "2024-10-30",
+                "ticker": "CRDO"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-01-02",
+            "opened": [
+              "APP",
+              "PLTR",
+              "NVDA",
+              "SPOT",
+              "CRDO"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2023-12-29",
+                "momentum_12_1": 7.450439,
+                "signal_date": "2024-12-31",
+                "skip_end_date": "2024-11-29",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2023-12-29",
+                "momentum_12_1": 2.906814,
+                "signal_date": "2024-12-31",
+                "skip_end_date": "2024-11-29",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2023-12-29",
+                "momentum_12_1": 1.792288,
+                "signal_date": "2024-12-31",
+                "skip_end_date": "2024-11-29",
+                "ticker": "NVDA"
+              },
+              {
+                "base_date": "2023-12-29",
+                "momentum_12_1": 1.538236,
+                "signal_date": "2024-12-31",
+                "skip_end_date": "2024-11-29",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2023-12-29",
+                "momentum_12_1": 1.514638,
+                "signal_date": "2024-12-31",
+                "skip_end_date": "2024-11-29",
+                "ticker": "CRDO"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-02-03",
+            "opened": [],
+            "top_candidates": [
+              {
+                "base_date": "2024-01-30",
+                "momentum_12_1": 6.896868,
+                "signal_date": "2025-01-31",
+                "skip_end_date": "2024-12-30",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-01-30",
+                "momentum_12_1": 3.610514,
+                "signal_date": "2025-01-31",
+                "skip_end_date": "2024-12-30",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-01-30",
+                "momentum_12_1": 2.317445,
+                "signal_date": "2025-01-31",
+                "skip_end_date": "2024-12-30",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-01-30",
+                "momentum_12_1": 1.190859,
+                "signal_date": "2025-01-31",
+                "skip_end_date": "2024-12-30",
+                "ticker": "NVDA"
+              },
+              {
+                "base_date": "2024-01-30",
+                "momentum_12_1": 1.178663,
+                "signal_date": "2025-01-31",
+                "skip_end_date": "2024-12-30",
+                "ticker": "TSLA"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-03-03",
+            "opened": [
+              "APP",
+              "PLTR",
+              "CRDO",
+              "SPOT",
+              "TSLA"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-02-27",
+                "momentum_12_1": 5.042223,
+                "signal_date": "2025-02-28",
+                "skip_end_date": "2025-01-29",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-02-27",
+                "momentum_12_1": 2.251529,
+                "signal_date": "2025-02-28",
+                "skip_end_date": "2025-01-29",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-02-27",
+                "momentum_12_1": 1.669846,
+                "signal_date": "2025-02-28",
+                "skip_end_date": "2025-01-29",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-02-27",
+                "momentum_12_1": 1.129595,
+                "signal_date": "2025-02-28",
+                "skip_end_date": "2025-01-29",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-02-27",
+                "momentum_12_1": 0.94813,
+                "signal_date": "2025-02-28",
+                "skip_end_date": "2025-01-29",
+                "ticker": "TSLA"
+              }
+            ]
+          },
+          {
+            "eligible_candidate_count": 38,
+            "entry_date": "2025-04-01",
+            "opened": [
+              "APP",
+              "PLTR",
+              "CRDO",
+              "SPOT",
+              "TSLA"
+            ],
+            "top_candidates": [
+              {
+                "base_date": "2024-03-27",
+                "momentum_12_1": 3.730467,
+                "signal_date": "2025-03-31",
+                "skip_end_date": "2025-02-28",
+                "ticker": "APP"
+              },
+              {
+                "base_date": "2024-03-27",
+                "momentum_12_1": 2.464708,
+                "signal_date": "2025-03-31",
+                "skip_end_date": "2025-02-28",
+                "ticker": "PLTR"
+              },
+              {
+                "base_date": "2024-03-27",
+                "momentum_12_1": 1.60283,
+                "signal_date": "2025-03-31",
+                "skip_end_date": "2025-02-28",
+                "ticker": "CRDO"
+              },
+              {
+                "base_date": "2024-03-27",
+                "momentum_12_1": 1.336702,
+                "signal_date": "2025-03-31",
+                "skip_end_date": "2025-02-28",
+                "ticker": "SPOT"
+              },
+              {
+                "base_date": "2024-03-27",
+                "momentum_12_1": 0.629205,
+                "signal_date": "2025-03-31",
+                "skip_end_date": "2025-02-28",
+                "ticker": "TSLA"
+              }
+            ]
+          }
+        ],
+        "signal_diagnostics": {
+          "candidate_open_count": 25,
+          "eligible_candidate_count_sum": 266,
+          "rebalance_count": 7,
+          "reject_counts": {}
+        },
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "universe": {
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "GLD",
+            "IAU",
+            "IEF",
+            "IWM",
+            "QQQ",
+            "SLV",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "created_at": "2026-04-22T11:17:18.037663",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2025-04-27",
+            "download_start": "2023-08-29",
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "hypothesis": "External baseline: a fixed 12-1 cross-sectional momentum policy that ranks core-universe stocks by 252-trading-day return excluding the most recent 21 sessions, enters the top five on monthly rebalance dates, and holds for 21 sessions may challenge current trend_long better than local trend thresholds.",
+  "implementation_mode": "read_only_external_baseline_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260708-024.json",
+  "mechanism_family": "external_cross_sectional_momentum_baseline",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260708-022",
+    "exp-20260529-013",
+    "exp-20260601-006"
+  ],
+  "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "different_external_baseline_family_such_as_pead_or_low_vol_quality",
+    "no_12_1_lookback_topn_hold_liquidity_universe_cost_notional_or_tiebreak_retune_on_same_windows"
+  ],
+  "observed_only_lead": false,
+  "owner": "codex-alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun 12-1 momentum on these frozen windows by changing 252/21 lookbacks, monthly cadence, top-N, hold days, liquidity floors, universe exclusions, costs, notional, or ranking tie-breaks. That would be a parameter sweep on the same OHLCV momentum surface.",
+    "new_evidence_required": "If positive, next evidence must be a shared helper/backtester Gate 1-4 replay. If negative, move to a different external baseline lane such as PEAD/revision or low-vol/quality admission instead of retuning 12-1 parameters.",
+    "why_result_happened": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark."
+  },
+  "prediction": {
+    "confidence_reason": "The plan explicitly named 12-1 momentum as the next external baseline after Donchian; it is a distinct academic trend benchmark using only PIT OHLCV, but the current trend_long comparator is strong and the fixed-window core universe may be too concentrated.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "momentum_lags_current_trend_long",
+      "old_thin_window_regression",
+      "drawdown_worse",
+      "lookback_coverage_thin",
+      "private_replay_not_production_ready"
+    ],
+    "recorded_at": "2026-07-08T18:04:59+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_external_12_1_momentum_baseline_replay",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "momentum_drawdown_above_guard",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-024.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+  "runner_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+  "single_causal_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+  "status": "observed_only",
+  "ticket_before": {
+    "acceptance_rule": "Use AGENTS.md Gate 4.",
+    "allowed_write_scope": [
+      "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+      "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+      "experiments/cards/exp-20260708-024.md",
+      "experiments/manifests/exp-20260708-024.json",
+      "experiments/tickets/exp-20260708-024.json",
+      "experiments/logs/exp-20260708-024.json",
+      "docs/experiment_log.jsonl",
+      "docs/experiment_registry.json"
+    ],
+    "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "realized_failure_modes": [
+        "momentum_aggregate_pnl_not_above_current_trend_long",
+        "momentum_fewer_than_two_windows_beat_trend_long",
+        "momentum_trade_count_below_floor",
+        "momentum_not_positive_vs_cash"
+      ],
+      "realized_success": false
+    },
+    "card_file": "experiments/cards/exp-20260708-024.md",
+    "causal_components": [
+      "fixed 252-to-21 momentum ranking",
+      "monthly rebalance",
+      "next-open entry",
+      "21-session hold",
+      "5-position cap",
+      "canonical OHLCV snapshots",
+      "no strategy behavior change"
+    ],
+    "change_type": "entry_external_baseline_observed_only_replay",
+    "changed_files": [
+      "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+      "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+      "experiments/logs/exp-20260708-024.json",
+      "experiments/cards/exp-20260708-024.md",
+      "experiments/manifests/exp-20260708-024.json",
+      "experiments/tickets/exp-20260708-024.json",
+      "docs/experiment_registry.json"
+    ],
+    "changed_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+    "claimed_at": "2026-07-08T18:05:45+00:00",
+    "completed_at": "2026-07-08T18:10:42+00:00",
+    "created_at": "2026-07-08T18:05:36+00:00",
+    "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+    "evaluation_windows": [],
+    "experiment_id": "exp-20260708-024",
+    "experiment_uid": "expuid-15fa6de655054de2",
+    "gate1": {
+      "baseline_available": true,
+      "baseline_protocol": "private external 12-1 monthly momentum replay compared to accepted current trend_long by_strategy rows",
+      "canonical_core_results": [
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+      ],
+      "canonical_snapshots": [
+        "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+      ],
+      "passed": true
+    },
+    "gate2": {
+      "entry_date_contract": "entry fills use monthly rebalance Open after signal-date close",
+      "passed": true,
+      "required_fields": [
+        "Date",
+        "Open",
+        "High",
+        "Low",
+        "Close",
+        "Volume"
+      ],
+      "target_price_required_for_signal_generation": false,
+      "uses_runtime_production_visible_fields": true
+    },
+    "gate3": {
+      "eligible_candidate_count_sum": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      },
+      "no_filter_added_to_strategy": true,
+      "passed": false,
+      "private_replay_trade_count": 0,
+      "rebalance_count": {
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0
+      }
+    },
+    "gate4": {
+      "aggregate": {
+        "current_trend_long_total_pnl": 131996.98,
+        "current_trend_long_trade_count": 39,
+        "diagnostic_expected_value_score": 0.0,
+        "diagnostic_total_return_pct": 0.0,
+        "max_window_drawdown_pct": 0.0,
+        "mean_window_sharpe_daily": 0.0,
+        "momentum_total_pnl": 0.0,
+        "momentum_trade_count": 0,
+        "momentum_win_window_count_vs_trend_long": 0,
+        "momentum_win_windows_vs_trend_long": [],
+        "pnl_delta_vs_trend_long": -131996.98
+      },
+      "diagnostic_only": true,
+      "failed_reasons": [
+        "momentum_aggregate_pnl_not_above_current_trend_long",
+        "momentum_fewer_than_two_windows_beat_trend_long",
+        "momentum_trade_count_below_floor",
+        "momentum_not_positive_vs_cash",
+        "not_full_gate4_private_external_replay"
+      ],
+      "full_gate4_passed": false,
+      "observed_only_lead": false,
+      "windows": [
+        {
+          "label": "late_strong",
+          "momentum_beats_trend_pnl": false,
+          "momentum_ev": 0.0,
+          "momentum_max_drawdown_pct": 0.0,
+          "momentum_total_pnl": 0.0,
+          "momentum_trade_count": 0,
+          "pnl_delta_vs_trend_long": -42082.01,
+          "trend_long_total_pnl": 42082.01
+        },
+        {
+          "label": "mid_weak",
+          "momentum_beats_trend_pnl": false,
+          "momentum_ev": 0.0,
+          "momentum_max_drawdown_pct": 0.0,
+          "momentum_total_pnl": 0.0,
+          "momentum_trade_count": 0,
+          "pnl_delta_vs_trend_long": -54981.55,
+          "trend_long_total_pnl": 54981.55
+        },
+        {
+          "label": "old_thin",
+          "momentum_beats_trend_pnl": false,
+          "momentum_ev": 0.0,
+          "momentum_max_drawdown_pct": 0.0,
+          "momentum_total_pnl": 0.0,
+          "momentum_trade_count": 0,
+          "pnl_delta_vs_trend_long": -34933.42,
+          "trend_long_total_pnl": 34933.42
+        }
+      ]
+    },
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-024",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T18:05:36+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "cross_sectional_12_1_momentum_external_baseline"
+    },
+    "hypothesis": "External baseline: a fixed 12-1 cross-sectional momentum policy that ranks core-universe stocks by 252-trading-day return excluding the most recent 21 sessions, enters the top five on monthly rebalance dates, and holds for 21 sessions may challenge current trend_long better than local trend thresholds.",
+    "implementation_mode": "read_only_external_baseline_replay",
+    "lane": "alpha_search",
+    "lean_quality_passed": true,
+    "locked_variables": [
+      "cross_sectional_12_1_momentum_monthly_top5_baseline_v1"
+    ],
+    "log": "experiments/logs/exp-20260708-024.json",
+    "mechanism_family": "external_cross_sectional_momentum_baseline",
+    "multiple_testing_risk_bucket": "low",
+    "must_not_touch": [],
+    "nearby_prior_experiments": [
+      "exp-20260708-022",
+      "exp-20260529-013",
+      "exp-20260601-006"
+    ],
+    "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+    "new_evidence_type": "new_gate_shape",
+    "novelty": {
+      "blocking_matches": [
+        {
+          "accept_rate": 0.0,
+          "family_key": "cross_sectional_ranking_component_attribution",
+          "score": 0.6261,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "cross_sectional_ranking_attribution",
+          "score": 0.6178,
+          "status": "frozen_rejected",
+          "trials": 4
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "core_ample_slot_stock_rank1_topup_extension",
+          "score": 0.6089,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+          "score": 0.6,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "ohlcv_momentum",
+        "field_tags": [
+          "a",
+          "baseline",
+          "better",
+          "by",
+          "challenge",
+          "core",
+          "cross",
+          "current",
+          "dates",
+          "enters",
+          "excluding",
+          "external",
+          "five",
+          "holds",
+          "local",
+          "long",
+          "may",
+          "momentum",
+          "monthly",
+          "most",
+          "on",
+          "policy",
+          "ranks",
+          "rebalance",
+          "recent",
+          "return",
+          "sectional",
+          "sessions",
+          "stocks",
+          "than",
+          "that",
+          "thresholds",
+          "top",
+          "top5",
+          "trading",
+          "trend"
+        ],
+        "gate_shape": "allocator_source"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "cross_sectional_ranking_component_attribution",
+          "reopen_condition": null,
+          "score": 0.6261,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "cross_sectional_ranking_attribution",
+          "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+          "score": 0.6178,
+          "status": "frozen_rejected",
+          "trials": 4
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "core_ample_slot_stock_rank1_topup_extension",
+          "reopen_condition": null,
+          "score": 0.6089,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+          "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially new component-level ranking field. Do not mine nearby alpha_score risk formulas on the same frozen replay.",
+          "score": 0.6,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "core_alpha_score_bucket_top_quartile_topup",
+          "reopen_condition": null,
+          "score": 0.4678,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+      "observed_only_streak_guard": {
+        "applicable": true,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md \u00a72.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "ohlcv_momentum",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": true,
+      "reopen_condition_guard": {
+        "applicable": true,
+        "blocked": false,
+        "matched_conditions": [],
+        "new_evidence_axis": {
+          "axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+          "categories": [
+            "new_gate_shape"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md \u00a72.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": "New gate shape: complete external 12-1 monthly momentum entry/hold policy (252-to-21 ranking, monthly top-5, 21-session hold) compared to current trend_long. Prior cross-sectional ranking work attributed alpha_score/components or 60d residual pullback candidates; it did not test this full 12-1 monthly entry/hold benchmark.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "allocator_source",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "ohlcv_momentum",
+        "trials": 0
+      },
+      "warn": true,
+      "warn_threshold": 0.55
+    },
+    "owner": "codex-alpha-explore",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not rerun 12-1 momentum on these frozen windows by changing 252/21 lookbacks, monthly cadence, top-N, hold days, liquidity floors, universe exclusions, costs, notional, or ranking tie-breaks. That would be a parameter sweep on the same OHLCV momentum surface.",
+      "new_evidence_required": "If positive, next evidence must be a shared helper/backtester Gate 1-4 replay. If negative, move to a different external baseline lane such as PEAD/revision or low-vol/quality admission instead of retuning 12-1 parameters.",
+      "why_result_happened": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark."
+    },
+    "prediction": {
+      "confidence_reason": "The plan explicitly named 12-1 momentum as the next external baseline after Donchian; it is a distinct academic trend benchmark using only PIT OHLCV, but the current trend_long comparator is strong and the fixed-window core universe may be too concentrated.",
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "main_failure_modes": [
+        "momentum_lags_current_trend_long",
+        "old_thin_window_regression",
+        "drawdown_worse",
+        "lookback_coverage_thin",
+        "private_replay_not_production_ready"
+      ],
+      "recorded_at": "2026-07-08T18:04:59+00:00",
+      "success_probability": 0.22
+    },
+    "prior_trial_count": 0,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "llm_decision_boundary_changed": false,
+      "orders_changed": false,
+      "paper_state_changed": false,
+      "ranking_changed": false,
+      "run_adapter_changed": false,
+      "scope": "read_only_external_12_1_momentum_baseline_replay",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "strategy_code_changed": false,
+      "trade_enabled": false
+    },
+    "related_files": [
+      "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+      "experiments/tickets/exp-20260708-024.json"
+    ],
+    "result": {
+      "accepted": false,
+      "accepted_alpha": false,
+      "artifact": "data/experiments/exp-20260708-024/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.json",
+      "card_file": "experiments/cards/exp-20260708-024.md",
+      "decision": "observed_only_rejected_cross_sectional_12_1_momentum_external_baseline",
+      "gate4": {
+        "aggregate": {
+          "current_trend_long_total_pnl": 131996.98,
+          "current_trend_long_trade_count": 39,
+          "diagnostic_expected_value_score": 0.0,
+          "diagnostic_total_return_pct": 0.0,
+          "max_window_drawdown_pct": 0.0,
+          "mean_window_sharpe_daily": 0.0,
+          "momentum_total_pnl": 0.0,
+          "momentum_trade_count": 0,
+          "momentum_win_window_count_vs_trend_long": 0,
+          "momentum_win_windows_vs_trend_long": [],
+          "pnl_delta_vs_trend_long": -131996.98
+        },
+        "diagnostic_only": true,
+        "failed_reasons": [
+          "momentum_aggregate_pnl_not_above_current_trend_long",
+          "momentum_fewer_than_two_windows_beat_trend_long",
+          "momentum_trade_count_below_floor",
+          "momentum_not_positive_vs_cash",
+          "not_full_gate4_private_external_replay"
+        ],
+        "full_gate4_passed": false,
+        "observed_only_lead": false,
+        "windows": [
+          {
+            "label": "late_strong",
+            "momentum_beats_trend_pnl": false,
+            "momentum_ev": 0.0,
+            "momentum_max_drawdown_pct": 0.0,
+            "momentum_total_pnl": 0.0,
+            "momentum_trade_count": 0,
+            "pnl_delta_vs_trend_long": -42082.01,
+            "trend_long_total_pnl": 42082.01
+          },
+          {
+            "label": "mid_weak",
+            "momentum_beats_trend_pnl": false,
+            "momentum_ev": 0.0,
+            "momentum_max_drawdown_pct": 0.0,
+            "momentum_total_pnl": 0.0,
+            "momentum_trade_count": 0,
+            "pnl_delta_vs_trend_long": -54981.55,
+            "trend_long_total_pnl": 54981.55
+          },
+          {
+            "label": "old_thin",
+            "momentum_beats_trend_pnl": false,
+            "momentum_ev": 0.0,
+            "momentum_max_drawdown_pct": 0.0,
+            "momentum_total_pnl": 0.0,
+            "momentum_trade_count": 0,
+            "pnl_delta_vs_trend_long": -34933.42,
+            "trend_long_total_pnl": 34933.42
+          }
+        ]
+      },
+      "log": "experiments/logs/exp-20260708-024.json",
+      "observed_only_lead": false,
+      "runner": "quant/experiments/exp_20260708_024_cross_sectional_12_1_momentum_external_baseline.py",
+      "summary": "The fixed 12-1 monthly momentum baseline did not beat the accepted current trend_long comparator under the predeclared private replay criteria, so the weakness is not solved by replacing core trend entries with a vanilla cross-sectional momentum benchmark."
+    },
+    "revision_manifest_file": "experiments/manifests/exp-20260708-024.json",
+    "single_causal_variable": "cross_sectional_12_1_momentum_monthly_top5_baseline_v1",
+    "status": "observed_only",
+    "ticket_file": "experiments/tickets/exp-20260708-024.json",
+    "trial_family": "cross_sectional_12_1_momentum_baseline",
+    "trial_variant_id": "exp-20260708-024",
+    "updated_at": "2026-07-08T18:10:42+00:00"
+  },
+  "trial_family": "cross_sectional_12_1_momentum_baseline",
+  "trial_variant_id": "exp-20260708-024"
+}

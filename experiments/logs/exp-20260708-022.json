@@ -1,0 +1,205 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260708-022/exp_20260708_022_donchian_turtle_breakout_external_baseline.json",
+  "calibration": {
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "donchian_aggregate_pnl_not_above_current_breakout_long",
+      "donchian_fewer_than_two_windows_beat_breakout_long",
+      "donchian_drawdown_above_guard"
+    ],
+    "realized_success": false
+  },
+  "change_type": "entry_external_baseline_observed_only_replay",
+  "changed_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_022_donchian_turtle_breakout_external_baseline.py",
+    "data/experiments/exp-20260708-022/exp_20260708_022_donchian_turtle_breakout_external_baseline.json",
+    "data/experiments/exp-20260708-022/before_measurement.json",
+    "data/experiments/exp-20260708-022/after_measurement.json",
+    "experiments/logs/exp-20260708-022.json",
+    "experiments/cards/exp-20260708-022.md",
+    "experiments/manifests/exp-20260708-022.json",
+    "experiments/tickets/exp-20260708-022.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "donchian_55_20_turtle_breakout_baseline_v1",
+  "completed_at": "2026-07-08T17:39:11Z",
+  "decision": "observed_only_rejected_donchian_turtle_breakout_baseline",
+  "experiment_id": "exp-20260708-022",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "private external Donchian 55/20 replay compared to accepted current breakout_long by_strategy rows",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "entry fills use next available Open after the signal close",
+    "passed": true,
+    "required_fields": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "private_replay_trade_count": 51,
+    "raw_breakout_signal_count": {
+      "late_strong": 197,
+      "mid_weak": 394,
+      "old_thin": 307
+    },
+    "skipped_signal_count": {
+      "late_strong": 103,
+      "mid_weak": 288,
+      "old_thin": 215
+    }
+  },
+  "gate4": {
+    "aggregate": {
+      "current_breakout_long_total_pnl": 102854.01,
+      "current_breakout_long_trade_count": 22,
+      "diagnostic_expected_value_score": 0.324669,
+      "diagnostic_total_return_pct": 0.269998,
+      "donchian_total_pnl": 26999.79,
+      "donchian_trade_count": 51,
+      "donchian_win_window_count_vs_breakout_long": 0,
+      "donchian_win_windows_vs_breakout_long": [],
+      "max_window_drawdown_pct": 0.31339,
+      "mean_window_sharpe_daily": 1.202488,
+      "pnl_delta_vs_breakout_long": -75854.22
+    },
+    "diagnostic_only": true,
+    "failed_reasons": [
+      "donchian_aggregate_pnl_not_above_current_breakout_long",
+      "donchian_fewer_than_two_windows_beat_breakout_long",
+      "donchian_drawdown_above_guard",
+      "not_full_gate4_private_external_replay"
+    ],
+    "full_gate4_passed": false,
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "breakout_long_total_pnl": 74990.91,
+        "donchian_beats_breakout_pnl": false,
+        "donchian_ev": 0.134101,
+        "donchian_max_drawdown_pct": 0.092793,
+        "donchian_total_pnl": 11384.47,
+        "donchian_trade_count": 16,
+        "label": "late_strong",
+        "pnl_delta_vs_breakout_long": -63606.44
+      },
+      {
+        "breakout_long_total_pnl": 23128.56,
+        "donchian_beats_breakout_pnl": false,
+        "donchian_ev": 0.361634,
+        "donchian_max_drawdown_pct": 0.043152,
+        "donchian_total_pnl": 15958.77,
+        "donchian_trade_count": 13,
+        "label": "mid_weak",
+        "pnl_delta_vs_breakout_long": -7169.79
+      },
+      {
+        "breakout_long_total_pnl": 4734.54,
+        "donchian_beats_breakout_pnl": false,
+        "donchian_ev": -0.000561,
+        "donchian_max_drawdown_pct": 0.31339,
+        "donchian_total_pnl": -343.45,
+        "donchian_trade_count": 22,
+        "label": "old_thin",
+        "pnl_delta_vs_breakout_long": -5077.99
+      }
+    ]
+  },
+  "hypothesis": "A fixed Donchian/Turtle 55-day channel breakout with 20-day channel exit should reveal whether the current breakout_long weakness is a local implementation problem or whether a simple external price-channel breakout family also fails against the accepted core breakout comparator on the canonical windows.",
+  "implementation_mode": "read_only_external_baseline_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-022.json",
+  "mechanism_family": "external_price_channel_breakout_baseline",
+  "nearby_prior_experiments": [
+    "exp-20260708-021",
+    "exp-20260708-002"
+  ],
+  "new_evidence_axis": "New gate shape and external benchmark family: predeclared Donchian/Turtle 55-day channel breakout entry plus 20-day channel exit, compared against current breakout_long on the same canonical OHLCV windows; not a retune of existing breakout thresholds, stops, DTE buckets, risk scalars, or ticker/window slices.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "different_external_baseline_family_such_as_12_1_momentum_or_pead",
+    "no_donchian_lookback_sizing_liquidity_universe_cost_or_ranking_retune_on_same_windows"
+  ],
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun Donchian/Turtle on these frozen windows by changing 55/20 lookbacks, ATR sizing units, liquidity floors, position caps, universe exclusions, costs, or ranking order. That would be a parameter sweep on the same OHLCV relation surface.",
+    "new_evidence_required": "If positive, next evidence must be a shared helper/backtester Gate 1-4 replay. If negative, move to the next external baseline lane such as 12-1/residual momentum or PEAD/revision rather than retuning Donchian parameters.",
+    "why_result_happened": "The fixed Donchian/Turtle baseline did not beat the accepted current breakout_long comparator under the predeclared private replay criteria, so the weakness is not solved by simply replacing core breakouts with a vanilla 55/20 channel system."
+  },
+  "prediction": {
+    "confidence_reason": "The current core breakout has strong late-window performance but weaker historical consistency; a canonical Donchian benchmark may expose whether the problem is local implementation, but simple channel systems often whipsaw on a concentrated equity universe.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "simple_channel_breakout_lags_core_breakout",
+      "too_many_whipsaws",
+      "trade_count_too_low",
+      "drawdown_worse",
+      "private_replay_not_production_ready"
+    ],
+    "recorded_at": "2026-07-08T17:33:43+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_external_donchian_baseline_replay",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "donchian_aggregate_pnl_not_above_current_breakout_long;donchian_fewer_than_two_windows_beat_breakout_long;donchian_drawdown_above_guard",
+  "related_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-022.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_022_donchian_turtle_breakout_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_022_donchian_turtle_breakout_external_baseline.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "donchian_55_20_turtle_breakout_baseline_v1",
+  "status": "observed_only",
+  "trial_family": "donchian_turtle_breakout_baseline",
+  "trial_variant_id": "exp-20260708-022"
+}

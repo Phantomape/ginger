@@ -1,0 +1,1635 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_measurement": "data/experiments/exp-20260708-026/after_measurement.json",
+  "allowed_write_scope": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    "data/experiments/exp-20260708-026/",
+    "experiments/logs/exp-20260708-026.json",
+    "experiments/cards/exp-20260708-026.md",
+    "experiments/manifests/exp-20260708-026.json",
+    "experiments/tickets/exp-20260708-026.json",
+    "docs/experiment_registry.json"
+  ],
+  "artifact": "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "baseline_result_summary": {
+    "accepted_stack_aggregate_ev": null,
+    "artifact": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "artifact_exists": true
+  },
+  "before_measurement": "data/experiments/exp-20260708-026/before_measurement.json",
+  "calibration": {
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl"
+    ],
+    "realized_success": false
+  },
+  "card_file": "experiments/cards/exp-20260708-026.md",
+  "causal_components": [
+    "saved core trades",
+    "entry-time 60-session realized volatility percentile",
+    "entry-time 60-session SPY beta percentile",
+    "fixed top-quintile-both no-entry diagnostic",
+    "no strategy behavior change"
+  ],
+  "change_type": "entry_admission_observed_only_counterfactual",
+  "changed_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+    "data/experiments/exp-20260708-026/before_measurement.json",
+    "data/experiments/exp-20260708-026/after_measurement.json",
+    "experiments/logs/exp-20260708-026.json",
+    "experiments/cards/exp-20260708-026.md",
+    "experiments/manifests/exp-20260708-026.json",
+    "experiments/tickets/exp-20260708-026.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+  "completed_at": "2026-07-08T18:59:07Z",
+  "config": {
+    "acceptance_rule": "Observed-only lead only: blocked high-vol/high-beta core trades must have negative aggregate PnL, improve additive PnL in at least two canonical windows, preserve at least 45 remaining saved trades, and avoid single-ticker/window concentration. Any positive result still requires a shared-helper Gate 1-4 before behavior changes.",
+    "annualization_days": 252,
+    "diagnostic_only": true,
+    "lookback_return_sessions": 60,
+    "max_single_ticker_blocked_count_share": 0.5,
+    "max_single_window_abs_delta_share": 0.75,
+    "min_blocked_trades_for_lead": 3,
+    "min_feature_universe_count": 20,
+    "min_improved_windows_for_lead": 2,
+    "min_remaining_trades_for_lead": 45,
+    "top_quintile_percentile": 0.8
+  },
+  "decision": "observed_only_rejected_low_vol_quality_core_admission_overlay",
+  "experiment_id": "exp-20260708-026",
+  "gate1": {
+    "baseline_available": true,
+    "baseline_protocol": "current accepted core stack plus saved canonical warehouse window trades",
+    "canonical_core_results": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "canonical_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "passed": true
+  },
+  "gate2": {
+    "note": "This diagnostic consumes saved trade rows and PIT OHLCV snapshots. It verifies the fields used by the attribution; target_price remains a signal-generation sentinel for any future shared-helper promotion.",
+    "passed": true,
+    "required_ohlcv_fields": [
+      "Date",
+      "Close"
+    ],
+    "required_saved_trade_fields": [
+      "ticker",
+      "entry_date",
+      "strategy",
+      "pnl"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "uses_runtime_production_visible_fields": true
+  },
+  "gate3": {
+    "baseline_signals_generated": {
+      "late_strong": 51,
+      "mid_weak": 53,
+      "old_thin": 60
+    },
+    "baseline_signals_survived": {
+      "late_strong": 41,
+      "mid_weak": 42,
+      "old_thin": 52
+    },
+    "baseline_survival_rate": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    },
+    "diagnostic_trade_survival_not_signal_survival": true,
+    "feature_evaluable_trade_count": 61,
+    "no_filter_added_to_strategy": true,
+    "passed": true,
+    "remaining_saved_trades_after_diagnostic_block": 53
+  },
+  "gate4": {
+    "acceptance_rule": "Observed-only lead only: blocked high-vol/high-beta core trades must have negative aggregate PnL, improve additive PnL in at least two canonical windows, preserve at least 45 remaining saved trades, and avoid single-ticker/window concentration. Any positive result still requires a shared-helper Gate 1-4 before behavior changes.",
+    "aggregate": {
+      "additive_counterfactual_total_pnl": 194535.55,
+      "additive_pnl_delta": -40315.44,
+      "baseline_total_pnl": 234850.99,
+      "baseline_trade_count": 61,
+      "blocked_pnl_sum": 40315.44,
+      "blocked_strategy_counts": {
+        "breakout_long": 3,
+        "trend_long": 5
+      },
+      "blocked_strategy_pnl": {
+        "breakout_long": 9848.2,
+        "trend_long": 30467.24
+      },
+      "blocked_ticker_counts": {
+        "AMD": 3,
+        "APP": 2,
+        "COIN": 2,
+        "MU": 1
+      },
+      "blocked_ticker_pnl": {
+        "AMD": 1145.07,
+        "APP": 17358.32,
+        "COIN": 12386.57,
+        "MU": 9425.48
+      },
+      "blocked_trade_count": 8,
+      "feature_evaluable_rate": 1.0,
+      "feature_evaluable_trade_count": 61,
+      "improved_window_count": 0,
+      "improved_windows": [],
+      "max_single_ticker_blocked_count_share": 0.375,
+      "max_single_window_abs_delta_share": 0.3753,
+      "remaining_trade_count": 53,
+      "window_abs_delta_share": {
+        "late_strong": 0.2537,
+        "mid_weak": 0.3753,
+        "old_thin": 0.371
+      }
+    },
+    "diagnostic_only": true,
+    "failed_reasons": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl",
+      "not_full_gate4_saved_trade_counterfactual"
+    ],
+    "full_gate4_passed": false,
+    "not_recomputed": [
+      "expected_value_score",
+      "sharpe_daily",
+      "max_drawdown_pct",
+      "slot_replacement",
+      "cash_drag",
+      "ranking_effect"
+    ],
+    "observed_only_lead": false,
+    "windows": [
+      {
+        "additive_counterfactual_total_pnl": 106844.31,
+        "additive_pnl_delta": -10228.61,
+        "baseline_metrics": {
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "total_trades": 18,
+          "win_rate": 0.8333
+        },
+        "baseline_trade_summary": {
+          "avg_pnl": 6504.05,
+          "largest_loser": -2296.65,
+          "largest_winner": 14493.45,
+          "losses": 3,
+          "total_pnl": 117072.92,
+          "trades": 18,
+          "win_rate": 0.8333,
+          "wins": 15
+        },
+        "blocked_pnl_sum": 10228.61,
+        "blocked_trade_summary": {
+          "avg_pnl": 5114.3,
+          "largest_loser": 803.13,
+          "largest_winner": 9425.48,
+          "losses": 0,
+          "total_pnl": 10228.61,
+          "trades": 2,
+          "win_rate": 1.0,
+          "wins": 2
+        },
+        "blocked_trades": [
+          {
+            "beta_cutoff_80": 2.145085,
+            "beta_top_quintile": true,
+            "entry_date": "2026-01-07",
+            "entry_price": 340.74,
+            "exit_date": "2026-01-27",
+            "exit_price": 415.83,
+            "exit_reason": "target",
+            "pnl": 9425.48,
+            "pnl_pct_net": 0.216879,
+            "realized_vol_60d": 0.706747,
+            "realized_vol_percentile": 0.973684,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2026-01-06",
+            "spy_beta_60d": 3.430559,
+            "spy_beta_percentile": 0.973684,
+            "strategy": "breakout_long",
+            "ticker": "MU",
+            "trade_id": "MU:2026-01-07:340.7400",
+            "vol_cutoff_80": 0.516802,
+            "vol_top_quintile": true,
+            "window": "late_strong"
+          },
+          {
+            "beta_cutoff_80": 1.921567,
+            "beta_top_quintile": true,
+            "entry_date": "2026-04-17",
+            "entry_price": 281.14,
+            "exit_date": "2026-04-21",
+            "exit_price": 284.35,
+            "exit_reason": "end_of_backtest",
+            "pnl": 803.13,
+            "pnl_pct_net": 0.00791,
+            "realized_vol_60d": 0.667474,
+            "realized_vol_percentile": 0.842105,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2026-04-16",
+            "spy_beta_60d": 2.540032,
+            "spy_beta_percentile": 0.921053,
+            "strategy": "breakout_long",
+            "ticker": "AMD",
+            "trade_id": "AMD:2026-04-17:281.1400",
+            "vol_cutoff_80": 0.618566,
+            "vol_top_quintile": true,
+            "window": "late_strong"
+          }
+        ],
+        "core_result_file": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "diagnostic_limits": {
+          "cash_drag_measured": false,
+          "exit_path_replayed": false,
+          "expected_value_score_recomputed": false,
+          "reason": "Saved-trade additive attribution only; not a full backtest.",
+          "slot_replacement_measured": false
+        },
+        "end": "2026-04-21",
+        "enriched_trade_count": 18,
+        "feature_coverage": {
+          "feature_evaluable_rate": 1.0,
+          "feature_evaluable_trade_count": 18,
+          "feature_missing_reasons": {},
+          "median_same_day_feature_universe_count": 38.0,
+          "min_same_day_feature_universe_count": 38,
+          "saved_trade_count": 18,
+          "unique_entry_dates": 14
+        },
+        "improves_additive_pnl": false,
+        "kept_trade_summary": {
+          "avg_pnl": 6677.77,
+          "largest_loser": -2296.65,
+          "largest_winner": 14493.45,
+          "losses": 3,
+          "total_pnl": 106844.31,
+          "trades": 16,
+          "win_rate": 0.8125,
+          "wins": 13
+        },
+        "label": "late_strong",
+        "pnl_reconciliation": {
+          "difference": 0.0,
+          "reported_total_pnl": 117072.92,
+          "sum_trade_pnl": 117072.92
+        },
+        "snapshot_file": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "universe": {
+          "all_ticker_count": 56,
+          "eligible_ticker_count": 38,
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "BE",
+            "GLD",
+            "IAU",
+            "IEF",
+            "INTC",
+            "IWM",
+            "LITE",
+            "QQQ",
+            "SLV",
+            "SNXX",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "added_tickers": [
+              "BE",
+              "INTC",
+              "LITE",
+              "SNXX"
+            ],
+            "created_at": "2026-04-22T00:07:24.416406",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2026-04-26",
+            "download_start": "2024-09-18",
+            "merge_policy": "preserve all existing old snapshot OHLCV rows; add only tickers missing from old snapshot",
+            "merged_from": [
+              "data\\ohlcv_snapshot_20251023_20260421.json",
+              "data\\ohlcv_snapshot_20251023_20260421_with_pilot_refreshed.json"
+            ],
+            "ticker_count": 56,
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BE",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "INTC",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LITE",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SNXX",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      },
+      {
+        "additive_counterfactual_total_pnl": 62979.55,
+        "additive_pnl_delta": -15130.56,
+        "baseline_metrics": {
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "total_trades": 21,
+          "win_rate": 0.5238
+        },
+        "baseline_trade_summary": {
+          "avg_pnl": 3719.53,
+          "largest_loser": -765.61,
+          "largest_winner": 13936.45,
+          "losses": 10,
+          "total_pnl": 78110.11,
+          "trades": 21,
+          "win_rate": 0.5238,
+          "wins": 11
+        },
+        "blocked_pnl_sum": 15130.56,
+        "blocked_trade_summary": {
+          "avg_pnl": 3026.11,
+          "largest_loser": -765.61,
+          "largest_winner": 12766.98,
+          "losses": 2,
+          "total_pnl": 15130.56,
+          "trades": 5,
+          "win_rate": 0.6,
+          "wins": 3
+        },
+        "blocked_trades": [
+          {
+            "beta_cutoff_80": 1.746471,
+            "beta_top_quintile": true,
+            "entry_date": "2025-05-14",
+            "entry_price": 257.96,
+            "exit_date": "2025-06-24",
+            "exit_price": 321.67,
+            "exit_reason": "target",
+            "pnl": 12766.98,
+            "pnl_pct_net": 0.243473,
+            "realized_vol_60d": 0.934684,
+            "realized_vol_percentile": 0.947368,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2025-05-13",
+            "spy_beta_60d": 1.812125,
+            "spy_beta_percentile": 0.842105,
+            "strategy": "trend_long",
+            "ticker": "COIN",
+            "trade_id": "COIN:2025-05-14:257.9600",
+            "vol_cutoff_80": 0.711783,
+            "vol_top_quintile": true,
+            "window": "mid_weak"
+          },
+          {
+            "beta_cutoff_80": 1.643903,
+            "beta_top_quintile": true,
+            "entry_date": "2025-06-17",
+            "entry_price": 127.99,
+            "exit_date": "2025-07-15",
+            "exit_price": 154.9,
+            "exit_reason": "target",
+            "pnl": 1107.55,
+            "pnl_pct_net": 0.20677,
+            "realized_vol_60d": 0.750464,
+            "realized_vol_percentile": 0.842105,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2025-06-16",
+            "spy_beta_60d": 2.010971,
+            "spy_beta_percentile": 0.921053,
+            "strategy": "trend_long",
+            "ticker": "AMD",
+            "trade_id": "AMD:2025-06-17:127.9900",
+            "vol_cutoff_80": 0.728339,
+            "vol_top_quintile": true,
+            "window": "mid_weak"
+          },
+          {
+            "beta_cutoff_80": 1.753005,
+            "beta_top_quintile": true,
+            "entry_date": "2025-07-21",
+            "entry_price": 425.76,
+            "exit_date": "2025-07-23",
+            "exit_price": 389.08,
+            "exit_reason": "stop",
+            "pnl": -380.41,
+            "pnl_pct_net": -0.089651,
+            "realized_vol_60d": 0.811456,
+            "realized_vol_percentile": 1.0,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2025-07-18",
+            "spy_beta_60d": 2.042843,
+            "spy_beta_percentile": 0.921053,
+            "strategy": "breakout_long",
+            "ticker": "COIN",
+            "trade_id": "COIN:2025-07-21:425.7600",
+            "vol_cutoff_80": 0.431943,
+            "vol_top_quintile": true,
+            "window": "mid_weak"
+          },
+          {
+            "beta_cutoff_80": 1.775509,
+            "beta_top_quintile": true,
+            "entry_date": "2025-09-09",
+            "entry_price": 555.29,
+            "exit_date": "2025-09-29",
+            "exit_price": 707.9,
+            "exit_reason": "target",
+            "pnl": 2402.05,
+            "pnl_pct_net": 0.271322,
+            "realized_vol_60d": 0.59612,
+            "realized_vol_percentile": 0.894737,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2025-09-08",
+            "spy_beta_60d": 2.562741,
+            "spy_beta_percentile": 0.921053,
+            "strategy": "trend_long",
+            "ticker": "APP",
+            "trade_id": "APP:2025-09-09:555.2900",
+            "vol_cutoff_80": 0.474823,
+            "vol_top_quintile": true,
+            "window": "mid_weak"
+          },
+          {
+            "beta_cutoff_80": 1.875164,
+            "beta_top_quintile": true,
+            "entry_date": "2025-10-09",
+            "entry_price": 236.42,
+            "exit_date": "2025-10-10",
+            "exit_price": 218.51,
+            "exit_reason": "stop",
+            "pnl": -765.61,
+            "pnl_pct_net": -0.07925,
+            "realized_vol_60d": 0.66115,
+            "realized_vol_percentile": 0.973684,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2025-10-08",
+            "spy_beta_60d": 1.96831,
+            "spy_beta_percentile": 0.868421,
+            "strategy": "trend_long",
+            "ticker": "AMD",
+            "trade_id": "AMD:2025-10-09:236.4200",
+            "vol_cutoff_80": 0.485129,
+            "vol_top_quintile": true,
+            "window": "mid_weak"
+          }
+        ],
+        "core_result_file": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "diagnostic_limits": {
+          "cash_drag_measured": false,
+          "exit_path_replayed": false,
+          "expected_value_score_recomputed": false,
+          "reason": "Saved-trade additive attribution only; not a full backtest.",
+          "slot_replacement_measured": false
+        },
+        "end": "2025-10-22",
+        "enriched_trade_count": 21,
+        "feature_coverage": {
+          "feature_evaluable_rate": 1.0,
+          "feature_evaluable_trade_count": 21,
+          "feature_missing_reasons": {},
+          "median_same_day_feature_universe_count": 38.0,
+          "min_same_day_feature_universe_count": 38,
+          "saved_trade_count": 21,
+          "unique_entry_dates": 21
+        },
+        "improves_additive_pnl": false,
+        "kept_trade_summary": {
+          "avg_pnl": 3936.22,
+          "largest_loser": -502.66,
+          "largest_winner": 13936.45,
+          "losses": 8,
+          "total_pnl": 62979.55,
+          "trades": 16,
+          "win_rate": 0.5,
+          "wins": 8
+        },
+        "label": "mid_weak",
+        "pnl_reconciliation": {
+          "difference": 0.0,
+          "reported_total_pnl": 78110.11,
+          "sum_trade_pnl": 78110.11
+        },
+        "snapshot_file": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "universe": {
+          "all_ticker_count": 52,
+          "eligible_ticker_count": 38,
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "GLD",
+            "IAU",
+            "IEF",
+            "IWM",
+            "QQQ",
+            "SLV",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "created_at": "2026-04-22T11:17:29.367830",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2025-10-27",
+            "download_start": "2024-03-19",
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      },
+      {
+        "additive_counterfactual_total_pnl": 24711.69,
+        "additive_pnl_delta": -14956.27,
+        "baseline_metrics": {
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "total_trades": 22,
+          "win_rate": 0.4091
+        },
+        "baseline_trade_summary": {
+          "avg_pnl": 1803.09,
+          "largest_loser": -3049.82,
+          "largest_winner": 14956.27,
+          "losses": 13,
+          "total_pnl": 39667.96,
+          "trades": 22,
+          "win_rate": 0.4091,
+          "wins": 9
+        },
+        "blocked_pnl_sum": 14956.27,
+        "blocked_trade_summary": {
+          "avg_pnl": 14956.27,
+          "largest_loser": 14956.27,
+          "largest_winner": 14956.27,
+          "losses": 0,
+          "total_pnl": 14956.27,
+          "trades": 1,
+          "win_rate": 1.0,
+          "wins": 1
+        },
+        "blocked_trades": [
+          {
+            "beta_cutoff_80": 2.270643,
+            "beta_top_quintile": true,
+            "entry_date": "2024-11-08",
+            "entry_price": 249.21,
+            "exit_date": "2024-11-19",
+            "exit_price": 319.25,
+            "exit_reason": "target",
+            "pnl": 14956.27,
+            "pnl_pct_net": 0.277549,
+            "realized_vol_60d": 1.045183,
+            "realized_vol_percentile": 1.0,
+            "same_day_feature_universe_count": 38,
+            "signal_date": "2024-11-07",
+            "spy_beta_60d": 2.270643,
+            "spy_beta_percentile": 0.815789,
+            "strategy": "trend_long",
+            "ticker": "APP",
+            "trade_id": "APP:2024-11-08:249.2100",
+            "vol_cutoff_80": 0.47815,
+            "vol_top_quintile": true,
+            "window": "old_thin"
+          }
+        ],
+        "core_result_file": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "diagnostic_limits": {
+          "cash_drag_measured": false,
+          "exit_path_replayed": false,
+          "expected_value_score_recomputed": false,
+          "reason": "Saved-trade additive attribution only; not a full backtest.",
+          "slot_replacement_measured": false
+        },
+        "end": "2025-04-22",
+        "enriched_trade_count": 22,
+        "feature_coverage": {
+          "feature_evaluable_rate": 1.0,
+          "feature_evaluable_trade_count": 22,
+          "feature_missing_reasons": {},
+          "median_same_day_feature_universe_count": 38.0,
+          "min_same_day_feature_universe_count": 38,
+          "saved_trade_count": 22,
+          "unique_entry_dates": 20
+        },
+        "improves_additive_pnl": false,
+        "kept_trade_summary": {
+          "avg_pnl": 1176.75,
+          "largest_loser": -3049.82,
+          "largest_winner": 6990.25,
+          "losses": 13,
+          "total_pnl": 24711.69,
+          "trades": 21,
+          "win_rate": 0.381,
+          "wins": 8
+        },
+        "label": "old_thin",
+        "pnl_reconciliation": {
+          "difference": 0.0,
+          "reported_total_pnl": 39667.96,
+          "sum_trade_pnl": 39667.96
+        },
+        "snapshot_file": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "universe": {
+          "all_ticker_count": 52,
+          "eligible_ticker_count": 38,
+          "eligible_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GOOG",
+            "GS",
+            "ISRG",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MSFT",
+            "MU",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "RTX",
+            "SNOW",
+            "SPOT",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "excluded_tickers": [
+            "GLD",
+            "IAU",
+            "IEF",
+            "IWM",
+            "QQQ",
+            "SLV",
+            "SPY",
+            "TLT",
+            "USO",
+            "UUP",
+            "XLE",
+            "XLP",
+            "XLU",
+            "XLV"
+          ],
+          "metadata": {
+            "created_at": "2026-04-22T11:17:18.037663",
+            "cross_asset_proxies_added": [
+              "IEF",
+              "TLT",
+              "USO",
+              "UUP",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV"
+            ],
+            "download_end": "2025-04-27",
+            "download_start": "2023-08-29",
+            "tickers": [
+              "AAPL",
+              "AMD",
+              "AMZN",
+              "APP",
+              "AVGO",
+              "BKNG",
+              "CAT",
+              "COIN",
+              "CRDO",
+              "CVX",
+              "DDOG",
+              "DE",
+              "DIS",
+              "GE",
+              "GLD",
+              "GOOG",
+              "GS",
+              "IAU",
+              "IEF",
+              "ISRG",
+              "IWM",
+              "JPM",
+              "LLY",
+              "MA",
+              "MCD",
+              "META",
+              "MSFT",
+              "MU",
+              "NFLX",
+              "NOW",
+              "NVDA",
+              "NVO",
+              "PLTR",
+              "QQQ",
+              "RTX",
+              "SLV",
+              "SNOW",
+              "SPOT",
+              "SPY",
+              "TLT",
+              "TRIP",
+              "TSLA",
+              "TSM",
+              "UNH",
+              "USO",
+              "UUP",
+              "V",
+              "XLE",
+              "XLP",
+              "XLU",
+              "XLV",
+              "XOM"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "hypothesis": "A fixed low-volatility/quality admission overlay should reveal whether current core trades with both entry-time 60-session realized volatility and 60-session SPY beta in the same-day top quintile are lower-quality crowded momentum entries that should be blocked before entry rather than merely sized or stopped after entry.",
+  "implementation_mode": "read_only_saved_trade_counterfactual",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260708-026.json",
+  "mechanism_family": "core_low_vol_quality_admission_overlay",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260606-015",
+    "exp-20260611-019",
+    "exp-20260708-021",
+    "exp-20260708-024"
+  ],
+  "new_evidence_axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-vol and SPY-beta ranks; not a low-vol candidate-pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "different_admission_field_or_external_baseline_family",
+    "no_low_vol_beta_lookback_threshold_universe_strategy_or_window_retune_on_same_saved_trades"
+  ],
+  "observed_only_lead": false,
+  "owner": "codex-alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun this same saved-trade diagnostic by changing the 60-session lookback, 80th-percentile thresholds, beta/vol rank formula, ticker universe exclusions, strategy scope, or window slices. Those are retunes on the same OHLCV momentum surface.",
+    "new_evidence_required": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+    "why_result_happened": "The fixed high-vol/high-beta diagnostic did not clear the predeclared observed-only lead criteria. In this sample, broad top-quintile volatility plus top-quintile beta is not sufficient by itself to justify a core no-entry rule."
+  },
+  "prediction": {
+    "confidence_reason": "Prior low-vol/defensive candidate pools often failed by deleting convex winners, but the user asked for ways to avoid bad core contexts before stops. This fixed admission diagnostic tests that boundary without retuning existing strategy thresholds.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "high_vol_high_beta_contains_best_winners",
+      "too_few_blocked_trades",
+      "one_window_concentration",
+      "private_counterfactual_ignores_slot_replacement"
+    ],
+    "recorded_at": "2026-07-08T18:51:24+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_saved_trade_additive_counterfactual",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "blocked_trades_not_negative_aggregate_pnl;fewer_than_two_windows_improve_additive_pnl",
+  "related_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-026.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+  "runner_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+  "single_causal_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+  "status": "observed_only",
+  "ticket_before": {
+    "acceptance_rule": "Observed-only lead only: blocked high-vol/high-beta core trades must have negative aggregate PnL, improve additive PnL in at least two canonical windows, preserve at least 45 remaining saved trades, and avoid single-ticker/window concentration; positive result requires shared-helper Gate 1-4 before behavior changes.",
+    "after_measurement": "data/experiments/exp-20260708-026/after_measurement.json",
+    "allowed_write_scope": [
+      "docs/core_entry_admission_external_strategy_plan.md",
+      "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+      "data/experiments/exp-20260708-026/",
+      "experiments/logs/exp-20260708-026.json",
+      "experiments/cards/exp-20260708-026.md",
+      "experiments/manifests/exp-20260708-026.json",
+      "experiments/tickets/exp-20260708-026.json",
+      "docs/experiment_registry.json"
+    ],
+    "artifact": "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+    "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "before_measurement": "data/experiments/exp-20260708-026/before_measurement.json",
+    "calibration": {
+      "predicted_success_probability": 0.22,
+      "realized_failure_modes": [
+        "blocked_trades_not_negative_aggregate_pnl",
+        "fewer_than_two_windows_improve_additive_pnl"
+      ],
+      "realized_success": false
+    },
+    "card_file": "experiments/cards/exp-20260708-026.md",
+    "causal_components": [
+      "saved core trades",
+      "entry-time 60-session realized volatility percentile",
+      "entry-time 60-session SPY beta percentile",
+      "fixed top-quintile-both no-entry diagnostic",
+      "no strategy behavior change"
+    ],
+    "change_type": "entry_admission_observed_only_counterfactual",
+    "changed_files": [
+      "docs/core_entry_admission_external_strategy_plan.md",
+      "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+      "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+      "data/experiments/exp-20260708-026/before_measurement.json",
+      "data/experiments/exp-20260708-026/after_measurement.json",
+      "experiments/logs/exp-20260708-026.json",
+      "experiments/cards/exp-20260708-026.md",
+      "experiments/manifests/exp-20260708-026.json",
+      "experiments/tickets/exp-20260708-026.json",
+      "docs/experiment_registry.json"
+    ],
+    "changed_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+    "claimed_at": "2026-07-08T18:53:13+00:00",
+    "completed_at": "2026-07-08T18:58:45+00:00",
+    "created_at": "2026-07-08T18:51:43+00:00",
+    "decision": "observed_only_rejected_low_vol_quality_core_admission_overlay",
+    "evaluation_windows": [
+      {
+        "end": "2026-04-21",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ],
+    "experiment_id": "exp-20260708-026",
+    "experiment_uid": "expuid-119f5025eee84c47",
+    "gate1": {
+      "baseline_available": true,
+      "baseline_protocol": "current accepted core stack plus saved canonical warehouse window trades",
+      "canonical_core_results": [
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+      ],
+      "canonical_snapshots": [
+        "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+      ],
+      "passed": true
+    },
+    "gate2": {
+      "note": "This diagnostic consumes saved trade rows and PIT OHLCV snapshots. It verifies the fields used by the attribution; target_price remains a signal-generation sentinel for any future shared-helper promotion.",
+      "passed": true,
+      "required_ohlcv_fields": [
+        "Date",
+        "Close"
+      ],
+      "required_saved_trade_fields": [
+        "ticker",
+        "entry_date",
+        "strategy",
+        "pnl"
+      ],
+      "target_price_required_for_signal_generation": false,
+      "uses_runtime_production_visible_fields": true
+    },
+    "gate3": {
+      "baseline_signals_generated": {
+        "late_strong": 51,
+        "mid_weak": 53,
+        "old_thin": 60
+      },
+      "baseline_signals_survived": {
+        "late_strong": 41,
+        "mid_weak": 42,
+        "old_thin": 52
+      },
+      "baseline_survival_rate": {
+        "late_strong": 0.8039,
+        "mid_weak": 0.7925,
+        "old_thin": 0.8667
+      },
+      "diagnostic_trade_survival_not_signal_survival": true,
+      "feature_evaluable_trade_count": 61,
+      "no_filter_added_to_strategy": true,
+      "passed": true,
+      "remaining_saved_trades_after_diagnostic_block": 53
+    },
+    "gate4": {
+      "aggregate": {
+        "additive_counterfactual_total_pnl": 194535.55,
+        "additive_pnl_delta": -40315.44,
+        "baseline_total_pnl": 234850.99,
+        "baseline_trade_count": 61,
+        "blocked_pnl_sum": 40315.44,
+        "blocked_strategy_counts": {
+          "breakout_long": 3,
+          "trend_long": 5
+        },
+        "blocked_strategy_pnl": {
+          "breakout_long": 9848.2,
+          "trend_long": 30467.24
+        },
+        "blocked_ticker_counts": {
+          "AMD": 3,
+          "APP": 2,
+          "COIN": 2,
+          "MU": 1
+        },
+        "blocked_ticker_pnl": {
+          "AMD": 1145.07,
+          "APP": 17358.32,
+          "COIN": 12386.57,
+          "MU": 9425.48
+        },
+        "blocked_trade_count": 8,
+        "feature_evaluable_rate": 1.0,
+        "feature_evaluable_trade_count": 61,
+        "improved_window_count": 0,
+        "improved_windows": [],
+        "max_single_ticker_blocked_count_share": 0.375,
+        "max_single_window_abs_delta_share": 0.3753,
+        "remaining_trade_count": 53,
+        "window_abs_delta_share": {
+          "late_strong": 0.2537,
+          "mid_weak": 0.3753,
+          "old_thin": 0.371
+        }
+      },
+      "diagnostic_only": true,
+      "failed_reasons": [
+        "blocked_trades_not_negative_aggregate_pnl",
+        "fewer_than_two_windows_improve_additive_pnl",
+        "not_full_gate4_saved_trade_counterfactual"
+      ],
+      "full_gate4_passed": false,
+      "observed_only_lead": false,
+      "windows": [
+        {
+          "additive_counterfactual_total_pnl": 106844.31,
+          "additive_pnl_delta": -10228.61,
+          "baseline_total_pnl": 117072.92,
+          "blocked_pnl_sum": 10228.61,
+          "blocked_trade_count": 2,
+          "feature_evaluable_trade_count": 18,
+          "improves_additive_pnl": false,
+          "label": "late_strong"
+        },
+        {
+          "additive_counterfactual_total_pnl": 62979.55,
+          "additive_pnl_delta": -15130.56,
+          "baseline_total_pnl": 78110.11,
+          "blocked_pnl_sum": 15130.56,
+          "blocked_trade_count": 5,
+          "feature_evaluable_trade_count": 21,
+          "improves_additive_pnl": false,
+          "label": "mid_weak"
+        },
+        {
+          "additive_counterfactual_total_pnl": 24711.69,
+          "additive_pnl_delta": -14956.27,
+          "baseline_total_pnl": 39667.96,
+          "blocked_pnl_sum": 14956.27,
+          "blocked_trade_count": 1,
+          "feature_evaluable_trade_count": 22,
+          "improves_additive_pnl": false,
+          "label": "old_thin"
+        }
+      ]
+    },
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-026",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T18:51:43+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "low_vol_quality_core_admission_overlay"
+    },
+    "hypothesis": "A fixed low-volatility/quality admission overlay should reveal whether current core trades with both entry-time 60-session realized volatility and 60-session SPY beta in the same-day top quintile are lower-quality crowded momentum entries that should be blocked before entry rather than merely sized or stopped after entry.",
+    "implementation_mode": "read_only_saved_trade_counterfactual",
+    "lane": "alpha_search",
+    "lean_quality_passed": true,
+    "locked_variables": [
+      "breakout_thresholds",
+      "trend_thresholds",
+      "stops",
+      "position_sizing",
+      "live_orders",
+      "trade_enabled"
+    ],
+    "log": "experiments/logs/exp-20260708-026.json",
+    "mechanism_family": "core_low_vol_quality_admission_overlay",
+    "multiple_testing_risk_bucket": "moderate",
+    "must_not_touch": [
+      "quant/portfolio_engine.py",
+      "quant/backtester.py",
+      "run.py",
+      "operator_inputs/open_positions.json",
+      "operator_inputs/open_positions.moomoo_preview.json"
+    ],
+    "nearby_prior_experiments": [
+      "exp-20260606-015",
+      "exp-20260611-019",
+      "exp-20260708-021",
+      "exp-20260708-024"
+    ],
+    "new_evidence_axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-vol and SPY-beta ranks; not a low-vol candidate-pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+    "new_evidence_type": "new_gate_shape",
+    "novelty": {
+      "blocking_matches": [],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "ohlcv_momentum",
+        "field_tags": [
+          "a",
+          "admission",
+          "after",
+          "are",
+          "be",
+          "before",
+          "beta",
+          "blocked",
+          "both",
+          "core",
+          "crowded",
+          "current",
+          "entries",
+          "entry",
+          "high",
+          "in",
+          "low",
+          "lower",
+          "merely",
+          "momentum",
+          "no",
+          "or",
+          "overlay",
+          "quintile",
+          "rather",
+          "realized",
+          "same",
+          "session",
+          "should",
+          "show",
+          "sized",
+          "spy",
+          "stopped",
+          "than",
+          "that",
+          "time",
+          "top",
+          "trades",
+          "vol",
+          "volatility",
+          "whether"
+        ],
+        "gate_shape": "other"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "broad_low_beta_residual_momentum_candidate_pool",
+          "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+          "score": 0.4779,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "sector_relative_risk_adjusted_momentum",
+          "reopen_condition": "Forward replacement-value rows or an orthogonal free-data quality field; do not simply retune sector residual/volatility thresholds.",
+          "score": 0.4755,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "low_deployment_dynamic_etf_overlay_allocation",
+          "reopen_condition": null,
+          "score": 0.474,
+          "status": "frozen_rejected",
+          "trials": 8
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+          "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+          "score": 0.467,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "ohlcv_momentum",
+          "family_key": "event_benchmark_momentum_context",
+          "reopen_condition": null,
+          "score": 0.4663,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-volatility and SPY-beta ranks; not a low-vol candidate pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+      "observed_only_streak_guard": {
+        "applicable": true,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md \u00a72.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "ohlcv_momentum",
+        "streak": 1,
+        "streak_experiments": [
+          "exp-20260708-024"
+        ]
+      },
+      "override": false,
+      "reopen_condition_guard": {
+        "applicable": true,
+        "blocked": false,
+        "matched_conditions": [],
+        "new_evidence_axis": {
+          "axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-volatility and SPY-beta ranks; not a low-vol candidate pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+          "categories": [
+            "new_gate_shape"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md \u00a72.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": "New gate shape: converts external low-volatility/Betting-Against-Beta prior into a pre-entry quality admission diagnostic on existing core saved trades, using same-day cross-sectional top-quintile realized-volatility and SPY-beta ranks; not a low-vol candidate pool retry, not a Donchian/12-1 retune, and not a scalar/stop threshold change.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "other",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "ohlcv_momentum",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    },
+    "owner": "codex-alpha-explore",
+    "post_run_reflection": {
+      "forbidden_near_neighbor_retry": "Do not rerun this same saved-trade diagnostic by changing the 60-session lookback, 80th-percentile thresholds, beta/vol rank formula, ticker universe exclusions, strategy scope, or window slices. Those are retunes on the same OHLCV momentum surface.",
+      "new_evidence_required": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+      "why_result_happened": "The fixed high-vol/high-beta diagnostic did not clear the predeclared observed-only lead criteria. In this sample, broad top-quintile volatility plus top-quintile beta is not sufficient by itself to justify a core no-entry rule."
+    },
+    "prediction": {
+      "confidence_reason": "Prior low-vol/defensive candidate pools often failed by deleting convex winners, but the user asked for ways to avoid bad core contexts before stops. This fixed admission diagnostic tests that boundary without retuning existing strategy thresholds.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "high_vol_high_beta_contains_best_winners",
+        "too_few_blocked_trades",
+        "one_window_concentration",
+        "private_counterfactual_ignores_slot_replacement"
+      ],
+      "recorded_at": "2026-07-08T18:51:24+00:00",
+      "success_probability": 0.22
+    },
+    "prior_trial_count": 0,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "llm_decision_boundary_changed": false,
+      "orders_changed": false,
+      "paper_state_changed": false,
+      "ranking_changed": false,
+      "run_adapter_changed": false,
+      "scope": "read_only_saved_trade_additive_counterfactual",
+      "shared_policy_changed": false,
+      "sizing_changed": false,
+      "strategy_code_changed": false,
+      "trade_enabled": false
+    },
+    "related_files": [
+      "docs/core_entry_admission_external_strategy_plan.md",
+      "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+      "experiments/tickets/exp-20260708-026.json"
+    ],
+    "result": {
+      "accepted": false,
+      "accepted_alpha": false,
+      "artifact": "data/experiments/exp-20260708-026/exp_20260708_026_low_vol_quality_core_admission_overlay.json",
+      "card_file": "experiments/cards/exp-20260708-026.md",
+      "decision": "observed_only_rejected_low_vol_quality_core_admission_overlay",
+      "gate4": {
+        "aggregate": {
+          "additive_counterfactual_total_pnl": 194535.55,
+          "additive_pnl_delta": -40315.44,
+          "baseline_total_pnl": 234850.99,
+          "baseline_trade_count": 61,
+          "blocked_pnl_sum": 40315.44,
+          "blocked_strategy_counts": {
+            "breakout_long": 3,
+            "trend_long": 5
+          },
+          "blocked_strategy_pnl": {
+            "breakout_long": 9848.2,
+            "trend_long": 30467.24
+          },
+          "blocked_ticker_counts": {
+            "AMD": 3,
+            "APP": 2,
+            "COIN": 2,
+            "MU": 1
+          },
+          "blocked_ticker_pnl": {
+            "AMD": 1145.07,
+            "APP": 17358.32,
+            "COIN": 12386.57,
+            "MU": 9425.48
+          },
+          "blocked_trade_count": 8,
+          "feature_evaluable_rate": 1.0,
+          "feature_evaluable_trade_count": 61,
+          "improved_window_count": 0,
+          "improved_windows": [],
+          "max_single_ticker_blocked_count_share": 0.375,
+          "max_single_window_abs_delta_share": 0.3753,
+          "remaining_trade_count": 53,
+          "window_abs_delta_share": {
+            "late_strong": 0.2537,
+            "mid_weak": 0.3753,
+            "old_thin": 0.371
+          }
+        },
+        "diagnostic_only": true,
+        "failed_reasons": [
+          "blocked_trades_not_negative_aggregate_pnl",
+          "fewer_than_two_windows_improve_additive_pnl",
+          "not_full_gate4_saved_trade_counterfactual"
+        ],
+        "full_gate4_passed": false,
+        "observed_only_lead": false,
+        "windows": [
+          {
+            "additive_counterfactual_total_pnl": 106844.31,
+            "additive_pnl_delta": -10228.61,
+            "baseline_total_pnl": 117072.92,
+            "blocked_pnl_sum": 10228.61,
+            "blocked_trade_count": 2,
+            "feature_evaluable_trade_count": 18,
+            "improves_additive_pnl": false,
+            "label": "late_strong"
+          },
+          {
+            "additive_counterfactual_total_pnl": 62979.55,
+            "additive_pnl_delta": -15130.56,
+            "baseline_total_pnl": 78110.11,
+            "blocked_pnl_sum": 15130.56,
+            "blocked_trade_count": 5,
+            "feature_evaluable_trade_count": 21,
+            "improves_additive_pnl": false,
+            "label": "mid_weak"
+          },
+          {
+            "additive_counterfactual_total_pnl": 24711.69,
+            "additive_pnl_delta": -14956.27,
+            "baseline_total_pnl": 39667.96,
+            "blocked_pnl_sum": 14956.27,
+            "blocked_trade_count": 1,
+            "feature_evaluable_trade_count": 22,
+            "improves_additive_pnl": false,
+            "label": "old_thin"
+          }
+        ]
+      },
+      "log": "experiments/logs/exp-20260708-026.json",
+      "observed_only_lead": false,
+      "runner": "quant/experiments/exp_20260708_026_low_vol_quality_core_admission_overlay.py",
+      "summary": "The fixed high-vol/high-beta diagnostic did not clear the predeclared observed-only lead criteria. In this sample, broad top-quintile volatility plus top-quintile beta is not sufficient by itself to justify a core no-entry rule."
+    },
+    "revision_manifest_file": "experiments/manifests/exp-20260708-026.json",
+    "single_causal_variable": "core_high_vol_high_beta_no_entry_admission_v1",
+    "status": "observed_only",
+    "ticket_file": "experiments/tickets/exp-20260708-026.json",
+    "trial_family": "core_high_vol_high_beta_admission_overlay",
+    "trial_variant_id": "exp-20260708-026",
+    "updated_at": "2026-07-08T18:58:45+00:00"
+  },
+  "trial_family": "core_high_vol_high_beta_admission_overlay",
+  "trial_variant_id": "exp-20260708-026"
+}

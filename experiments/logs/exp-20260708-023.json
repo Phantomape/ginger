@@ -1,0 +1,664 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/chop_mean_reversion_sleeve.py",
+    "quant/test_chop_mean_reversion_sleeve.py",
+    "quant/experiments/exp_20260708_023_chop_regime_mean_reversion_sleeve.py",
+    "data/experiments/exp-20260708-023/exp_20260708_023_chop_regime_mean_reversion_sleeve.json",
+    "experiments/logs/exp-20260708-023.json",
+    "experiments/cards/exp-20260708-023.md",
+    "experiments/manifests/exp-20260708-023.json",
+    "experiments/tickets/exp-20260708-023.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Owner priority 2026-07-08: a NEW ENTRY RULE family - buy short-horizon oversold pullbacks on the core universe ONLY on days labeled choppy_range, exiting on the snap back above SMA5 or a fixed 10-day horizon. All prior chop work built classifiers or reduced size of existing momentum entries; nothing ever tested a reversion ENTRY that profits from the chop state.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260708-023/exp_20260708_023_chop_regime_mean_reversion_sleeve.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "chop_bucket_sample_too_thin",
+      "mean_reversion_negative_ev_after_costs",
+      "regime_label_lag_misses_entries",
+      "core_universe_too_trendy_for_reversion"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_modes": [
+      "insufficient_nonnegative_windows"
+    ]
+  },
+  "causal_components": [
+    "chop_day_condition",
+    "oversold_pullback_entry_rule",
+    "range_mid_or_fixed_horizon_exit",
+    "shared_paper_helper",
+    "daily_default_off_snapshot",
+    "historical_replay"
+  ],
+  "change_type": "strategy_logic",
+  "changed_files": [
+    "quant/chop_mean_reversion_sleeve.py",
+    "quant/test_chop_mean_reversion_sleeve.py",
+    "quant/experiments/exp_20260708_023_chop_regime_mean_reversion_sleeve.py",
+    "data/experiments/exp-20260708-023/exp_20260708_023_chop_regime_mean_reversion_sleeve.json",
+    "experiments/logs/exp-20260708-023.json",
+    "experiments/cards/exp-20260708-023.md",
+    "experiments/manifests/exp-20260708-023.json",
+    "experiments/tickets/exp-20260708-023.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "chop_regime_mean_reversion_entry_sleeve_v1",
+  "decision": "rejected_chop_regime_mean_reversion_sleeve",
+  "delta_metrics": {
+    "chop_days_by_window": {
+      "late_strong": 26,
+      "mid_weak": 0,
+      "old_thin": 7
+    },
+    "chop_mean_minus_control_mean_usd": -7.27,
+    "evaluable_window_count": 2,
+    "expected_value_score_sum_delta": 0.0,
+    "nonnegative_evaluable_window_count": 1,
+    "pooled_mean_pnl_usd": 2.0,
+    "pooled_replacement_value_vs_qqq_usd": 777.78,
+    "pooled_replacement_value_vs_spy_usd": 1024.1,
+    "pooled_total_pnl_usd": 82.13,
+    "pooled_trade_count": 41,
+    "pooled_win_rate": 0.5366,
+    "risk_on_control_mean_pnl_usd": 9.27,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260708-023",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_scope": "Paper replay rows carry entry_date per lot; no production signal objects are created.",
+    "fields_checked": [
+      "ticker",
+      "signal_date",
+      "entry_date",
+      "entry_price",
+      "exit_date",
+      "exit_price",
+      "exit_reason",
+      "regime_label_at_signal",
+      "p_choppy_at_signal"
+    ],
+    "passed": true,
+    "target_price_scope": "No target_price contract: exits are SMA5-cross or timeout by design (paper sleeve)."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Default-off paper sleeve; no filter added to the production chain.",
+    "passed": true,
+    "signals_generated": 47,
+    "signals_survived": 41,
+    "survival_rate": 0.87234
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [
+      "insufficient_nonnegative_windows"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "rejected_chop_regime_mean_reversion_sleeve",
+    "measurement_blockers": [],
+    "measurement_repair_only": false,
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Owner priority 2026-07-08: a NEW ENTRY RULE family - buy short-horizon oversold pullbacks on the core universe ONLY on days labeled choppy_range, exiting on the snap back above SMA5 or a fixed 10-day horizon. All prior chop work built classifiers or reduced size of existing momentum entries; nothing ever tested a reversion ENTRY that profits from the chop state.",
+  "implementation_mode": "shared_paper_first_default_off_replay",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-023.json",
+  "mechanism_family": "chop_regime_mean_reversion",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260615-019",
+    "exp-20260615-023",
+    "exp-20260615-025",
+    "exp-20260622-017",
+    "exp-20260614-010"
+  ],
+  "new_evidence_type": "new_gate_shape_reversion_entry_in_chop",
+  "next_retry_requires": [
+    "forward chop-day paper rows from daily wiring (separate wiring ticket if accepted)",
+    "no same-window parameter retunes of chop_mean_reversion_v1"
+  ],
+  "owner": "interactive",
+  "parameters": {
+    "caps": "max 3 new lots/day, 1 lot/ticker, max 6 concurrent",
+    "entry": "regime==choppy_range AND RSI(2)<10 AND close>SMA200; next-open fill",
+    "excluded_entry_tickers": [
+      "GLD",
+      "IAU",
+      "IWM",
+      "QQQ",
+      "SLV",
+      "SPY",
+      "TQQQ"
+    ],
+    "exit": "close>SMA5 or 10-trading-day timeout; window end force-close flagged",
+    "latest_bar_date": "2026-07-07",
+    "notional_usd": 4000.0,
+    "sleeve_rule_version": "chop_mean_reversion_v1",
+    "universe_size": 46,
+    "warehouses": [
+      "data/warehouse/warehouse_main.sqlite",
+      "data/warehouse/warehouse_main_hot.sqlite"
+    ]
+  },
+  "pooled_summary": {
+    "best_trade_usd": 479.01,
+    "forced_window_end_exits": 0,
+    "mean_holding_days": 4.12,
+    "mean_pnl_usd": 2.0,
+    "replacement_value_vs_qqq_usd": 777.78,
+    "replacement_value_vs_spy_usd": 1024.1,
+    "total_pnl_usd": 82.13,
+    "trade_count": 41,
+    "win_rate": 0.5366,
+    "worst_trade_usd": -533.9
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune RSI threshold, SMA windows, hold days, lot caps, or notional on these frozen windows; do not swap the regime axis (ER already rejected). New evidence = forward chop-day rows via a daily default-off snapshot, or a different unsaturated entry family.",
+    "new_evidence_required": "Forward chop-labeled paper rows (daily default-off wiring) or materially more chop days in new calendar data.",
+    "why_result_happened": "Reversion entries on chop days closed 41 trades with 82.13 USD vs SPY replacement 1024.1; the mirror trade did not clear the predeclared bar on the frozen windows."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Owner priority 2026-07-08: a NEW ENTRY RULE family - buy short-horizon oversold pullbacks on the core universe ONLY on days labeled choppy_range, exiting on the snap back above SMA5 or a fixed 10-day horizon. All prior chop work built classifiers or reduced size of existing momentum entries; nothing ever tested a reversion ENTRY that profits from the chop state.",
+    "2_history_check": {
+      "exp-20260614-010": "Hard chop gate on momentum entries rejected 3 windows.",
+      "exp-20260615-019": "Chop is the loss axis for momentum sleeve entries (lead).",
+      "exp-20260615-023": "Kaufman ER chop axis rejected; trend-state x breadth axis retained.",
+      "exp-20260615-025": "Shared regime_chop_state_v1 module promoted (used unchanged here).",
+      "exp-20260622-017": "Core stack is NOT chop-sensitive; tilts must be sleeve-scoped.",
+      "novelty_gate": "Override accepted: new gate shape (reversion ENTRY from chop state); saturation override on misclassified companyfacts_ratio fingerprint."
+    },
+    "3_single_measurement_bundle": "chop_regime_mean_reversion_entry_sleeve_v1",
+    "4_success_failure_standard": "Accept only if pooled canonical-window trades >= 15, pooled PnL > 0, pooled replacement value vs SPY > 0, and >= 2 evaluable windows non-negative; < 15 pooled trades -> observed_only (thin sample); otherwise rejected.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_023_chop_regime_mean_reversion_sleeve.py"
+  },
+  "prediction": {
+    "confidence_reason": "Direction is the structural mirror of a confirmed loss axis and the chop label is validated and live at full fidelity, but mean reversion on a momentum-selected megacap universe is unproven and chop-bucket N was modest; genuine exploration.",
+    "expected_ev_delta": 0.5,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "chop_bucket_sample_too_thin",
+      "mean_reversion_negative_ev_after_costs",
+      "regime_label_lag_misses_entries",
+      "core_universe_too_trendy_for_reversion"
+    ],
+    "recorded_at": "2026-07-08T17:48:04+00:00",
+    "success_probability": 0.25
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "default_off_paper_replay_only_no_daily_wiring_yet",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "recent_observe": {
+    "end": "2026-07-07",
+    "entry_label_days": 0,
+    "gate_role": "observe_only_diagnostic",
+    "signals_generated": 0,
+    "start": "2026-04-22",
+    "summary": {
+      "best_trade_usd": null,
+      "forced_window_end_exits": 0,
+      "mean_holding_days": null,
+      "mean_pnl_usd": null,
+      "replacement_value_vs_qqq_usd": null,
+      "replacement_value_vs_spy_usd": null,
+      "total_pnl_usd": 0.0,
+      "trade_count": 0,
+      "win_rate": null,
+      "worst_trade_usd": null
+    },
+    "window": "recent_observe"
+  },
+  "related_files": [
+    "quant/regime_chop_state.py",
+    "quant/market_context.py",
+    "experiments/cards/exp-20260615-019.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_023_chop_regime_mean_reversion_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_chop_mean_reversion_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "risk_on_control_windows": [
+    {
+      "entry_label_days": 100,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 134,
+      "summary": {
+        "best_trade_usd": 779.8,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 4.09,
+        "mean_pnl_usd": -0.26,
+        "replacement_value_vs_qqq_usd": 1069.77,
+        "replacement_value_vs_spy_usd": 1436.4,
+        "total_pnl_usd": -24.53,
+        "trade_count": 93,
+        "win_rate": 0.5376,
+        "worst_trade_usd": -726.0
+      },
+      "window": "old_thin"
+    },
+    {
+      "entry_label_days": 113,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 124,
+      "summary": {
+        "best_trade_usd": 387.91,
+        "forced_window_end_exits": 2,
+        "mean_holding_days": 3.65,
+        "mean_pnl_usd": 23.34,
+        "replacement_value_vs_qqq_usd": 1597.09,
+        "replacement_value_vs_spy_usd": 1988.7,
+        "total_pnl_usd": 2380.61,
+        "trade_count": 102,
+        "win_rate": 0.6569,
+        "worst_trade_usd": -866.88
+      },
+      "window": "mid_weak"
+    },
+    {
+      "entry_label_days": 76,
+      "entry_regime_label": "risk_on_trend",
+      "signals_generated": 87,
+      "summary": {
+        "best_trade_usd": 307.64,
+        "forced_window_end_exits": 1,
+        "mean_holding_days": 4.11,
+        "mean_pnl_usd": 0.44,
+        "replacement_value_vs_qqq_usd": 728.95,
+        "replacement_value_vs_spy_usd": 599.57,
+        "total_pnl_usd": 27.32,
+        "trade_count": 62,
+        "win_rate": 0.5484,
+        "worst_trade_usd": -621.57
+      },
+      "window": "late_strong"
+    }
+  ],
+  "single_causal_variable": "chop_regime_mean_reversion_entry_sleeve_v1",
+  "status": "rejected",
+  "ticket_before": {
+    "claimed_at": "2026-07-08T17:48:04+00:00",
+    "created_at": "2026-07-08T17:39:00+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-023",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T17:39:00+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "chop_regime_mean_reversion_sleeve"
+    },
+    "novelty": {
+      "blocking_matches": [
+        {
+          "accept_rate": 0.0,
+          "family_key": "cash_conversion_quality_low_deployment_candidate_pool",
+          "score": 0.6116,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "low_asset_growth_quality_candidate_pool",
+          "score": 0.6062,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "broad_companyfacts_eps_dilution_candidate_pool",
+          "score": 0.6061,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+          "score": 0.606,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "cash_backed_low_asset_growth_quality_candidate_pool",
+          "score": 0.606,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "companyfacts_ratio",
+        "field_tags": [
+          "a",
+          "all",
+          "at",
+          "backtesting",
+          "built",
+          "buy",
+          "chop",
+          "choppy",
+          "classifiers",
+          "core",
+          "daily",
+          "docs",
+          "entries",
+          "entry",
+          "ever",
+          "existing",
+          "exiting",
+          "family",
+          "first",
+          "from",
+          "gate",
+          "has",
+          "helper",
+          "historical",
+          "horizon",
+          "itself",
+          "judged",
+          "labeled",
+          "low",
+          "md",
+          "mean",
+          "midpoint",
+          "momentum",
+          "new",
+          "nothing",
+          "of",
+          "on",
+          "only",
+          "or",
+          "oversold",
+          "owner",
+          "per",
+          "prior",
+          "priority",
+          "profits",
+          "pullbacks",
+          "range",
+          "recent",
+          "reduced",
+          "regime",
+          "reversion",
+          "rule",
+          "short",
+          "size",
+          "sleeve",
+          "snapshot",
+          "state",
+          "tested",
+          "that",
+          "toward",
+          "weakness",
+          "work"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "cash_conversion_quality_low_deployment_candidate_pool",
+          "reopen_condition": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality.",
+          "score": 0.6116,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "low_asset_growth_quality_candidate_pool",
+          "reopen_condition": "A retry needs materially different PIT investment discipline evidence such as asset growth relative to industry peers, capex-free-cash-flow coverage, or closed forward replacement rows. Do not sweep asset-growth thresholds, fact age, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.6062,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "broad_companyfacts_eps_dilution_candidate_pool",
+          "reopen_condition": null,
+          "score": 0.6061,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+          "reopen_condition": null,
+          "score": 0.606,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "companyfacts_ratio",
+          "family_key": "cash_backed_low_asset_growth_quality_candidate_pool",
+          "reopen_condition": "A retry needs materially new PIT investment-quality evidence, such as industry-relative asset-growth surprise, capex/free-cash-flow coverage, manager-quality ownership context, or closed forward replacement rows. Do not sweep cash-conversion, accruals, asset-growth, fact age, RS/close/volume, top-N, hold, cooldown, or notional on these frozen windows.",
+          "score": 0.606,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": "New gate shape: a mean-reversion ENTRY rule conditioned on chop days (candidate pool generated FROM the chop state, opposite trade direction to every prior family). Prior chop experiments were classifiers (exp-20260615-019/023/025), read-only attribution (exp-20260622-017), or size reduction of momentum entries (exp-20260614-010). Also note data_source fingerprint companyfacts_ratio is a misclassification - inputs are OHLCV ranges + regime label, no companyfacts field involved.",
+      "observed_only_streak_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "companyfacts_ratio",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": true,
+      "reopen_condition_guard": {
+        "applicable": true,
+        "blocked": false,
+        "matched_conditions": [],
+        "new_evidence_axis": {
+          "axis": "New gate shape: a mean-reversion ENTRY rule conditioned on chop days (candidate pool generated FROM the chop state, opposite trade direction to every prior family). Prior chop experiments were classifiers (exp-20260615-019/023/025), read-only attribution (exp-20260622-017), or size reduction of momentum entries (exp-20260614-010). Also note data_source fingerprint companyfacts_ratio is a misclassification - inputs are OHLCV ranges + regime label, no companyfacts field involved.",
+          "categories": [
+            "new_gate_shape"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": "New gate shape: a mean-reversion ENTRY rule conditioned on chop days (candidate pool generated FROM the chop state, opposite trade direction to every prior family). Prior chop experiments were classifiers (exp-20260615-019/023/025), read-only attribution (exp-20260622-017), or size reduction of momentum entries (exp-20260614-010). Also note data_source fingerprint companyfacts_ratio is a misclassification - inputs are OHLCV ranges + regime label, no companyfacts field involved.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "saturated_source_override": true,
+      "source_saturation": {
+        "accept_rate": 0.033,
+        "accepts": 3,
+        "applicable": true,
+        "gate_shape": "candidate_pool_top1_10d",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": true,
+        "source": "companyfacts_ratio",
+        "trials": 91
+      },
+      "warn": true,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-07-08T17:54:35Z",
+  "trial_family": "chop_regime_mean_reversion_candidate_pool",
+  "trial_variant_id": "chop_mean_reversion_v1",
+  "windows": [
+    {
+      "end": "2025-04-22",
+      "entry_label_days": 7,
+      "regime_day_counts": {
+        "choppy_range": 7,
+        "risk_off_stress": 31,
+        "risk_on_trend": 100
+      },
+      "signals_generated": 15,
+      "start": "2024-10-02",
+      "summary": {
+        "best_trade_usd": 479.01,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 4.85,
+        "mean_pnl_usd": -37.12,
+        "replacement_value_vs_qqq_usd": 29.18,
+        "replacement_value_vs_spy_usd": 29.26,
+        "total_pnl_usd": -482.52,
+        "trade_count": 13,
+        "win_rate": 0.4615,
+        "worst_trade_usd": -533.9
+      },
+      "trading_days": 138,
+      "window": "old_thin"
+    },
+    {
+      "end": "2025-10-22",
+      "entry_label_days": 0,
+      "regime_day_counts": {
+        "risk_off_stress": 14,
+        "risk_on_trend": 113
+      },
+      "signals_generated": 0,
+      "start": "2025-04-23",
+      "summary": {
+        "best_trade_usd": null,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": null,
+        "mean_pnl_usd": null,
+        "replacement_value_vs_qqq_usd": null,
+        "replacement_value_vs_spy_usd": null,
+        "total_pnl_usd": 0.0,
+        "trade_count": 0,
+        "win_rate": null,
+        "worst_trade_usd": null
+      },
+      "trading_days": 127,
+      "window": "mid_weak"
+    },
+    {
+      "end": "2026-04-21",
+      "entry_label_days": 26,
+      "regime_day_counts": {
+        "choppy_range": 26,
+        "risk_off_stress": 21,
+        "risk_on_trend": 76
+      },
+      "signals_generated": 32,
+      "start": "2025-10-23",
+      "summary": {
+        "best_trade_usd": 364.51,
+        "forced_window_end_exits": 0,
+        "mean_holding_days": 3.79,
+        "mean_pnl_usd": 20.17,
+        "replacement_value_vs_qqq_usd": 748.6,
+        "replacement_value_vs_spy_usd": 994.84,
+        "total_pnl_usd": 564.65,
+        "trade_count": 28,
+        "win_rate": 0.5714,
+        "worst_trade_usd": -349.36
+      },
+      "trading_days": 123,
+      "window": "late_strong"
+    }
+  ]
+}

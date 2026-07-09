@@ -1,0 +1,531 @@
+{
+  "acceptance_rule": "Observed-only lead only: blocked severe-haircut trend_long trades must have negative aggregate PnL, improve additive PnL in at least two canonical windows, preserve useful trade count, and avoid single-ticker/window concentration; positive result requires later shared-helper Gate 1-4 before behavior changes.",
+  "allowed_write_scope": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.py",
+    "data/experiments/exp-20260708-021/",
+    "experiments/logs/exp-20260708-021.json",
+    "experiments/cards/exp-20260708-021.md",
+    "experiments/manifests/exp-20260708-021.json",
+    "experiments/tickets/exp-20260708-021.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260708-021.md",
+  "causal_components": [
+    "existing saved core trade rows",
+    "fixed trend_long severe risk-haircut predicate",
+    "additive no-entry attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "entry_admission_observed_only_counterfactual",
+  "changed_variable": "core_trend_long_severe_haircut_no_entry_admission_v1",
+  "claimed_at": "2026-07-08T17:19:19+00:00",
+  "completed_at": "2026-07-08T17:23:40+00:00",
+  "created_at": "2026-07-08T17:18:59+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260708-021",
+  "experiment_uid": "expuid-a3af87b8dd18465c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T17:18:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_trend_long_severe_haircut_no_entry_admission"
+  },
+  "hypothesis": "A read-only diagnostic should show whether existing production-visible severe risk haircuts on trend_long trades would have worked better as a pre-entry no-entry admission gate, avoiding weak-context loss instead of relying on small size and stops.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "breakout_thresholds",
+    "trend_thresholds",
+    "stops",
+    "position_sizing",
+    "live_orders",
+    "trade_enabled"
+  ],
+  "mechanism_family": "core_entry_admission_gate",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "run.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260707-010",
+    "exp-20260708-002",
+    "exp-20260516-012",
+    "exp-20260516-035"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "admission",
+        "as",
+        "avoiding",
+        "better",
+        "context",
+        "core",
+        "diagnostic",
+        "entry",
+        "existing",
+        "gate",
+        "haircut",
+        "haircuts",
+        "have",
+        "instead",
+        "long",
+        "loss",
+        "no",
+        "of",
+        "on",
+        "only",
+        "pre",
+        "read",
+        "relying",
+        "risk",
+        "severe",
+        "should",
+        "show",
+        "size",
+        "small",
+        "stops",
+        "trades",
+        "trend",
+        "weak",
+        "whether",
+        "worked",
+        "would"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_misfit_long_risk_governance",
+        "reopen_condition": "Keep CORE_MISFIT_PAPER as default-off observation; retry only with new forward closed outcomes or a materially different production-visible discriminator.",
+        "score": 0.0381,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "core_misfit_no_trade_forward_maturation",
+        "reopen_condition": "Reach 20 closed 10d CORE_MISFIT_PAPER outcomes, then test exactly one live-path haircut or exclusion variable.",
+        "score": 0.0372,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_entry_catalyst_core_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.0372,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "accepted_core_style_factor_tape_risk_attribution",
+        "reopen_condition": "Prospective forward rows tagged by a shared default-off style tape logger, or an independent source such as options/flows that is not merely another ETF-style threshold.",
+        "score": 0.0356,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "trend_long_entry_latency_attribution",
+        "reopen_condition": "A promotable next step needs a shared default-off paper helper that prospectively logs breakout-without-2x-volume precursor rows, records displacement versus the accepted comparator, and then runs Gate 1-4 with a fixed rule. A non-OHLCV catalyst or forward-row maturation axis would be needed before any live/default entry timing change.",
+        "score": 0.034,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: converts existing production-visible severe risk haircut evidence on trend_long trades into a pre-entry no-entry diagnostic, instead of retuning raw trend/breakout thresholds, stops, notional scalars, or response curves; first pass is diagnostic_only and changes no strategy code.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: converts existing production-visible severe risk haircut evidence on trend_long trades into a pre-entry no-entry diagnostic, instead of retuning raw trend/breakout thresholds, stops, notional scalars, or response curves; first pass is diagnostic_only and changes no strategy code.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: converts existing production-visible severe risk haircut evidence on trend_long trades into a pre-entry no-entry diagnostic, instead of retuning raw trend/breakout thresholds, stops, notional scalars, or response curves; first pass is diagnostic_only and changes no strategy code.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.32,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "blocked_trades_positive_pnl",
+      "opportunity_cost_exceeds_avoided_loss",
+      "too_few_blocked_trades",
+      "one_window_or_ticker_concentration"
+    ],
+    "confidence_reason": "Prior analysis showed core losses often survive with smaller risk after existing haircuts, but saved-trade attribution ignores slot displacement and may reveal that severe haircuts were correctly preserving small winners.",
+    "recorded_at": "2026-07-08T17:18:23+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_severe_haircut_no_entry_diagnostic",
+    "artifact": "data/experiments/exp-20260708-021/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.json",
+    "log": "experiments/logs/exp-20260708-021.json",
+    "card_file": "experiments/cards/exp-20260708-021.md",
+    "runner": "quant/experiments/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.py",
+    "gate4": {
+      "diagnostic_only": true,
+      "observed_only_lead": false,
+      "full_gate4_passed": false,
+      "failed_reasons": [
+        "blocked_trades_not_negative_aggregate_pnl",
+        "fewer_than_two_windows_improve_additive_pnl",
+        "single_window_delta_concentration",
+        "not_full_gate4_saved_trade_counterfactual"
+      ],
+      "aggregate": {
+        "baseline_total_pnl": 234850.99,
+        "additive_counterfactual_total_pnl": 232599.39,
+        "additive_pnl_delta": -2251.6,
+        "blocked_pnl_sum": 2251.6,
+        "baseline_trade_count": 61,
+        "remaining_trade_count": 47,
+        "blocked_trade_count": 14,
+        "improved_windows": [],
+        "improved_window_count": 0,
+        "blocked_ticker_counts": {
+          "AMD": 3,
+          "APP": 1,
+          "DDOG": 1,
+          "GOOG": 1,
+          "ISRG": 1,
+          "META": 1,
+          "NOW": 1,
+          "PLTR": 1,
+          "SNOW": 1,
+          "TSM": 3
+        },
+        "blocked_ticker_pnl": {
+          "AMD": 240.17,
+          "APP": 2402.05,
+          "DDOG": -9.86,
+          "GOOG": -434.82,
+          "ISRG": -440.94,
+          "META": -20.56,
+          "NOW": 1102.21,
+          "PLTR": -8.11,
+          "SNOW": -445.19,
+          "TSM": -133.35
+        },
+        "max_single_ticker_blocked_count_share": 0.2143,
+        "window_abs_delta_share": {
+          "late_strong": 0.0,
+          "mid_weak": 0.9589,
+          "old_thin": 0.0411
+        },
+        "max_single_window_abs_delta_share": 0.9589
+      },
+      "windows": [
+        {
+          "label": "late_strong",
+          "blocked_trade_count": 0,
+          "blocked_pnl_sum": 0.0,
+          "additive_pnl_delta": 0.0,
+          "improves_additive_pnl": false,
+          "baseline_total_pnl": 117072.92,
+          "additive_counterfactual_total_pnl": 117072.92
+        },
+        {
+          "label": "mid_weak",
+          "blocked_trade_count": 8,
+          "blocked_pnl_sum": 2159.09,
+          "additive_pnl_delta": -2159.09,
+          "improves_additive_pnl": false,
+          "baseline_total_pnl": 78110.11,
+          "additive_counterfactual_total_pnl": 75951.02
+        },
+        {
+          "label": "old_thin",
+          "blocked_trade_count": 6,
+          "blocked_pnl_sum": 92.51,
+          "additive_pnl_delta": -92.51,
+          "improves_additive_pnl": false,
+          "baseline_total_pnl": 39667.96,
+          "additive_counterfactual_total_pnl": 39575.45
+        }
+      ]
+    },
+    "summary": "The fixed severe-haircut no-entry diagnostic did not clear the predeclared observed-only lead criteria. This means existing severe haircuts are not enough by themselves to justify a no-entry rule on the saved canonical trades."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-021.json",
+  "single_causal_variable": "core_trend_long_severe_haircut_no_entry_admission_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260708-021.json",
+  "trial_family": "core_trend_long_severe_haircut_no_entry_admission",
+  "trial_variant_id": "exp-20260708-021",
+  "implementation_mode": "read_only_saved_trade_counterfactual",
+  "new_evidence_axis": "New gate shape: converts existing production-visible severe risk haircut evidence on trend_long trades into a pre-entry no-entry diagnostic, instead of retuning raw trend/breakout thresholds, stops, notional scalars, or response curves; first pass is diagnostic_only and changes no strategy code.",
+  "decision": "observed_only_rejected_severe_haircut_no_entry_diagnostic",
+  "artifact": "data/experiments/exp-20260708-021/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.json",
+  "before_measurement": "data/experiments/exp-20260708-021/before_measurement.json",
+  "after_measurement": "data/experiments/exp-20260708-021/after_measurement.json",
+  "log": "experiments/logs/exp-20260708-021.json",
+  "gate1": {
+    "baseline_available": true,
+    "canonical_window_files": [
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+      "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+    ],
+    "baseline_protocol": "current exp-20260602-003 accepted core stack plus saved canonical warehouse window trades",
+    "passed": true
+  },
+  "gate2": {
+    "required_saved_trade_fields": [
+      "strategy",
+      "entry_date",
+      "pnl",
+      "sizing_multipliers"
+    ],
+    "target_price_required_for_signal_generation": false,
+    "target_price_saved_trade_available": false,
+    "uses_runtime_production_visible_fields": true,
+    "note": "This diagnostic consumes saved trade rows, not regenerated signals. It therefore verifies entry_date/pnl/sizing fields used by the attribution, while target_price remains a signal contract sentinel for future shared-helper promotion.",
+    "passed": true
+  },
+  "gate3": {
+    "no_filter_added_to_strategy": true,
+    "diagnostic_trade_survival_not_signal_survival": true,
+    "baseline_signals_generated": {
+      "late_strong": 51,
+      "mid_weak": 53,
+      "old_thin": 60
+    },
+    "baseline_signals_survived": {
+      "late_strong": 41,
+      "mid_weak": 42,
+      "old_thin": 52
+    },
+    "baseline_survival_rate": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    },
+    "remaining_saved_trades_after_diagnostic_block": 47,
+    "passed": true
+  },
+  "gate4": {
+    "diagnostic_only": true,
+    "observed_only_lead": false,
+    "full_gate4_passed": false,
+    "failed_reasons": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl",
+      "single_window_delta_concentration",
+      "not_full_gate4_saved_trade_counterfactual"
+    ],
+    "aggregate": {
+      "baseline_total_pnl": 234850.99,
+      "additive_counterfactual_total_pnl": 232599.39,
+      "additive_pnl_delta": -2251.6,
+      "blocked_pnl_sum": 2251.6,
+      "baseline_trade_count": 61,
+      "remaining_trade_count": 47,
+      "blocked_trade_count": 14,
+      "improved_windows": [],
+      "improved_window_count": 0,
+      "blocked_ticker_counts": {
+        "AMD": 3,
+        "APP": 1,
+        "DDOG": 1,
+        "GOOG": 1,
+        "ISRG": 1,
+        "META": 1,
+        "NOW": 1,
+        "PLTR": 1,
+        "SNOW": 1,
+        "TSM": 3
+      },
+      "blocked_ticker_pnl": {
+        "AMD": 240.17,
+        "APP": 2402.05,
+        "DDOG": -9.86,
+        "GOOG": -434.82,
+        "ISRG": -440.94,
+        "META": -20.56,
+        "NOW": 1102.21,
+        "PLTR": -8.11,
+        "SNOW": -445.19,
+        "TSM": -133.35
+      },
+      "max_single_ticker_blocked_count_share": 0.2143,
+      "window_abs_delta_share": {
+        "late_strong": 0.0,
+        "mid_weak": 0.9589,
+        "old_thin": 0.0411
+      },
+      "max_single_window_abs_delta_share": 0.9589
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "blocked_trade_count": 0,
+        "blocked_pnl_sum": 0.0,
+        "additive_pnl_delta": 0.0,
+        "improves_additive_pnl": false,
+        "baseline_total_pnl": 117072.92,
+        "additive_counterfactual_total_pnl": 117072.92
+      },
+      {
+        "label": "mid_weak",
+        "blocked_trade_count": 8,
+        "blocked_pnl_sum": 2159.09,
+        "additive_pnl_delta": -2159.09,
+        "improves_additive_pnl": false,
+        "baseline_total_pnl": 78110.11,
+        "additive_counterfactual_total_pnl": 75951.02
+      },
+      {
+        "label": "old_thin",
+        "blocked_trade_count": 6,
+        "blocked_pnl_sum": 92.51,
+        "additive_pnl_delta": -92.51,
+        "improves_additive_pnl": false,
+        "baseline_total_pnl": 39667.96,
+        "additive_counterfactual_total_pnl": 39575.45
+      }
+    ]
+  },
+  "production_impact": {
+    "strategy_code_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "read_only_saved_trade_additive_counterfactual"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed severe-haircut no-entry diagnostic did not clear the predeclared observed-only lead criteria. This means existing severe haircuts are not enough by themselves to justify a no-entry rule on the saved canonical trades.",
+    "forbidden_near_neighbor_retry": "Do not rerun this same saved-trade diagnostic by changing the 0.25 threshold, adding ticker blacklists, including breakout trades, changing concentration floors, or slicing by canonical window labels. Those are retunes on the same evidence surface.",
+    "new_evidence_required": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'."
+  },
+  "changed_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "quant/experiments/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.py",
+    "data/experiments/exp-20260708-021/exp_20260708_021_core_trend_long_severe_haircut_no_entry_admission.json",
+    "data/experiments/exp-20260708-021/before_measurement.json",
+    "data/experiments/exp-20260708-021/after_measurement.json",
+    "experiments/logs/exp-20260708-021.json",
+    "experiments/cards/exp-20260708-021.md",
+    "experiments/manifests/exp-20260708-021.json",
+    "experiments/tickets/exp-20260708-021.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "docs/core_entry_admission_external_strategy_plan.md",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+    "experiments/tickets/exp-20260708-021.json"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.32,
+    "realized_success": false,
+    "realized_failure_modes": [
+      "blocked_trades_not_negative_aggregate_pnl",
+      "fewer_than_two_windows_improve_additive_pnl",
+      "single_window_delta_concentration"
+    ]
+  },
+  "updated_at": "2026-07-08T17:23:40+00:00"
+}

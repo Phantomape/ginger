@@ -1,0 +1,911 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260708_028_core_entry_admission_fingerprint_coverage.py",
+    "data/experiments/exp-20260708-028/exp_20260708_028_core_entry_admission_fingerprint_coverage.json",
+    "experiments/cards/exp-20260708-028.md",
+    "experiments/manifests/exp-20260708-028.json",
+    "experiments/tickets/exp-20260708-028.json",
+    "experiments/logs/exp-20260708-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260708-028/before_measurement.json",
+    "data/experiments/exp-20260708-028/after_measurement.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260708-028.md",
+  "causal_components": [
+    "dedicated core_entry_admission data_source keywords",
+    "dedicated entry_admission gate_shape keywords",
+    "focused classifier regression tests",
+    "rebuilt frozen-family measurement view"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "core_entry_admission_fingerprint_coverage_v1",
+  "claimed_at": "2026-07-08T20:04:31+00:00",
+  "completed_at": "2026-07-08T20:10:03+00:00",
+  "created_at": "2026-07-08T20:04:23+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260708-028",
+  "experiment_uid": "expuid-e287dbaae939433d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260708-028",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-08T20:04:23+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_entry_admission_fingerprint_coverage"
+  },
+  "hypothesis": "Core entry-admission saved-trade diagnostics are currently fingerprinted as generic other or OHLCV momentum, so novelty and saturation guards cannot reliably count repeated no-entry admission probes; add dedicated core_entry_admission classifier coverage without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core_entry_admission_fingerprint_coverage_v1"
+  ],
+  "mechanism_family": "core_entry_admission_gate",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-021",
+    "exp-20260708-026",
+    "exp-20260708-027"
+  ],
+  "new_evidence_type": "measurement_repair_classifier_coverage",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "add",
+        "admission",
+        "are",
+        "as",
+        "behavior",
+        "cannot",
+        "changing",
+        "classifier",
+        "core",
+        "count",
+        "coverage",
+        "currently",
+        "dedicated",
+        "diagnostics",
+        "entry",
+        "fingerprint",
+        "fingerprinted",
+        "generic",
+        "guards",
+        "momentum",
+        "no",
+        "novelty",
+        "or",
+        "other",
+        "probes",
+        "reliably",
+        "repeated",
+        "saturation",
+        "saved",
+        "so",
+        "strategy",
+        "trade",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_low_beta_residual_momentum_candidate_pool",
+        "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "rs20_entry_state_lifecycle_allocation",
+        "reopen_condition": null,
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "platform_entry_state_rs20_leader_gate",
+        "reopen_condition": null,
+        "score": 0.4605,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "rs20_entry_state_shared_sizing",
+        "reopen_condition": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+        "score": 0.4605,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "smooth_momentum_path_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, require forward paper outcomes or an orthogonal production-visible event/source confirmation field. Do not just retune ret60, ret20, max-daily-return, or top-N thresholds on the frozen sample.",
+        "score": 0.4605,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_core_entry_admission_fingerprint_coverage",
+    "artifact": "data/experiments/exp-20260708-028/exp_20260708_028_core_entry_admission_fingerprint_coverage.json",
+    "log": "experiments/logs/exp-20260708-028.json",
+    "card_file": "experiments/cards/exp-20260708-028.md",
+    "gate4": {
+      "passed": true,
+      "accepted_measurement_repair": true,
+      "accepted_alpha": false,
+      "decision": "accepted_measurement_repair_core_entry_admission_fingerprint_coverage",
+      "repair_failed_reasons": [],
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0
+      },
+      "summary": {
+        "classifier_cases": 3,
+        "classifier_cases_passed": 3,
+        "regression_cases": 4,
+        "regression_cases_passed": 4,
+        "target_frozen_families": 2,
+        "target_frozen_families_found": 2,
+        "target_frozen_families_passed": 2,
+        "derived_frozen_family_view_rebuilt": true
+      },
+      "cases": [
+        {
+          "label": "severe_haircut_no_entry",
+          "text": "core_entry_admission_gate severe haircut no-entry saved trade diagnostic",
+          "prior_data_source": "other",
+          "prior_gate_shape": "other",
+          "expected_data_source": "core_entry_admission",
+          "expected_gate_shape": "entry_admission",
+          "fingerprint": {
+            "data_source": "core_entry_admission",
+            "field_tags": [
+              "admission",
+              "core",
+              "diagnostic",
+              "entry",
+              "gate",
+              "haircut",
+              "no",
+              "saved",
+              "severe",
+              "trade"
+            ],
+            "gate_shape": "entry_admission"
+          },
+          "passed": true
+        },
+        {
+          "label": "high_vol_high_beta_overlay",
+          "text": "core high-vol high-beta admission overlay saved-trade counterfactual for crowded momentum entries",
+          "prior_data_source": "ohlcv_momentum",
+          "prior_gate_shape": "other",
+          "expected_data_source": "core_entry_admission",
+          "expected_gate_shape": "entry_admission",
+          "fingerprint": {
+            "data_source": "core_entry_admission",
+            "field_tags": [
+              "admission",
+              "beta",
+              "core",
+              "counterfactual",
+              "crowded",
+              "entries",
+              "high",
+              "momentum",
+              "overlay",
+              "saved",
+              "trade",
+              "vol"
+            ],
+            "gate_shape": "entry_admission"
+          },
+          "passed": true
+        },
+        {
+          "label": "generic_saved_trade_counterfactual",
+          "text": "saved-trade counterfactual pre-entry no-entry admission diagnostic",
+          "prior_data_source": "other",
+          "prior_gate_shape": "other",
+          "expected_data_source": "core_entry_admission",
+          "expected_gate_shape": "entry_admission",
+          "fingerprint": {
+            "data_source": "core_entry_admission",
+            "field_tags": [
+              "admission",
+              "counterfactual",
+              "diagnostic",
+              "entry",
+              "no",
+              "pre",
+              "saved",
+              "trade"
+            ],
+            "gate_shape": "entry_admission"
+          },
+          "passed": true
+        }
+      ],
+      "regressions": [
+        {
+          "label": "microstructure_admission_stays_microstructure",
+          "text": "microstructure tick_to_atr admission gate vol_normalized_tick",
+          "expected_data_source": "microstructure_viability",
+          "expected_gate_shape": "microstructure_attribution",
+          "fingerprint": {
+            "data_source": "microstructure_viability",
+            "field_tags": [
+              "admission",
+              "atr",
+              "gate",
+              "microstructure",
+              "normalized",
+              "tick",
+              "to",
+              "vol"
+            ],
+            "gate_shape": "microstructure_attribution"
+          },
+          "passed": true
+        },
+        {
+          "label": "generic_momentum_stays_ohlcv_momentum",
+          "text": "12-1 cross sectional momentum top5 external baseline",
+          "expected_data_source": "ohlcv_momentum",
+          "expected_gate_shape": "other",
+          "fingerprint": {
+            "data_source": "ohlcv_momentum",
+            "field_tags": [
+              "baseline",
+              "cross",
+              "external",
+              "momentum",
+              "sectional",
+              "top5"
+            ],
+            "gate_shape": "other"
+          },
+          "passed": true
+        },
+        {
+          "label": "sec_entry_risk_stays_sec_text",
+          "text": "SEC 8-K item 3.01 listing noncompliance entry risk",
+          "expected_data_source": "sec_text_event",
+          "expected_gate_shape": "other",
+          "fingerprint": {
+            "data_source": "sec_text_event",
+            "field_tags": [
+              "entry",
+              "item",
+              "k",
+              "listing",
+              "noncompliance",
+              "risk"
+            ],
+            "gate_shape": "other"
+          },
+          "passed": true
+        },
+        {
+          "label": "cisa_entry_risk_stays_cisa",
+          "text": "CISA KEV mapped issuer entry risk gate",
+          "expected_data_source": "cisa_kev",
+          "expected_gate_shape": "other",
+          "fingerprint": {
+            "data_source": "cisa_kev",
+            "field_tags": [
+              "cisa",
+              "entry",
+              "gate",
+              "issuer",
+              "kev",
+              "mapped",
+              "risk"
+            ],
+            "gate_shape": "other"
+          },
+          "passed": true
+        }
+      ],
+      "target_frozen_families": [
+        {
+          "family_key": "core_high_vol_high_beta_admission_overlay",
+          "expected_data_source": "core_entry_admission",
+          "expected_gate_shape": "entry_admission",
+          "actual_data_source": "core_entry_admission",
+          "actual_gate_shape": "entry_admission",
+          "found": true,
+          "passed": true,
+          "row": {
+            "accept_rate": 0.0,
+            "accepted": 0,
+            "blocked": 0,
+            "family_key": "core_high_vol_high_beta_admission_overlay",
+            "fingerprint": {
+              "data_source": "core_entry_admission",
+              "field_tags": [
+                "admission",
+                "beta",
+                "core",
+                "entry",
+                "exp",
+                "high",
+                "no",
+                "overlay",
+                "vol"
+              ],
+              "gate_shape": "entry_admission"
+            },
+            "leads": 0,
+            "rejected": 1,
+            "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+            "representative_exps": [
+              "exp-20260708-026"
+            ],
+            "status": "single_attempt",
+            "trials": 1
+          }
+        },
+        {
+          "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+          "expected_data_source": "core_entry_admission",
+          "expected_gate_shape": "entry_admission",
+          "actual_data_source": "core_entry_admission",
+          "actual_gate_shape": "entry_admission",
+          "found": true,
+          "passed": true,
+          "row": {
+            "accept_rate": 0.0,
+            "accepted": 0,
+            "blocked": 0,
+            "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+            "fingerprint": {
+              "data_source": "core_entry_admission",
+              "field_tags": [
+                "admission",
+                "core",
+                "entry",
+                "exp",
+                "haircut",
+                "long",
+                "no",
+                "severe",
+                "trend"
+              ],
+              "gate_shape": "entry_admission"
+            },
+            "leads": 0,
+            "rejected": 1,
+            "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+            "representative_exps": [
+              "exp-20260708-021"
+            ],
+            "status": "single_attempt",
+            "trials": 1
+          }
+        }
+      ]
+    },
+    "delta_metrics": {
+      "classifier_cases_passed": 3,
+      "classifier_cases_total": 3,
+      "regression_cases_passed": 4,
+      "regression_cases_total": 4,
+      "target_frozen_families_passed": 2,
+      "target_frozen_families_total": 2,
+      "strategy_behavior_changed": false,
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "strategy_code_changed": false,
+      "entry_rules_changed": false,
+      "exit_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "orders_changed": false,
+      "paper_state_changed": false,
+      "live_orders_changed": false,
+      "llm_decision_boundary_changed": false,
+      "trade_enabled": false,
+      "live_ready": false,
+      "live_realism_evaluated": false,
+      "scope": "novelty_guard_measurement_only"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260708-028.json",
+  "single_causal_variable": "core_entry_admission_fingerprint_coverage_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260708-028.json",
+  "trial_family": "core_entry_admission_fingerprint_coverage",
+  "trial_variant_id": "exp-20260708-028",
+  "alpha_hypothesis": "A core admission layer may eventually improve entry quality by blocking weak contexts before orders are placed, but after exp021/026/027 the next alpha step is blocked unless the novelty guard can count admission probes as their own surface instead of generic momentum/other.",
+  "implementation_mode": "novelty_guard_classifier_repair",
+  "new_evidence_axis": "Concrete classifier miss: exp021 reservation recorded data_source=other/gate_shape=other and exp026 recorded data_source=ohlcv_momentum/gate_shape=other for core saved-trade entry-admission diagnostics.",
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "scripts.experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "scripts.experiment_fingerprint._GATE_SHAPE_KEYWORDS",
+      "historical_ticket_fingerprints"
+    ],
+    "entry_date_contract": "unchanged_not_signal_generator",
+    "target_price_contract": "unchanged_not_signal_generator"
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "note": "Classifier-only measurement repair; no signal survival changes."
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_measurement_repair": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_core_entry_admission_fingerprint_coverage",
+    "repair_failed_reasons": [],
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "summary": {
+      "classifier_cases": 3,
+      "classifier_cases_passed": 3,
+      "regression_cases": 4,
+      "regression_cases_passed": 4,
+      "target_frozen_families": 2,
+      "target_frozen_families_found": 2,
+      "target_frozen_families_passed": 2,
+      "derived_frozen_family_view_rebuilt": true
+    },
+    "cases": [
+      {
+        "label": "severe_haircut_no_entry",
+        "text": "core_entry_admission_gate severe haircut no-entry saved trade diagnostic",
+        "prior_data_source": "other",
+        "prior_gate_shape": "other",
+        "expected_data_source": "core_entry_admission",
+        "expected_gate_shape": "entry_admission",
+        "fingerprint": {
+          "data_source": "core_entry_admission",
+          "field_tags": [
+            "admission",
+            "core",
+            "diagnostic",
+            "entry",
+            "gate",
+            "haircut",
+            "no",
+            "saved",
+            "severe",
+            "trade"
+          ],
+          "gate_shape": "entry_admission"
+        },
+        "passed": true
+      },
+      {
+        "label": "high_vol_high_beta_overlay",
+        "text": "core high-vol high-beta admission overlay saved-trade counterfactual for crowded momentum entries",
+        "prior_data_source": "ohlcv_momentum",
+        "prior_gate_shape": "other",
+        "expected_data_source": "core_entry_admission",
+        "expected_gate_shape": "entry_admission",
+        "fingerprint": {
+          "data_source": "core_entry_admission",
+          "field_tags": [
+            "admission",
+            "beta",
+            "core",
+            "counterfactual",
+            "crowded",
+            "entries",
+            "high",
+            "momentum",
+            "overlay",
+            "saved",
+            "trade",
+            "vol"
+          ],
+          "gate_shape": "entry_admission"
+        },
+        "passed": true
+      },
+      {
+        "label": "generic_saved_trade_counterfactual",
+        "text": "saved-trade counterfactual pre-entry no-entry admission diagnostic",
+        "prior_data_source": "other",
+        "prior_gate_shape": "other",
+        "expected_data_source": "core_entry_admission",
+        "expected_gate_shape": "entry_admission",
+        "fingerprint": {
+          "data_source": "core_entry_admission",
+          "field_tags": [
+            "admission",
+            "counterfactual",
+            "diagnostic",
+            "entry",
+            "no",
+            "pre",
+            "saved",
+            "trade"
+          ],
+          "gate_shape": "entry_admission"
+        },
+        "passed": true
+      }
+    ],
+    "regressions": [
+      {
+        "label": "microstructure_admission_stays_microstructure",
+        "text": "microstructure tick_to_atr admission gate vol_normalized_tick",
+        "expected_data_source": "microstructure_viability",
+        "expected_gate_shape": "microstructure_attribution",
+        "fingerprint": {
+          "data_source": "microstructure_viability",
+          "field_tags": [
+            "admission",
+            "atr",
+            "gate",
+            "microstructure",
+            "normalized",
+            "tick",
+            "to",
+            "vol"
+          ],
+          "gate_shape": "microstructure_attribution"
+        },
+        "passed": true
+      },
+      {
+        "label": "generic_momentum_stays_ohlcv_momentum",
+        "text": "12-1 cross sectional momentum top5 external baseline",
+        "expected_data_source": "ohlcv_momentum",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "ohlcv_momentum",
+          "field_tags": [
+            "baseline",
+            "cross",
+            "external",
+            "momentum",
+            "sectional",
+            "top5"
+          ],
+          "gate_shape": "other"
+        },
+        "passed": true
+      },
+      {
+        "label": "sec_entry_risk_stays_sec_text",
+        "text": "SEC 8-K item 3.01 listing noncompliance entry risk",
+        "expected_data_source": "sec_text_event",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "sec_text_event",
+          "field_tags": [
+            "entry",
+            "item",
+            "k",
+            "listing",
+            "noncompliance",
+            "risk"
+          ],
+          "gate_shape": "other"
+        },
+        "passed": true
+      },
+      {
+        "label": "cisa_entry_risk_stays_cisa",
+        "text": "CISA KEV mapped issuer entry risk gate",
+        "expected_data_source": "cisa_kev",
+        "expected_gate_shape": "other",
+        "fingerprint": {
+          "data_source": "cisa_kev",
+          "field_tags": [
+            "cisa",
+            "entry",
+            "gate",
+            "issuer",
+            "kev",
+            "mapped",
+            "risk"
+          ],
+          "gate_shape": "other"
+        },
+        "passed": true
+      }
+    ],
+    "target_frozen_families": [
+      {
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "expected_data_source": "core_entry_admission",
+        "expected_gate_shape": "entry_admission",
+        "actual_data_source": "core_entry_admission",
+        "actual_gate_shape": "entry_admission",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 0,
+          "family_key": "core_high_vol_high_beta_admission_overlay",
+          "fingerprint": {
+            "data_source": "core_entry_admission",
+            "field_tags": [
+              "admission",
+              "beta",
+              "core",
+              "entry",
+              "exp",
+              "high",
+              "no",
+              "overlay",
+              "vol"
+            ],
+            "gate_shape": "entry_admission"
+          },
+          "leads": 0,
+          "rejected": 1,
+          "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+          "representative_exps": [
+            "exp-20260708-026"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      },
+      {
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "expected_data_source": "core_entry_admission",
+        "expected_gate_shape": "entry_admission",
+        "actual_data_source": "core_entry_admission",
+        "actual_gate_shape": "entry_admission",
+        "found": true,
+        "passed": true,
+        "row": {
+          "accept_rate": 0.0,
+          "accepted": 0,
+          "blocked": 0,
+          "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+          "fingerprint": {
+            "data_source": "core_entry_admission",
+            "field_tags": [
+              "admission",
+              "core",
+              "entry",
+              "exp",
+              "haircut",
+              "long",
+              "no",
+              "severe",
+              "trend"
+            ],
+            "gate_shape": "entry_admission"
+          },
+          "leads": 0,
+          "rejected": 1,
+          "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+          "representative_exps": [
+            "exp-20260708-021"
+          ],
+          "status": "single_attempt",
+          "trials": 1
+        }
+      }
+    ]
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "delta_metrics": {
+    "classifier_cases_passed": 3,
+    "classifier_cases_total": 3,
+    "regression_cases_passed": 4,
+    "regression_cases_total": 4,
+    "target_frozen_families_passed": 2,
+    "target_frozen_families_total": 2,
+    "strategy_behavior_changed": false,
+    "expected_value_score_sum_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "strategy_code_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "live_orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "novelty_guard_measurement_only"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The admission probes were lexical misses: exp021 had no source-specific keywords, while exp026 contained generic momentum text that won before the admission concept. Specific keywords now bind this population to its own guard surface.",
+    "forbidden_near_neighbor_retry": "Do not use this measurement repair as alpha evidence. Do not rerun severe-haircut, high-vol/high-beta, or external OHLCV trend/admission probes by changing thresholds, tickers, windows, or response functions on the same rows.",
+    "new_evidence_required": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4."
+  },
+  "next_retry_requires": [
+    "independent_admission_field_or_new_data_source",
+    "materially_more_settled_forward_rows",
+    "shared_helper_gate_1_4_before_any_behavior_change",
+    "no_exp021_exp026_threshold_ticker_window_response_retunes"
+  ],
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/exp_20260708_028_core_entry_admission_fingerprint_coverage.py",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260708-028/exp_20260708_028_core_entry_admission_fingerprint_coverage.json",
+    "data/experiments/exp-20260708-028/before_measurement.json",
+    "data/experiments/exp-20260708-028/after_measurement.json",
+    "experiments/logs/exp-20260708-028.json",
+    "experiments/cards/exp-20260708-028.md",
+    "experiments/manifests/exp-20260708-028.json",
+    "experiments/tickets/exp-20260708-028.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "experiments/tickets/exp-20260708-021.json",
+    "experiments/tickets/exp-20260708-026.json",
+    "experiments/logs/exp-20260708-021.json",
+    "experiments/logs/exp-20260708-026.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\experiments\\exp_20260708_028_core_entry_admission_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_028_core_entry_admission_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "calibration": {
+    "actual_success": 1,
+    "predicted_success_probability": null,
+    "predicted_failure_modes": [
+      "overmatching_microstructure",
+      "target_frozen_family_missing"
+    ],
+    "predicted_failure_mode_hit": false,
+    "surprise_note": "Low surprise: exp021 explicitly recorded the missing classifier as the next measurement repair, and focused regressions prevented overmatching."
+  },
+  "artifact": "data/experiments/exp-20260708-028/exp_20260708_028_core_entry_admission_fingerprint_coverage.json",
+  "log": "experiments/logs/exp-20260708-028.json",
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-08T20:10:03+00:00"
+}
