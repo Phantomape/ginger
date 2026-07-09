@@ -1,0 +1,51 @@
+{
+  "experiment_id": "exp-20260709-002",
+  "measurement_mode": "after",
+  "expected_value_score": 7.8941,
+  "total_pnl": 234850.99,
+  "measurement_contract": {
+    "options_forward_ledger_daily_wiring": true,
+    "run_py_post_quant_signals_refresh": true,
+    "failure_tolerant_snapshot_status": true,
+    "default_off_no_order_impact": true
+  },
+  "implementation": {
+    "run_py_helper": "_refresh_options_forward_ledger_after_quant_signals",
+    "script_reused": "scripts/run_options_forward_ledger.py",
+    "default_output_dir": "data/non_ohlcv/options_forward",
+    "disable_env": "REFRESH_OPTIONS_FORWARD_LEDGER=false",
+    "optional_ohlcv_env": "OPTIONS_FORWARD_OHLCV_SNAPSHOT",
+    "date_scope_env": "OPTIONS_FORWARD_LEDGER_DATE"
+  },
+  "tests": {
+    "quant_test_run_daily_wiring": "34 passed",
+    "quant_test_llm_advisor_paths": "4 passed"
+  },
+  "smoke_result": {
+    "command_scope": "run.py helper with OPTIONS_FORWARD_LEDGER_DATE=2026-07-06 and output under data/experiments/exp-20260709-002/daily_wiring_smoke",
+    "status": "ok",
+    "candidate_count": 6,
+    "options_candidate_coverage_rate": 1.0,
+    "quality_usable_candidates": 6,
+    "outcome_status_counts": {
+      "ohlcv_snapshot_missing": 6
+    },
+    "note": "Smoke intentionally did not pass OPTIONS_FORWARD_OHLCV_SNAPSHOT, so it verified wiring and candidate ledger refresh, not closed return settlement."
+  },
+  "artifacts": {
+    "smoke_ledger": "data/experiments/exp-20260709-002/daily_wiring_smoke/options_forward_candidate_ledger.jsonl",
+    "smoke_report": "data/experiments/exp-20260709-002/daily_wiring_smoke/options_forward_candidate_ledger_report.json",
+    "smoke_quality_gate": "data/experiments/exp-20260709-002/daily_wiring_smoke/options_collection_quality_gate.json"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "scope": "default_off_options_forward_ledger_refreshed"
+  }
+}

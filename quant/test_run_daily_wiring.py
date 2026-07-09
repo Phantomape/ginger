@@ -27,6 +27,8 @@ from run import (  # noqa: E402
     _persist_sec_contract_relation_provenance,
     _persist_sec_corporate_event_stream,
     _refresh_estimate_revision_ledger_after_quant_signals,
+    _refresh_live_position_control_after_report,
+    _refresh_options_forward_ledger_after_quant_signals,
     main,
 )
 
@@ -260,6 +262,229 @@ def test_estimate_revision_outcomes_skip_when_quant_signals_save_failed(monkeypa
     assert summary["reason"] == "quant_signals_save_failed"
     assert snapshot["estimate_revision_outcomes"] == {"status": "previous"}
     assert summary["production_impact"]["alters_signal_generation"] is False
+
+
+def test_options_forward_ledger_refresh_after_quant_signals(monkeypatch):
+    calls = []
+
+    class FakeParser:
+        def parse_args(self, argv):
+            calls.append(list(argv))
+            return types.SimpleNamespace(argv=list(argv))
+
+    def fake_build_ledger(args):
+        assert "--output-dir" in args.argv
+        assert "data/non_ohlcv/options_forward" in args.argv
+        assert "--quant-signal-dir" in args.argv
+        assert "data" in args.argv
+        assert "--ohlcv-snapshot" in args.argv
+        return {
+            "mode": "default_off_forward_options_candidate_tag_ledger",
+            "candidate_summary": {
+                "options_candidate_coverage_rate": 0.75,
+                "quality_usable_candidates": 2,
+                "outcome_status_counts": {"complete": 1, "partial_or_pending": 1},
+            },
+            "required_metrics": {
+                "candidate_count": 4,
+                "overlap_with_existing_signals": 4,
+            },
+            "outcome_close_summary": {"all_scoring_allowed": {"sample_size": 2}},
+            "artifacts": {
+                "ledger": "data/non_ohlcv/options_forward/options_forward_candidate_ledger.jsonl",
+                "report": "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+            },
+        }
+
+    fake_module = types.SimpleNamespace(
+        build_arg_parser=lambda: FakeParser(),
+        build_ledger=fake_build_ledger,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "_load_options_forward_ledger_module",
+        lambda: fake_module,
+    )
+    monkeypatch.setenv("OPTIONS_FORWARD_OHLCV_SNAPSHOT", "data/ohlcv_snapshot.json")
+    snapshot = {}
+
+    summary = _refresh_options_forward_ledger_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=True,
+    )
+
+    assert len(calls) == 1
+    assert "--date" not in calls[0]
+    assert summary["status"] == "ok"
+    assert summary["candidate_count"] == 4
+    assert summary["outcome_status_counts"]["complete"] == 1
+    assert snapshot["options_forward_ledger"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_options_forward_ledger_refresh_skips_when_quant_signals_save_failed(
+    monkeypatch,
+):
+    def unexpected_loader():
+        raise AssertionError("should not refresh without quant_signals")
+
+    monkeypatch.setattr(
+        run_module,
+        "_load_options_forward_ledger_module",
+        unexpected_loader,
+    )
+    snapshot = {"options_forward_ledger": {"status": "previous"}}
+
+    summary = _refresh_options_forward_ledger_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=False,
+    )
+
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "quant_signals_save_failed"
+    assert snapshot["options_forward_ledger"] == {"status": "previous"}
+    assert summary["production_impact"]["alters_signal_generation"] is False
+
+
+def test_options_forward_ledger_refresh_failure_is_snapshot_visible(monkeypatch):
+    class FakeParser:
+        def parse_args(self, argv):
+            return types.SimpleNamespace(argv=list(argv))
+
+    def fake_build_ledger(args):
+        raise RuntimeError("options ledger unavailable")
+
+    fake_module = types.SimpleNamespace(
+        build_arg_parser=lambda: FakeParser(),
+        build_ledger=fake_build_ledger,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "_load_options_forward_ledger_module",
+        lambda: fake_module,
+    )
+    snapshot = {}
+
+    summary = _refresh_options_forward_ledger_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=True,
+    )
+
+    assert summary["status"] == "failed_post_quant_options_forward_ledger_refresh"
+    assert "options ledger unavailable" in summary["error"]
+    assert snapshot["options_forward_ledger"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_live_position_control_refresh_after_report(monkeypatch):
+    calls = []
+
+    def fake_build_position_control_ledger(**kwargs):
+        calls.append(kwargs)
+        assert kwargs["report_path"] == "data/daily/reports/report_20260709.txt"
+        return {
+            "state": {
+                "status": "ok",
+                "asof_date": "2026-07-09",
+                "report_date": "2026-07-09",
+                "positions_as_of": "2026-07-09",
+                "position_rows": 2,
+                "ok_to_add_reported": True,
+                "ok_to_add_control_pass": False,
+                "ok_to_add_control_blockers": ["exit_now"],
+                "entry_slots_reported": 4,
+                "manual_order_instruction_count": 3,
+                "exit_now_count": 1,
+                "fallback_stop_count": 0,
+                "stale_target_count": 0,
+                "missing_daily_report_control_count": 0,
+                "report_open_positions_asof_mismatch": False,
+                "ledger": {
+                    "ledger_path": "data/live_pilot/position_control/ledger.jsonl",
+                    "rows_appended": 2,
+                    "rows_total": 2,
+                },
+            },
+            "append_result": {
+                "ledger_path": "data/live_pilot/position_control/ledger.jsonl",
+                "rows_appended": 2,
+                "rows_total": 2,
+            },
+            "rows": [{}, {}],
+        }
+
+    monkeypatch.setattr(
+        run_module,
+        "build_position_control_ledger",
+        fake_build_position_control_ledger,
+    )
+    trend_signals = {}
+
+    summary = _refresh_live_position_control_after_report(
+        "2026-07-09",
+        trend_signals,
+        report_path="data/daily/reports/report_20260709.txt",
+    )
+
+    assert len(calls) == 1
+    assert summary["status"] == "ok"
+    assert summary["ok_to_add_control_pass"] is False
+    assert summary["ok_to_add_control_blockers"] == ["exit_now"]
+    assert summary["rows_appended"] == 2
+    assert trend_signals["live_position_control"] is summary
+    assert summary["production_impact"]["alters_signal_generation"] is False
+    assert summary["production_impact"]["alters_candidate_ranking"] is False
+    assert summary["production_impact"]["alters_sizing"] is False
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_live_position_control_refresh_skips_without_report_path(monkeypatch):
+    def unexpected_build_position_control_ledger(**kwargs):
+        raise AssertionError("should not refresh without a saved report path")
+
+    monkeypatch.setattr(
+        run_module,
+        "build_position_control_ledger",
+        unexpected_build_position_control_ledger,
+    )
+    trend_signals = {"live_position_control": {"status": "previous"}}
+
+    summary = _refresh_live_position_control_after_report(
+        "2026-07-09",
+        trend_signals,
+        report_path=None,
+    )
+
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "daily_report_save_failed"
+    assert trend_signals["live_position_control"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_live_position_control_refresh_failure_is_snapshot_visible(monkeypatch):
+    def failing_build_position_control_ledger(**kwargs):
+        raise RuntimeError("position-control parser unavailable")
+
+    monkeypatch.setattr(
+        run_module,
+        "build_position_control_ledger",
+        failing_build_position_control_ledger,
+    )
+    trend_signals = {}
+
+    summary = _refresh_live_position_control_after_report(
+        "2026-07-09",
+        trend_signals,
+        report_path="data/daily/reports/report_20260709.txt",
+    )
+
+    assert summary["status"] == "failed_live_position_control_refresh"
+    assert "position-control parser unavailable" in summary["error"]
+    assert trend_signals["live_position_control"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
 
 
 def test_daily_non_ohlcv_wires_form4_context_into_run_path(monkeypatch):

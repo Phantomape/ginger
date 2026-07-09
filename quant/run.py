@@ -21,11 +21,13 @@ Usage:
 """
 
 import functools
+import importlib.util
 import json
 import logging
 import os
 from copy import deepcopy
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
@@ -44,6 +46,7 @@ from estimate_revision_outcomes import (
     persist_estimate_revision_outcomes,
     persist_recent_estimate_revision_outcome_catchup,
 )
+from live_position_control_ledger import build_position_control_ledger
 from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import core_slot_positions, has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
@@ -908,6 +911,253 @@ def _persist_estimate_revision_ledger_step(today_iso):
                 "scope": "default_off_forward_estimate_revision_data_ledger_failed",
             },
         }
+
+
+def _options_forward_ledger_production_impact(scope):
+    return {
+        "shared_policy_changed": False,
+        "backtester_adapter_changed": False,
+        "run_adapter_changed": True,
+        "replay_only": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_sizing": False,
+        "alters_orders": False,
+        "scope": scope,
+    }
+
+
+def _live_position_control_production_impact(scope):
+    return {
+        "shared_policy_changed": False,
+        "backtester_adapter_changed": False,
+        "run_adapter_changed": True,
+        "replay_only": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_sizing": False,
+        "alters_exits": False,
+        "alters_orders": False,
+        "scope": scope,
+    }
+
+
+def _refresh_live_position_control_after_report(
+    today_iso,
+    trend_signals_dict,
+    *,
+    report_path,
+):
+    """Refresh read-only live position-control state after the daily report."""
+    if not report_path:
+        summary = {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "daily_report_save_failed",
+            "production_impact": _live_position_control_production_impact(
+                "live_position_control_daily_refresh_skipped"
+            ),
+        }
+        if isinstance(trend_signals_dict, dict):
+            trend_signals_dict["live_position_control"] = summary
+        return summary
+    if not _env_flag("REFRESH_LIVE_POSITION_CONTROL_LEDGER", True):
+        summary = {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "refresh_live_position_control_ledger_false",
+            "production_impact": _live_position_control_production_impact(
+                "live_position_control_daily_refresh_skipped"
+            ),
+        }
+        if isinstance(trend_signals_dict, dict):
+            trend_signals_dict["live_position_control"] = summary
+        return summary
+
+    try:
+        result = build_position_control_ledger(report_path=report_path)
+        state = result.get("state") or {}
+        append_result = result.get("append_result") or {}
+        ledger = state.get("ledger") or append_result
+        summary = {
+            "status": state.get("status", "ok"),
+            "as_of_date": state.get("asof_date") or today_iso,
+            "report_date": state.get("report_date"),
+            "positions_as_of": state.get("positions_as_of"),
+            "position_rows": state.get("position_rows"),
+            "rows_appended": append_result.get("rows_appended"),
+            "rows_total": append_result.get("rows_total"),
+            "ledger_path": ledger.get("ledger_path"),
+            "ok_to_add_reported": state.get("ok_to_add_reported"),
+            "ok_to_add_control_pass": state.get("ok_to_add_control_pass"),
+            "ok_to_add_control_blockers": state.get("ok_to_add_control_blockers")
+            or [],
+            "entry_slots_reported": state.get("entry_slots_reported"),
+            "manual_order_instruction_count": state.get(
+                "manual_order_instruction_count"
+            ),
+            "exit_now_count": state.get("exit_now_count"),
+            "fallback_stop_count": state.get("fallback_stop_count"),
+            "stale_target_count": state.get("stale_target_count"),
+            "missing_daily_report_control_count": state.get(
+                "missing_daily_report_control_count"
+            ),
+            "report_open_positions_asof_mismatch": state.get(
+                "report_open_positions_asof_mismatch"
+            ),
+            "production_impact": _live_position_control_production_impact(
+                "live_position_control_daily_refreshed"
+            ),
+        }
+        if isinstance(trend_signals_dict, dict):
+            trend_signals_dict["live_position_control"] = summary
+        if summary.get("ok_to_add_control_pass") is False:
+            log.warning(
+                "Live position-control blocks OK-to-add: blockers=%s",
+                summary.get("ok_to_add_control_blockers"),
+            )
+        else:
+            log.info(
+                "Live position-control refreshed: rows=%s status=%s",
+                summary.get("position_rows"),
+                summary.get("status"),
+            )
+        return summary
+    except Exception as e:
+        log.warning(f"Live position-control refresh unavailable: {e}")
+        summary = {
+            "status": "failed_live_position_control_refresh",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": _live_position_control_production_impact(
+                "live_position_control_daily_refresh_failed"
+            ),
+        }
+        if isinstance(trend_signals_dict, dict):
+            trend_signals_dict["live_position_control"] = summary
+        return summary
+
+
+def _load_options_forward_ledger_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "run_options_forward_ledger.py"
+    )
+    spec = importlib.util.spec_from_file_location(
+        "ginger_run_options_forward_ledger",
+        script_path,
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load {script_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _refresh_options_forward_ledger_after_quant_signals(
+    today_iso,
+    non_ohlcv_snapshot,
+    *,
+    quant_signals_saved,
+):
+    """Refresh the default-off options forward ledger after quant_signals exist."""
+    if not quant_signals_saved:
+        return {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "quant_signals_save_failed",
+            "production_impact": _options_forward_ledger_production_impact(
+                "default_off_options_forward_ledger_refresh_skipped"
+            ),
+        }
+    if not _env_flag("REFRESH_OPTIONS_FORWARD_LEDGER", True):
+        summary = {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "refresh_options_forward_ledger_false",
+            "production_impact": _options_forward_ledger_production_impact(
+                "default_off_options_forward_ledger_refresh_skipped"
+            ),
+        }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["options_forward_ledger"] = summary
+        return summary
+
+    output_dir = os.environ.get(
+        "OPTIONS_FORWARD_LEDGER_OUTPUT_DIR",
+        "data/non_ohlcv/options_forward",
+    )
+    argv = [
+        "--experiment-id",
+        "daily_options_forward_ledger",
+        "--output-dir",
+        output_dir,
+        "--chain-dir",
+        os.environ.get("OPTIONS_FORWARD_CHAIN_DIR", "data/non_ohlcv"),
+        "--quant-signal-dir",
+        os.environ.get("OPTIONS_FORWARD_QUANT_SIGNAL_DIR", "data"),
+    ]
+    ohlcv_snapshot = os.environ.get("OPTIONS_FORWARD_OHLCV_SNAPSHOT")
+    if ohlcv_snapshot:
+        argv.extend(["--ohlcv-snapshot", ohlcv_snapshot])
+    date_scope = os.environ.get("OPTIONS_FORWARD_LEDGER_DATE")
+    if date_scope:
+        for date_value in date_scope.split(","):
+            date_value = date_value.strip()
+            if date_value:
+                argv.extend(["--date", date_value])
+
+    try:
+        module = _load_options_forward_ledger_module()
+        args = module.build_arg_parser().parse_args(argv)
+        report = module.build_ledger(args)
+        candidate_summary = report.get("candidate_summary") or {}
+        required_metrics = report.get("required_metrics") or {}
+        summary = {
+            "status": "ok",
+            "as_of_date": today_iso,
+            "mode": report.get("mode"),
+            "output_dir": output_dir,
+            "candidate_count": required_metrics.get("candidate_count"),
+            "overlap_with_existing_signals": required_metrics.get(
+                "overlap_with_existing_signals"
+            ),
+            "options_candidate_coverage_rate": candidate_summary.get(
+                "options_candidate_coverage_rate"
+            ),
+            "quality_usable_candidates": candidate_summary.get(
+                "quality_usable_candidates"
+            ),
+            "outcome_status_counts": candidate_summary.get("outcome_status_counts"),
+            "outcome_close_summary": report.get("outcome_close_summary"),
+            "artifacts": report.get("artifacts") or {},
+            "production_impact": _options_forward_ledger_production_impact(
+                "default_off_options_forward_ledger_refreshed"
+            ),
+        }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["options_forward_ledger"] = summary
+        log.info(
+            "Options forward ledger refreshed: candidates=%s coverage=%s output=%s",
+            summary.get("candidate_count"),
+            summary.get("options_candidate_coverage_rate"),
+            output_dir,
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Post-quant options forward ledger refresh unavailable: {e}")
+        summary = {
+            "status": "failed_post_quant_options_forward_ledger_refresh",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": _options_forward_ledger_production_impact(
+                "default_off_options_forward_ledger_refresh_failed"
+            ),
+        }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["options_forward_ledger"] = summary
+        return summary
 
 
 def _refresh_estimate_revision_ledger_after_quant_signals(
@@ -2476,6 +2726,30 @@ def main():
         _state_sentiment,
     )
 
+    # Forward observer for the frozen chop paper bundles (exp-20260708-030).
+    # Default-off: replays exp-20260708-023/-025 bundles on the frames already
+    # loaded and upserts paper rows; verdicts on those bundles are calendar-
+    # bound on forward chop days, so this ledger is the only evidence source.
+    try:
+        from chop_forward_observer import persist_chop_forward_observations
+
+        _chop_frames = dict(ohlcv_dict)
+        if spy_ohlcv is not None:
+            _chop_frames.setdefault("SPY", spy_ohlcv)
+        if qqq_ohlcv is not None:
+            _chop_frames.setdefault("QQQ", qqq_ohlcv)
+        _chop_fwd = persist_chop_forward_observations(_chop_frames, as_of=today_iso)
+        log.info(
+            "Chop forward observer: label=%s chop_days_45d=%s rows=%s closed=%s upserted=%s",
+            _chop_fwd.get("regime_label_asof"),
+            _chop_fwd.get("chop_days_in_window"),
+            _chop_fwd.get("rows_total"),
+            _chop_fwd.get("rows_closed"),
+            _chop_fwd.get("rows_upserted_this_run"),
+        )
+    except Exception as _chop_exc:
+        log.warning("Chop forward observer unavailable: %s", _chop_exc)
+
     pilot_signals = []
     pilot_entry_filter_audit = {
         "signals_before_entry_filters": 0,
@@ -3960,7 +4234,12 @@ def main():
         bracket_orders = bracket_orders_plan,
     )
     print("\n" + report)
-    save_report(report)
+    saved_report_path = save_report(report)
+    live_position_control_summary = _refresh_live_position_control_after_report(
+        today_iso,
+        trend_signals_dict,
+        report_path=saved_report_path,
+    )
 
     quant_signals_payload = {
         "generated_at":   datetime.now().isoformat(),
@@ -4038,6 +4317,7 @@ def main():
         "heat_blocked_signals": heat_blocked_signals,
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
+        "live_position_control": live_position_control_summary,
         "features":       features_dict,
     }
     quant_signals_path = str(daily_artifact_path("quant_signals", today))
@@ -4052,6 +4332,11 @@ def main():
         quant_signals_saved=quant_signals_saved,
     )
     _persist_estimate_revision_outcomes_after_quant_signals(
+        today_iso,
+        non_ohlcv_snapshot,
+        quant_signals_saved=quant_signals_saved,
+    )
+    _refresh_options_forward_ledger_after_quant_signals(
         today_iso,
         non_ohlcv_snapshot,
         quant_signals_saved=quant_signals_saved,

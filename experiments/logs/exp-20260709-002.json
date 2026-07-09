@@ -1,0 +1,118 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0784,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "options_script_not_import_safe",
+      "ledger_duplicate_rows",
+      "missing_ohlcv_snapshot_argument",
+      "run_py_contract_mismatch"
+    ],
+    "predicted_success_probability": 0.72,
+    "realized_failure_mode": null,
+    "surprise_level": "low",
+    "surprise_note": null
+  },
+  "causal_components": [
+    "options_chain_snapshot",
+    "quant_signals_candidate_join",
+    "options_forward_candidate_ledger",
+    "outcome_close_summary",
+    "run_py_after_quant_signals_wiring"
+  ],
+  "change_summary": "Wired the existing default-off OnclickMedia options forward ledger builder into quant/run.py after quant_signals are saved. The refresh is failure-tolerant, records production_impact with alters_orders=false, supports optional OHLCV snapshot settlement through OPTIONS_FORWARD_OHLCV_SNAPSHOT, and can be disabled with REFRESH_OPTIONS_FORWARD_LEDGER=false.",
+  "change_type": "production_visible_options_forward_ledger_daily_wiring",
+  "changed_variable": "options_forward_ledger_daily_pipeline_wiring_v1",
+  "component": "quant/run.py, quant/test_run_daily_wiring.py, data/experiments/<experiment_id>",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260709-002",
+  "hypothesis": "Alpha blocker: OnclickMedia options demand/structure alpha needs settled forward rows, but options forward candidate ledger and outcome refresh have been manually materialized across multiple IDs; wire a default-off daily refresh into the production daily pipeline without changing orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "options_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260624-026",
+    "exp-20260629-014",
+    "exp-20260630-003",
+    "exp-20260701-008",
+    "exp-20260702-007"
+  ],
+  "new_evidence_type": "routine_materialization_pipeline_wiring",
+  "next_retry_requires": [],
+  "notes": "Measurement repair only: no entry, exit, ranking, sizing, LLM, or order logic changed. Tests passed: pytest quant/test_run_daily_wiring.py -q (34 passed) and pytest quant/test_llm_advisor_paths.py -q (4 passed). Smoke wrote data/experiments/exp-20260709-002/daily_wiring_smoke with 6 candidate rows and ohlcv_snapshot_missing outcomes because no OHLCV snapshot was supplied.",
+  "parameters": {
+    "locked_variables": [
+      "onclickmedia_options_forward_ledger_daily_pipeline_wiring_v1"
+    ],
+    "single_causal_variable": "onclickmedia_options_forward_ledger_daily_pipeline_wiring_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open another manual options forward ledger/outcome materialization ID for routine daily deltas. The legal next options alpha probe needs materially more closed options_forward rows produced by this pipeline, a new data source, or a genuinely different gate shape.",
+    "new_evidence_required": "Let the daily pipeline accumulate options_forward_ledger rows with an OHLCV snapshot supplied through OPTIONS_FORWARD_OHLCV_SNAPSHOT if closed return settlement is required. Alpha activation remains blocked until there are materially more closed rows with nonzero candidate overlap.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The existing options forward ledger builder was already import-safe enough to run from run.py. Adding a failure-tolerant post-quant-signals wrapper mirrored the accepted estimate_revision pattern and the smoke run produced a default-off snapshot-visible ledger without touching orders, ranking, sizing, or signal generation."
+  },
+  "prediction": {
+    "confidence_reason": "rg found options chain collection in daily_non_ohlcv_snapshot but no run.py wiring for run_options_forward_ledger; estimate_revision already provides a matching after-quant-signals pattern.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "options_script_not_import_safe",
+      "ledger_duplicate_rows",
+      "missing_ohlcv_snapshot_argument",
+      "run_py_contract_mismatch"
+    ],
+    "recorded_at": "2026-07-09T01:20:39+00:00",
+    "success_probability": 0.72
+  },
+  "prior_trial_count": 5,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260709-002/before_options_forward_daily_wiring.json",
+    "data/experiments/exp-20260709-002/after_options_forward_daily_wiring.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-09T01:28:58+00:00",
+  "trial_family": "onclickmedia_options_forward_daily_wiring",
+  "trial_variant_id": "run_py_default_off_wiring_v1"
+}

@@ -1,0 +1,553 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/chop_forward_observer.py",
+    "quant/test_chop_forward_observer.py",
+    "quant/run.py",
+    "quant/experiments/exp_20260708_030_chop_forward_observer_wiring.py",
+    "data/experiments/exp-20260708-030/exp_20260708_030_chop_forward_observer_wiring.json",
+    "experiments/logs/exp-20260708-030.json",
+    "experiments/cards/exp-20260708-030.md",
+    "experiments/manifests/exp-20260708-030.json",
+    "experiments/tickets/exp-20260708-030.json",
+    "docs/experiment_registry.json",
+    "data/paper_sleeves/chop_forward/rows.jsonl",
+    "data/paper_sleeves/chop_forward/summary.json"
+  ],
+  "alpha_hypothesis": "None directly; this ledger is the evidence channel through which the two frozen chop bundles (and the sleeve-scoped chop down-tilt) get their verdicts.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260708-030/exp_20260708_030_chop_forward_observer_wiring.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "frame_lookback_too_short_for_sma200",
+      "regime_label_daily_vs_replay_divergence",
+      "ledger_upsert_key_collision",
+      "run_py_step_ordering_breaks_frames"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "shared_forward_observer_module",
+    "frozen_bundle_replay_reuse",
+    "idempotent_row_upsert_ledger",
+    "run_py_failure_tolerant_step",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/chop_forward_observer.py",
+    "quant/test_chop_forward_observer.py",
+    "quant/run.py",
+    "quant/experiments/exp_20260708_030_chop_forward_observer_wiring.py",
+    "data/experiments/exp-20260708-030/exp_20260708_030_chop_forward_observer_wiring.json",
+    "experiments/logs/exp-20260708-030.json",
+    "experiments/cards/exp-20260708-030.md",
+    "experiments/manifests/exp-20260708-030.json",
+    "experiments/tickets/exp-20260708-030.json",
+    "docs/experiment_registry.json",
+    "data/paper_sleeves/chop_forward/rows.jsonl",
+    "data/paper_sleeves/chop_forward/summary.json"
+  ],
+  "changed_variable": "chop_forward_observer_daily_wiring_v1",
+  "decision": "accepted_measurement_repair_chop_forward_observer_wiring",
+  "delta_metrics": {
+    "chop_days_in_trailing_window": 0,
+    "expected_value_score_sum_delta": 0.0,
+    "idempotent_rerun_rows_delta": 0,
+    "ledger_rows_closed": 0,
+    "ledger_rows_total": 0,
+    "observer_status": "ok",
+    "regime_label_asof": "risk_on_trend",
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "unit_tests_passed": true
+  },
+  "experiment_id": "exp-20260708-030",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_scope": "Forward paper rows carry entry_date; no production signal objects are created.",
+    "fields_checked": [
+      "bundle",
+      "row_status",
+      "signal_date",
+      "entry_date",
+      "exit_reason",
+      "regime_label_at_signal",
+      "pnl_usd"
+    ],
+    "passed": true,
+    "target_price_scope": "Not applicable; bundle exits are rule-based (SMA5/z-convergence/timeout)."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Measurement wiring only; no executable filter/entry/rank/size/exit/order rule added.",
+    "passed": true,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_chop_forward_observer_wiring",
+    "measurement_blockers": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Pipeline wiring: both frozen chop bundles need forward chop-day paper rows to ever reach a verdict (canonical windows hold ~33 chop days total); wire a daily default-off forward observer into run.py that replays the frozen bundles over a trailing window and idempotently upserts open/closed paper rows into a forward ledger. One-time wiring; no strategy behavior changes.",
+  "implementation_mode": "measurement_wiring_forward_observer",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260708-030.json",
+  "mechanism_family": "chop_regime_forward_measurement",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260708-023",
+    "exp-20260708-025",
+    "exp-20260706-010"
+  ],
+  "new_evidence_type": "pipeline_wiring_for_forward_chop_rows",
+  "next_retry_requires": [
+    ">=15 closed forward chop rows per bundle before any verdict reopen",
+    "no manual daily materialization IDs (wired into run.py)"
+  ],
+  "owner": "interactive",
+  "parameters": {
+    "bundles": [
+      "chop_mean_reversion_v1",
+      "chop_pairs_spread_v1"
+    ],
+    "entry_window_trading_days": 45,
+    "ledger": "data/paper_sleeves/chop_forward/rows.jsonl",
+    "upsert_key": "bundle|instrument|signal_date"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs for daily chop-row materialization; the run.py step now owns it. Reopen the chop bundles only when the ledger holds >= 15 closed chop rows for a bundle (mean reversion) or >= 15 closed spreads (pairs).",
+    "new_evidence_required": "Calendar time: forward chop-labeled days accruing rows in data/paper_sleeves/chop_forward/rows.jsonl.",
+    "why_result_happened": "The observer reuses the exact frozen replay functions on frames the pipeline already loads, so wiring reduced to one failure-tolerant run.py step plus an idempotent ledger."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Forward chop-day rows are the only remaining evidence source for the chop lane.",
+    "2_history_check": {
+      "exp-20260706-010": "Precedent: settlement wiring accepted as measurement repair.",
+      "exp-20260708-023": "Mean reversion in chop rejected on 41 trades; bundle frozen.",
+      "exp-20260708-025": "Pairs spread in chop observed_only on 9 trades; bundle frozen."
+    },
+    "3_single_measurement_bundle": "chop_forward_observer_daily_wiring_v1",
+    "4_success_failure_standard": "Accept only if the observer smoke-runs ok on real frames, re-run is idempotent, run.py carries the failure-tolerant step, and all tests pass.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_030_chop_forward_observer_wiring.py"
+  },
+  "prediction": {
+    "confidence_reason": "Both bundles are frozen tested modules; the observer only re-runs their replay functions on frames run.py already loads and writes an untracked-then-committed ledger with atomic upserts; failure-tolerant step mirrors existing observer wiring patterns.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "frame_lookback_too_short_for_sma200",
+      "regime_label_daily_vs_replay_divergence",
+      "ledger_upsert_key_collision",
+      "run_py_step_ordering_breaks_frames"
+    ],
+    "recorded_at": "2026-07-08T22:28:53+00:00",
+    "success_probability": 0.85
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": true,
+    "scope": "measurement_wiring_forward_chop_bundle_observation_only",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/chop_mean_reversion_sleeve.py",
+    "quant/chop_pairs_spread_sleeve.py",
+    "quant/regime_chop_state.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260708_030_chop_forward_observer_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_chop_forward_observer.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "chop_forward_observer_daily_wiring_v1",
+  "smoke": {
+    "first": {
+      "as_of_date": "2026-07-08",
+      "chop_days_in_window": 0,
+      "closed_by_bundle": {
+        "chop_mean_reversion_v1": 0,
+        "chop_pairs_spread_v1": 0
+      },
+      "closed_pnl_by_bundle": {
+        "chop_mean_reversion_v1": 0,
+        "chop_pairs_spread_v1": 0
+      },
+      "generated_at": "2026-07-08T22:32:35+00:00",
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": true,
+        "scope": "default_off_forward_chop_bundle_observation",
+        "shared_policy_changed": false,
+        "trade_enabled": false
+      },
+      "regime_label_asof": "risk_on_trend",
+      "rows_closed": 0,
+      "rows_open": 0,
+      "rows_path": "D:/Github/ginger/data/paper_sleeves/chop_forward/rows.jsonl",
+      "rows_total": 0,
+      "rows_upserted_this_run": 0,
+      "status": "ok",
+      "window_end": "2026-07-07",
+      "window_start": "2026-05-01"
+    },
+    "second": {
+      "as_of_date": "2026-07-08",
+      "chop_days_in_window": 0,
+      "closed_by_bundle": {
+        "chop_mean_reversion_v1": 0,
+        "chop_pairs_spread_v1": 0
+      },
+      "closed_pnl_by_bundle": {
+        "chop_mean_reversion_v1": 0,
+        "chop_pairs_spread_v1": 0
+      },
+      "generated_at": "2026-07-08T22:32:36+00:00",
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": true,
+        "scope": "default_off_forward_chop_bundle_observation",
+        "shared_policy_changed": false,
+        "trade_enabled": false
+      },
+      "regime_label_asof": "risk_on_trend",
+      "rows_closed": 0,
+      "rows_open": 0,
+      "rows_path": "D:/Github/ginger/data/paper_sleeves/chop_forward/rows.jsonl",
+      "rows_total": 0,
+      "rows_upserted_this_run": 0,
+      "status": "ok",
+      "window_end": "2026-07-07",
+      "window_start": "2026-05-01"
+    }
+  },
+  "status": "accepted_measurement_repair",
+  "tests": {
+    "passed": true,
+    "returncode": 0,
+    "tail": [
+      "..................................................                       [100%]",
+      "50 passed in 2.64s"
+    ]
+  },
+  "ticket_before": {
+    "claimed_at": "2026-07-08T22:28:53+00:00",
+    "created_at": "2026-07-08T22:28:43+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260708-030",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-08T22:28:43+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "chop_forward_observer_wiring"
+    },
+    "novelty": {
+      "blocking_matches": [
+        {
+          "accept_rate": 1.0,
+          "family_key": "observer_no_entry_status_semantics",
+          "score": 0.6162,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "core_high_vol_high_beta_admission_overlay",
+          "score": 0.6145,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+          "score": 0.6145,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "family_key": "core_entry_admission_fingerprint_coverage",
+          "score": 0.6099,
+          "status": "has_accepted",
+          "trials": 1
+        }
+      ],
+      "data_source_unclassified": false,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "core_entry_admission",
+        "field_tags": [
+          "a",
+          "after",
+          "agents",
+          "already",
+          "approved",
+          "behavior",
+          "both",
+          "bundles",
+          "changes",
+          "chop",
+          "closed",
+          "contain",
+          "daily",
+          "enabled",
+          "entry",
+          "ever",
+          "exit",
+          "exp",
+          "experiment",
+          "false",
+          "forward",
+          "frames",
+          "from",
+          "frozen",
+          "further",
+          "historical",
+          "idempotently",
+          "ids",
+          "into",
+          "ledger",
+          "loads",
+          "materialization",
+          "md",
+          "mean",
+          "measurement",
+          "need",
+          "no",
+          "observer",
+          "one",
+          "only",
+          "or",
+          "order",
+          "over",
+          "owner",
+          "pairs",
+          "per",
+          "pipeline",
+          "py",
+          "ranking",
+          "reach",
+          "regime",
+          "replays",
+          "reversion",
+          "routine",
+          "rows",
+          "rule",
+          "run",
+          "sizing",
+          "spread",
+          "stays",
+          "structurally",
+          "takes",
+          "that",
+          "thin",
+          "this",
+          "time",
+          "to",
+          "too",
+          "total",
+          "trade",
+          "trailing",
+          "upserts",
+          "verdict",
+          "window",
+          "windows",
+          "wire",
+          "wiring"
+        ],
+        "gate_shape": "entry_admission"
+      },
+      "nearest": [
+        {
+          "accept_rate": 1.0,
+          "data_source": "core_entry_admission",
+          "family_key": "observer_no_entry_status_semantics",
+          "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+          "score": 0.6162,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "core_entry_admission",
+          "family_key": "core_high_vol_high_beta_admission_overlay",
+          "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+          "score": 0.6145,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "core_entry_admission",
+          "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+          "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+          "score": 0.6145,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 1.0,
+          "data_source": "core_entry_admission",
+          "family_key": "core_entry_admission_fingerprint_coverage",
+          "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+          "score": 0.6099,
+          "status": "has_accepted",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "deep_drawdown",
+          "family_key": "deep_drawdown_rebound_first_stabilization_budget",
+          "reopen_condition": "Settled forward rows from live deep-drawdown episodes recorded by the new run.py default-off wiring (reopen when >=3 new episodes have settled, i.e. likely years out), or an ex-ante bear-vs-correction conditioning state fixed before replay (different gate shape), or a genuinely new data source for capitulation quality (e.g. PIT breadth/volume climax from the index archive plus warehouse cross-sect",
+          "score": 0.0505,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "observed_only_streak_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md \u00a72.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "core_entry_admission",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": false,
+      "reopen_condition_guard": {
+        "applicable": false,
+        "blocked": false,
+        "matched_conditions": [],
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "proposal_classification": {
+          "fault_recovery": false,
+          "pipeline_wiring": true,
+          "routine": true
+        },
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md \u00a72.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "entry_admission",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "core_entry_admission",
+        "trials": 0
+      },
+      "warn": true,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-07-08T22:32:41Z",
+  "trial_family": "chop_forward_observer_wiring",
+  "trial_variant_id": "chop_forward_observer_v1"
+}
