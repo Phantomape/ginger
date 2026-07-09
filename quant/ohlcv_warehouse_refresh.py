@@ -31,6 +31,7 @@ try:
         hot_path_for,
         upsert_ohlcv_frames,
     )
+    from ohlcv_split_repair import check_frames_against_warehouse
     from pead_broad_universe_tickers import get_pead_broad_universe_tickers
 except ImportError:  # pragma: no cover - package-style imports for tests
     from quant import broad_market_sector_map
@@ -41,6 +42,7 @@ except ImportError:  # pragma: no cover - package-style imports for tests
         hot_path_for,
         upsert_ohlcv_frames,
     )
+    from quant.ohlcv_split_repair import check_frames_against_warehouse
     from quant.pead_broad_universe_tickers import get_pead_broad_universe_tickers
 
 
@@ -179,12 +181,22 @@ def refresh_warehouse_ohlcv(
     max_lookback_days: int = DEFAULT_MAX_LOOKBACK_DAYS,
     max_tickers: int | None = None,
     dry_run: bool = False,
+    repair_splits: bool = True,
     logger: Any = None,
 ) -> dict[str, Any]:
     """Incrementally refresh warehouse OHLCV for the broad universe.
 
     Existing rows are never rewritten (``update_existing=False``); fetching a
     generous overlap is safe and only missing days insert.
+
+    exp-20260709-008: because existing rows are frozen, a stock split after a
+    row was written leaves the stored history at the pre-split scale while new
+    fetches insert post-split-adjusted rows — a permanent discontinuity (KLAC
+    10:1 2026-06-12, CRWD 4:1 2026-07-02). Before each chunk upserts, the
+    fetched frames' overlap days are compared against stored closes; a
+    consistent round-factor mismatch is back-adjusted in both tiers via
+    ``quant/ohlcv_split_repair.py`` (``repair_splits=False`` reports only).
+    Detections land in ``summary["split_discontinuities"]``.
     """
     started = time.monotonic()
     fetcher = fetch_many or _default_fetch_many
@@ -210,6 +222,7 @@ def refresh_warehouse_ohlcv(
         "inserted": 0,
         "updated": 0,
         "unchanged": 0,
+        "split_discontinuities": [],
         "errors": [],
     }
     if dry_run:
@@ -234,6 +247,32 @@ def refresh_warehouse_ohlcv(
                     {"bucket": bucket_text, "tickers": len(chunk), "error": str(fetch_error)}
                 )
                 continue
+            try:
+                split_events = check_frames_against_warehouse(
+                    db_path, frames, repair=repair_splits
+                )
+            except Exception as guard_error:
+                # The guard must never take the refresh down with it; a missed
+                # detection is caught by the standing scan audit.
+                split_events = []
+                summary["errors"].append(
+                    {
+                        "bucket": bucket_text,
+                        "tickers": len(chunk),
+                        "error": f"split_guard_failed: {guard_error}",
+                    }
+                )
+            for event in split_events:
+                summary["split_discontinuities"].append(event)
+                if logger is not None:
+                    logger.warning(
+                        "Warehouse refresh split guard: %s boundary=%s kind=%s "
+                        "repaired=%s",
+                        event.get("ticker"),
+                        event.get("boundary_date"),
+                        event.get("kind"),
+                        event.get("repaired"),
+                    )
             upsert = upsert_ohlcv_frames(
                 hot_path_for(db_path),
                 frames,

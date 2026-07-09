@@ -108,6 +108,50 @@ def test_refresh_dry_run_fetches_nothing(tmp_path) -> None:
     assert summary["inserted"] == 0
 
 
+def test_refresh_split_guard_repairs_stale_history(tmp_path) -> None:
+    # exp-20260709-008: stored rows are frozen, so a split after they were
+    # written leaves pre-split-scale history next to adjusted new rows. The
+    # refresh guard must detect the round-factor mismatch on overlap days and
+    # back-adjust the stored tier before upserting.
+    db = tmp_path / "warehouse.sqlite"
+    # One underlying series: stored rows keep the OLD (pre-split) scale, the
+    # vendor serves the same series post-split-adjusted (prices/2, volume*2).
+    full = _frame(AS_OF, 25)
+    stale = full[full.index <= "2026-06-05"]
+    _seed(db, {"SPLT": stale})
+
+    def adjusted_fetch(tickers: list[str], lookback_days: int) -> dict[str, pd.DataFrame]:
+        frame = full.copy()
+        frame[["Open", "High", "Low", "Close"]] /= 2.0  # vendor post-2:1-split view
+        frame["Volume"] *= 2.0
+        return {ticker: frame for ticker in tickers}
+
+    summary = refresh_warehouse_ohlcv(
+        db_path=db, tickers=["SPLT"], as_of=AS_OF, fetch_many=adjusted_fetch
+    )
+    assert summary["status"] == "completed"
+    events = summary["split_discontinuities"]
+    assert len(events) == 1
+    assert events[0]["ticker"] == "SPLT"
+    assert events[0]["kind"] == "split_2:1"
+    assert events[0]["repaired"] is True
+
+    import sqlite3
+
+    conn = sqlite3.connect(db)
+    first_close = conn.execute(
+        "SELECT close FROM ohlcv WHERE ticker='SPLT' ORDER BY date LIMIT 1"
+    ).fetchone()[0]
+    conn.close()
+    assert first_close == 11.5 / 2.0  # stale history back-adjusted in place
+
+    # Second refresh over the repaired warehouse: no detection, no double-divide.
+    again = refresh_warehouse_ohlcv(
+        db_path=db, tickers=["SPLT"], as_of=AS_OF, fetch_many=adjusted_fetch
+    )
+    assert again["split_discontinuities"] == []
+
+
 def test_refresh_records_fetch_errors_per_chunk(tmp_path) -> None:
     db = tmp_path / "warehouse.sqlite"
     _seed(db, {"STALE": _frame("2026-04-24", 30)})

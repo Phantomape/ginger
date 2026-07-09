@@ -278,8 +278,13 @@ def test_options_forward_ledger_refresh_after_quant_signals(monkeypatch):
         assert "--quant-signal-dir" in args.argv
         assert "data" in args.argv
         assert "--ohlcv-snapshot" in args.argv
+        assert "--ohlcv-warehouse" not in args.argv
         return {
             "mode": "default_off_forward_options_candidate_tag_ledger",
+            "source_files": {
+                "ohlcv_snapshot": "data/ohlcv_snapshot.json",
+                "ohlcv_warehouse": None,
+            },
             "candidate_summary": {
                 "options_candidate_coverage_rate": 0.75,
                 "quality_usable_candidates": 2,
@@ -319,6 +324,74 @@ def test_options_forward_ledger_refresh_after_quant_signals(monkeypatch):
     assert summary["status"] == "ok"
     assert summary["candidate_count"] == 4
     assert summary["outcome_status_counts"]["complete"] == 1
+    assert summary["ohlcv_snapshot"] == "data/ohlcv_snapshot.json"
+    assert summary["ohlcv_warehouse"] is None
+    assert snapshot["options_forward_ledger"] is summary
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_options_forward_ledger_refresh_uses_default_warehouse_when_snapshot_missing(
+    monkeypatch,
+):
+    calls = []
+
+    class FakeParser:
+        def parse_args(self, argv):
+            calls.append(list(argv))
+            return types.SimpleNamespace(argv=list(argv))
+
+    def fake_build_ledger(args):
+        assert "--ohlcv-snapshot" not in args.argv
+        assert "--ohlcv-warehouse" in args.argv
+        assert "data/warehouse/warehouse_main.sqlite" in args.argv
+        return {
+            "mode": "default_off_forward_options_candidate_tag_ledger",
+            "source_files": {
+                "ohlcv_snapshot": None,
+                "ohlcv_warehouse": "data/warehouse/warehouse_main.sqlite",
+            },
+            "candidate_summary": {
+                "options_candidate_coverage_rate": 0.5,
+                "quality_usable_candidates": 1,
+                "outcome_status_counts": {"partial_or_pending": 1},
+            },
+            "required_metrics": {
+                "candidate_count": 1,
+                "overlap_with_existing_signals": 1,
+            },
+            "outcome_close_summary": {"all_scoring_allowed": {"sample_size": 1}},
+            "artifacts": {},
+        }
+
+    fake_module = types.SimpleNamespace(
+        build_arg_parser=lambda: FakeParser(),
+        build_ledger=fake_build_ledger,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "_load_options_forward_ledger_module",
+        lambda: fake_module,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "_default_options_forward_ohlcv_warehouse",
+        lambda: "data/warehouse/warehouse_main.sqlite",
+    )
+    monkeypatch.delenv("OPTIONS_FORWARD_OHLCV_SNAPSHOT", raising=False)
+    monkeypatch.delenv("OPTIONS_FORWARD_OHLCV_WAREHOUSE", raising=False)
+    snapshot = {}
+
+    summary = _refresh_options_forward_ledger_after_quant_signals(
+        "2026-07-02",
+        snapshot,
+        quant_signals_saved=True,
+    )
+
+    assert len(calls) == 1
+    assert summary["status"] == "ok"
+    assert summary["candidate_count"] == 1
+    assert summary["ohlcv_snapshot"] is None
+    assert summary["ohlcv_warehouse"] == "data/warehouse/warehouse_main.sqlite"
     assert snapshot["options_forward_ledger"] is summary
     assert summary["production_impact"]["alters_orders"] is False
 

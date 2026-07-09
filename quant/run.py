@@ -1055,6 +1055,17 @@ def _load_options_forward_ledger_module():
     return module
 
 
+def _default_options_forward_ohlcv_warehouse() -> str | None:
+    repo_root = Path(__file__).resolve().parents[1]
+    warehouse_path = repo_root / "data" / "warehouse" / "warehouse_main.sqlite"
+    if not warehouse_path.exists():
+        return None
+    try:
+        return str(warehouse_path.relative_to(repo_root)).replace("\\", "/")
+    except ValueError:
+        return str(warehouse_path)
+
+
 def _refresh_options_forward_ledger_after_quant_signals(
     today_iso,
     non_ohlcv_snapshot,
@@ -1101,6 +1112,13 @@ def _refresh_options_forward_ledger_after_quant_signals(
     ohlcv_snapshot = os.environ.get("OPTIONS_FORWARD_OHLCV_SNAPSHOT")
     if ohlcv_snapshot:
         argv.extend(["--ohlcv-snapshot", ohlcv_snapshot])
+    else:
+        ohlcv_warehouse = (
+            os.environ.get("OPTIONS_FORWARD_OHLCV_WAREHOUSE")
+            or _default_options_forward_ohlcv_warehouse()
+        )
+        if ohlcv_warehouse:
+            argv.extend(["--ohlcv-warehouse", ohlcv_warehouse])
     date_scope = os.environ.get("OPTIONS_FORWARD_LEDGER_DATE")
     if date_scope:
         for date_value in date_scope.split(","):
@@ -1131,6 +1149,8 @@ def _refresh_options_forward_ledger_after_quant_signals(
             ),
             "outcome_status_counts": candidate_summary.get("outcome_status_counts"),
             "outcome_close_summary": report.get("outcome_close_summary"),
+            "ohlcv_snapshot": (report.get("source_files") or {}).get("ohlcv_snapshot"),
+            "ohlcv_warehouse": (report.get("source_files") or {}).get("ohlcv_warehouse"),
             "artifacts": report.get("artifacts") or {},
             "production_impact": _options_forward_ledger_production_impact(
                 "default_off_options_forward_ledger_refreshed"
