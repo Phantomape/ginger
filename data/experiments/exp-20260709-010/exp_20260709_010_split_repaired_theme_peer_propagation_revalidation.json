@@ -1,0 +1,505 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.py",
+    "data/experiments/exp-20260709-010/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.json",
+    "data/experiments/exp-20260709-010/revalidated_ipo_rows.jsonl",
+    "data/experiments/exp-20260709-010/revalidated_sec_425_rows.jsonl",
+    "experiments/logs/exp-20260709-010.json",
+    "experiments/cards/exp-20260709-010.md",
+    "experiments/manifests/exp-20260709-010.json",
+    "experiments/tickets/exp-20260709-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "After the accepted warehouse split-adjustment repair, the previously contaminated IPO and SEC 425 theme-peer propagation attribution verdicts must be re-run on repaired KLAC/CRWD OHLCV to see whether the original no-edge conclusion changes without any event, horizon, threshold, ranking, sizing, or response retune.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260709-010/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.json",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "predicted_failure_modes": [
+      "contaminated KLAC/CRWD rows are too small to change verdict",
+      "sign remains unstable across windows",
+      "repair changes metrics but not enough for observed-only lead"
+    ],
+    "predicted_failure_modes_hit": [
+      "contaminated KLAC/CRWD rows are too small to change verdict",
+      "sign remains unstable across windows",
+      "repair changes metrics but not enough for observed-only lead"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_modes": [
+      "no_prior_theme_peer_verdict_changed",
+      "no_current_observed_only_lead",
+      "no_row_level_metric_changes_detected"
+    ],
+    "surprise_note": "Split repair did not change the no-edge theme-peer verdicts."
+  },
+  "causal_components": [
+    "reuse exp-20260702-017 fixed IPO theme-peer bundle",
+    "reuse exp-20260702-018 fixed SEC 425 theme-peer bundle",
+    "repaired OHLCV warehouse only",
+    "pre/post artifact delta",
+    "read-only no strategy change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.py",
+    "data/experiments/exp-20260709-010/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.json",
+    "data/experiments/exp-20260709-010/revalidated_ipo_rows.jsonl",
+    "data/experiments/exp-20260709-010/revalidated_sec_425_rows.jsonl",
+    "experiments/logs/exp-20260709-010.json",
+    "experiments/cards/exp-20260709-010.md",
+    "experiments/manifests/exp-20260709-010.json",
+    "experiments/tickets/exp-20260709-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "none_read_only_revalidation",
+  "decision": "observed_only_rejected_split_repair_no_alpha_verdict_change",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "impacted_ticker_metric_changed_rows": 0,
+    "row_level_metric_changed_rows": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-010",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date": "validated by imported fixed bundles",
+    "fields": [
+      "event_class",
+      "form_type",
+      "filed_date",
+      "theme",
+      "ticker",
+      "entry_date",
+      "Open/Close warehouse bars"
+    ],
+    "passed": true,
+    "target_price_scope": "not_applicable_observed_only_fixed_horizon"
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, rank, or sizing rule was added.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "failed_reasons": [
+      "no_prior_theme_peer_verdict_changed",
+      "no_current_observed_only_lead",
+      "no_row_level_metric_changes_detected"
+    ],
+    "mode": "observed_only_revalidation",
+    "observed_only_lead": false,
+    "passed": false
+  },
+  "hypothesis": "After the accepted warehouse split-adjustment repair, the previously contaminated IPO and SEC 425 theme-peer propagation attribution verdicts must be re-run on repaired KLAC/CRWD OHLCV to see whether the original no-edge conclusion changes without any event, horizon, threshold, ranking, sizing, or response retune.",
+  "implementation_mode": "read_only_revalidation",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260709-010.json",
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260702-017",
+    "exp-20260702-018",
+    "exp-20260709-008"
+  ],
+  "new_evidence_axis": "Accepted exp-20260709-008 repaired split-discontinuous OHLCV values for KLAC/CRWD rows that the prior IPO/425 theme-peer artifacts consumed; this reruns the identical fixed bundles and measures artifact deltas, not a new row slice or threshold.",
+  "new_evidence_type": "repaired_warehouse_ohlcv_split_adjustment",
+  "next_retry_requires": [
+    "richer deal economics or entity relation provenance",
+    "materially more closed forward rows under a shared helper",
+    "no further same-warehouse revalidation IDs for this contamination"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run IPO/425 theme-peer propagation again on the same repaired warehouse, and do not re-slice by theme, keyword, horizon, entry lag, density, ticker status, top-N, hold, cooldown, notional, or response shape.",
+    "new_evidence_required": "A valid future retry needs richer deal/economic provenance such as priced-deal terms, cash/stock consideration, bidder or target role, amendment/termination trajectory, PIT SIC repair, materially more closed forward rows under a shared helper, or a new non-SEC relation data source.",
+    "why_result_happened": "Re-running the fixed IPO and SEC 425 theme-peer attribution bundles on the split-repaired warehouse did not create an observed-only lead or change either prior no-edge verdict. The repaired rows are valid measurement hygiene, but not new alpha evidence for this relation surface."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "After the accepted warehouse split-adjustment repair, the previously contaminated IPO and SEC 425 theme-peer propagation attribution verdicts must be re-run on repaired KLAC/CRWD OHLCV to see whether the original no-edge conclusion changes without any event, horizon, threshold, ranking, sizing, or response retune.",
+    "2_history_check": "Novelty override accepted because exp-20260709-008 repaired the exact KLAC/CRWD OHLCV rows consumed by the old artifacts.",
+    "3_single_policy_bundle": "Re-run the unchanged exp-20260702-017 IPO and exp-20260702-018 SEC 425 theme-peer attribution bundles on the repaired warehouse; compare artifact deltas only.",
+    "4_success_failure_standard": "Positive only if the unchanged fixed-bundle observed-only lead criteria now pass or the prior verdict changes because of repaired OHLCV. Otherwise reject as no alpha verdict change.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.py"
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260709-008 named exp-20260702-017 and exp-20260702-018 as contaminated by KLAC/CRWD split-discontinuous warehouse rows, so the evidence axis is real; base rate remains low because both prior fixed bundles failed on sign stability and the contaminated tickers are only part of the cohorts.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "contaminated KLAC/CRWD rows are too small to change verdict",
+      "sign remains unstable across windows",
+      "repair changes metrics but not enough for observed-only lead"
+    ],
+    "recorded_at": "2026-07-09T07:06:17+00:00",
+    "success_probability": 0.22
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_ready": false,
+    "parity_note": "Read-only revalidation; no production or backtest behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "no_prior_theme_peer_verdict_changed;no_current_observed_only_lead;no_row_level_metric_changes_detected",
+  "related_files": [
+    "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+    "quant/experiments/exp_20260702_018_sec_425_merger_theme_peer_propagation.py",
+    "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+    "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant/experiments/exp_20260709_010_split_repaired_theme_peer_propagation_revalidation.py"
+  ],
+  "revalidation": {
+    "ipo_theme_peer": {
+      "after": {
+        "deduped_rows": 489,
+        "observed_only_lead": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": -46.6,
+            "median_delta_10d_bp": -115.2,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.41,
+            "rows": 117,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.043
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": 148.7,
+            "median_delta_10d_bp": -0.0,
+            "median_delta_5d_bp": 44.5,
+            "positive_share": 0.497,
+            "rows": 157,
+            "top_ticker": "HOOD",
+            "top_ticker_share": 0.051
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": -112.6,
+            "median_delta_10d_bp": -39.4,
+            "median_delta_5d_bp": 8.9,
+            "positive_share": 0.465,
+            "rows": 170,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.076
+          }
+        },
+        "pooled_delta_threshold_ok": true,
+        "pooled_median_delta_10d_bp": -28.0,
+        "pooled_rows": 444,
+        "rows_threshold_ok": true,
+        "settled_rows": 449,
+        "sign_consistent": false
+      },
+      "before": {
+        "deduped_rows": 483,
+        "observed_only_lead": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": -46.6,
+            "median_delta_10d_bp": -115.2,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.41,
+            "rows": 117,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.043
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": 148.7,
+            "median_delta_10d_bp": -0.0,
+            "median_delta_5d_bp": 44.5,
+            "positive_share": 0.497,
+            "rows": 157,
+            "top_ticker": "HOOD",
+            "top_ticker_share": 0.051
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": -112.6,
+            "median_delta_10d_bp": -39.4,
+            "median_delta_5d_bp": 8.9,
+            "positive_share": 0.465,
+            "rows": 170,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.076
+          }
+        },
+        "pooled_delta_threshold_ok": true,
+        "pooled_median_delta_10d_bp": -28.0,
+        "pooled_rows": 444,
+        "rows_threshold_ok": true,
+        "settled_rows": 449,
+        "sign_consistent": false
+      },
+      "delta": {
+        "deduped_rows": 6,
+        "observed_only_lead_changed": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": 0.0,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": 0.0,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": 0.0,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          }
+        },
+        "pooled_median_delta_10d_bp": 0.0,
+        "pooled_rows": 0,
+        "settled_rows": 0
+      },
+      "module": "quant/experiments/exp_20260702_017_ipo_theme_propagation.py",
+      "old_artifact": "data/experiments/exp-20260702-017/exp_20260702_017_ipo_theme_propagation.json",
+      "old_rows": "data/experiments/exp-20260702-017/propagation_rows.jsonl",
+      "prior_experiment": "exp-20260702-017",
+      "row_delta": {
+        "common_rows": 449,
+        "current_only_rows": 0,
+        "current_rows": 449,
+        "impacted_ticker_common_rows": 2,
+        "metric_changed_common_rows": 0,
+        "metric_changed_impacted_rows": 0,
+        "old_only_rows": 0,
+        "old_rows": 449,
+        "sample_current_only": [],
+        "sample_metric_changes": [],
+        "sample_old_only": []
+      }
+    },
+    "sec_425_theme_peer": {
+      "after": {
+        "deduped_rows": 2631,
+        "observed_only_lead": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": -25.8,
+            "median_delta_10d_bp": -28.7,
+            "median_delta_5d_bp": 35.1,
+            "positive_share": 0.481,
+            "rows": 899,
+            "top_ticker": "HOOD",
+            "top_ticker_share": 0.07
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": -70.4,
+            "median_delta_10d_bp": -26.2,
+            "median_delta_5d_bp": -33.2,
+            "positive_share": 0.479,
+            "rows": 843,
+            "top_ticker": "PYPL",
+            "top_ticker_share": 0.083
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": 72.9,
+            "median_delta_10d_bp": 8.6,
+            "median_delta_5d_bp": 1.7,
+            "positive_share": 0.51,
+            "rows": 686,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.092
+          }
+        },
+        "pooled_delta_threshold_ok": false,
+        "pooled_median_delta_10d_bp": -12.2,
+        "pooled_rows": 2428,
+        "rows_threshold_ok": true,
+        "settled_rows": 2550,
+        "sign_consistent": false
+      },
+      "before": {
+        "deduped_rows": 2631,
+        "observed_only_lead": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": -25.7,
+            "median_delta_10d_bp": -28.7,
+            "median_delta_5d_bp": 35.1,
+            "positive_share": 0.481,
+            "rows": 899,
+            "top_ticker": "HOOD",
+            "top_ticker_share": 0.07
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": -70.4,
+            "median_delta_10d_bp": -26.2,
+            "median_delta_5d_bp": -33.2,
+            "positive_share": 0.479,
+            "rows": 843,
+            "top_ticker": "PYPL",
+            "top_ticker_share": 0.083
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": 72.9,
+            "median_delta_10d_bp": 8.6,
+            "median_delta_5d_bp": 1.7,
+            "positive_share": 0.51,
+            "rows": 686,
+            "top_ticker": "MRNA",
+            "top_ticker_share": 0.092
+          }
+        },
+        "pooled_delta_threshold_ok": false,
+        "pooled_median_delta_10d_bp": -12.2,
+        "pooled_rows": 2428,
+        "rows_threshold_ok": true,
+        "settled_rows": 2544,
+        "sign_consistent": false
+      },
+      "delta": {
+        "deduped_rows": 0,
+        "observed_only_lead_changed": false,
+        "per_window": {
+          "late_strong": {
+            "mean_delta_10d_bp": -0.1,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          },
+          "mid_weak": {
+            "mean_delta_10d_bp": 0.0,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          },
+          "old_thin": {
+            "mean_delta_10d_bp": 0.0,
+            "median_delta_10d_bp": 0.0,
+            "median_delta_5d_bp": 0.0,
+            "positive_share": 0.0,
+            "rows": 0,
+            "top_ticker_changed": false,
+            "top_ticker_share": 0.0
+          }
+        },
+        "pooled_median_delta_10d_bp": 0.0,
+        "pooled_rows": 0,
+        "settled_rows": 6
+      },
+      "module": "quant/experiments/exp_20260702_018_sec_425_merger_theme_peer_propagation.py",
+      "old_artifact": "data/experiments/exp-20260702-018/exp_20260702_018_sec_425_merger_theme_peer_propagation.json",
+      "old_rows": "data/experiments/exp-20260702-018/propagation_rows.jsonl",
+      "prior_experiment": "exp-20260702-018",
+      "row_delta": {
+        "common_rows": 2544,
+        "current_only_rows": 6,
+        "current_rows": 2550,
+        "impacted_ticker_common_rows": 14,
+        "metric_changed_common_rows": 0,
+        "metric_changed_impacted_rows": 0,
+        "old_only_rows": 0,
+        "old_rows": 2544,
+        "sample_current_only": [
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "AI"
+          },
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "GOOGL"
+          },
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "META"
+          },
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "MSFT"
+          },
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "NOW"
+          },
+          {
+            "entry_date": "2026-06-18",
+            "ticker": "PLTR"
+          }
+        ],
+        "sample_metric_changes": [],
+        "sample_old_only": []
+      }
+    }
+  },
+  "single_causal_variable": "split_repaired_theme_peer_propagation_verdict_revalidation_v1",
+  "status": "observed_only_rejected",
+  "timestamp": "2026-07-09T07:11:03Z",
+  "trial_family": "split_repaired_theme_peer_propagation_revalidation",
+  "trial_variant_id": "split_repaired_ipo_425_theme_peer_revalidation_v1"
+}

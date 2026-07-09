@@ -1,0 +1,471 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "experiments/logs/exp-20260709-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-019.md",
+  "causal_components": [
+    "fixed_shared_moomoo_candidate_guards",
+    "flow_to_price_impact_field_v1",
+    "10d_cash_spy_qqq_forward_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "moomoo_flow_impact_normalized_forward_value_v1",
+  "claimed_at": "2026-07-09T16:06:07+00:00",
+  "completed_at": "2026-07-09T16:15:29+00:00",
+  "created_at": "2026-07-09T16:05:58+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-019",
+  "experiment_uid": "expuid-5605d31ecb9a4033",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-019",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T16:05:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_flow_impact_forward_value"
+  },
+  "hypothesis": "Observed-only alpha: Moomoo DAY capital-flow rows may have usable replacement value only after same-day signed main flow is normalized by PIT price-impact/liquidity context, separating low-impact accumulation from high-impact chase/exhaustion without retuning the rejected raw main-flow source.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "moomoo_flow_impact_normalized_forward_value_v1"
+  ],
+  "mechanism_family": "production_visible_moomoo_capital_flow_impact_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-019",
+    "exp-20260705-016"
+  ],
+  "new_evidence_type": "new_gate_shape_impact_normalized_flow_field",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "moomoo_capital_flow",
+      "field_tags": [
+        "accumulation",
+        "after",
+        "alpha",
+        "attribution",
+        "by",
+        "capital",
+        "chase",
+        "context",
+        "exhaustion",
+        "flow",
+        "forward",
+        "from",
+        "have",
+        "high",
+        "impact",
+        "is",
+        "liquidity",
+        "low",
+        "main",
+        "may",
+        "moomoo",
+        "normalized",
+        "observed",
+        "only",
+        "pit",
+        "price",
+        "raw",
+        "rejected",
+        "replacement",
+        "retuning",
+        "rows",
+        "same",
+        "separating",
+        "signed",
+        "usable",
+        "value",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_capital_flow",
+        "family_key": "moomoo_capital_flow_day_accumulation_candidate_pool",
+        "reopen_condition": "Materially more settled forward rows from the daily archive refresh (coverage only grows forward), a genuinely different vendor flow decomposition with intraday provenance, or PIT borrow/short-side economics joined to the same names.",
+        "score": 0.5026,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_capital_flow",
+        "family_key": "moomoo_capital_flow_forward_readiness",
+        "reopen_condition": null,
+        "score": 0.49,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_capital_flow",
+        "family_key": "moomoo_capital_flow_forward_row_materialization",
+        "reopen_condition": "Closed forward rows with cash/SPY/QQQ replacement values, a different PIT vendor flow decomposition, or borrow/loan economics.",
+        "score": 0.489,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_capital_flow",
+        "family_key": "moomoo_historical_capital_flow_pit_archive_readiness",
+        "reopen_condition": "Materialize a versioned get_capital_flow DAY archive for the target universe from the earliest available date, map rows to next-session usable_trade_date, build a shared default-off candidate helper/daily snapshot, then run a single frozen Gate 1-4 replay. If old_thin remains empty, record the source activation boundary explicitly.",
+        "score": 0.4864,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_capital_flow",
+        "family_key": "moomoo_capital_flow_daily_default_off_snapshot_wiring",
+        "reopen_condition": "Materially more closed forward rows from automatic daily snapshots, a genuinely different vendor flow decomposition, or PIT borrow economics.",
+        "score": 0.48,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new gate shape and new PIT derived field: impact-normalized flow/liquidity attribution, not raw main-flow threshold or bucket retune",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "moomoo_capital_flow",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "new gate shape and new PIT derived field: impact-normalized flow/liquidity attribution, not raw main-flow threshold or bucket retune",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new gate shape and new PIT derived field: impact-normalized flow/liquidity attribution, not raw main-flow threshold or bucket retune",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "moomoo_capital_flow",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.29,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_edge",
+      "flow_already_priced_by_next_open",
+      "thin_forward_sample",
+      "impact_proxy_is_only_liquidity"
+    ],
+    "confidence_reason": "Raw Moomoo main-flow admission was rejected, but external order-flow research points to impact/liquidity normalization rather than raw flow. This run is observed-only attribution and does not change live or backtest policy.",
+    "recorded_at": "2026-07-09T16:15:29+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+    "artifact": "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "log": "experiments/logs/exp-20260709-019.json",
+    "runner": "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "gate4": {
+      "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+      "baseline_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "max_drawdown_pct_worst": 0.1119
+      },
+      "after_metrics": {
+        "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+        "window_count": 3,
+        "expected_value_score_sum": 7.8941,
+        "total_pnl": 234850.99,
+        "trade_count": 61,
+        "signals_generated": 164,
+        "signals_survived": 135,
+        "survival_rate": 0.823171,
+        "max_drawdown_pct_worst": 0.1119
+      },
+      "delta": {
+        "expected_value_score_sum": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct_worst": 0.0
+      },
+      "observed_only": true,
+      "reason": "Strategy behavior is unchanged; this is an attribution lead test on closed historical rows."
+    },
+    "evaluation": {
+      "headline_metrics": {
+        "flow_archive_rows": 12413,
+        "flow_archive_tickers": 60,
+        "flow_archive_first_date": "2025-07-02",
+        "flow_archive_last_date": "2026-07-06",
+        "raw_candidate_rows": 2380,
+        "scored_closed_rows": 2282,
+        "top_rows": 570,
+        "bottom_rows": 570,
+        "top_tickers": 43,
+        "bottom_tickers": 43,
+        "top_minus_bottom_cash_mean": -58.751035,
+        "top_minus_bottom_spy_mean": -55.534,
+        "top_minus_bottom_qqq_mean": -51.02586,
+        "spearman_cash": -0.013089,
+        "spearman_spy": -0.016128,
+        "spearman_qqq": -0.013146,
+        "chrono_cash_positive_both_halves": false,
+        "top_positive_single_ticker_share": 0.105944,
+        "top_positive_top5_ticker_share": 0.414817
+      },
+      "bucket_counts": {
+        "q4_low_impact_accumulation": 570,
+        "q2_q3_middle": 1142,
+        "q1_high_impact_chase_or_weak_flow": 570
+      },
+      "criteria": {
+        "min_total_rows": true,
+        "min_top_rows": true,
+        "min_bottom_rows": true,
+        "min_top_tickers": true,
+        "min_bottom_tickers": true,
+        "top_mean_beats_bottom_all_fields": false,
+        "top_median_beats_bottom_two_fields": true,
+        "spearman_positive_two_fields": false,
+        "chrono_cash_mean_positive_both_halves": false,
+        "top_positive_single_ticker_share_ok": true,
+        "top_positive_top5_ticker_share_ok": true
+      },
+      "top_bottom_deltas": {
+        "replacement_value_vs_cash_usd": {
+          "top_mean": 56.429842,
+          "bottom_mean": 115.180877,
+          "top_minus_bottom_mean": -58.751035,
+          "top_median": 33.395,
+          "bottom_median": 32.995,
+          "top_minus_bottom_median": 0.4
+        },
+        "replacement_value_vs_spy_usd": {
+          "top_mean": 48.622649,
+          "bottom_mean": 104.156649,
+          "top_minus_bottom_mean": -55.534,
+          "top_median": 31.595,
+          "bottom_median": 20.095,
+          "top_minus_bottom_median": 11.5
+        },
+        "replacement_value_vs_qqq_usd": {
+          "top_mean": 38.522018,
+          "bottom_mean": 89.547877,
+          "top_minus_bottom_mean": -51.02586,
+          "top_median": 22.065,
+          "bottom_median": 12.23,
+          "top_minus_bottom_median": 9.835
+        }
+      },
+      "spearman": {
+        "replacement_value_vs_cash_usd": -0.013089,
+        "replacement_value_vs_spy_usd": -0.016128,
+        "replacement_value_vs_qqq_usd": -0.013146
+      }
+    },
+    "summary": "failed_predeclared_criteria: top_mean_beats_bottom_all_fields, spearman_positive_two_fields, chrono_cash_mean_positive_both_halves"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-019.json",
+  "single_causal_variable": "moomoo_flow_impact_normalized_forward_value_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260709-019.json",
+  "trial_family": "moomoo_flow_impact_normalized_forward_value",
+  "trial_variant_id": "fixed_amihud_impact_normalized_main_flow_v1",
+  "alpha_hypothesis": "Observed-only alpha: Moomoo DAY capital-flow rows may have usable replacement value only after same-day signed main flow is normalized by PIT price-impact/liquidity context, separating low-impact accumulation from high-impact chase/exhaustion without retuning the rejected raw main-flow source.",
+  "implementation_mode": "self_registered_observed_only_runner",
+  "new_evidence_axis": "New gate shape and fixed PIT derived field: main_flow_ratio divided by same-day absolute price impact, evaluated as 10d cash/SPY/QQQ replacement attribution. This is not a raw main-flow threshold, bucket, notional, hold, or response-function retune.",
+  "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+  "artifact": "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+  "log": "experiments/logs/exp-20260709-019.json",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "after_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "strategy_behavior_changed": false
+  },
+  "gate2": {
+    "field_availability": {
+      "entry_date": {
+        "required_for_scored_rows": true,
+        "present_count": 2282,
+        "scored_rows": 2282
+      },
+      "target_price": {
+        "required": false,
+        "reason": "Observed-only fixed-horizon attribution; no executable target exit or signal contract is introduced."
+      },
+      "flow_to_price_impact": {
+        "present_count": 2282,
+        "scored_rows": 2282
+      }
+    },
+    "runtime_fields_verified": true
+  },
+  "gate3": {
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "new_filter_added": false,
+    "note": "No executable filter was added; observed-only rows are not candidate survival rows."
+  },
+  "gate4": {
+    "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "after_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "delta": {
+      "expected_value_score_sum": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct_worst": 0.0
+    },
+    "observed_only": true,
+    "reason": "Strategy behavior is unchanged; this is an attribution lead test on closed historical rows."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_orders": false,
+    "alters_candidate_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "shared_policy_changed": false,
+    "llm_change_scope": "none"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fixed flow-to-impact field was evaluated across the local Moomoo archive with the existing shared candidate guards. Any positive or negative result is attribution only because the strategy path was not changed.",
+    "forbidden_near_neighbor_retry": "Do not retune raw main-flow thresholds, main-flow buckets, entry slots, hold days, cooldowns, notional, comparator subset, impact floor, or response functions on this same archive.",
+    "new_evidence_required": "A valid retry needs materially more closed Moomoo forward rows, a genuinely different intraday/vendor flow decomposition with PIT provenance, borrow/loan economics, or a new gate shape that is not another raw-flow or impact-threshold slice.",
+    "next_evidence_needed": "If this is positive, the next legal step is a shared default-off helper that keeps impact-normalized accumulation as a diagnostic candidate state and runs full Gate 1-4. If negative, park Moomoo DAY flow until new provenance or more settled rows."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/logs/exp-20260709-019.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/logs/exp-20260709-019.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-09T16:15:29+00:00"
+}

@@ -1,0 +1,372 @@
+{
+  "acceptance_rule": "Observed-only lead only: >=30 positive usable revision rows with joined theme lifecycle, >=8 constructive and >=8 crowded/breaking rows, H10 avg return and win rate constructive > crowded/breaking, H5/H20 not both inverted, max single ticker share <=35%; no strategy behavior accepted.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-011.md",
+  "causal_components": [
+    "PIT estimate revision source rows from exp-20260526-006",
+    "candidate-level named theme lifecycle join",
+    "sector-cache proxy theme fallback for otherwise unthemed tickers",
+    "OHLCV H5/H10/H20 outcome attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "expectation_revision_theme_lifecycle_context_v1",
+  "claimed_at": "2026-07-09T08:06:06+00:00",
+  "completed_at": "2026-07-09T08:19:42+00:00",
+  "created_at": "2026-07-09T08:05:53+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-011",
+  "experiment_uid": "expuid-dddb61a1d675476a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T08:05:53+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "expectation_theme_lifecycle_context"
+  },
+  "hypothesis": "Observed-only alpha: positive PIT estimate-revision candidate rows should have better forward outcomes when candidate-level theme lifecycle context is birth/expansion/neutral rather than mania/exhaustion/collapse, because revision drift should persist when theme participation is broadening rather than crowded or breaking.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "expectation_revision_theme_lifecycle_context_v1"
+  ],
+  "mechanism_family": "expectation_drift_residual_pead",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260526-036",
+    "exp-20260707-004",
+    "exp-20260706-010",
+    "exp-20260709-002"
+  ],
+  "new_evidence_type": "reopened_measurement_blocker_candidate_level_context_join",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.75,
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "score": 0.632,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "post_earnings_positive_surprise_drift_candidate_pool",
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "analyst_revision_acceleration_residual_leadership_candidate_pool",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "short_horizon_pead_readiness_probe",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "alpha",
+        "because",
+        "better",
+        "birth",
+        "breadth",
+        "breaking",
+        "broadening",
+        "collapse",
+        "context",
+        "crowded",
+        "drift",
+        "estimate",
+        "exhaustion",
+        "expansion",
+        "expectation",
+        "forward",
+        "have",
+        "is",
+        "level",
+        "lifecycle",
+        "mania",
+        "neutral",
+        "observed",
+        "only",
+        "or",
+        "outcomes",
+        "participation",
+        "pead",
+        "persist",
+        "pit",
+        "positive",
+        "probe",
+        "rather",
+        "residual",
+        "revision",
+        "rows",
+        "should",
+        "than",
+        "theme",
+        "when"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.75,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger",
+        "reopen_condition": "Next alpha-compliant revision work needs h3/h5/h10 settlement for these rows plus materially more matched/non-flat rows, another settled production revision cohort, or a different unsaturated PIT expectation source.",
+        "score": 0.632,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_persistence_underreaction_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_drift_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer production-visible event-quality field such as guidance direction, same-event revenue/EPS mix, or audited filing/news tone.",
+        "score": 0.6186,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "analyst_revision_acceleration_residual_leadership_candidate_pool",
+        "reopen_condition": "If this fails, leave short-window revision acceleration frozen until a real PIT analyst revision source or materially broader expectation-trajectory data arrives.",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "short_horizon_pead_readiness_probe",
+        "reopen_condition": "Add PIT last_earnings_date/report_date and post-earnings gap-failure fields to daily snapshots.",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Reopen condition satisfied from exp-20260526-036: candidate-level theme lifecycle context is now joined to PIT estimate-revision rows; this is not a revision threshold/source retune, not another forward_replacement_value field, and not a SEC/news item enumeration.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "revision_expectation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Reopen condition satisfied from exp-20260526-036: candidate-level theme lifecycle context is now joined to PIT estimate-revision rows; this is not a revision threshold/source retune, not another forward_replacement_value field, and not a SEC/news item enumeration.",
+        "categories": [],
+        "invalid_same_source_field_only": true,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Reopen condition satisfied from exp-20260526-036: candidate-level theme lifecycle context is now joined to PIT estimate-revision rows; this is not a revision threshold/source retune, not another forward_replacement_value field, and not a SEC/news item enumeration.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.3143,
+      "accepts": 11,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 35
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "theme_context_sparse",
+      "no_h10_separation",
+      "ticker_concentration",
+      "revision_family_already_captured"
+    ],
+    "confidence_reason": "exp-20260526-036 explicitly parked this line until candidate-level breadth/theme fields could be joined; the repo now has theme lifecycle and sector cache context, while the historical rows are settled, but revision families are heavily explored and may already be captured.",
+    "recorded_at": "2026-07-09T08:19:42+00:00"
+  },
+  "prior_trial_count": 9,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_data_gap_theme_lifecycle_comparator_sparse",
+    "artifact": "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "log": "experiments/logs/exp-20260709-011.json",
+    "runner": "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "gate4": {
+      "passed": false,
+      "canonical_backtest_required": false,
+      "strategy_behavior_changed": false,
+      "note": "An observed-only lead can only unlock a later default-off paper or ranking Gate 1-4 experiment."
+    },
+    "evaluation": {
+      "primary_joined_h10_rows": 41,
+      "bucket_counts": {
+        "constructive": 39,
+        "crowded_breaking": 2
+      },
+      "criteria": {
+        "joined_rows_gte_30": true,
+        "constructive_rows_gte_8": true,
+        "crowded_breaking_rows_gte_8": false,
+        "h10_avg_return_constructive_gt_crowded": false,
+        "h10_win_rate_constructive_gt_crowded": true,
+        "h5_h20_not_both_inverted": true,
+        "max_single_ticker_share_lte_35pct": true
+      }
+    },
+    "summary": "Joined context or constructive/crowded comparator rows did not meet the predeclared sample-size floor."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-011.json",
+  "single_causal_variable": "expectation_revision_theme_lifecycle_context_v1",
+  "status": "observed_only_data_gap",
+  "ticket_file": "experiments/tickets/exp-20260709-011.json",
+  "trial_family": "expectation_breadth_theme_context_probe",
+  "trial_variant_id": "theme_lifecycle_context_join_v1",
+  "alpha_hypothesis": "Observed-only alpha: positive PIT estimate-revision candidate rows should have better forward outcomes when candidate-level theme lifecycle context is birth/expansion/neutral rather than mania/exhaustion/collapse, because revision drift should persist when theme participation is broadening rather than crowded or breaking.",
+  "implementation_mode": "self_registered_observed_only_runner",
+  "new_evidence_axis": "Reopen condition satisfied from exp-20260526-036: candidate-level theme lifecycle context is joined to the historical PIT positive revision rows. This is not a revision threshold/source retune, not another forward_replacement_value field, and not a SEC/news item enumeration.",
+  "decision": "observed_only_data_gap_theme_lifecycle_comparator_sparse",
+  "artifact": "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+  "log": "experiments/logs/exp-20260709-011.json",
+  "gate1": {
+    "passed": true,
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "note": "Read-only attribution; no before/after core strategy metric change."
+  },
+  "gate2": {
+    "passed": true,
+    "rule_dependencies": [
+      "exp-20260526-006 PIT primary positive revision rows",
+      "warehouse OHLCV overlay for PIT features and H5/H10/H20 outcomes",
+      "theme_lifecycle_surface.DEFAULT_THEME_MAP",
+      "broad_market_sector_map cache for fallback sector proxy theme"
+    ],
+    "entry_date_target_price_sentinel": {
+      "not_applicable": true,
+      "reason": "No executable signal generation or backtester position contract is changed."
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "passed": false,
+    "canonical_backtest_required": false,
+    "strategy_behavior_changed": false,
+    "note": "An observed-only lead can only unlock a later default-off paper or ranking Gate 1-4 experiment."
+  },
+  "production_impact": {
+    "observed_only_attribution": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "shared_policy_changed": false,
+    "llm_change_scope": "none"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The parked context join is now measurable, but the result depends on whether the sector proxy produces enough crowded/breaking rows. Default named themes alone remain a sparse subset.",
+    "forbidden_near_neighbor_retry": "Do not retune estimate-revision thresholds, hold periods, or residual overextension states from this result. If this closes as data_gap, the only valid reopen axis is a broader PIT theme taxonomy or materially more settled candidate-level rows.",
+    "new_evidence_required": "A valid reopen needs a PIT named-theme taxonomy or materially more settled candidate-level revision rows that produce at least 30 joined rows and at least 8 rows on both constructive and crowded/breaking lifecycle sides.",
+    "next_evidence_needed": "If observed-only lead: build a default-off paper context overlay with shared helper and full Gate 1-4. If data_gap: park until a PIT named-theme taxonomy covers at least 30 rows and both lifecycle sides have >=8 settled rows."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-09T08:19:42+00:00"
+}

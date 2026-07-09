@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-08.
+Last refreshed: 2026-07-09.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -931,6 +931,22 @@ source/fingerprint guard maintenance, and train-before-test source governance,
 not SEC item/text regex retunes, crypto EMA retunes, or all-row kill-switch
 threshold sweeps.
 
+The July 9 batch was mostly plumbing plus negative alpha reads. The accepted
+repairs are valuable because they protect future evidence: live position-control
+ledger/daily wiring makes OK-to-add and core-slot state machine-checkable,
+warehouse split repair fixes frozen pre-split OHLCV rows before refresh upserts,
+and options-forward autowiring can now settle rows from the SQLite warehouse
+without manual snapshot paths. These are measurement contracts, not alpha
+promotions. Broad dispersion/skew/source-state routers, APP/META single-name
+timing, split-repaired theme-peer revalidation, expectation-theme lifecycle,
+and broad-dispersion core-entry admission did not create deployable policy
+evidence. The only positive idea was official-government space catalyst events,
+but promotion failed because canonical coverage is not ready. SEC 6-K historical
+text and SBC grant-value normalization are still blocked by local text/evidence
+coverage. Default next work is to let the repaired ledgers accumulate settled
+replacement-value rows, not to retune dispersion, skew, single-name archetypes,
+space catalyst filters, 6-K text regexes, or SBC ratio variants.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -1029,6 +1045,16 @@ watchlist-scale enriched closed cash/SPY/QQQ replacement rows with acceptable
 concentration. The only fresh alpha hypothesis worth carrying forward is a
 train-selected source-level kill switch once enough pre-cutoff rows exist; the
 July 8 all-row lead is not policy-ready.
+
+July 9 status: live position-control, split-adjusted OHLCV refresh, and
+options-forward warehouse settlement are accepted measurement surfaces. They
+should improve future row quality but do not change trading policy. The broad
+dispersion/skew family, APP/META single-name timing, and current source-state
+router attempts are rejected or observed-only negative. Space catalyst direct
+official events are a watchlist lead only; do not promote until canonical
+coverage and shared-helper replay exist. SEC 6-K and SBC grant-value work should
+wait for richer local text/proxy evidence rather than another regex or ratio
+reslice.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -2082,6 +2108,29 @@ production-visible field:
   observed-only policy checks versus fee-aware BTC buy-and-hold and cash.
   Reopen only with materially more saved production snapshots, a new execution
   cost/liquidity surface, or a different predeclared crypto policy family;
+- broad dispersion, skew, source-state router, or core-entry admission gates
+  that only retune dispersion percentile, average-correlation cutoffs, skew
+  buckets, source/source-family slices, top-N, hold, cooldown, or response
+  shape on the current forward rows. The July 9 reads did not produce a
+  train-selected deployable policy. Reopen only with materially more settled
+  replacement-value rows, a joint predeclared covariance/capacity model, or a
+  new PIT breadth/dispersion data surface;
+- APP/META single-name specialist timing retries that only change the same
+  OHLCV archetypes, trend/reclaim/breakout labels, lookbacks, hold days,
+  cooldown, or notional. `exp-20260709-009` did not justify a standalone
+  ticker policy. Reopen only with a new ticker-specific event/source surface or
+  materially more settled forward rows under a fixed helper;
+- space catalyst direct-official promotion before canonical coverage and a
+  shared helper exist. `exp-20260709-014` is a positive observed-only lead, but
+  `exp-20260709-015` failed promotion coverage. Do not retune event wording,
+  official-source filters, peers, top-N, hold, cooldown, or notional from the
+  same sparse surface;
+- SEC 6-K text and SBC grant-value normalization retries that only add regexes
+  to currently missing local evidence. `exp-20260709-012` and
+  `exp-20260709-018` show the blocker is coverage/evidence availability, not
+  a threshold. Reopen with materially more accession-bounded local text,
+  proxy/vesting/grant-value data, or a distinct production-visible document
+  source;
 - fingerprint/data-source coverage repairs as alpha evidence. ORTEX,
   intraday structured news, SEC filer status, pilot scorecard, space catalyst,
   and news-event exposure classification repairs are accepted guard plumbing.

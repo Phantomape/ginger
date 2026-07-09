@@ -1,0 +1,99 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Back-adjusted 4 unadjusted stock splits in the OHLCV warehouse (KLAC 10:1 <=2026-04-24, CRWD 4:1 <=2026-06-29, DD 1:3 reverse <=2026-06-22, MLI 2:1 <=2026-06-26; 2767 cold + 72 hot rows across both tiers), recorded in new split_adjustments ledger table; added quant/ohlcv_split_repair.py (scan/apply/list CLI, idempotent, crash-resumable) and wired an overlap-day split guard into refresh_warehouse_ohlcv (repair_splits=True default) so future splits are detected and repaired at write time. Strategy behavior unchanged; affected tickers are not in the core traded universe.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/ohlcv_split_repair.py",
+    "quant/ohlcv_warehouse_refresh.py",
+    "quant/test_ohlcv_split_repair.py",
+    "quant/test_ohlcv_warehouse_refresh.py",
+    "quant/experiments/exp_20260709_008_warehouse_split_back_adjustment.py",
+    "data/experiments/exp-20260709-008/exp_20260709_008_warehouse_split_back_adjustment.json",
+    "data/experiments/exp-20260709-008/scan_before.json",
+    "data/experiments/exp-20260709-008/scan_after.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite"
+  ],
+  "changed_variable": "warehouse OHLCV split-adjustment consistency (ohlcv_overlay continuity across split boundaries)",
+  "component": "quant/experiments/exp_20260709_008_warehouse_split_back_adjustment.py, data/experiments/exp-20260709-008/exp_20260709_008_warehouse_split_back_adjustment.json, experiments/cards/exp-20260709-008.md, experiments/manifests/exp-20260709-008.json, experiments/tickets/exp-20260709-008.json, experiments/logs/exp-20260709-008.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260709-008",
+  "hypothesis": "Warehouse OHLCV series for tickers that split after their frozen-tier rows were written (KLAC 10:1 at 2026-04-27, CRWD 4:1 at 2026-06-30) carry a permanent unadjusted discontinuity that corrupts returns/ATR/drawdown for any consumer; back-adjust pre-split rows by the round split factor in both tiers and add a write-path split-discontinuity guard to ohlcv_warehouse_refresh.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Vendor-verified split calendar (yfinance): KLAC 10:1 eff 2026-06-12, CRWD 4:1 eff 2026-07-02, DD 1-for-3 eff 2026-06-24, MLI 2:1 eff 2026-07-01. Before scan: 4 cross-batch round-factor discontinuities; after scan: 0; all 4 boundary windows continuous (<30% day moves). Contamination audit: no default-on live/order path consumed corrupt series (core signals price off yfinance directly); contaminated artifacts: data/kova/rs_proxy daily files (KLAC 20260612+, CRWD 20260702+, DD 20260623+, MLI 20260701+; regenerate clean going forward), news_event_exposure_observations rows for KLAC/CRWD after corruption dates; contaminated experiments: exp-20260622-025 (KLAC across boundary), exp-20260702-017 and exp-20260702-018 (KLAC/CRWD theme-peer propagation rows). DD/MLI absent from PEAD broad universe and propagation artifacts. Residual risk: seed_warehouse_from_snapshots(update_existing=True) would regress a repaired ticker only if it appears in snapshot JSONs — none of the 4 do; split_adjustments ledger + scan CLI catch any regression.",
+  "parameters": {
+    "locked_variables": [
+      "warehouse OHLCV split-adjustment consistency (ohlcv_overlay continuity across split boundaries)"
+    ],
+    "single_causal_variable": "warehouse OHLCV split-adjustment consistency (ohlcv_overlay continuity across split boundaries)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to re-scan or re-apply these four boundaries; the repair is recorded in the split_adjustments ledger and re-runs return already_applied. Do not hand-patch warehouse prices for future splits — the refresh guard handles them; if it misses one, fix the guard, not the data by hand. Routine future guard-triggered repairs are pipeline behavior, not new experiments (fault recovery exemption applies only if the guard itself breaks).",
+    "new_evidence_required": "A new experiment on this surface needs either a guard false-positive/false-negative on a real future split, a snapshot re-seed regression (repaired ticker appearing in snapshot JSONs), or a non-split adjustment class (e.g. non-round spinoff factors like DD 2.39x on 2025-11-03, which the round-factor scan deliberately does not cover — DD's cold series was single-batch and internally consistent, so no repair was needed there).",
+    "realized_failure_mode": null,
+    "why_result_happened": "Every warehouse write path freezes existing rows (update_existing=False), so a split occurring after a ticker's rows were written leaves stored history at the pre-split scale while later auto-adjusted vendor fetches insert post-split-scale rows next to it. Four such boundaries existed (KLAC/CRWD/DD/MLI). Back-adjusting the stale rows by the vendor-verified round factor restored ohlcv_overlay continuity (scan 4 hits -> 0), and the new overlap-day guard in refresh_warehouse_ohlcv repairs future cases at write time because fetched frames always overlap already-stored dates."
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "note": "refresh_warehouse_ohlcv gains a default-on split guard (data hygiene only); no signal/order path changed. Affected tickers are outside the core traded universe; core live signals price off yfinance directly.",
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": true,
+    "scope": "measurement_repair_warehouse_split_back_adjustment",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_008_warehouse_split_back_adjustment.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\test_ohlcv_split_repair.py quant\test_ohlcv_warehouse_refresh.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\ohlcv_split_repair.py scan",
+    ".\\.venv\\Scripts\\python.exe -B quant\\ohlcv_split_repair.py list"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-09T06:24:41+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260709-008"
+}

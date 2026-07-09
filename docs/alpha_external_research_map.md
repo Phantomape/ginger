@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-08.
+Last refreshed: 2026-07-09.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,39 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### Useful Alphas Need Live-Cap And Cost Reality
+
+Chen and Welch's July 2026 "What Useful Alphas?" is a direct warning against
+mining published anomaly catalogs or small-cap effects as if they were deployable
+Ginger edges. Their headline result is that long-short anomaly returns decay
+sharply after 2005 and after excluding microcaps; modest luck and transaction
+cost allowances can erase the remaining non-micro edge. The local translation:
+every broad factor, universe expansion, and academic-anomaly-inspired source
+must prove non-micro, after-cost replacement value against the displaced helper,
+not just cross-sectional prediction quality.
+
+Implementable fields:
+
+- `published_alpha_family_id`
+- `post_2005_non_micro_placebo_delta`
+- `microcap_dependency_bucket`
+- `capacity_feasible_universe_share`
+- `transaction_cost_edge_buffer_bps`
+- `luck_adjusted_t_stat_bucket`
+- `accepted_helper_incremental_value`
+
+Controls:
+
+- report results separately for non-micro / liquid names before any broad
+  source promotion;
+- compare against simple recency, momentum, size/style, and accepted-helper
+  baselines on the same PIT dates;
+- require a positive after-cost buffer, not just nominal anomaly spread;
+- treat academic-anomaly imports as hypothesis generators until Gate 1-4 clears
+  with Ginger's capacity and displacement constraints.
+
+Source: <https://arxiv.org/abs/2607.06502>
 
 ### LLM Research Is A Pipeline Checklist, Not A Trading Delegate
 
@@ -697,6 +730,96 @@ Controls:
   constraints or after turnover/costs.
 
 Source: <https://arxiv.org/abs/2607.05320>
+
+### Rotating Driver Manifolds Are Rebalance-Risk Context
+
+Dynamic causal portfolio choice extends the separator idea: the relevant driver
+geometry itself can rotate or jump, and that motion becomes a first-order
+portfolio risk. Ginger should use this as a portfolio-covariance and allocator
+diagnostic, not an optimizer mandate. A source router that works in one driver
+state may fail when the common-driver manifold rotates, so experiments should
+log driver-set stability and rebalance pressure before promoting allocation or
+capacity changes.
+
+Implementable fields:
+
+- `driver_manifold_version`
+- `driver_loading_rotation_bucket`
+- `conditioning_set_change_flag`
+- `geometry_jump_event_id`
+- `rebalance_pressure_bucket`
+- `unhedgeable_driver_change_risk`
+- `driver_state_allocator_replacement_value`
+
+Controls:
+
+- predeclare the observable driver set and update cadence;
+- score whether source/router performance is stable across driver rotations;
+- report turnover and capacity impact from geometry changes;
+- reject allocator gains that depend on hindsight driver-set changes.
+
+Source: <https://arxiv.org/abs/2607.06702>
+
+### Global Factor Detection Needs Eigenvector Breadth Checks
+
+The July 2026 iterative global-factor paper combines adaptive
+Marcenko-Pastur-edge recalibration with eigenvector participation-ratio filters
+to avoid confusing weak global factors with high-dimensional noise near the BBP
+transition. The Ginger use is a diagnostic around regime, covariance, and broad
+source claims: a detected factor should have enough eigenvector breadth to be a
+real common state, and source performance should be tested after removing or
+conditioning on those global factors.
+
+Implementable fields:
+
+- `global_factor_detection_version`
+- `mp_edge_recalibration_id`
+- `eigenvector_participation_ratio`
+- `bbp_near_edge_flag`
+- `retained_global_factor_count`
+- `factor_breadth_bucket`
+- `source_residual_value_after_global_factors`
+
+Controls:
+
+- separate broad market/factor exposure from source-specific replacement value;
+- block factor-conditioned policies when participation ratio is too localized
+  or unstable;
+- compare covariance and regime diagnostics with and without retained factors;
+- use global-factor counts as context until Gate 1-4 proves a shared policy.
+
+Source: <https://arxiv.org/abs/2607.06908>
+
+### RL Manipulation Results Are Execution Safeguards
+
+The July 2026 RL manipulation paper shows that a model-free agent can discover
+profitable price-manipulative strategies in some nonlinear-impact settings when
+model-based parameter estimates are noisy. Ginger should treat this as a
+safety and market-impact lesson: learned allocators, execution policies, or
+agentic tools need explicit manipulation, impact, and inventory-flow controls
+before they touch live orders.
+
+Implementable fields:
+
+- `learning_execution_policy_id`
+- `nonlinear_permanent_impact_bucket`
+- `temporary_impact_cost_bucket`
+- `manipulation_opportunity_flag`
+- `impact_parameter_uncertainty_bucket`
+- `inventory_roundtrip_constraint_passed`
+- `execution_policy_safeguard_reason`
+
+Controls:
+
+- forbid learned policies from optimizing round-trip PnL without explicit
+  impact and manipulation constraints;
+- report impact-parameter uncertainty and inventory path shape;
+- keep RL/agentic execution research sandboxed until compliance and
+  production-order safeguards are machine-checkable;
+- prefer deterministic no-trade / inaction bands when impact uncertainty is
+  high.
+
+Source: <https://arxiv.org/abs/2607.06121>
 
 ### Overnight And Intraday Tails Need Separate Risk States
 

@@ -1,0 +1,199 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_017_options_forward_ohlcv_autowire.py",
+    "scripts/run_options_forward_ledger.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "data/experiments/exp-20260709-017/exp_20260709_017_options_forward_ohlcv_autowire.json",
+    "data/experiments/exp-20260709-017/options_forward/",
+    "experiments/cards/exp-20260709-017.md",
+    "experiments/manifests/exp-20260709-017.json",
+    "experiments/tickets/exp-20260709-017.json",
+    "experiments/logs/exp-20260709-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-017.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "options_forward_daily_ohlcv_settlement_autowire_v1",
+  "claimed_at": "2026-07-09T14:08:13+00:00",
+  "completed_at": "2026-07-09T14:14:30+00:00",
+  "created_at": "2026-07-09T14:08:05+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-017",
+  "experiment_uid": "expuid-52b8c87823694479",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T14:08:05+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_forward_ohlcv_autowire"
+  },
+  "hypothesis": "Repair options_forward daily settlement wiring so default-off options candidate rows can accumulate closed OHLCV outcomes without requiring a manual OPTIONS_FORWARD_OHLCV_SNAPSHOT env var.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "options_forward_daily_ohlcv_settlement_autowire_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-002",
+    "exp-20260630-010"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accumulate",
+        "autowire",
+        "can",
+        "closed",
+        "daily",
+        "env",
+        "forward",
+        "manual",
+        "options",
+        "outcomes",
+        "repair",
+        "requiring",
+        "rows",
+        "settlement",
+        "snapshot",
+        "so",
+        "var",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "non_ohlcv_options_structure_overlay",
+        "reopen_condition": null,
+        "score": 0.19,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_outcome_ledger_daily_wiring",
+        "reopen_condition": "Next alpha-compliant revision work needs H5/H10 settlement and materially more matched/non-flat rows, another settled production revision cohort, or a distinct unsaturated PIT expectation source.",
+        "score": 0.1887,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "kova_snapshot",
+        "family_key": "kova_multisource_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.1833,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "recovered_quant_signals_entry_candidate_forward_readiness",
+        "reopen_condition": "Generate or recover session-date quant_signals artifacts with candidate rows, then settle them against PIT local OHLCV/quote bars before testing allocation value.",
+        "score": 0.1786,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1786,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+    "after_result_file": "data/experiments/exp-20260709-017/options_forward/options_forward_candidate_ledger_report.json",
+    "delta_metrics": {}
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-017.json",
+  "single_causal_variable": "options_forward_daily_ohlcv_settlement_autowire_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260709-017.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260709-017"
+}

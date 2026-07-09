@@ -74,6 +74,11 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    分类为键；未收录的新种群会落到 `other` 并被 guard 直接放行——新建数据面 / observer /
    种群时必须在同一实验里给 `_DATA_SOURCE_KEYWORDS` 补关键词，否则该面的 ✅ 实际是 ⚠️
    （案例：2026-07-05/06 deep-drawdown 5 连发与 entity-theme 11 小时 3 连发均因 `other` 逃逸）。
+   反向误配同样失效：关键词碰撞会把探针路由进**错误种群**（over-match），令该面的 streak /
+   saturation 计数悄然错位——当 fingerprint 的 data_source 与真实证据面不符时，必须按**真实面**
+   自查各通道阈值，并在 log 里记 fingerprint caveat（案例：2026-07-09 exp-016 的
+   forward_replacement_value 探针因假设含 "dead-chop" 被记为 chop_forward_observer，恰逢该面
+   005/006/007 三连 observed-only 收尾之后）。
    **共同例外**：真正的故障恢复（orphan temp、上游格式变更、污染快照、语义相关性缺陷、发布
    异常）按 measurement repair 占 ID，不计入以上任何阈值。
    各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查

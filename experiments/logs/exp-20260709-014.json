@@ -1,0 +1,1237 @@
+{
+  "acceptance_rule": "Observed-only lead only: >=15 de-duplicated closed decision rows, >=8 direct official defense-budget rows, >=4 attention-only comparator rows, direct official rows positive on all 10d/20d cash/SPY/QQQ/ARKX/UFO average cells with >=60% win rate, direct official beats attention-only in at least 8 of those 10 average cells, and max direct single-ticker share <=40%. same_theme_replacement_value is diagnostic because the basket can contain the event ticker and broad theme beta; no strategy behavior is accepted.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_014_space_catalyst_direct_event_validation.py",
+    "data/experiments/exp-20260709-014/exp_20260709_014_space_catalyst_direct_event_validation.json",
+    "experiments/logs/exp-20260709-014.json",
+    "experiments/cards/exp-20260709-014.md",
+    "experiments/manifests/exp-20260709-014.json",
+    "experiments/tickets/exp-20260709-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Space catalyst official defense-budget events should have better forward relative value than attention-only space proxies when evaluated as de-duplicated closed event decisions across cash, SPY, QQQ, ARKX, and UFO comparators; this would indicate a direct official catalyst sleeve lead rather than broad theme beta.",
+  "baseline_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "causal_components": [
+    "space_catalyst_event_state_shadow_ledger",
+    "deduplicated_closed_event_decisions",
+    "semantic_bucket_direct_vs_attention",
+    "multi_benchmark_10d_20d_relative_value",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_014_space_catalyst_direct_event_validation.py",
+    "data/experiments/exp-20260709-014/exp_20260709_014_space_catalyst_direct_event_validation.json",
+    "experiments/logs/exp-20260709-014.json",
+    "experiments/cards/exp-20260709-014.md",
+    "experiments/manifests/exp-20260709-014.json",
+    "experiments/tickets/exp-20260709-014.json"
+  ],
+  "changed_variable": "space_catalyst_direct_official_event_provenance_validation_v1",
+  "decision": "observed_only_positive_space_catalyst_direct_official_lead_not_promoted",
+  "evaluation": {
+    "bucket_counts": {
+      "attention_only": 5,
+      "defense_budget_theme": 10,
+      "fundamental_contract_regulatory": 3
+    },
+    "dedup_closed_decision_rows": 18,
+    "dedupe_key": [
+      "event_id",
+      "ticker",
+      "entry_date",
+      "semantic_bucket",
+      "theme_segment"
+    ],
+    "dedupe_order": [
+      "asof_date",
+      "logged_at"
+    ],
+    "diagnostic": {
+      "same_theme_attention_10d": {
+        "avg": -598.188,
+        "count": 5,
+        "max": 966.6,
+        "median": -547.51,
+        "min": -1590.81,
+        "positive_count": 1,
+        "win_rate": 0.2
+      },
+      "same_theme_attention_20d": {
+        "avg": 11.822,
+        "count": 5,
+        "max": 390.68,
+        "median": 167.91,
+        "min": -440.6,
+        "positive_count": 3,
+        "win_rate": 0.6
+      },
+      "same_theme_direct_10d": {
+        "avg": 0.0,
+        "count": 10,
+        "max": 2332.78,
+        "median": 160.53,
+        "min": -1885.03,
+        "positive_count": 5,
+        "win_rate": 0.5
+      },
+      "same_theme_direct_20d": {
+        "avg": 0.001,
+        "count": 10,
+        "max": 9045.91,
+        "median": -823.285,
+        "min": -4454.31,
+        "positive_count": 4,
+        "win_rate": 0.4
+      }
+    },
+    "direct_vs_attention": {
+      "cell_count": 10,
+      "cells": [
+        {
+          "attention_avg": 1314.334,
+          "direct_avg": 1927.76,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 613.426,
+          "direct_positive_avg": true,
+          "direct_win_rate": 1.0,
+          "direct_win_rate_ge_60pct": true,
+          "field": "cash_relative_pnl",
+          "horizon": "10d"
+        },
+        {
+          "attention_avg": 1188.012,
+          "direct_avg": 1590.36,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 402.348,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.9,
+          "direct_win_rate_ge_60pct": true,
+          "field": "spy_relative_value",
+          "horizon": "10d"
+        },
+        {
+          "attention_avg": 1165.826,
+          "direct_avg": 1189.16,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 23.334,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.7,
+          "direct_win_rate_ge_60pct": true,
+          "field": "qqq_relative_value",
+          "horizon": "10d"
+        },
+        {
+          "attention_avg": 964.03,
+          "direct_avg": 1428.36,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 464.33,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.9,
+          "direct_win_rate_ge_60pct": true,
+          "field": "arkx_relative_value",
+          "horizon": "10d"
+        },
+        {
+          "attention_avg": -149.726,
+          "direct_avg": 810.07,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 959.796,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.7,
+          "direct_win_rate_ge_60pct": true,
+          "field": "ufo_relative_value",
+          "horizon": "10d"
+        },
+        {
+          "attention_avg": -12.382,
+          "direct_avg": 4576.811,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 4589.193,
+          "direct_positive_avg": true,
+          "direct_win_rate": 1.0,
+          "direct_win_rate_ge_60pct": true,
+          "field": "cash_relative_pnl",
+          "horizon": "20d"
+        },
+        {
+          "attention_avg": -13.224,
+          "direct_avg": 4081.541,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 4094.765,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.8,
+          "direct_win_rate_ge_60pct": true,
+          "field": "spy_relative_value",
+          "horizon": "20d"
+        },
+        {
+          "attention_avg": -22.592,
+          "direct_avg": 3582.421,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 3605.013,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.8,
+          "direct_win_rate_ge_60pct": true,
+          "field": "qqq_relative_value",
+          "horizon": "20d"
+        },
+        {
+          "attention_avg": 119.91,
+          "direct_avg": 3653.221,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 3533.311,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.8,
+          "direct_win_rate_ge_60pct": true,
+          "field": "arkx_relative_value",
+          "horizon": "20d"
+        },
+        {
+          "attention_avg": 175.73,
+          "direct_avg": 1654.221,
+          "direct_beats_attention": true,
+          "direct_minus_attention": 1478.491,
+          "direct_positive_avg": true,
+          "direct_win_rate": 0.8,
+          "direct_win_rate_ge_60pct": true,
+          "field": "ufo_relative_value",
+          "horizon": "20d"
+        }
+      ],
+      "direct_beats_attention_cells": 10,
+      "direct_positive_avg_cells": 10,
+      "direct_win_rate_ge_60pct_cells": 10
+    },
+    "gate": {
+      "criteria": {
+        "attention_only_rows_gte_4": true,
+        "direct_beats_attention_at_least_8_core_cells": true,
+        "direct_max_single_ticker_share_lte_40pct": true,
+        "direct_official_rows_gte_8": true,
+        "direct_positive_all_10d_20d_core_cells": true,
+        "direct_win_rate_ge_60pct_all_core_cells": true,
+        "strategy_behavior_changed_false": true,
+        "total_dedup_closed_rows_gte_15": true
+      },
+      "data_gap": false,
+      "failed_criteria": [],
+      "passed": true,
+      "same_theme_replacement_value_binding": false,
+      "same_theme_replacement_value_note": "Reported as a diagnostic only because the same-theme basket can contain the event ticker and broad space-theme beta; it is not a binding pass/fail comparator for this gate shape.",
+      "thresholds": {
+        "max_direct_single_ticker_share": 0.4,
+        "min_attention_rows": 4,
+        "min_direct_beats_attention_cells": 8,
+        "min_direct_rows": 8,
+        "min_total_rows": 15
+      }
+    },
+    "groups": {
+      "all_dedup_closed": {
+        "event_counts": {
+          "asts_fcc_d2d_authorization_20260421": 1,
+          "golden_dome_sbi_awards_20260424": 10,
+          "lunr_nasa_clps_20260324": 1,
+          "rklb_record_backlog_launch_deal_20260507": 1,
+          "spacex_ipo_attention_20260507": 3,
+          "uap_release_attention_20260508": 2
+        },
+        "horizons": {
+          "10d": {
+            "arkx_relative_value": {
+              "avg": 1146.5578,
+              "count": 18,
+              "max": 3761.14,
+              "median": 1131.37,
+              "min": -1669.08,
+              "positive_count": 14,
+              "win_rate": 0.777778
+            },
+            "cash_relative_pnl": {
+              "avg": 1542.2706,
+              "count": 18,
+              "max": 4260.54,
+              "median": 1580.44,
+              "min": -1651.31,
+              "positive_count": 17,
+              "win_rate": 0.944444
+            },
+            "qqq_relative_value": {
+              "avg": 1030.1328,
+              "count": 18,
+              "max": 3521.94,
+              "median": 1166.51,
+              "min": -2271.97,
+              "positive_count": 14,
+              "win_rate": 0.777778
+            },
+            "same_theme_replacement_value": {
+              "avg": -169.2711,
+              "count": 18,
+              "max": 2332.78,
+              "median": -212.555,
+              "min": -1885.03,
+              "positive_count": 8,
+              "win_rate": 0.444444
+            },
+            "spy_relative_value": {
+              "avg": 1276.4967,
+              "count": 18,
+              "max": 3923.14,
+              "median": 1357.105,
+              "min": -1969.36,
+              "positive_count": 16,
+              "win_rate": 0.888889
+            },
+            "ufo_relative_value": {
+              "avg": 429.6572,
+              "count": 18,
+              "max": 3142.85,
+              "median": 321.125,
+              "min": -1354.86,
+              "positive_count": 10,
+              "win_rate": 0.555556
+            }
+          },
+          "20d": {
+            "arkx_relative_value": {
+              "avg": 2276.3283,
+              "count": 18,
+              "max": 12699.13,
+              "median": 1574.295,
+              "min": -801.09,
+              "positive_count": 13,
+              "win_rate": 0.722222
+            },
+            "cash_relative_pnl": {
+              "avg": 2804.1178,
+              "count": 18,
+              "max": 13622.72,
+              "median": 2040.46,
+              "min": -566.61,
+              "positive_count": 16,
+              "win_rate": 0.888889
+            },
+            "qqq_relative_value": {
+              "avg": 2135.7333,
+              "count": 18,
+              "max": 12628.33,
+              "median": 1509.24,
+              "min": -871.89,
+              "positive_count": 11,
+              "win_rate": 0.611111
+            },
+            "same_theme_replacement_value": {
+              "avg": 55.3383,
+              "count": 18,
+              "max": 9045.91,
+              "median": -138.295,
+              "min": -4454.31,
+              "positive_count": 9,
+              "win_rate": 0.5
+            },
+            "spy_relative_value": {
+              "avg": 2460.3933,
+              "count": 18,
+              "max": 13127.45,
+              "median": 1689.51,
+              "min": -536.18,
+              "positive_count": 13,
+              "win_rate": 0.722222
+            },
+            "ufo_relative_value": {
+              "avg": 1124.25,
+              "count": 18,
+              "max": 10700.13,
+              "median": 598.525,
+              "min": -2800.09,
+              "positive_count": 12,
+              "win_rate": 0.666667
+            }
+          }
+        },
+        "max_single_ticker_share": 0.166667,
+        "rows": 18,
+        "ticker_counts": {
+          "ARKX": 2,
+          "ASTS": 2,
+          "BKSY": 1,
+          "GSAT": 1,
+          "IRDM": 1,
+          "LUNR": 2,
+          "PL": 1,
+          "RDW": 1,
+          "RKLB": 3,
+          "SATS": 1,
+          "UFO": 2,
+          "VSAT": 1
+        },
+        "top_ticker": "RKLB",
+        "unique_events": 6,
+        "unique_tickers": 12
+      },
+      "attention_only": {
+        "event_counts": {
+          "spacex_ipo_attention_20260507": 3,
+          "uap_release_attention_20260508": 2
+        },
+        "horizons": {
+          "10d": {
+            "arkx_relative_value": {
+              "avg": 964.03,
+              "count": 5,
+              "max": 2557.41,
+              "median": 1043.3,
+              "min": 0.0,
+              "positive_count": 3,
+              "win_rate": 0.6
+            },
+            "cash_relative_pnl": {
+              "avg": 1314.334,
+              "count": 5,
+              "max": 2871.91,
+              "median": 1357.8,
+              "min": 314.5,
+              "positive_count": 5,
+              "win_rate": 1.0
+            },
+            "qqq_relative_value": {
+              "avg": 1165.826,
+              "count": 5,
+              "max": 2783.19,
+              "median": 1269.08,
+              "min": 165.82,
+              "positive_count": 5,
+              "win_rate": 1.0
+            },
+            "same_theme_replacement_value": {
+              "avg": -598.188,
+              "count": 5,
+              "max": 966.6,
+              "median": -547.51,
+              "min": -1590.81,
+              "positive_count": 1,
+              "win_rate": 0.2
+            },
+            "spy_relative_value": {
+              "avg": 1188.012,
+              "count": 5,
+              "max": 2763.18,
+              "median": 1249.07,
+              "min": 205.77,
+              "positive_count": 5,
+              "win_rate": 1.0
+            },
+            "ufo_relative_value": {
+              "avg": -149.726,
+              "count": 5,
+              "max": 1514.11,
+              "median": 0.0,
+              "min": -1219.44,
+              "positive_count": 1,
+              "win_rate": 0.2
+            }
+          },
+          "20d": {
+            "arkx_relative_value": {
+              "avg": 119.91,
+              "count": 5,
+              "max": 766.84,
+              "median": 0.0,
+              "min": -222.77,
+              "positive_count": 2,
+              "win_rate": 0.4
+            },
+            "cash_relative_pnl": {
+              "avg": -12.382,
+              "count": 5,
+              "max": 775.58,
+              "median": 8.74,
+              "min": -566.61,
+              "positive_count": 3,
+              "win_rate": 0.6
+            },
+            "qqq_relative_value": {
+              "avg": -22.592,
+              "count": 5,
+              "max": 707.53,
+              "median": -59.31,
+              "min": -490.06,
+              "positive_count": 1,
+              "win_rate": 0.2
+            },
+            "same_theme_replacement_value": {
+              "avg": 11.822,
+              "count": 5,
+              "max": 390.68,
+              "median": 167.91,
+              "min": -440.6,
+              "positive_count": 3,
+              "win_rate": 0.6
+            },
+            "spy_relative_value": {
+              "avg": -13.224,
+              "count": 5,
+              "max": 753.89,
+              "median": -12.95,
+              "min": -536.18,
+              "positive_count": 2,
+              "win_rate": 0.4
+            },
+            "ufo_relative_value": {
+              "avg": 175.73,
+              "count": 5,
+              "max": 711.36,
+              "median": 0.0,
+              "min": -55.48,
+              "positive_count": 2,
+              "win_rate": 0.4
+            }
+          }
+        },
+        "max_single_ticker_share": 0.4,
+        "rows": 5,
+        "ticker_counts": {
+          "ARKX": 2,
+          "RKLB": 1,
+          "UFO": 2
+        },
+        "top_ticker": "ARKX",
+        "unique_events": 2,
+        "unique_tickers": 3
+      },
+      "direct_official_defense_budget": {
+        "event_counts": {
+          "golden_dome_sbi_awards_20260424": 10
+        },
+        "horizons": {
+          "10d": {
+            "arkx_relative_value": {
+              "avg": 1428.36,
+              "count": 10,
+              "max": 3761.14,
+              "median": 1588.89,
+              "min": -456.67,
+              "positive_count": 9,
+              "win_rate": 0.9
+            },
+            "cash_relative_pnl": {
+              "avg": 1927.76,
+              "count": 10,
+              "max": 4260.54,
+              "median": 2088.29,
+              "min": 42.73,
+              "positive_count": 10,
+              "win_rate": 1.0
+            },
+            "qqq_relative_value": {
+              "avg": 1189.16,
+              "count": 10,
+              "max": 3521.94,
+              "median": 1349.69,
+              "min": -695.87,
+              "positive_count": 7,
+              "win_rate": 0.7
+            },
+            "same_theme_replacement_value": {
+              "avg": 0.0,
+              "count": 10,
+              "max": 2332.78,
+              "median": 160.53,
+              "min": -1885.03,
+              "positive_count": 5,
+              "win_rate": 0.5
+            },
+            "spy_relative_value": {
+              "avg": 1590.36,
+              "count": 10,
+              "max": 3923.14,
+              "median": 1750.89,
+              "min": -294.67,
+              "positive_count": 9,
+              "win_rate": 0.9
+            },
+            "ufo_relative_value": {
+              "avg": 810.07,
+              "count": 10,
+              "max": 3142.85,
+              "median": 970.6,
+              "min": -1074.96,
+              "positive_count": 7,
+              "win_rate": 0.7
+            }
+          },
+          "20d": {
+            "arkx_relative_value": {
+              "avg": 3653.221,
+              "count": 10,
+              "max": 12699.13,
+              "median": 2829.935,
+              "min": -801.09,
+              "positive_count": 8,
+              "win_rate": 0.8
+            },
+            "cash_relative_pnl": {
+              "avg": 4576.811,
+              "count": 10,
+              "max": 13622.72,
+              "median": 3753.525,
+              "min": 122.5,
+              "positive_count": 10,
+              "win_rate": 1.0
+            },
+            "qqq_relative_value": {
+              "avg": 3582.421,
+              "count": 10,
+              "max": 12628.33,
+              "median": 2759.135,
+              "min": -871.89,
+              "positive_count": 8,
+              "win_rate": 0.8
+            },
+            "same_theme_replacement_value": {
+              "avg": 0.001,
+              "count": 10,
+              "max": 9045.91,
+              "median": -823.285,
+              "min": -4454.31,
+              "positive_count": 4,
+              "win_rate": 0.4
+            },
+            "spy_relative_value": {
+              "avg": 4081.541,
+              "count": 10,
+              "max": 13127.45,
+              "median": 3258.255,
+              "min": -372.77,
+              "positive_count": 8,
+              "win_rate": 0.8
+            },
+            "ufo_relative_value": {
+              "avg": 1654.221,
+              "count": 10,
+              "max": 10700.13,
+              "median": 830.935,
+              "min": -2800.09,
+              "positive_count": 8,
+              "win_rate": 0.8
+            }
+          }
+        },
+        "max_single_ticker_share": 0.1,
+        "rows": 10,
+        "ticker_counts": {
+          "ASTS": 1,
+          "BKSY": 1,
+          "GSAT": 1,
+          "IRDM": 1,
+          "LUNR": 1,
+          "PL": 1,
+          "RDW": 1,
+          "RKLB": 1,
+          "SATS": 1,
+          "VSAT": 1
+        },
+        "top_ticker": "ASTS",
+        "unique_events": 1,
+        "unique_tickers": 10
+      },
+      "fundamental_contract_regulatory": {
+        "event_counts": {
+          "asts_fcc_d2d_authorization_20260421": 1,
+          "lunr_nasa_clps_20260324": 1,
+          "rklb_record_backlog_launch_deal_20260507": 1
+        },
+        "horizons": {
+          "10d": {
+            "arkx_relative_value": {
+              "avg": 511.43,
+              "count": 3,
+              "max": 2557.41,
+              "median": 645.96,
+              "min": -1669.08,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "cash_relative_pnl": {
+              "avg": 637.2,
+              "count": 3,
+              "max": 2871.91,
+              "median": 691.0,
+              "min": -1651.31,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "qqq_relative_value": {
+              "avg": 273.8867,
+              "count": 3,
+              "max": 2783.19,
+              "median": 310.44,
+              "min": -2271.97,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "same_theme_replacement_value": {
+              "avg": -18.6467,
+              "count": 3,
+              "max": 966.6,
+              "median": 200.19,
+              "min": -1222.73,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "spy_relative_value": {
+              "avg": 377.76,
+              "count": 3,
+              "max": 2763.18,
+              "median": 339.46,
+              "min": -1969.36,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "ufo_relative_value": {
+              "avg": 127.2533,
+              "count": 3,
+              "max": 1514.11,
+              "median": 222.51,
+              "min": -1354.86,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            }
+          },
+          "20d": {
+            "arkx_relative_value": {
+              "avg": 1280.7167,
+              "count": 3,
+              "max": 2754.82,
+              "median": 766.84,
+              "min": 320.49,
+              "positive_count": 3,
+              "win_rate": 1.0
+            },
+            "cash_relative_pnl": {
+              "avg": 1589.3067,
+              "count": 3,
+              "max": 3411.19,
+              "median": 775.58,
+              "min": 581.15,
+              "positive_count": 3,
+              "win_rate": 1.0
+            },
+            "qqq_relative_value": {
+              "avg": 910.65,
+              "count": 3,
+              "max": 2329.23,
+              "median": 707.53,
+              "min": -304.81,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "same_theme_replacement_value": {
+              "avg": 312.3233,
+              "count": 3,
+              "max": 1630.05,
+              "median": 326.24,
+              "min": -1019.32,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            },
+            "spy_relative_value": {
+              "avg": 1179.2633,
+              "count": 3,
+              "max": 2625.13,
+              "median": 753.89,
+              "min": 158.77,
+              "positive_count": 3,
+              "win_rate": 1.0
+            },
+            "ufo_relative_value": {
+              "avg": 938.5467,
+              "count": 3,
+              "max": 2371.96,
+              "median": 711.36,
+              "min": -267.68,
+              "positive_count": 2,
+              "win_rate": 0.666667
+            }
+          }
+        },
+        "max_single_ticker_share": 0.333333,
+        "rows": 3,
+        "ticker_counts": {
+          "ASTS": 1,
+          "LUNR": 1,
+          "RKLB": 1
+        },
+        "top_ticker": "LUNR",
+        "unique_events": 3,
+        "unique_tickers": 3
+      }
+    },
+    "raw_closed_mature_rows": 732,
+    "raw_ledger_rows": 1044,
+    "sample_rows": [
+      {
+        "description": "SpaceX IPO attention proxy; not direct public-company fundamentals.",
+        "entry_date": "2026-05-08",
+        "event_date": "2026-05-07",
+        "event_id": "spacex_ipo_attention_20260507",
+        "h10_cash_relative_pnl": 314.5,
+        "h10_spy_relative_value": 205.77,
+        "h20_cash_relative_pnl": 8.74,
+        "h20_spy_relative_value": -12.95,
+        "semantic_bucket": "attention_only",
+        "source_type": "market_attention_proxy",
+        "theme_segment": "theme_beta_benchmark",
+        "ticker": "ARKX"
+      },
+      {
+        "description": "SpaceX IPO attention proxy; not direct public-company fundamentals.",
+        "entry_date": "2026-05-08",
+        "event_date": "2026-05-07",
+        "event_id": "spacex_ipo_attention_20260507",
+        "h10_cash_relative_pnl": 2871.91,
+        "h10_spy_relative_value": 2763.18,
+        "h20_cash_relative_pnl": 775.58,
+        "h20_spy_relative_value": 753.89,
+        "semantic_bucket": "attention_only",
+        "source_type": "market_attention_proxy",
+        "theme_segment": "launch_lunar",
+        "ticker": "RKLB"
+      },
+      {
+        "description": "SpaceX IPO attention proxy; not direct public-company fundamentals.",
+        "entry_date": "2026-05-08",
+        "event_date": "2026-05-07",
+        "event_id": "spacex_ipo_attention_20260507",
+        "h10_cash_relative_pnl": 1357.8,
+        "h10_spy_relative_value": 1249.07,
+        "h20_cash_relative_pnl": 64.22,
+        "h20_spy_relative_value": 42.53,
+        "semantic_bucket": "attention_only",
+        "source_type": "market_attention_proxy",
+        "theme_segment": "theme_beta_benchmark",
+        "ticker": "UFO"
+      },
+      {
+        "description": "Department of War initial release of UAP/UFO files; attention catalyst only.",
+        "entry_date": "2026-05-11",
+        "event_date": "2026-05-08",
+        "event_id": "uap_release_attention_20260508",
+        "h10_cash_relative_pnl": 404.01,
+        "h10_spy_relative_value": 251.3,
+        "h20_cash_relative_pnl": -343.84,
+        "h20_spy_relative_value": -313.41,
+        "semantic_bucket": "attention_only",
+        "source_type": "official_attention_release",
+        "theme_segment": "theme_beta_benchmark",
+        "ticker": "ARKX"
+      },
+      {
+        "description": "Department of War initial release of UAP/UFO files; attention catalyst only.",
+        "entry_date": "2026-05-11",
+        "event_date": "2026-05-08",
+        "event_id": "uap_release_attention_20260508",
+        "h10_cash_relative_pnl": 1623.45,
+        "h10_spy_relative_value": 1470.74,
+        "h20_cash_relative_pnl": -566.61,
+        "h20_spy_relative_value": -536.18,
+        "semantic_bucket": "attention_only",
+        "source_type": "official_attention_release",
+        "theme_segment": "theme_beta_benchmark",
+        "ticker": "UFO"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 693.01,
+        "h10_spy_relative_value": 355.61,
+        "h20_cash_relative_pnl": 5505.18,
+        "h20_spy_relative_value": 5009.91,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "ASTS"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 2460.1,
+        "h10_spy_relative_value": 2122.7,
+        "h20_cash_relative_pnl": 4685.34,
+        "h20_spy_relative_value": 4190.07,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "space_data_defense",
+        "ticker": "BKSY"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 42.73,
+        "h10_spy_relative_value": -294.67,
+        "h20_cash_relative_pnl": 206.35,
+        "h20_spy_relative_value": -288.92,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "GSAT"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 1537.43,
+        "h10_spy_relative_value": 1200.03,
+        "h20_cash_relative_pnl": 3411.76,
+        "h20_spy_relative_value": 2916.49,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "IRDM"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 2374.04,
+        "h10_spy_relative_value": 2036.64,
+        "h20_cash_relative_pnl": 3305.34,
+        "h20_spy_relative_value": 2810.07,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "launch_lunar",
+        "ticker": "LUNR"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 1802.54,
+        "h10_spy_relative_value": 1465.14,
+        "h20_cash_relative_pnl": 3630.47,
+        "h20_spy_relative_value": 3135.2,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "space_data_defense",
+        "ticker": "PL"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 3033.23,
+        "h10_spy_relative_value": 2695.83,
+        "h20_cash_relative_pnl": 13622.72,
+        "h20_spy_relative_value": 13127.45,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "space_data_defense",
+        "ticker": "RDW"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 4260.54,
+        "h10_spy_relative_value": 3923.14,
+        "h20_cash_relative_pnl": 7401.87,
+        "h20_spy_relative_value": 6906.6,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "launch_lunar",
+        "ticker": "RKLB"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 617.45,
+        "h10_spy_relative_value": 280.05,
+        "h20_cash_relative_pnl": 122.5,
+        "h20_spy_relative_value": -372.77,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "SATS"
+      },
+      {
+        "description": "Space Force SBI/Golden Dome awards validate defense-space budget attention.",
+        "entry_date": "2026-04-27",
+        "event_date": "2026-04-24",
+        "event_id": "golden_dome_sbi_awards_20260424",
+        "h10_cash_relative_pnl": 2456.53,
+        "h10_spy_relative_value": 2119.13,
+        "h20_cash_relative_pnl": 3876.58,
+        "h20_spy_relative_value": 3381.31,
+        "semantic_bucket": "defense_budget_theme",
+        "source_type": "official_government_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "VSAT"
+      },
+      {
+        "description": "NASA CLPS award for Lunar South Pole payload delivery.",
+        "entry_date": "2026-03-25",
+        "event_date": "2026-03-24",
+        "event_id": "lunr_nasa_clps_20260324",
+        "h10_cash_relative_pnl": 691.0,
+        "h10_spy_relative_value": 339.46,
+        "h20_cash_relative_pnl": 3411.19,
+        "h20_spy_relative_value": 2625.13,
+        "semantic_bucket": "fundamental_contract_regulatory",
+        "source_type": "official_or_primary_release",
+        "theme_segment": "launch_lunar",
+        "ticker": "LUNR"
+      },
+      {
+        "description": "FCC authorization for AST direct-to-device constellation/SCS service.",
+        "entry_date": "2026-04-22",
+        "event_date": "2026-04-21",
+        "event_id": "asts_fcc_d2d_authorization_20260421",
+        "h10_cash_relative_pnl": -1651.31,
+        "h10_spy_relative_value": -1969.36,
+        "h20_cash_relative_pnl": 581.15,
+        "h20_spy_relative_value": 158.77,
+        "semantic_bucket": "fundamental_contract_regulatory",
+        "source_type": "official_regulatory_release",
+        "theme_segment": "satellite_connectivity",
+        "ticker": "ASTS"
+      },
+      {
+        "description": "Rocket Lab reported record Q1 revenue/backlog and a large Neutron/Electron launch deal.",
+        "entry_date": "2026-05-08",
+        "event_date": "2026-05-07",
+        "event_id": "rklb_record_backlog_launch_deal_20260507",
+        "h10_cash_relative_pnl": 2871.91,
+        "h10_spy_relative_value": 2763.18,
+        "h20_cash_relative_pnl": 775.58,
+        "h20_spy_relative_value": 753.89,
+        "semantic_bucket": "fundamental_contract_regulatory",
+        "source_type": "company_release",
+        "theme_segment": "launch_lunar",
+        "ticker": "RKLB"
+      }
+    ],
+    "source_type_counts": {
+      "company_release": 1,
+      "market_attention_proxy": 3,
+      "official_attention_release": 2,
+      "official_government_release": 10,
+      "official_or_primary_release": 1,
+      "official_regulatory_release": 1
+    },
+    "ticker_counts": {
+      "ARKX": 2,
+      "ASTS": 2,
+      "BKSY": 1,
+      "GSAT": 1,
+      "IRDM": 1,
+      "LUNR": 2,
+      "PL": 1,
+      "RDW": 1,
+      "RKLB": 3,
+      "SATS": 1,
+      "UFO": 2,
+      "VSAT": 1
+    }
+  },
+  "experiment_id": "exp-20260709-014",
+  "gate": {
+    "decision": "observed_only_positive_space_catalyst_direct_official_lead_not_promoted",
+    "observed_only_lead_passed": true,
+    "pass_fail": {
+      "criteria": {
+        "attention_only_rows_gte_4": true,
+        "direct_beats_attention_at_least_8_core_cells": true,
+        "direct_max_single_ticker_share_lte_40pct": true,
+        "direct_official_rows_gte_8": true,
+        "direct_positive_all_10d_20d_core_cells": true,
+        "direct_win_rate_ge_60pct_all_core_cells": true,
+        "strategy_behavior_changed_false": true,
+        "total_dedup_closed_rows_gte_15": true
+      },
+      "data_gap": false,
+      "failed_criteria": [],
+      "passed": true,
+      "same_theme_replacement_value_binding": false,
+      "same_theme_replacement_value_note": "Reported as a diagnostic only because the same-theme basket can contain the event ticker and broad space-theme beta; it is not a binding pass/fail comparator for this gate shape.",
+      "thresholds": {
+        "max_direct_single_ticker_share": 0.4,
+        "min_attention_rows": 4,
+        "min_direct_beats_attention_cells": 8,
+        "min_direct_rows": 8,
+        "min_total_rows": 15
+      }
+    },
+    "promotion_gate_passed": false,
+    "reason": "observed_only_lead_only_no_strategy_change"
+  },
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "note": "Read-only attribution; no before/after core strategy metric change.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_sentinel": {
+      "entry_date_present": true,
+      "reason": "No executable signal generation or backtester position contract is changed.",
+      "target_price_not_applicable": true
+    },
+    "passed": true,
+    "rule_dependencies": [
+      "data/paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl",
+      "closed_decision and outcome_status mature flags",
+      "horizons.10d and horizons.20d replacement-value fields",
+      "semantic_bucket and source_type provenance fields"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "baseline_survival_rate": 0.823171,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "note": "This can only unlock a later shared default-off paper adapter or candidate routing experiment that must run full Gate 1-4.",
+    "observed_only_lead_passed": true,
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Space catalyst official defense-budget events should have better forward relative value than attention-only space proxies when evaluated as de-duplicated closed event decisions across cash, SPY, QQQ, ARKX, and UFO comparators; this would indicate a direct official catalyst sleeve lead rather than broad theme beta.",
+    "2_history_check": "exp-20260708-015 accepted the space_catalyst surface contract and required richer provenance or a new gate shape before another space alpha attempt. This run uses the new direct-vs-attention gate shape; nearby SEC, crypto, chop, broad-state, and portfolio overlay lanes were avoided as frozen or waiting for materially more closed rows.",
+    "3_single_causal_variable": "space_catalyst_direct_official_event_provenance_validation_v1",
+    "4_acceptance_standard": "Observed-only lead only: >=15 de-duplicated closed decision rows, >=8 direct official defense-budget rows, >=4 attention-only comparator rows, direct official rows positive on all 10d/20d cash/SPY/QQQ/ARKX/UFO average cells with >=60% win rate, direct official beats attention-only in at least 8 of those 10 average cells, and max direct single-ticker share <=40%. same_theme_replacement_value is diagnostic because the basket can contain the event ticker and broad theme beta; no strategy behavior is accepted.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_014_space_catalyst_direct_event_validation.py"
+  },
+  "headline_metrics": {
+    "attention_rows": 5,
+    "dedup_closed_decision_rows": 18,
+    "direct_beats_attention_cells": 10,
+    "direct_max_single_ticker_share": 0.1,
+    "direct_positive_avg_cells": 10,
+    "direct_rows": 10,
+    "direct_win_rate_ge_60pct_cells": 10
+  },
+  "hypothesis": "Space catalyst official defense-budget events should have better forward relative value than attention-only space proxies when evaluated as de-duplicated closed event decisions across cash, SPY, QQQ, ARKX, and UFO comparators; this would indicate a direct official catalyst sleeve lead rather than broad theme beta.",
+  "implementation_mode": "self_registered_observed_only_runner",
+  "input_files": {
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "ledger": "data/paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl",
+    "summary": "data/paper_sleeves/space_catalyst/event_state_shadow_summary.json"
+  },
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "space_catalyst_event_relation_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260708-015"
+  ],
+  "new_evidence_axis": "New gate shape: de-duplicated official defense-budget catalyst versus attention-only comparator validation on the event_state_shadow ledger, using provenance buckets and multi-benchmark 10d/20d decision-level relative value; no threshold retune or routine materialization.",
+  "new_evidence_type": "new_gate_shape",
+  "observed_only_lead": true,
+  "observed_only_lead_passed": true,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune same source thresholds, event fields, hold days, or same-theme binding rules on these same 18 de-duplicated rows. The same-theme basket should remain diagnostic until a PIT ex-event theme basket is built.",
+    "new_evidence_required": "A valid promotion needs a shared default-off paper helper with daily parity and full Gate 1-4, or materially more closed space_catalyst rows. A valid further attribution retry needs new provenance data, an ex-event theme replacement basket, or at least 50% and 10 absolute new de-duplicated closed rows.",
+    "next_evidence_needed": "If pursued, build a default-off direct official catalyst sleeve that admits only official_government_release defense budget rows and keeps attention-only rows as explicit rejects; run shared helper parity and standard windows before any promotion.",
+    "why_result_happened": "The direct official defense-budget group is small but cleanly distributed across 10 tickers, while attention-only proxies have positive 10d theme beta but fade on 20d cash and index-relative outcomes."
+  },
+  "predicted_failure_modes": [
+    "same_theme_benchmark_contamination",
+    "attention_proxy_not_separable",
+    "small_event_sample",
+    "semantic_bucket_overfit"
+  ],
+  "prediction": {
+    "confidence_reason": "The event_state shadow summary shows defense_budget_theme has 10 closed decisions with positive 10d and 20d averages versus cash, SPY, QQQ, ARKX, and UFO, while attention-only fades by 20d; sample is still small and same-theme replacement is contaminated by theme beta.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "same_theme_benchmark_contamination",
+      "attention_proxy_not_separable",
+      "small_event_sample",
+      "semantic_bucket_overfit"
+    ],
+    "success_probability": 0.34
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "observed_only_attribution": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "realized_failure_mode": null,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260709_014_space_catalyst_direct_event_validation.py",
+    "data/experiments/exp-20260709-014/exp_20260709_014_space_catalyst_direct_event_validation.json",
+    "experiments/logs/exp-20260709-014.json",
+    "experiments/cards/exp-20260709-014.md",
+    "experiments/manifests/exp-20260709-014.json",
+    "experiments/tickets/exp-20260709-014.json"
+  ],
+  "single_causal_variable": "space_catalyst_direct_official_event_provenance_validation_v1",
+  "status": "observed_only_lead",
+  "summary_snapshot": {
+    "closed_decision_count": 18,
+    "official_closed_decision_count": null,
+    "promotion_gate": {
+      "checks": {
+        "minimum_closed_decisions": true,
+        "official_bucket_has_closed_decision": true,
+        "positive_10d_arkx_relative_value": true,
+        "positive_10d_return": true,
+        "positive_10d_same_theme_value": false,
+        "positive_10d_ufo_relative_value": true
+      },
+      "closed_decision_count": 18,
+      "minimum_closed_decisions": 10,
+      "mode": "observe_only",
+      "official_closed_decision_count": 13,
+      "passed": false,
+      "reason": "insufficient_closed_official_forward_replacement_value"
+    }
+  },
+  "timestamp": "2026-07-09T11:14:20Z",
+  "trial_family": "space_catalyst_direct_official_event_provenance_validation",
+  "trial_variant_id": "direct_official_vs_attention_event_state_v1"
+}

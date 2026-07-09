@@ -20,6 +20,11 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     # gate counts per data_source), and they are not the canonical SEC13F/
     # rs-proxy surfaces even when the joined field comes from those.
     ("kova_snapshot", ("kova",)),
+    # GDELT 2.0 DOC/GKG historical news tone/volume archive (exp-20260709-020).
+    ("gdelt_news_tone", (
+        "gdelt", "gdelt_news_tone", "gdelt news tone", "news_tone_archive",
+        "tone_shock", "tone shock",
+    )),
     # Keep newer source-specific surfaces above their generic parents so the
     # saturation guards count the actual population under test.
     ("finra_otc_internalization", (

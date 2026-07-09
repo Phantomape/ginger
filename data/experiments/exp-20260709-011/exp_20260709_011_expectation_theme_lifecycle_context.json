@@ -1,0 +1,2060 @@
+{
+  "acceptance_rule": "Observed-only lead only: >=30 positive usable revision rows with joined theme lifecycle, >=8 constructive and >=8 crowded/breaking rows, H10 avg return and win rate constructive > crowded/breaking, H5/H20 not both inverted, max single ticker share <=35%; no strategy behavior accepted.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "alpha_hypothesis": "Observed-only alpha: positive PIT estimate-revision candidate rows should have better forward outcomes when candidate-level theme lifecycle context is birth/expansion/neutral rather than mania/exhaustion/collapse, because revision drift should persist when theme participation is broadening rather than crowded or breaking.",
+  "before_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "causal_components": [
+    "PIT estimate revision source rows from exp-20260526-006",
+    "candidate-level named theme lifecycle join",
+    "sector-cache proxy theme fallback for otherwise unthemed tickers",
+    "OHLCV H5/H10/H20 outcome attribution",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "changed_variable": "expectation_revision_theme_lifecycle_context_v1",
+  "coverage": {
+    "current_daily_ledger_diagnostic": {
+      "date_max": "2026-07-08",
+      "date_min": "2026-06-29",
+      "dedup_rows": 24848,
+      "diagnostic": "Current materialized daily candidate rows are too sparse for this experiment; primary evaluation uses the parked exp-20260526-006 historical PIT rows.",
+      "ledger_files": 85,
+      "positive_usable_matched_rows": 6,
+      "positive_usable_matched_tickers": {
+        "GS": 6
+      }
+    },
+    "default_only_joined_h10_rows": 19,
+    "loaded_ohlcv_frames": 868,
+    "missing_context_rows": 0,
+    "named_theme_context_rows": 19,
+    "primary_joined_h10_rows": 41,
+    "sector_proxy_context_rows": 22,
+    "source_context_dates": [
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-18",
+      "2026-05-19",
+      "2026-05-20",
+      "2026-05-24",
+      "2026-05-25"
+    ],
+    "source_primary_positive_rows": 41,
+    "source_primary_positive_tickers": {
+      "AAPL": 4,
+      "AMD": 2,
+      "APP": 2,
+      "CAT": 5,
+      "COHR": 4,
+      "CVX": 2,
+      "DDOG": 1,
+      "DIS": 3,
+      "LLY": 2,
+      "MTSI": 1,
+      "MU": 4,
+      "NVDA": 5,
+      "NVO": 2,
+      "RBLX": 2,
+      "SOFI": 1,
+      "V": 1
+    },
+    "warehouse_overlay_status": {
+      "hot_attached": true,
+      "hot_error": null,
+      "hot_exists": true,
+      "hot_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite"
+    },
+    "warehouse_path": "data/warehouse/warehouse_main.sqlite"
+  },
+  "decision": "observed_only_data_gap_theme_lifecycle_comparator_sparse",
+  "default_only_evaluation": {
+    "bucket_counts": {
+      "constructive": 19
+    },
+    "context_source_counts": {
+      "default_theme_map": 19
+    },
+    "groups": {
+      "constructive": {
+        "horizons": {
+          "10d": {
+            "avg_excess_qqq_pct": 0.055371,
+            "avg_excess_spy_pct": 0.076196,
+            "avg_return_pct": 0.095838,
+            "closed_rows": 19,
+            "win_rate": 0.7368
+          },
+          "20d": {
+            "avg_excess_qqq_pct": 0.060667,
+            "avg_excess_spy_pct": 0.081195,
+            "avg_return_pct": 0.08926,
+            "closed_rows": 19,
+            "win_rate": 0.5789
+          },
+          "5d": {
+            "avg_excess_qqq_pct": 0.034772,
+            "avg_excess_spy_pct": 0.046838,
+            "avg_return_pct": 0.060318,
+            "closed_rows": 19,
+            "win_rate": 0.6316
+          }
+        },
+        "rows": 19,
+        "ticker_concentration": {
+          "rows": 19,
+          "ticker_count": 5,
+          "ticker_counts": {
+            "AAPL": 4,
+            "AMD": 2,
+            "COHR": 4,
+            "MU": 4,
+            "NVDA": 5
+          },
+          "top_ticker": "NVDA",
+          "top_ticker_rows": 5,
+          "top_ticker_share": 0.2632
+        }
+      },
+      "crowded_breaking": {
+        "horizons": {
+          "10d": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "closed_rows": 0,
+            "win_rate": null
+          },
+          "20d": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "closed_rows": 0,
+            "win_rate": null
+          },
+          "5d": {
+            "avg_excess_qqq_pct": null,
+            "avg_excess_spy_pct": null,
+            "avg_return_pct": null,
+            "closed_rows": 0,
+            "win_rate": null
+          }
+        },
+        "rows": 0,
+        "ticker_concentration": {
+          "rows": 0,
+          "ticker_count": 0,
+          "ticker_counts": {},
+          "top_ticker": null,
+          "top_ticker_rows": 0,
+          "top_ticker_share": null
+        }
+      }
+    },
+    "joined_rows": 19,
+    "state_counts": {
+      "neutral": 19
+    },
+    "ticker_concentration": {
+      "rows": 19,
+      "ticker_count": 5,
+      "ticker_counts": {
+        "AAPL": 4,
+        "AMD": 2,
+        "COHR": 4,
+        "MU": 4,
+        "NVDA": 5
+      },
+      "top_ticker": "NVDA",
+      "top_ticker_rows": 5,
+      "top_ticker_share": 0.2632
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_delta": 0,
+    "total_pnl_sum_delta": 0.0
+  },
+  "evaluation": {
+    "bucket_counts": {
+      "constructive": 39,
+      "crowded_breaking": 2
+    },
+    "context_source_counts": {
+      "default_theme_map": 19,
+      "sector_proxy_theme": 22
+    },
+    "groups": {
+      "constructive": {
+        "horizons": {
+          "10d": {
+            "avg_excess_qqq_pct": 0.034672,
+            "avg_excess_spy_pct": 0.050426,
+            "avg_return_pct": 0.064806,
+            "closed_rows": 39,
+            "win_rate": 0.6154
+          },
+          "20d": {
+            "avg_excess_qqq_pct": 0.041774,
+            "avg_excess_spy_pct": 0.059109,
+            "avg_return_pct": 0.063133,
+            "closed_rows": 39,
+            "win_rate": 0.5897
+          },
+          "5d": {
+            "avg_excess_qqq_pct": 0.014266,
+            "avg_excess_spy_pct": 0.024423,
+            "avg_return_pct": 0.03559,
+            "closed_rows": 39,
+            "win_rate": 0.6154
+          }
+        },
+        "rows": 39,
+        "ticker_concentration": {
+          "rows": 39,
+          "ticker_count": 16,
+          "ticker_counts": {
+            "AAPL": 4,
+            "AMD": 2,
+            "APP": 1,
+            "CAT": 5,
+            "COHR": 4,
+            "CVX": 2,
+            "DDOG": 1,
+            "DIS": 2,
+            "LLY": 2,
+            "MTSI": 1,
+            "MU": 4,
+            "NVDA": 5,
+            "NVO": 2,
+            "RBLX": 2,
+            "SOFI": 1,
+            "V": 1
+          },
+          "top_ticker": "NVDA",
+          "top_ticker_rows": 5,
+          "top_ticker_share": 0.1282
+        }
+      },
+      "crowded_breaking": {
+        "horizons": {
+          "10d": {
+            "avg_excess_qqq_pct": 0.04546,
+            "avg_excess_spy_pct": 0.065917,
+            "avg_return_pct": 0.089704,
+            "closed_rows": 2,
+            "win_rate": 0.5
+          },
+          "20d": {
+            "avg_excess_qqq_pct": -0.026234,
+            "avg_excess_spy_pct": 0.003314,
+            "avg_return_pct": 0.018908,
+            "closed_rows": 2,
+            "win_rate": 0.5
+          },
+          "5d": {
+            "avg_excess_qqq_pct": -0.043898,
+            "avg_excess_spy_pct": -0.034345,
+            "avg_return_pct": -0.020963,
+            "closed_rows": 2,
+            "win_rate": 0.0
+          }
+        },
+        "rows": 2,
+        "ticker_concentration": {
+          "rows": 2,
+          "ticker_count": 2,
+          "ticker_counts": {
+            "APP": 1,
+            "DIS": 1
+          },
+          "top_ticker": "DIS",
+          "top_ticker_rows": 1,
+          "top_ticker_share": 0.5
+        }
+      }
+    },
+    "joined_rows": 41,
+    "state_counts": {
+      "birth": 1,
+      "collapse": 2,
+      "neutral": 38
+    },
+    "ticker_concentration": {
+      "rows": 41,
+      "ticker_count": 16,
+      "ticker_counts": {
+        "AAPL": 4,
+        "AMD": 2,
+        "APP": 2,
+        "CAT": 5,
+        "COHR": 4,
+        "CVX": 2,
+        "DDOG": 1,
+        "DIS": 3,
+        "LLY": 2,
+        "MTSI": 1,
+        "MU": 4,
+        "NVDA": 5,
+        "NVO": 2,
+        "RBLX": 2,
+        "SOFI": 1,
+        "V": 1
+      },
+      "top_ticker": "NVDA",
+      "top_ticker_rows": 5,
+      "top_ticker_share": 0.122
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260709-011",
+  "gate": {
+    "decision": "observed_only_data_gap_theme_lifecycle_comparator_sparse",
+    "observed_only_lead_passed": false,
+    "pass_fail": {
+      "criteria": {
+        "constructive_rows_gte_8": true,
+        "crowded_breaking_rows_gte_8": false,
+        "h10_avg_return_constructive_gt_crowded": false,
+        "h10_win_rate_constructive_gt_crowded": true,
+        "h5_h20_not_both_inverted": true,
+        "joined_rows_gte_30": true,
+        "max_single_ticker_share_lte_35pct": true
+      },
+      "data_gap": true,
+      "h20_inverted": false,
+      "h5_inverted": false,
+      "passed": false
+    },
+    "promotion_gate_passed": false,
+    "reason": "Joined context or constructive/crowded comparator rows did not meet the predeclared sample-size floor."
+  },
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "note": "Read-only attribution; no before/after core strategy metric change.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_sentinel": {
+      "not_applicable": true,
+      "reason": "No executable signal generation or backtester position contract is changed."
+    },
+    "passed": true,
+    "rule_dependencies": [
+      "exp-20260526-006 PIT primary positive revision rows",
+      "warehouse OHLCV overlay for PIT features and H5/H10/H20 outcomes",
+      "theme_lifecycle_surface.DEFAULT_THEME_MAP",
+      "broad_market_sector_map cache for fallback sector proxy theme"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "note": "An observed-only lead can only unlock a later default-off paper or ranking Gate 1-4 experiment.",
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Observed-only alpha: positive PIT estimate-revision candidate rows should have better forward outcomes when candidate-level theme lifecycle context is birth/expansion/neutral rather than mania/exhaustion/collapse, because revision drift should persist when theme participation is broadening rather than crowded or breaking.",
+    "2_history_check": "exp-20260526-036 parked this exact breadth/theme context lane because candidate-level fields were not joined; recent 48h lanes around SEC item enumeration, forward replacement state, crypto retunes, and portfolio daily overlays were avoided as saturated.",
+    "3_single_causal_variable": "expectation_revision_theme_lifecycle_context_v1",
+    "4_acceptance_standard": "Observed-only lead only: >=30 positive usable revision rows with joined theme lifecycle, >=8 constructive and >=8 crowded/breaking rows, H10 avg return and win rate constructive > crowded/breaking, H5/H20 not both inverted, max single ticker share <=35%; no strategy behavior accepted.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_011_expectation_theme_lifecycle_context.py"
+  },
+  "hypothesis": "Observed-only alpha: positive PIT estimate-revision candidate rows should have better forward outcomes when candidate-level theme lifecycle context is birth/expansion/neutral rather than mania/exhaustion/collapse, because revision drift should persist when theme participation is broadening rather than crowded or breaking.",
+  "implementation_mode": "self_registered_observed_only_runner",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "expectation_drift_residual_pead",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260526-036",
+    "exp-20260707-004",
+    "exp-20260706-010",
+    "exp-20260709-002"
+  ],
+  "new_evidence_axis": "Reopen condition satisfied from exp-20260526-036: candidate-level theme lifecycle context is joined to the historical PIT positive revision rows. This is not a revision threshold/source retune, not another forward_replacement_value field, and not a SEC/news item enumeration.",
+  "new_evidence_type": "reopened_measurement_blocker_candidate_level_context_join",
+  "observed_only_lead": false,
+  "observed_only_lead_passed": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "constructive_states": [
+      "birth",
+      "expansion",
+      "neutral"
+    ],
+    "context_policy": "named default theme first, sector proxy theme fallback",
+    "crowded_breaking_states": [
+      "collapse",
+      "exhaustion",
+      "mania"
+    ],
+    "entry_rule": "effective date or next available trading close",
+    "feature_rule": "OHLCV only, as-of day or previous available close",
+    "forward_horizons_trading_days": [
+      5,
+      10,
+      20
+    ],
+    "max_single_ticker_share": 0.35,
+    "min_group_rows": 8,
+    "min_joined_rows": 30,
+    "paper_notional_usd": 10000.0,
+    "primary_positive_expectation_definition": "estimate_revision_usable && eps_estimate_delta_7d > 0",
+    "prior_blocker_artifact": "data/experiments/exp-20260526-036/expectation_breadth_theme_context_probe.json",
+    "prior_blocker_experiment": "exp-20260526-036",
+    "sector_proxy_rule_version": "yfinance_gics_proxy_sector_v1",
+    "sector_proxy_source": "yfinance.Ticker.info.sector",
+    "source_experiment": "exp-20260526-006",
+    "source_rows": "data/experiments/exp-20260526-006/expectation_revision_overextension_attribution.json"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune estimate-revision thresholds, hold periods, or residual overextension states from this result. If this closes as data_gap, the only valid reopen axis is a broader PIT theme taxonomy or materially more settled candidate-level rows.",
+    "new_evidence_required": "A valid reopen needs a PIT named-theme taxonomy or materially more settled candidate-level revision rows that produce at least 30 joined rows and at least 8 rows on both constructive and crowded/breaking lifecycle sides.",
+    "next_evidence_needed": "If observed-only lead: build a default-off paper context overlay with shared helper and full Gate 1-4. If data_gap: park until a PIT named-theme taxonomy covers at least 30 rows and both lifecycle sides have >=8 settled rows.",
+    "why_result_happened": "The parked context join is now measurable, but the result depends on whether the sector proxy produces enough crowded/breaking rows. Default named themes alone remain a sparse subset."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260526-036 explicitly parked this line until candidate-level breadth/theme fields could be joined; the repo now has theme lifecycle and sector cache context, while the historical rows are settled, but revision families are heavily explored and may already be captured.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "theme_context_sparse",
+      "no_h10_separation",
+      "ticker_concentration",
+      "revision_family_already_captured"
+    ],
+    "success_probability": 0.3
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "observed_only_attribution": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "realized_failure_mode": "theme_context_sparse",
+  "rejection_reason": "Joined context or constructive/crowded comparator rows did not meet the predeclared sample-size floor.",
+  "related_files": [
+    "quant/experiments/exp_20260709_011_expectation_theme_lifecycle_context.py",
+    "data/experiments/exp-20260709-011/exp_20260709_011_expectation_theme_lifecycle_context.json",
+    "experiments/logs/exp-20260709-011.json",
+    "experiments/cards/exp-20260709-011.md",
+    "experiments/manifests/exp-20260709-011.json",
+    "experiments/tickets/exp-20260709-011.json"
+  ],
+  "sample_enriched_rows": [
+    {
+      "as_of_date": "2026-05-25",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.18,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-25",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.075402,
+          "excess_spy_pct": 0.062699,
+          "exit_close": 935.89,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 446.6,
+          "qqq_return_pct": -0.030742,
+          "return_pct": 0.04466,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.19729,
+          "excess_spy_pct": 0.190967,
+          "exit_close": 1048.51,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 1703.69,
+          "qqq_return_pct": -0.026921,
+          "return_pct": 0.170369,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.166026,
+          "excess_spy_pct": 0.175807,
+          "exit_close": 1064.1,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 1877.71,
+          "qqq_return_pct": 0.021745,
+          "return_pct": 0.187771,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "strong_residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-25",
+        "named_theme_states": {
+          "ai": "neutral"
+        },
+        "named_themes": [
+          "ai"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.629608,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "MU",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-25",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.05,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-25",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.04184,
+          "excess_spy_pct": 0.029138,
+          "exit_close": 186.76,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 110.98,
+          "qqq_return_pct": -0.030742,
+          "return_pct": 0.011098,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.044867,
+          "excess_spy_pct": -0.05119,
+          "exit_close": 171.45,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -717.88,
+          "qqq_return_pct": -0.026921,
+          "return_pct": -0.071788,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.00637,
+          "excess_spy_pct": 0.003412,
+          "exit_close": 187.55,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 153.75,
+          "qqq_return_pct": 0.021745,
+          "return_pct": 0.015375,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "neutral",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Oil & Gas Integrated",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Energy",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-25",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:energy",
+        "primary_theme_score": 0.452809,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:energy"
+      },
+      "ticker": "CVX",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-25",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-25",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.007504,
+          "excess_spy_pct": -0.020206,
+          "exit_close": 99.33,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -382.46,
+          "qqq_return_pct": -0.030742,
+          "return_pct": -0.038246,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.006007,
+          "excess_spy_pct": -0.000315,
+          "exit_close": 101.12,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -209.14,
+          "qqq_return_pct": -0.026921,
+          "return_pct": -0.020914,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.039851,
+          "excess_spy_pct": -0.03007,
+          "exit_close": 101.41,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -181.06,
+          "qqq_return_pct": 0.021745,
+          "return_pct": -0.018106,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Entertainment",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Communication Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-25",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:communication_services",
+        "primary_theme_score": 0.306334,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:communication_services"
+      },
+      "ticker": "DIS",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-25",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-25",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.034476,
+          "excess_spy_pct": -0.047178,
+          "exit_close": 43.0,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -652.17,
+          "qqq_return_pct": -0.030742,
+          "return_pct": -0.065217,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.069095,
+          "excess_spy_pct": 0.062772,
+          "exit_close": 47.94,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 421.74,
+          "qqq_return_pct": -0.026921,
+          "return_pct": 0.042174,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.043484,
+          "excess_spy_pct": -0.033703,
+          "exit_close": 45.0,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -217.39,
+          "qqq_return_pct": 0.021745,
+          "return_pct": -0.021739,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Electronic Gaming & Multimedia",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Communication Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-25",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:communication_services",
+        "primary_theme_score": 0.306334,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:communication_services"
+      },
+      "ticker": "RBLX",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-24",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.18,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-24",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.075402,
+          "excess_spy_pct": 0.062699,
+          "exit_close": 935.89,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 446.6,
+          "qqq_return_pct": -0.030742,
+          "return_pct": 0.04466,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.19729,
+          "excess_spy_pct": 0.190967,
+          "exit_close": 1048.51,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 1703.69,
+          "qqq_return_pct": -0.026921,
+          "return_pct": 0.170369,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 895.88,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.166026,
+          "excess_spy_pct": 0.175807,
+          "exit_close": 1064.1,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 1877.71,
+          "qqq_return_pct": 0.021745,
+          "return_pct": 0.187771,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "strong_residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-24",
+        "named_theme_states": {
+          "ai": "neutral"
+        },
+        "named_themes": [
+          "ai"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.629608,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "MU",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-24",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.05,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-24",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.04184,
+          "excess_spy_pct": 0.029138,
+          "exit_close": 186.76,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 110.98,
+          "qqq_return_pct": -0.030742,
+          "return_pct": 0.011098,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.044867,
+          "excess_spy_pct": -0.05119,
+          "exit_close": 171.45,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -717.88,
+          "qqq_return_pct": -0.026921,
+          "return_pct": -0.071788,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 184.71,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.00637,
+          "excess_spy_pct": 0.003412,
+          "exit_close": 187.55,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 153.75,
+          "qqq_return_pct": 0.021745,
+          "return_pct": 0.015375,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "neutral",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Oil & Gas Integrated",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Energy",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-24",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:energy",
+        "primary_theme_score": 0.452809,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:energy"
+      },
+      "ticker": "CVX",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-24",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-24",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.007504,
+          "excess_spy_pct": -0.020206,
+          "exit_close": 99.33,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -382.46,
+          "qqq_return_pct": -0.030742,
+          "return_pct": -0.038246,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.006007,
+          "excess_spy_pct": -0.000315,
+          "exit_close": 101.12,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -209.14,
+          "qqq_return_pct": -0.026921,
+          "return_pct": -0.020914,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 103.28,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.039851,
+          "excess_spy_pct": -0.03007,
+          "exit_close": 101.41,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -181.06,
+          "qqq_return_pct": 0.021745,
+          "return_pct": -0.018106,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Entertainment",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Communication Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-24",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:communication_services",
+        "primary_theme_score": 0.306334,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:communication_services"
+      },
+      "ticker": "DIS",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-24",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-24",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.034476,
+          "excess_spy_pct": -0.047178,
+          "exit_close": 43.0,
+          "exit_date": "2026-06-09",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -652.17,
+          "qqq_return_pct": -0.030742,
+          "return_pct": -0.065217,
+          "spy_return_pct": -0.018039
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": 0.069095,
+          "excess_spy_pct": 0.062772,
+          "exit_close": 47.94,
+          "exit_date": "2026-06-24",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 421.74,
+          "qqq_return_pct": -0.026921,
+          "return_pct": 0.042174,
+          "spy_return_pct": -0.020599
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 46.0,
+          "entry_date": "2026-05-26",
+          "excess_qqq_pct": -0.043484,
+          "excess_spy_pct": -0.033703,
+          "exit_close": 45.0,
+          "exit_date": "2026-06-02",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -217.39,
+          "qqq_return_pct": 0.021745,
+          "return_pct": -0.021739,
+          "spy_return_pct": 0.011964
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Electronic Gaming & Multimedia",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Communication Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-24",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:communication_services",
+        "primary_theme_score": 0.306334,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:communication_services"
+      },
+      "ticker": "RBLX",
+      "watchlist_effective_trade_date": "2026-05-25",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.18,
+      "eps_estimate_delta_prev": 0.13,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 731.99,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.321028,
+          "excess_spy_pct": 0.339305,
+          "exit_close": 996.0,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 3606.74,
+          "qqq_return_pct": 0.039646,
+          "return_pct": 0.360674,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 731.99,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.509527,
+          "excess_spy_pct": 0.539186,
+          "exit_close": 1133.99,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 5491.88,
+          "qqq_return_pct": 0.03966,
+          "return_pct": 0.549188,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 731.99,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.229043,
+          "excess_spy_pct": 0.243647,
+          "exit_close": 923.52,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 2616.57,
+          "qqq_return_pct": 0.032614,
+          "return_pct": 0.261657,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "strong_residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {
+          "ai": "neutral"
+        },
+        "named_themes": [
+          "ai"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.511816,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "MU",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 302.25,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.009936,
+          "excess_spy_pct": 0.008341,
+          "exit_close": 311.23,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 297.11,
+          "qqq_return_pct": 0.039646,
+          "return_pct": 0.029711,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 302.25,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.053689,
+          "excess_spy_pct": -0.02403,
+          "exit_close": 298.01,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -140.28,
+          "qqq_return_pct": 0.03966,
+          "return_pct": -0.014028,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 302.25,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.001332,
+          "excess_spy_pct": 0.015935,
+          "exit_close": 312.51,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 339.45,
+          "qqq_return_pct": 0.032614,
+          "return_pct": 0.033945,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Consumer Electronics",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {
+          "mega_cap": "neutral"
+        },
+        "named_themes": [
+          "mega_cap"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "mega_cap",
+        "primary_theme_score": 0.482282,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "AAPL",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 9.8673,
+      "eps_estimate_delta_prev": 9.8673,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 223.2099,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.06003,
+          "excess_spy_pct": -0.041753,
+          "exit_close": 218.66,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -203.84,
+          "qqq_return_pct": 0.039646,
+          "return_pct": -0.020384,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 223.2099,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.095751,
+          "excess_spy_pct": -0.066092,
+          "exit_close": 210.69,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -560.9,
+          "qqq_return_pct": 0.03966,
+          "return_pct": -0.05609,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 223.2099,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.073872,
+          "excess_spy_pct": -0.059268,
+          "exit_close": 214.0006,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -412.58,
+          "qqq_return_pct": 0.032614,
+          "return_pct": -0.041258,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {
+          "ai": "neutral",
+          "mega_cap": "neutral"
+        },
+        "named_themes": [
+          "ai",
+          "mega_cap"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.511816,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "NVDA",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.11,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 872.56,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.038193,
+          "excess_spy_pct": 0.056471,
+          "exit_close": 940.48,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 778.4,
+          "qqq_return_pct": 0.039646,
+          "return_pct": 0.07784,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 872.56,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.090142,
+          "excess_spy_pct": 0.1198,
+          "exit_close": 985.82,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 1298.02,
+          "qqq_return_pct": 0.03966,
+          "return_pct": 0.129802,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 872.56,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.015297,
+          "excess_spy_pct": -0.000693,
+          "exit_close": 887.67,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 173.17,
+          "qqq_return_pct": 0.032614,
+          "return_pct": 0.017317,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "neutral",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Farm & Heavy Construction Machinery",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Industrials",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:industrials",
+        "primary_theme_score": 0.309163,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:industrials"
+      },
+      "ticker": "CAT",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 11.6309,
+      "eps_estimate_delta_prev": 11.6309,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 330.75,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.071604,
+          "excess_spy_pct": -0.053327,
+          "exit_close": 320.18,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -319.58,
+          "qqq_return_pct": 0.039646,
+          "return_pct": -0.031958,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 330.75,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.050273,
+          "excess_spy_pct": -0.020614,
+          "exit_close": 327.24,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -106.12,
+          "qqq_return_pct": 0.03966,
+          "return_pct": -0.010612,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 330.75,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.050149,
+          "excess_spy_pct": -0.035546,
+          "exit_close": 324.95,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -175.36,
+          "qqq_return_pct": 0.032614,
+          "return_pct": -0.017536,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "neutral",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Credit Services",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Financial Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:financial_services",
+        "primary_theme_score": 0.349577,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:financial_services"
+      },
+      "ticker": "V",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 358.5,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.137202,
+          "excess_spy_pct": 0.155479,
+          "exit_close": 421.9,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 1768.48,
+          "qqq_return_pct": 0.039646,
+          "return_pct": 0.176848,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 358.5,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.047006,
+          "excess_spy_pct": 0.076665,
+          "exit_close": 389.57,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 866.67,
+          "qqq_return_pct": 0.03966,
+          "return_pct": 0.086667,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 358.5,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.018851,
+          "excess_spy_pct": 0.033454,
+          "exit_close": 376.95,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 514.64,
+          "qqq_return_pct": 0.032614,
+          "return_pct": 0.051464,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Scientific & Technical Instruments",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {
+          "ai": "neutral"
+        },
+        "named_themes": [
+          "ai"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.511816,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "COHR",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.01,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 104.08,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.085188,
+          "excess_spy_pct": -0.066911,
+          "exit_close": 99.34,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -455.42,
+          "qqq_return_pct": 0.039646,
+          "return_pct": -0.045542,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 104.08,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.041486,
+          "excess_spy_pct": -0.011827,
+          "exit_close": 103.89,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -18.26,
+          "qqq_return_pct": 0.03966,
+          "return_pct": -0.001826,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 104.08,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": -0.035976,
+          "excess_spy_pct": -0.021373,
+          "exit_close": 103.73,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -33.63,
+          "qqq_return_pct": 0.032614,
+          "return_pct": -0.003363,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Entertainment",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Communication Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "crowded_breaking",
+        "context_date": "2026-05-20",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:communication_services",
+        "primary_theme_score": 0.267108,
+        "primary_theme_state": "collapse",
+        "sector_proxy_state": "collapse",
+        "sector_proxy_theme": "sector:communication_services"
+      },
+      "ticker": "DIS",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-20",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.6725,
+      "eps_estimate_delta_prev": 0.6725,
+      "feature_context_date": "2026-05-20",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 15.69,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.053407,
+          "excess_spy_pct": 0.071684,
+          "exit_close": 17.15,
+          "exit_date": "2026-06-04",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 930.53,
+          "qqq_return_pct": 0.039646,
+          "return_pct": 0.093053,
+          "spy_return_pct": 0.021369
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 15.69,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.101831,
+          "excess_spy_pct": 0.13149,
+          "exit_close": 17.91,
+          "exit_date": "2026-06-18",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 1414.91,
+          "qqq_return_pct": 0.03966,
+          "return_pct": 0.141491,
+          "spy_return_pct": 0.010002
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 15.69,
+          "entry_date": "2026-05-20",
+          "excess_qqq_pct": 0.048967,
+          "excess_spy_pct": 0.063571,
+          "exit_close": 16.97,
+          "exit_date": "2026-05-28",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 815.81,
+          "qqq_return_pct": 0.032614,
+          "return_pct": 0.081581,
+          "spy_return_pct": 0.01801
+        }
+      },
+      "residual_state": "beta_lagging",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Credit Services",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Financial Services",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-20",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:financial_services",
+        "primary_theme_score": 0.349577,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:financial_services"
+      },
+      "ticker": "SOFI",
+      "watchlist_effective_trade_date": "2026-05-20",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-19",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.05,
+      "eps_estimate_delta_prev": 0.05,
+      "feature_context_date": "2026-05-19",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 698.74,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.48302,
+          "excess_spy_pct": 0.517071,
+          "exit_close": 1079.5699,
+          "exit_date": "2026-06-03",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 5450.24,
+          "qqq_return_pct": 0.062004,
+          "return_pct": 0.545024,
+          "spy_return_pct": 0.027953
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 698.74,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.461921,
+          "excess_spy_pct": 0.483105,
+          "exit_close": 1043.1899,
+          "exit_date": "2026-06-17",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 4929.59,
+          "qqq_return_pct": 0.031038,
+          "return_pct": 0.492959,
+          "spy_return_pct": 0.009854
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 698.74,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.28775,
+          "excess_spy_pct": 0.30589,
+          "exit_close": 928.41,
+          "exit_date": "2026-05-27",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 3286.92,
+          "qqq_return_pct": 0.040941,
+          "return_pct": 0.328692,
+          "spy_return_pct": 0.022801
+        }
+      },
+      "residual_state": "strong_residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-19",
+        "named_theme_states": {
+          "ai": "neutral"
+        },
+        "named_themes": [
+          "ai"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.526402,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "MU",
+      "watchlist_effective_trade_date": "2026-05-19",
+      "watchlist_signal_basis": [
+        "primary_7d",
+        "scout_prev"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-19",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-19",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 298.97,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.024241,
+          "excess_spy_pct": 0.00981,
+          "exit_close": 310.26,
+          "exit_date": "2026-06-03",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 377.63,
+          "qqq_return_pct": 0.062004,
+          "return_pct": 0.037763,
+          "spy_return_pct": 0.027953
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 298.97,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.041139,
+          "excess_spy_pct": -0.019955,
+          "exit_close": 295.95,
+          "exit_date": "2026-06-17",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -101.01,
+          "qqq_return_pct": 0.031038,
+          "return_pct": -0.010101,
+          "spy_return_pct": 0.009854
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 298.97,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.001205,
+          "excess_spy_pct": 0.016935,
+          "exit_close": 310.85,
+          "exit_date": "2026-05-27",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 397.36,
+          "qqq_return_pct": 0.040941,
+          "return_pct": 0.039736,
+          "spy_return_pct": 0.022801
+        }
+      },
+      "residual_state": "residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Consumer Electronics",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-19",
+        "named_theme_states": {
+          "mega_cap": "neutral"
+        },
+        "named_themes": [
+          "mega_cap"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "mega_cap",
+        "primary_theme_score": 0.461449,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "AAPL",
+      "watchlist_effective_trade_date": "2026-05-19",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-19",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.01,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-19",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 220.3532,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.088567,
+          "excess_spy_pct": -0.054516,
+          "exit_close": 214.5,
+          "exit_date": "2026-06-03",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": -265.63,
+          "qqq_return_pct": 0.062004,
+          "return_pct": -0.026563,
+          "spy_return_pct": 0.027953
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 220.3532,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.102302,
+          "excess_spy_pct": -0.081117,
+          "exit_close": 204.65,
+          "exit_date": "2026-06-17",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": -712.64,
+          "qqq_return_pct": 0.031038,
+          "return_pct": -0.071264,
+          "spy_return_pct": 0.009854
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 220.3532,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": -0.07725,
+          "excess_spy_pct": -0.05911,
+          "exit_close": 212.3525,
+          "exit_date": "2026-05-27",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": -363.08,
+          "qqq_return_pct": 0.040941,
+          "return_pct": -0.036308,
+          "spy_return_pct": 0.022801
+        }
+      },
+      "residual_state": "residual_leader",
+      "revision_residual_overextension_aggregate": "overextended_residual_leader",
+      "sector_lookup": {
+        "industry": "Semiconductors",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Technology",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-19",
+        "named_theme_states": {
+          "ai": "neutral",
+          "mega_cap": "neutral"
+        },
+        "named_themes": [
+          "ai",
+          "mega_cap"
+        ],
+        "primary_context_source": "default_theme_map",
+        "primary_theme": "ai",
+        "primary_theme_score": 0.526402,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:technology"
+      },
+      "ticker": "NVDA",
+      "watchlist_effective_trade_date": "2026-05-19",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    },
+    {
+      "as_of_date": "2026-05-19",
+      "eps_estimate_delta_30d": null,
+      "eps_estimate_delta_7d": 0.12,
+      "eps_estimate_delta_prev": 0.0,
+      "feature_context_date": "2026-05-19",
+      "forward_outcomes": {
+        "10d": {
+          "closed": true,
+          "entry_close": 860.15,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.014761,
+          "excess_spy_pct": 0.048813,
+          "exit_close": 926.18,
+          "exit_date": "2026-06-03",
+          "horizon_trading_days": 10,
+          "pnl_proxy_usd": 767.66,
+          "qqq_return_pct": 0.062004,
+          "return_pct": 0.076766,
+          "spy_return_pct": 0.027953
+        },
+        "20d": {
+          "closed": true,
+          "entry_close": 860.15,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.080303,
+          "excess_spy_pct": 0.101487,
+          "exit_close": 955.92,
+          "exit_date": "2026-06-17",
+          "horizon_trading_days": 20,
+          "pnl_proxy_usd": 1113.41,
+          "qqq_return_pct": 0.031038,
+          "return_pct": 0.111341,
+          "spy_return_pct": 0.009854
+        },
+        "5d": {
+          "closed": true,
+          "entry_close": 860.15,
+          "entry_date": "2026-05-19",
+          "excess_qqq_pct": 0.016932,
+          "excess_spy_pct": 0.035072,
+          "exit_close": 909.93,
+          "exit_date": "2026-05-27",
+          "horizon_trading_days": 5,
+          "pnl_proxy_usd": 578.74,
+          "qqq_return_pct": 0.040941,
+          "return_pct": 0.057874,
+          "spy_return_pct": 0.022801
+        }
+      },
+      "residual_state": "neutral",
+      "revision_residual_overextension_aggregate": "non_overextended",
+      "sector_lookup": {
+        "industry": "Farm & Heavy Construction Machinery",
+        "rule_version": "yfinance_gics_proxy_sector_v1",
+        "sector": "Industrials",
+        "status": "ok"
+      },
+      "theme_context": {
+        "context_bucket": "constructive",
+        "context_date": "2026-05-19",
+        "named_theme_states": {},
+        "named_themes": [],
+        "primary_context_source": "sector_proxy_theme",
+        "primary_theme": "sector:industrials",
+        "primary_theme_score": 0.268579,
+        "primary_theme_state": "neutral",
+        "sector_proxy_state": "neutral",
+        "sector_proxy_theme": "sector:industrials"
+      },
+      "ticker": "CAT",
+      "watchlist_effective_trade_date": "2026-05-19",
+      "watchlist_signal_basis": [
+        "primary_7d"
+      ]
+    }
+  ],
+  "single_causal_variable": "expectation_revision_theme_lifecycle_context_v1",
+  "status": "observed_only_data_gap",
+  "surprise_note": "Current daily outcome materialization was much thinner than the historical parked sample, so the runner evaluates the original 41 PIT rows and separately reports current ledger sparsity.",
+  "timestamp": "2026-07-09T08:19:42Z",
+  "trial_family": "expectation_breadth_theme_context_probe",
+  "trial_variant_id": "theme_lifecycle_context_join_v1"
+}

@@ -1,0 +1,74 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Added warehouse-backed OHLCV settlement for the default-off options forward ledger and daily runner fallback when no manual OPTIONS_FORWARD_OHLCV_SNAPSHOT is supplied.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "options_forward_daily_ohlcv_settlement_autowire_v1",
+  "component": "quant/experiments/exp_20260709_017_options_forward_ohlcv_autowire.py, scripts/run_options_forward_ledger.py, quant/run.py, quant/test_run_daily_wiring.py, data/experiments/exp-20260709-017/exp_20260709_017_options_forward_ohlcv_autowire.json, data/experiments/exp-20260709-017/options_forward/, experiments/cards/exp-20260709-017.md, experiments/manifests/exp-20260709-017.json, experiments/tickets/exp-20260709-017.json, experiments/logs/exp-20260709-017.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260709-017",
+  "hypothesis": "Repair options_forward daily settlement wiring so default-off options candidate rows can accumulate closed OHLCV outcomes without requiring a manual OPTIONS_FORWARD_OHLCV_SNAPSHOT env var.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260709-002",
+    "exp-20260630-010"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "materially_more_settled_options_forward_rows",
+    "warehouse_ohlcv_extended_beyond_2026_06_15",
+    "shared_paper_first_gate_1_4_before_alpha_promotion"
+  ],
+  "notes": "Measurement repair: before report had 175/175 outcome_status=ohlcv_snapshot_missing and zero closed scoring-allowed outcomes; after warehouse settlement produced closed scoring-allowed horizons 5d=14, 10d=12, 20d=9 while preserving shadow-only/default-off production impact. Alpha hypothesis remains untested; next options alpha requires materially more settled forward rows and Gate 1-4.",
+  "parameters": {
+    "locked_variables": [
+      "options_forward_daily_ohlcv_settlement_autowire_v1"
+    ],
+    "single_causal_variable": "options_forward_daily_ohlcv_settlement_autowire_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune or promote squeeze/downside options overlays from this small observed-only repaired sample; prior options overlay alpha was rejected and this run only fixed settlement plumbing.",
+    "new_evidence_required": "Materially more settled options_forward rows, preferably after warehouse OHLCV extends beyond 2026-06-15, followed by shared-paper-first Gate 1-4 before any alpha promotion.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The daily options forward ledger had candidate and option-chain rows, but no OHLCV settlement input unless OPTIONS_FORWARD_OHLCV_SNAPSHOT was manually supplied. The JSON snapshots stop before most current option-chain rows, while warehouse_main.sqlite covers enough May-June 2026 OHLCV to close 5/10/20 day outcomes."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260709-017/options_forward/options_forward_candidate_ledger_report.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-09T14:14:31+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260709-017"
+}

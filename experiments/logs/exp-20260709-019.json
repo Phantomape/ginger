@@ -1,0 +1,433 @@
+{
+  "acceptance_rule": "Observed-only lead only: >=100 closed rows; top and bottom flow-to-impact quartiles each have >=25 rows and >=15 tickers; top quartile beats bottom quartile on mean cash/SPY/QQQ replacement values, median in at least two of three fields, and positive Spearman monotonicity in at least two of three fields; top-minus-bottom cash mean is positive in both chronological halves; top positive PnL concentration <=40% single ticker and <=70% top5. Passing this does not alter strategy behavior.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "experiments/logs/exp-20260709-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Observed-only alpha: Moomoo DAY capital-flow rows may have usable replacement value only after same-day signed main flow is normalized by PIT price-impact/liquidity context, separating low-impact accumulation from high-impact chase/exhaustion without retuning the rejected raw main-flow source.",
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.29
+  },
+  "causal_components": [
+    "fixed_shared_moomoo_candidate_guards",
+    "flow_to_price_impact_field_v1",
+    "10d_cash_spy_qqq_forward_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/logs/exp-20260709-019.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "moomoo_flow_impact_normalized_forward_value_v1",
+  "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+  "evaluation": "<stripped 59KB oversized field; full value retained in the experiment artifact>",
+  "experiment_id": "exp-20260709-019",
+  "fixed_policy_bundle": {
+    "candidate_guards": {
+      "excluded_tickers": [
+        "GLD",
+        "IAU",
+        "IEF",
+        "IWM",
+        "QQQ",
+        "SLV",
+        "SPY",
+        "TLT",
+        "USO",
+        "UUP",
+        "XLE",
+        "XLP",
+        "XLU",
+        "XLV"
+      ],
+      "min_avg_dollar_volume_20": 50000000.0,
+      "min_close": 10.0,
+      "min_main_in_flow": 0.0,
+      "min_ret20_excess_spy": 0.0,
+      "same_day_core_tickers": "fixed_empty_set_for_historical_replay"
+    },
+    "candidate_rule_version": "moomoo_capital_flow_day_main_inflow_top1_v1",
+    "entry_exit": {
+      "entry": "next ticker session open with shared entry fill model",
+      "exit": "10 ticker trading sessions after entry at close with sell slippage",
+      "paper_notional_usd": 4000.0,
+      "round_trip_cost_pct": 0.0035,
+      "slippage_bps_target": 5
+    },
+    "impact_field": {
+      "formula": "main_flow_ratio / max(abs(signal_close/prev_close - 1), 0.0025, 0.25 * prior_20d_realized_vol)",
+      "known_at": "after signal-date close with same-day vendor DAY flow, before next-open paper entry",
+      "name": "flow_to_price_impact"
+    },
+    "source_rule_version": "moomoo_get_capital_flow_day_archive_v1",
+    "source_sleeve": "MOOMOO_CAPITAL_FLOW_ACCUMULATION_PAPER",
+    "trade_enabled": false
+  },
+  "gate": {
+    "pass_fail": {
+      "acceptance_rule": "Observed-only lead only: >=100 closed rows; top and bottom flow-to-impact quartiles each have >=25 rows and >=15 tickers; top quartile beats bottom quartile on mean cash/SPY/QQQ replacement values, median in at least two of three fields, and positive Spearman monotonicity in at least two of three fields; top-minus-bottom cash mean is positive in both chronological halves; top positive PnL concentration <=40% single ticker and <=70% top5. Passing this does not alter strategy behavior.",
+      "criteria": {
+        "chrono_cash_mean_positive_both_halves": false,
+        "min_bottom_rows": true,
+        "min_bottom_tickers": true,
+        "min_top_rows": true,
+        "min_top_tickers": true,
+        "min_total_rows": true,
+        "spearman_positive_two_fields": false,
+        "top_mean_beats_bottom_all_fields": false,
+        "top_median_beats_bottom_two_fields": true,
+        "top_positive_single_ticker_share_ok": true,
+        "top_positive_top5_ticker_share_ok": true
+      },
+      "passed": false
+    },
+    "reason": "failed_predeclared_criteria: top_mean_beats_bottom_all_fields, spearman_positive_two_fields, chrono_cash_mean_positive_both_halves"
+  },
+  "gate1": {
+    "after_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "strategy_behavior_changed": false
+  },
+  "gate2": {
+    "field_availability": {
+      "entry_date": {
+        "present_count": 2282,
+        "required_for_scored_rows": true,
+        "scored_rows": 2282
+      },
+      "flow_to_price_impact": {
+        "present_count": 2282,
+        "scored_rows": 2282
+      },
+      "target_price": {
+        "reason": "Observed-only fixed-horizon attribution; no executable target exit or signal contract is introduced.",
+        "required": false
+      }
+    },
+    "runtime_fields_verified": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "note": "No executable filter was added; observed-only rows are not candidate survival rows.",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "after_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "decision": "observed_only_rejected_moomoo_flow_impact_edge_unstable",
+    "delta": {
+      "expected_value_score_sum": 0.0,
+      "max_drawdown_pct_worst": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "observed_only": true,
+    "reason": "Strategy behavior is unchanged; this is an attribution lead test on closed historical rows."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Observed-only alpha: Moomoo DAY capital-flow rows may have usable replacement value only after same-day signed main flow is normalized by PIT price-impact/liquidity context, separating low-impact accumulation from high-impact chase/exhaustion without retuning the rejected raw main-flow source.",
+    "2_history_check": "exp-20260702-019 rejected raw Moomoo main-flow admission and exp-20260705-016 only materialized the first forward snapshot. This run uses a new gate shape, fixed PIT impact-normalized field, and closed historical warehouse outcomes; recent SEC, options, broad-dispersion, crypto, chop, and SBC lanes were avoided as rejected, saturated, or not ready.",
+    "3_single_causal_variable": "moomoo_flow_impact_normalized_forward_value_v1",
+    "4_acceptance_standard": "Observed-only lead only: >=100 closed rows; top and bottom flow-to-impact quartiles each have >=25 rows and >=15 tickers; top quartile beats bottom quartile on mean cash/SPY/QQQ replacement values, median in at least two of three fields, and positive Spearman monotonicity in at least two of three fields; top-minus-bottom cash mean is positive in both chronological halves; top positive PnL concentration <=40% single ticker and <=70% top5. Passing this does not alter strategy behavior.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_019_moomoo_flow_impact_forward_value.py"
+  },
+  "generated_at": "2026-07-09T16:15:27Z",
+  "headline_metrics": {
+    "bottom_rows": 570,
+    "bottom_tickers": 43,
+    "chrono_cash_positive_both_halves": false,
+    "flow_archive_first_date": "2025-07-02",
+    "flow_archive_last_date": "2026-07-06",
+    "flow_archive_rows": 12413,
+    "flow_archive_tickers": 60,
+    "raw_candidate_rows": 2380,
+    "scored_closed_rows": 2282,
+    "spearman_cash": -0.013089,
+    "spearman_qqq": -0.013146,
+    "spearman_spy": -0.016128,
+    "top_minus_bottom_cash_mean": -58.751035,
+    "top_minus_bottom_qqq_mean": -51.02586,
+    "top_minus_bottom_spy_mean": -55.534,
+    "top_positive_single_ticker_share": 0.105944,
+    "top_positive_top5_ticker_share": 0.414817,
+    "top_rows": 570,
+    "top_tickers": 43
+  },
+  "hypothesis": "Observed-only alpha: Moomoo DAY capital-flow rows may have usable replacement value only after same-day signed main flow is normalized by PIT price-impact/liquidity context, separating low-impact accumulation from high-impact chase/exhaustion without retuning the rejected raw main-flow source.",
+  "implementation_mode": "self_registered_observed_only_runner",
+  "inputs": {
+    "baseline_result": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "flow_manifest": {
+      "earliest_flow_date": "2025-07-02",
+      "latest_flow_date": "2026-07-06",
+      "row_count": 12413,
+      "source_rule_version": "moomoo_get_capital_flow_day_archive_v1",
+      "ticker_count": 60
+    },
+    "flow_manifest_json": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "flow_rows_jsonl": "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "warehouse": {
+      "flow_first_date": "2025-07-02",
+      "flow_last_date": "2026-07-06",
+      "load_end": "2026-07-09",
+      "load_start": "2025-05-01",
+      "loaded_tickers": 60,
+      "missing_tickers": [],
+      "qqq_span": {
+        "first_date": "2025-05-01",
+        "last_date": "2026-07-08",
+        "rows": 297
+      },
+      "requested_tickers": 60,
+      "spy_span": {
+        "first_date": "2025-05-01",
+        "last_date": "2026-07-08",
+        "rows": 297
+      },
+      "ticker_spans_sample": {
+        "AAPL": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "AMD": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "AMZN": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "APLD": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "APP": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "AVGO": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "BE": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "BKNG": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "CAT": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        },
+        "COHR": {
+          "first_date": "2025-05-01",
+          "last_date": "2026-07-08",
+          "rows": 297
+        }
+      },
+      "warehouse_sqlite": "data/warehouse/warehouse_main.sqlite"
+    }
+  },
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_moomoo_capital_flow_impact_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260702-019",
+    "exp-20260705-016"
+  ],
+  "new_evidence_axis": "New gate shape and fixed PIT derived field: main_flow_ratio divided by same-day absolute price impact, evaluated as 10d cash/SPY/QQQ replacement attribution. This is not a raw main-flow threshold, bucket, notional, hold, or response-function retune.",
+  "new_evidence_type": "new_gate_shape_impact_normalized_flow_field",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune raw main-flow thresholds, main-flow buckets, entry slots, hold days, cooldowns, notional, comparator subset, impact floor, or response functions on this same archive.",
+    "new_evidence_required": "A valid retry needs materially more closed Moomoo forward rows, a genuinely different intraday/vendor flow decomposition with PIT provenance, borrow/loan economics, or a new gate shape that is not another raw-flow or impact-threshold slice.",
+    "next_evidence_needed": "If this is positive, the next legal step is a shared default-off helper that keeps impact-normalized accumulation as a diagnostic candidate state and runs full Gate 1-4. If negative, park Moomoo DAY flow until new provenance or more settled rows.",
+    "why_result_happened": "The fixed flow-to-impact field was evaluated across the local Moomoo archive with the existing shared candidate guards. Any positive or negative result is attribution only because the strategy path was not changed."
+  },
+  "predicted_failure_modes": [
+    "no_monotonic_edge",
+    "flow_already_priced_by_next_open",
+    "thin_forward_sample",
+    "impact_proxy_is_only_liquidity"
+  ],
+  "prediction": {
+    "confidence_reason": "Raw Moomoo main-flow admission was rejected, but external order-flow research points to impact/liquidity normalization rather than raw flow. This run is observed-only attribution and does not change live or backtest policy.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_edge",
+      "flow_already_priced_by_next_open",
+      "thin_forward_sample",
+      "impact_proxy_is_only_liquidity"
+    ],
+    "success_probability": 0.29
+  },
+  "production_impact": {
+    "alters_candidate_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "failed_predeclared_criteria: top_mean_beats_bottom_all_fields, spearman_positive_two_fields, chrono_cash_mean_positive_both_halves",
+  "related_files": [
+    "quant/experiments/exp_20260709_019_moomoo_flow_impact_forward_value.py",
+    "data/experiments/exp-20260709-019/exp_20260709_019_moomoo_flow_impact_forward_value.json",
+    "experiments/logs/exp-20260709-019.json",
+    "experiments/cards/exp-20260709-019.md",
+    "experiments/manifests/exp-20260709-019.json",
+    "experiments/tickets/exp-20260709-019.json",
+    "docs/experiment_registry.json"
+  ],
+  "sample_generation": {
+    "candidate_reject_totals": {
+      "avg_dollar_volume_below_threshold": 35,
+      "main_in_flow_not_positive": 6601,
+      "missing_flow_row_asof": 2761,
+      "ret20_excess_spy_below_threshold": 1885
+    },
+    "flow_date_count": 253,
+    "max_daily_candidate_count": 19,
+    "scoring_reject_totals": {
+      "missing_exit_session": 98
+    },
+    "signal_dates_with_candidates": 253,
+    "universe_ticker_count": 54,
+    "universe_tickers": [
+      "AAPL",
+      "AMD",
+      "AMZN",
+      "APLD",
+      "APP",
+      "AVGO",
+      "BE",
+      "BKNG",
+      "CAT",
+      "COHR",
+      "COIN",
+      "CRDO",
+      "CVX",
+      "DDOG",
+      "DE",
+      "DIS",
+      "GE",
+      "GEV",
+      "GOOG",
+      "GS",
+      "HOOD",
+      "INTC",
+      "ISRG",
+      "JPM",
+      "LITE",
+      "LLY",
+      "MA",
+      "MCD",
+      "META",
+      "MRVL",
+      "MSFT",
+      "MTSI",
+      "MU",
+      "MUU",
+      "NBIS",
+      "NFLX",
+      "NOW",
+      "NVDA",
+      "NVO",
+      "PLTR",
+      "RBLX",
+      "RTX",
+      "SNOW",
+      "SNXX",
+      "SOFI",
+      "SPOT",
+      "TQQQ",
+      "TSLA",
+      "TSM",
+      "UNH",
+      "V",
+      "VRT",
+      "WDC",
+      "XOM"
+    ]
+  },
+  "single_causal_variable": "moomoo_flow_impact_normalized_forward_value_v1",
+  "status": "observed_only_rejected",
+  "trial_family": "moomoo_flow_impact_normalized_forward_value",
+  "trial_variant_id": "fixed_amihud_impact_normalized_main_flow_v1"
+}
