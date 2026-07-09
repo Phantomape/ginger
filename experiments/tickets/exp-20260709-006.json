@@ -1,0 +1,646 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_006_sector_dispersion_forward_replacement_state.py",
+    "data/experiments/exp-20260709-006/exp_20260709_006_sector_dispersion_forward_replacement_state.json",
+    "experiments/cards/exp-20260709-006.md",
+    "experiments/manifests/exp-20260709-006.json",
+    "experiments/tickets/exp-20260709-006.json",
+    "experiments/logs/exp-20260709-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-006.md",
+  "causal_components": [
+    "sector_cache",
+    "warehouse_ohlcv_sector_dispersion",
+    "prior_close_entry_state_join",
+    "closed_forward_replacement_rows",
+    "cash_spy_qqq_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "sector_dispersion_forward_replacement_state_v1",
+  "claimed_at": "2026-07-09T05:08:43+00:00",
+  "completed_at": "2026-07-09T05:17:21+00:00",
+  "created_at": "2026-07-09T05:08:32+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-006",
+  "experiment_uid": "expuid-c98e1b26b83246c4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T05:08:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sector_dispersion_forward_replacement_state"
+  },
+  "hypothesis": "Observed-only alpha: actual default-off forward replacement rows should have better cash/SPY/QQQ replacement value when the entry ticker's sector is in a high prior-close within-sector dispersion stock-picker state than when sector dispersion is low, because accepted paper sources need idiosyncratic separation rather than a uniform sector tape.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sector_dispersion_forward_replacement_state_v1"
+  ],
+  "mechanism_family": "sector_dispersion_forward_replacement_value_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-004",
+    "exp-20260709-005",
+    "exp-20260703-003"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.6585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "score": 0.6585,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_short_volume_replacement_value_attribution",
+        "score": 0.6545,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6528,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "a",
+        "accepted",
+        "actual",
+        "attribution",
+        "because",
+        "better",
+        "cash",
+        "dispersion",
+        "entry",
+        "forward",
+        "have",
+        "high",
+        "idiosyncratic",
+        "in",
+        "is",
+        "low",
+        "need",
+        "picker",
+        "qqq",
+        "rather",
+        "replacement",
+        "rows",
+        "s",
+        "sector",
+        "separation",
+        "should",
+        "sources",
+        "spy",
+        "state",
+        "stock",
+        "tape",
+        "than",
+        "ticker",
+        "uniform",
+        "value",
+        "when",
+        "within"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.6585,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "reopen_condition": "Reopen only after materially more stretched closed forward rows settle under the same fixed helper, or after a genuinely new PIT entry-fragility data source appears.",
+        "score": 0.6585,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_short_volume_replacement_value_attribution",
+        "reopen_condition": "At least 20 PIT-tagged Q5 closed forward rows, max single Q5 ticker share <=40%, positive clean-vs-toxic separation versus cash/SPY/QQQ, or a materially new borrow fee/utilization/loan-availability field.",
+        "score": 0.6545,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6528,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.6513,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: sector-level within-sector dispersion state per ticker/entry_date, not broad-universe dispersion/correlation thresholds from exp-20260709-004/005. This uses a different entry-time state source/gate shape on closed forward replacement rows and tests sector stock-picker context, not a response-curve or quartile retune of the broad-state score.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 1,
+      "streak_experiments": [
+        "exp-20260709-005"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: sector-level within-sector dispersion state per ticker/entry_date, not broad-universe dispersion/correlation thresholds from exp-20260709-004/005. This uses a different entry-time state source/gate shape on closed forward replacement rows and tests sector stock-picker context, not a response-curve or quartile retune of the broad-state score.",
+        "categories": [
+          "new_gate_shape",
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: sector-level within-sector dispersion state per ticker/entry_date, not broad-universe dispersion/correlation thresholds from exp-20260709-004/005. This uses a different entry-time state source/gate shape on closed forward replacement rows and tests sector stock-picker context, not a response-curve or quartile retune of the broad-state score.",
+      "categories": [
+        "new_gate_shape",
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sector_cache_or_feature_coverage_too_thin",
+      "accepted_rows_concentrated_in_one_ticker_or_sleeve",
+      "sector_dispersion_not_monotonic_against_replacement_value",
+      "broad_dispersion_lead_not_transferable_to_ticker_sector_state"
+    ],
+    "confidence_reason": "exp-20260709-005 found a forward-row lead for broad stock-picker state, but exp-20260709-004 rejected synthetic proxy spreads. Sector-level prior-close dispersion is a different entry-time state source/gate shape with enough closed rows for falsification but real risk of technology concentration and no positive absolute replacement value.",
+    "recorded_at": "2026-07-09T05:17:21+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_sector_dispersion_forward_replacement_state",
+    "artifact": "data/experiments/exp-20260709-006/exp_20260709_006_sector_dispersion_forward_replacement_state.json",
+    "log": "experiments/logs/exp-20260709-006.json",
+    "gate4": {
+      "mode": "observed_only_forward_replacement_value_attribution",
+      "champion_challenge_run": false,
+      "decision": "observed_only_rejected_sector_dispersion_forward_replacement_state",
+      "measurement_blockers": [],
+      "lead_passed": false,
+      "criteria": {
+        "covered_rows_gte_min": true,
+        "top_rows_gte_min": true,
+        "bottom_rows_gte_min": true,
+        "max_ticker_share_lte_guard": true,
+        "max_sleeve_share_lte_guard": true,
+        "top_max_ticker_share_lte_guard": true,
+        "bottom_max_ticker_share_lte_guard": true,
+        "top_beats_bottom_all_comparators": true,
+        "top_positive_at_least_two_comparators": false,
+        "spearman_positive_at_least_two_comparators": true,
+        "top_beats_bottom_fields": [
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd",
+          "replacement_value_vs_qqq_usd"
+        ],
+        "top_positive_fields": [],
+        "spearman_positive_fields": [
+          "replacement_value_vs_cash_usd",
+          "replacement_value_vs_spy_usd"
+        ]
+      },
+      "passed": false,
+      "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha."
+    },
+    "delta_metrics": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0,
+      "live_order_behavior_changed": false,
+      "strategy_behavior_changed": false,
+      "observed_only_forward_rows": 59
+    },
+    "calibration": {
+      "predicted_success_probability": 0.3,
+      "actual_success": false,
+      "calibration_note": "Success means observed-only lead criteria passed; no alpha acceptance or live behavior change is possible in this runner.",
+      "surprise_note": "The relative q4-vs-q1 spread was positive across comparators, but q4 itself remained negative and too concentrated in technology exposure to qualify as a forward alpha lead."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-006.json",
+  "single_causal_variable": "sector_dispersion_forward_replacement_state_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260709-006.json",
+  "trial_family": "sector_dispersion_forward_replacement_state",
+  "trial_variant_id": "prior_close_sector_dispersion_z_quartile_v1",
+  "alpha_hypothesis": "Observed-only alpha: actual default-off forward replacement rows should have better cash/SPY/QQQ replacement value when the entry ticker's sector is in a high prior-close within-sector dispersion stock-picker state than when sector dispersion is low, because accepted paper sources need idiosyncratic separation rather than a uniform sector tape.",
+  "implementation_mode": "observed_only_runner_no_strategy_change",
+  "decision": "observed_only_rejected_sector_dispersion_forward_replacement_state",
+  "artifact": "data/experiments/exp-20260709-006/exp_20260709_006_sector_dispersion_forward_replacement_state.json",
+  "log": "experiments/logs/exp-20260709-006.json",
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "standard_window_count": 3,
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_checked": [
+      "entry_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "sector_cache_mapping",
+      "prior_close_sector_dispersion_z"
+    ],
+    "missing_required_forward_fields": {},
+    "sector_cache": {
+      "cache_file": "data/reference/broad_market_sector_map.json",
+      "cache_exists": true,
+      "rule_version": "yfinance_gics_proxy_sector_v1",
+      "source": "yfinance.Ticker.info.sector",
+      "entries": 1455,
+      "mapped_tickers": 1252,
+      "status_counts": {
+        "ok": 1252,
+        "fetch_error": 193,
+        "missing_info": 10
+      },
+      "sector_counts": {
+        "Basic Materials": 66,
+        "Communication Services": 49,
+        "Consumer Cyclical": 164,
+        "Consumer Defensive": 61,
+        "Energy": 80,
+        "Financial Services": 178,
+        "Healthcare": 141,
+        "Industrials": 192,
+        "Real Estate": 64,
+        "Technology": 215,
+        "Utilities": 42
+      },
+      "generated_at": "2026-07-07T05:27:42Z"
+    },
+    "coverage": {
+      "raw_enriched_rows": 77,
+      "covered_rows": 59,
+      "uncovered_rows": 18,
+      "coverage_rate": 0.766234,
+      "uncovered_reason_counts": {
+        "missing_sector_map": 18
+      },
+      "uncovered_examples": [
+        {
+          "entry_date": "2026-05-12",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-13",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-14",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-15",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-18",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-19",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-20",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-21",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-22",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-26",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-27",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-28",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-29",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-06-01",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-06-02",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-06-03",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-06-04",
+          "ticker": "QQQ",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "low_deployment_etf",
+          "reason": "missing_sector_map"
+        },
+        {
+          "entry_date": "2026-05-08",
+          "ticker": "SNXX",
+          "sector": null,
+          "state_feature_date": null,
+          "sleeve_key": "state_surface",
+          "reason": "missing_sector_map"
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "passed": true,
+    "note": "Observed-only attribution; no candidate filter was added."
+  },
+  "gate4": {
+    "mode": "observed_only_forward_replacement_value_attribution",
+    "champion_challenge_run": false,
+    "decision": "observed_only_rejected_sector_dispersion_forward_replacement_state",
+    "measurement_blockers": [],
+    "lead_passed": false,
+    "criteria": {
+      "covered_rows_gte_min": true,
+      "top_rows_gte_min": true,
+      "bottom_rows_gte_min": true,
+      "max_ticker_share_lte_guard": true,
+      "max_sleeve_share_lte_guard": true,
+      "top_max_ticker_share_lte_guard": true,
+      "bottom_max_ticker_share_lte_guard": true,
+      "top_beats_bottom_all_comparators": true,
+      "top_positive_at_least_two_comparators": false,
+      "spearman_positive_at_least_two_comparators": true,
+      "top_beats_bottom_fields": [
+        "replacement_value_vs_cash_usd",
+        "replacement_value_vs_spy_usd",
+        "replacement_value_vs_qqq_usd"
+      ],
+      "top_positive_fields": [],
+      "spearman_positive_fields": [
+        "replacement_value_vs_cash_usd",
+        "replacement_value_vs_spy_usd"
+      ]
+    },
+    "passed": false,
+    "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha."
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "max_drawdown_pct_delta": 0.0,
+    "live_order_behavior_changed": false,
+    "strategy_behavior_changed": false,
+    "observed_only_forward_rows": 59
+  },
+  "production_impact": {
+    "live_orders_changed": false,
+    "trade_enabled_changed": false,
+    "candidate_generation_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_changed": false,
+    "llm_decision_boundary_changed": false,
+    "default_off_helper_changed": false,
+    "paper_snapshot_changed": false,
+    "live_realistic_execution_envelope": "Not evaluated; observed-only attribution on settled default-off forward rows. No order semantics, sizing, capital cap, or kill switch changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Sector-level prior-close within-sector dispersion produced a positive q4-minus-q1 spread across cash/SPY/QQQ, but the q4 bucket itself stayed negative versus all three comparators and the sample was heavily technology-sector exposed. The fixed lead criteria therefore rejected the hypothesis rather than promoting a relative loss-reduction effect.",
+    "predicted_failure_mode_observed": true,
+    "forbidden_near_neighbor_retry": "Do not retune sector count, liquidity floor, z-lookback, quartile shape, top/bottom thresholds, or cash/SPY/QQQ comparator subset on the same 59 covered rows.",
+    "new_evidence_required": "Reopen only with materially more closed forward rows that reduce sector concentration, or with a genuinely new entry-time state source/gate shape rather than another sector-dispersion retune."
+  },
+  "next_retry_requires": "Do not retune sector count, liquidity floor, z-lookback, quartile shape, or cash/SPY/QQQ comparator subset on the same rows. Reopen only with materially more closed forward rows or a genuinely new entry-time state source/gate shape.",
+  "changed_files": [
+    "quant/experiments/exp_20260709_006_sector_dispersion_forward_replacement_state.py",
+    "data/experiments/exp-20260709-006/exp_20260709_006_sector_dispersion_forward_replacement_state.json",
+    "experiments/logs/exp-20260709-006.json",
+    "experiments/cards/exp-20260709-006.md",
+    "experiments/manifests/exp-20260709-006.json",
+    "experiments/tickets/exp-20260709-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/reference/broad_market_sector_map.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.3,
+    "actual_success": false,
+    "calibration_note": "Success means observed-only lead criteria passed; no alpha acceptance or live behavior change is possible in this runner.",
+    "surprise_note": "The relative q4-vs-q1 spread was positive across comparators, but q4 itself remained negative and too concentrated in technology exposure to qualify as a forward alpha lead."
+  },
+  "updated_at": "2026-07-09T05:17:21+00:00"
+}
