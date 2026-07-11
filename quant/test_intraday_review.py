@@ -464,7 +464,15 @@ def test_report_and_prompt_surface_news_text_sanitation_summary():
 
 
 def test_output_paths_stay_inside_intraday_subtree(tmp_path):
-    for kind in ("report", "llm_prompt", "news_raw", "trade_news", "snapshot"):
+    for kind in (
+        "report",
+        "llm_prompt",
+        "news_raw",
+        "trade_news",
+        "snapshot",
+        "opend_context",
+        "decision_template",
+    ):
         path = intraday_output_path(kind, "20260610", "1300ET", tmp_path)
         rel = path.relative_to(tmp_path)
         assert rel.parts[:2] == ("daily", "intraday"), rel

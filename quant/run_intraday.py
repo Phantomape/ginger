@@ -30,6 +30,11 @@ try:
     from data_layer import get_ohlcv_many
     from data_paths import DATA_ROOT
     from intraday_quotes import get_intraday_quotes, quote_source_summary
+    from intraday_moomoo import (
+        build_analysis_universe,
+        fetch_intraday_context,
+        quote_from_ticker_payload,
+    )
     from intraday_review import (
         INDEX_TICKERS,
         build_advisory_shadow_actions,
@@ -41,6 +46,7 @@ try:
         render_intraday_report,
         split_completed_sessions,
     )
+    from intraday_triage import build_decision_template, build_machine_triage
     from news_text_sanitizer import annotate_news_items, build_news_sanitation_summary
     from open_position_schema import positions_by_ticker
     from pending_actions import get_open_pending_actions
@@ -51,6 +57,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.data_layer import get_ohlcv_many
     from quant.data_paths import DATA_ROOT
     from quant.intraday_quotes import get_intraday_quotes, quote_source_summary
+    from quant.intraday_moomoo import (
+        build_analysis_universe,
+        fetch_intraday_context,
+        quote_from_ticker_payload,
+    )
     from quant.intraday_review import (
         INDEX_TICKERS,
         build_advisory_shadow_actions,
@@ -62,6 +73,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         render_intraday_report,
         split_completed_sessions,
     )
+    from quant.intraday_triage import build_decision_template, build_machine_triage
     from quant.news_text_sanitizer import (
         annotate_news_items,
         build_news_sanitation_summary,
@@ -245,6 +257,7 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         log.warning("No open positions — producing regime/news-only review.")
 
     tickers = sorted(held_tickers | set(INDEX_TICKERS))
+    analysis_tickers = build_analysis_universe(held_tickers)
 
     ohlcv_dict: dict = {}
     try:
@@ -253,18 +266,52 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         log.error("OHLCV download failed: %s", e)
     daily_closes = _completed_closes(ohlcv_dict, asof_date)
 
+    opend_context = {
+        "source": "moomoo_opend",
+        "status": "offline" if offline else "unavailable",
+        "capture_time_et": capture_time_et,
+        "market_phase": "UNKNOWN",
+        "requested_tickers": analysis_tickers,
+        "tickers": {},
+        "errors": {},
+        "trade_enabled": False,
+        "strategy_behavior_changed": False,
+    }
+    if not offline:
+        try:
+            opend_context = fetch_intraday_context(
+                analysis_tickers,
+                now_et=now_et,
+            )
+        except Exception as e:
+            log.warning("moomoo OpenD context unavailable: %s", e)
+
     if offline:
         quotes = _offline_quotes(tickers, daily_closes, capture_time_et)
     else:
-        try:
-            quotes = get_intraday_quotes(
-                tickers,
-                daily_closes,
-                capture_time_et=capture_time_et,
+        quotes = {}
+        for ticker in tickers:
+            quote = quote_from_ticker_payload(
+                (opend_context.get("tickers") or {}).get(ticker) or {},
+                capture_time_et,
             )
+            if quote is not None:
+                quotes[ticker] = quote
+        missing_quote_tickers = [ticker for ticker in tickers if ticker not in quotes]
+        try:
+            if missing_quote_tickers:
+                quotes.update(get_intraday_quotes(
+                    missing_quote_tickers,
+                    daily_closes,
+                    capture_time_et=capture_time_et,
+                ))
         except Exception as e:
-            log.error("Quote fetch failed entirely: %s", e)
-            quotes = _offline_quotes(tickers, daily_closes, capture_time_et)
+            log.error("Fallback quote fetch failed: %s", e)
+            quotes.update(_offline_quotes(
+                missing_quote_tickers,
+                daily_closes,
+                capture_time_et,
+            ))
 
     regime = build_intraday_market_regime(
         {t: ohlcv_dict.get(t) for t in INDEX_TICKERS}, quotes, asof_date
@@ -360,6 +407,15 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
             "text_sanitation": news_sanitation_summary,
         }
 
+    machine_triage = build_machine_triage(
+        open_positions,
+        positions,
+        opend_context,
+        portfolio_heat=heat,
+        accounting=accounting,
+        pending_actions=pending,
+    )
+
     review = {
         "generated_at_et": now_et.strftime("%Y-%m-%d %H:%M ET"),
         "generated_at_pt": now_pt.strftime("%H:%M PT"),
@@ -375,6 +431,8 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         "portfolio_heat": heat,
         "heat_quote_coverage": heat_coverage,
         "accounting": accounting,
+        "opend_context": opend_context,
+        "machine_triage": machine_triage,
         "positions": positions,
         "advisory_shadow_actions": build_advisory_shadow_actions(positions),
         "pending_actions": pending,
@@ -383,6 +441,10 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
             "quote_sources": quote_source_summary(
                 {t: q for t, q in quotes.items() if t in held_tickers}
             ) if held_tickers else {},
+            "opend_status": opend_context.get("status"),
+            "opend_requested_tickers": len(analysis_tickers),
+            "opend_available_tickers": opend_context.get("available_tickers", 0),
+            "opend_errors": opend_context.get("errors") or {},
             "calendar_audit": calendar_findings,
             **(
                 {
@@ -397,6 +459,12 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
 
     report_text = render_intraday_report(review)
     prompt_text = build_intraday_llm_prompt(review)
+    snapshot_path = intraday_output_path("snapshot", date_str, time_label, data_dir)
+    decision_template = build_decision_template(
+        machine_triage,
+        timestamp_et=capture_time_et,
+        raw_snapshot_ref=str(snapshot_path),
+    )
 
     outputs = []
     try:
@@ -406,8 +474,13 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
         path = intraday_output_path("llm_prompt", date_str, time_label, data_dir)
         _write_intraday_text(prompt_text, path)
         outputs.append(path)
-        path = intraday_output_path("snapshot", date_str, time_label, data_dir)
-        _write_intraday_json(review, path, default=str)
+        _write_intraday_json(review, snapshot_path, default=str)
+        outputs.append(snapshot_path)
+        path = intraday_output_path("opend_context", date_str, time_label, data_dir)
+        _write_intraday_json(opend_context, path, default=str)
+        outputs.append(path)
+        path = intraday_output_path("decision_template", date_str, time_label, data_dir)
+        _write_intraday_json(decision_template, path, default=str)
         outputs.append(path)
         if news_payload:
             path = intraday_output_path("news_raw", date_str, time_label, data_dir)
@@ -437,7 +510,8 @@ def main(no_news: bool = False, offline: bool = False, data_dir=None) -> dict:
     )
     heat_txt = f"{heat['portfolio_heat_pct'] * 100:.1f}%" if heat else "n/a"
     print(f"SUMMARY: breached={breached} approaching={approaching} "
-          f"regime={regime.get('regime')} heat={heat_txt}")
+          f"regime={regime.get('regime')} heat={heat_txt} "
+          f"add_review_eligible={len(machine_triage.get('add_review_eligible') or [])}")
     if stale:
         print(f"WARNING: {stale} held-position quote(s) are stale/missing — "
               "verify those prices manually before acting.")

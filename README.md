@@ -128,7 +128,11 @@ $env:RUN_BROAD_ACCUMULATION = "0"; .\.venv\Scripts\python.exe quant\run.py
 
 ## 盘中风险复查（advisory）
 
-`quant\run_intraday.py` 是**手动触发的盘中风险复查**，一般在美西 10:00 左右跑一次。它用**盘中价格**重新评估现有持仓的 exit 规则、市场 regime 和组合热度，只产出 advisory 报告，**不**生成任何被 `run.py`、`backtester.py` 或实验消费的文件，也不会写 `operator_inputs\`。
+实现、状态机、artifact 和故障降级的完整说明见 `docs\intraday_code_driven_triage.md`；人工判断与 forward 验证原则见 `docs\live_trade_triage_framework.md`。
+
+`quant\run_intraday.py` 是**手动触发的盘中风险复查**，一般在美西 10:00 左右跑一次。它用**盘中价格**重新评估现有持仓的 exit 规则、市场 regime 和组合热度，并生成 discretionary triage 的机器 guardrail。输出均为 advisory-only，**不**生成订单，不被 `run.py`、`backtester.py` 或实验消费，也不会写 `operator_inputs\`。
+
+实时行情优先读本机 moomoo OpenD（默认 `127.0.0.1:11111`）。代码会一次性获取持仓、杠杆 ETF 底层、行业代理和 SPY/QQQ 的 snapshot、日线与 5 分钟线，派生 VWAP、ATR%、RSI、SMA/EMA、区间位置和尾段强弱。OpenD 不可用时，退出复查报价回退到 yfinance/EOD，但机器 guardrail 不会开放 `ADD_SMALL`。
 
 ```powershell
 .\.venv\Scripts\python.exe -B quant\run_intraday.py
@@ -149,8 +153,26 @@ $env:RUN_BROAD_ACCUMULATION = "0"; .\.venv\Scripts\python.exe quant\run.py
 | `data\daily\intraday\llm\intraday_llm_prompt_*.txt` | 盘中 LLM 提示词。 |
 | `data\daily\intraday\snapshots\intraday_review_*.json` | 完整盘中快照（regime、持仓复查、热度、pending actions）。 |
 | `data\daily\intraday\news\intraday_*_news_*.json` | 盘中新闻（未加 `--no-news` 时）。 |
+| `data\daily\intraday\market_data\intraday_opend_context_*.json` | OpenD 原始快照、日线/5 分钟线和代码派生指标。 |
+| `data\daily\intraday\decisions\intraday_decision_template_*.json` | 代码生成的安全默认动作、允许动作和 decision-row 模板。 |
+| `data\daily\intraday\decisions\intraday_triage_*.json` | 新闻语义审查通过代码校验后的不可覆盖 forward decision。 |
 
-终端会打印一行 `SUMMARY: breached=… approaching=… regime=… heat=…`，并对 stale/缺失报价给出告警 —— 操作前请手动核对相关价格。
+机器 guardrail 的规则边界：
+
+- 已触发可执行 EXIT/REDUCE 的持仓只允许 `REDUCE_RISK`；`TIME_STOP REVIEW` 一类复核规则默认 `HOLD_ONLY`，但不允许加仓。
+- 非 RTH、OpenD/技术字段不完整、价格未站回 VWAP/EMA8/SMA20、底层/行业/大盘未确认时，不开放 `ADD_SMALL`。
+- 接近现有止损、组合热度到上限、现金低于 5%、距离现有 target 不足 2%，或已有 pending 风险动作时，默认 `HOLD_ONLY`。
+- 只有所有代码条件通过时，`ADD_SMALL` 才会进入 `allowed_actions`；机器默认动作仍为 `WAIT`，新闻审查不得越权。
+
+新闻语义审查得到 JSON 后，必须通过校验器写最终 ledger：
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\finalize_intraday_decision.py `
+  --template data\daily\intraday\decisions\intraday_decision_template_<timestamp>.json `
+  --response <semantic_response.json>
+```
+
+校验器会拒绝漏 ticker、重复 ticker、越过 `allowed_actions`、非法置信度，以及没有已核验新闻链接的 `ADD_SMALL`。终端会打印 `SUMMARY: breached=… approaching=… regime=… heat=… add_review_eligible=…`。
 
 ## 标准回测
 
