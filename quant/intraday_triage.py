@@ -68,6 +68,43 @@ def _levels(metrics: dict) -> tuple[float | None, float | None]:
     return confirmation, invalidation
 
 
+def _paper_position_fields(
+    position: dict,
+    metrics: dict,
+    *,
+    reference_price: float | None,
+    reduce_fraction: float,
+) -> dict[str, Any]:
+    shares = _number(position.get("shares"))
+    market_value = (
+        shares * reference_price
+        if shares is not None and reference_price is not None
+        else _number(position.get("market_val"))
+    )
+    bid = _number(metrics.get("bid"))
+    ask = _number(metrics.get("ask"))
+    midpoint = (bid + ask) / 2.0 if bid and ask and bid > 0 and ask >= bid else None
+    spread_bps = (
+        (ask - bid) / midpoint * 10_000.0
+        if midpoint is not None and midpoint > 0
+        else 0.0
+    )
+    # Fixed paper slippage is 5 bps per fill, plus the observed half/full spread.
+    one_way_cost_bps = 5.0 + spread_bps / 2.0
+    round_trip_cost_bps = 10.0 + spread_bps
+    return {
+        "position_shares": round(shares, 6) if shares is not None else None,
+        "position_avg_cost": _number(position.get("avg_cost")),
+        "position_market_value_at_decision": (
+            round(market_value, 2) if market_value is not None else None
+        ),
+        "paper_reduce_fraction_existing_position": round(reduce_fraction, 4),
+        "spread_bps_at_decision": round(spread_bps, 4),
+        "paper_one_way_cost_bps": round(one_way_cost_bps, 4),
+        "paper_round_trip_cost_bps": round(round_trip_cost_bps, 4),
+    }
+
+
 def build_machine_triage(
     open_positions: dict,
     position_reviews: list[dict],
@@ -125,6 +162,11 @@ def build_machine_triage(
                 default_action = "REDUCE_RISK"
                 allowed_actions = ["REDUCE_RISK"]
                 block_name = "existing_exit_rule_breached"
+            reference_price = (
+                metrics.get("reference_price")
+                or (review.get("quote") or {}).get("price")
+            )
+            reduce_fraction = 1.0 if shadow_action in {"", "EXIT"} else 0.25
             rows.append({
                 "ticker": ticker,
                 "position_group": position.get("position_group"),
@@ -136,10 +178,19 @@ def build_machine_triage(
                 "allowed_actions": allowed_actions,
                 "blockers": [block_name],
                 "risk_blocks": [block_name],
-                "reference_price": metrics.get("reference_price") or (review.get("quote") or {}).get("price"),
+                "reference_price": reference_price,
                 "confirmation_level": None,
                 "invalidation_level": None,
                 "max_add_pct_existing_position": 0.0,
+                "paper_counterfactual_add_fraction_existing_position": _add_size_cap(
+                    ticker, _number(metrics.get("atr_pct"))
+                ),
+                **_paper_position_fields(
+                    position,
+                    metrics,
+                    reference_price=_number(reference_price),
+                    reduce_fraction=reduce_fraction,
+                ),
                 "trade_enabled": False,
             })
             continue
@@ -237,7 +288,16 @@ def build_machine_triage(
             "confirmation_level": round(confirmation, 4) if confirmation is not None else None,
             "invalidation_level": round(invalidation, 4) if invalidation is not None else None,
             "max_add_pct_existing_position": _add_size_cap(ticker, atr_pct) if eligible else 0.0,
+            "paper_counterfactual_add_fraction_existing_position": _add_size_cap(
+                ticker, atr_pct
+            ),
             "atr_pct": atr_pct,
+            **_paper_position_fields(
+                position,
+                metrics,
+                reference_price=price,
+                reduce_fraction=0.25,
+            ),
             "trade_enabled": False,
         })
 
@@ -272,6 +332,7 @@ def build_decision_template(machine_triage: dict, *, timestamp_et: str,
             "sector_proxy": row.get("sector_proxy"),
             "market_proxy": row.get("market_proxy"),
             "action_label": row.get("default_action"),
+            "machine_default_action": row.get("default_action"),
             "allowed_actions": row.get("allowed_actions"),
             "confidence": None,
             "reference_price": row.get("reference_price"),
@@ -287,11 +348,35 @@ def build_decision_template(machine_triage: dict, *, timestamp_et: str,
                 "blockers": row.get("blockers"),
                 "risk_blocks": row.get("risk_blocks"),
                 "max_add_pct_existing_position": row.get("max_add_pct_existing_position"),
+                "paper_reduce_fraction_existing_position": row.get(
+                    "paper_reduce_fraction_existing_position"
+                ),
                 "requires_news_review": True,
+            },
+            "paper_execution_contract": {
+                "rule_version": "intraday_triage_next_5m_execution_v1",
+                "entry_rule": "next_eligible_5m_open_strictly_after_decision",
+                "horizons": ["h1", "rth_close", "next_close", "d3_close"],
+                "position_shares": row.get("position_shares"),
+                "position_market_value_at_decision": row.get(
+                    "position_market_value_at_decision"
+                ),
+                "max_add_fraction_existing_position": row.get(
+                    "max_add_pct_existing_position"
+                ),
+                "counterfactual_add_fraction_existing_position": row.get(
+                    "paper_counterfactual_add_fraction_existing_position"
+                ),
+                "reduce_fraction_existing_position": row.get(
+                    "paper_reduce_fraction_existing_position"
+                ),
+                "spread_bps_at_decision": row.get("spread_bps_at_decision"),
+                "one_way_cost_bps": row.get("paper_one_way_cost_bps"),
+                "round_trip_cost_bps": row.get("paper_round_trip_cost_bps"),
             },
         })
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "decision_template_pending_news_review",
         "immutable_after_finalization": True,
         "trade_enabled": False,
@@ -336,6 +421,30 @@ def finalize_decision_payload(template: dict, semantic_response: dict) -> dict:
             raise ValueError(f"{ticker}: reason is required")
 
         row = dict(template_row)
+        contract = dict(template_row.get("paper_execution_contract") or {})
+        position_value = _number(contract.get("position_market_value_at_decision"))
+        if action in {"ADD_SMALL", "OPEN_SMALL"}:
+            fraction = _number(contract.get("max_add_fraction_existing_position")) or 0.0
+            direction = 1
+            cost_bps = _number(contract.get("round_trip_cost_bps")) or 0.0
+        elif action == "REDUCE_RISK":
+            fraction = _number(contract.get("reduce_fraction_existing_position")) or 0.0
+            direction = -1
+            cost_bps = _number(contract.get("one_way_cost_bps")) or 0.0
+        else:
+            fraction = 0.0
+            direction = 0
+            cost_bps = 0.0
+        contract.update({
+            "final_action": action,
+            "action_direction": direction,
+            "action_fraction_existing_position": round(fraction, 4),
+            "paper_notional_usd": (
+                round(position_value * fraction, 2)
+                if position_value is not None else None
+            ),
+            "applicable_cost_bps": round(cost_bps, 4),
+        })
         row.update({
             "agent": "codex_intraday_semantic_reviewer",
             "action_label": action,
@@ -343,11 +452,12 @@ def finalize_decision_payload(template: dict, semantic_response: dict) -> dict:
             "news_refs": news_refs,
             "news_veto": bool(semantic.get("news_veto")),
             "reason": reason,
+            "paper_execution": contract,
         })
         finalized.append(row)
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "finalized_discretionary_forward_decision",
         "finalized_at_et": datetime.now(ZoneInfo("America/New_York")).strftime(
             "%Y-%m-%d %H:%M:%S ET"

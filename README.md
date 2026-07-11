@@ -174,6 +174,14 @@ $env:RUN_BROAD_ACCUMULATION = "0"; .\.venv\Scripts\python.exe quant\run.py
 
 校验器会拒绝漏 ticker、重复 ticker、越过 `allowed_actions`、非法置信度，以及没有已核验新闻链接的 `ADD_SMALL`。终端会打印 `SUMMARY: breached=… approaching=… regime=… heat=… add_review_eligible=…`。
 
+盘中调仓使用独立的 forward 回测框架，不进入标准日线回测。每次最终 decision 写入后运行：
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\run_intraday_backtest.py
+```
+
+它按“决策后第一根 5 分钟线开盘成交”的固定口径，从 OpenD 更新 `h1`、当日收盘、次日收盘和第 3 个交易日收盘结果；同时比较最终动作、机器默认动作、不调仓、始终加仓及 WAIT 后确认入场。日报在 `data\daily\intraday\backtests\`，最新摘要为 `latest_scorecard.json`。`finalize_intraday_decision.py` 成功写入 ledger 后会自动运行该结算器；只有排障时才使用 `--skip-backtest`。该框架只评估 forward 决策，不是标准 Gate 1-4 回测，也不会下单。
+
 ## 标准回测
 
 标准回测仍然用 `quant\backtester.py`。按 `docs/backtesting.md`，当前固定看三个非重叠窗口：

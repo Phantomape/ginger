@@ -1,0 +1,190 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "The code guardrail plus semantic news selection has positive net incremental decision value versus the machine default and no intraday adjustment after fixed costs; this experiment only creates the forward measurement surface needed to test that later.",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "no_finalized_decisions",
+      "insufficient_5m_history",
+      "ambiguous_action_sizing",
+      "correlated_repeat_decisions"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "no_finalized_decisions",
+    "surprise_level": "very_low",
+    "surprise_note": "Implementation and regression checks passed; the only realized limitation was expected zero forward rows because finalized decision persistence starts with this workflow."
+  },
+  "causal_components": [
+    "fixed execution contract",
+    "action counterfactuals",
+    "forward outcome ledger",
+    "daily scorecard",
+    "idempotent runner",
+    "tests",
+    "documentation"
+  ],
+  "change_summary": "Add a separate code-driven intraday forward counterfactual backtester with frozen next-5m execution, costs, action comparators, normalized daily scorecards, and automatic refresh after finalization.",
+  "change_type": "measurement_instrumentation",
+  "changed_files": [
+    "quant/intraday_backtester.py",
+    "quant/run_intraday_backtest.py",
+    "quant/intraday_triage.py",
+    "quant/finalize_intraday_decision.py",
+    "quant/test_intraday_backtester.py",
+    "quant/test_intraday_triage.py",
+    "docs/intraday_code_driven_triage.md",
+    "README.md",
+    "data/experiments/exp-20260711-022/zero_row_scorecard.json",
+    "experiments/logs/exp-20260711-022.json",
+    "experiments/cards/exp-20260711-022.md",
+    "experiments/manifests/exp-20260711-022.json",
+    "experiments/tickets/exp-20260711-022.json"
+  ],
+  "changed_variable": "intraday_triage_counterfactual_outcome_settlement_v1",
+  "component": "quant/intraday_backtester.py, quant/run_intraday_backtest.py, quant/intraday_triage.py, quant/finalize_intraday_decision.py, quant/run_intraday.py, quant/test_intraday_backtester.py, quant/test_intraday_triage.py, docs/intraday_code_driven_triage.md, README.md, data/daily/intraday/backtests, data/experiments/exp-20260711-022",
+  "date_range": {},
+  "decision": "accepted_measurement_repair_intraday_forward_counterfactual_backtester",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260711-022",
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; canonical before/after strategy replay is unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "timestamp_et",
+      "ticker",
+      "machine_default_action",
+      "position_market_value_at_decision",
+      "confirmation_level",
+      "invalidation_level",
+      "one_way_cost_bps",
+      "round_trip_cost_bps"
+    ],
+    "sentinel_note": "entry_date and target_price are canonical signal sentinels and are not consumed by this separate finalized-decision surface; frozen decision timestamp and execution contract are its point-in-time sentinels."
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_intraday_forward_counterfactual_backtester",
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "finalized_decision_rows": 0,
+    "settled_primary_next_close_decisions": 0,
+    "focused_and_core_tests_passed": 355,
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Alpha-enabling measurement repair: finalized code-driven intraday ADD/WAIT/HOLD/REDUCE decisions cannot be evaluated credibly until fixed next-5m execution, transaction costs, and machine-default/no-adjustment/proxy counterfactuals are settled into a separate daily scorecard; this framework will test whether the eventual triage policy has positive net incremental decision value without changing orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "intraday_discretionary_triage_outcome_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260707-024",
+    "exp-20260710-009",
+    "exp-20260704-024"
+  ],
+  "new_evidence_type": "new_gate_shape_new_decision_ledger_settlement",
+  "next_retry_requires": [
+    "at least 20 settled primary next_close decisions for early observed-only review",
+    "at least 50 settled primary next_close decisions for stability analysis",
+    "at least 100 settled primary next_close decisions before a separate frozen alpha promotion hypothesis"
+  ],
+  "notes": "Accepted measurement repair only, not alpha. Current finalized decision rows=0, so the generated 2026-07-11 scorecard is explicitly no_finalized_decisions/case_review_only. Framework compares final action vs machine default, no adjustment, always-add, WAIT confirmation entry, and market proxies across h1/rth_close/next_close/d3_close. Same-ticker-day repeats are retained but only earliest is primary. As-of clipping, execution-bar invalidation, pending horizons, missing-position-value exclusion, normalization, and zero-row behavior are tested. 355 focused/core regression tests passed. No orders, canonical backtester, EOD signals, ranking, sizing, or live strategy behavior changed. Reopen alpha evaluation after at least 20 settled primary next_close decisions for early observed-only review; require 50 for stability analysis and 100 before freezing a promotion hypothesis for Gate 1-4.",
+  "parameters": {
+    "locked_variables": [
+      "intraday_triage_counterfactual_outcome_settlement_v1"
+    ],
+    "single_causal_variable": "intraday_triage_counterfactual_outcome_settlement_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve new experiment IDs for routine daily outcome refreshes, cosmetic scorecard changes, threshold retuning, or repeated zero/thin-sample readiness audits on this same decision surface.",
+    "new_evidence_required": "Routine refresh is already wired. Reopen alpha analysis only after 20/50/100 settled primary next_close rows at the documented evidence stages, or with a genuinely new execution/counterfactual gate shape or data source.",
+    "realized_failure_mode": "no_finalized_decisions",
+    "why_result_happened": "Implementation and regression checks passed; the only realized limitation was expected zero forward rows because finalized decision persistence starts with this workflow."
+  },
+  "production_impact": {
+    "automatic_refresh": "finalize_intraday_decision.py refreshes the advisory scorecard only after exclusive final-ledger persistence succeeds",
+    "canonical_backtester_changed": false,
+    "live_orders_changed": false,
+    "operator_positions_changed": false,
+    "trade_enabled": false
+  },
+  "prediction": {
+    "confidence_reason": "The finalized decision schema and OpenD bar adapter now exist, so a deterministic settlement layer is engineering-feasible; the main uncertainty is forward sample availability, not implementation, and no alpha acceptance will be claimed from zero or thin rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_finalized_decisions",
+      "insufficient_5m_history",
+      "ambiguous_action_sizing",
+      "correlated_repeat_decisions"
+    ],
+    "recorded_at": "2026-07-11T16:44:48+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "reopen_condition": "At 20 settled primary next_close decisions perform early observed-only review without a new implementation ID; at 50 review action/window stability; only at 100 may a separate frozen alpha hypothesis be reserved for Gate 1-4.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/experiments/exp-20260711-022/zero_row_scorecard.json",
+    "data/daily/intraday/backtests/latest_scorecard.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\run_intraday_backtest.py --as-of 2026-07-11 --no-fetch",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_backtester.py quant\\test_intraday_triage.py quant\\test_intraday_review.py quant\\test_run_intraday_wiring.py quant\\test_quant.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-11T16:59:35+00:00",
+  "trial_family": "intraday_triage_counterfactual_settlement",
+  "trial_variant_id": "next_5m_machine_default_no_adjustment_proxy_v1"
+}

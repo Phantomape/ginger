@@ -9,9 +9,11 @@ from pathlib import Path
 
 try:
     from data_paths import DATA_ROOT
+    from intraday_backtester import render_scorecard, run_intraday_backtest
     from intraday_triage import finalize_decision_payload, persist_final_decision
 except ImportError:  # pragma: no cover - package-style imports
     from quant.data_paths import DATA_ROOT
+    from quant.intraday_backtester import render_scorecard, run_intraday_backtest
     from quant.intraday_triage import finalize_decision_payload, persist_final_decision
 
 
@@ -29,6 +31,15 @@ if __name__ == "__main__":
     parser.add_argument("--template", required=True)
     parser.add_argument("--response", required=True)
     parser.add_argument("--output-dir")
+    parser.add_argument(
+        "--skip-backtest",
+        action="store_true",
+        help="persist the decision without refreshing forward outcomes",
+    )
     args = parser.parse_args()
     path = main(args.template, args.response, args.output_dir)
     print(path)
+    if not args.skip_backtest:
+        result = run_intraday_backtest()
+        print(render_scorecard(result["scorecard"]))
+        print(json.dumps(result["paths"], indent=2))

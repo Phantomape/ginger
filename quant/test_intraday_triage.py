@@ -213,6 +213,11 @@ def test_finalize_and_persist_valid_decision_exclusively(tmp_path):
     assert first != second
     assert first.exists() and second.exists()
     assert finalized["rows"][0]["action_label"] == "ADD_SMALL"
+    execution = finalized["rows"][0]["paper_execution"]
+    assert execution["action_direction"] == 1
+    assert execution["action_fraction_existing_position"] == 0.20
+    assert execution["paper_notional_usd"] == 240.0
+    assert execution["entry_rule"] == "next_eligible_5m_open_strictly_after_decision"
 
 
 def test_derive_metrics_uses_completed_daily_history_and_rth_vwap():

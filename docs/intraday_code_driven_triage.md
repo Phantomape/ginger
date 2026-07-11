@@ -249,18 +249,95 @@ agent 先按 prompt schema 写纯 JSON response，然后运行：
 
 校验失败时只能修正 semantic response，不能手工编辑 template、删除 blocker 或直接伪造最终 ledger。
 
-## 8. 定时任务合同
+### 7.3 更新盘中 forward 回测
 
-Codex 中名称为“盘中”的任务保持原定时频率。任务只做四件事：
+最终 decision 写入后运行独立结算器：
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\run_intraday_backtest.py
+```
+
+正常 CLI 流程无需手工执行这条命令：`finalize_intraday_decision.py` 只有在最终 ledger 成功持久化后才自动刷新回测。`--skip-backtest` 仅用于 OpenD 排障或只验证 finalizer；之后仍需单独运行上面的结算命令补齐结果。
+
+无 finalized decision 的环境可执行零样本 smoke：
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\run_intraday_backtest.py --no-fetch
+```
+
+## 8. 第二套回测框架
+
+`quant/intraday_backtester.py` 是盘中调仓专用的 forward counterfactual backtester。它与 `quant/backtester.py` 完全分离：前者评估每日真实发生的盘中判断，后者仍负责标准日线策略和 Gate 1-4。
+
+### 8.1 冻结执行合同
+
+每个 decision 在最终化时冻结以下字段，后续结算不得按结果改写：
+
+| 字段 | 固定口径 |
+| --- | --- |
+| 成交时点 | decision 后严格第一根可用 RTH 5 分钟 bar 的 open |
+| ADD/OPEN 仓位 | 代码当时给出的现有仓位百分比上限 |
+| REDUCE 仓位 | 强制退出为 100%；review 型减仓为 25% |
+| ADD 成本 | 每次成交 5 bps 滑点 + 当时完整 spread；按往返成本扣除 |
+| REDUCE 成本 | 5 bps 滑点 + 当时 half-spread；按单边成本扣除 |
+| ADD 失效 | 从成交 bar 开始，首次触及冻结 invalidation 即退出 |
+| 价格源 | moomoo OpenD RTH、QFQ 5 分钟线 |
+
+结算器严格裁剪到 `--as-of` 日期，不能用其后的 bar。决策日同一 ticker 多次运行时，最早一条是 scorecard 的 primary observation；其余行保留在 ledger 供审计，但不重复计入组合收益。
+
+### 8.2 同行反事实
+
+每个 primary decision 在相同成交时点和相同仓位基数下比较：
+
+| 对照 | 回答的问题 |
+| --- | --- |
+| `final_result` vs no adjustment | 这次实际建议增加或减少了多少模拟 PnL |
+| `final_result` vs `machine_default_result` | 新闻语义选择相对代码默认动作是否增值 |
+| `final_result` vs `always_add_result` | WAIT/HOLD/REDUCE 是否避免了盲目加仓损失，或错过收益 |
+| `wait_trigger_result` | WAIT 后达到 confirmation，再下一根 bar 入场是否更好 |
+| underlying/sector/market proxy | 个股表现是否只是底层、行业或大盘 beta |
+
+`REDUCE_RISK` 的 PnL 是被减掉那部分仓位相对“不调仓”的 avoided loss / missed gain；不是创建空头。`WAIT`、`HOLD_ONLY` 和 `NO_TRADE` 相对不调仓的直接 PnL 为零，但仍通过 `always_add` 与确认触发对照衡量等待价值。
+
+### 8.3 结果窗口与产物
+
+固定窗口为 `h1`、`rth_close`、`next_close`、`d3_close`。未走完的窗口显式写 `pending_horizon_bar`，不会被当成 0 收益。
+
+缺少决策时原持仓市值的旧行或异常行写为 `missing_position_value` 并排除收益统计；结算器禁止使用假设的固定美元仓位补数。
+
+| 路径 | 内容 |
+| --- | --- |
+| `backtests/outcome_ledgers/intraday_triage_outcomes_YYYYMMDD.jsonl` | 每个 decision/horizon 的可重建结果 |
+| `backtests/scorecards/intraday_triage_scorecard_YYYYMMDD.json` | 当日累计 scorecard |
+| `backtests/reports/intraday_triage_scorecard_YYYYMMDD.txt` | 人类可读短报告 |
+| `backtests/latest_scorecard.json` | 定时任务读取的最新摘要 |
+
+日报至少审视 `next_close` 的累计模拟 PnL、按决策时原持仓市值归一化的增量 bps、相对机器默认的 semantic lift、相对始终加仓的差值、正收益率、动作分布和按日最大回撤。它是事件驱动的 forward 评估，不应用持仓标的自身买入持有收益冒充调仓收益。
+
+### 8.4 证据成熟度
+
+| 已结算 primary `next_close` 决策 | 允许结论 |
+| ---: | --- |
+| `<20` | 只做案例和数据质量复查 |
+| `20-49` | observed-only 早期方向 |
+| `50-99` | 检查分窗口、分动作稳定性 |
+| `>=100` | 才可冻结新的 alpha 假设并另走 Gate 1-4 |
+
+任何样本量下，该 scorecard 都不会自动把盘中流程标为 accepted alpha。收益为正还需要检查成本敏感性、时间段稳定性、单 ticker 集中度和相对机器默认动作的增值；生产化仍需独立实验和 Gate 1-4。
+
+## 9. 定时任务合同
+
+Codex 中名称为“盘中”的任务保持原定时频率。任务只做五件事：
 
 1. 运行 `quant/run_intraday.py`；
 2. 读取本次 report、snapshot、template 和 prompt；
 3. 浏览核验最新新闻并生成固定 JSON；
-4. 调用 `finalize_intraday_decision.py`，再以最终 ledger 汇报。
+4. 调用 `finalize_intraday_decision.py`；成功写入后代码自动运行 `run_intraday_backtest.py` 更新历史 forward 结果；
+5. 以最终 ledger 和最新 scorecard 汇报。
 
 任务不得重新执行技术指标计算，不得修改 `operator_inputs/open_positions.json`，不得下单。
 
-## 9. 失败与降级
+## 10. 失败与降级
 
 | 故障 | 代码行为 | 操作含义 |
 | --- | --- | --- |
@@ -271,13 +348,15 @@ Codex 中名称为“盘中”的任务保持原定时频率。任务只做四�
 | 新闻无法核验 | 使用机器默认动作 | 不用模型记忆补新闻 |
 | semantic response 越权 | finalizer 抛错，不写最终 ledger | 修正响应后重跑 |
 | 同名最终文件已存在 | 自动增加安全后缀 | 永不覆盖历史判断 |
+| OpenD 历史 5 分钟线不可用 | outcome 写 pending，scorecard 保留数据源错误 | 不把缺失窗口记作 0 收益 |
 
-## 10. 测试与验证
+## 11. 测试与验证
 
 聚焦测试：
 
 ```powershell
 .\.venv\Scripts\python.exe -B -m pytest `
+  quant\test_intraday_backtester.py `
   quant\test_intraday_triage.py `
   quant\test_intraday_review.py `
   quant\test_run_intraday_wiring.py -q
@@ -287,6 +366,7 @@ Codex 中名称为“盘中”的任务保持原定时频率。任务只做四�
 
 ```powershell
 .\.venv\Scripts\python.exe -B -m pytest `
+  quant\test_intraday_backtester.py `
   quant\test_intraday_triage.py `
   quant\test_intraday_review.py `
   quant\test_run_intraday_wiring.py `
@@ -303,8 +383,11 @@ Codex 中名称为“盘中”的任务保持原定时频率。任务只做四�
 - stale OpenD snapshot 被显式标记；
 - finalizer 拒绝越过 `allowed_actions`；
 - 最终 ledger 使用不可覆盖写入。
+- forward 结算不会读取 `as_of` 之后的 bar；
+- ADD 失效价、WAIT 确认入场和 REDUCE avoided loss 口径均有测试；
+- 零 decision 和未走完窗口不会伪造收益。
 
-## 11. 证据升级边界
+## 12. 证据升级边界
 
 当前阈值和状态机只用于 discretionary guardrail，不是 alpha 结论。若未来要让其中任何字段直接改变生产 entry、add-on、ranking、sizing、exit 或订单，必须：
 
