@@ -1788,17 +1788,25 @@ def _step5_position_context(
     save_trend_signals(trend_signals_dict, trend_output)
 
     # Exit lifecycle shadow log (read-only attribution, exp-20260531-020)
+    _exit_outcome_summary = {
+        "status": "not_run",
+        "outcome_rule_version": "exit_lifecycle_forward_outcome_ledger_v1",
+        "trade_enabled": False,
+    }
     try:
         from exit_lifecycle_shadow_log import (
             build_exit_lifecycle_snapshot,
             persist_exit_lifecycle_snapshot,
         )
+        from exit_lifecycle_outcomes import persist_exit_lifecycle_outcome_ledger
+
         _exit_snapshot = build_exit_lifecycle_snapshot(
             as_of=today_iso,
             trend_signals_signals=trend_signals_signals,
             open_positions=open_positions,
         )
         _exit_log_path = persist_exit_lifecycle_snapshot(_exit_snapshot)
+        _exit_outcome_summary = persist_exit_lifecycle_outcome_ledger(today_iso)
         if _exit_snapshot.get("advisory_event_count", 0) > 0:
             log.info(
                 "Exit lifecycle shadow log: %d positions, %d advisory events -> %s",
@@ -1806,8 +1814,22 @@ def _step5_position_context(
                 _exit_snapshot.get("advisory_event_count", 0),
                 _exit_log_path,
             )
+        if _exit_outcome_summary.get("candidate_outcome_rows"):
+            log.info(
+                "Exit lifecycle outcomes: rows=%s settled=%s unsettled=%s",
+                _exit_outcome_summary.get("candidate_outcome_rows"),
+                _exit_outcome_summary.get("settled_count"),
+                _exit_outcome_summary.get("unsettled_count"),
+            )
     except Exception as _exit_exc:
         log.warning("Exit lifecycle shadow log unavailable: %s", _exit_exc)
+        _exit_outcome_summary = {
+            "status": "failed",
+            "outcome_rule_version": "exit_lifecycle_forward_outcome_ledger_v1",
+            "error": str(_exit_exc),
+            "trade_enabled": False,
+        }
+    trend_signals_dict["exit_lifecycle_outcomes"] = _exit_outcome_summary
 
     return trend_signals_dict
 
@@ -1984,6 +2006,10 @@ def main():
     from volatility_relief_stock_leadership_paper_sleeve import (
         empty_volatility_relief_stock_leadership_snapshot,
         prep_and_build_volatility_relief_stock_leadership_snapshot,
+    )
+    from move_rate_volatility_relief_paper_sleeve import (
+        empty_move_rate_volatility_relief_snapshot,
+        prep_and_build_move_rate_volatility_relief_snapshot,
     )
     from rolling_corr_peer_shock_paper_sleeve import (
         empty_rolling_corr_peer_shock_paper_sleeve_snapshot,
@@ -2486,6 +2512,33 @@ def main():
             )
     except Exception as e:
         log.warning(f"Macro event calendar refresh skipped: {e}")
+
+    # ── Step 1.65: iBorrowDesk borrow-economics archive refresh ─────────────
+    # exp-20260712-013: the free IBKR-mirror borrow fee/availability history is
+    # a rolling ~1y window that erodes daily, so a sharded refresh (stalest
+    # tickers first, each fetch returns the full year) keeps the PIT archive
+    # loss-free with a bounded per-run request budget. Data collection only;
+    # total failure changes nothing downstream. Env opt-out:
+    # IBORROWDESK_REFRESH_DISABLED=1.
+    if os.environ.get("IBORROWDESK_REFRESH_DISABLED", "").strip() not in ("1", "true"):
+        try:
+            from iborrowdesk_data_source import refresh_archive as _ibd_refresh
+            from ohlcv_warehouse_refresh import build_default_refresh_universe as _ibd_universe
+            _ibd_summary = _ibd_refresh(
+                _ibd_universe(), max_fetches=150, min_age_days=5.0, sleep_s=1.0,
+            )
+            log.info(
+                "iBorrowDesk archive refresh: %s/%s fetched, %s rows added, "
+                "%s due", _ibd_summary.get("succeeded"), _ibd_summary.get("attempted"),
+                _ibd_summary.get("rows_added"), _ibd_summary.get("due_count"),
+            )
+            if _ibd_summary.get("aborted_early"):
+                log.warning(
+                    "iBorrowDesk archive refresh aborted early (throttled or "
+                    "host down); resumes next run from fetch_state.json",
+                )
+        except Exception as e:
+            log.warning(f"iBorrowDesk archive refresh skipped: {e}")
 
     # exp-20260612-009: keep unowned reference caches fresh from the daily path.
     # Sector map rolls a stale slice (caps the yfinance burst); SEC company
@@ -3074,6 +3127,78 @@ def main():
             },
         }
 
+    try:
+        from candidate_decision_training_ledger import (
+            append_candidate_decision_training_snapshot,
+            build_candidate_decision_training_snapshot,
+            settle_candidate_decision_training_outcomes,
+        )
+
+        candidate_decision_training_ledger = (
+            build_candidate_decision_training_snapshot(
+                as_of=today_iso,
+                entry_candidate_review=entry_candidate_review,
+                metadata={
+                    "source": "quant.run.entry_candidate_review",
+                    "trade_enabled": False,
+                    "active_positions_scope": entry_execution_plan.get(
+                        "active_positions_scope"
+                    ),
+                },
+            )
+        )
+        candidate_decision_training_persistence = (
+            append_candidate_decision_training_snapshot(
+                candidate_decision_training_ledger
+            )
+        )
+        candidate_decision_training_ledger[
+            "persistence"
+        ] = candidate_decision_training_persistence
+        _candidate_training_ohlcv = dict(ohlcv_dict)
+        if spy_ohlcv is not None:
+            _candidate_training_ohlcv.setdefault("SPY", spy_ohlcv)
+        if qqq_ohlcv is not None:
+            _candidate_training_ohlcv.setdefault("QQQ", qqq_ohlcv)
+        candidate_decision_training_settlement = (
+            settle_candidate_decision_training_outcomes(
+                as_of=today_iso,
+                ohlcv_by_ticker=_candidate_training_ohlcv,
+            )
+        )
+        candidate_decision_training_ledger[
+            "settlement"
+        ] = candidate_decision_training_settlement
+        if (
+            candidate_decision_training_persistence.get("rows_written")
+            or candidate_decision_training_settlement.get("outcome_rows_written")
+        ):
+            log.info(
+                "Candidate decision training ledger: wrote %d/%d row(s), settled %d outcome row(s)",
+                candidate_decision_training_persistence.get("rows_written", 0),
+                candidate_decision_training_persistence.get("rows_seen", 0),
+                candidate_decision_training_settlement.get("outcome_rows_written", 0),
+            )
+    except Exception as exc:
+        log.warning("Candidate decision training ledger unavailable: %s", exc)
+        candidate_decision_training_ledger = {
+            "schema_version": 1,
+            "rule_version": "candidate_decision_training_ledger_v1",
+            "as_of": today_iso,
+            "trade_enabled": False,
+            "candidate_count": 0,
+            "rows": [],
+            "status": "build_failed",
+            "error": str(exc),
+            "production_impact": {
+                "entry_rules_changed": False,
+                "exit_rules_changed": False,
+                "ranking_changed": False,
+                "sizing_changed": False,
+                "orders_changed": False,
+            },
+        }
+
     space_catalyst_observation_slot = _build_space_catalyst_observation_step(
         today_iso=today_iso,
         space_catalyst_shadow=space_catalyst_shadow,
@@ -3134,6 +3259,9 @@ def main():
         trend_signals_dict["entry_execution_plan"] = entry_execution_plan
         trend_signals_dict["strategy_entry_execution_plan"] = strategy_entry_execution_plan
         trend_signals_dict["entry_candidate_review"] = entry_candidate_review
+        trend_signals_dict[
+            "candidate_decision_training_ledger"
+        ] = candidate_decision_training_ledger
         trend_signals_dict[
             "core_risk_intensity_forward_observation"
         ] = core_risk_intensity_forward_observation
@@ -3778,6 +3906,19 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    move_rate_volatility_relief_paper_sleeve = _sleeve(
+        lambda: prep_and_build_move_rate_volatility_relief_snapshot(
+            as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
+            broad_market_candidate_universe=broad_market_candidate_universe,
+            spy_ohlcv=spy_ohlcv, ohlcv_dict=ohlcv_dict, cached_ohlcv_fn=_cached_ohlcv,
+            core_entries=signals,
+        ),
+        empty_move_rate_volatility_relief_snapshot,
+        "MOVE rate-volatility-relief leadership",
+        "move_rate_volatility_relief_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     rolling_corr_peer_shock_paper_sleeve = _sleeve(
         lambda: prep_and_build_rolling_corr_peer_shock_paper_sleeve_snapshot(
             as_of=today_iso, broad_market_ohlcv=broad_market_ohlcv,
@@ -4046,6 +4187,7 @@ def main():
         broad_market_paper_sleeve=broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve=macro_relief_leadership_paper_sleeve,
         volatility_relief_stock_leadership_paper_sleeve=volatility_relief_stock_leadership_paper_sleeve,
+        move_rate_volatility_relief_paper_sleeve=move_rate_volatility_relief_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve=rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve=industry_relative_laggard_repair_paper_sleeve,
         industry_stable_core_flow_paper_sleeve=industry_stable_core_flow_paper_sleeve,
@@ -4071,6 +4213,9 @@ def main():
     trend_signals_dict["entry_execution_plan"] = entry_execution_plan
     trend_signals_dict["strategy_entry_execution_plan"] = strategy_entry_execution_plan
     trend_signals_dict["entry_candidate_review"] = entry_candidate_review
+    trend_signals_dict[
+        "candidate_decision_training_ledger"
+    ] = candidate_decision_training_ledger
     trend_signals_dict["market_state_snapshot"] = market_state_snapshot
     trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
@@ -4097,6 +4242,7 @@ def main():
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["macro_relief_leadership_paper_sleeve"] = macro_relief_leadership_paper_sleeve
     trend_signals_dict["volatility_relief_stock_leadership_paper_sleeve"] = volatility_relief_stock_leadership_paper_sleeve
+    trend_signals_dict["move_rate_volatility_relief_paper_sleeve"] = move_rate_volatility_relief_paper_sleeve
     trend_signals_dict["rolling_corr_peer_shock_paper_sleeve"] = rolling_corr_peer_shock_paper_sleeve
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
     trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
@@ -4230,6 +4376,7 @@ def main():
         broad_market_paper_sleeve = broad_market_paper_sleeve,
         macro_relief_leadership_paper_sleeve = macro_relief_leadership_paper_sleeve,
         volatility_relief_stock_leadership_paper_sleeve = volatility_relief_stock_leadership_paper_sleeve,
+        move_rate_volatility_relief_paper_sleeve = move_rate_volatility_relief_paper_sleeve,
         rolling_corr_peer_shock_paper_sleeve = rolling_corr_peer_shock_paper_sleeve,
         industry_relative_laggard_repair_paper_sleeve = industry_relative_laggard_repair_paper_sleeve,
         industry_stable_core_flow_paper_sleeve = industry_stable_core_flow_paper_sleeve,
@@ -4273,6 +4420,7 @@ def main():
         "entry_execution_plan": entry_execution_plan,
         "strategy_entry_execution_plan": strategy_entry_execution_plan,
         "entry_candidate_review": entry_candidate_review,
+        "candidate_decision_training_ledger": candidate_decision_training_ledger,
         "core_risk_intensity_forward_observation": core_risk_intensity_forward_observation,
         "market_state_snapshot": market_state_snapshot,
         "pilot_entry_filter_audit": pilot_entry_filter_audit,
@@ -4300,6 +4448,7 @@ def main():
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "macro_relief_leadership_paper_sleeve": macro_relief_leadership_paper_sleeve,
         "volatility_relief_stock_leadership_paper_sleeve": volatility_relief_stock_leadership_paper_sleeve,
+        "move_rate_volatility_relief_paper_sleeve": move_rate_volatility_relief_paper_sleeve,
         "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
         "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
