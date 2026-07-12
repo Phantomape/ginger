@@ -6949,6 +6949,107 @@ def test_sharpe_daily_from_synthetic_equity():
     assert expected > 0
 
 
+def _run_full_slot_mtm_harness(monkeypatch):
+    """Run one always-full position through changing closes and final unwind."""
+    from fill_model import apply_entry_fill
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    closes = [100.0] * 21 + [101.0, 103.0, 102.0, 102.5, 101.0, 103.0, 102.0, 103.0, 102.0]
+    test_df = pd.DataFrame(
+        {
+            "Open": [100.0] * len(idx),
+            "High": [value + 0.1 for value in closes],
+            "Low": [99.0] * len(idx),
+            "Close": closes,
+        },
+        index=idx,
+    )
+    spy_df = pd.DataFrame(
+        {
+            "Open": [100.0] * len(idx),
+            "High": [100.0] * len(idx),
+            "Low": [100.0] * len(idx),
+            "Close": [100.0] * len(idx),
+        },
+        index=idx,
+    )
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.config["MAX_POSITIONS"] = 1
+    result = engine.run()
+    return idx, closes, round(apply_entry_fill(100.0), 2), result
+
+
+def test_backtester_full_slot_days_remain_close_marked(monkeypatch):
+    idx, closes, entry_price, result = _run_full_slot_mtm_harness(monkeypatch)
+    curve = result["equity_curve"]
+
+    assert len(curve) == result["trading_days"] == len(idx)
+    assert [date for date, _ in curve] == [str(day.date()) for day in idx]
+    assert len({date for date, _ in curve}) == len(curve)
+
+    # The position fills on idx[21]. On idx[22] MAX_POSITIONS is still full,
+    # so this observation specifically traverses the former early-continue bug.
+    marked = dict(curve)[str(idx[22].date())]
+    expected = round(100_000.0 + (closes[22] - entry_price) * 10, 2)
+    assert marked == expected
+    assert marked != 100_000.0
+
+
+def test_backtester_last_equity_point_is_net_force_close_value(monkeypatch):
+    from fill_model import apply_slippage, SLIPPAGE_BPS_TARGET
+    from portfolio_engine import ROUND_TRIP_COST_PCT
+
+    _, closes, entry_price, result = _run_full_slot_mtm_harness(monkeypatch)
+
+    assert result["total_trades"] == 1
+    trade = result["trades"][0]
+    assert trade["exit_reason"] == "end_of_backtest"
+    expected_exit = apply_slippage(
+        closes[-1],
+        SLIPPAGE_BPS_TARGET,
+        "sell",
+        adv_dollar=None,
+        notional=closes[-1] * 10,
+    )
+    expected_pnl = round(
+        (expected_exit - entry_price) * 10
+        - expected_exit * ROUND_TRIP_COST_PCT * 10,
+        2,
+    )
+    assert trade["entry_price"] == entry_price
+    assert trade["exit_price"] == round(expected_exit, 2)
+    assert trade["pnl"] == expected_pnl
+    assert result["total_pnl"] == round(sum(t["pnl"] for t in result["trades"]), 2)
+    assert result["equity_curve"][-1][1] == round(100_000.0 + result["total_pnl"], 2)
+
+    gross_close_mark = round(100_000.0 + (closes[-1] - entry_price) * 10, 2)
+    assert result["equity_curve"][-1][1] < gross_close_mark
+
+
+def test_backtester_persists_sharpe_inference_without_full_equity_curve(monkeypatch):
+    from backtester import _persistable_backtest_result
+
+    _, _, _, result = _run_full_slot_mtm_harness(monkeypatch)
+    inference = result["sharpe_inference"]
+
+    assert result["sharpe_daily"] == round(inference["annualized_sharpe"], 2)
+    assert inference["sample_count"] == result["trading_days"] - 1
+    assert len(inference["return_series"]) == inference["sample_count"]
+    assert inference["return_series"][0]["date"] == result["equity_curve"][1][0]
+    assert isinstance(inference["return_series"][0]["return"], float)
+    assert inference["return_series_sha256"]
+
+    trades_before = json.loads(json.dumps(result["trades"]))
+    pnl_before = result["total_pnl"]
+    persisted = _persistable_backtest_result(result)
+
+    assert "equity_curve" not in persisted
+    assert persisted["sharpe_inference"] == inference
+    assert persisted["trades"] == trades_before == result["trades"]
+    assert persisted["total_pnl"] == pnl_before == result["total_pnl"]
+    json.dumps(persisted)
+
+
 def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     """Structured bias disclosure + equity_curve_integrity must be attached."""
     import pandas as pd

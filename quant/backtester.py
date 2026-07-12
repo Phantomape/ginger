@@ -84,6 +84,16 @@ def _atomic_write_json(path, payload, *, default=None, trailing_newline=False):
                 logger.warning("Could not remove temporary JSON file: %s", tmp_path)
 
 
+def _persistable_backtest_result(result):
+    """Return the compact on-disk result without dropping Sharpe evidence.
+
+    The full equity curve remains available to in-process experiment runners,
+    while ``sharpe_inference.return_series`` is the smaller, hash-addressed
+    evidence surface persisted by the canonical CLI.
+    """
+    return {key: value for key, value in result.items() if key != "equity_curve"}
+
+
 def _replace_with_retry(tmp_path, path, *, attempts=6, base_delay=0.25):
     """Retry transient Windows replace locks without changing write semantics."""
     last_exc = None
@@ -1786,6 +1796,36 @@ class BacktestEngine:
             value = row[column]
             return float(value.item() if hasattr(value, "item") else value)
 
+        def _mark_to_market_equity(asof_day):
+            """Realized equity plus close-marked unrealized P&L for one day."""
+            mtm = equity
+            asof_timestamp = pd.Timestamp(asof_day)
+            for pos in positions:
+                # A signal planned on T is represented immediately, but the
+                # position does not exist until its next-session fill.
+                if pd.Timestamp(pos.entry_date) > asof_timestamp:
+                    continue
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or asof_day not in df.index:
+                    continue
+                close = _scalar_price(df.loc[asof_day], "Close")
+                mtm += (close - pos.entry_price) * pos.shares
+            return mtm
+
+        def _record_equity_point(asof_day, *, equity_value=None):
+            """Append or replace the sole equity observation for ``asof_day``."""
+            date_key = str(pd.Timestamp(asof_day).date())
+            value = (
+                _mark_to_market_equity(asof_day)
+                if equity_value is None
+                else float(equity_value)
+            )
+            point = (date_key, round(value, 2))
+            if equity_curve and equity_curve[-1][0] == date_key:
+                equity_curve[-1] = point
+            else:
+                equity_curve.append(point)
+
         def _next_trade_date_for_ticker(ticker, after_day):
             df = ohlcv_all.get(ticker)
             if df is None:
@@ -3063,7 +3103,7 @@ class BacktestEngine:
             )
             core_slots_full = _core_position_count() >= self.config["MAX_POSITIONS"]
             if core_slots_full and not pilot_records_today:
-                equity_curve.append((str(today.date()), round(equity, 2)))
+                _record_equity_point(today)
                 continue
 
             # Compute features for each ticker using data up to today
@@ -3697,19 +3737,7 @@ class BacktestEngine:
                     "shares": shares,
                 })
 
-            # Mark-to-market equity
-            mtm = capital
-            for t in closed:
-                mtm += t["pnl"]  # realized
-            for pos in positions:
-                df = ohlcv_all.get(pos.ticker)
-                if df is not None and today in df.index:
-                    row = df.loc[today]
-                    cls = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
-                    mtm += (cls - pos.entry_price) * pos.shares
-                # If no price, unrealized = 0
-
-            equity_curve.append((str(today.date()), round(mtm, 2)))
+            _record_equity_point(today)
 
         # ── Force-close remaining positions at last day's close ─────────────
         last_day = sim_dates[-1]
@@ -3778,6 +3806,11 @@ class BacktestEngine:
                 _attach_pilot_attribution(pos, trade_record, pnl, last_day)
             closed.append(trade_record)
 
+        # Replace the last close-marked observation with net liquidation value
+        # after forced-exit slippage and transaction costs. The helper replaces
+        # the same-date point, so every trading day still has exactly one row.
+        _record_equity_point(last_day, equity_value=equity)
+
         # ── Compute metrics ─────────────────────────────────────────────────
         wins   = [t for t in closed if t["pnl"] > 0]
         losses = [t for t in closed if t["pnl"] <= 0]
@@ -3810,19 +3843,26 @@ class BacktestEngine:
         # Additive measurement — does NOT enter compute_convergence (that still
         # reads `sharpe`). This number is for humans to read alongside the
         # legacy value and form a trust verdict.
-        equity_series = [eq for _, eq in equity_curve]
-        sharpe_daily = None
-        daily_returns = []
-        if len(equity_series) >= 2:
-            for i in range(1, len(equity_series)):
-                prev = equity_series[i - 1]
-                if prev > 0:
-                    daily_returns.append((equity_series[i] / prev) - 1)
-            if len(daily_returns) >= 2:
-                mean_r = sum(daily_returns) / len(daily_returns)
-                var_r  = sum((x - mean_r) ** 2 for x in daily_returns) / (len(daily_returns) - 1)
-                std_r  = math.sqrt(var_r) if var_r > 0 else 0
-                sharpe_daily = round((mean_r / std_r) * math.sqrt(252), 2) if std_r > 0 else None
+        from sharpe_inference import build_backtest_sharpe_inference
+
+        sharpe_inference = build_backtest_sharpe_inference(
+            equity_curve,
+            periods_per_year=252,
+            return_basis="strategy_equity_return",
+            risk_free_assumption="zero",
+        )
+        daily_returns = [
+            float(point["return"])
+            for point in sharpe_inference.get("return_series", [])
+        ]
+        annualized_sharpe = sharpe_inference.get("annualized_sharpe")
+        sharpe_daily = (
+            round(float(annualized_sharpe), 2)
+            if isinstance(annualized_sharpe, (int, float))
+            and not isinstance(annualized_sharpe, bool)
+            and math.isfinite(float(annualized_sharpe))
+            else None
+        )
 
         # Backwards-compatible: convergence.py + downstream readers continue to
         # use `sharpe` (legacy). `sharpe_daily` sits alongside for auditing.
@@ -3899,7 +3939,7 @@ class BacktestEngine:
         equity_curve_integrity = {
             "cash_field_present_in_open_positions": open_positions_cash_populated,
             "risk_rules_enforced_in_backtest":      True,  # synthetic stop_price
-            "equity_curve_len":                     len(equity_series),
+            "equity_curve_len":                     len(equity_curve),
             "trading_days":                         len(sim_dates),
             "equity_flat_days":                     equity_flat_days,
             "equity_flat_fraction": (round(equity_flat_days / len(daily_returns), 4)
@@ -4388,6 +4428,7 @@ class BacktestEngine:
             "total_pnl":           round(total_pnl, 2),
             "sharpe":              sharpe,
             "sharpe_daily":        sharpe_daily,
+            "sharpe_inference":    sharpe_inference,
             "sharpe_method":       "per_trade_sqrt30_legacy",
             "max_drawdown_pct":    round(max_dd, 4),
             "worst_trade_pct":     worst_trade_pct,
@@ -5016,9 +5057,9 @@ def main():
         out_path = str(backtest_result_path(datetime.now().strftime("%Y%m%d")))
         os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 
-        primary_save = {k: v for k, v in results.items() if k != "equity_curve"}
+        primary_save = _persistable_backtest_result(results)
         if secondary is not None:
-            secondary_save = ({k: v for k, v in secondary.items() if k != "equity_curve"}
+            secondary_save = (_persistable_backtest_result(secondary)
                               if "error" not in secondary else secondary)
             save_data = {
                 **primary_save,                 # flat keys preserved for compat

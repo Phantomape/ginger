@@ -281,6 +281,16 @@ Verdicts:
 An incomplete execution envelope blocks only `live_eligible`; it does not block
 `accepted_paper_pending_forward`. Declare the envelope up front anyway.
 
+Within this full-stack candidate-pool contract, Gate 5 also requires
+trial-adjusted significance evidence: a computed DSR of
+at least `0.95`, backed by a complete explicit selection pool, a non-empty
+panel hash, and a selection-scope ID.  Missing or sub-threshold evidence blocks
+only `live_eligible`; it does not overturn Gate 4 or default-off paper
+acceptance.  Do not synthesize DSR from `prior_trial_count` or rounded Sharpe
+summaries. The verdict helper consumes the full CLI report and recomputes its
+retained panel; a summary dict alone is not evidence. The full contract is
+`docs/deflated_sharpe_protocol.md`.
+
 Gate-4 evaluation note: `evaluate_gate4` includes the AGENTS.md scout
 materiality floor (>= $500 average per-trade PnL delta or >= 5pp average return
 delta). That floor is calibrated for support-field / notional-scalar scouts on

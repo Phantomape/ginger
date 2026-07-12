@@ -1,0 +1,125 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "concurrent source mutation",
+      "dirty-tree provenance ambiguity",
+      "nondeterministic replay",
+      "incomplete PIT input fingerprint",
+      "current stack not stable"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "none",
+    "surprise_level": "low",
+    "surprise_note": "The frozen replay exactly matched the exp-20260712-006 smoke metrics in every window; the main discovered issue was mutable universe/earnings-calendar provenance, which the frozen-input contract now removes from reruns."
+  },
+  "causal_components": [
+    "fixed three-window replay",
+    "source and input identity manifest",
+    "double-run determinism",
+    "post-MTM baseline pointer"
+  ],
+  "change_summary": "Freeze a source/data/config/cost-pinned post-MTM three-window Gate-1 reference with frozen universe and earnings inputs, exact warehouse rowset identities, recoverable source bundle, raw compatible per-window artifacts, and two-pass determinism.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "post_mtm_gate1_baseline_identity_contract_v1",
+  "component": "quant/experiments/exp_20260712_015_post_mtm_gate1_baseline.py, data/experiments/exp-20260712-015, data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json, data/backtests/post_mtm_20260712, docs/backtesting.md, docs/current_state_snapshot.md, experiments/tickets/exp-20260712-015.json, experiments/cards/exp-20260712-015.md, experiments/manifests/exp-20260712-015.json, experiments/logs/exp-20260712-015.json, docs/experiment_log.jsonl, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260712-015",
+  "hypothesis": "A separately rerun post-MTM three-window Gate-1 baseline, bound to exact source-tree, resolved-config, universe, warehouse-rowset, PIT-input, trade, and dated-daily-return identities and accepted only after two deterministic replays, will restore a trustworthy comparison anchor without changing strategy or order behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "backtest_measurement_identity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260712-006",
+    "exp-20260602-008"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair only; no strategy or order behavior changed. All three windows reproduced exact metric/trade/dated-return identities across two passes, source and input hashes stayed stable, calendar capture coverage was 100%, and the active aggregate is EV 12.2698 / PnL 237852.27 / 62 trades. The old 7.8941 baseline remains pre-MTM history and is not delta-comparable. clean_release_ready remains false because the exact source is bundled from a dirty tree rather than a clean commit. Do not rerun with refresh/replace after close; any source/input/result drift requires a new experiment.",
+  "parameters": {
+    "locked_variables": [
+      "all strategy/order behavior and fixed-window definitions"
+    ],
+    "single_causal_variable": "post_mtm_gate1_baseline_identity_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not refresh or replace the exp-20260712-015 frozen inputs/artifacts, reserve another ID for the same source/data/config context, or interpret 7.8941 to 12.2698 as alpha gain across the MTM protocol boundary.",
+    "new_evidence_required": "A changed behavior source, strategy stack, dependency, cost contract, frozen universe/calendar, or warehouse rowset requires a new experiment; clean-release promotion additionally requires the bundled source in a clean committed Git tree.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The frozen replay exactly matched the exp-20260712-006 smoke metrics in every window; the main discovered issue was mutable universe/earnings-calendar provenance, which the frozen-input contract now removes from reruns."
+  },
+  "prediction": {
+    "confidence_reason": "The repaired engine already produced all three windows once; uncertainty is whether the dirty shared tree can be frozen and replayed twice without identity drift.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "concurrent source mutation",
+      "dirty-tree provenance ambiguity",
+      "nondeterministic replay",
+      "incomplete PIT input fingerprint",
+      "current stack not stable"
+    ],
+    "recorded_at": "2026-07-12T19:30:07+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260712-015/before_measurement.json",
+    "data/experiments/exp-20260712-015/after_measurement.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-12T19:56:46+00:00",
+  "trial_family": "post_mtm_gate1_baseline",
+  "trial_variant_id": "v1"
+}

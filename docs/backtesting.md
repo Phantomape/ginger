@@ -1,8 +1,8 @@
 ﻿# Backtesting Commands
 
-This file defines the single canonical deterministic backtest command used by
-alpha experiments. Other ad hoc runs may be useful for debugging, but they are
-not acceptance evidence.
+This file defines the canonical backtest command shape and the frozen-input
+identity contract used by alpha experiments. Other ad hoc runs may be useful
+for debugging, but they are not acceptance evidence.
 
 ## Canonical Command
 
@@ -27,6 +27,24 @@ cd D:\Github\ginger
 above loads the warehouse `ohlcv_snapshot_versions` table, so standard
 fixed-window baselines stay bit-exact to the organized snapshot files while
 new work reads through the same SQLite warehouse surface.
+
+The command shape alone is not an immutable Gate-1 identity: `get_universe()`
+also reads current open positions, and the backtester normally resolves the
+yfinance earnings calendar at run time. `exp-20260712-015` therefore freezes
+the exact universe, earnings calendar, earnings-snapshot map, resolved config,
+cost model, source bundle, and warehouse rowsets before replay. Reproduce the
+active post-MTM reference with:
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\experiments\exp_20260712_015_post_mtm_gate1_baseline.py
+```
+
+The runner refuses to replace the published baseline when its source or frozen
+inputs differ. A new Gate-4 challenger must reuse the same frozen behavior
+inputs from `data/experiments/exp-20260712-015/frozen_behavior_inputs.json`, or
+run before and after against one newly frozen context under a new experiment
+ID. Never use `--refresh-inputs` or `--replace-baseline` after this experiment
+is closed.
 
 For new broad/full-universe work, use the broad warehouse `ohlcv` table:
 
@@ -134,13 +152,42 @@ window is unavailable, missing, stale, too short, or contradictory, record the
 observation and continue using only the three fixed canonical windows for
 Gate 1-4.
 
-Current accepted fixed-window metrics use the production-faithful PIT earnings
-snapshot `days_to_earnings` replay accepted in `exp-20260601-025` plus the
-explicit same-day post-earnings continuation semantics accepted in
-`exp-20260602-003`. The strategy stack keeps the core `exp-20260517-009`
-(`ample_slot_stock_rank1_topup`) promotion on top of the accepted scarce-slot
-rank-1 top-up, and now treats a same-day earnings row as post-event only when
-actual EPS is already known and a later future earnings date exists.
+### Active post-MTM Gate-1 reference
+
+`exp-20260712-015` is the active fixed-window comparison anchor. It froze the
+current 47-ticker universe, the 100%-covered captured earnings calendar, the
+earnings-snapshot map, resolved config/costs, source bundle, snapshot files,
+and warehouse behavior rows. All three windows were then replayed twice; the
+full-precision metric projection, complete trade rows, and dated daily-return
+hashes matched exactly in both passes. The source and input hashes also stayed
+unchanged from pre-run through post-run.
+
+| Label | EV score | Sharpe daily (display / full) | Total PnL | Return | Max DD | Win rate | Trades | Survival | PSR | DSR |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `late_strong` | 7.2115 | 6.16 / 6.1564 | $117,072.92 | 117.07% | 5.94% | 83.33% | 18 | 80.39% | 99.9998% | not computable |
+| `mid_weak` | 3.7446 | 4.81 / 4.8077 | $77,845.53 | 77.85% | 5.02% | 52.38% | 21 | 78.85% | 99.9913% | not computable |
+| `old_thin` | 1.3137 | 3.06 / 3.0589 | $42,933.82 | 42.93% | 9.75% | 43.48% | 23 | 90.32% | 99.8192% | not computable |
+
+Aggregate EV is `12.2698`, aggregate PnL is `$237,852.27`, and total trades
+are `62`. The active summary is
+`data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json`;
+its per-window `path` values point to raw backtest results and its
+`manifest_path` values point to the code/data/config identity wrappers.
+
+This is an active source-bundle-pinned working-tree reference, not yet a clean
+Git release: `clean_release_ready=false`. The exact behavior source is
+recoverable from `data/experiments/exp-20260712-015/source_bundle.zip`, but the
+MTM/inference stack is not represented by a clean committed tree. That release
+label does not affect its use as the same-context Gate-1 comparison anchor.
+
+### Archived pre-MTM baseline
+
+The table below is the archived pre-repair baseline. Its `sharpe_daily`,
+`expected_value_score`, and `max_drawdown_pct` were computed from an equity
+curve that could skip open-position mark-to-market on full-slot days and omit
+final-liquidation costs. The current strategy/data identity also does not
+exactly reproduce all of its trades. Keep it for historical provenance only;
+do not interpret the difference from the active post-MTM table as alpha gain.
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -148,10 +195,11 @@ actual EPS is already known and a later future earnings date exists.
 | `mid_weak` | 2.1402 | 2.74 | $78,110.11 | 78.11% | 11.19% | 52.38% | 21 | 79.25% |
 | `old_thin` | 0.5911 | 1.49 | $39,667.96 | 39.67% | 10.01% | 40.91% | 22 | 86.67% |
 
-Artifact note:
+Archived artifact note:
 `data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json`
-records the current canonical core baseline version. Aggregate accepted-stack
-EV is `7.8941`; aggregate PnL is `$234,850.99`. The prior PIT-DTE control
+records the historical pre-MTM core baseline version. Its aggregate EV was
+`7.8941` and aggregate PnL was `$234,850.99`; neither is the active Gate-1
+pointer. The prior PIT-DTE control
 artifact is
 `data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json`
 with aggregate EV `6.3596` and PnL `$192,538.61`; use it only as the before
@@ -168,6 +216,21 @@ The backtester emits these extra measurement fields for alpha experiments:
 | `sizing_rule_trade_attribution` | Shows observed trade outcomes for positions that carried non-neutral sizing multipliers. This is attribution, not a counterfactual PnL claim. |
 | `single_window_quality` | Summarizes whether the current window is positive on EV, return, daily Sharpe, and drawdown guardrails. |
 | `multi_window_robustness` | Added to cross-window diagnostics; summarizes positive windows, EV spread, worst drawdown, and an observation-only robustness score. |
+| `sharpe_inference` | Persists full-precision dated daily returns, their hash, return moments, PSR, and an honest DSR state. See `docs/deflated_sharpe_protocol.md`; rounded `sharpe_daily` alone is not DSR evidence. |
+
+### Trial-adjusted Sharpe and Gate 5
+
+Gate 1-4 still use the canonical metrics and windows in this document. They do
+not require DSR and must not be silently re-judged by it. In the codified
+`full_stack_candidate_pool` verdict, Gate 5 additionally requires a complete,
+comparable selection panel and a computed Deflated Sharpe Ratio of at least
+`0.95`. Missing evidence fails closed for that `live_eligible` verdict while
+leaving default-off paper acceptance unchanged. Legacy/manual activation paths
+do not yet share one central Gate-5 function and must not claim DSR enforcement
+until they explicitly adopt the same recomputation contract.
+
+The formula, daily-return evidence schema, panel completeness rules, and limits
+are defined in `docs/deflated_sharpe_protocol.md`.
 
 ## Diagnostic / Oracle Analysis
 

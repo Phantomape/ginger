@@ -115,7 +115,9 @@ def declare_execution_envelope() -> ExecutionEnvelope:
 # TODO 5: forward + parity inputs for Gate 5. On a FIRST run these are usually
 # immature (0 closed forward trades, kill-switch parity may still be passing if
 # you wrote the parity test in this experiment). That is expected -- the verdict
-# will land at accepted_paper_pending_forward.
+# will land at accepted_paper_pending_forward. ``dsr_report`` must come from
+# scripts/deflated_sharpe.py over the complete aligned selection panel; do not
+# fill it from a rounded Sharpe or prior_trial_count.
 # ---------------------------------------------------------------------------
 def collect_live_readiness_inputs() -> dict[str, Any]:
     return {
@@ -123,6 +125,7 @@ def collect_live_readiness_inputs() -> dict[str, Any]:
         "forward_pnl": None,               # TODO: forward paper PnL once it exists
         "replacement_value_passed": False, # TODO: replacement value vs core/cash
         "kill_switch_parity_passed": False,# TODO: True once parity test added+green
+        "dsr_report": None,                 # TODO: full deflated_sharpe.py report (recomputed)
     }
 
 

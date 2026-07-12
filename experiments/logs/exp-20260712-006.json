@@ -1,0 +1,125 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "annualized-versus-periodic unit mismatch",
+      "false effective-trial estimate",
+      "numerical edge cases",
+      "live-readiness caller regression",
+      "historical trial panel unavailable"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "historical trial panel unavailable",
+    "surprise_level": "very_low",
+    "surprise_note": "The formulas and MTM repair worked, but retained historical artifacts lack dated trial returns and the current working stack does not exactly reproduce the archived champion, so archived PSR/DSR correctly remain not_computable."
+  },
+  "causal_components": [
+    "daily mark-to-market measurement repair",
+    "daily return persistence",
+    "PSR and DSR formula",
+    "explicit recomputable trial panel and effective-trial evidence",
+    "full-stack Gate-5 live blocker",
+    "current-working-stack versus archived-champion identity diagnostic",
+    "tests and documentation",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Accept DSR measurement repair: correct daily MTM, persist PSR evidence, validate explicit trial panels, and recompute full-stack Gate-5 DSR reports.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "trial_adjusted_sharpe_inference_v1",
+  "component": "quant/sharpe_inference.py, quant/test_sharpe_inference.py, scripts/deflated_sharpe.py, quant/test_deflated_sharpe_cli.py, quant/experiments/exp_20260712_006_deflated_sharpe_protocol.py, quant/backtester.py, quant/test_quant.py, quant/full_stack_candidate_pool.py, quant/test_full_stack_candidate_pool.py, quant/experiments/_templates/candidate_pool_full_stack_template.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/deflated_sharpe_protocol.md, docs/backtesting.md, docs/agent_experiment_protocol.md, data/experiments/exp-20260712-006, experiments/tickets/exp-20260712-006.json, experiments/cards/exp-20260712-006.md, experiments/manifests/exp-20260712-006.json, experiments/logs/exp-20260712-006.json, docs/experiment_log.jsonl, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260712-006",
+  "hypothesis": "Centralize daily-return evidence and Bailey-Lopez de Prado PSR/DSR computation with explicit recomputable trial panels, then require a computable DSR probability of at least 0.95 for the codified full_stack_candidate_pool live_eligible verdict, so missing required submitted trials and any return rows that mismatch the declared date vector/hash cannot be silently treated as one test; strategy and order behavior remain unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "research_selection_bias_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260709-023",
+    "exp-20260712-001"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "A complete prospective same-scope trial panel with every attempted configuration",
+    "A preregistered selection manifest and Gate-4 artifact binding for trusted provenance",
+    "Separate scoped integration for legacy or manual live-activation boundaries"
+  ],
+  "notes": "Accepted as measurement repair only. Working-tree PSR is not archived-champion evidence; retained 2026-06-04 artifacts cannot compute PSR/DSR. Enforcement covers the codified full_stack_candidate_pool live_eligible verdict only, and embedded-panel provenance remains self-attested rather than cryptographically bound to Gate 4.",
+  "parameters": {
+    "locked_variables": [
+      "trial_adjusted_sharpe_inference_v1"
+    ],
+    "single_causal_variable": "trial_adjusted_sharpe_inference_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not manufacture DSR from rounded sharpe_daily, prior_trial_count, a winner-only subset, a selected strategy standard error, or a hand-written summary; do not relabel current-working-stack PSR as archived-champion evidence or claim system-wide live enforcement.",
+    "new_evidence_required": "A prospective complete aligned trial panel with declared expected dates and retained return hashes is required for numeric DSR. Stronger source trust requires a preregistered selection manifest plus exact Gate-4/source-artifact hashes; broader live enforcement requires explicit adoption by each legacy/manual activation path.",
+    "realized_failure_mode": "historical trial panel unavailable",
+    "why_result_happened": "The formulas and MTM repair worked, but retained historical artifacts lack dated trial returns and the current working stack does not exactly reproduce the archived champion, so archived PSR/DSR correctly remain not_computable."
+  },
+  "prediction": {
+    "confidence_reason": "The formula is deterministic and backtester already computes daily returns in memory; the main uncertainty is honest historical panel coverage, which should fail closed rather than block the repair.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "annualized-versus-periodic unit mismatch",
+      "false effective-trial estimate",
+      "numerical edge cases",
+      "live-readiness caller regression",
+      "historical trial panel unavailable"
+    ],
+    "recorded_at": "2026-07-12T04:28:18+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260712-006/before_measurement.json",
+    "data/experiments/exp-20260712-006/after_measurement.json",
+    "data/experiments/exp-20260712-006/current_working_stack_sharpe_inference.json",
+    "docs/deflated_sharpe_protocol.md"
+  ],
+  "production_impact": "No entry, exit, ranking, sizing, or order behavior changed. The full_stack_candidate_pool live_eligible verdict now requires a recomputable DSR report at or above 0.95; paper/default-off acceptance is unchanged. Legacy/manual activation paths remain outside this enforcement boundary.",
+  "reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_006_deflated_sharpe_protocol.py; .\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_quant.py quant\\test_sharpe_inference.py quant\\test_deflated_sharpe_cli.py quant\\test_full_stack_candidate_pool.py quant\\test_experiment_fingerprint.py -q",
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-12T05:46:49+00:00",
+  "trial_family": "trial_adjusted_sharpe_measurement",
+  "trial_variant_id": "trial_adjusted_sharpe_inference_v1"
+}
