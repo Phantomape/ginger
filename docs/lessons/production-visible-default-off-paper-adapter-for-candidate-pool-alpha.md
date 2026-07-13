@@ -6,12 +6,12 @@ records before making strategy changes.
 
 ## Current Conclusion
 
-- Experiments: `124`
-- Accepted / rejected: `16` / `101`
-- Accept rate: `12.90%`
+- Experiments: `125`
+- Accepted / rejected: `16` / `102`
+- Accept rate: `12.80%`
 - Sum EV delta: `+71.7601`
 - Sum PnL delta: `$1,426,177.75`
-- Latest: `exp-20260708-003` `rejected_sec_item502_leadership_quality_text` with EV `-0.0315` and PnL `$-449.87`.
+- Latest: `exp-20260712-008` `rejected_move_rate_volatility_allocator_source` with EV `+0.0000` and PnL `$0.00`.
 
 ## Retained Or Positive Evidence
 
@@ -30,8 +30,6 @@ records before making strategy changes.
 
 ## Rejections And Failure Lessons
 
-- `exp-20260618-021` `rejected_sbc_burden_no_displacement_gap_allocator`: EV `+2.1267`, PnL `$41,141.15`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
-  Lesson: Removing displacement was not sufficient. The remaining SBC candidates on empty allocator dates were too low quality, too thin, or failed the accepted allocator comparator, which means the standalone SBC edge mostly o...
 - `exp-20260618-022` `rejected_distribution_no_displacement_gap_allocator`: EV `+2.3061`, PnL `$42,370.24`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_gap_fill_allocation`.
   Lesson: Removing displacement was not sufficient. Empty allocator dates did not supply distribution rows with enough incremental quality to beat the accepted allocator comparator after costs, cooldown, and concentration check...
 - `exp-20260620-011` `rejected_supplier_financing_rank3_allocator_source`: EV `+2.4918`, PnL `$41,503.66`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -46,6 +44,8 @@ records before making strategy changes.
   Lesson: The claimed source admission was a stale near-neighbor of a known failed allocator experiment, not a new alpha test. Do not retry by changing SBC source rank, SBC/revenue thresholds, revenue/gross-profit floors, fact-...
 - `exp-20260708-003` `rejected_sec_item502_leadership_quality_text`: EV `-0.0315`, PnL `$-449.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `sec_item502_leadership_quality_text_candidate_pool`.
   Lesson: Gate 4 evaluated the fixed text-quality Item 5.02 policy: EV delta -0.0315, PnL delta -449.87, failed ['aggregate_ev_not_positive', 'aggregate_pnl_not_positive', 'window_ev_regression', 'window_pnl_regression', 'targe...
+- `exp-20260712-008` `rejected_move_rate_volatility_allocator_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone MOVE edge did not survive source-priority arbitration at the predeclared rank: it either displaced stronger lower-priority rows, touched too few allocator decisions, or failed the 10% current-schema EV...
 
 ## Retry Discipline
 
@@ -67,9 +67,9 @@ records before making strategy changes.
 
 ## Recent Raw Records
 
-- `exp-20260621-006` source `experiments/logs/exp-20260621-006.json`.
 - `exp-20260621-007` source `experiments/logs/exp-20260621-007.json`.
 - `exp-20260621-008` source `experiments/logs/exp-20260621-008.json`.
 - `exp-20260622-013` source `experiments/logs/exp-20260622-013.json`.
 - `exp-20260628-001` source `experiments/logs/exp-20260628-001.json`.
 - `exp-20260708-003` source `experiments/logs/exp-20260708-003.json`.
+- `exp-20260712-008` source `experiments/logs/exp-20260712-008.json`.

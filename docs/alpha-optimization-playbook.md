@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-09.
+Last refreshed: 2026-07-13.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -947,6 +947,78 @@ coverage. Default next work is to let the repaired ledgers accumulate settled
 replacement-value rows, not to retune dispersion, skew, single-name archetypes,
 space catalyst filters, 6-K text regexes, or SBC ratio variants.
 
+The July 10 batch extended the same pattern: most value came from making future
+evidence surfaces machine-checkable, while the first candidate-pool attempts on
+those surfaces failed or blocked. Candidate meta-labeling now has a canonical
+and daily training ledger, but the first cohort read found no stable missed-alpha
+bucket. SEC 13D/13G work added Item-4 campaign provenance, fingerprint coverage,
+and 13G/A amendment direction materialization; fixed board-change and non-Big3
+stake-increase candidate pools were rejected, so ownership remains a structured
+context surface rather than a deployable source. GDELT tone, SEC 425 deal
+economics, entity/theme news row growth, live rejected-source mirror positions,
+and news-event exposure reads did not clear readiness or replacement-value bars.
+Exit-lifecycle and advisory rows are now fingerprinted and daily-settled, but
+the first materially-more-settled severity refresh did not preserve a usable
+loss-separation edge, so it remains attribution only. Default next work is
+data-surface maturation, relation/economics provenance, and predeclared cohort
+validation, not field/threshold churn.
+
+The July 11 batch added one accepted shared paper helper and closed a broad set
+of tempting macro-relief near-neighbors. The retained edge is narrow:
+`exp-20260711-004` promoted MOVE rate-volatility relief into a shared
+default-off helper after reproducing the fixed private replay through daily and
+report paths with `trade_enabled=false`. Treat the mechanism as
+option-implied Treasury-rate volatility relief plus stock leadership, not a
+generic credit or volatility-relief license. HYG/JNK full coverage, direct
+high-yield OAS compression, VVIX relief, SKEW relief, curve steepening,
+mortgage-rate relief, MOVE duration-priority ranking, and MOVE reentry
+kill-switch variants failed or stayed observed-only negative. The same day also
+fixed a live-drift measurement boundary: stale broker position IDs cannot stand
+in for lot identity; current-lot entry dates must be reconstructed from
+quantity continuity after full exits. SEC 13F chronological manager-skill
+selection produced positive aggregate PnL, but failed Gate 4 because old_thin
+regressed and drawdown drifted; treat delayed 13F manager alpha as context until
+a non-quarterly flow or materially new manager-quality source appears. Default next work is forward
+replacement-value maturation for the accepted MOVE helper and richer
+non-price macro relation surfaces, not macro proxy threshold/rank/exit retunes.
+
+The July 12 batch was mostly protocol and broker-execution measurement work,
+with several tempting alpha reads rejected. Broker-authoritative order/fill
+ledger wiring, real-fee calibration, pilot execution provenance, and centralized
+PSR/DSR daily-return evidence are accepted measurement assets; they improve
+future evaluation but do not promote live trading. The broker-fill alpha reads
+failed as policy evidence: actual exits did not show robust five-session
+avoidance value, and actual entries only looked partly positive before failing
+the all-comparator median bar versus QQQ. The accepted MOVE helper should remain
+standalone: forcing it into the accepted source-priority allocator at the
+predeclared rank lost EV/PnL and regressed windows. DoD revenue-materiality was
+the allowed richer relation after prior award failures, but it produced only
+8 trades and failed the accepted comparators. Accruals/cash-conversion
+revalidation under the repaired schema-v1 MTM protocol kept positive aggregate
+PnL but still failed on window regression and drawdown. NFCI easing and
+session semivariance similarly remain diagnostics. Default next work is
+forward settlement, cost/provenance adoption in evaluation, and new genuinely
+different data surfaces; not retuning broker-fill cohorts, MOVE allocator rank,
+DoD thresholds, accruals deployment, or macro easing labels.
+
+The July 13 batch reinforced two operating rules. First, entity/theme news still
+has one plausible relation lead, but only after row duplication is removed:
+exact-URL event baskets with equal-weight ticker allocation showed positive
+observed-only replacement value, while the duplicate reservation that followed
+added no evidence. The retained asset is the first-seen prospective observer
+and shared default-off event ledger, not another frozen July reslice. Reopen
+performance only after enough prospective unique-URL rows settle with complete
+cash/SPY/QQQ replacement values and theme concentration controls. Second,
+measurement identity matters as much as strategy identity: the MOVE/mortgage
+compact-log wrapper bug showed how a stale delegated log writer can corrupt
+novelty, failure-rate, and DSR trial accounting without changing strategy
+behavior. Wrapper identity repairs are guard plumbing, not alpha axes. The new
+Drugs@FDA CDER original-approval surface is the right kind of new evidence
+source, but it is only a prospective observer until first-seen approvals,
+public-sponsor mapping, and next-open/10-session outcomes mature. Default next
+work is prospective settlement and relation/economic provenance, not source
+filter, theme, approval-type, URL, or wrapper-identity retunes.
+
 ## Detail Sources
 
 Generated mechanism memory lives in `docs/lessons/*.md`; exact facts live in
@@ -984,6 +1056,8 @@ evidence on accepted paper adapters:
   from `exp-20260614-004`;
 - SBC burden-improvement dilution-quality shared default-off adapter from
   `exp-20260616-015`;
+- MOVE rate-volatility relief stock-leadership shared default-off helper from
+  `exp-20260711-004`;
 - VBB / VCP / Space observe-only buckets where nonzero forward rows exist.
 - entry-regime-tagged forward replacement rows, options forward observations,
   Kova multi-source observations, and exit/LLM advisory outcomes as
@@ -1055,6 +1129,48 @@ official events are a watchlist lead only; do not promote until canonical
 coverage and shared-helper replay exist. SEC 6-K and SBC grant-value work should
 wait for richer local text/proxy evidence rather than another regex or ratio
 reslice.
+
+July 10 status: candidate-decision training ledger, SEC 13D/13G Item-4 and
+13G/A direction materialization, GDELT/news/contract-relation/SEC-filing
+fingerprints, and exit-lifecycle settlement are alpha-enabling measurement
+surfaces only. The rejected reads say the next edge is not in retuning
+same-source labels. Candidate meta labels need more leak-free complete rows and
+a train-selected cohort; 13D/13G needs richer campaign outcome or forward rows;
+GDELT and SEC 425 need coverage plus deal-economics fields; entity/theme news
+needs fresh settled replacement value; exit lifecycle needs materially more
+rows again plus slot-reuse/winner-collateral accounting or a shared pre-exit
+policy. Crypto sleeve transfer reads should treat the current EMA/SMA target
+policy as BTC-specific until a separately predeclared ETH/shared crypto policy
+beats fee-aware buy-and-hold on EV, not only drawdown.
+
+July 11 status: MOVE rate-volatility relief is now an accepted
+`accepted_paper_pending_forward` helper; collect closed forward rows with
+cash/SPY/QQQ replacement value before any activation-envelope work. The
+neighboring macro-proxy family is mostly rejected: HYG/JNK breadth, direct
+high-yield OAS, VVIX, SKEW, Treasury-curve steepening, mortgage-rate relief,
+MOVE duration priority, and MOVE reentry kill-switch did not add robust
+incremental value. Moomoo entry-date repair should use current-lot continuity
+after full exits; do not reuse stale broker position ids as lot identity. SEC
+13F prior-manager skill is still a rejected delayed-ownership context signal
+after `exp-20260711-019`; do not retune manager skill thresholds without a new
+flow surface. Official DoD award events also failed both the awarded-prime
+self candidate and the predeclared non-awarded peer-substitution response:
+the peer version produced only `+0.0460` aggregate EV / `+$222.13`, regressed
+two windows, and concentrated 57.56% of positive PnL in one ticker. Treat DoD
+awards as context until richer obligated-vs-ceiling/backlog economics or fixed
+shared forward rows exist; do not invert the response or sweep peers again.
+
+July 12 status: broker-authoritative execution rows are now a measurement
+surface, not a promotion surface. Use them to calibrate fees, provenance, fill
+identity, and future entry/exit attribution, but do not convert the first closed
+broker cohorts into exit or entry policy. PSR/DSR evidence is now centralized
+for future live eligibility; missing or non-recomputable trial panels fail
+closed for live activation while leaving default-off acceptance unchanged.
+MOVE stays as its own accepted helper until forward rows mature; the allocator
+source-rank promotion failed. DoD awards need a second PIT economics source
+or fixed forward rows, not another award/revenue threshold. Static accruals /
+cash-conversion remains a rejected clue under schema-v1 MTM unless a new PIT
+quality discriminator or forward replacement evidence appears.
 
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
@@ -2106,8 +2222,11 @@ production-visible field:
 - crypto sleeve EMA/SMA target-policy activation or parameter retunes based on
   the current saved production snapshots. `exp-20260708-010` failed the
   observed-only policy checks versus fee-aware BTC buy-and-hold and cash.
-  Reopen only with materially more saved production snapshots, a new execution
-  cost/liquidity surface, or a different predeclared crypto policy family;
+  `exp-20260710-017` then showed the same shared target policy transferred to
+  ETH can reduce drawdown but still fails the predeclared EV win rule versus
+  fee-aware ETH buy-and-hold. Reopen only with materially more saved production
+  snapshots, a new execution cost/liquidity surface, or a different predeclared
+  crypto policy family;
 - broad dispersion, skew, source-state router, or core-entry admission gates
   that only retune dispersion percentile, average-correlation cutoffs, skew
   buckets, source/source-family slices, top-N, hold, cooldown, or response
@@ -2136,6 +2255,106 @@ production-visible field:
   and news-event exposure classification repairs are accepted guard plumbing.
   New data surfaces must update `_DATA_SOURCE_KEYWORDS` and tests when built,
   but the repair itself is not a valid new alpha axis;
+- candidate meta-label alpha retries that only reslice current candidate-decision
+  training rows by skip reason, rank, source, score, or horizon. July 9-10 built
+  the canonical/daily ledger, but the first observed-only cohort read found no
+  stable missed-alpha bucket. Reopen only with materially more leak-free complete
+  forward rows, a train-before-test cohort, or a genuinely new candidate context
+  field;
+- GDELT tone/news-volume, entity/theme news, and news-event exposure retries
+  that only change tone thresholds, source bundles, themes, event-age windows,
+  or response shapes on the same July rows. GDELT is still coverage/fingerprint
+  plumbing; entity/theme row growth did not create edge; split-repaired
+  news-event rows are measurement repair. Reopen only with materially more
+  settled cash/SPY/QQQ replacement rows, verified economic relation provenance,
+  or a new PIT news data source;
+- SEC 13D/13G Item-4 campaign or 13G/A stake-direction candidate pools that only
+  sweep board-change phrases, holder classes, Big-3 exclusions, stake-increase
+  thresholds, event ages, top-N, hold, cooldown, or notional. July 10 repaired
+  provenance and fingerprints and materialized 13G/A direction, but fixed
+  board-change and non-Big3 stake-increase sources were rejected. Reopen with
+  richer campaign outcome evidence, old_thin coverage repair, non-quarterly flow
+  provenance, or settled forward replacement-value rows;
+- SEC 425 merger/deal-economics retries before local text coverage exposes
+  bidder/target role, cash/stock/mixed consideration, amendment/withdrawal state,
+  and deal-size economics. July 10 blocked on coverage; do not retry with only
+  form-code, phrase-list, or event-age changes;
+- exit-lifecycle/advisory severity risk-allocation retries that only slice the
+  same settled rows by urgency, action type, horizon, LLM wording, or confidence.
+  July 10 wired fingerprinting and daily settlement; policy promotion still
+  requires a shared pre-exit lifecycle rule or materially more severity-tagged
+  closed replacement-value rows;
+- MOVE / credit / rate-relief macro-proxy retries that only change moving-average
+  spans, relief thresholds, ETF proxy lists, duration/sector priority ranks,
+  hold/cooldown/top-N/notional, or reentry kill-switch timing. July 11 accepted
+  only the fixed MOVE stock-leadership shared paper helper; HYG/JNK, high-yield
+  OAS, VVIX, SKEW, Treasury-curve, mortgage-rate, duration-priority, and MOVE
+  reentry variants did not create robust incremental value. Reopen with
+  materially more closed MOVE forward replacement rows, a distinct PIT macro
+  relation source, or a new gate shape, not another proxy/rank/threshold retune;
+- moomoo open-position entry-date repairs that infer current lot identity from
+  stale broker position IDs after a full exit. July 11 rejected that fallback
+  and accepted current-lot backward reconstruction from present quantity and
+  deal continuity; future repairs must preserve lot continuity semantics;
+- SEC 13F chronological manager-skill retries that only change prior-return
+  horizons, min training additions, manager count, holder-growth/value-share
+  thresholds, liquidity floors, top-N, hold/cooldown, or overlap exclusions.
+  July 11 showed positive aggregate PnL but failed Gate 4 on old_thin regression
+  and drawdown drift; reopen only with non-quarterly institutional-flow evidence
+  or a materially new manager-quality source;
+- DoD daily contract-award retries that sweep award thresholds, prime/branch/
+  modification filters, peer lists, peer-rank weights, absorption thresholds,
+  top-N, hold, cooldown, notional, or simply invert awardee versus peers.
+  `exp-20260711-020` rejected the awarded-prime self candidate and
+  `exp-20260711-023` rejected the non-awarded peer-substitution response across
+  all three windows. Reopen only with obligated-versus-ceiling/new-award
+  economics from a second PIT source, backlog/revenue normalization, a fixed
+  shared helper with materially settled forward replacement rows, or a truly
+  different supplier/customer relation;
+- broker-authoritative fill alpha retries that only reslice the first trusted
+  closed entry/exit cohorts by action type, fill route, hold horizon, ticker,
+  or time cohort. July 12 observed-only reads failed the robust all-comparator
+  entry/exit bars; reopen only with materially more trusted closed broker rows,
+  a new predeclared execution-quality field, or a shared policy that changes
+  the lifecycle before the fill;
+- accepted MOVE allocator-source promotion retries that only change rank,
+  scalar, source priority, top-N, hold/cooldown, or allocator tie-breaks. July
+  12 showed the standalone helper does not survive source-priority arbitration
+  under the predeclared rank; reopen only with materially more closed MOVE
+  forward replacement rows or a new allocator gate shape;
+- DoD award revenue-materiality retries that only adjust award/revenue cutoffs,
+  new-award exclusions, branch/prime filters, peer lists, absorption gates,
+  top-N, hold, cooldown, or notional. July 12 tested the richer allowed
+  revenue-normalized relation and it was too sparse; reopen only with a second
+  PIT obligation/backlog/segment-economics source or settled fixed-helper
+  forward rows;
+- annual accruals / cash-conversion retries that only change deployment,
+  stop/hold/notional, static thresholds, or schema-v1 revalidation framing.
+  July 12 confirmed the unchanged bundle remains rejected under corrected
+  daily-MTM Sharpe evidence; reopen only with a materially new PIT quality
+  discriminator such as fresher TTM/quarterly cash-flow evidence or forward
+  replacement rows;
+- entity/theme event-decision-basket retries that only change URL dedup,
+  source bundle, theme, article-age, mapped-ticker weighting, polarity, top-N,
+  hold, cooldown, or notional on the frozen July observer rows. July 13 found a
+  positive observed-only exact-URL basket lead, then retained a prospective
+  first-seen observer instead of promoting the frozen read. Reopen deployable
+  evaluation only after the prospective helper has at least 75 settled
+  unique-URL events across at least 15 first-seen decision dates and 3 themes,
+  max theme share <=30%, with complete cash/SPY/QQQ replacement values;
+- experiment-log wrapper identity repairs as alpha evidence. July 13 repaired a
+  stale delegated compact-log writer that wrote a MOVE-derived identity into
+  the mortgage-rate relief shard; future work should touch this lane only when
+  a manifest hash mismatch, cross-ID shard write, or source-bundle identity
+  defect is detected;
+- Drugs@FDA / CDER original-approval alpha retries before prospective
+  first-seen approval rows mature. The July 13 official source is valuable
+  because it is a new PIT candidate surface, not because historical approvals
+  can be replayed as newly known. Reopen performance only after at least 30
+  prospective first-seen approvals across at least 20 approval dates with
+  contemporaneous public-sponsor mapping and complete next-open/10-session
+  cash/SPY/QQQ outcomes, or after obtaining an independently auditable official
+  historical PIT snapshot archive;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

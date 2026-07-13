@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1514`
-- Accepted strategy records: `230`
-- History fingerprint: `2061a4bdd0f58964`
+- Strategy records counted: `1530`
+- Accepted strategy records: `231`
+- History fingerprint: `64fbf22642601bef`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,8 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260610-014` `accepted_shared_default_off_revision_allocator_source_extension`: EV `+0.9720`, PnL `$15,197.05`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
-  Lesson: The revision rows added replacement value on dates where expectation revision evidence displaced pure OHLCV rows or supplied coverage on dates where the higher-priority helpers had weaker candidates. The shared helper...
 - `exp-20260611-005` `accepted_lagged_consensus_shared_allocator_source_extension`: EV `+2.1849`, PnL `$40,397.21`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The lagged consensus rows added distinct multi-source confirmation and improved replacement value across all canonical windows after being moved into the shared allocator/daily snapshot boundary. Do not retry by chang...
 - `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
@@ -58,11 +56,11 @@ complete state database.
   Lesson: The corrected turn_of_month independence signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping turn_of_month scalar, source rank, allocator top-N, hold...
 - `exp-20260621-007` `accepted_allocator_lagged_consensus_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The current after-arbitration lagged_cross_source_consensus signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping lagged consensus scalar, source rank,...
+- `exp-20260711-004` `accepted_paper_pending_forward`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_candidate_pool`, trial `move_rate_volatility_relief_shared_paper_candidate_pool`.
+  Lesson: The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off. Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold,...
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
 - `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
   Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 - `exp-20260613-005` `accepted`: EV `+0.0804`, PnL `$1,872.59`, family `regime_router`, trial `market_state_conditioned_sleeve_router`.
@@ -81,6 +79,8 @@ complete state database.
   Lesson: The corrected turn_of_month independence signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping turn_of_month scalar, source rank, allocator top-N, hold...
 - `exp-20260621-007` `accepted_allocator_lagged_consensus_source_notional_scalar`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
   Lesson: The current after-arbitration lagged_cross_source_consensus signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping lagged consensus scalar, source rank,...
+- `exp-20260711-004` `accepted_paper_pending_forward`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_candidate_pool`, trial `move_rate_volatility_relief_shared_paper_candidate_pool`.
+  Lesson: The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off. Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold,...
 
 ## Current Research Queue Pointers
 

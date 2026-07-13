@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1514`
-- Raw records loaded by meta report: `4909`
-- History fingerprint: `2061a4bdd0f58964`
+- Strategy records counted: `1530`
+- Raw records loaded by meta report: `5070`
+- History fingerprint: `64fbf22642601bef`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -42,12 +42,12 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
   Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5701`: experiments `340`, accept `25.29%`, sum EV `+82.5806`, sum PnL `$1,481,333.24`.
-  Reason: 18/340 records have sample >= 10; 324/340 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5654`: experiments `350`, accept `24.57%`, sum EV `+82.6798`, sum PnL `$1,483,485.70`.
+  Reason: 18/350 records have sample >= 10; 334/350 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
-- `candidate_pool_full_stack` priority `0.5655`: experiments `26`, accept `23.08%`, sum EV `+5.5598`, sum PnL `$103,177.10`.
-  Reason: 20/26 records show multi-window evidence; 4/26 records have sample >= 10; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: average drawdown delta worsens; heavily explored family; diminishing-return risk; many prior rejections in this family
+- `default_off_paper_allocation` priority `0.5641`: experiments `24`, accept `33.33%`, sum EV `+0.0570`, sum PnL `$912.60`.
+  Reason: 24/24 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: heavily explored family; diminishing-return risk
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -64,30 +64,30 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260705-009` `rejected_duplicate_exposure_cap_historical_validation_failed`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `duplicate_exposure_cap_policy_sim`.
-  Lesson: The forward ledger can support a cross-sleeve cap simulation, but the independent historical accepted-paper surface is still too thin or concentrated to validate a default-off duplicate exposure policy. Do not retune...
-- `exp-20260705-014` `rejected_cisa_kev_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `external_event_entry_risk_gate`, trial `cisa_kev_mapped_issuer_entry_risk_window`.
-  Lesson: Mapped mega-cap issuers absorb KEV headlines without systematic near-term underperformance, or the flagged sample was too thin/saturated for a deployable gate: thin_vetoed_trade_sample Do not retune the 5-session wind...
-- `exp-20260706-013` `rejected_core_risk_multiplier_stack_loss_tail`: EV `+0.0000`, PnL `$0.00`, family `risk_allocation`, trial `risk_allocation`.
-  Lesson: The high-stack bucket was not a loss-tail cohort: aggregate mean PnL was higher than non-high-stack, and no window showed both lower mean PnL and higher severe-loss rate for high-stack entries. Do not retune boost_cou...
-- `exp-20260706-018` `rejected_finra_otc_internalization_retreat_default_off_candidate_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_finra_otc_internalization_candidate_pool`, trial `finra_otc_internalization_retreat_candidate_pool`.
-  Lesson: The fixed top-1/publication-day non-ATS internalization-retreat source did not clear the predeclared Gate 4 bar on the canonical windows: window_ev_regression; window_pnl_regression; accepted_compression_ev_not_beaten...
-- `exp-20260707-010` `rejected_microstructure_tick_gate_cv_overlay`: EV `+0.2121`, PnL `$7,589.46`, family `microstructure_viability`, trial `microstructure_tick_to_atr20_admission_gate`.
-  Lesson: The observed-only tick-to-ATR20 separation had to survive a source-specific leave-one-window cutoff and top1/day overlay. This stricter shape tests whether the field is deployable rather than merely explanatory. Do no...
-- `exp-20260707-019` `rejected_sec_nt_late_filing_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `free_sec_disclosure_timing_entry_risk`, trial `sec_nt_late_filing_notice_entry_risk`.
-  Lesson: The NT notice surface is dominated by untradeable rows after liquidity gates, and the few liquid events did not behave like entry risk. The 21 deployable events had positive aggregate 10-session long drift, so avoidin...
-- `exp-20260707-020` `rejected_sec_item301_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `free_sec_listing_compliance_entry_risk`, trial `sec_8k_item301_listing_noncompliance_entry_risk`.
-  Lesson: The direct Item 3.01 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule. Do not retune price, ADV, hold days, cooldown, same-day r...
-- `exp-20260708-003` `rejected_sec_item502_leadership_quality_text`: EV `-0.0315`, PnL `$-449.87`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `sec_item502_leadership_quality_text_candidate_pool`.
-  Lesson: Gate 4 evaluated the fixed text-quality Item 5.02 policy: EV delta -0.0315, PnL delta -449.87, failed ['aggregate_ev_not_positive', 'aggregate_pnl_not_positive', 'window_ev_regression', 'window_pnl_regression', 'targe...
-- `exp-20260708-009` `rejected_sec_item205206_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `free_sec_restructuring_impairment_entry_risk`, trial `sec_8k_item205206_restructuring_impairment_entry_risk`.
-  Lesson: The direct Item 2.05/2.06 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule. Do not retune price, ADV, hold days, cooldown, same-...
-- `exp-20260708-014` `rejected_sec_item205206_text_provenance_entry_risk_gate`: EV `+0.0000`, PnL `$0.00`, family `free_sec_restructuring_impairment_entry_risk`, trial `sec_8k_item205206_text_provenance_entry_risk`.
-  Lesson: The text-provenance Item 2.05/2.06 surface did not produce broad negative deployable event drift after liquidity gates, or failed the predeclared support/concentration rule. Do not retune text regexes, price, ADV, hol...
-- `exp-20260708-020` `rejected_crypto_vol_target_overlay_policy_candidate`: EV `+0.0000`, PnL `$0.00`, family `production_visible_crypto_sleeve_policy`, trial `btc_spot_crypto_sleeve_realized_vol_target_overlay`.
-  Lesson: The volatility target overlay did not beat the current crypto policy under the predeclared multi-window rule: overlay_ev_beats_current_in_2_of_3_windows;overlay_aggregate_ev_beats_current Do not retune vol lookback, t...
-- `exp-20260708-023` `rejected_chop_regime_mean_reversion_sleeve`: EV `+0.0000`, PnL `$0.00`, family `chop_regime_mean_reversion`, trial `chop_regime_mean_reversion_candidate_pool`.
-  Lesson: Reversion entries on chop days closed 41 trades with 82.13 USD vs SPY replacement 1024.1; the mirror trade did not clear the predeclared bar on the frozen windows. Do not retune RSI threshold, SMA windows, hold days,...
+- `exp-20260711-013` `rejected_high_yield_oas_credit_relief_shared_paper`: EV `+0.0000`, PnL `$0.00`, family `production_visible_direct_credit_spread_relief_candidate_pool`, trial `high_yield_oas_credit_relief_shared_paper_candidate_pool`.
+  Lesson: Direct high-yield OAS compression did not add robust incremental value over the accepted relief comparator after costs; it remained beta-like or window fragile. Do not retry by changing the OAS moving-average span, ad...
+- `exp-20260711-015` `rejected_move_duration_priority_ranking`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_candidate_pool`, trial `move_rate_volatility_relief_sector_priority_ranking`.
+  Lesson: The duration-sensitive sector priority did not materially and consistently beat the accepted MOVE v1 helper. Do not retry MOVE sector lists, sector tiers, score bonuses, thresholds, top-N, hold, cooldown, notional, or...
+- `exp-20260711-018` `rejected_move_relief_kill_switch`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_exit_policy`, trial `move_rate_volatility_relief_kill_switch`.
+  Lesson: The opposite MOVE20 cross was not a reliable thesis invalidation event; it truncated winners or whipsawed too late to beat the accepted fixed-horizon sleeve. Do not retry MOVE exit thresholds, SMA spans, persistence,...
+- `exp-20260711-019` `rejected_sec13f_chronological_manager_skill_candidate_pool`: EV `+0.1786`, PnL `$5,132.60`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_manager_skill_candidate_pool`.
+  Lesson: Prior-quarter manager alpha did not persist strongly enough after the 13F disclosure delay and unchanged next-open execution rules. Do not retry 13F manager skill by changing training sample count, median cutoff, retu...
+- `exp-20260711-020` `rejected_dod_contract_award_candidate_pool`: EV `-0.0083`, PnL `$-714.16`, family `production_visible_dod_contract_award_candidate_pool`, trial `dod_daily_contract_award_candidate_pool`.
+  Lesson: The DoD daily contract-award source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_t...
+- `exp-20260711-023` `rejected_dod_award_peer_substitution_candidate_pool`: EV `+0.0460`, PnL `$222.13`, family `production_visible_dod_contract_award_peer_substitution_candidate_pool`, trial `dod_contract_award_peer_substitution_candidate_pool`.
+  Lesson: The fixed DoD award peer-substitution candidate pool failed Gate 4 (window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_concentration_failed, accepted_peer_comparator_ev_not_beaten,...
+- `exp-20260712-008` `rejected_move_rate_volatility_allocator_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
+  Lesson: The standalone MOVE edge did not survive source-priority arbitration at the predeclared rank: it either displaced stronger lower-priority rows, touched too few allocator decisions, or failed the 10% current-schema EV...
+- `exp-20260712-009` `rejected_dod_new_contract_revenue_materiality_candidate_pool`: EV `+0.0496`, PnL `$1,076.23`, family `production_visible_dod_contract_award_candidate_pool`, trial `dod_new_contract_revenue_materiality_candidate_pool`.
+  Lesson: The new-contract revenue-materiality relation produced only 8 trades. It added $1,076.23 and +0.0496 aggregate EV, but schema-v1 daily MTM made late_strong EV regress and the result did not beat either accepted candid...
+- `exp-20260712-011` `rejected_accruals_cash_conversion_schema_v1_revalidation`: EV `+0.7860`, PnL `$21,322.65`, family `production_visible_free_sec_companyfacts_quality_candidate_pool`, trial `accruals_cash_conversion_quality_schema_v1_revalidation`.
+  Lesson: The corrected schema-v1 daily MTM replay still rejected the unchanged accruals bundle (failed: window_ev_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high). Do not retry accrual thresholds, cash-...
+- `exp-20260712-017` `rejected_broker_fee_aware_minimum_notional_entry_gate`: EV `+0.0000`, PnL `$0.00`, family `broker_fee_aware_execution_economics`, trial `broker_fee_aware_core_minimum_notional_entry_gate`.
+  Lesson: The fixed broker-fee breakpoint did not create robust multi-window incremental value after the backtester admitted any replacement candidates. Do not sweep $250/$750/$1,000 thresholds, change the gate to a notional sc...
+- `exp-20260712-019` `rejected_prior_month_max_residual_entry_gate`: EV `+0.0000`, PnL `$0.00`, family `lottery_demand_max_effect_entry_admission`, trial `ohlcv_lottery_max_residual_entry_exclusion`.
+  Lesson: The prior-month MAX-residual exclusion did not add robust multi-window value; the removed lottery-like breakouts were not consistently worse than their replacements or empty slots. Do not retry 10/40/60-session lookba...
+- `exp-20260712-020` `rejected_core_amihud_scarce_slot_ranking`: EV `+0.0000`, PnL `$0.00`, family `real_ohlcv_relation_price_impact_quality_ranking`, trial `core_amihud_illiquidity_scarce_slot_ranking`.
+  Lesson: Lower prior-20-session Amihud price impact did not improve scarce-slot choices robustly; baseline momentum/quality ordering was as good or better across the canonical windows. Do not retry 10/40/60-session Amihud, med...
 
 ## Highest-Signal Historical Records
 

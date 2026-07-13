@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-09.
+Last refreshed: 2026-07-13.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -81,6 +81,51 @@ Controls:
 - keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2510.05533>
+
+### LLM Forecasts Need PIT Recall Diagnostics
+
+Three recent LLM-finance papers sharpen one deployable rule for Ginger:
+off-the-shelf LLM forecasts can look predictive because the model has memorized
+firm/date outcomes, while time-aware pretraining and filing-grounded prompts
+reduce but do not remove the need for validation. DatedGPT shows the clean
+architecture pattern: annual model cutoffs and temporally filtered
+instruction-tuning. The Lookahead Propensity test shows the cheap diagnostic:
+ask a date-only recall question, then measure whether forecast accuracy loads
+on the model's own probability of "knowing" the outcome. The stock-investing
+human-factor study adds a production boundary: regulatory filing grounding and
+human/structured supervision help, but autonomous recommendations still fail
+through misconceptions, carryover errors, stale facts, and hallucinations.
+
+Implementable fields:
+
+- `llm_model_cutoff_date`
+- `llm_prompt_information_cutoff`
+- `llm_date_only_recall_probability`
+- `llm_lookahead_propensity_bucket`
+- `llm_signal_x_recall_interaction_tstat`
+- `llm_filing_grounded_flag`
+- `llm_human_supervision_mode`
+- `llm_reasoning_failure_bucket`
+- `llm_pit_forecast_replacement_value`
+
+Controls:
+
+- record model id, model knowledge cutoff, prompt timestamp, source timestamp,
+  and evidence hashes for every LLM-derived forecast row;
+- run a date-only recall probe before scoring any LLM forecast over historical
+  firm/date outcomes;
+- treat high recall probability as contamination risk unless the forecast still
+  adds after-cost replacement value after recall controls;
+- prefer official-filing grounded prompts with deterministic numeric checks and
+  bounded human/schema supervision;
+- never let an LLM forecast affect entry, ranking, sizing, exits, or orders
+  until a shared helper passes Gate 1-4 with PIT recall diagnostics attached.
+
+Sources:
+
+- <https://arxiv.org/abs/2603.11838>
+- <https://arxiv.org/abs/2512.23847>
+- <https://arxiv.org/abs/2603.19944>
 
 ### Agentic Research Needs Tool Traces And Reproducible Panels
 
@@ -175,6 +220,45 @@ Controls:
 - treat "more parameters" as model-risk evidence until the placebo clears.
 
 Source: <https://www.ft.com/content/89d88cbf-a92c-43d2-b8af-88ae26529be0>
+
+### Prediction Uncertainty Belongs In Ranking And Admission
+
+Recent ML asset-pricing work argues that point forecasts are the wrong object
+to sort on when asset-specific estimation uncertainty differs across names.
+Uncertainty-adjusted sorting and forecast-confidence intervals improve mainly
+by reducing volatility and shrinking fragile model picks, not by discovering a
+magic new signal. This maps directly to Ginger's repeated sparse-source and
+single-window failures: candidate-pool and source-router scores should expose
+confidence bounds, sample support, and lower-bound replacement value before
+they can win scarce slots or receive larger paper notional.
+
+Implementable fields:
+
+- `forecast_point_score`
+- `forecast_lower_bound_score`
+- `forecast_uncertainty_width`
+- `asset_specific_uncertainty_bucket`
+- `model_sample_support_count`
+- `uncertainty_adjusted_rank`
+- `lower_bound_replacement_value_delta`
+- `uncertainty_shrinkage_reason`
+
+Controls:
+
+- rank learned or meta-labeled candidates by a predeclared lower-bound score,
+  not only by point expected return;
+- report whether improvements come from lower return volatility, fewer tail
+  losses, or higher gross PnL;
+- compare uncertainty-adjusted ranking against the existing deterministic rank,
+  simple momentum/recency baselines, and accepted helper comparators on the
+  same PIT rows;
+- keep low-sample or high-uncertainty names in default-off observation until
+  closed replacement rows narrow the interval.
+
+Sources:
+
+- <https://arxiv.org/abs/2601.00593>
+- <https://arxiv.org/abs/2503.00549>
 
 ### Financial Time-Series Foundation Models Need Contamination Audits
 
@@ -1354,11 +1438,16 @@ Sources:
 ### LLM Alpha Mining Requires A Trajectory Ledger
 
 Recent LLM alpha-mining systems are useful because they make idea generation,
-code generation, critique, and backtest feedback explicit. The local lesson is
-not to outsource alpha discovery to an agent; it is to persist every generated
-hypothesis, formula/code hash, critique, repair, comparator, and backtest
-result as a replayable trajectory. This is the missing audit layer between an
-LLM idea and Ginger's `experiment.py new` contract.
+code generation, critique, and backtest feedback explicit. July 2026 XAlpha,
+March 2026 FactorEngine, and February 2026 FactorMiner sharpen the engineering
+lesson: the durable asset is a memory-controlled research loop that separates
+hypothesis planning, executable factor/code generation, code/idea consistency
+verification, hyperparameter search, empirical feedback, redundancy checks, and
+failure distillation. The local lesson is not to outsource alpha discovery to an
+agent; it is to persist every generated hypothesis, formula/code hash, critique,
+repair, comparator, and backtest result as a replayable trajectory. This is the
+missing audit layer between an LLM idea and Ginger's `experiment.py new`
+contract.
 
 Implementable fields:
 
@@ -1371,6 +1460,11 @@ Implementable fields:
 - `llm_hypothesis_to_code_consistency_score`
 - `llm_alpha_miner_comparator_delta`
 - `llm_alpha_miner_repair_reason`
+- `llm_alpha_memory_cycle_id`
+- `llm_factor_logic_revision_id`
+- `llm_factor_hyperparameter_search_id`
+- `llm_factor_redundancy_neighbor_ids`
+- `llm_failure_distillation_card_id`
 
 Controls:
 
@@ -1382,9 +1476,16 @@ Controls:
   placebos and the accepted local comparator after costs;
 - treat self-repair loops as multiple-testing exposure unless the full
   trajectory and rejected candidates are logged.
+- separate logic revisions from parameter searches; a threshold sweep is not a
+  new idea unless the factor logic or evidence surface changes;
+- require a code-vs-hypothesis consistency check and redundancy check before a
+  generated factor can reserve an alpha experiment.
 
 Sources:
 
+- <https://arxiv.org/abs/2607.08332>
+- <https://arxiv.org/abs/2603.16365>
+- <https://arxiv.org/abs/2602.14670>
 - <https://arxiv.org/abs/2602.07085>
 - <https://arxiv.org/abs/2511.18850>
 
@@ -1579,6 +1680,45 @@ Controls:
   controls, or replayable source artifacts.
 
 Source: <https://arxiv.org/abs/2605.19337>
+
+### Financial Tool Agents Need Domain-Alignment Ledgers
+
+FinToolBench and the broader FinLLM / FinAgent evaluation-suite work are useful
+because they evaluate finance agents as tool-using systems, not static text
+classifiers. The Ginger translation is direct: any agent that retrieves prices,
+filings, broker state, macro data, or order information must leave a runnable
+tool trace with timestamp, intent, regulatory/domain alignment, and execution
+status. A correct-looking answer is not enough if the tool call was stale,
+misrouted, or outside the declared finance domain.
+
+Implementable fields:
+
+- `financial_tool_manifest_version`
+- `tool_call_trace_hash`
+- `tool_data_timestamp`
+- `tool_intent_type`
+- `tool_regulatory_domain_bucket`
+- `tool_result_timeliness_bucket`
+- `tool_retrieval_reasoning_failure`
+- `tool_execution_status`
+- `tool_output_replay_passed`
+- `tool_assisted_replacement_value`
+
+Controls:
+
+- preserve every tool call, input, output hash, timestamp, and failure mode in
+  the experiment artifact;
+- separate retrieval failure, stale data, wrong-domain tool choice, and invalid
+  execution from model reasoning failure;
+- require deterministic replay of the tool trace before using agent-produced
+  fields in candidate pools, ranking, sizing, exits, or risk;
+- benchmark tool-assisted rows against cash, SPY/QQQ, and the exact displaced
+  accepted helper after costs.
+
+Sources:
+
+- <https://arxiv.org/abs/2603.08262>
+- <https://arxiv.org/abs/2602.19073>
 
 ### Trading-R1 Style Reasoning Traces Need Action-Level Attribution
 
@@ -2949,6 +3089,38 @@ Sources:
 
 - <https://arxiv.org/abs/2607.01377>
 - <https://arxiv.org/abs/2607.04280>
+
+### Learning-Agent Impact Cycles Are Stress Tests, Not Alpha
+
+A July 2026 learning-agent market-impact study reports endogenous manipulation
+cycles when an optimized institutional agent interacts with herding flow under
+square-root impact. Ginger should not translate this into a trading target.
+The useful lesson is adversarial: allocator, execution, and liquidity overlays
+must be stress-tested for self-reinforcing flow, repeated same-direction
+entries, and impact feedback before live capital grows.
+
+Implementable fields:
+
+- `impact_feedback_stress_protocol_id`
+- `same_direction_entry_cycle_count`
+- `self_excited_flow_risk_bucket`
+- `herding_flow_proxy_bucket`
+- `impact_cycle_drawdown_bucket`
+- `allocator_flow_reversal_latency`
+- `liquidity_feedback_kill_switch_flag`
+
+Controls:
+
+- treat square-root impact and flow feedback as execution-envelope stress, not
+  candidate-pool alpha;
+- check whether repeated helper entries create same-ticker or same-theme flow
+  cycles before increasing notional;
+- require kill-switch behavior under stressed impact scenarios, especially for
+  accepted paper adapters moving toward activation;
+- keep any agent-discovered execution policy default-off until a deterministic
+  shared policy and Gate 1-4 / Gate 5 evidence exist.
+
+Source: <https://arxiv.org/abs/2607.05141>
 
 ### MACD-Style Signals Need Latent-Drift And Cost Context
 
