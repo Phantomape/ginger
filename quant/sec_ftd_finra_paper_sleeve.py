@@ -659,6 +659,7 @@ def build_sec_ftd_finra_paper_sleeve_snapshot(
         "candidate_reject_counts": dict(sorted(reject_counts.items())),
         "candidates": _safe(selected_candidates),
         "new_pending_entries": _safe(new_pending),
+        "pending_entries": _safe(working_state.get("pending_entries") or []),
         "filled_entries_today": _safe(filled_today),
         "skipped_entries_today": _safe(skipped_today),
         "closed_positions_today": _safe(closed_today),

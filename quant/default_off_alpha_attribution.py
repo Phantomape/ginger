@@ -223,6 +223,7 @@ def build_default_off_alpha_attribution_report(
     broad_market_paper_sleeve: dict[str, Any] | None = None,
     macro_relief_leadership_paper_sleeve: dict[str, Any] | None = None,
     volatility_relief_stock_leadership_paper_sleeve: dict[str, Any] | None = None,
+    move_rate_volatility_relief_paper_sleeve: dict[str, Any] | None = None,
     rolling_corr_peer_shock_paper_sleeve: dict[str, Any] | None = None,
     industry_relative_laggard_repair_paper_sleeve: dict[str, Any] | None = None,
     industry_stable_core_flow_paper_sleeve: dict[str, Any] | None = None,
@@ -344,6 +345,35 @@ def build_default_off_alpha_attribution_report(
                         )
                         or {}
                     ).get("uses_free_ohlcv_only")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="move_rate_volatility_relief_stock_leadership",
+            label="MOVE_RATE_VOLATILITY_RELIEF_LEADERSHIP_PAPER",
+            snapshot=move_rate_volatility_relief_paper_sleeve,
+            extra_metrics={
+                "rule_version": (move_rate_volatility_relief_paper_sleeve or {}).get("rule_version"),
+                "source_rule_version": (move_rate_volatility_relief_paper_sleeve or {}).get(
+                    "source_rule_version"
+                ),
+                "move_rate_volatility_relief_days": (
+                    ((move_rate_volatility_relief_paper_sleeve or {}).get("context_scan") or {}).get(
+                        "move_rate_volatility_relief_days"
+                    )
+                ),
+                "raw_candidate_count": (move_rate_volatility_relief_paper_sleeve or {}).get(
+                    "raw_candidate_count"
+                ),
+                "candidate_universe_status": (
+                    ((move_rate_volatility_relief_paper_sleeve or {}).get("candidate_universe") or {}).get(
+                        "status"
+                    )
+                ),
+                "uses_free_ohlcv_only": (
+                    ((move_rate_volatility_relief_paper_sleeve or {}).get("production_impact") or {}).get(
+                        "uses_free_ohlcv_only"
+                    )
                 ),
             },
         ),

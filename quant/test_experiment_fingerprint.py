@@ -22,6 +22,7 @@ import experiment_fingerprint as fp  # noqa: E402
         ("Moomoo capital-flow accumulation source", "moomoo_capital_flow"),
         ("Moomoo daily short volume activity helper", "moomoo_short_volume"),
         ("session semivariance overnight-versus-intraday attribution", "ohlcv_relation"),
+        ("intraindustry transfer entropy directional edge", "ohlcv_relation"),
         ("broker-authoritative execution fact ledger", "moomoo_execution_history"),
         ("Moomoo broker deal history order fee snapshots", "moomoo_execution_history"),
         ("Moomoo borrow availability readiness gate", "borrow_availability"),
@@ -100,6 +101,51 @@ def test_existing_source_mappings_still_resolve(text, expected):
     assert fp.infer_fingerprint(text)["data_source"] == expected
 
 
+def test_cftc_tff_positioning_precedes_generic_ranking_and_ohlcv_sources():
+    fingerprint = fp.infer_fingerprint(
+        "CFTC TFF Traders in Financial Futures institutional positioning "
+        "scarce-slot ranking against an OHLCV relation"
+    )
+
+    assert fingerprint["data_source"] == "cftc_tff_positioning"
+    assert fingerprint["gate_shape"] == "allocator_source"
+    assert fp.infer_fingerprint(
+        "fut_fin_txt Asset_Mgr_Positions versus Lev_Money_Positions rank"
+    )["data_source"] == "cftc_tff_positioning"
+    assert fp.infer_fingerprint(
+        "cftc_tff_equity_index_asset_manager_positioning"
+    )["data_source"] == "cftc_tff_positioning"
+
+
+def test_wikimedia_pageviews_precedes_revision_attention_and_news_words():
+    ticket_hypothesis = (
+        "Observed-only ticker-level attention attribution: among the common-stock "
+        "issuers appearing in accepted core trades, a strictly lagged Wikimedia "
+        "Analytics API canonical-company-page attention surprise should identify "
+        "stronger information persistence."
+    )
+
+    assert fp.infer_fingerprint(ticket_hypothesis)["data_source"] == "wikimedia_pageviews"
+    assert fp.infer_fingerprint(
+        "wikimedia_pageviews_canonical_issuer_attention_surprise"
+    )["data_source"] == "wikimedia_pageviews"
+    assert fp.infer_fingerprint(
+        "Wikipedia pageviews per article news-attention revision surprise"
+    )["data_source"] == "wikimedia_pageviews"
+
+
+def test_wikimedia_keywords_do_not_capture_other_attention_surfaces():
+    assert fp.infer_fingerprint(
+        "Form 4 insider open-market purchase attention confluence"
+    )["data_source"] == "form4_insider"
+    assert fp.infer_fingerprint(
+        "event attention persistence context notional scalar"
+    )["data_source"] == "other"
+    assert fp.infer_fingerprint(
+        "entity-theme news relation observer"
+    )["data_source"] == "entity_theme_news"
+
+
 def test_specific_finra_surfaces_precede_generic_short_interest():
     assert fp.infer_fingerprint("FINRA OTC internalization retreat")["data_source"] == "finra_otc_internalization"
     assert fp.infer_fingerprint("FINRA ATS dark pool share")["data_source"] == "finra_ats_share"
@@ -158,6 +204,42 @@ def test_intraday_structured_news_precedes_generic_relation_and_news_sources():
     assert fp.infer_fingerprint("intraday structured news relation observer")["data_source"] == "intraday_structured_news"
     assert fp.infer_fingerprint("entity-theme news relation observer")["data_source"] == "entity_theme_news"
     assert fp.infer_fingerprint("lead_lag peer rolling_corr relation candidate pool")["data_source"] == "ohlcv_relation"
+
+
+def test_entity_theme_event_decision_basket_precedes_generic_forward_shapes():
+    ticket = fp.infer_fingerprint(
+        "entity_theme_news_observer exact-url-deduplicated event decision "
+        "basket with 10-session replacement-value candidate attribution"
+    )
+    ticket_hypothesis = fp.infer_fingerprint(
+        "Observed-only event-decision-basket alpha: collapse settled "
+        "entity_theme_news observer rows by exact URL, then measure positive "
+        "10-session replacement value across canonical windows"
+    )
+    family = fp.infer_fingerprint(
+        "entity_theme_news_event_decision_basket URL event basket"
+    )
+
+    assert ticket["data_source"] == "entity_theme_news"
+    assert ticket["gate_shape"] == "event_decision_basket"
+    assert ticket_hypothesis["data_source"] == "entity_theme_news"
+    assert ticket_hypothesis["gate_shape"] == "event_decision_basket"
+    assert family["data_source"] == "entity_theme_news"
+    assert family["gate_shape"] == "event_decision_basket"
+
+
+def test_ordinary_entity_theme_forward_attribution_is_not_an_event_basket():
+    ordinary = fp.infer_fingerprint(
+        "entity_theme_news observer settled replacement value forward attribution"
+    )
+    generic_news = fp.infer_fingerprint(
+        "entity-theme news relation observer"
+    )
+
+    assert ordinary["data_source"] == "entity_theme_news"
+    assert ordinary["gate_shape"] == "forward_attribution"
+    assert generic_news["data_source"] == "entity_theme_news"
+    assert generic_news["gate_shape"] != "event_decision_basket"
 
 
 def test_intraday_advisory_is_not_structured_news_or_other():
@@ -301,6 +383,19 @@ def test_move_rate_volatility_precedes_forward_replacement_and_ohlcv_relation():
     assert fp.infer_fingerprint(
         "move20_cross_below_rate_volatility_relief_stock_leadership_v1"
     )["data_source"] == "move_rate_volatility"
+
+
+def test_cboe_ovx_precedes_forward_replacement_and_ohlcv_relation():
+    fingerprint = fp.infer_fingerprint(
+        "CBOE OVX oil-volatility relief Energy leadership forward replacement "
+        "value candidate pool"
+    )
+
+    assert fingerprint["data_source"] == "cboe_ovx"
+    assert fingerprint["gate_shape"] == "candidate_pool_top1_10d"
+    assert fp.infer_fingerprint(
+        "ovx20_cross_below_energy_leadership_candidate_pool_v1"
+    )["data_source"] == "cboe_ovx"
 
 
 def test_move_relief_kill_switch_has_dedicated_source_and_gate_shape():
@@ -565,3 +660,22 @@ def test_trial_adjusted_sharpe_family_key_uses_dsr_surface():
 
     assert result["data_source"] == "trial_return_panel"
     assert result["gate_shape"] == "trial_adjusted_significance"
+
+
+def test_drugsfda_original_approval_ticket_uses_distinct_official_source():
+    result = fp.infer_fingerprint(
+        "Alpha-enabling new-source hypothesis: a first official CDER original "
+        "NDA/BLA approval can create post-regulatory-de-risking stock drift; "
+        "freeze the Drugs@FDA source and persist a shared default-off "
+        "first-seen application ledger."
+    )
+
+    assert result["data_source"] == "drugsfda_approval"
+
+
+def test_generic_fda_approval_news_does_not_claim_drugsfda_source():
+    result = fp.infer_fingerprint(
+        "FDA approval news sentiment around a biotech catalyst candidate pool"
+    )
+
+    assert result["data_source"] == "other"

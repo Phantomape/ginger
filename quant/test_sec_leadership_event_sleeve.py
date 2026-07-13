@@ -58,12 +58,15 @@ def test_sec_leadership_event_sleeve_is_default_off_paper_only(tmp_path):
     assert first["pending_count"] == 1
     assert first["open_position_count"] == 0
     assert first["production_impact"]["alters_orders"] is False
+    assert first["pending_entries"][0]["paper_notional_usd"] == 10_000.0
+    assert first["pending_entries"][0]["paper_notional_frozen"] is True
 
     second = build_sec_leadership_event_sleeve_snapshot(
         sec_leadership_event_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         open_prices={"CEOX": 97.0},
         current_prices={"CEOX": 98.0},
+        config={"event_notional_usd": 2_500.0},
         persist=True,
         state_path=tmp_path / "state.json",
         snapshot_log_path=tmp_path / "snapshots.jsonl",
@@ -72,6 +75,7 @@ def test_sec_leadership_event_sleeve_is_default_off_paper_only(tmp_path):
     assert second["filled_count"] == 1
     assert second["pending_count"] == 0
     assert second["open_position_count"] == 1
+    assert second["open_positions"][0]["notional"] == 10_000.0
     assert second["open_positions"][0]["trade_enabled"] is False
 
 

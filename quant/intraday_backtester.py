@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 from statistics import mean, median
 from typing import Any, Iterable, Mapping, Sequence
@@ -23,9 +24,17 @@ import pandas as pd
 try:
     from data_paths import DATA_ROOT
     from intraday_moomoo import _history_pages
+    from moomoo_open_positions import (
+        _redirect_moomoo_sdk_appdata,
+        _restore_moomoo_sdk_appdata,
+    )
 except ImportError:  # pragma: no cover - package-style imports
     from quant.data_paths import DATA_ROOT
     from quant.intraday_moomoo import _history_pages
+    from quant.moomoo_open_positions import (
+        _redirect_moomoo_sdk_appdata,
+        _restore_moomoo_sdk_appdata,
+    )
 
 
 SCHEMA_VERSION = 1
@@ -200,7 +209,13 @@ def fetch_opend_history(
     errors: dict[str, str] = {}
     if not requested:
         return bars, {"status": "empty", "requested_tickers": 0, "errors": {}}
+    redirect_sdk_logs = not os.environ.get("GINGER_MOOMOO_USE_SYSTEM_APPDATA")
+    previous_appdata = None
+    redirected = False
     try:
+        if redirect_sdk_logs:
+            previous_appdata = _redirect_moomoo_sdk_appdata()
+            redirected = True
         from moomoo import AuType, KLType, OpenQuoteContext, Session
     except Exception as exc:  # pragma: no cover - local SDK dependency
         return bars, {
@@ -208,6 +223,9 @@ def fetch_opend_history(
             "requested_tickers": len(requested),
             "errors": {"sdk": str(exc)},
         }
+    finally:
+        if redirected:
+            _restore_moomoo_sdk_appdata(previous_appdata)
 
     context = None
     try:

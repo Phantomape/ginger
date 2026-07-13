@@ -19,6 +19,8 @@ from run import (  # noqa: E402
     _build_daily_non_ohlcv_snapshot,
     _core_slot_ticker_set,
     _persist_daily_structured_news_observation,
+    _persist_drugsfda_approval_observer,
+    _persist_entity_theme_news_event_forward_observer,
     _persist_entity_theme_news_observer,
     _persist_entity_theme_news_outcomes,
     _persist_estimate_revision_outcomes_after_quant_signals,
@@ -885,6 +887,200 @@ def test_entity_theme_news_observer_daily_wiring_fail_soft(monkeypatch):
     assert "entity observer unavailable" in summary["error"]
     assert summary["strategy_behavior_changed"] is False
     assert summary["trade_enabled"] is False
+
+
+def test_entity_theme_news_event_forward_observer_daily_wiring(monkeypatch):
+    calls = {"persist": 0}
+
+    def fake_persist_entity_theme_news_event_forward_observer(today):
+        calls["persist"] += 1
+        assert today == "20260703"
+        return {
+            "status": "ok",
+            "decision_count": 7,
+            "rows_appended": 5,
+            "settled_count": 2,
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+            "alters_orders": False,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "entity_theme_news_event_forward_observer",
+        types.SimpleNamespace(
+            persist_entity_theme_news_event_forward_observer=(
+                fake_persist_entity_theme_news_event_forward_observer
+            )
+        ),
+    )
+
+    summary = _persist_entity_theme_news_event_forward_observer("20260703")
+
+    assert calls == {"persist": 1}
+    assert summary["status"] == "ok"
+    assert summary["decision_count"] == 7
+    assert summary["rows_appended"] == 5
+    assert summary["settled_count"] == 2
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["trade_enabled"] is False
+    assert summary["alters_orders"] is False
+
+
+def test_entity_theme_news_event_forward_observer_daily_wiring_fail_soft(monkeypatch):
+    def failing_persist_entity_theme_news_event_forward_observer(today):
+        raise RuntimeError("entity theme event forward observer unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "entity_theme_news_event_forward_observer",
+        types.SimpleNamespace(
+            persist_entity_theme_news_event_forward_observer=(
+                failing_persist_entity_theme_news_event_forward_observer
+            )
+        ),
+    )
+
+    summary = _persist_entity_theme_news_event_forward_observer("20260703")
+
+    assert summary["status"] == "unavailable"
+    assert "entity theme event forward observer unavailable" in summary["error"]
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["trade_enabled"] is False
+
+
+def test_drugsfda_approval_observer_daily_wiring_calls_only_with_local_zip(
+    monkeypatch, tmp_path
+):
+    raw_zip_path = tmp_path / "drugsatfda_official.zip"
+    raw_zip_path.write_bytes(b"official fixture")
+    calls = []
+
+    def fake_persist_daily_drugsfda_approval_observer(**kwargs):
+        calls.append(kwargs)
+        return {
+            "status": "ok",
+            "row_count": 17,
+            "rows_appended": 17,
+            "first_seen_count": 17,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "drugsfda_approval_observer",
+        types.SimpleNamespace(
+            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            persist_daily_drugsfda_approval_observer=(
+                fake_persist_daily_drugsfda_approval_observer
+            ),
+        ),
+    )
+
+    summary = _persist_drugsfda_approval_observer("20260713")
+
+    assert calls == [
+        {
+            "today": "20260713",
+            "raw_zip_path": str(raw_zip_path),
+        }
+    ]
+    assert summary["status"] == "ok"
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    assert summary["alters_ranking"] is False
+    assert summary["alters_sizing"] is False
+    assert summary["alters_exits"] is False
+
+
+def test_drugsfda_approval_observer_skips_without_local_zip(monkeypatch, tmp_path):
+    calls = []
+    raw_zip_path = tmp_path / "missing_drugsatfda_official.zip"
+
+    def unexpected_persist_daily_drugsfda_approval_observer(**kwargs):
+        calls.append(kwargs)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "drugsfda_approval_observer",
+        types.SimpleNamespace(
+            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            persist_daily_drugsfda_approval_observer=(
+                unexpected_persist_daily_drugsfda_approval_observer
+            ),
+        ),
+    )
+
+    summary = _persist_drugsfda_approval_observer("20260713")
+
+    assert calls == []
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "official_zip_missing"
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    assert summary["alters_ranking"] is False
+    assert summary["alters_sizing"] is False
+    assert summary["alters_exits"] is False
+
+
+def test_drugsfda_approval_observer_daily_wiring_fail_soft(monkeypatch, tmp_path):
+    raw_zip_path = tmp_path / "drugsatfda_official.zip"
+    raw_zip_path.write_bytes(b"official fixture")
+    calls = []
+
+    def failing_persist_daily_drugsfda_approval_observer(**kwargs):
+        calls.append(kwargs)
+        raise RuntimeError("Drugs@FDA observer unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "drugsfda_approval_observer",
+        types.SimpleNamespace(
+            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            persist_daily_drugsfda_approval_observer=(
+                failing_persist_daily_drugsfda_approval_observer
+            ),
+        ),
+    )
+
+    summary = _persist_drugsfda_approval_observer("20260713")
+
+    assert calls == [
+        {
+            "today": "20260713",
+            "raw_zip_path": str(raw_zip_path),
+        }
+    ]
+    assert summary["status"] == "unavailable"
+    assert "Drugs@FDA observer unavailable" in summary["error"]
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    assert summary["alters_ranking"] is False
+    assert summary["alters_sizing"] is False
+    assert summary["alters_exits"] is False
+
+
+def test_drugsfda_approval_observer_is_wired_in_both_daily_paths():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    call_expressions = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        == "_persist_drugsfda_approval_observer"
+    ]
+
+    assert len(call_expressions) == 2
+    assert all(
+        isinstance(expression.value, ast.Call)
+        and len(expression.value.args) == 1
+        and isinstance(expression.value.args[0], ast.Name)
+        and expression.value.args[0].id == "today"
+        for expression in call_expressions
+    )
 
 
 def test_entity_theme_news_outcome_daily_wiring(monkeypatch):

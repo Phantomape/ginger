@@ -111,6 +111,8 @@ def test_snapshot_adds_industry_repair_candidate_without_orders() -> None:
 
     assert snapshot["candidate_count"] == 1
     assert snapshot["new_pending_count"] == 1
+    assert len(snapshot["pending_entries"]) == snapshot["pending_count"] == 1
+    assert snapshot["pending_entries"][0]["paper_notional_usd"] == 4_000.0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
     candidate = snapshot["candidates"][0]

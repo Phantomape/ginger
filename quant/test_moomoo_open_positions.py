@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 
 import moomoo_open_positions as M
@@ -135,6 +136,168 @@ def test_build_payload_prior_fallback_for_entry_and_notes():
     row = payload["observations"][0]
     assert row["entry_date"] == "2025-02-13"     # preserved from prior file
     assert row["risk_notes"] == "legacy hold"
+
+
+def test_reconstruct_current_lot_after_full_close_and_reopen():
+    fills = [
+        {"ticker": "US.SNXX", "side": "BUY", "qty": 200, "date": "2026-07-02"},
+        {"ticker": "US.SNXX", "side": "SELL", "qty": 200, "date": "2026-07-08"},
+        {"ticker": "US.SNXX", "side": "BUY", "qty": 50, "date": "2026-07-10"},
+    ]
+
+    assert M.reconstruct_entry_dates(
+        fills, current_qty_by_ticker={"SNXX": 50}
+    ) == {"SNXX": "2026-07-10"}
+
+
+def test_reconstruct_current_lot_keeps_oldest_contributing_buy_after_partial_sale():
+    fills = [
+        {"ticker": "US.AAPL", "side": "BUY", "qty": 100, "date": "2026-07-01"},
+        {"ticker": "US.AAPL", "side": "SELL", "qty": 50, "date": "2026-07-05"},
+    ]
+
+    assert M.reconstruct_entry_dates(
+        fills, current_qty_by_ticker={"AAPL": 50}
+    ) == {"AAPL": "2026-07-01"}
+
+
+def test_reconstruct_current_lot_uses_full_broker_time_for_same_day_reopen():
+    fills = [
+        {
+            "ticker": "US.SNXX", "side": "BUY", "qty": 10,
+            "date": "2026-07-11", "create_time": "2026-07-11 09:30:00.000",
+            "deal_id": "1",
+        },
+        {
+            "ticker": "US.SNXX", "side": "SELL", "qty": 10,
+            "date": "2026-07-11", "create_time": "2026-07-11 10:00:00.000",
+            "deal_id": "2",
+        },
+        {
+            "ticker": "US.SNXX", "side": "BUY", "qty": 5,
+            "date": "2026-07-11", "create_time": "2026-07-11 10:00:00.001",
+            "deal_id": "3",
+        },
+    ]
+
+    assert M.reconstruct_entry_dates(
+        fills, current_qty_by_ticker={"SNXX": 5}
+    ) == {"SNXX": "2026-07-11"}
+
+
+def test_generate_treats_successful_empty_positions_as_authoritative_flat_account(
+    tmp_path, monkeypatch
+):
+    out = tmp_path / "open_positions.json"
+    out.write_text(
+        '{"as_of":"2026-07-10","positions":[{"ticker":"STALE","shares":1}]}',
+        encoding="utf-8",
+    )
+    state = {
+        "positions": [],
+        "positions_query_ok": True,
+        "account": {"total_assets": 1000.0, "cash": 1000.0, "market_val": 0.0},
+        "fills": [],
+    }
+
+    result = M.generate(
+        preview=False,
+        out_path=out,
+        tag_map_path=tmp_path / "missing-tags.json",
+        state=state,
+    )
+
+    assert result["status"] == "written"
+    payload = result["payload"]
+    assert payload["core_positions"] == []
+    assert payload["positions"] == []
+    assert payload["observations"] == []
+    assert payload["cash_usd"] == 1000.0
+    assert "STALE" not in out.read_text(encoding="utf-8")
+    assert payload["broker_execution_ledger"]["status"] == (
+        "preview_or_injected_state_not_persisted"
+    )
+
+
+def test_generate_refreshes_positions_but_preserves_prior_account_when_accinfo_fails(
+    tmp_path, monkeypatch
+):
+    out = tmp_path / "open_positions.json"
+    out.write_text(
+        '{"portfolio_value_usd":1234.0,"cash_usd":234.0,"positions":[]}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(M, "_atr_by_ticker", lambda tickers: {})
+    state = {
+        "positions": [
+            {"code": "US.NEW", "qty": 2, "average_cost": 10,
+             "nominal_price": 11, "position_side": "LONG"}
+        ],
+        "positions_query_ok": True,
+        "account_query_ok": False,
+        "account": {},
+        "fills": [],
+    }
+
+    result = M.generate(
+        preview=False,
+        out_path=out,
+        tag_map_path=tmp_path / "missing-tags.json",
+        state=state,
+    )
+
+    payload = result["payload"]
+    assert payload["positions"][0]["ticker"] == "NEW"
+    assert payload["portfolio_value_usd"] == 1234.0
+    assert payload["cash_usd"] == 234.0
+    assert payload["account_snapshot_status"] == "stale_prior_account_values"
+
+
+def test_ledger_failure_is_durable_but_does_not_leave_stale_holdings(
+    tmp_path, monkeypatch
+):
+    from broker_execution_ledger import BrokerLedgerCorruptionError
+
+    out = tmp_path / "open_positions.json"
+    out.write_text(
+        '{"portfolio_value_usd":1000.0,"cash_usd":500.0,"positions":[]}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(M, "_atr_by_ticker", lambda tickers: {})
+    def fail_persist(*args, **kwargs):
+        raise BrokerLedgerCorruptionError("broken chain")
+
+    monkeypatch.setattr(M, "persist_broker_execution_capture", fail_persist)
+    state = {
+        "positions": [
+            {"code": "US.FRESH", "qty": 1, "average_cost": 20,
+             "nominal_price": 21, "position_side": "LONG"}
+        ],
+        "positions_query_ok": True,
+        "account_query_ok": True,
+        "account": {"total_assets": 1001.0, "cash": 500.0, "market_val": 501.0},
+        "fills": [],
+        "broker_execution": {
+            "collection_id": "failed-capture",
+            "account_key": "hashed-account",
+            "queries": {},
+        },
+    }
+
+    result = M.generate(
+        preview=False,
+        out_path=out,
+        tag_map_path=tmp_path / "missing-tags.json",
+        state=state,
+        persist_execution_ledger=True,
+        broker_ledger_dir=tmp_path / "ledger",
+    )
+
+    assert result["status"] == "written"
+    assert result["payload"]["positions"][0]["ticker"] == "FRESH"
+    assert result["payload"]["broker_execution_ledger"]["status"] == "failed"
+    health = json.loads((tmp_path / "ledger" / "health.json").read_text(encoding="utf-8"))
+    assert health["status"] == "failed"
 
 
 def test_generate_falls_back_fast_when_opend_unreachable(tmp_path, monkeypatch):

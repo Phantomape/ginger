@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
+import sys
+import types
 
+import intraday_backtester as intraday_backtester_module
 from intraday_backtester import (
     HORIZONS,
     build_intraday_outcomes,
+    fetch_opend_history,
     load_finalized_decisions,
     run_intraday_backtest,
 )
@@ -72,6 +76,68 @@ def _all_bars(ticker_rows):
         "SMH": _bars(),
         "QQQ": _bars(),
     }
+
+
+def test_opend_fetch_redirects_sdk_import_log_and_restores_environment(monkeypatch):
+    events = []
+
+    def redirect():
+        events.append("redirect")
+        return "system-appdata"
+
+    def restore(previous):
+        events.append(("restore", previous))
+
+    class FakeContext:
+        def __init__(self, *, host, port):
+            events.append(("connect", host, port))
+
+        def close(self):
+            events.append("close")
+
+    fake_moomoo = types.ModuleType("moomoo")
+    fake_moomoo.AuType = types.SimpleNamespace(QFQ="QFQ")
+    fake_moomoo.KLType = types.SimpleNamespace(K_5M="K_5M")
+    fake_moomoo.Session = types.SimpleNamespace(RTH="RTH")
+    fake_moomoo.OpenQuoteContext = FakeContext
+    monkeypatch.setitem(sys.modules, "moomoo", fake_moomoo)
+    monkeypatch.setattr(
+        intraday_backtester_module,
+        "_redirect_moomoo_sdk_appdata",
+        redirect,
+    )
+    monkeypatch.setattr(
+        intraday_backtester_module,
+        "_restore_moomoo_sdk_appdata",
+        restore,
+    )
+    monkeypatch.setattr(
+        intraday_backtester_module,
+        "_history_pages",
+        lambda *args, **kwargs: ([{
+            "time_key": "2026-07-10 09:30:00",
+            "open": 100.0,
+            "high": 101.0,
+            "low": 99.0,
+            "close": 100.5,
+        }], None),
+    )
+
+    bars, source = fetch_opend_history(
+        ["SPY"],
+        start_date="2026-07-10",
+        end_date="2026-07-10",
+    )
+
+    assert source["status"] == "ok"
+    assert source["returned_bars"] == 1
+    assert len(bars["SPY"]) == 1
+    assert events[:3] == [
+        "redirect",
+        ("restore", "system-appdata"),
+        ("connect", "127.0.0.1", 11111),
+    ]
+    assert events[-1] == "close"
 
 
 def test_add_small_settles_all_horizons_and_semantic_lift():

@@ -278,5 +278,55 @@ def test_direction_fields_increase_above5():
     assert d["item4_current_max_percent"] == 9.3
 
 
+def test_build_parsed_rows_computes_13ga_stake_change_direction(monkeypatch, tmp_path):
+    previous_accession = "0001111111-24-000010"
+    current_accession = "0001111111-25-000020"
+    (tmp_path / f"{previous_accession.replace('-', '')}.xml").write_text(
+        XML_13G, encoding="utf-8"
+    )
+    (tmp_path / f"{current_accession.replace('-', '')}.xml").write_text(
+        XML_13GA_INCREASE, encoding="utf-8"
+    )
+    monkeypatch.setattr(ingest, "XML_CACHE_DIR", tmp_path)
+    base_event = {
+        "ticker": "EXM",
+        "issuer_cik": "0000000000",
+        "primary_doc_description": "SCHEDULE 13G",
+        "filing_date": "2025-01-02",
+        "accepted_at": "2025-01-02T21:00:00.000Z",
+        "primary_document": "primary_doc.xml",
+        "structured_xml": True,
+        "window": "mid_weak",
+        "usable_trade_date": "2025-01-03",
+        "family": "13G",
+    }
+    result = ingest.build_parsed_rows(
+        [
+            {
+                **base_event,
+                "accession_number": previous_accession,
+                "form": "SCHEDULE 13G",
+                "is_amendment": False,
+            },
+            {
+                **base_event,
+                "accession_number": current_accession,
+                "form": "SCHEDULE 13G/A",
+                "is_amendment": True,
+            },
+        ],
+        fetch=False,
+        refresh=False,
+    )
+    by_accession = {row["accession_number"]: row for row in result["rows"]}
+    amended = by_accession[current_accession]
+    assert amended["sec13ga_previous_accession"] == previous_accession
+    assert amended["sec13ga_current_max_percent"] == 9.3
+    assert amended["sec13ga_previous_max_percent"] == 8.4
+    assert amended["sec13ga_percent_delta"] == 0.9
+    assert amended["sec13ga_stake_change_direction"] == "increase"
+    assert amended["sec13ga_direction_status"] == "computed"
+
+
 def test_direction_fields_reject_non_structured():
     assert ingest.parse_13ga_direction_fields("<html>nope</html>") is None

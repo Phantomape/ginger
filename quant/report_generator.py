@@ -83,6 +83,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            pilot_attribution=None,
                            ai_infra_aggressive_attribution=None,
                            default_off_alpha_attribution=None,
+                           paper_sleeve_execution_contract=None,
                            form4_event_queue=None,
                            form4_event_sleeve=None,
                            sec_event_queue=None,
@@ -100,6 +101,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            broad_market_paper_sleeve=None,
                            macro_relief_leadership_paper_sleeve=None,
                            volatility_relief_stock_leadership_paper_sleeve=None,
+                           move_rate_volatility_relief_paper_sleeve=None,
                            rolling_corr_peer_shock_paper_sleeve=None,
                            industry_relative_laggard_repair_paper_sleeve=None,
                            industry_stable_core_flow_paper_sleeve=None,
@@ -139,6 +141,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         pilot_attribution (dict):       Pilot direct/replacement-value summary
         ai_infra_aggressive_attribution (dict): AI infra sleeve daily surface
         default_off_alpha_attribution (dict): Read-only default-off alpha blocker surface
+        paper_sleeve_execution_contract (dict): Paper evidence vs executable experiment sizing audit
         form4_event_queue (dict):       Default-off Form 4 observation queue
         form4_event_sleeve (dict):      Default-off Form 4 paper event sleeve
         sec_event_queue (dict):         Default-off SEC negative-reaction queue
@@ -156,6 +159,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         macro_relief_leadership_paper_sleeve (dict): Default-off macro-relief stock leadership paper sleeve
         volatility_relief_stock_leadership_paper_sleeve (dict): Default-off VIXY volatility-relief stock leadership paper sleeve
+        move_rate_volatility_relief_paper_sleeve (dict): Default-off MOVE rate-volatility-relief stock leadership paper sleeve
         rolling_corr_peer_shock_paper_sleeve (dict): Default-off rolling-correlation peer-shock paper sleeve
         industry_relative_laggard_repair_paper_sleeve (dict): Default-off industry-relative laggard repair paper sleeve
         industry_stable_core_flow_paper_sleeve (dict): Default-off industry stable core-flow paper sleeve
@@ -1412,6 +1416,51 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"blocked_by={blocker_text}"
             )
 
+    if paper_sleeve_execution_contract:
+        lines.append("\n" + "-" * 60)
+        lines.append("PAPER SLEEVE EXECUTION SIZING")
+        lines.append("-" * 60)
+        lines.append(
+            "  Surfaces: "
+            f"{paper_sleeve_execution_contract.get('surface_count', 0)}  |  "
+            "Declared envelopes: "
+            f"{paper_sleeve_execution_contract.get('envelope_declared_count', 0)}  |  "
+            "Complete: "
+            f"{paper_sleeve_execution_contract.get('envelope_complete_count', 0)}"
+        )
+        lines.append(
+            "  Pending: "
+            f"{paper_sleeve_execution_contract.get('pending_action_count', 0)}  |  "
+            "Executable experiment amounts: "
+            f"{paper_sleeve_execution_contract.get('executable_pending_action_count', 0)}  |  "
+            "Blocked: "
+            f"{paper_sleeve_execution_contract.get('blocked_pending_action_count', 0)}  |  "
+            "Unresolved rows: "
+            f"{paper_sleeve_execution_contract.get('unresolved_pending_action_count', 0)}"
+        )
+        for action in (paper_sleeve_execution_contract.get("pending_actions") or [])[:20]:
+            paper_notional = action.get("paper_notional_usd")
+            experiment_notional = action.get("experiment_notional_usd")
+            paper_text = (
+                f"${paper_notional:,.2f} evidence only"
+                if isinstance(paper_notional, (int, float))
+                else "n/a evidence only"
+            )
+            experiment_text = (
+                f"${experiment_notional:,.2f}"
+                if isinstance(experiment_notional, (int, float))
+                else "BLOCKED"
+            )
+            blocker_text = ", ".join(
+                (action.get("execution_sizing_blockers") or [])[:3]
+            ) or "none"
+            lines.append(
+                "  "
+                f"{action.get('ticker', '?')} [{action.get('surface', '?')}]: "
+                f"paper={paper_text} | experiment={experiment_text} | "
+                f"blocked_by={blocker_text}"
+            )
+
     if form4_event_queue and (
         form4_event_queue.get("candidate_count", 0) > 0
         or form4_event_queue.get("data_source", {}).get("status") != "loaded"
@@ -2145,6 +2194,44 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
                 f"signal={candidate.get('signal_date', candidate.get('date'))} "
                 f"notional={notional_text} (paper only)"
+            )
+
+    if move_rate_volatility_relief_paper_sleeve and (
+        move_rate_volatility_relief_paper_sleeve.get("candidate_count", 0) > 0
+        or move_rate_volatility_relief_paper_sleeve.get("pending_count", 0) > 0
+        or move_rate_volatility_relief_paper_sleeve.get("open_position_count", 0) > 0
+        or move_rate_volatility_relief_paper_sleeve.get("closed_count_today", 0) > 0
+        or move_rate_volatility_relief_paper_sleeve.get("closed_position_count", 0) > 0
+        or move_rate_volatility_relief_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("MOVE RATE-VOLATILITY RELIEF PAPER SLEEVE")
+        lines.append("-" * 60)
+        context = move_rate_volatility_relief_paper_sleeve.get(
+            "move_rate_volatility_relief_context"
+        ) or {}
+        universe = move_rate_volatility_relief_paper_sleeve.get("candidate_universe") or {}
+        lines.append(
+            f"  Paper: {move_rate_volatility_relief_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {move_rate_volatility_relief_paper_sleeve.get('trade_enabled', False)}"
+        )
+        lines.append(
+            f"  Universe: {universe.get('status', 'unknown')}  |  "
+            f"Tickers: {universe.get('ticker_count', 0)}  |  "
+            f"Relief day: {context.get('passed', False)}  |  "
+            f"MOVE: {context.get('move_close')} vs SMA20 {context.get('move_sma20')}"
+        )
+        lines.append(
+            f"  Candidates: {move_rate_volatility_relief_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {move_rate_volatility_relief_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {move_rate_volatility_relief_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {move_rate_volatility_relief_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        for candidate in (move_rate_volatility_relief_paper_sleeve.get("candidates") or [])[:5]:
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: score={candidate.get('candidate_score')} "
+                f"rel_spy={candidate.get('candidate_relative_vs_spy')} "
+                f"signal={candidate.get('signal_date', candidate.get('date'))} (paper only)"
             )
 
     if rolling_corr_peer_shock_paper_sleeve and (

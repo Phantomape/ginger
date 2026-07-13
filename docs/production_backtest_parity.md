@@ -44,6 +44,23 @@ Legacy matrix rows that say "separate Gate 1-4 trade adapter" should be read
 through this rule: the required work is a live-realistic execution-envelope
 evaluation unless the accepted experiment already supplied it.
 
+## Paper Evidence vs Executable Sizing
+
+`quant/paper_sleeve_execution_contract.py` is the shared fail-closed boundary
+between paper-ledger economics and an executable experiment size. A paper
+notional measures one sleeve's evidence and PnL; it is not an order amount.
+Daily paper surfaces must expose `execution_sizing_contract`, and `run.py` must
+publish the aggregate `paper_sleeve_execution_contract` for every paper sleeve
+it builds.
+
+Pending event rows freeze `paper_notional_usd` when the signal is created.
+Legacy pending rows are backfilled once before they can fill. Later config
+changes must not resize those rows. `experiment_notional_usd` remains `null`
+unless the snapshot declares a complete execution envelope, passes its forward
+gate, and explicitly enables its trade adapter. Missing fields fail closed and
+must never fall back to the paper notional. This contract is attribution-only:
+it cannot change candidates, paper PnL, core sizing, or orders.
+
 ## Read-Only SEC Semantic Provenance
 
 `quant/run.py` passes the daily `sec_filing_text` artifact into the shared SEC

@@ -6,6 +6,7 @@ from daily_news_structured_events import (
     build_forward_observation_contract,
     build_structured_event_ledger,
     is_target_relation_quality,
+    next_session_after,
 )
 
 
@@ -101,5 +102,16 @@ def test_forward_observation_contract_has_stable_ids_and_pending_outcomes(tmp_pa
     assert first["audit"]["required_field_audit"]["all_required_fields_present"] is True
     assert first["rows"][0]["observation_id"] == second["rows"][0]["observation_id"]
     assert first["rows"][0]["outcome_status"] == "pending_forward_close"
-    assert first["rows"][0]["entry_date"] is None
+    assert first["rows"][0]["entry_date"] == "2026-06-29"
+    assert first["rows"][0]["entry_date_status"] == "planned_next_session_open"
+    assert first["rows"][0]["target_price"] is None
+    assert (
+        first["rows"][0]["target_price_applicability"]
+        == "not_applicable_fixed_horizon_observation"
+    )
     assert first["rows"][0]["target_relation_quality"] is True
+
+
+def test_next_session_after_skips_weekends_and_us_market_holidays():
+    assert next_session_after("2026-06-26") == "2026-06-29"
+    assert next_session_after("2026-07-02") == "2026-07-06"

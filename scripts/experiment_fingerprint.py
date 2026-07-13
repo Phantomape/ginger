@@ -26,6 +26,40 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "trial-adjusted sharpe", "trial adjusted sharpe",
         "trial_adjusted_sharpe",
     )),
+    # Drugs@FDA original-application approvals are an official regulatory
+    # source, not generic FDA-approval news. Keep the distinctive product and
+    # CDER/NDA/BLA phrases narrow so ordinary biotech headlines do not consume
+    # this source's novelty/saturation budget.
+    ("drugsfda_approval", (
+        "drugsfda_approval", "drugsfda approval", "drugsfda",
+        "drugs@fda", "drugsatfda", "official_drugsfda",
+        "official drugsfda", "drugsfda cder", "drugsfda bulk",
+        "cder original nda/bla", "cder original nda bla",
+        "official fda original nda/bla", "official fda original nda bla",
+    )),
+    # CFTC Traders in Financial Futures (TFF) annual positioning files are a
+    # distinct weekly source. Keep this ahead of generic macro/OHLCV and
+    # allocator wording so ranking consumers cannot escape through `other` or
+    # be counted against a proxy-price surface.
+    ("cftc_tff_positioning", (
+        "cftc_tff_positioning", "cftc_tff", "cftc tff",
+        "traders in financial futures", "cftc commitments of traders",
+        "cftc cot positioning", "fut_fin_txt",
+        "asset_mgr_positions", "asset mgr positions",
+        "lev_money_positions", "lev money positions",
+        "institutional positioning", "leveraged funds positioning",
+    )),
+    # Wikimedia per-article reader counts are an issuer-attention source, not
+    # estimate-revision ``surprise`` or generic event/news attention. Keep the
+    # source near the front so those downstream mechanism words cannot route a
+    # Wikimedia trial into an unrelated frozen population.
+    ("wikimedia_pageviews", (
+        "wikimedia_pageviews", "wikimedia pageviews",
+        "wikimedia analytics api", "wikipedia pageviews",
+        "wikipedia page views", "enwiki pageviews", "enwiki page views",
+        "pageviews per article", "pageviews/per-article",
+        "canonical issuer pageviews", "canonical company pageviews",
+    )),
     # Chicago Fed NFCI is an official weekly composite of money, debt,
     # equity, and banking conditions. Keep it ahead of generic Companyfacts
     # financial/earn keywords and macro proxy families so NFCI trials share
@@ -77,6 +111,14 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("cboe_vvix", (
         "cboe_vvix", "cboe vvix", "vvix", "vol-of-vol", "vol of vol",
         "volatility of volatility", "vvix20", "vvix 20-session",
+    )),
+    # Cboe OVX measures oil/USO option-implied volatility. Keep it ahead of
+    # generic forward-replacement and OHLCV relation wording so oil-risk
+    # candidate pools share their real evidence surface.
+    ("cboe_ovx", (
+        "cboe_ovx", "cboe ovx", "ovx", "ovx20", "ovx 20-session",
+        "crude oil etf volatility index", "oil volatility", "oil-volatility",
+        "oil risk relief", "oil-risk relief",
     )),
     # ICE BofA MOVE is an option-implied Treasury-rate-volatility source, not
     # generic forward replacement or OHLCV regime context. Keep it first so
@@ -215,6 +257,14 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "text direction vs price bucket", "same_accession_facts",
         "same accession facts",
     )),
+    # Entity-theme news ledgers can also discuss settled replacement value.
+    # Keep their explicit observer/family names ahead of the generic forward
+    # replacement source so the underlying evidence surface remains stable.
+    ("entity_theme_news", (
+        "entity_theme_news", "entity-theme news", "entity theme news",
+        "entity_theme_news_observer", "entity-theme news observer",
+        "entity theme news observer",
+    )),
     ("forward_replacement_value", (
         "forward_replacement", "forward replacement", "forward_replacement_value",
         "replacement_value", "replacement value", "settled forward", "closed forward",
@@ -346,6 +396,7 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "52_week", "fifty_two", "fiftytwo", "turn_of_month", "calendar", "relation", "core_flow",
         "session semivariance", "session_semivariance", "downside semivariance",
         "overnight-versus-intraday", "overnight versus intraday",
+        "transfer entropy", "transfer_entropy", "directed information",
     )),
     ("ohlcv_momentum", ("momentum", "winner", "continuation", "extension", "alpha_score", "rs20")),
 ]
@@ -389,6 +440,9 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "cboe_vvix_relief_stock_leadership",
         "cboe vvix vol-of-vol relief stock leadership",
         "vvix20_cross_below_vol_of_vol_relief_stock_leadership",
+        "cboe_ovx_oil_volatility_relief_energy_leadership",
+        "cboe ovx oil-volatility relief energy leadership",
+        "ovx20_cross_below_energy_leadership",
         "move_rate_volatility_relief_stock_leadership",
         "move20_cross_below_rate_volatility_relief_stock_leadership",
     )),
@@ -408,6 +462,15 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "portfolio_covariance", "portfolio covariance", "daily_equity_overlay",
         "daily equity overlay", "mark_to_market", "mark-to-market",
         "daily mark to market", "mtm_overlay", "mtm overlay",
+    )),
+    # One exact URL is one event-level portfolio decision. Require explicit
+    # basket wording so ordinary entity-theme row attribution continues to use
+    # the generic forward-attribution response shape.
+    ("event_decision_basket", (
+        "event_decision_basket", "event-decision-basket", "event decision basket",
+        "exact-url-deduplicated event decision",
+        "exact url deduplicated event decision",
+        "url event basket", "url_event_basket",
     )),
     ("forward_attribution", (
         "forward_attribution", "forward attribution", "forward_replacement",

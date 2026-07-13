@@ -60,6 +60,14 @@ def test_persist_daily_structured_event_snapshot_writes_artifacts(tmp_path):
     assert event_payload["event_contract_audit"]["ledger_rows"] >= 2
     assert len(observations) == event_payload["event_contract_audit"]["ledger_rows"]
     assert {row["outcome_status"] for row in observations} == {"pending_forward_close"}
+    assert {row["entry_date"] for row in observations} == {"2026-06-30"}
+    assert {row["entry_date_status"] for row in observations} == {
+        "planned_next_session_open"
+    }
+    assert {row["target_price"] for row in observations} == {None}
+    assert {row["target_price_applicability"] for row in observations} == {
+        "not_applicable_fixed_horizon_observation"
+    }
     assert any(row["target_relation_quality"] is True for row in observations)
     assert any(row["excluded_positive_relation"] is True for row in observations)
     assert event_payload["trade_enabled"] is False

@@ -106,6 +106,9 @@ def test_snapshot_adds_core_flow_confirmed_peer_shock_candidate_without_orders()
 
     assert snapshot["candidate_count"] == 1
     assert snapshot["new_pending_count"] == 1
+    assert len(snapshot["new_pending_entries"]) == 1
+    assert len(snapshot["pending_entries"]) == snapshot["pending_count"] == 1
+    assert snapshot["pending_entries"][0]["paper_notional_usd"] == 4_000.0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
     assert snapshot["production_impact"]["alters_signal_generation"] is False

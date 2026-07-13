@@ -551,6 +551,80 @@ def _persist_entity_theme_news_observer(today):
         }
 
 
+def _persist_entity_theme_news_event_forward_observer(today):
+    """Refresh default-off entity/theme news event-decision forward rows."""
+    try:
+        from entity_theme_news_event_forward_observer import (
+            persist_entity_theme_news_event_forward_observer,
+        )
+
+        summary = persist_entity_theme_news_event_forward_observer(today)
+        log.info(
+            "Entity/theme news event forward observer: decisions=%s appended=%s settled=%s",
+            summary.get("decision_count"),
+            summary.get("rows_appended"),
+            summary.get("settled_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Entity/theme news event forward observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_drugsfda_approval_observer(today):
+    """Refresh the default-off Drugs@FDA first-seen observer when its ZIP exists."""
+    behavior_contract = {
+        "strategy_behavior_changed": False,
+        "trade_enabled": False,
+        "alters_orders": False,
+        "alters_ranking": False,
+        "alters_sizing": False,
+        "alters_exits": False,
+    }
+    try:
+        from drugsfda_approval_observer import (
+            DEFAULT_RAW_ZIP_PATH,
+            persist_daily_drugsfda_approval_observer,
+        )
+
+        raw_zip_path = Path(DEFAULT_RAW_ZIP_PATH)
+        if not raw_zip_path.is_file():
+            return {
+                "status": "skipped",
+                "reason": "official_zip_missing",
+                "raw_zip_path": str(raw_zip_path),
+                **behavior_contract,
+            }
+
+        summary = dict(
+            persist_daily_drugsfda_approval_observer(
+                today=today,
+                raw_zip_path=str(raw_zip_path),
+            )
+            or {}
+        )
+        summary.update(behavior_contract)
+        log.info(
+            "Drugs@FDA original NDA/BLA observer: rows=%s appended=%s first_seen=%s",
+            summary.get("row_count"),
+            summary.get("rows_appended"),
+            summary.get("first_seen_count"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"Drugs@FDA approval observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            **behavior_contract,
+        }
+
+
 def _persist_entity_theme_news_outcomes(today):
     """Refresh read-only entity/theme news forward outcome rows."""
     try:
@@ -1924,6 +1998,7 @@ def main():
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from paper_sleeve_execution_contract import apply_execution_sizing_contracts
     from default_off_alpha_attribution import (
         build_default_off_alpha_attribution_report,
     )
@@ -3284,6 +3359,8 @@ def main():
         _persist_sec_corporate_event_stream(today)
         _persist_sec_contract_relation_provenance(today)
         _persist_entity_theme_news_observer(today)
+        _persist_entity_theme_news_event_forward_observer(today)
+        _persist_drugsfda_approval_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
         _persist_prediction_market_event_outcomes(today)
@@ -4135,6 +4212,51 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    paper_sleeve_execution_contract = apply_execution_sizing_contracts(
+        {
+            "form4_event_sleeve": form4_event_sleeve,
+            "sec_negative_event_sleeve": sec_negative_event_sleeve,
+            "sec_governance_event_sleeve": sec_governance_event_sleeve,
+            "sec_leadership_event_sleeve": sec_leadership_event_sleeve,
+            "sec_financial_report_event_sleeve": sec_financial_report_event_sleeve,
+            "event_sleeve_bundle": event_sleeve_bundle,
+            "state_surface_sleeve": state_surface_sleeve,
+            "low_deployment_etf_overlay": low_deployment_etf_overlay,
+            "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
+            "broad_market_paper_sleeve": broad_market_paper_sleeve,
+            "macro_relief_leadership_paper_sleeve": macro_relief_leadership_paper_sleeve,
+            "volatility_relief_stock_leadership_paper_sleeve": volatility_relief_stock_leadership_paper_sleeve,
+            "move_rate_volatility_relief_paper_sleeve": move_rate_volatility_relief_paper_sleeve,
+            "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
+            "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
+            "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
+            "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
+            "deep_drawdown_rebound_paper_sleeve": deep_drawdown_rebound_paper_sleeve,
+            "fiftytwo_week_high_proximity_paper_sleeve": fiftytwo_week_high_proximity_paper_sleeve,
+            "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
+            "distribution_day_absorption_leadership_paper_sleeve": distribution_day_absorption_leadership_paper_sleeve,
+            "sbc_burden_improvement_paper_sleeve": sbc_burden_improvement_paper_sleeve,
+            "supplier_financing_debt_relief_paper_sleeve": supplier_financing_debt_relief_paper_sleeve,
+            "revision_surprise_low_extension_paper_sleeve": revision_surprise_low_extension_paper_sleeve,
+            "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
+            "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
+            "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
+            "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
+            "post_earnings_underpriced_drift_paper_sleeve": post_earnings_underpriced_drift_paper_sleeve,
+            "pead_broad_universe_paper_sleeve": pead_broad_universe_paper_sleeve,
+            "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
+            "accepted_source_consensus_paper_sleeve": accepted_source_consensus_paper_sleeve,
+            "free_data_cross_source_consensus_paper_sleeve": free_data_cross_source_consensus_paper_sleeve,
+            "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
+            "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
+            "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
+            "sec_item101_contract_relation_paper_sleeve": sec_item101_contract_relation_paper_sleeve,
+            "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
+            "finra_ats_share_paper_sleeve": finra_ats_share_paper_sleeve,
+            "finra_otc_internalization_paper_sleeve": finra_otc_internalization_paper_sleeve,
+        }
+    )
+
     try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
@@ -4223,6 +4345,7 @@ def main():
     trend_signals_dict["pilot_attribution"] = pilot_attribution
     trend_signals_dict["ai_infra_aggressive_attribution"] = ai_infra_aggressive_attribution
     trend_signals_dict["default_off_alpha_attribution"] = default_off_alpha_attribution
+    trend_signals_dict["paper_sleeve_execution_contract"] = paper_sleeve_execution_contract
     trend_signals_dict["forward_replacement_value_summary"] = forward_replacement_value_summary
     trend_signals_dict["form4_event_queue"] = form4_event_queue
     trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
@@ -4247,6 +4370,7 @@ def main():
     trend_signals_dict["industry_relative_laggard_repair_paper_sleeve"] = industry_relative_laggard_repair_paper_sleeve
     trend_signals_dict["industry_stable_core_flow_paper_sleeve"] = industry_stable_core_flow_paper_sleeve
     trend_signals_dict["turn_of_month_liquid_leadership_paper_sleeve"] = turn_of_month_liquid_leadership_paper_sleeve
+    trend_signals_dict["deep_drawdown_rebound_paper_sleeve"] = deep_drawdown_rebound_paper_sleeve
     trend_signals_dict["fiftytwo_week_high_proximity_paper_sleeve"] = fiftytwo_week_high_proximity_paper_sleeve
     trend_signals_dict["narrow_range_compression_breakout_paper_sleeve"] = narrow_range_compression_breakout_paper_sleeve
     trend_signals_dict["distribution_day_absorption_leadership_paper_sleeve"] = distribution_day_absorption_leadership_paper_sleeve
@@ -4359,6 +4483,7 @@ def main():
         pilot_attribution = pilot_attribution,
         ai_infra_aggressive_attribution = ai_infra_aggressive_attribution,
         default_off_alpha_attribution = default_off_alpha_attribution,
+        paper_sleeve_execution_contract = paper_sleeve_execution_contract,
         form4_event_queue = form4_event_queue,
         form4_event_sleeve = form4_event_sleeve,
         sec_event_queue = sec_event_queue,
@@ -4430,6 +4555,7 @@ def main():
         "pilot_attribution": pilot_attribution,
         "ai_infra_aggressive_attribution": ai_infra_aggressive_attribution,
         "default_off_alpha_attribution": default_off_alpha_attribution,
+        "paper_sleeve_execution_contract": paper_sleeve_execution_contract,
         "form4_event_queue": form4_event_queue,
         "form4_event_sleeve": form4_event_sleeve,
         "sec_event_queue": sec_event_queue,
@@ -4453,6 +4579,7 @@ def main():
         "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
         "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
         "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
+        "deep_drawdown_rebound_paper_sleeve": deep_drawdown_rebound_paper_sleeve,
         "fiftytwo_week_high_proximity_paper_sleeve": fiftytwo_week_high_proximity_paper_sleeve,
         "narrow_range_compression_breakout_paper_sleeve": narrow_range_compression_breakout_paper_sleeve,
         "distribution_day_absorption_leadership_paper_sleeve": distribution_day_absorption_leadership_paper_sleeve,
@@ -4530,6 +4657,8 @@ def main():
         _persist_sec_corporate_event_stream(today)
         _persist_sec_contract_relation_provenance(today)
         _persist_entity_theme_news_observer(today)
+        _persist_entity_theme_news_event_forward_observer(today)
+        _persist_drugsfda_approval_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
         _persist_prediction_market_event_outcomes(today)

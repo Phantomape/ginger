@@ -1,7 +1,10 @@
 import json
+import importlib.util
 import threading
 import sys
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -986,6 +989,51 @@ def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
     assert path == logs_dir / "exp-20990101-003.json"
     assert experiment_log_exists("exp-20990101-003", logs_dir=logs_dir)
     assert json.loads(path.read_text(encoding="utf-8"))["decision"] == "observed_only"
+
+
+def test_per_experiment_log_entry_rejects_expected_identity_mismatch(tmp_path):
+    row = {"experiment_id": "exp-20990101-002", "decision": "observed_only"}
+    logs_dir = tmp_path / "logs"
+
+    with pytest.raises(ValueError, match="experiment log identity mismatch"):
+        save_experiment_log_entry(
+            row,
+            expected_experiment_id="exp-20990101-017",
+            logs_dir=logs_dir,
+        )
+
+    assert not logs_dir.exists()
+
+
+def test_mortgage_wrapper_rebinds_inherited_compact_log_identity(monkeypatch):
+    runner = (
+        ROOT
+        / "quant"
+        / "experiments"
+        / "exp_20260711_017_mortgage_rate_relief_residential_leadership.py"
+    )
+    spec = importlib.util.spec_from_file_location("mortgage_log_identity_test", runner)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    base = module.prior.scaffold.prior.base
+    monkeypatch.setattr(
+        base,
+        "compact_log",
+        lambda payload: {
+            "experiment_id": "exp-20260711-002",
+            "artifact": "data/experiments/exp-20260711-002/stale.json",
+            "log": "experiments/logs/exp-20260711-002.json",
+            "hypothesis": "stale MOVE identity",
+        },
+    )
+
+    row = module.build_log_record({})
+
+    assert row["experiment_id"] == "exp-20260711-017"
+    assert row["hypothesis"] == module.HYPOTHESIS
+    assert row["changed_variable"] == module.CHANGED_VARIABLE
+    assert row["artifact"].startswith("data/experiments/exp-20260711-017/")
+    assert row["log"] == "experiments/logs/exp-20260711-017.json"
 
 
 def test_append_log_entry_is_idempotent_on_repeat(tmp_path):

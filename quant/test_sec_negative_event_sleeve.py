@@ -58,6 +58,8 @@ def test_sec_negative_sleeve_freezes_pending_then_paper_fills_and_closes() -> No
     assert first["pending_count"] == 1
     assert first["open_position_count"] == 0
     assert first["production_impact"]["alters_orders"] is False
+    assert first["pending_entries"][0]["paper_notional_usd"] == 10_000.0
+    assert first["pending_entries"][0]["paper_notional_frozen"] is True
 
     second = build_sec_negative_event_sleeve_snapshot(
         sec_event_queue=_queue(),
@@ -65,12 +67,13 @@ def test_sec_negative_sleeve_freezes_pending_then_paper_fills_and_closes() -> No
         open_prices={"LITE": 100.0},
         current_prices={"LITE": 101.0},
         state=_state_from_snapshot(first),
-        config={"hold_days": 1},
+        config={"hold_days": 1, "event_notional_usd": 2_500.0},
         persist=False,
     )
 
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
+    assert second["open_positions"][0]["notional"] == 10_000.0
     assert second["open_positions"][0]["trade_enabled"] is False
 
     third = build_sec_negative_event_sleeve_snapshot(

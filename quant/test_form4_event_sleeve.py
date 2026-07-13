@@ -48,6 +48,8 @@ def test_form4_event_sleeve_is_default_off_and_opens_no_same_day_order():
     assert snapshot["new_pending_count"] == 1
     assert snapshot["open_position_count"] == 0
     assert snapshot["pending_entries"][0]["trade_enabled"] is False
+    assert snapshot["pending_entries"][0]["paper_notional_usd"] == 10_000.0
+    assert snapshot["pending_entries"][0]["paper_notional_frozen"] is True
 
 
 def test_form4_event_sleeve_fills_prior_pending_at_next_seen_open():
@@ -74,6 +76,7 @@ def test_form4_event_sleeve_fills_prior_pending_at_next_seen_open():
         open_prices={"INTC": 32.0},
         current_prices={"INTC": 33.0},
         state=state,
+        config={"event_notional_usd": 2_500.0},
         persist=False,
     )
 
@@ -83,6 +86,8 @@ def test_form4_event_sleeve_fills_prior_pending_at_next_seen_open():
     position = second["open_positions"][0]
     assert position["entry_date"] == "2026-05-05"
     assert position["entry_price"] == 32.0
+    assert position["notional"] == 10_000.0
+    assert position["paper_notional_frozen"] is True
     assert position["trade_enabled"] is False
 
 

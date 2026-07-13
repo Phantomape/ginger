@@ -63,7 +63,7 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
    | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
    | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
-   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型等），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
+   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型、宏观指标家族×固定 relief 配方等；清单项本身构成轴 (a) 新数据源、能逐项通过 novelty gate 时**同样适用**——过 gate 不豁免本通道），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒；再见 2026-07-11→12 宏观 relief "指标首破 20 日均线×板块 leadership" 配方 6 连拒——VVIX/SKEW/HY-OAS/MORTGAGE30US/NFCI/OVX，其中后 2 票是本通道点名"宏观指标家族"**之后**仍被逐项烧掉的：该车道已触发，剩余 relief 指标只能批量或 park） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
 
    强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
    observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；
@@ -78,7 +78,13 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    saturation 计数悄然错位——当 fingerprint 的 data_source 与真实证据面不符时，必须按**真实面**
    自查各通道阈值，并在 log 里记 fingerprint caveat（案例：2026-07-09 exp-016 的
    forward_replacement_value 探针因假设含 "dead-chop" 被记为 chop_forward_observer，恰逢该面
-   005/006/007 三连 observed-only 收尾之后）。
+   005/006/007 三连 observed-only 收尾之后）。关键词回补本身也受 ID 预算约束：对**已存在**面的
+   fingerprint 覆盖回补是同形修复，应把已知缺口打包成单个批量 measurement repair ID，禁止一面
+   一 ID 地连开（案例：2026-07-07→07-10 共 14 个单面 fingerprint_coverage ID，其中 07-09/10
+   窗口 5 个）。且回补只有在 `docs/frozen_families.jsonl` 用新关键词表重建后才对 guard 生效——
+   close 的自动重建是 best-effort、失败只打 stderr，会静默停摆（案例：2026-07-09 09:18 起约
+   24h 未重建，期间 5 个 fingerprint 修复对 novelty gate 完全 inert）；fingerprint 修复票关闭前
+   必须核对输出文件已含新 key，怀疑停摆时手跑 `scripts/build_frozen_families.py`。
    **共同例外**：真正的故障恢复（orphan temp、上游格式变更、污染快照、语义相关性缺陷、发布
    异常）按 measurement repair 占 ID，不计入以上任何阈值。
    各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查
@@ -202,6 +208,17 @@ moomoo 实盘持仓与回测模型期望（fill drift / trajectory drift，口�
 ## 7. 记录、审计与交接
 
 实验 ID 必须先 reserve，再写 runner、artifact、data、log。多代理时先 claim。
+
+**并发重复 reserve（reserve 前自查）**：novelty gate 的近邻数据只来自已关闭实验
+（`docs/frozen_families.jsonl`），**看不见 in-flight 票据**；并发 agent 会对同一假设各自
+reserve，输家只能以 `duplicate_reservation_accounting` 收尾、白烧 ID（案例：2026-07-10/11
+窗口 7 个重复票据，占当窗 26 个 ID 的 27%）。reserve 前先用 `scripts/list_experiments.py`
+核对 proposed / claimed 中是否已有同假设票据；确认有并发 agent 在场时用
+`scripts/agent_mailbox.py` 分工，而不是各自抢跑。发现自己是输家时必须**立刻**把票据以
+`duplicate_reservation_accounting` 关闭，不得悬挂在 proposed——悬挂的重复票据会污染
+pre-reserve 检查面 `list_experiments` 本身（案例：2026-07-11 exp-021 与已接受的 exp-022
+同假设，至 07-12 仍 proposed）。让 `experiment.py new` 对 open 票据也做
+指纹近邻拦截是待办的机器强制修复——落码前本条是 ⚠️ 自查。
 
 关闭实验时必须留下：
 

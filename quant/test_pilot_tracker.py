@@ -1,6 +1,70 @@
 from __future__ import annotations
 
+import json
+
 from quant import pilot_tracker
+
+
+def test_latest_broker_position_snapshot_is_overlap_only(tmp_path) -> None:
+    path = tmp_path / "position_snapshots.jsonl"
+    rows = [
+        {
+            "observed_at_utc": "2026-07-11T01:00:00Z",
+            "fact": {"positions": [{"code": "US.OLD"}]},
+        },
+        {
+            "observed_at_utc": "2026-07-12T01:00:00Z",
+            "fact": {"positions": [{"code": "US.DDOG"}, {"code": "US.CRDO"}]},
+        },
+    ]
+    path.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
+
+    snapshot = pilot_tracker._load_latest_broker_position_snapshot(path)
+
+    assert snapshot == {
+        "status": "available",
+        "observed_at_utc": "2026-07-12T01:00:00Z",
+        "position_count": 2,
+        "tickers": ["CRDO", "DDOG"],
+        "reason": None,
+    }
+
+
+def test_execution_provenance_does_not_promote_ticker_overlap_to_live_evidence() -> None:
+    recs = [
+        {
+            "pilot": "paper_pilot",
+            "actionable": [{"ticker": "DDOG"}, {"ticker": "WDC"}],
+            "exits_executed_today": [],
+            "skipped": [{"ticker": "CRDO"}],
+        }
+    ]
+    cards = [{"pilot": "paper_pilot", "verdict": "KILL"}]
+    broker_snapshot = {
+        "status": "available",
+        "observed_at_utc": "2026-07-12T01:00:00Z",
+        "position_count": 2,
+        "tickers": ["CRDO", "DDOG"],
+    }
+
+    provenance = pilot_tracker._attach_execution_provenance(
+        recs, cards, broker_snapshot
+    )
+
+    assert provenance["paper_actionable_ticker_count"] == 2
+    assert provenance["broker_current_ticker_overlap"] == ["DDOG"]
+    assert provenance["live_promotion_eligible"] is False
+    assert cards[0]["verdict"] == "KILL"
+    assert cards[0]["verdict_scope"] == pilot_tracker.PAPER_VERDICT_SCOPE
+    assert cards[0]["live_verdict_eligible"] is False
+    assert cards[0]["broker_confirmed_closed_trades"] is None
+    assert recs[0]["actionable"][0]["execution_provenance_status"] == (
+        "ticker_present_but_pilot_unattributed"
+    )
+    assert recs[0]["actionable"][1]["execution_provenance_status"] == (
+        "not_broker_confirmed"
+    )
+    assert recs[0]["skipped"][0]["broker_current_ticker_present"] is True
 
 
 def test_scorecard_kills_drawdown_breach_before_min_closed() -> None:

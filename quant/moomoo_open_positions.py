@@ -29,9 +29,32 @@ from __future__ import annotations
 import json
 import os
 import socket
+import time
+import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+try:
+    from broker_execution_ledger import (
+        DEFAULT_LEDGER_DIR as DEFAULT_BROKER_LEDGER_DIR,
+        account_key as broker_account_key,
+        json_safe,
+        persist_broker_execution_capture,
+        utc_now_iso,
+        write_broker_ledger_health,
+    )
+    from data_paths import atomic_write_text
+except ImportError:  # pragma: no cover - package-style imports
+    from quant.broker_execution_ledger import (
+        DEFAULT_LEDGER_DIR as DEFAULT_BROKER_LEDGER_DIR,
+        account_key as broker_account_key,
+        json_safe,
+        persist_broker_execution_capture,
+        utc_now_iso,
+        write_broker_ledger_health,
+    )
+    from quant.data_paths import atomic_write_text
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_PATH = REPO_ROOT / "operator_inputs" / "open_positions.json"
@@ -44,6 +67,10 @@ DEFAULT_HOST = os.environ.get("FUTU_OPEND_HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.environ.get("FUTU_OPEND_PORT", "11111"))
 DEFAULT_SDK_APPDATA = REPO_ROOT / "data" / "runtime" / "moomoo_sdk_appdata"
 FILLS_LOOKBACK_DAYS = 730  # ~2 years for entry-date reconstruction
+CASHFLOW_LOOKBACK_DAYS = 7  # per-clearing-date endpoint; stays below 20/30s limit
+ORDER_FEE_BATCH_SIZE = 400  # documented SDK request maximum
+ORDER_FEE_REQUESTS_PER_WINDOW = 9  # stay below 10 requests / 30 seconds
+ORDER_FEE_WINDOW_SECONDS = 30.0
 
 # type -> (section, slot_policy, default sleeve)
 TYPE_TO_SECTION = {
@@ -76,7 +103,10 @@ def read_json(path: Path, default: Any = None) -> Any:
 # --------------------------------------------------------------------------
 # Pure transforms (unit-tested).
 # --------------------------------------------------------------------------
-def reconstruct_entry_dates(fills: list[dict[str, Any]]) -> dict[str, str]:
+def reconstruct_entry_dates(
+    fills: list[dict[str, Any]],
+    current_qty_by_ticker: dict[str, float] | None = None,
+) -> dict[str, str]:
     """Earliest buy date of each ticker's currently-open long lot.
 
     Walk fills oldest->newest tracking a running signed share count per ticker.
@@ -86,7 +116,34 @@ def reconstruct_entry_dates(fills: list[dict[str, Any]]) -> dict[str, str]:
     not the latest add).
     """
     rows = [r for r in fills if r.get("ticker") and r.get("date")]
-    rows.sort(key=lambda r: (str(r["date"]), str(r.get("ticker"))))
+    if current_qty_by_ticker:
+        out: dict[str, str] = {}
+        by_ticker: dict[str, list[dict[str, Any]]] = {}
+        for row in rows:
+            by_ticker.setdefault(_strip_market(row["ticker"]), []).append(row)
+        for raw_ticker, current_qty in current_qty_by_ticker.items():
+            ticker = _strip_market(raw_ticker)
+            remaining = float(current_qty or 0.0)
+            if remaining <= 0:
+                continue
+            ticker_rows = sorted(by_ticker.get(ticker, []), key=_fill_event_key, reverse=True)
+            entry_date = None
+            for row in ticker_rows:
+                side = str(row.get("side") or "").upper()
+                qty = abs(float(row.get("qty") or 0.0))
+                if qty <= 0:
+                    continue
+                if side in ("BUY", "BUY_BACK", "BUYBACK"):
+                    remaining -= qty
+                    entry_date = str(row["date"])[:10]
+                    if remaining <= 1e-9:
+                        out[ticker] = entry_date
+                        break
+                else:
+                    # Rewinding a sale restores the shares that existed before it.
+                    remaining += qty
+        return out
+    rows.sort(key=lambda r: (_fill_event_key(r), str(r.get("ticker"))))
     running: dict[str, float] = {}
     lot_open_date: dict[str, str] = {}
     for r in rows:
@@ -104,6 +161,15 @@ def reconstruct_entry_dates(fills: list[dict[str, Any]]) -> dict[str, str]:
         if new <= 0:
             lot_open_date.pop(ticker, None)
     return {t: d for t, d in lot_open_date.items() if running.get(t, 0.0) > 0}
+
+
+def _fill_event_key(row: dict[str, Any]) -> tuple[str, str, str]:
+    """Full broker time first; IDs make same-timestamp ordering deterministic."""
+    return (
+        str(row.get("create_time") or row.get("timestamp") or row.get("date") or ""),
+        str(row.get("deal_id") or ""),
+        str(row.get("order_id") or ""),
+    )
 
 
 def compute_target_stop(
@@ -291,13 +357,21 @@ def fetch_moomoo_state(
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
     fills_lookback_days: int = FILLS_LOOKBACK_DAYS,
+    cashflow_lookback_days: int = CASHFLOW_LOOKBACK_DAYS,
 ) -> dict[str, Any] | None:
-    """Pull positions, USD account info, and ~2y of fills. None on failure."""
+    """Pull one broker collection for positions plus the execution ledger.
+
+    Each interface has an independent status in ``broker_execution.queries``;
+    an account/fill/fee failure is never represented as a successful empty
+    result.  ``None`` is reserved for a gateway/SDK/context failure before a
+    collection can be attempted.
+    """
     if not _opend_reachable(host, port):
         print(f"[moomoo_open_positions] OpenD not reachable at {host}:{port} -> fallback.")
         return None
     appdata_env = _redirect_moomoo_sdk_appdata()
     try:
+        import moomoo as moomoo_sdk
         from moomoo import (
             OpenSecTradeContext, TrdMarket, TrdEnv, SecurityFirm, Currency, RET_OK,
         )
@@ -308,42 +382,305 @@ def fetch_moomoo_state(
         _restore_moomoo_sdk_appdata(appdata_env)
 
     firm = getattr(SecurityFirm, str(security_firm), SecurityFirm.FUTUSG)
-    ctx = OpenSecTradeContext(
-        filter_trdmarket=TrdMarket.NONE, host=host, port=port, security_firm=firm
+    collection_started = utc_now_iso()
+    collection_id = (
+        "moomoo-"
+        + collection_started.replace("-", "").replace(":", "").replace(".", "")
+        + "-"
+        + uuid.uuid4().hex[:12]
+    )
+    account_scope = broker_account_key(
+        security_firm=str(security_firm),
+        trade_environment="REAL",
+        acc_id=acc_id,
     )
     try:
-        ret, posdf = ctx.position_list_query(trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True)
-        if ret != RET_OK:
-            print(f"[moomoo_open_positions] position query failed: {posdf}")
-            return None
-        positions = posdf.to_dict("records")
+        version_path = Path(moomoo_sdk.__file__).with_name("VERSION.txt")
+        sdk_version = version_path.read_text(encoding="utf-8").strip()
+    except (AttributeError, OSError):
+        sdk_version = "unknown"
 
-        ret, accdf = ctx.accinfo_query(
-            trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True, currency=Currency.USD
+    try:
+        ctx = OpenSecTradeContext(
+            filter_trdmarket=TrdMarket.NONE, host=host, port=port, security_firm=firm
         )
-        account = {}
-        if ret == RET_OK and len(accdf):
+    except Exception as exc:  # noqa: BLE001
+        print(f"[moomoo_open_positions] trade context unavailable: {exc}")
+        return None
+
+    queries: dict[str, dict[str, Any]] = {}
+
+    def sanitize_error(value: Any) -> str:
+        return str(value).replace(str(acc_id), "<account_id>")[:500]
+
+    def query_records(name: str, call) -> list[dict[str, Any]]:
+        observed_at = utc_now_iso()
+        try:
+            ret, data = call()
+        except Exception as exc:  # noqa: BLE001
+            queries[name] = {
+                "status": "error",
+                "row_count": 0,
+                "observed_at_utc": observed_at,
+                "error": sanitize_error(exc),
+            }
+            return []
+        if ret != RET_OK:
+            queries[name] = {
+                "status": "error",
+                "row_count": 0,
+                "observed_at_utc": observed_at,
+                "error": sanitize_error(data),
+            }
+            return []
+        records = json_safe(data.to_dict("records")) if hasattr(data, "to_dict") else []
+        records = records if isinstance(records, list) else []
+        queries[name] = {
+            "status": "ok",
+            "row_count": len(records),
+            "observed_at_utc": observed_at,
+            "error": None,
+        }
+        return [row for row in records if isinstance(row, dict)]
+
+    def dedupe_by_id(rows: list[dict[str, Any]], field: str) -> list[dict[str, Any]]:
+        keyed: dict[str, dict[str, Any]] = {}
+        fallback: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            value = row.get(field)
+            key = str(value).strip() if value not in (None, "", "N/A") else ""
+            if key:
+                keyed[key] = row  # later current-state rows supersede history duplicates
+            else:
+                canonical = json.dumps(row, ensure_ascii=True, sort_keys=True, default=str)
+                fallback[canonical] = row
+        return list(keyed.values()) + list(fallback.values())
+
+    def dedupe_versions(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        unique: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            canonical = json.dumps(row, ensure_ascii=True, sort_keys=True, default=str)
+            unique[canonical] = row
+        return list(unique.values())
+
+    try:
+        positions = query_records(
+            "positions",
+            lambda: ctx.position_list_query(
+                trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True
+            ),
+        )
+        accounts = query_records(
+            "account",
+            lambda: ctx.accinfo_query(
+                trd_env=TrdEnv.REAL,
+                acc_id=acc_id,
+                refresh_cache=True,
+                currency=Currency.USD,
+            ),
+        )
+        if queries["account"]["status"] == "ok" and not accounts:
+            queries["account"]["status"] = "error_empty_response"
+            queries["account"]["error"] = "accinfo_query returned zero rows"
+        account: dict[str, Any] = {}
+        if accounts:
+            rec = accounts[0]
             account = {
-                "total_assets": float(accdf["total_assets"][0]),
-                "cash": float(accdf["cash"][0]),
-                "market_val": float(accdf["market_val"][0]),
+                "total_assets": rec.get("total_assets"),
+                "cash": rec.get("cash"),
+                "market_val": rec.get("market_val"),
             }
 
         start = (datetime.now(timezone.utc).date() - timedelta(days=fills_lookback_days)).isoformat()
         end = datetime.now(timezone.utc).date().isoformat()
-        ret, filldf = ctx.history_deal_list_query(
-            trd_env=TrdEnv.REAL, acc_id=acc_id, start=start, end=end
+        history_deals = query_records(
+            "history_deals",
+            lambda: ctx.history_deal_list_query(
+                trd_env=TrdEnv.REAL, acc_id=acc_id, start=start, end=end
+            ),
         )
-        fills: list[dict[str, Any]] = []
-        if ret == RET_OK and len(filldf):
-            for rec in filldf.to_dict("records"):
-                fills.append({
-                    "ticker": rec.get("code"),
-                    "side": rec.get("trd_side"),
-                    "qty": rec.get("qty"),
-                    "date": str(rec.get("create_time") or "")[:10],
-                })
-        return {"positions": positions, "account": account, "fills": fills}
+        current_deals = query_records(
+            "current_deals",
+            lambda: ctx.deal_list_query(
+                trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True
+            ),
+        )
+        # Deal status can later become CHANGED or CANCELLED. Preserve distinct
+        # broker versions; the ledger's economic projection selects the latest
+        # version and excludes cancelled/unknown rows.
+        deals = dedupe_versions(history_deals + current_deals)
+        latest_deal_by_id: dict[str, dict[str, Any]] = {}
+        fallback_deals: list[dict[str, Any]] = []
+        for row in deals:
+            deal_id = row.get("deal_id")
+            if deal_id not in (None, "", "N/A"):
+                latest_deal_by_id[str(deal_id)] = row
+            else:
+                fallback_deals.append(row)
+        effective_deals = [
+            row
+            for row in list(latest_deal_by_id.values()) + fallback_deals
+            if str(row.get("status") or "").upper() in {"OK", "CHANGED"}
+        ]
+        effective_deals.sort(
+            key=lambda row: (
+                str(row.get("create_time") or ""),
+                str(row.get("deal_id") or ""),
+            )
+        )
+
+        history_orders = query_records(
+            "history_orders",
+            lambda: ctx.history_order_list_query(
+                trd_env=TrdEnv.REAL, acc_id=acc_id, start=start, end=end
+            ),
+        )
+        current_orders = query_records(
+            "current_orders",
+            lambda: ctx.order_list_query(
+                trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True
+            ),
+        )
+        orders = dedupe_versions(history_orders + current_orders)
+        orders.sort(
+            key=lambda row: (
+                str(row.get("create_time") or ""),
+                str(row.get("updated_time") or ""),
+                str(row.get("order_id") or ""),
+            )
+        )
+
+        order_ids = sorted(
+            {
+                str(row.get("order_id"))
+                for row in orders
+                if row.get("order_id") not in (None, "", "N/A")
+            }
+        )
+        fee_rows: list[dict[str, Any]] = []
+        fee_errors: list[str] = []
+        fee_observed_at = utc_now_iso()
+        if not order_ids:
+            queries["order_fees"] = {
+                "status": "skipped",
+                "row_count": 0,
+                "observed_at_utc": fee_observed_at,
+                "error": None,
+            }
+        else:
+            fee_window_started = time.monotonic()
+            fee_requests_in_window = 0
+            for offset in range(0, len(order_ids), ORDER_FEE_BATCH_SIZE):
+                if fee_requests_in_window >= ORDER_FEE_REQUESTS_PER_WINDOW:
+                    remaining = ORDER_FEE_WINDOW_SECONDS - (
+                        time.monotonic() - fee_window_started
+                    )
+                    if remaining > 0:
+                        time.sleep(remaining)
+                    fee_window_started = time.monotonic()
+                    fee_requests_in_window = 0
+                batch = order_ids[offset : offset + ORDER_FEE_BATCH_SIZE]
+                try:
+                    ret, data = ctx.order_fee_query(
+                        order_id_list=batch, trd_env=TrdEnv.REAL, acc_id=acc_id
+                    )
+                    fee_requests_in_window += 1
+                except Exception as exc:  # noqa: BLE001
+                    fee_requests_in_window += 1
+                    fee_errors.append(sanitize_error(exc))
+                    continue
+                if ret != RET_OK:
+                    fee_errors.append(sanitize_error(data))
+                    continue
+                rows = json_safe(data.to_dict("records")) if hasattr(data, "to_dict") else []
+                if isinstance(rows, list):
+                    fee_rows.extend(row for row in rows if isinstance(row, dict))
+            fee_rows = dedupe_versions(fee_rows)
+            queries["order_fees"] = {
+                "status": "partial" if fee_errors else "ok",
+                "row_count": len(fee_rows),
+                "observed_at_utc": fee_observed_at,
+                "error": "; ".join(fee_errors)[:500] if fee_errors else None,
+            }
+
+        # Securities accounts require one request per clearing date.  Seven
+        # calendar dates cover normal daily gaps while staying safely below the
+        # endpoint's 20 requests / 30 seconds limit.
+        cashflow_rows: list[dict[str, Any]] = []
+        cashflow_errors: list[str] = []
+        cashflow_observed_at = utc_now_iso()
+        lookback = max(1, min(int(cashflow_lookback_days), 19))
+        today = datetime.now(timezone.utc).date()
+        for days_ago in range(lookback):
+            clearing_date = (today - timedelta(days=days_ago)).isoformat()
+            try:
+                ret, data = ctx.get_acc_cash_flow(
+                    clearing_date=clearing_date,
+                    trd_env=TrdEnv.REAL,
+                    acc_id=acc_id,
+                )
+            except Exception as exc:  # noqa: BLE001
+                cashflow_errors.append(f"{clearing_date}: {sanitize_error(exc)}")
+                continue
+            if ret != RET_OK:
+                cashflow_errors.append(f"{clearing_date}: {sanitize_error(data)}")
+                continue
+            rows = json_safe(data.to_dict("records")) if hasattr(data, "to_dict") else []
+            if isinstance(rows, list):
+                cashflow_rows.extend(row for row in rows if isinstance(row, dict))
+        cashflow_rows = dedupe_by_id(cashflow_rows, "cashflow_id")
+        queries["cashflows"] = {
+            "status": "partial" if cashflow_errors else "ok",
+            "row_count": len(cashflow_rows),
+            "observed_at_utc": cashflow_observed_at,
+            "error": "; ".join(cashflow_errors)[:500] if cashflow_errors else None,
+        }
+
+        fills = [
+            {
+                "ticker": rec.get("code"),
+                "side": rec.get("trd_side"),
+                "qty": rec.get("qty"),
+                "price": rec.get("price"),
+                "date": str(rec.get("create_time") or "")[:10],
+                "create_time": rec.get("create_time"),
+                "deal_id": str(rec.get("deal_id")) if rec.get("deal_id") is not None else None,
+                "order_id": str(rec.get("order_id")) if rec.get("order_id") is not None else None,
+                "deal_market": rec.get("deal_market"),
+                "status": rec.get("status"),
+            }
+            for rec in effective_deals
+        ]
+        completed_at = utc_now_iso()
+        execution_capture = {
+            "collection_id": collection_id,
+            "collection_started_at_utc": collection_started,
+            "collection_completed_at_utc": completed_at,
+            "account_key": account_scope,
+            "security_firm": str(security_firm),
+            "trade_environment": "REAL",
+            "sdk_version": sdk_version,
+            "history_start": start,
+            "history_end": end,
+            "cashflow_lookback_days": lookback,
+            "queries": queries,
+            "deals": deals,
+            "orders": orders,
+            "order_fees": fee_rows,
+            "cashflows": cashflow_rows,
+            "accounts": accounts,
+            "positions": positions,
+        }
+        return {
+            "positions": positions,
+            "positions_query_ok": queries["positions"]["status"] == "ok",
+            "account_query_ok": (
+                queries["account"]["status"] == "ok" and bool(accounts)
+            ),
+            "account": account,
+            "fills": fills,
+            "broker_execution": execution_capture,
+        }
     finally:
         ctx.close()
 
@@ -375,32 +712,185 @@ def generate(
     tag_map_path: Path | str = DEFAULT_TAG_MAP_PATH,
     preview: bool = True,
     state: dict[str, Any] | None = None,
+    broker_ledger_dir: Path | str = DEFAULT_BROKER_LEDGER_DIR,
+    persist_execution_ledger: bool | None = None,
 ) -> dict[str, Any]:
-    """Build and write the payload. Falls back to the prior file if moomoo fails."""
-    prior_payload = read_json(out_path, None)
-    state = state if state is not None else fetch_moomoo_state()
-    if not state or not state.get("positions"):
-        print("[moomoo_open_positions] moomoo unavailable/empty -> keeping existing file (fallback).")
-        return {"status": "fallback_existing", "wrote": None, "untagged": []}
+    """Build and write holdings, persisting live execution facts on daily runs.
 
-    positions = state["positions"]
+    Preview and injected-state calls are side-effect free by default.  The
+    normal ``run.py`` path calls this with ``preview=False`` and no injected
+    state, which enables the ledger in the same broker collection.
+    """
+    prior_payload = read_json(out_path, None)
+    fetched_live = state is None
+    state = state if state is not None else fetch_moomoo_state()
+    if state is None:
+        print("[moomoo_open_positions] moomoo unavailable -> keeping existing file (fallback).")
+        return {
+            "status": "fallback_existing",
+            "wrote": None,
+            "untagged": [],
+            "broker_execution_ledger": None,
+        }
+
+    if persist_execution_ledger is None:
+        persist_execution_ledger = (
+            fetched_live
+            and not preview
+            and not bool(os.environ.get("GINGER_SKIP_BROKER_EXECUTION_LEDGER"))
+        )
+    broker_ledger_result = None
+    execution_capture = state.get("broker_execution")
+    if persist_execution_ledger and execution_capture:
+        try:
+            broker_ledger_result = persist_broker_execution_capture(
+                execution_capture,
+                ledger_dir=broker_ledger_dir,
+            )
+            print(
+                "[moomoo_open_positions] broker execution ledger "
+                f"status={broker_ledger_result.get('status')} "
+                f"fills+={broker_ledger_result['ledgers']['fills']['rows_appended']} "
+                f"orders+={broker_ledger_result['ledgers']['orders']['rows_appended']} "
+                f"fees+={broker_ledger_result['ledgers']['order_fees']['rows_appended']}"
+            )
+        except Exception as exc:  # noqa: BLE001
+            # Holdings are the live risk boundary.  Do not silently retain stale
+            # holdings merely because the measurement ledger needs repair;
+            # persist a separate health alert and continue with the fresh broker
+            # position snapshot.
+            try:
+                health = write_broker_ledger_health(
+                    execution_capture,
+                    ledger_dir=broker_ledger_dir,
+                    status="failed",
+                    error=exc,
+                )
+            except Exception as health_exc:  # noqa: BLE001
+                health = {
+                    "status": "failed_health_alert_write",
+                    "error": str(health_exc)[:500],
+                }
+            broker_ledger_result = {
+                "status": "failed",
+                "collection_id": execution_capture.get("collection_id"),
+                "state_path": None,
+                "error_type": type(exc).__name__,
+                "error": str(exc)[:1000],
+                "health": health,
+            }
+            print(
+                "[moomoo_open_positions] WARNING broker execution ledger failed; "
+                f"fresh holdings will still be written: {type(exc).__name__}: {exc}"
+            )
+
+    positions_query_ok = state.get("positions_query_ok")
+    if positions_query_ok is None:
+        positions_query_ok = "positions" in state
+    if not positions_query_ok:
+        print(
+            "[moomoo_open_positions] position query failed -> keeping existing file "
+            "(execution query statuses remain in the broker ledger)."
+        )
+        return {
+            "status": "fallback_existing",
+            "wrote": None,
+            "untagged": [],
+            "broker_execution_ledger": broker_ledger_result,
+        }
+
+    # A successful empty list is an authoritative flat account.  Treating it
+    # as gateway failure would retain phantom holdings after the final close.
+    positions = state.get("positions") or []
     tickers = sorted({_strip_market(p.get("code") or "") for p in positions if p.get("code")})
-    entry_dates = reconstruct_entry_dates(state.get("fills") or [])
+    current_qty_by_ticker = {
+        _strip_market(pos.get("code") or pos.get("ticker") or ""): float(
+            pos.get("qty") or pos.get("shares") or 0.0
+        )
+        for pos in positions
+    }
+    entry_dates = reconstruct_entry_dates(
+        state.get("fills") or [],
+        current_qty_by_ticker=current_qty_by_ticker,
+    )
     atr_by_ticker = _atr_by_ticker(tickers)
     tag_map = load_tag_map(tag_map_path)
+    account_query_ok = state.get("account_query_ok")
+    if account_query_ok is None:
+        account_query_ok = bool(state.get("account"))
+    if account_query_ok:
+        account_for_payload = state.get("account") or {}
+        account_snapshot_status = "current_broker_account"
+    else:
+        account_for_payload = {
+            "total_assets": (
+                prior_payload.get("portfolio_value_usd")
+                if isinstance(prior_payload, dict)
+                else None
+            ),
+            "cash": (
+                prior_payload.get("cash_usd")
+                if isinstance(prior_payload, dict)
+                else None
+            ),
+            "market_val": None,
+        }
+        account_snapshot_status = (
+            "stale_prior_account_values"
+            if account_for_payload.get("total_assets") is not None
+            or account_for_payload.get("cash") is not None
+            else "missing_account_values_no_prior"
+        )
     payload, untagged = build_payload(
-        positions, state.get("account") or {},
+        positions, account_for_payload,
         entry_dates=entry_dates, atr_by_ticker=atr_by_ticker,
         tag_map=tag_map, prior_payload=prior_payload,
     )
+    payload["account_snapshot_status"] = account_snapshot_status
+    payload["account_values_as_of"] = (
+        payload.get("as_of")
+        if account_query_ok
+        else (
+            prior_payload.get("as_of") if isinstance(prior_payload, dict) else None
+        )
+    )
+    if not account_query_ok:
+        print(
+            "[moomoo_open_positions] WARNING accinfo unavailable; fresh positions "
+            f"will use {account_snapshot_status} as_of={payload.get('account_values_as_of')}"
+        )
+    payload["broker_execution_ledger"] = (
+        {
+            "status": broker_ledger_result.get("status"),
+            "collection_id": broker_ledger_result.get("collection_id"),
+            "state_path": broker_ledger_result.get("state_path"),
+            "production_impact": "measurement_only",
+        }
+        if broker_ledger_result
+        else {
+            "status": "preview_or_injected_state_not_persisted",
+            "collection_id": (
+                execution_capture.get("collection_id") if execution_capture else None
+            ),
+            "state_path": None,
+            "production_impact": "measurement_only",
+        }
+    )
 
     target = Path(DEFAULT_PREVIEW_PATH if preview else out_path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(payload, indent=4, sort_keys=False) + "\n", encoding="utf-8")
+    atomic_write_text(json.dumps(payload, indent=4, sort_keys=False) + "\n", target)
     n = sum(len(payload.get(s) or []) for s in ("core_positions", "positions", "observations"))
     print(f"[moomoo_open_positions] wrote {n} positions -> {target} "
           f"(preview={preview}, untagged={untagged})")
-    return {"status": "written", "wrote": str(target), "untagged": untagged, "payload": payload}
+    return {
+        "status": "written",
+        "wrote": str(target),
+        "untagged": untagged,
+        "payload": payload,
+        "broker_execution_ledger": broker_ledger_result,
+        "account_snapshot_status": account_snapshot_status,
+        "account_values_as_of": payload.get("account_values_as_of"),
+    }
 
 
 def main() -> None:

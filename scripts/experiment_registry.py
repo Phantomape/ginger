@@ -2232,11 +2232,24 @@ def strip_oversized_fields(row, *, max_field_bytes=LOG_FIELD_MAX_BYTES):
 
 
 def save_experiment_log_entry(row, *, allow_duplicate=False,
+                              expected_experiment_id=None,
                               logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
                               timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
+    if expected_experiment_id is not None:
+        expected = normalize_experiment_id(expected_experiment_id)
+        actual = normalize_experiment_id(experiment_id)
+        if expected is None:
+            raise ValueError(
+                f"invalid expected_experiment_id: {expected_experiment_id}"
+            )
+        if actual != expected:
+            raise ValueError(
+                "experiment log identity mismatch: "
+                f"expected {expected}, got {experiment_id}"
+            )
     row = strip_oversized_fields(row)
     path = experiment_log_path(experiment_id, logs_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
