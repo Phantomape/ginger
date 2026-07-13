@@ -1,0 +1,163 @@
+{
+  "acceptance_rule": "Accepted measurement repair if focused fingerprint examples resolve to gdelt_news_tone, adjacent news/event sources remain on their specific data_source keys, and no strategy/live behavior changes.",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "GDELT daily company-news tone and volume shocks may identify replayable negative event pressure or allocator-quality evidence once the parked archive coverage blocker is removed.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "change_type": "gdelt_news_tone_fingerprint_regression_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260710_006_gdelt_news_tone_fingerprint_regression.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-006/exp_20260710_006_gdelt_news_tone_fingerprint_regression.json",
+    "experiments/logs/exp-20260710-006.json",
+    "experiments/cards/exp-20260710-006.md",
+    "experiments/manifests/exp-20260710-006.json",
+    "experiments/tickets/exp-20260710-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "gdelt_news_tone_fingerprint_regression_coverage_v1",
+  "checks": {
+    "entity_theme_news_control": {
+      "actual": {
+        "data_source": "entity_theme_news",
+        "field_tags": [
+          "entity",
+          "news",
+          "observer",
+          "relation",
+          "theme"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "entity_theme_news",
+      "passed": true,
+      "source_ok": true,
+      "text": "entity-theme news relation observer"
+    },
+    "gdelt_doc_timeline_archive": {
+      "actual": {
+        "data_source": "gdelt_news_tone",
+        "field_tags": [
+          "archive",
+          "company",
+          "doc",
+          "gdelt",
+          "news",
+          "shock",
+          "timelinetone",
+          "timelinevolraw",
+          "tone"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "gdelt_news_tone",
+      "passed": true,
+      "source_ok": true,
+      "text": "GDELT 2.0 DOC timelinetone timelinevolraw company news tone shock archive"
+    },
+    "gdelt_slug_archive": {
+      "actual": {
+        "data_source": "gdelt_news_tone",
+        "field_tags": [
+          "archive",
+          "company",
+          "coverage",
+          "gdelt",
+          "news",
+          "shock",
+          "tone"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "gdelt_news_tone",
+      "passed": true,
+      "source_ok": true,
+      "text": "gdelt_news_tone company news tone_shock archive coverage"
+    },
+    "news_event_exposure_control": {
+      "actual": {
+        "data_source": "news_event_exposure",
+        "field_tags": [
+          "daily",
+          "event",
+          "exposure",
+          "news",
+          "observer",
+          "pipeline"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "news_event_exposure",
+      "passed": true,
+      "source_ok": true,
+      "text": "news_event_exposure observer daily pipeline"
+    },
+    "prediction_market_control": {
+      "actual": {
+        "data_source": "prediction_market_event",
+        "field_tags": [
+          "event",
+          "market",
+          "observer",
+          "odds",
+          "prediction"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "prediction_market_event",
+      "passed": true,
+      "source_ok": true,
+      "text": "prediction-market event odds observer"
+    },
+    "test_file_regression_literals": {
+      "expected_literals": [
+        "GDELT 2.0 DOC timelinetone timelinevolraw news tone archive",
+        "test_gdelt_news_tone_archive_source_without_news_overmatch"
+      ],
+      "missing_literals": [],
+      "passed": true
+    }
+  },
+  "decision": "accepted_measurement_repair_gdelt_news_tone_fingerprint_regression",
+  "experiment_id": "exp-20260710-006",
+  "failed_checks": [],
+  "hypothesis": "Alpha hypothesis: GDELT daily company-news tone/volume shocks may become a replayable entry-risk or allocator signal once archive coverage is available; measurement blocker is that gdelt_news_tone must stay machine-classified outside data_source=other.",
+  "lane": "measurement_repair",
+  "mechanism_family": "external_news_tone_archive_measurement",
+  "nearby_prior_experiments": [
+    "exp-20260709-020"
+  ],
+  "new_evidence_axis": "GDELT news-tone archive data_source guard regression coverage; does not retry the parked alpha or consume forward-row evidence.",
+  "new_evidence_type": "measurement_repair_for_new_data_source_guard",
+  "next_step": "Resolve GDELT archive materialization or offline DOC/GKG coverage; then rerun the parked tone-shock forward-value experiment.",
+  "owner": "alpha-explore",
+  "post_run_reflection": "GDELT remains alpha-blocked by archive coverage, not by novelty classification. Do not run a GDELT tone-shock alpha retry until the exp-20260709-020 coverage blocker is resolved.",
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "result": {
+    "expected_value_score_delta": 0.0,
+    "notes": "Fingerprint/test-only measurement repair; no strategy backtest delta.",
+    "sharpe_daily_delta": 0.0,
+    "survival_rate_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "single_causal_variable": "gdelt_news_tone_fingerprint_regression_coverage_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-10T04:14:58Z",
+  "trial_family": "gdelt_news_tone_fingerprint_regression_coverage",
+  "trial_variant_id": "gdelt_news_tone_source_keyword_regression_v1",
+  "verification_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\test_experiment_fingerprint.py quant\\experiments\\exp_20260710_006_gdelt_news_tone_fingerprint_regression.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_006_gdelt_news_tone_fingerprint_regression.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

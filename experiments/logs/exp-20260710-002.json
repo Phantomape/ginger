@@ -1,0 +1,567 @@
+{
+  "acceptance_rule": "Observed-only lead only if current rejected-source live rows include at least 5 unique positions, span at least 2 as-of dates in the ledger, have average unrealized PnL at least 3 percentage points worse than non-rejected rows, have at least 0.5 more control blockers per row, and are not dominated by one ticker.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_002_live_position_control_rejected_source_risk.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-002/exp_20260710_002_live_position_control_rejected_source_risk.json",
+    "experiments/logs/exp-20260710-002.json",
+    "experiments/cards/exp-20260710-002.md",
+    "experiments/manifests/exp-20260710-002.json",
+    "experiments/tickets/exp-20260710-002.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "alpha_hypothesis": "Rejected-source discretionary live mirror positions may be a risk-allocation exclusion bucket: if live position-control rows tagged source_signal_rejected_alpha have worse unrealized PnL or more control blockers than comparable non-rejected live positions across current as-of dates, the system should keep them default-off and require more evidence before capacity.",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.18
+  },
+  "causal_components": [
+    "live_position_control_ledger",
+    "source_signal_rejected_alpha_bucket",
+    "unrealized_pnl_and_control_blocker_comparison",
+    "no_strategy_change",
+    "fingerprint_keyword_coverage"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260710_002_live_position_control_rejected_source_risk.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-002/exp_20260710_002_live_position_control_rejected_source_risk.json",
+    "experiments/logs/exp-20260710-002.json",
+    "experiments/cards/exp-20260710-002.md",
+    "experiments/manifests/exp-20260710-002.json",
+    "experiments/tickets/exp-20260710-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "live_position_control_rejected_source_risk_bucket_v1",
+  "decision": "observed_only_rejected_live_position_control_rejected_source_sample_too_thin",
+  "evaluation": {
+    "all_non_rejected_source": {
+      "asof_dates": [
+        "2026-07-07",
+        "2026-07-08"
+      ],
+      "avg_control_blockers": 2.333333,
+      "avg_unrealized_pct": 0.019267,
+      "avg_unrealized_pl": 121.2884,
+      "broker_order_coverage_status": {
+        "manual_instruction_not_broker_confirmed": 12
+      },
+      "exit_now_count": 2,
+      "fallback_stop_count": 2,
+      "manual_bracket_blocker_count": 12,
+      "max_ticker_share": 0.166667,
+      "median_unrealized_pct": 0.005422,
+      "median_unrealized_pl": 45.4879,
+      "missing_daily_report_control_count": 0,
+      "negative_unrealized_pct_share": 0.5,
+      "rows": 12,
+      "ticker_counts": {
+        "APP": 2,
+        "CRDO": 2,
+        "GEV": 2,
+        "HOOD": 2,
+        "NVDA": 2,
+        "TQQQ": 2
+      },
+      "tickers": [
+        "APP",
+        "CRDO",
+        "GEV",
+        "HOOD",
+        "NVDA",
+        "TQQQ"
+      ],
+      "unique_positions": 6
+    },
+    "all_rejected_source": {
+      "asof_dates": [
+        "2026-07-07",
+        "2026-07-08"
+      ],
+      "avg_control_blockers": 2,
+      "avg_unrealized_pct": 0.004005,
+      "avg_unrealized_pl": 15.1917,
+      "broker_order_coverage_status": {
+        "manual_instruction_not_broker_confirmed": 3,
+        "not_present_in_report": 3
+      },
+      "exit_now_count": 0,
+      "fallback_stop_count": 0,
+      "manual_bracket_blocker_count": 3,
+      "max_ticker_share": 0.333333,
+      "median_unrealized_pct": 0.001958,
+      "median_unrealized_pl": 7.6875,
+      "missing_daily_report_control_count": 3,
+      "negative_unrealized_pct_share": 0.333333,
+      "rows": 6,
+      "ticker_counts": {
+        "DDOG": 2,
+        "MCD": 2,
+        "UNH": 2
+      },
+      "tickers": [
+        "DDOG",
+        "MCD",
+        "UNH"
+      ],
+      "unique_positions": 3
+    },
+    "asof_dates": [
+      "2026-07-07",
+      "2026-07-08"
+    ],
+    "criteria": {
+      "min_current_unique_rejected_positions_5": false,
+      "min_rejected_asof_dates_2": true,
+      "not_single_ticker_dominated": true,
+      "rejected_avg_control_blockers_higher_by_0_5": false,
+      "rejected_avg_unrealized_pct_worse_by_3pp": false
+    },
+    "decision": "observed_only_rejected_live_position_control_rejected_source_sample_too_thin",
+    "generated_from_rows": 23,
+    "latest_asof": "2026-07-08",
+    "latest_comparison": {
+      "avg_control_blocker_delta_rejected_minus_other": -0.333333,
+      "avg_unrealized_pct_delta_rejected_minus_other": -0.010644
+    },
+    "latest_non_rejected_source": {
+      "asof_dates": [
+        "2026-07-08"
+      ],
+      "avg_control_blockers": 2.333333,
+      "avg_unrealized_pct": 0.017893,
+      "avg_unrealized_pl": 115.1084,
+      "broker_order_coverage_status": {
+        "manual_instruction_not_broker_confirmed": 6
+      },
+      "exit_now_count": 1,
+      "fallback_stop_count": 1,
+      "manual_bracket_blocker_count": 6,
+      "max_ticker_share": 0.166667,
+      "median_unrealized_pct": 0.005326,
+      "median_unrealized_pl": 45.1129,
+      "missing_daily_report_control_count": 0,
+      "negative_unrealized_pct_share": 0.5,
+      "rows": 6,
+      "ticker_counts": {
+        "APP": 1,
+        "CRDO": 1,
+        "GEV": 1,
+        "HOOD": 1,
+        "NVDA": 1,
+        "TQQQ": 1
+      },
+      "tickers": [
+        "APP",
+        "CRDO",
+        "GEV",
+        "HOOD",
+        "NVDA",
+        "TQQQ"
+      ],
+      "unique_positions": 6
+    },
+    "latest_rejected_source": {
+      "asof_dates": [
+        "2026-07-08"
+      ],
+      "avg_control_blockers": 2,
+      "avg_unrealized_pct": 0.007249,
+      "avg_unrealized_pl": 27.4333,
+      "broker_order_coverage_status": {
+        "manual_instruction_not_broker_confirmed": 3
+      },
+      "exit_now_count": 0,
+      "fallback_stop_count": 0,
+      "manual_bracket_blocker_count": 3,
+      "max_ticker_share": 0.333333,
+      "median_unrealized_pct": 0.001076,
+      "median_unrealized_pl": 4.5,
+      "missing_daily_report_control_count": 0,
+      "negative_unrealized_pct_share": 0.333333,
+      "rows": 3,
+      "ticker_counts": {
+        "DDOG": 1,
+        "MCD": 1,
+        "UNH": 1
+      },
+      "tickers": [
+        "DDOG",
+        "MCD",
+        "UNH"
+      ],
+      "unique_positions": 3
+    },
+    "latest_rows": 9,
+    "observed_only_lead": false,
+    "position_rows": 18,
+    "rejection_reason": "Only 3 current rejected-source positions were present; the predeclared minimum for a risk-allocation lead is 5.",
+    "sample_rows": [
+      {
+        "asof_date": "2026-07-08",
+        "broker_order_coverage_status": "manual_instruction_not_broker_confirmed",
+        "control_blockers": [
+          "manual_bracket_orders_not_broker_confirmed",
+          "report_open_positions_asof_mismatch"
+        ],
+        "control_notes": [
+          "discretionary_live_mirror",
+          "source_signal_rejected_alpha"
+        ],
+        "opened_by_strategy": "state_surface",
+        "position_id": "7632815698707742162",
+        "sleeve": "state_surface",
+        "ticker": "DDOG",
+        "unrealized_pct": 0.023808,
+        "unrealized_pl": 91.2
+      },
+      {
+        "asof_date": "2026-07-08",
+        "broker_order_coverage_status": "manual_instruction_not_broker_confirmed",
+        "control_blockers": [
+          "manual_bracket_orders_not_broker_confirmed",
+          "report_open_positions_asof_mismatch"
+        ],
+        "control_notes": [
+          "source_signal_rejected_alpha"
+        ],
+        "opened_by_strategy": "moomoo_capital_flow",
+        "position_id": "5025531777523043462",
+        "sleeve": "moomoo_capital_flow",
+        "ticker": "MCD",
+        "unrealized_pct": 0.001076,
+        "unrealized_pl": 4.5
+      },
+      {
+        "asof_date": "2026-07-08",
+        "broker_order_coverage_status": "manual_instruction_not_broker_confirmed",
+        "control_blockers": [
+          "manual_bracket_orders_not_broker_confirmed",
+          "report_open_positions_asof_mismatch"
+        ],
+        "control_notes": [
+          "source_signal_rejected_alpha"
+        ],
+        "opened_by_strategy": "finra_otc_internalization",
+        "position_id": "2978454292040381792",
+        "sleeve": "finra_otc_internalization",
+        "ticker": "UNH",
+        "unrealized_pct": -0.003136,
+        "unrealized_pl": -13.4
+      }
+    ],
+    "source_file": "data/live_pilot/position_control/ledger.jsonl"
+  },
+  "experiment_id": "exp-20260710-002",
+  "gate": {
+    "passed": false,
+    "reason": "Only 3 current rejected-source positions were present; the predeclared minimum for a risk-allocation lead is 5."
+  },
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "expected_value_score_sum": 7.8941,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 135,
+      "source_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ],
+      "worst_max_drawdown_pct": 0.1119
+    },
+    "note": "Baseline was read for protocol continuity; no strategy behavior changed."
+  },
+  "gate2": {
+    "field_availability": {
+      "control_notes": {
+        "required": true,
+        "source_signal_rejected_alpha_rows": 3
+      },
+      "entry_date": {
+        "note": "Live ledger rows have broker entry metadata; sampled rows list as-of date and position id for replay.",
+        "present_count": 3,
+        "required_for_scored_rows": true,
+        "scored_rows": 3
+      },
+      "target_price": {
+        "reason": "Observed-only live risk attribution; no executable target exit or signal contract is introduced.",
+        "required": false
+      }
+    },
+    "runtime_fields_verified": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "note": "No executable filter was added; live ledger rows are observed only.",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "after_metrics": {
+      "expected_value_score_sum": 7.8941,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 135,
+      "source_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ],
+      "worst_max_drawdown_pct": 0.1119
+    },
+    "baseline_metrics": {
+      "expected_value_score_sum": 7.8941,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 135,
+      "source_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "total_pnl_sum": 234850.99,
+      "trade_count_sum": 61,
+      "window_count": 3,
+      "windows": [
+        {
+          "end": "2026-04-21",
+          "expected_value_score": 5.1628,
+          "label": "late_strong",
+          "max_drawdown_pct": 0.0665,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "start": "2025-10-23",
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "trade_count": 18,
+          "win_rate": 0.8333
+        },
+        {
+          "end": "2025-10-22",
+          "expected_value_score": 2.1402,
+          "label": "mid_weak",
+          "max_drawdown_pct": 0.1119,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "start": "2025-04-23",
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        {
+          "end": "2025-04-22",
+          "expected_value_score": 0.5911,
+          "label": "old_thin",
+          "max_drawdown_pct": 0.1001,
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "start": "2024-10-02",
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        }
+      ],
+      "worst_max_drawdown_pct": 0.1119
+    },
+    "decision": "observed_only_rejected_live_position_control_rejected_source_sample_too_thin",
+    "delta": {
+      "expected_value_score_sum": 0.0,
+      "max_drawdown_pct_worst": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "observed_only": true,
+    "reason": "Strategy behavior is unchanged; this is a live ledger attribution read."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Rejected-source discretionary live mirror positions may be a risk-allocation exclusion bucket: if live position-control rows tagged source_signal_rejected_alpha have worse unrealized PnL or more control blockers than comparable non-rejected live positions across current as-of dates, the system should keep them default-off and require more evidence before capacity.",
+    "2_history_check": "exp-20260709-001 and exp-20260709-003 built/wired the live position-control ledger as measurement repair. They did not test source_signal_rejected_alpha as a risk-allocation bucket. Recent candidate_meta_label and estimate-revision surfaces were not ready for alpha because their reopen row counts did not move.",
+    "3_single_causal_variable": "live_position_control_rejected_source_risk_bucket_v1",
+    "4_acceptance_standard": "Observed-only lead only if current rejected-source live rows include at least 5 unique positions, span at least 2 as-of dates in the ledger, have average unrealized PnL at least 3 percentage points worse than non-rejected rows, have at least 0.5 more control blockers per row, and are not dominated by one ticker.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_002_live_position_control_rejected_source_risk.py"
+  },
+  "generated_at": "2026-07-10T01:12:16Z",
+  "headline_metrics": {
+    "current_non_rejected_positions": 6,
+    "current_rejected_source_positions": 3,
+    "latest_asof": "2026-07-08",
+    "latest_position_rows": 9,
+    "lead_criteria_passed": false,
+    "non_rejected_avg_unrealized_pct": 0.017893,
+    "rejected_avg_unrealized_pct": 0.007249,
+    "rejected_minus_other_control_blockers": -0.333333,
+    "rejected_minus_other_unrealized_pct": -0.010644,
+    "rejected_source_asof_dates": 2
+  },
+  "hypothesis": "Rejected-source discretionary live mirror positions may be a risk-allocation exclusion bucket: if live position-control rows tagged source_signal_rejected_alpha have worse unrealized PnL or more control blockers than comparable non-rejected live positions across current as-of dates, the system should keep them default-off and require more evidence before capacity.",
+  "implementation_mode": "self_registered_observed_only_live_risk_runner",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "live_position_control",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260709-001",
+    "exp-20260709-003"
+  ],
+  "new_evidence_axis": "New production-visible live_position_control ledger gate shape: source_signal_rejected_alpha risk bucket over open live positions; prior 20260709 IDs only built/wired the ledger and did not test this risk-allocation exclusion hypothesis. The same run also adds fingerprint coverage so this surface no longer escapes the saturation guards as other.",
+  "new_evidence_type": "live_position_control_ledger",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add or retune a hard rejected-source live mirror exclusion, notional scalar, or admission threshold from this same two-day open-position sample.",
+    "new_evidence_required": "Reopen only after at least 10 unique rejected-source live positions across at least 5 as-of dates with realized/closed or forward PnL, broker-confirmed order inventory, or a distinct closed-trade live exit-drift surface.",
+    "next_evidence_needed": "Keep rejected-source discretionary live mirror rows default-off and accumulate live position-control ledger observations; do not promote before the reopen counts and closed/live drift evidence exist.",
+    "why_result_happened": "The new live control ledger has explicit rejected-source tags, but the current rejected bucket is only three positions on the latest as-of date and shows mixed unrealized PnL. Manual bracket/order-confirmation blockers are broad across live rows, so they do not distinguish rejected-source rows yet."
+  },
+  "prediction": {
+    "confidence_reason": "New production ledger has explicit rejected-source tags, but only a few live rows are expected, so this is likely an observed-only risk read rather than promotable alpha.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_live_sample",
+      "same_day_positions",
+      "source_labels_mixed",
+      "control_blockers_dominate_signal"
+    ],
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "alters_candidate_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "fingerprint_guard_changed": true,
+    "llm_change_scope": "none",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "Only 3 current rejected-source positions were present; the predeclared minimum for a risk-allocation lead is 5.",
+  "related_files": [
+    "quant/experiments/exp_20260710_002_live_position_control_rejected_source_risk.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-002/exp_20260710_002_live_position_control_rejected_source_risk.json",
+    "experiments/logs/exp-20260710-002.json",
+    "experiments/cards/exp-20260710-002.md",
+    "experiments/manifests/exp-20260710-002.json",
+    "experiments/tickets/exp-20260710-002.json",
+    "docs/experiment_registry.json"
+  ],
+  "single_causal_variable": "live_position_control_rejected_source_risk_bucket_v1",
+  "status": "observed_only_rejected",
+  "trial_family": "live_position_control_rejected_source_risk",
+  "trial_variant_id": "rejected_source_bucket_v1"
+}

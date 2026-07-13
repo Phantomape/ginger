@@ -1,0 +1,173 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after": {
+    "appdata_after": "C:\\Users\\Administrator\\AppData\\Roaming",
+    "appdata_before": "C:\\Users\\Administrator\\AppData\\Roaming",
+    "appdata_restored": true,
+    "note": "The current finalized rows are timestamped on a weekend and remain pending; this live proof uses the immediately preceding trading session and does not claim settled alpha evidence.",
+    "price_source": {
+      "end_date": "2026-07-11",
+      "errors": {},
+      "requested_tickers": 1,
+      "returned_bars": 77,
+      "returned_tickers": 1,
+      "source": "moomoo_opend_request_history_kline_5m_rth_qfq",
+      "start_date": "2026-07-10",
+      "status": "ok"
+    },
+    "spy_bars": 77
+  },
+  "alpha_hypothesis": "The code guardrail plus semantic news selection has positive net incremental decision value versus the machine default and no intraday adjustment after fixed costs; this repair only restores the price surface needed to test that hypothesis later.",
+  "before": {
+    "artifact": "data/daily/intraday/backtests/latest_scorecard.json",
+    "price_source": {
+      "errors": {
+        "sdk": "[Errno 13] Permission denied: 'C:\\\\Users\\\\Administrator\\\\AppData\\\\Roaming\\\\com.moomoo.OpenD\\\\Log\\\\py_2026_07_11.log'"
+      },
+      "requested_tickers": 20,
+      "status": "unavailable"
+    },
+    "settled_primary_next_close_decisions": 0
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "weekend_decisions_remain_pending"
+  },
+  "causal_components": [
+    "reuse existing SDK APPDATA redirect around import",
+    "restore environment",
+    "focused regression",
+    "live OpenD proof",
+    "measurement-only closeout"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/intraday_backtester.py",
+    "quant/test_intraday_backtester.py",
+    "quant/experiments/exp_20260711_024_intraday_moomoo_sdk_log_redirect.py",
+    "data/experiments/exp-20260711-024/exp_20260711_024_intraday_moomoo_sdk_log_redirect.json",
+    "experiments/logs/exp-20260711-024.json",
+    "experiments/cards/exp-20260711-024.md",
+    "experiments/manifests/exp-20260711-024.json",
+    "experiments/tickets/exp-20260711-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "intraday_counterfactual_moomoo_sdk_import_log_redirect_v1",
+  "checks": {
+    "appdata_restored_after_sdk_import": true,
+    "baseline_reproduces_sdk_log_acl_blocker": true,
+    "execution_rule_version_unchanged": true,
+    "horizons_unchanged": true,
+    "live_opend_fetch_has_bars": true,
+    "live_opend_fetch_has_no_errors": true,
+    "live_opend_fetch_status_ok": true,
+    "outcome_rule_version_unchanged": true
+  },
+  "decision": "accepted_measurement_repair_intraday_moomoo_sdk_log_redirect",
+  "experiment_id": "exp-20260711-024",
+  "gate1": {
+    "baseline_artifact": "data/daily/intraday/backtests/latest_scorecard.json",
+    "note": "Measurement fault recovery only; canonical strategy replay is unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "APPDATA",
+      "GINGER_MOOMOO_SDK_APPDATA",
+      "OpenQuoteContext",
+      "request_history_kline K_5M RTH QFQ",
+      "timestamp_et",
+      "position_market_value_at_decision"
+    ],
+    "sentinel_note": "entry_date and target_price remain canonical signal sentinels; this separate finalized-decision measurement surface does not create or alter entry signals."
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_intraday_moomoo_sdk_log_redirect",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "checks_passed": 8,
+    "checks_total": 8,
+    "live_spy_5m_bars": 77,
+    "settled_alpha_rows_claimed": 0,
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Alpha-enabling fault recovery: intraday triage counterfactual settlement should redirect the Moomoo SDK import-time APPDATA log to the existing repo-local writable runtime directory so finalized decisions can fetch 5-minute bars and mature forward outcomes without changing execution, costs, actions, orders, or strategy behavior.",
+  "implementation_mode": "fault_recovery_existing_sdk_import_contract",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "intraday_discretionary_triage_outcome_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260711-022",
+    "exp-20260711-009"
+  ],
+  "new_evidence_type": "fault_recovery_import_time_sdk_log_acl",
+  "owner": "codex-alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness or SDK-log repair ID for this surface. Routine scorecard refresh is already wired, and the current weekend decisions remaining pending is not a fault.",
+    "new_evidence_required": "Allow routine forward settlement to accumulate. Review without a new implementation ID at 20/50 settled primary next-close decisions; reserve a separate alpha hypothesis only at 100 or with a genuinely new execution/counterfactual source.",
+    "why_result_happened": "The Moomoo SDK creates its file logger at import time. The intraday settlement path imported it under the system APPDATA directory, whose daily log file was not writable in this process. Reusing the repository's existing import-time APPDATA redirect restored OpenD price access and then restored the caller environment."
+  },
+  "prediction": {
+    "confidence_reason": "A no-write preflight reproduced the exact permission failure under system APPDATA and returned 77 SPY 5-minute bars immediately when APPDATA was redirected; the repository already has the same import-time workaround in moomoo_open_positions.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "helper_import_cycle",
+      "environment_not_restored",
+      "OpenD_unreachable",
+      "weekend_decisions_remain_pending"
+    ],
+    "recorded_at": "2026-07-11T20:07:46+00:00",
+    "success_probability": 0.9
+  },
+  "production_impact": {
+    "canonical_backtester_changed": false,
+    "counterfactual_actions_changed": false,
+    "counterfactual_costs_changed": false,
+    "counterfactual_execution_semantics_changed": false,
+    "live_orders_changed": false,
+    "operator_positions_changed": false,
+    "price_source_fault_recovered": true,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/intraday_backtester.py",
+    "quant/test_intraday_backtester.py",
+    "quant/experiments/exp_20260711_024_intraday_moomoo_sdk_log_redirect.py",
+    "data/experiments/exp-20260711-024/exp_20260711_024_intraday_moomoo_sdk_log_redirect.json",
+    "experiments/logs/exp-20260711-024.json",
+    "experiments/cards/exp-20260711-024.md",
+    "experiments/manifests/exp-20260711-024.json",
+    "experiments/tickets/exp-20260711-024.json",
+    "docs/experiment_registry.json"
+  ],
+  "reopen_condition": "20 settled primary next_close rows for early observed-only review, 50 for stability review, and 100 before a separate alpha promotion hypothesis.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_backtester.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_024_intraday_moomoo_sdk_log_redirect.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "intraday_counterfactual_moomoo_sdk_import_log_redirect_v1",
+  "status": "accepted",
+  "timestamp": "2026-07-11T20:12:35Z",
+  "trial_family": "intraday_triage_counterfactual_price_source_fault_recovery",
+  "trial_variant_id": "moomoo_sdk_import_appdata_redirect_v1"
+}

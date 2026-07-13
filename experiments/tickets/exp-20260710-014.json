@@ -1,0 +1,530 @@
+{
+  "acceptance_rule": "Accept as measurement repair only if 13G/A amendment rows are parsed from local cache, stake-change direction fields are present on canonical rows, focused tests pass, and no strategy/live order behavior changes.",
+  "allowed_write_scope": [
+    "quant/sec_13d13g_ingest.py",
+    "quant/test_sec_13d13g_ingest.py",
+    "quant/experiments/exp_20260710_014_sec13ga_stake_change_direction_materialization.py",
+    "data/non_ohlcv/sec_13d13g_holdings/rows.json",
+    "data/experiments/exp-20260710-014",
+    "experiments/cards/exp-20260710-014.md",
+    "experiments/manifests/exp-20260710-014.json",
+    "experiments/tickets/exp-20260710-014.json",
+    "experiments/logs/exp-20260710-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-014.md",
+  "causal_components": [
+    "13G/A amendment enumeration",
+    "local XML-cache parsing",
+    "previousAccessionNumber",
+    "current item4 percent/share fields",
+    "below-5pct exit flag",
+    "canonical rows refresh",
+    "no trading behavior change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "sec13ga_amendment_stake_change_direction_fields",
+  "claimed_at": "2026-07-10T14:13:28+00:00",
+  "completed_at": "2026-07-10T14:23:02+00:00",
+  "created_at": "2026-07-10T14:13:18+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-014",
+  "experiment_uid": "expuid-f0739a0eca974c60",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-014",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T14:13:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec13ga_stake_change_direction_materialization"
+  },
+  "hypothesis": "Alpha blocker: parsed SEC 13G/A amendment stake-change direction is the next named evidence axis for the 13D/13G ownership surface, but canonical rows still exclude 13G/A amendments and do not materialize previous-accession/current-stake/below-5pct direction fields for replay.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec13ga_amendment_stake_change_direction_materialization_v1"
+  ],
+  "mechanism_family": "production_visible_sec_ownership_holder_stake_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260618-016",
+    "exp-20260710-003",
+    "exp-20260710-004",
+    "exp-20260710-005"
+  ],
+  "new_evidence_type": "alpha_enabling_field_materialization",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec13d_ownership",
+      "field_tags": [
+        "13d",
+        "13g",
+        "5pct",
+        "a",
+        "accession",
+        "alpha",
+        "amendment",
+        "amendments",
+        "axis",
+        "below",
+        "blocker",
+        "but",
+        "canonical",
+        "change",
+        "current",
+        "direction",
+        "do",
+        "evidence",
+        "exclude",
+        "fields",
+        "holder",
+        "is",
+        "materialization",
+        "materialize",
+        "measurement",
+        "named",
+        "not",
+        "ownership",
+        "parsed",
+        "previous",
+        "rows",
+        "sec13ga",
+        "stake",
+        "still",
+        "surface"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "nonrepeat_alpha_direction_blocker",
+        "reopen_condition": null,
+        "score": 0.04,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_observer_settlement_price_surface_blocker",
+        "reopen_condition": "Reopen current observer alpha only after the warehouse or another PIT price surface covers observer entry sessions through at least 2026-07-03 for the audited tickers, warehouse_main_hot.sqlite no longer reports disk I/O errors, prediction_market_event_observer has at least 250 settled rows with cash/SPY/QQQ replacement value, and intraday structured-news observations have non-null entry_date and ",
+        "score": 0.0381,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "nonrepeat_alpha_surface_readiness",
+        "reopen_condition": "A retry needs materially more closed forward replacement rows, real 10-K/10-Q text/cache with parsed cover-page status, populated PIT borrow economics, or a genuinely new data source/gate shape.",
+        "score": 0.0372,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "alpha_direction_triage",
+        "reopen_condition": "Build a new free PIT data edge first: analyst-count/revenue/dispersion/provenance rows matched to historical candidates, structured customer/supplier contract economics, usable 13F holdings, closed options outcomes, or enough true-trigger forward replacement rows.",
+        "score": 0.0356,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_alpha_surface_readiness_delta",
+        "reopen_condition": "Need materially more closed forward replacement rows for a diversified sleeve/source, non-skipped Kova intraday or 13F provenance, replayable historical 6-K text, PIT borrow/loan or options history, or a new production-visible field not already saturated.",
+        "score": 0.0316,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New alpha-enabling canonical 13G/A amendment rows plus stake-change direction fields (previous accession, current item4 percent/shares, below-5pct flag) explicitly required after exp-20260618-016; not a 13D Item-4 phrase, holder-type, classPercent threshold, notional, hold, or response-shape retry.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec13d_ownership",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New alpha-enabling canonical 13G/A amendment rows plus stake-change direction fields (previous accession, current item4 percent/shares, below-5pct flag) explicitly required after exp-20260618-016; not a 13D Item-4 phrase, holder-type, classPercent threshold, notional, hold, or response-shape retry.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec13d_ownership",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Parser already exposes parse_13ga_direction_fields and tests; preflight found 2787 cached 13G/A XML rows; playbook names this field as the missing legal evidence axis.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "13G/A cached XML too sparse",
+      "previousAccessionNumber absent",
+      "canonical refresh would overwrite unrelated rows",
+      "tests fail"
+    ],
+    "recorded_at": "2026-07-10T14:12:35+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_sec13ga_stake_change_direction_materialization",
+    "artifact": "data/experiments/exp-20260710-014/exp_20260710_014_sec13ga_stake_change_direction_materialization.json",
+    "log": "experiments/logs/exp-20260710-014.json",
+    "runner": "quant/experiments/exp_20260710_014_sec13ga_stake_change_direction_materialization.py",
+    "gate4": {
+      "mode": "measurement_repair_field_materialization",
+      "passed": true,
+      "checks": {
+        "families_quoted_correctly": true,
+        "preserved_13d_rows": true,
+        "materialized_13ga_rows": true,
+        "materialized_current_percent": true,
+        "materialized_previous_accession": true,
+        "computed_direction_rows": true,
+        "focused_py_compile_passed": true,
+        "focused_pytest_passed": true
+      },
+      "failed_reasons": [],
+      "strategy_metric_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0
+      },
+      "acceptance_rule": "Accept as measurement repair only if 13G/A amendment rows are parsed from local cache, stake-change direction fields are present on canonical rows, focused tests pass, and no strategy/live order behavior changes."
+    },
+    "headline_metrics": {
+      "checks_passed": 8,
+      "checks_total": 8,
+      "failed_checks": [],
+      "before_parsed_rows": 3480,
+      "after_parsed_rows": 6267,
+      "new_13ga_rows": 2787,
+      "computed_13ga_direction_rows": 978,
+      "percent_delta_rows": 234
+    },
+    "summary": "measurement_repair_sec13ga_stake_change_direction_materialization"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-014.json",
+  "single_causal_variable": "sec13ga_amendment_stake_change_direction_materialization_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260710-014.json",
+  "trial_family": "sec13ga_stake_change_direction_materialization",
+  "trial_variant_id": "sec13ga_direction_rows_v1",
+  "alpha_hypothesis": "13G/A stake-change direction may separate passive index-fund trims/exits from non-Big3 stake increases, but this run only materializes the shared measurement fields and makes no alpha claim.",
+  "decision": "accepted_sec13ga_stake_change_direction_materialization",
+  "artifact": "data/experiments/exp-20260710-014/exp_20260710_014_sec13ga_stake_change_direction_materialization.json",
+  "log": "experiments/logs/exp-20260710-014.json",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "note": "No strategy metrics changed; baseline is cited for protocol continuity."
+  },
+  "gate2": {
+    "fields": [
+      "accession_number",
+      "form",
+      "family",
+      "is_amendment",
+      "sec13ga_previous_accession",
+      "sec13ga_current_max_percent",
+      "sec13ga_current_max_shares",
+      "sec13ga_below_5pct",
+      "sec13ga_stake_change_direction"
+    ],
+    "before_measurement": {
+      "source": "pre-run canonical rows from exp-20260710-003 materialization",
+      "parsed_row_count": 3480,
+      "rows_by_family": {
+        "13D": 950,
+        "13G_init": 2530,
+        "13G_amendment": 0
+      },
+      "include_amendments": {
+        "13D": true,
+        "13G": false
+      },
+      "sec13ga_direction_rows": 0,
+      "sec13ga_computed_direction_rows": 0
+    },
+    "after_measurement": {
+      "generated_at": "2026-07-10T14:16:55+00:00",
+      "families": [
+        "13D",
+        "13G"
+      ],
+      "include_amendments": true,
+      "parsed_row_count": 6267,
+      "fetch_status": {
+        "cached": 6267,
+        "not_fetched": 14422
+      },
+      "rows_by_family": {
+        "13D": 950,
+        "13G_init": 2530,
+        "13G_amendment": 2787
+      },
+      "13ga_with_previous_accession": 1836,
+      "13ga_with_current_max_percent": 2284,
+      "13ga_with_percent_delta": 234,
+      "13ga_below_5pct_true": 744,
+      "13ga_direction_status_counts": {
+        "unknown_missing_previous_accession": 758,
+        "computed": 978,
+        "unknown_previous_row_missing": 999,
+        "unknown_current_percent_missing": 52
+      },
+      "13ga_direction_counts": {
+        "None": 1809,
+        "exit_below_5pct": 744,
+        "increase": 161,
+        "decrease": 55,
+        "unchanged": 18
+      },
+      "13ga_by_window": {
+        "late_strong": 927,
+        "mid_weak": 924,
+        "old_thin": 936
+      },
+      "sample_computed": [
+        {
+          "ticker": "AIG",
+          "accession": "0001422848-25-000082",
+          "previous": "0001422848-23-000116",
+          "current_pct": 4.4,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "AAL",
+          "accession": "0000950170-25-018951",
+          "previous": "0001193125-21-363636",
+          "current_pct": null,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "AWI",
+          "accession": "0001398344-25-020888",
+          "previous": null,
+          "current_pct": 4.94,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "BALL",
+          "accession": "0001897612-25-000179",
+          "previous": "0001897612-24-001123",
+          "current_pct": 4.8,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "BNS",
+          "accession": "0000927971-25-000050",
+          "previous": "0001085146-25-001420",
+          "current_pct": 3.27,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "BAX",
+          "accession": "0001193125-25-280418",
+          "previous": "0000950170-25-035281",
+          "current_pct": 11.2,
+          "previous_pct": 10.1,
+          "delta": 1.1,
+          "direction": "increase",
+          "status": "computed"
+        },
+        {
+          "ticker": "BAX",
+          "accession": "0000950170-25-035281",
+          "previous": "0000950170-25-019886",
+          "current_pct": 10.1,
+          "previous_pct": 9.9,
+          "delta": 0.2,
+          "direction": "increase",
+          "status": "computed"
+        },
+        {
+          "ticker": "BIO",
+          "accession": "0001325447-25-000023",
+          "previous": "0001325447-25-000022",
+          "current_pct": 10.0,
+          "previous_pct": 6.8,
+          "delta": 3.2,
+          "direction": "increase",
+          "status": "computed"
+        },
+        {
+          "ticker": "BA",
+          "accession": "0001172661-25-000553",
+          "previous": "0001172661-18-000502",
+          "current_pct": 4.1,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        },
+        {
+          "ticker": "BMY",
+          "accession": "0000019617-25-001051",
+          "previous": null,
+          "current_pct": 4.0,
+          "previous_pct": null,
+          "delta": null,
+          "direction": "exit_below_5pct",
+          "status": "computed"
+        }
+      ]
+    },
+    "passed": true
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "passed": true,
+    "note": "No executable filter was added; baseline survival is unchanged."
+  },
+  "gate4": {
+    "mode": "measurement_repair_field_materialization",
+    "passed": true,
+    "checks": {
+      "families_quoted_correctly": true,
+      "preserved_13d_rows": true,
+      "materialized_13ga_rows": true,
+      "materialized_current_percent": true,
+      "materialized_previous_accession": true,
+      "computed_direction_rows": true,
+      "focused_py_compile_passed": true,
+      "focused_pytest_passed": true
+    },
+    "failed_reasons": [],
+    "strategy_metric_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    },
+    "acceptance_rule": "Accept as measurement repair only if 13G/A amendment rows are parsed from local cache, stake-change direction fields are present on canonical rows, focused tests pass, and no strategy/live order behavior changes."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "ranking_sizing_exits_changed": false,
+    "canonical_data_surface_changed": true,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The parser already knew how to read 13G/A direction fields, but canonical materialization used 13D amendments plus 13G initial filings only. Quoted-family local-cache refresh preserved 13D rows and added 2,787 13G/A rows.",
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence and do not sweep 13G/A holder types, classPercent thresholds, top-N, hold, notional, or response shape on these frozen rows.",
+    "new_evidence_required": "Next 13G/A alpha work must be a fixed shared-paper-first policy using stake-change direction against accepted comparators, or wait for materially more closed forward rows or richer ownership/campaign data.",
+    "power_shell_reproduction_note": "Quote --families as '13D,13G' in PowerShell; unquoted 13D,13G is parsed incorrectly and can drop 13D rows."
+  },
+  "rejection_reason": "focused_py_compile_passed",
+  "related_files": [
+    "quant/sec_13d13g_ingest.py",
+    "quant/test_sec_13d13g_ingest.py",
+    "quant/experiments/exp_20260710_014_sec13ga_stake_change_direction_materialization.py",
+    "data/non_ohlcv/sec_13d13g_holdings/rows.json",
+    "data/experiments/exp-20260710-014/before_measurement.json",
+    "data/experiments/exp-20260710-014/after_measurement.json",
+    "data/experiments/exp-20260710-014/exp_20260710_014_sec13ga_stake_change_direction_materialization.json",
+    "experiments/logs/exp-20260710-014.json",
+    "experiments/cards/exp-20260710-014.md",
+    "experiments/manifests/exp-20260710-014.json",
+    "experiments/tickets/exp-20260710-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_files": [
+    "quant/sec_13d13g_ingest.py",
+    "quant/test_sec_13d13g_ingest.py",
+    "quant/experiments/exp_20260710_014_sec13ga_stake_change_direction_materialization.py",
+    "data/non_ohlcv/sec_13d13g_holdings/rows.json",
+    "data/experiments/exp-20260710-014/before_measurement.json",
+    "data/experiments/exp-20260710-014/after_measurement.json",
+    "data/experiments/exp-20260710-014/exp_20260710_014_sec13ga_stake_change_direction_materialization.json",
+    "experiments/logs/exp-20260710-014.json",
+    "experiments/cards/exp-20260710-014.md",
+    "experiments/manifests/exp-20260710-014.json",
+    "experiments/tickets/exp-20260710-014.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\sec_13d13g_ingest.py quant\\test_sec_13d13g_ingest.py quant\\experiments\\exp_20260710_014_sec13ga_stake_change_direction_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_13d13g_ingest.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\sec_13d13g_ingest.py --families '13D,13G'",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_014_sec13ga_stake_change_direction_materialization.py"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T14:23:02+00:00"
+}

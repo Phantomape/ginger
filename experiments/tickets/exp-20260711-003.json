@@ -1,0 +1,327 @@
+{
+  "acceptance_rule": "Positive replay lead only if Gate 1 baseline identity passes, Gate 2 MOVE and signal fields exist, Gate 3 survival stays at least 5%, aggregate EV and PnL improve, at least two windows improve EV, no window regresses EV or PnL, target trades cover all three windows with at least 20 total, drawdown drift is at most 0.5pp, and concentration passes; even a pass remains private observed-only until shared-paper-first promotion.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_003_move_rate_volatility_relief_stock_leadership.py",
+    "data/experiments/exp-20260711-003/exp_20260711_003_move_rate_volatility_relief_stock_leadership.json",
+    "experiments/cards/exp-20260711-003.md",
+    "experiments/manifests/exp-20260711-003.json",
+    "experiments/tickets/exp-20260711-003.json",
+    "experiments/logs/exp-20260711-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260711-003.md",
+  "causal_components": [
+    "Yahoo-mirrored ICE BofA MOVE daily closes",
+    "fixed MOVE cross-below-20d-mean relief event",
+    "unchanged exp-20260607-018 stock leadership selector",
+    "next-open 10d paper replay",
+    "canonical costs and Gate 1-4"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "move20_cross_below_rate_volatility_relief_stock_leadership_v1",
+  "claimed_at": "2026-07-11T03:04:19+00:00",
+  "completed_at": "2026-07-11T03:05:14+00:00",
+  "created_at": "2026-07-11T02:11:46+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260711-003",
+  "experiment_uid": "expuid-fd7333efdc1748e4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T02:11:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "move_rate_volatility_relief_stock_leadership"
+  },
+  "hypothesis": "Private replay scout: a first daily close of the ICE BofA MOVE Index below its trailing 20-session mean is an option-implied Treasury-rate-volatility relief event; applying the unchanged exp-20260607-018 liquid stock-leadership selector on that event day should add positive next-open 10-session paper replacement value across all three canonical windows without window, drawdown, survival, or concentration failure.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "MOVE 20-session simple mean",
+    "cross-below event",
+    "exp-20260607-018 stock selector",
+    "top-2/day",
+    "4000 USD notional",
+    "next-open entry",
+    "10-session close",
+    "costs",
+    "cooldown",
+    "canonical windows"
+  ],
+  "mechanism_family": "production_visible_rate_volatility_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "live orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM decisions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-002"
+  ],
+  "new_evidence_type": "new_data_source_move_index",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6353,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "score": 0.6211,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.1053,
+        "family_key": "external_event_satellite_overlay_allocation",
+        "score": 0.6211,
+        "status": "has_accepted",
+        "trials": 19
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "score": 0.6207,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_cross_sectional_skew_forward_replacement_state",
+        "score": 0.6207,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "a",
+        "across",
+        "add",
+        "all",
+        "an",
+        "applying",
+        "below",
+        "bofa",
+        "canonical",
+        "close",
+        "concentration",
+        "cross",
+        "daily",
+        "drawdown",
+        "event",
+        "exp",
+        "failure",
+        "first",
+        "ice",
+        "implied",
+        "index",
+        "is",
+        "its",
+        "leadership",
+        "liquid",
+        "mean",
+        "move",
+        "move20",
+        "of",
+        "on",
+        "option",
+        "or",
+        "positive",
+        "private",
+        "rate",
+        "replacement",
+        "selector",
+        "session",
+        "should",
+        "stock",
+        "survival",
+        "that",
+        "three",
+        "trailing",
+        "treasury",
+        "unchanged",
+        "value",
+        "volatility",
+        "window",
+        "windows",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6353,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "reopen_condition": "Do not retry nearby core-overlap event scalars on the frozen sample without new closed forward rows or a shared production-visible overlap/displacement adapter.",
+        "score": 0.6211,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.1053,
+        "data_source": "forward_replacement_value",
+        "family_key": "external_event_satellite_overlay_allocation",
+        "reopen_condition": null,
+        "score": 0.6211,
+        "status": "has_accepted",
+        "trials": 19
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "reopen_condition": null,
+        "score": 0.6207,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "broad_cross_sectional_skew_forward_replacement_state",
+        "reopen_condition": "Materially more closed forward replacement rows with broad-state coverage, a genuinely different data source, or a shared helper Gate 1-4. Another same-row forward attribution field is not enough.",
+        "score": 0.6207,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuinely new data source: ICE BofA MOVE Index daily history spans all three canonical windows and no prior family, ticket, log, or fingerprint used MOVE/Treasury rate-volatility relief; the candidate selector is frozen from exp-20260607-018 rather than retuned.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Genuinely new data source: ICE BofA MOVE Index daily history spans all three canonical windows and no prior family, ticket, log, or fingerprint used MOVE/Treasury rate-volatility relief; the candidate selector is frozen from exp-20260607-018 rather than retuned.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuinely new data source: ICE BofA MOVE Index daily history spans all three canonical windows and no prior family, ticket, log, or fingerprint used MOVE/Treasury rate-volatility relief; the candidate selector is frozen from exp-20260607-018 rather than retuned.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "move_relief_relabels_broad_beta",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "confidence_reason": "MOVE is a genuinely new options-implied Treasury risk-transfer source with complete local-download coverage, and accepted volatility/macro relief analogs support the mechanism; odds stay low because HYG/JNK and VIX9D tests showed macro relief labels often overlap beta or delete convex winners.",
+    "recorded_at": "2026-07-11T02:10:58+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "reason": "Ticket duplicated completed exp-20260711-002 before its closeout became visible; no replay or strategy work ran.",
+    "source_experiment": "exp-20260711-002",
+    "new_evidence": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-003.json",
+  "single_causal_variable": "move20_cross_below_rate_volatility_relief_stock_leadership_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260711-003.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "move20_cross_below_fixed_stock_leadership_v1",
+  "post_run_reflection": {
+    "why_result_happened": "The stale ticket duplicated the already completed fixed MOVE scout.",
+    "forbidden_near_neighbor_retry": "Do not rerun the private MOVE scout or retune its fixed policy.",
+    "new_evidence_required": "Proceed only through the shared-paper-first promotion gate shape or materially settled forward rows."
+  },
+  "calibration": {
+    "actual_success": null,
+    "brier_score": null,
+    "surprise_note": "No experiment ran; duplicate accounting only."
+  },
+  "updated_at": "2026-07-11T03:05:14+00:00"
+}

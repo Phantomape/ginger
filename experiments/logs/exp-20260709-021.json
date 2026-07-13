@@ -1,0 +1,225 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "entry_date_present_count": 35,
+    "expected_value_score_sum": 7.8941,
+    "gate_ready_current_rows": 0,
+    "max_drawdown_pct_worst": 0.1119,
+    "repaired_daily_observation_rows": 35,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "target_price_applicability_present_count": 35,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "Daily structured relation-quality news rows may become LLM event-scoring alpha after the fixed observer accumulates replayable entry dates and later closed cash/SPY/QQQ replacement values.",
+  "alpha_ready": false,
+  "alpha_ready_reason": "Not alpha-ready: this fixes entry_date schema only. Current rows still lack closed cash/SPY/QQQ replacement values.",
+  "artifact": "data/experiments/exp-20260709-021/exp_20260709_021_daily_structured_news_entry_date_contract.json",
+  "before_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "current_daily_observation_rows": 35,
+    "entry_date_present_count": 0,
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "target_price_applicability_present_count": 0,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_daily_structured_news_entry_date_contract",
+    "actual_success": 1,
+    "brier_score": 0.0484,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "calendar mismatch",
+      "observation_id drift",
+      "current source rebuild failure",
+      "test contract mismatch"
+    ],
+    "predicted_success_probability": 0.78,
+    "realized_failure_modes": [],
+    "surprise_note": "Low surprise: the daily contract used the same deterministic calendar shape already accepted for intraday."
+  },
+  "causal_components": [
+    "daily_news_structured_events.next_session_after",
+    "daily fixed-horizon target_price non-applicability",
+    "test coverage",
+    "current-row repair audit"
+  ],
+  "change_type": "measurement_repair_daily_structured_news_entry_date_contract",
+  "changed_files": [
+    "quant/daily_news_structured_events.py",
+    "quant/test_daily_news_structured_events.py",
+    "quant/test_daily_news_structured_event_snapshot.py",
+    "quant/experiments/exp_20260709_021_daily_structured_news_entry_date_contract.py",
+    "data/experiments/exp-20260709-021/exp_20260709_021_daily_structured_news_entry_date_contract.json",
+    "data/experiments/exp-20260709-021/repaired_current_daily_observations.jsonl",
+    "experiments/logs/exp-20260709-021.json",
+    "experiments/cards/exp-20260709-021.md",
+    "experiments/manifests/exp-20260709-021.json",
+    "experiments/tickets/exp-20260709-021.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "daily_structured_news_entry_date_contract_parity_v1",
+  "decision": "accepted_measurement_repair_daily_structured_news_entry_date_contract",
+  "delta_metrics": {
+    "entry_date_present_delta": 35,
+    "expected_value_score_delta": 0.0,
+    "observation_id_symmetric_difference": 0,
+    "repaired_replacement_value_vs_cash_present_count": 0,
+    "target_price_applicability_present_delta": 35,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-021",
+  "gate1": {
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "observation_id_symmetric_difference": 0,
+    "old_entry_date_missing_count": 35,
+    "old_entry_date_present_count": 0,
+    "passed": true,
+    "repaired_entry_date_missing_count": 0,
+    "repaired_entry_date_present_count": 35,
+    "required_fields_checked": [
+      "observation_id",
+      "event_id",
+      "event_date",
+      "ticker",
+      "entry_date",
+      "entry_date_status",
+      "target_price",
+      "target_price_applicability",
+      "outcome_status"
+    ],
+    "target_price_applicability_present_count": 35,
+    "target_price_scope": "target_price remains null by design because this fixed-horizon observer does not schedule target exits or orders; readiness uses entry_date plus closed cash/SPY/QQQ replacement-value comparators."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter/rank/size/exit rule changed; baseline survival is unchanged.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "accepted_measurement_repair_daily_structured_news_entry_date_contract",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_delta": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: daily structured-news relation-quality observer cannot become Gate-ready LLM event-scoring alpha while forward observations omit deterministic next-session entry_date even though entry_semantics says next_session_open_after_news_date. Repair the daily entry_date contract to match the accepted intraday fixed-horizon observer without changing relation rules, horizon, notional, orders, or response curves.",
+  "implementation_mode": "fixed_horizon_forward_observation_schema_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "daily_structured_news_alpha_enabling_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_axis": "Daily structured-news is a distinct forward-observation surface from the already repaired intraday contract: current daily artifacts had 35/35 entry_date-missing rows, while post-20260705 intraday artifacts already carry planned_next_session_open.",
+  "new_evidence_type": "daily_structured_news_entry_date_gate2_contract_repair",
+  "next_retry_requires": [
+    "at least 20 closed daily structured-news rows with entry_date",
+    "cash/SPY/QQQ replacement-value comparators for those rows",
+    "or a distinct PIT LLM event scorer writing the same evidence schema"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "entry_date_policy": "next_us_equity_session_after_event_date",
+    "forward_observation_rule_version": "daily_news_structured_event_forward_observation_contract_v1",
+    "repaired_rows_written_to_experiment_artifact_only": true,
+    "strategy_behavior_changed": false,
+    "target_price_policy": "not_applicable_fixed_horizon_observation",
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "fingerprint_caveat": "experiment.py classified the reservation as ohlcv_relation/notional_scalar; the actual evidence surface is daily_structured_news measurement repair.",
+    "forbidden_near_neighbor_retry": "Do not reslice these daily structured-news rows by relation, polarity, keyword, ticker, source, event age, prompt wording, top-N, hold, notional, or response curve. Do not add a synthetic target_price to fixed-horizon observations.",
+    "new_evidence_required": "Reopen daily structured-news alpha only after production or an experiment-owned outcome ledger has at least 20 rows with entry_date plus closed cash/SPY/QQQ replacement values, or after a distinct PIT LLM scorer writes this same evidence-span schema. target_price remains non-applicable for this fixed-horizon observer.",
+    "why_result_happened": "The daily contract already declared deterministic next-session entry semantics but did not materialize the date. Reusing the US equity session calendar fills all current rebuilt rows without changing observation IDs. The remaining blocker is closed replacement-value comparators, not target_price."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Daily structured relation-quality news rows may become LLM event-scoring alpha after the fixed observer accumulates replayable entry dates and later closed cash/SPY/QQQ replacement values.",
+    "2_history_check": {
+      "exp-20260630-006": "Accepted daily structured-news forward observation contract, but entry_date remained null.",
+      "exp-20260704-024": "Accepted the equivalent intraday entry_date contract repair.",
+      "exp-20260708-004": "Recovered daily 20260707 artifacts but left rows pending and entry_date-null.",
+      "novelty_gate_caveat": "Reservation fingerprint overmatched OHLCV/notional; true surface is daily_structured_news measurement repair."
+    },
+    "3_single_measurement_bundle": "daily_structured_news_entry_date_contract_parity_v1",
+    "4_success_failure_standard": "Accept only if current daily observation rows rebuild with the same observation IDs and row counts, all repaired rows carry entry_date, target_price stays null with explicit fixed-horizon non-applicability, replacement values remain pending, and strategy metrics stay unchanged.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_021_daily_structured_news_entry_date_contract.py"
+  },
+  "prediction": {
+    "confidence_reason": "Intraday contract repair already established deterministic next-session entry_date using the shared US equity session calendar; daily artifacts still have 35/35 missing entry_date rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "calendar mismatch",
+      "observation_id drift",
+      "current source rebuild failure",
+      "test contract mismatch"
+    ],
+    "recorded_at": "2026-07-09T19:16:28+00:00",
+    "success_probability": 0.78
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "llm_prompt_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Future daily structured-news observation snapshots will carry planned entry_date while preserving fixed-horizon, default-off, read-only semantics. No order or target exit is created.",
+    "ranking_sizing_entry_exit_changed": false,
+    "run_adapter_changed": false,
+    "run_intraday_adapter_changed": false,
+    "shared_observer_contract_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "repaired_current_observation_ledger": "data/experiments/exp-20260709-021/repaired_current_daily_observations.jsonl",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\daily_news_structured_events.py quant\\test_daily_news_structured_events.py quant\\test_daily_news_structured_event_snapshot.py quant\\experiments\\exp_20260709_021_daily_structured_news_entry_date_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_daily_news_structured_events.py quant\\test_daily_news_structured_event_snapshot.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_021_daily_structured_news_entry_date_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "runner": "quant/experiments/exp_20260709_021_daily_structured_news_entry_date_contract.py",
+  "single_causal_variable": "daily_structured_news_entry_date_contract_parity_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-09T19:22:38Z",
+  "trial_family": "daily_structured_news_entry_date_contract",
+  "trial_variant_id": "daily_structured_news_entry_date_contract_parity_v1"
+}

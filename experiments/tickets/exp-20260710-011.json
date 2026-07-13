@@ -1,0 +1,367 @@
+{
+  "acceptance_rule": "Accepted measurement repair only if local SEC filing-text cache overlap covers at least 300 unique 425 accessions and at least 100 resolved-ticker 425 accessions, enough to attempt a historical parser without network fetching. Otherwise close blocked with a quantitative reopen condition.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-011.md",
+  "causal_components": [
+    "sec_corporate_event_stream_425_rows",
+    "sec_filing_text_cache_overlap",
+    "deal_economics_role_axis_readiness",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_425_deal_economics_text_coverage_readiness_v1",
+  "claimed_at": "2026-07-10T10:12:58+00:00",
+  "completed_at": "2026-07-10T10:18:21+00:00",
+  "created_at": "2026-07-10T10:12:32+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-011",
+  "experiment_uid": "expuid-faf710f0bcd74980",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T10:12:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_425_deal_economics_text_coverage_readiness"
+  },
+  "hypothesis": "Alpha hypothesis: SEC 425 merger communications may have tradable target/acquirer or peer replacement value only when parsed deal economics and bidder-target role distinguish cash, stock, mixed, amendment, and termination contexts; current blocker is whether local 425 filing text coverage exists for that richer axis.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_425_deal_economics_text_coverage_readiness_v1"
+  ],
+  "mechanism_family": "production_visible_sec_corporate_event_stream",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-018",
+    "exp-20260709-010"
+  ],
+  "new_evidence_type": "measurement_repair_alpha_blocker_readiness",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.375,
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "score": 0.6333,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "score": 0.6255,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fundamental_growth_rs_forward_readiness",
+        "score": 0.625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "score": 0.6245,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "acquirer",
+        "alpha",
+        "amendment",
+        "axis",
+        "bidder",
+        "blocker",
+        "cash",
+        "communications",
+        "contexts",
+        "corporate",
+        "coverage",
+        "current",
+        "deal",
+        "distinguish",
+        "economics",
+        "event",
+        "exists",
+        "filing",
+        "have",
+        "hypothesis",
+        "is",
+        "local",
+        "may",
+        "merger",
+        "mixed",
+        "only",
+        "or",
+        "parsed",
+        "peer",
+        "readiness",
+        "replacement",
+        "richer",
+        "role",
+        "stock",
+        "stream",
+        "target",
+        "termination",
+        "text",
+        "that",
+        "tradable",
+        "value",
+        "when",
+        "whether"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.375,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+        "score": 0.6333,
+        "status": "has_accepted",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": null,
+        "score": 0.6255,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "fundamental_growth_rs_forward_readiness",
+        "reopen_condition": "Do not reserve another fundamental_growth_rs forward-readiness ID until at least 20 enriched closed rows exist for a watchlist-lead refresh, and do not test activation envelope until at least 60 enriched closed rows exist with positive cash/SPY/QQQ replacement value and diversified ticker concentration.",
+        "score": 0.625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "reopen_condition": "Do not retry nearby core-overlap event scalars on the frozen sample without new closed forward rows or a shared production-visible overlap/displacement adapter.",
+        "score": 0.6245,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Measurement-readiness check for the explicitly allowed richer 425 deal-economics/role axis; this does not reslice the rejected 425 theme-peer propagation alpha.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Measurement-readiness check for the explicitly allowed richer 425 deal-economics/role axis; this does not reslice the rejected 425 theme-peer propagation alpha.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.85,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "zero_425_text_cache_overlap",
+      "only_index_metadata_available",
+      "network_fetch_required"
+    ],
+    "confidence_reason": "Plain 425 theme-peer propagation was rejected, while the playbook allows a richer deal-economics role axis only if filing text is available; preliminary counts showed index metadata without 425 text cache overlap.",
+    "recorded_at": "2026-07-10T10:18:21+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "decision": "blocked_sec_425_deal_economics_text_coverage",
+    "artifact": "data/experiments/exp-20260710-011/exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.json",
+    "log": "experiments/logs/exp-20260710-011.json",
+    "runner": "quant/experiments/exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.py",
+    "headline_metrics": {
+      "425_unique_accessions": 7445,
+      "425_unique_accessions_with_cached_text": 0,
+      "425_resolved_ticker_accessions_with_cached_text": 0
+    },
+    "summary": "blocked_sec_425_deal_economics_text_coverage"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-011.json",
+  "single_causal_variable": "sec_425_deal_economics_text_coverage_readiness_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260710-011.json",
+  "trial_family": "sec_425_deal_economics_text_coverage_readiness",
+  "trial_variant_id": "sec_425_text_cache_overlap_v1",
+  "alpha_hypothesis": "SEC 425 merger communications may become a tradable event source only when filing text can classify consideration mix, party role, and deal trajectory rather than re-slicing rejected theme-peer rows.",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "Measurement-readiness check for the explicitly allowed richer 425 deal-economics/role axis; this does not reslice the rejected 425 theme-peer propagation alpha.",
+  "reopen_condition": "Reopen the 425 deal-economics alpha only after local filing text covers at least 300 unique SEC 425 accessions and at least 100 resolved-ticker 425 accessions, or after a production/PIT-safe text materializer is wired for the corporate-event stream. Do not rerun theme, keyword, horizon, entry-lag, top-N, hold, notional, or response-shape slices on the current index-only rows.",
+  "decision": "blocked_sec_425_deal_economics_text_coverage",
+  "artifact": "data/experiments/exp-20260710-011/exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.json",
+  "log": "experiments/logs/exp-20260710-011.json",
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair/readiness only; no before/after strategy delta."
+  },
+  "gate2": {
+    "passed": false,
+    "fields_checked": [
+      "entry_date",
+      "target_price",
+      "filing_text_or_primary_document_text",
+      "consideration_type_cash_stock_mixed",
+      "exchange_ratio_or_cash_price",
+      "bidder_or_target_role",
+      "deal_value_or_size",
+      "amendment_withdrawal_termination_trajectory"
+    ],
+    "entry_date": "not_applicable_no_signal_generation",
+    "target_price": "not_applicable_no_signal_generation",
+    "missing_rich_fields": [
+      "filing_text_or_primary_document_text",
+      "consideration_type_cash_stock_mixed",
+      "exchange_ratio_or_cash_price",
+      "bidder_or_target_role",
+      "deal_value_or_size",
+      "amendment_withdrawal_termination_trajectory"
+    ],
+    "cached_425_unique_accessions": 0,
+    "cached_425_resolved_accessions": 0
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": null,
+    "note": "No executable signal/filter/ranking/sizing rule was added."
+  },
+  "gate4": {
+    "passed": false,
+    "mode": "measurement_repair_readiness",
+    "failed_reasons": [
+      "zero_425_text_cache_overlap"
+    ],
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false,
+    "daily_snapshot_changed": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The accepted SEC corporate-event stream materializes form-index metadata for 425 rows, but local filing_text cache currently contains no matching 425 accession, so deal consideration and bidder/target roles cannot be parsed offline.",
+    "forbidden_near_neighbor_retry": "Do not retry SEC 425 theme-peer propagation by theme, keyword, horizon, entry lag, ticker status, top-N, hold, cooldown, notional, or response shape on the current rows.",
+    "new_evidence_required": "Reopen the 425 deal-economics alpha only after local filing text covers at least 300 unique SEC 425 accessions and at least 100 resolved-ticker 425 accessions, or after a production/PIT-safe text materializer is wired for the corporate-event stream. Do not rerun theme, keyword, horizon, entry-lag, top-N, hold, notional, or response-shape slices on the current index-only rows."
+  },
+  "rejection_reason": "zero_425_text_cache_overlap",
+  "realized_failure_mode": "zero_425_text_cache_overlap",
+  "related_files": [
+    "data/non_ohlcv/sec_corporate_event_stream/rows.jsonl",
+    "data/non_ohlcv/sec_corporate_event_stream/manifest.json",
+    "data/cache/sec/filing_text",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.py",
+    "data/experiments/exp-20260710-011/exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.json",
+    "experiments/logs/exp-20260710-011.json",
+    "experiments/cards/exp-20260710-011.md",
+    "experiments/manifests/exp-20260710-011.json",
+    "experiments/tickets/exp-20260710-011.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_011_sec_425_deal_economics_text_coverage_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "updated_at": "2026-07-10T10:18:21+00:00"
+}

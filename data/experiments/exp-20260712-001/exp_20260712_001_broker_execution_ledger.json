@@ -1,0 +1,177 @@
+{
+  "experiment_id": "exp-20260712-001",
+  "status": "accepted_measurement_repair",
+  "lane": "measurement_repair",
+  "hypothesis": "One-time daily pipeline wiring of broker-authoritative fills, order versions, order-level fees, cash flows, and account/position snapshots will make live execution auditable without changing any strategy or order behavior.",
+  "change_type": "identity_or_measurement_repair",
+  "mechanism_family": "broker_execution_measurement",
+  "trial_family": "broker_execution_measurement",
+  "trial_variant_id": "broker_authoritative_execution_fact_ledger_v1",
+  "single_causal_variable": "broker_authoritative_execution_fact_ledger_v1",
+  "nearby_prior_experiments": [
+    "exp-20260706-019",
+    "exp-20260711-006",
+    "exp-20260711-009",
+    "exp-20260711-026"
+  ],
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "No new alpha is claimed. This is an alpha-enabling blocker repair: without broker fills and fees, the system cannot distinguish decayed alpha from execution/cost damage.",
+    "2_history_check": "exp-20260711-006 proved position_id is reused; exp-20260711-009 repaired current-lot entry dates but still discarded deal/order IDs, price and time; exp-20260706-019 explicitly parked exit-side drift until deal history was materialized with at least 20 closed lifecycles.",
+    "3_single_policy_bundle": "Collect in the existing daily Moomoo session, normalize broker facts, append strict hash-chained ledgers, derive lifecycle links and reconciliation state, and classify the new evidence surface. No consumer threshold or trade policy changes.",
+    "4_success_failure_standard": "Stable IDs and full timestamps persist; same capture is idempotent; deal/cashflow corrections append versions; fixed-snapshot conflicts and corruption fail closed; flat accounts are explicit; fee scope and historical cash unknowns are honest; live proof exceeds 20 closed lifecycles; regression/audit pass.",
+    "5_reproducibility": "Run focused pytest commands, strict ledger validation, a read-only fetch followed by persist_broker_execution_capture, then repeat the exact capture and verify all rows_appended values are zero."
+  },
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "sharpe_daily": 0.0,
+    "total_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "trade_count": 0,
+    "survival_rate": 1.0
+  },
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "sharpe_daily": 0.0,
+    "total_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "trade_count": 0,
+    "survival_rate": 1.0
+  },
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "sharpe_daily": 0.0,
+    "total_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "trade_count": 0,
+    "survival_rate": 0.0
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement-only repair; strategy metrics are held equal."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields_verified": [
+      "deal_id",
+      "order_id",
+      "qty",
+      "price",
+      "trd_side",
+      "create_time",
+      "order_status",
+      "fee_amount",
+      "cashflow_id",
+      "cash",
+      "total_assets",
+      "long_mv",
+      "short_mv"
+    ],
+    "sentinel_note": "Existing open-position entry_date and target_price behavior is preserved; full broker time and deal ID now exist as a separate evidence surface."
+  },
+  "gate3": {
+    "passed": true,
+    "new_entry_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "passed": true,
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "checks": {
+      "live_broker_queries_all_ok": true,
+      "fills_have_string_ids_price_and_full_time": true,
+      "deal_corrections_append_versions": true,
+      "cancelled_deal_is_void_economically": true,
+      "order_fee_is_not_duplicated_per_fill": true,
+      "hash_chains_validate": true,
+      "same_capture_rerun_is_zero_append": true,
+      "fixed_snapshot_conflict_fails_before_writes": true,
+      "corrupt_chain_fails_closed": true,
+      "flat_account_is_authoritative": true,
+      "negative_cash_is_preserved": true,
+      "historical_post_fill_cash_is_marked_unavailable": true,
+      "strategy_and_order_behavior_unchanged": true
+    }
+  },
+  "headline_metrics": {
+    "broker_deal_snapshot_version_rows": 1178,
+    "broker_distinct_deal_count": 589,
+    "broker_effective_fill_count": 588,
+    "broker_cancelled_deal_count": 1,
+    "broker_order_snapshot_version_rows": 1250,
+    "broker_order_fee_snapshot_version_rows": 1110,
+    "broker_cashflow_snapshot_version_rows_recent_7_clearing_dates": 28,
+    "broker_distinct_cashflow_count": 14,
+    "broker_account_snapshots": 5,
+    "broker_position_snapshots": 5,
+    "broker_collection_manifests": 3,
+    "fill_lifecycle_link_version_rows": 1766,
+    "active_fill_lifecycle_links": 588,
+    "void_cancelled_lifecycle_links": 1,
+    "trusted_closed_fill_lifecycles": 87,
+    "effective_orders_with_fills": 554,
+    "effective_orders_with_reported_fee": 554,
+    "fee_coverage_pct": 100.0,
+    "same_capture_second_run_rows_appended": 0,
+    "position_qty_reconciliation_mismatches": 6,
+    "fill_order_reconciliation_mismatches": 0,
+    "baseline_unknown_securities": 6,
+    "unlinked_or_quarantined_lifecycle_rows": 103,
+    "focused_and_related_tests_passed": 213,
+    "core_quant_tests_passed": 310
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_moomoo_source_adapter_changed": true,
+    "daily_wiring": "existing run.py Moomoo refresh calls the enhanced generate path",
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "strategy_thresholds_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "measurement_only": true
+  },
+  "acceptance_basis": "The live account materialized 589 distinct broker deals, of which the latest projection has 588 effective fills and one CANCELLED record preserved but economically void with an explicit void lifecycle link, plus 14 distinct recent cash flows and account/position snapshots. All chains and three collection manifests validate; all 554 effective filled orders have reported order-level fees and fill/order quantities match; exact replay is idempotent; 87 trusted closed lifecycles exceed the prior >=20 reopen condition; unsafe fixed identities and damaged chains fail closed while fresh holdings still update with a durable health alert; no trading behavior changed.",
+  "known_limitations": [
+    "The validator proves all eight hash chains and requires at least one collection manifest, but it does not yet prove that every fact row's collection_id belongs to a committed manifest; a crash between fact writes and manifest commit can leave orphan collection versions.",
+    "The broker timestamp timezone is not documented by the local SDK contract; raw time is preserved and UTC is left null.",
+    "Historical post-fill cash/leverage cannot be backfilled from today's accinfo snapshot.",
+    "Two-year deal coverage does not include older positions, transfers, splits or all corporate actions; 6 current quantity mismatches remain explicit.",
+    "Six securities have unknown history-window baselines; 103 affected lifecycle rows remain unlinked/quarantined, so only 87 closed lifecycles are marked trusted.",
+    "Cash-flow forward capture covers the latest seven clearing dates per daily run; downtime longer than seven days requires an explicit rate-limited backfill and older cash-flow history is not claimed complete.",
+    "Order-level fees are not yet allocated to individual fills or closed-lifecycle PnL."
+  ],
+  "post_run_reflection": {
+    "why_result_happened": "The SDK already exposed the needed identifiers and economics; the loss occurred entirely in the adapter, which truncated timestamps and discarded IDs/prices after each run. Reusing the existing daily session made the repair low-risk and immediately produced more than enough closed-lifecycle evidence.",
+    "forbidden_near_neighbor_retry": "Do not reserve new IDs for routine ledger refreshes, re-copy order fees onto every fill, fabricate historical cash snapshots, use position_id as lot identity, or synthesize fills to force quantity reconciliation.",
+    "new_evidence_required": "A separate consumer experiment may reopen exit-side live drift using these 87 trusted closed lifecycles; lifecycle identity may be upgraded with verified broker timezone/push events, corporate-action/transfer records, or a demonstrated cross-zero allocation contract."
+  },
+  "changed_files": [
+    ".gitignore",
+    "quant/broker_execution_ledger.py",
+    "quant/test_broker_execution_ledger.py",
+    "quant/moomoo_open_positions.py",
+    "quant/test_moomoo_open_positions.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/broker_execution_ledger.md",
+    "data/live_pilot/broker_execution/",
+    "data/experiments/exp-20260712-001/",
+    "experiments/tickets/exp-20260712-001.json",
+    "experiments/cards/exp-20260712-001.md",
+    "experiments/manifests/exp-20260712-001.json",
+    "experiments/logs/exp-20260712-001.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_broker_execution_ledger.py quant\\test_moomoo_open_positions.py quant\\test_live_drift_reconciliation.py quant\\test_pending_actions.py quant\\test_open_position_accounting.py quant\\test_open_position_schema.py quant\\test_portfolio_accounting.py quant\\test_run_daily_wiring.py quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_quant.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -c \"from quant.broker_execution_ledger import validate_broker_execution_ledger as v; print(v())\"",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

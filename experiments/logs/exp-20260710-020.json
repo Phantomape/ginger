@@ -1,0 +1,410 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260710-020/exp_20260710_020_cboe_vix9d_vix_backwardation_core_entry_gate.json",
+  "calibration": {
+    "predicted_success_probability": 0.28,
+    "realized_failure_modes": [
+      "gate_removes_convex_recovery_winners",
+      "one_window_concentration"
+    ],
+    "realized_success": false
+  },
+  "change_type": "entry_exclusion_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260710_020_cboe_vix9d_vix_backwardation_core_entry_gate.py",
+    "data/experiments/exp-20260710-020/exp_20260710_020_cboe_vix9d_vix_backwardation_core_entry_gate.json",
+    "data/experiments/exp-20260710-020/cboe_vix9d_vix_daily_closes.json",
+    "data/experiments/exp-20260710-020/before_measurement.json",
+    "data/experiments/exp-20260710-020/after_measurement.json",
+    "experiments/logs/exp-20260710-020.json",
+    "experiments/cards/exp-20260710-020.md",
+    "experiments/manifests/exp-20260710-020.json",
+    "experiments/tickets/exp-20260710-020.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260710-020/before_late_strong.json",
+    "data/experiments/exp-20260710-020/before_mid_weak.json",
+    "data/experiments/exp-20260710-020/before_old_thin.json",
+    "data/experiments/exp-20260710-020/after_late_strong.json",
+    "data/experiments/exp-20260710-020/after_mid_weak.json",
+    "data/experiments/exp-20260710-020/after_old_thin.json"
+  ],
+  "changed_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1",
+  "completed_at": "2026-07-11T00:09:22Z",
+  "decision": "observed_only_rejected_cboe_vix9d_vix_backwardation_entry_gate",
+  "experiment_id": "exp-20260710-020",
+  "gate1": {
+    "baseline_available": true,
+    "canonical_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "identity_passed": true,
+    "passed": true,
+    "warehouse_available": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "decision_time": "after_signal_day_close_before_next_open",
+    "entry_date_and_target_price_sentinels": {
+      "late_strong": {
+        "entry_date_complete": true,
+        "target_price_complete": false
+      },
+      "mid_weak": {
+        "entry_date_complete": true,
+        "target_price_complete": false
+      },
+      "old_thin": {
+        "entry_date_complete": true,
+        "target_price_complete": false
+      }
+    },
+    "missing_date_behavior": "fail_open_keep_core_entries",
+    "passed": true,
+    "required_term_structure_fields": [
+      "date",
+      "vix_close",
+      "vix9d_close"
+    ]
+  },
+  "gate3": {
+    "min_survival_rate": 0.7143,
+    "passed": true,
+    "signals_generated": {
+      "late_strong": 51,
+      "mid_weak": 53,
+      "old_thin": 63
+    },
+    "signals_survived": {
+      "late_strong": 38,
+      "mid_weak": 42,
+      "old_thin": 45
+    },
+    "survival_rate": {
+      "late_strong": 0.7451,
+      "mid_weak": 0.7925,
+      "old_thin": 0.7143
+    }
+  },
+  "gate4": {
+    "acceptance_rule": "Positive replay lead only if aggregate EV and PnL improve, at least two of three windows improve EV, no window regresses EV or PnL, max drawdown drift is <=0.5pp, remaining trades retain statistical meaning, and survival stays >=5%; even a pass requires shared-paper-first promotion before any behavior change.",
+    "accepted_alpha": false,
+    "aggregate": {
+      "after_expected_value_score": 7.1829,
+      "after_total_pnl": 213931.54,
+      "after_trade_count": 59,
+      "before_expected_value_score": 7.8941,
+      "before_total_pnl": 234850.99,
+      "before_trade_count": 61,
+      "candidate_dates_missing_state": 0,
+      "dropped_signal_count": 15,
+      "ev_improved_windows": [],
+      "ev_regressed_windows": [
+        "late_strong",
+        "old_thin"
+      ],
+      "expected_value_score_delta": -0.7112,
+      "expected_value_score_delta_pct": -9.0093,
+      "max_drawdown_drift_max": 0.0,
+      "min_after_survival_rate": 0.7143,
+      "pnl_regressed_windows": [
+        "late_strong",
+        "old_thin"
+      ],
+      "total_pnl_delta": -20919.45,
+      "trade_count_delta": -2.0
+    },
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "fewer_than_two_ev_improved_windows",
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "full_backtest_replay": true,
+    "positive_replay_lead": false,
+    "promotion_boundary": "positive result still requires shared-paper-first helper and parity",
+    "windows": [
+      {
+        "after": {
+          "expected_value_score": 4.686,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.24,
+          "signals_generated": 51,
+          "signals_survived": 38,
+          "strategy_total_return_pct": 1.1052,
+          "survival_rate": 0.7451,
+          "total_pnl": 110522.33,
+          "total_trades": 17,
+          "win_rate": 0.8235
+        },
+        "before": {
+          "expected_value_score": 5.1628,
+          "max_drawdown_pct": 0.0665,
+          "sharpe_daily": 4.41,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "strategy_total_return_pct": 1.1707,
+          "survival_rate": 0.8039,
+          "total_pnl": 117072.92,
+          "total_trades": 18,
+          "win_rate": 0.8333
+        },
+        "delta": {
+          "expected_value_score": -0.4768,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": -0.17,
+          "signals_generated": 0.0,
+          "signals_survived": -3.0,
+          "strategy_total_return_pct": -0.0655,
+          "survival_rate": -0.0588,
+          "total_pnl": -6550.59,
+          "total_trades": -1.0,
+          "win_rate": -0.0098
+        },
+        "identity": {
+          "canonical_ev": 5.1628,
+          "canonical_pnl": 117072.92,
+          "ev_drift": 0.0,
+          "passed": true,
+          "pnl_drift": 0.0
+        },
+        "label": "late_strong",
+        "term_structure_coverage": {
+          "backwardation_market_days": 19,
+          "candidate_dates_missing_state": 0,
+          "candidate_dates_seen": 34,
+          "candidate_dates_with_drops": 2,
+          "dropped_signal_count": 3,
+          "dropped_ticker_counts": {
+            "CVX": 1,
+            "DE": 1,
+            "MCD": 1
+          }
+        }
+      },
+      {
+        "after": {
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "strategy_total_return_pct": 0.7811,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "total_trades": 21,
+          "win_rate": 0.5238
+        },
+        "before": {
+          "expected_value_score": 2.1402,
+          "max_drawdown_pct": 0.1119,
+          "sharpe_daily": 2.74,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "strategy_total_return_pct": 0.7811,
+          "survival_rate": 0.7925,
+          "total_pnl": 78110.11,
+          "total_trades": 21,
+          "win_rate": 0.5238
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "signals_generated": 0.0,
+          "signals_survived": 0.0,
+          "strategy_total_return_pct": 0.0,
+          "survival_rate": 0.0,
+          "total_pnl": 0.0,
+          "total_trades": 0.0,
+          "win_rate": 0.0
+        },
+        "identity": {
+          "canonical_ev": 2.1402,
+          "canonical_pnl": 78110.11,
+          "ev_drift": 0.0,
+          "passed": true,
+          "pnl_drift": 0.0
+        },
+        "label": "mid_weak",
+        "term_structure_coverage": {
+          "backwardation_market_days": 9,
+          "candidate_dates_missing_state": 0,
+          "candidate_dates_seen": 43,
+          "candidate_dates_with_drops": 0,
+          "dropped_signal_count": 0,
+          "dropped_ticker_counts": {}
+        }
+      },
+      {
+        "after": {
+          "expected_value_score": 0.3567,
+          "max_drawdown_pct": 0.1,
+          "sharpe_daily": 1.41,
+          "signals_generated": 63,
+          "signals_survived": 45,
+          "strategy_total_return_pct": 0.253,
+          "survival_rate": 0.7143,
+          "total_pnl": 25299.1,
+          "total_trades": 21,
+          "win_rate": 0.3333
+        },
+        "before": {
+          "expected_value_score": 0.5911,
+          "max_drawdown_pct": 0.1001,
+          "sharpe_daily": 1.49,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "strategy_total_return_pct": 0.3967,
+          "survival_rate": 0.8667,
+          "total_pnl": 39667.96,
+          "total_trades": 22,
+          "win_rate": 0.4091
+        },
+        "delta": {
+          "expected_value_score": -0.2344,
+          "max_drawdown_pct": -0.0001,
+          "sharpe_daily": -0.08,
+          "signals_generated": 3.0,
+          "signals_survived": -7.0,
+          "strategy_total_return_pct": -0.1437,
+          "survival_rate": -0.1524,
+          "total_pnl": -14368.86,
+          "total_trades": -1.0,
+          "win_rate": -0.0758
+        },
+        "identity": {
+          "canonical_ev": 0.5911,
+          "canonical_pnl": 39667.96,
+          "ev_drift": 0.0,
+          "passed": true,
+          "pnl_drift": 0.0
+        },
+        "label": "old_thin",
+        "term_structure_coverage": {
+          "backwardation_market_days": 41,
+          "candidate_dates_missing_state": 0,
+          "candidate_dates_seen": 38,
+          "candidate_dates_with_drops": 9,
+          "dropped_signal_count": 12,
+          "dropped_ticker_counts": {
+            "AMZN": 1,
+            "BKNG": 2,
+            "CVX": 1,
+            "DDOG": 1,
+            "GOOG": 2,
+            "MCD": 1,
+            "PLTR": 1,
+            "RTX": 1,
+            "SLV": 1,
+            "SPOT": 1
+          }
+        }
+      }
+    ]
+  },
+  "hypothesis": "Private replay scout: CBOE VIX9D close above VIX close on the signal day is an option-implied near-term backwardation stress state in which current core next-open entries should be excluded; the fixed no-entry gate should improve canonical multi-window EV, PnL, and drawdown without threshold tuning.",
+  "implementation_mode": "private_replay_scout_data_shape_uncertain",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260710-020.json",
+  "mechanism_family": "cboe_volatility_term_structure_entry_admission",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260603-024",
+    "exp-20260607-018",
+    "exp-20260607-023",
+    "exp-20260708-028"
+  ],
+  "new_evidence_axis": "Genuinely new data source: CBOE option-implied VIX9D versus VIX term structure, explicitly named as required reopen evidence by exp-20260607-018 and exp-20260607-023; no prior family used VIX9D/VIX backwardation.",
+  "new_evidence_type": "new_data_source",
+  "next_retry_requires": [
+    "different_volatility_risk_transfer_source",
+    "no_vix9d_vix_threshold_ratio_lookback_strategy_window_or_response_retune"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing the VIX9D/VIX spread threshold, using a ratio instead of a difference, adding lookbacks, switching to VIX3M/VIX6M, limiting to a strategy/ticker/window, changing missing-date handling, or converting the same rejected signal to a scalar/tilt. Those are retunes of this evidence surface.",
+    "new_evidence_required": "If positive, the only next step is a shared-paper-first Cboe term-structure helper with daily default-off snapshot, parity, and the same fixed rule. If rejected, revisit only with materially settled forward rows from such a helper or a genuinely different volatility-risk-transfer source.",
+    "why_result_happened": "The fixed VIX9D>VIX backwardation gate did not improve the current core stack under the predeclared multi-window rules. The likely cause is overlap with existing bear/regime protection or deletion of high-convexity rebound entries rather than isolation of uniquely weak entry conditions."
+  },
+  "prediction": {
+    "confidence_reason": "The existing VIXY relief sleeve was a positive replay lead and both exp-20260607-018/023 explicitly named actual VIX term structure as the next legal evidence. A strict VIX9D>VIX state is economically interpretable, but core regime gates may already absorb stress and hard exclusion can delete rebound winners, so pass odds remain below one third.",
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "backwardation_days_already_blocked_by_bear_regime",
+      "gate_removes_convex_recovery_winners",
+      "sample_too_thin",
+      "one_window_concentration",
+      "yahoo_cboe_date_gaps"
+    ],
+    "recorded_at": "2026-07-10T23:49:26+00:00",
+    "success_probability": 0.28
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "experiment_local_private_replay_scout",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "strategy_code_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive;aggregate_pnl_not_positive;fewer_than_two_ev_improved_windows;window_ev_regression;window_pnl_regression",
+  "related_files": [
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "data/experiments/exp-20260519-030/warehouse_main.sqlite",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "exp-20260603-024",
+    "exp-20260607-018",
+    "exp-20260607-023",
+    "exp-20260708-028"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260710_020_cboe_vix9d_vix_backwardation_core_entry_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_020_cboe_vix9d_vix_backwardation_core_entry_gate.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1",
+  "status": "observed_only",
+  "trial_family": "cboe_vix9d_vix_backwardation_core_entry_gate",
+  "trial_variant_id": "cboe_vix9d_gt_vix_core_entry_exclusion_v1"
+}

@@ -1,0 +1,61 @@
+{
+  "experiment_id": "exp-20260711-026",
+  "measurement_surface": "pending_action_position_lifecycle_binding_v1",
+  "expected_value_score": 0.0,
+  "total_pnl": 0.0,
+  "total_return_pct": 0.0,
+  "sharpe_daily": 0.0,
+  "max_drawdown_pct": 0.0,
+  "total_trades": 0,
+  "signals_generated": 0,
+  "signals_survived": 0,
+  "survival_rate": 1.0,
+  "lifecycle_contract": {
+    "format": "v1:{account}:{ticker}:{direction}:{verified_current_lot_entry_date}",
+    "broker_position_id_role": "audit_only_not_identity",
+    "missing_or_ambiguous_identity_behavior": "fail_closed_no_override",
+    "legacy_migration_rule": "supersede when current entry_date is later than first_advice_date"
+  },
+  "current_case": {
+    "ticker": "MCD",
+    "pending_action_first_advice_date": "20260414",
+    "pending_action_status": "superseded",
+    "pending_action_close_reason": "legacy_action_predates_current_lifecycle",
+    "current_position_lifecycle_id": "v1:moomoo_futusg:MCD:long:2026-07-08",
+    "current_open_pending_actions": 0
+  },
+  "current_snapshot": {
+    "valid": true,
+    "position_rows": 11,
+    "archive_bootstrap_rows": 0
+  },
+  "checks": {
+    "pending_action_has_lifecycle_identity": true,
+    "reopened_lot_is_distinguished": true,
+    "terminal_reconciliation_is_persisted": true,
+    "pending_reminder_reregistration_is_blocked": true,
+    "current_stale_action_is_inactive": true,
+    "same_lifecycle_reduce_and_add_still_repeat": true,
+    "missing_entry_date_is_quarantined": true,
+    "direction_change_supersedes_old_action": true,
+    "archive_bootstrap_without_pit_positions_is_disabled": true,
+    "malformed_snapshot_fails_closed_globally": true,
+    "backdated_reconciliation_hides_future_actions_without_closing_them": true,
+    "same_day_legacy_identity_is_quarantined": true,
+    "strategy_thresholds_changed": false,
+    "orders_changed": false,
+    "backtester_changed": false
+  },
+  "verification": {
+    "focused_pending_action_tests": "17 passed",
+    "related_integration_tests": "38 passed",
+    "core_quant_tests": "310 passed",
+    "current_ledger_query": "[]"
+  },
+  "known_limitations": [
+    "Current lot identity is day-granular; a same-day full exit and re-entry needs broker fill timestamp or contributing deal id before it can be distinguished safely.",
+    "The account field is the operator snapshot account label, not yet a persisted broker account id.",
+    "The production contract is currently one account per snapshot; multi-account same-ticker indexing needs a later schema extension.",
+    "Atomic persistence prevents partial files but does not yet provide a compare-and-swap lock for concurrent ledger writers."
+  ]
+}

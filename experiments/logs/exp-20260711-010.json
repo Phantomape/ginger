@@ -1,0 +1,20 @@
+{
+  "accepted": false,
+  "change_type": "duplicate_reservation_accounting",
+  "decision": "rejected_duplicate_no_new_evidence_axis",
+  "experiment_id": "exp-20260711-010",
+  "hypothesis": "Correct the invalid position-id entry-date fallback from exp-20260711-006 by reconstructing the current lot backward from current quantity and newest fills.",
+  "lane": "measurement_repair",
+  "nearby_prior_experiments": ["exp-20260711-009"],
+  "notes": "Duplicate reservation only; no implementation or measurement ran.",
+  "post_run_reflection": {
+    "why_result_happened": "The second reservation was created while the first experiment.py process was still waiting on the shared registry lock; it duplicated the identical locked repair variable.",
+    "forbidden_near_neighbor_retry": "Do not create another current-lot reconstruction ticket for the SNXX incident.",
+    "new_evidence_required": "A new ID requires a different unresolved corporate-action, transfer, or fill-history case after exp-20260711-009."
+  },
+  "production_impact": {"measurement_only": true, "orders_changed": false},
+  "single_causal_variable": "moomoo_current_lot_backward_fill_reconstruction_v1",
+  "status": "rejected",
+  "timestamp": "2026-07-11T04:45:30+00:00",
+  "trial_family": "duplicate_reservation_accounting"
+}

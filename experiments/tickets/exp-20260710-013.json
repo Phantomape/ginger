@@ -1,0 +1,359 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "experiments/cards/exp-20260710-013.md",
+    "experiments/manifests/exp-20260710-013.json",
+    "experiments/tickets/exp-20260710-013.json",
+    "experiments/logs/exp-20260710-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-013.md",
+  "causal_components": [
+    "sec_filing_features_data_source_keyword",
+    "fingerprint_regression_tests",
+    "readiness_blocker_record",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "sec_filing_features_fingerprint_data_source_repair_v1",
+  "claimed_at": "2026-07-10T13:05:07+00:00",
+  "completed_at": "2026-07-10T13:07:51+00:00",
+  "created_at": "2026-07-10T13:04:53+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-013",
+  "experiment_uid": "expuid-26c6a67405ac4b1a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T13:04:53+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_filing_features_fingerprint_repair"
+  },
+  "hypothesis": "Repair SEC filing feature mosaic fingerprint coverage so sec_filing_features / sec_filing_text_plus_companyfacts can be tracked as its own data source before any future source-credibility or predictability alpha read.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_filing_features_fingerprint_data_source_repair_v1"
+  ],
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-003",
+    "exp-20260708-014",
+    "exp-20260710-012"
+  ],
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "alpha",
+        "any",
+        "as",
+        "be",
+        "before",
+        "can",
+        "companyfacts",
+        "coverage",
+        "credibility",
+        "data",
+        "feature",
+        "features",
+        "filing",
+        "fingerprint",
+        "future",
+        "its",
+        "mosaic",
+        "or",
+        "own",
+        "plus",
+        "predictability",
+        "read",
+        "repair",
+        "so",
+        "text",
+        "tracked"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_10k_10q_text_default_coverage_repair",
+        "reopen_condition": "Run SEC filing-text materialization with the repaired defaults for historical 10-K/10-Q events, parse cover-page filer-status booleans by accession/accepted_at, then rerun one fixed shared-paper-first filer-status transition rule.",
+        "score": 0.5016,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_coverage_status_allocation",
+        "reopen_condition": "Do not use SEC text archive missingness as an allocation signal. If this edge is revisited, replace it with a stable production-visible field such as form type, accession-matched text_event_type, or an explicit disclosure-quality bucket and rerun Gate 1-4.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_divestiture_spinoff_completion_text_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer PIT transaction provenance such as normalized business/segment identity, segment revenue or profit mix, buyer/counterparty identity, proceeds/use-of-proceeds, completion status labels from a shared daily helper, or closed forward replacement rows. Do not sweep SEC divestiture/spin-off phrase lists, item codes, optional value thresholds, RS/close/volume guards,",
+        "score": 0.4638,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item502_leadership_quality_text_candidate_pool",
+        "reopen_condition": "A legal retry needs prospective closed forward replacement rows, normalized executive-role extraction from primary documents, independent management-change data, or another non-SEC source that identifies leadership quality.",
+        "score": 0.4638,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_cyber_incident_containment_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer PIT cyber provenance such as incident category, quantified business interruption, exfiltration/ransomware status, insurance/recovery evidence, customer churn or regulatory exposure, or closed forward replacement rows from a shared daily helper. Do not sweep cyber phrase lists, Item 1.05/8.01 item codes, RS/close/volume guards, top-N, hold, cooldown, or notiona",
+        "score": 0.4638,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec_text_event",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore-automation",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+    "artifact": "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "log": "experiments/logs/exp-20260710-013.json",
+    "runner": "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "strategy_behavior_changed": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0
+      },
+      "failed_reasons": [],
+      "acceptance_rule": "Accepted measurement repair if SEC filing-feature examples resolve to sec_filing_features, forward-attribution and candidate-pool gate shapes are preserved, generic SEC text remains sec_text_event, SEC filer status remains sec_filer_status, Companyfacts remains companyfacts_ratio, generic forward replacement remains forward_replacement_value, and no strategy/live behavior changes."
+    },
+    "headline_metrics": {
+      "checks_total": 8,
+      "checks_passed": 8,
+      "failed_checks": [],
+      "sec_filing_feature_rows": 17,
+      "same_accession_companyfacts_rows": 0,
+      "strategy_behavior_delta": 0
+    },
+    "summary": "measurement_repair_sec_filing_features_fingerprint_coverage"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-013.json",
+  "single_causal_variable": "sec_filing_features_fingerprint_data_source_repair_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260710-013.json",
+  "trial_family": "sec_filing_features_fingerprint_coverage",
+  "trial_variant_id": "sec_filing_features_source_key_v1",
+  "alpha_hypothesis": "candidate_pool/forward-attribution: SEC filing-feature source credibility, low-volume predictability, and text-direction-vs-price buckets may later explain filing-event replacement value, but current rows lack enough same-accession economic fields and settled forward outcomes.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "new_evidence_axis": "Fingerprint classifier repair for a distinct SEC filing-feature mosaic surface; this changes novelty accounting only, not SEC item lists, text regexes, thresholds, candidate ranking, holds, notional, or alpha response shape.",
+  "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+  "artifact": "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+  "log": "experiments/logs/exp-20260710-013.json",
+  "feature_summary": {
+    "exists": true,
+    "path": "data/non_ohlcv/sec_filing_features_summary_20260709.json",
+    "rows_written": 17,
+    "pit_safe_rows": 17,
+    "rows_with_same_accession_facts": 0,
+    "rows_with_filer_status": 14,
+    "field_counts": {
+      "fcf_to_net_income_gap": 0,
+      "filer_status_category": 0,
+      "gross_margin_delta": 0,
+      "inventory_growth": 0,
+      "low_volume_predictability_bucket": 17,
+      "predictability_mosaic_bucket": 17,
+      "receivables_growth": 0,
+      "source_credibility_bucket": 17,
+      "text_direction_vs_price_bucket": 17
+    },
+    "filer_status_parse_counts": {
+      "blocked_no_cover_page_status_terms": 3,
+      "parsed_machine_readable_dei_fact": 14
+    },
+    "pit_caveat": "accepted_at/usable_trade_date gate event tradability; Companyfacts filed date is only a public-availability proxy for historical replay."
+  },
+  "alpha_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "feature_rows_below_alpha_sample_floor",
+      "same_accession_companyfacts_rows_too_thin",
+      "economic_feature_fields_unpopulated"
+    ],
+    "note": "This run deliberately does not test an alpha. Current feature rows and same-accession/economic fields are too thin for a Gate 1-4 candidate-pool or forward-attribution read."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "sec_filing_features",
+      "sec_filing_text_plus_companyfacts",
+      "source_credibility_bucket",
+      "predictability_mosaic_bucket"
+    ],
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals."
+  },
+  "gate3": {
+    "passed": true,
+    "new_core_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "note": "No buy/sell/filter/ranking behavior changed."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "failed_reasons": [],
+    "acceptance_rule": "Accepted measurement repair if SEC filing-feature examples resolve to sec_filing_features, forward-attribution and candidate-pool gate shapes are preserved, generic SEC text remains sec_text_event, SEC filer status remains sec_filer_status, Companyfacts remains companyfacts_ratio, generic forward replacement remains forward_replacement_value, and no strategy/live behavior changes."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "ranking_sizing_exits_changed": false,
+    "novelty_guard_accounting_changed": true,
+    "daily_snapshot_exposed": false,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The keyword table had specific keys for SEC filer status, SEC contract relation, generic SEC text, Companyfacts, and forward replacement rows, but not the combined SEC filing-feature mosaic. Proposals mentioning both SEC text, Companyfacts, and replacement value were therefore routed to the wrong source population.",
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Future sec_filing_features work still needs materially more PIT feature rows with same-accession/economic fields and settled cash/SPY/QQQ replacement value, or a distinct non-SEC data source. Do not sweep SEC forms/items, text regexes, credibility bucket labels, top-N, hold, cooldown, notional, or response shape on the current 17 rows.",
+    "new_evidence_required": "A valid next alpha ticket should fingerprint as sec_filing_features and provide enough settled rows and populated economic fields for Gate 1-4 or a declared observed-only replacement-value read."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-013.json",
+    "experiments/cards/exp-20260710-013.md",
+    "experiments/manifests/exp-20260710-013.json",
+    "experiments/tickets/exp-20260710-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-013.json",
+    "experiments/cards/exp-20260710-013.md",
+    "experiments/manifests/exp-20260710-013.json",
+    "experiments/tickets/exp-20260710-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\experiments\\exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T13:07:51+00:00"
+}

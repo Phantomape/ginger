@@ -1,0 +1,215 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.3344,
+  "aggregate_strategy_total_pnl_delta": 7548.9,
+  "artifact": "data/experiments/exp-20260711-002/exp_20260711_002_move_rate_volatility_relief_stock_leadership.json",
+  "calibration": {
+    "actual_success": true,
+    "brier_score": 0.7056,
+    "failed_reasons": [],
+    "predicted_failure_modes": [
+      "move_relief_relabels_broad_beta",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "predicted_failure_modes_hit": [],
+    "predicted_success_probability": 0.16,
+    "surprise_note": "The fixed MOVE event and frozen selector cleared every replay gate."
+  },
+  "causal_components": [
+    "Yahoo-mirrored ICE BofA MOVE daily closes",
+    "fixed first cross below trailing 20-session simple mean",
+    "unchanged exp-20260607-018 stock leadership selector",
+    "next-open 10-session paper replay",
+    "canonical costs and Gate 1-4"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260711_002_move_rate_volatility_relief_stock_leadership.py",
+    "data/experiments/exp-20260711-002/**",
+    "experiments/tickets/exp-20260711-002.json",
+    "experiments/cards/exp-20260711-002.md",
+    "experiments/manifests/exp-20260711-002.json",
+    "experiments/logs/exp-20260711-002.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "move20_cross_below_rate_volatility_relief_stock_leadership_v1",
+  "data_coverage": {
+    "all_canonical_windows_covered": true,
+    "relief_events_by_window": {
+      "late_strong": 7,
+      "mid_weak": 12,
+      "old_thin": 6
+    },
+    "row_count": 428,
+    "rows_by_window": {
+      "late_strong": 122,
+      "mid_weak": 126,
+      "old_thin": 136
+    },
+    "source": "Yahoo Finance mirror of ICE BofA MOVE Index"
+  },
+  "decision": "positive_replay_lead_not_promoted_move_rate_volatility_relief",
+  "experiment_id": "exp-20260711-002",
+  "fingerprint_caveat": "Reservation overmatched forward_replacement_value; this experiment adds the dedicated move_rate_volatility key and rebuilds frozen families.",
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 10
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "ICE BofA MOVE daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.3344,
+    "aggregate_pnl_delta": 7548.9,
+    "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+    "failed_reasons": [],
+    "max_drawdown_worse": 0.0021,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.227918,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.098849,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 49,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "Private replay scout: a first daily close of the ICE BofA MOVE Index below its trailing 20-session mean is an option-implied Treasury-rate-volatility relief event; applying the unchanged exp-20260607-018 liquid stock-leadership selector on that event day should add positive next-open 10-session paper replacement value across all three canonical windows without window, drawdown, survival, or concentration failure.",
+  "implementation_mode": "private_replay_scout_new_data_shape",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260711-002.json",
+  "mechanism_family": "production_visible_rate_volatility_relief_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260607-018",
+    "exp-20260607-019",
+    "exp-20260619-021",
+    "exp-20260710-020",
+    "exp-20260711-001"
+  ],
+  "new_evidence_axis": "ICE BofA MOVE daily history spans all three canonical windows and no prior experiment used MOVE/Treasury rate-volatility relief; the candidate selector remains frozen from exp-20260607-018.",
+  "new_evidence_type": "new_data_source_move_index",
+  "observed_only_lead": true,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing the MOVE moving-average span, using percent/level thresholds, adding direction persistence, changing stock filters, sectors, top-N, hold, cooldown, notional, windows, or scalar response.",
+    "new_evidence_required": "Reopen only with materially settled forward rows from a fixed shared helper or a genuinely different rate-volatility source such as publication-timed swaption/term-premium data.",
+    "why_result_happened": "The first MOVE cross below its 20-session mean supplied an independent rate-volatility relief state whose frozen stock selector added robust after-cost replacement value in every canonical window."
+  },
+  "prediction": {
+    "confidence_reason": "MOVE is a genuinely new options-implied Treasury risk-transfer source with complete canonical coverage, and accepted volatility/macro relief analogs support the mechanism; odds stay low because HYG/JNK and VIX9D tests showed macro relief labels often overlap beta or delete winners.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "move_relief_relabels_broad_beta",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "recorded_at": "2026-07-11T02:09:47+00:00",
+    "success_probability": 0.16
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "scope": "experiment_local_private_replay_scout",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_002_move_rate_volatility_relief_stock_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_002_move_rate_volatility_relief_stock_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "move20_cross_below_rate_volatility_relief_stock_leadership_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-11T02:23:12Z",
+  "trial_family": "move_rate_volatility_relief_stock_leadership_candidate_pool",
+  "trial_variant_id": "move20_cross_below_fixed_stock_leadership_v1"
+}

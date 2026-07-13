@@ -1,0 +1,1167 @@
+{
+  "acceptance_rule": "Observed-only lead only if old_thin+mid_weak can select exactly one unselected decision cohort using fixed train criteria, and that same cohort validates on late_strong with positive cash/SPY/QQQ 10d averages, cash win rate >=50%, cash average above entered late_strong candidates, >=3 holdout rows, and max single ticker share <=40%. No alpha can be accepted here.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "complete_10d_rows_examined": 130,
+    "expected_value_score_sum": 7.8941,
+    "holdout_rows": 37,
+    "max_drawdown_pct_worst": 0.1119,
+    "observed_only_holdout_lead": false,
+    "selected_train_cohort_decision": "slot_sliced",
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "train_rows": 93,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "candidate_meta_label train-before-test alpha: the leak-free canonical candidate ledger may contain an unselected entry-decision cohort that can be selected using only earlier chronological rows and then validated on later rows for positive 10d cash/SPY/QQQ replacement value versus entered candidates; if no cohort is train-selected and test-valid, candidate meta-label promotion remains blocked.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+    "actual_success": 0,
+    "brier_score": 0.0441,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "train_segment_selects_no_cohort",
+      "holdout_window_instability",
+      "entered_candidates_remain_best",
+      "sample_too_thin"
+    ],
+    "predicted_success_probability": 0.21,
+    "realized_failure_modes": [
+      "avg_cash_positive",
+      "avg_spy_positive",
+      "avg_qqq_positive",
+      "cash_win_rate_gte_50pct",
+      "cash_avg_beats_entered"
+    ]
+  },
+  "causal_components": [
+    "exp024_candidate_training_ledger",
+    "train_before_test_cohort_selection",
+    "holdout_10d_cash_spy_qqq_validation",
+    "no_model_training",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "experiments/logs/exp-20260710-018.json",
+    "experiments/cards/exp-20260710-018.md",
+    "experiments/manifests/exp-20260710-018.json",
+    "experiments/tickets/exp-20260710-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "candidate_meta_label_train_selected_decision_cohort_validation_v1",
+  "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "observed_only_holdout_lead": false,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "evaluation": {
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "complete_10d_rows": 130,
+    "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+    "failed_reasons": [
+      "avg_cash_positive",
+      "avg_spy_positive",
+      "avg_qqq_positive",
+      "cash_win_rate_gte_50pct",
+      "cash_avg_beats_entered"
+    ],
+    "gate_shape": {
+      "holdout_windows": [
+        "late_strong"
+      ],
+      "max_ticker_share": 0.4,
+      "min_cash_win_rate": 0.5,
+      "min_holdout_rows": 3,
+      "min_train_rows": 8,
+      "selection_rule": "choose passing unselected train cohort with highest train avg_cash_minus_entered",
+      "train_windows": [
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "holdout_decision_counts": {
+      "adverse_gap_down_cancel": 5,
+      "entered": 16,
+      "gap_cancel": 3,
+      "no_shares": 10,
+      "slot_sliced": 3
+    },
+    "holdout_passed": false,
+    "holdout_rows": 37,
+    "holdout_summary_for_selected_cohort": {
+      "avg_cash_minus_entered": -1941.896667,
+      "comparators": {
+        "cash": {
+          "avg": -1359.426667,
+          "count": 3,
+          "max": -518.84,
+          "median": -1205.91,
+          "min": -2353.53,
+          "positive_count": 0,
+          "win_rate": 0.0
+        },
+        "qqq": {
+          "avg": -961.46,
+          "count": 3,
+          "max": -112.0,
+          "median": -825.7,
+          "min": -1946.68,
+          "positive_count": 0,
+          "win_rate": 0.0
+        },
+        "spy": {
+          "avg": -1192.86,
+          "count": 3,
+          "max": -341.56,
+          "median": -1060.78,
+          "min": -2176.24,
+          "positive_count": 0,
+          "win_rate": 0.0
+        }
+      },
+      "concentration": {
+        "top_ticker": "IWM",
+        "top_ticker_rows": 1,
+        "top_ticker_share": 0.333333,
+        "unique_tickers": 3
+      },
+      "criteria": {
+        "avg_cash_positive": false,
+        "avg_qqq_positive": false,
+        "avg_spy_positive": false,
+        "cash_avg_beats_entered": false,
+        "cash_win_rate_gte_50pct": false,
+        "max_ticker_share_lte_40pct": true,
+        "min_rows": true,
+        "unselected_cohort": true
+      },
+      "decision": "slot_sliced",
+      "entered_avg_cash": 582.47,
+      "passed": false,
+      "rows": 3,
+      "sample_rows": [
+        {
+          "cash_rv_usd": -518.84,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2026-01-22",
+          "qqq_rv_usd": -112.0,
+          "signal_date": "2026-01-21",
+          "spy_rv_usd": -341.56,
+          "strategy": "breakout_long",
+          "ticker": "IWM",
+          "window": "late_strong"
+        },
+        {
+          "cash_rv_usd": -2353.53,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2026-01-22",
+          "qqq_rv_usd": -1946.68,
+          "signal_date": "2026-01-21",
+          "spy_rv_usd": -2176.24,
+          "strategy": "breakout_long",
+          "ticker": "AMD",
+          "window": "late_strong"
+        },
+        {
+          "cash_rv_usd": -1205.91,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2026-01-30",
+          "qqq_rv_usd": -825.7,
+          "signal_date": "2026-01-29",
+          "spy_rv_usd": -1060.78,
+          "strategy": "trend_long",
+          "ticker": "META",
+          "window": "late_strong"
+        }
+      ]
+    },
+    "holdout_windows": [
+      "late_strong"
+    ],
+    "selected_train_cohort": {
+      "avg_cash_minus_entered": 238.537209,
+      "comparators": {
+        "cash": {
+          "avg": 501.35,
+          "count": 12,
+          "max": 1756.72,
+          "median": 194.325,
+          "min": -103.42,
+          "positive_count": 11,
+          "win_rate": 0.916667
+        },
+        "qqq": {
+          "avg": 439.88,
+          "count": 12,
+          "max": 1823.99,
+          "median": 164.7,
+          "min": -196.45,
+          "positive_count": 8,
+          "win_rate": 0.666667
+        },
+        "spy": {
+          "avg": 464.2375,
+          "count": 12,
+          "max": 1746.78,
+          "median": 164.59,
+          "min": -113.37,
+          "positive_count": 10,
+          "win_rate": 0.833333
+        }
+      },
+      "concentration": {
+        "top_ticker": "PLTR",
+        "top_ticker_rows": 2,
+        "top_ticker_share": 0.166667,
+        "unique_tickers": 10
+      },
+      "criteria": {
+        "avg_cash_positive": true,
+        "avg_qqq_positive": true,
+        "avg_spy_positive": true,
+        "cash_avg_beats_entered": true,
+        "cash_win_rate_gte_50pct": true,
+        "max_ticker_share_lte_40pct": true,
+        "min_rows": true,
+        "unselected_cohort": true
+      },
+      "decision": "slot_sliced",
+      "entered_avg_cash": 262.812791,
+      "passed": true,
+      "rows": 12,
+      "sample_rows": [
+        {
+          "cash_rv_usd": 151.42,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2025-10-09",
+          "qqq_rv_usd": 166.14,
+          "signal_date": "2025-10-08",
+          "spy_rv_usd": 177.7,
+          "strategy": "trend_long",
+          "ticker": "GLD",
+          "window": "mid_weak"
+        },
+        {
+          "cash_rv_usd": 103.56,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2024-11-07",
+          "qqq_rv_usd": 170.83,
+          "signal_date": "2024-11-06",
+          "spy_rv_usd": 93.61,
+          "strategy": "trend_long",
+          "ticker": "GS",
+          "window": "old_thin"
+        },
+        {
+          "cash_rv_usd": -103.42,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2024-11-07",
+          "qqq_rv_usd": -36.16,
+          "signal_date": "2024-11-06",
+          "spy_rv_usd": -113.37,
+          "strategy": "trend_long",
+          "ticker": "IWM",
+          "window": "old_thin"
+        },
+        {
+          "cash_rv_usd": 10.63,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2024-11-07",
+          "qqq_rv_usd": 77.9,
+          "signal_date": "2024-11-06",
+          "spy_rv_usd": 0.69,
+          "strategy": "trend_long",
+          "ticker": "JPM",
+          "window": "old_thin"
+        },
+        {
+          "cash_rv_usd": 992.48,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2024-11-07",
+          "qqq_rv_usd": 1059.74,
+          "signal_date": "2024-11-06",
+          "spy_rv_usd": 982.53,
+          "strategy": "trend_long",
+          "ticker": "PLTR",
+          "window": "old_thin"
+        },
+        {
+          "cash_rv_usd": 1756.72,
+          "decision": "slot_sliced",
+          "intended_entry_date": "2024-11-07",
+          "qqq_rv_usd": 1823.99,
+          "signal_date": "2024-11-06",
+          "spy_rv_usd": 1746.78,
+          "strategy": "trend_long",
+          "ticker": "TSLA",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "selected_train_cohort_decision": "slot_sliced",
+    "source_artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "source_experiment_id": "exp-20260709-024",
+    "source_readiness": {
+      "complete_10d_candidate_rows": 130,
+      "complete_20d_candidate_rows": 123,
+      "negative_10d_cash_labels": 54,
+      "positive_10d_cash_labels": 76,
+      "readiness_failed_criteria": [
+        "complete_candidate_rows_gte_300",
+        "negative_labels_gte_75",
+        "each_fold_has_at_least_50_test_rows"
+      ],
+      "readiness_gate_passed": false,
+      "rejected_or_unselected_complete_10d_rows": 71,
+      "selected_complete_10d_rows": 59,
+      "strategy_behavior_changed": false,
+      "training_ledger_rows": 138
+    },
+    "source_rows": 138,
+    "train_decision_counts": {
+      "adverse_gap_down_cancel": 2,
+      "entered": 43,
+      "gap_cancel": 9,
+      "no_shares": 18,
+      "scarce_slot_breakout_deferred": 9,
+      "slot_sliced": 12
+    },
+    "train_rows": 93,
+    "train_summaries": {
+      "adverse_gap_down_cancel": {
+        "avg_cash_minus_entered": -119.087791,
+        "comparators": {
+          "cash": {
+            "avg": 143.725,
+            "count": 2,
+            "max": 621.9,
+            "median": 143.725,
+            "min": -334.45,
+            "positive_count": 1,
+            "win_rate": 0.5
+          },
+          "qqq": {
+            "avg": 137.435,
+            "count": 2,
+            "max": 137.48,
+            "median": 137.435,
+            "min": 137.39,
+            "positive_count": 2,
+            "win_rate": 1.0
+          },
+          "spy": {
+            "avg": 83.495,
+            "count": 2,
+            "max": 210.43,
+            "median": 83.495,
+            "min": -43.44,
+            "positive_count": 1,
+            "win_rate": 0.5
+          }
+        },
+        "concentration": {
+          "top_ticker": "SNOW",
+          "top_ticker_rows": 1,
+          "top_ticker_share": 0.5,
+          "unique_tickers": 2
+        },
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "cash_avg_beats_entered": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": false,
+          "min_rows": false,
+          "unselected_cohort": true
+        },
+        "decision": "adverse_gap_down_cancel",
+        "entered_avg_cash": 262.812791,
+        "passed": false,
+        "rows": 2,
+        "sample_rows": [
+          {
+            "cash_rv_usd": 621.9,
+            "decision": "adverse_gap_down_cancel",
+            "intended_entry_date": "2025-05-23",
+            "qqq_rv_usd": 137.48,
+            "signal_date": "2025-05-22",
+            "spy_rv_usd": 210.43,
+            "strategy": "trend_long",
+            "ticker": "SNOW",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -334.45,
+            "decision": "adverse_gap_down_cancel",
+            "intended_entry_date": "2024-12-17",
+            "qqq_rv_usd": 137.39,
+            "signal_date": "2024-12-16",
+            "spy_rv_usd": -43.44,
+            "strategy": "trend_long",
+            "ticker": "AVGO",
+            "window": "old_thin"
+          }
+        ]
+      },
+      "entered": {
+        "avg_cash_minus_entered": 0.0,
+        "comparators": {
+          "cash": {
+            "avg": 262.812791,
+            "count": 43,
+            "max": 3381.11,
+            "median": 197.43,
+            "min": -2523.32,
+            "positive_count": 27,
+            "win_rate": 0.627907
+          },
+          "qqq": {
+            "avg": 147.598605,
+            "count": 43,
+            "max": 3522.42,
+            "median": 42.7,
+            "min": -2559.08,
+            "positive_count": 25,
+            "win_rate": 0.581395
+          },
+          "spy": {
+            "avg": 184.063023,
+            "count": 43,
+            "max": 3392.18,
+            "median": 48.39,
+            "min": -2561.49,
+            "positive_count": 29,
+            "win_rate": 0.674419
+          }
+        },
+        "concentration": {
+          "top_ticker": "SLV",
+          "top_ticker_rows": 4,
+          "top_ticker_share": 0.093023,
+          "unique_tickers": 25
+        },
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "cash_avg_beats_entered": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "unselected_cohort": false
+        },
+        "decision": "entered",
+        "entered_avg_cash": 262.812791,
+        "passed": false,
+        "rows": 43,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -312.23,
+            "decision": "entered",
+            "intended_entry_date": "2025-05-14",
+            "qqq_rv_usd": -373.38,
+            "signal_date": "2025-05-13",
+            "spy_rv_usd": -350.34,
+            "strategy": "trend_long",
+            "ticker": "COIN",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 789.89,
+            "decision": "entered",
+            "intended_entry_date": "2025-06-03",
+            "qqq_rv_usd": 684.46,
+            "signal_date": "2025-06-02",
+            "spy_rv_usd": 702.28,
+            "strategy": "trend_long",
+            "ticker": "SLV",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 303.93,
+            "decision": "entered",
+            "intended_entry_date": "2025-06-11",
+            "qqq_rv_usd": 94.58,
+            "signal_date": "2025-06-10",
+            "spy_rv_usd": 146.88,
+            "strategy": "breakout_long",
+            "ticker": "DIS",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 827.8,
+            "decision": "entered",
+            "intended_entry_date": "2025-06-17",
+            "qqq_rv_usd": 457.13,
+            "signal_date": "2025-06-16",
+            "spy_rv_usd": 460.02,
+            "strategy": "trend_long",
+            "ticker": "AMD",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 907.61,
+            "decision": "entered",
+            "intended_entry_date": "2025-06-23",
+            "qqq_rv_usd": 423.0,
+            "signal_date": "2025-06-20",
+            "spy_rv_usd": 482.43,
+            "strategy": "trend_long",
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 917.55,
+            "decision": "entered",
+            "intended_entry_date": "2025-06-26",
+            "qqq_rv_usd": 717.86,
+            "signal_date": "2025-06-25",
+            "spy_rv_usd": 677.32,
+            "strategy": "trend_long",
+            "ticker": "COIN",
+            "window": "mid_weak"
+          }
+        ]
+      },
+      "gap_cancel": {
+        "avg_cash_minus_entered": 73.214987,
+        "comparators": {
+          "cash": {
+            "avg": 336.027778,
+            "count": 9,
+            "max": 1719.84,
+            "median": 329.14,
+            "min": -783.53,
+            "positive_count": 6,
+            "win_rate": 0.666667
+          },
+          "qqq": {
+            "avg": 291.242222,
+            "count": 9,
+            "max": 1701.28,
+            "median": 169.35,
+            "min": -709.53,
+            "positive_count": 5,
+            "win_rate": 0.555556
+          },
+          "spy": {
+            "avg": 324.91,
+            "count": 9,
+            "max": 1711.8,
+            "median": 191.5,
+            "min": -464.02,
+            "positive_count": 6,
+            "win_rate": 0.666667
+          }
+        },
+        "concentration": {
+          "top_ticker": "CRDO",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.222222,
+          "unique_tickers": 8
+        },
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "cash_avg_beats_entered": true,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "unselected_cohort": true
+        },
+        "decision": "gap_cancel",
+        "entered_avg_cash": 262.812791,
+        "passed": true,
+        "rows": 9,
+        "sample_rows": [
+          {
+            "cash_rv_usd": 1719.84,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2025-06-04",
+            "qqq_rv_usd": 1701.28,
+            "signal_date": "2025-06-03",
+            "spy_rv_usd": 1711.8,
+            "strategy": "breakout_long",
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 786.47,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2025-06-25",
+            "qqq_rv_usd": 539.44,
+            "signal_date": "2025-06-24",
+            "spy_rv_usd": 491.85,
+            "strategy": "trend_long",
+            "ticker": "COIN",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -154.26,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2025-08-08",
+            "qqq_rv_usd": -180.9,
+            "signal_date": "2025-08-07",
+            "spy_rv_usd": -331.68,
+            "strategy": "breakout_long",
+            "ticker": "APP",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 1078.89,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2025-10-07",
+            "qqq_rv_usd": 1040.14,
+            "signal_date": "2025-10-06",
+            "spy_rv_usd": 1097.48,
+            "strategy": "breakout_long",
+            "ticker": "AMD",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -481.85,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2024-10-21",
+            "qqq_rv_usd": -335.07,
+            "signal_date": "2024-10-18",
+            "spy_rv_usd": -241.38,
+            "strategy": "breakout_long",
+            "ticker": "SLV",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 500.59,
+            "decision": "gap_cancel",
+            "intended_entry_date": "2024-10-31",
+            "qqq_rv_usd": 169.35,
+            "signal_date": "2024-10-30",
+            "spy_rv_usd": 191.5,
+            "strategy": "trend_long",
+            "ticker": "BKNG",
+            "window": "old_thin"
+          }
+        ]
+      },
+      "no_shares": {
+        "avg_cash_minus_entered": -400.25668,
+        "comparators": {
+          "cash": {
+            "avg": -137.443889,
+            "count": 18,
+            "max": 309.22,
+            "median": -154.02,
+            "min": -610.48,
+            "positive_count": 5,
+            "win_rate": 0.277778
+          },
+          "qqq": {
+            "avg": -215.352778,
+            "count": 18,
+            "max": 326.77,
+            "median": -194.71,
+            "min": -618.41,
+            "positive_count": 3,
+            "win_rate": 0.166667
+          },
+          "spy": {
+            "avg": -181.117778,
+            "count": 18,
+            "max": 285.53,
+            "median": -110.86,
+            "min": -620.43,
+            "positive_count": 5,
+            "win_rate": 0.277778
+          }
+        },
+        "concentration": {
+          "top_ticker": "DE",
+          "top_ticker_rows": 3,
+          "top_ticker_share": 0.166667,
+          "unique_tickers": 12
+        },
+        "criteria": {
+          "avg_cash_positive": false,
+          "avg_qqq_positive": false,
+          "avg_spy_positive": false,
+          "cash_avg_beats_entered": false,
+          "cash_win_rate_gte_50pct": false,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "unselected_cohort": true
+        },
+        "decision": "no_shares",
+        "entered_avg_cash": 262.812791,
+        "passed": false,
+        "rows": 18,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -154.32,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-05-16",
+            "qqq_rv_usd": -203.3,
+            "signal_date": "2025-05-15",
+            "spy_rv_usd": -179.02,
+            "strategy": "trend_long",
+            "ticker": "DE",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -157.68,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-06-16",
+            "qqq_rv_usd": -480.1,
+            "signal_date": "2025-06-13",
+            "spy_rv_usd": -475.4,
+            "strategy": "trend_long",
+            "ticker": "RTX",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -31.36,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-07-24",
+            "qqq_rv_usd": -104.09,
+            "signal_date": "2025-07-23",
+            "spy_rv_usd": 5.67,
+            "strategy": "breakout_long",
+            "ticker": "RTX",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -277.2,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-08-01",
+            "qqq_rv_usd": -608.42,
+            "signal_date": "2025-07-31",
+            "spy_rv_usd": -550.87,
+            "strategy": "trend_long",
+            "ticker": "MSFT",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 131.32,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-08-07",
+            "qqq_rv_usd": 278.09,
+            "signal_date": "2025-08-06",
+            "spy_rv_usd": 142.17,
+            "strategy": "breakout_long",
+            "ticker": "MCD",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 23.45,
+            "decision": "no_shares",
+            "intended_entry_date": "2025-09-23",
+            "qqq_rv_usd": -12.08,
+            "signal_date": "2025-09-22",
+            "spy_rv_usd": -12.55,
+            "strategy": "breakout_long",
+            "ticker": "AAPL",
+            "window": "mid_weak"
+          }
+        ]
+      },
+      "scarce_slot_breakout_deferred": {
+        "avg_cash_minus_entered": -265.93168,
+        "comparators": {
+          "cash": {
+            "avg": -3.118889,
+            "count": 9,
+            "max": 516.77,
+            "median": 72.89,
+            "min": -627.74,
+            "positive_count": 6,
+            "win_rate": 0.666667
+          },
+          "qqq": {
+            "avg": -93.388889,
+            "count": 9,
+            "max": 266.61,
+            "median": -84.78,
+            "min": -820.15,
+            "positive_count": 4,
+            "win_rate": 0.444444
+          },
+          "spy": {
+            "avg": -67.124444,
+            "count": 9,
+            "max": 317.32,
+            "median": 19.15,
+            "min": -714.53,
+            "positive_count": 5,
+            "win_rate": 0.555556
+          }
+        },
+        "concentration": {
+          "top_ticker": "DDOG",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.222222,
+          "unique_tickers": 8
+        },
+        "criteria": {
+          "avg_cash_positive": false,
+          "avg_qqq_positive": false,
+          "avg_spy_positive": false,
+          "cash_avg_beats_entered": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "unselected_cohort": true
+        },
+        "decision": "scarce_slot_breakout_deferred",
+        "entered_avg_cash": 262.812791,
+        "passed": false,
+        "rows": 9,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -627.74,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2025-07-07",
+            "qqq_rv_usd": -820.15,
+            "signal_date": "2025-07-03",
+            "spy_rv_usd": -714.53,
+            "strategy": "breakout_long",
+            "ticker": "DDOG",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 280.09,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2025-09-03",
+            "qqq_rv_usd": -84.78,
+            "signal_date": "2025-09-02",
+            "spy_rv_usd": 23.2,
+            "strategy": "breakout_long",
+            "ticker": "IAU",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -98.6,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2025-09-08",
+            "qqq_rv_usd": -522.69,
+            "signal_date": "2025-09-05",
+            "spy_rv_usd": -408.01,
+            "strategy": "breakout_long",
+            "ticker": "AVGO",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 242.45,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2024-10-22",
+            "qqq_rv_usd": 253.0,
+            "signal_date": "2024-10-21",
+            "spy_rv_usd": 317.32,
+            "strategy": "breakout_long",
+            "ticker": "APP",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 150.53,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2024-10-31",
+            "qqq_rv_usd": -180.72,
+            "signal_date": "2024-10-30",
+            "spy_rv_usd": -158.56,
+            "strategy": "breakout_long",
+            "ticker": "GOOG",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 516.77,
+            "decision": "scarce_slot_breakout_deferred",
+            "intended_entry_date": "2024-11-04",
+            "qqq_rv_usd": 245.62,
+            "signal_date": "2024-11-01",
+            "spy_rv_usd": 219.66,
+            "strategy": "breakout_long",
+            "ticker": "CVX",
+            "window": "old_thin"
+          }
+        ]
+      },
+      "slot_sliced": {
+        "avg_cash_minus_entered": 238.537209,
+        "comparators": {
+          "cash": {
+            "avg": 501.35,
+            "count": 12,
+            "max": 1756.72,
+            "median": 194.325,
+            "min": -103.42,
+            "positive_count": 11,
+            "win_rate": 0.916667
+          },
+          "qqq": {
+            "avg": 439.88,
+            "count": 12,
+            "max": 1823.99,
+            "median": 164.7,
+            "min": -196.45,
+            "positive_count": 8,
+            "win_rate": 0.666667
+          },
+          "spy": {
+            "avg": 464.2375,
+            "count": 12,
+            "max": 1746.78,
+            "median": 164.59,
+            "min": -113.37,
+            "positive_count": 10,
+            "win_rate": 0.833333
+          }
+        },
+        "concentration": {
+          "top_ticker": "PLTR",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.166667,
+          "unique_tickers": 10
+        },
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "cash_avg_beats_entered": true,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "unselected_cohort": true
+        },
+        "decision": "slot_sliced",
+        "entered_avg_cash": 262.812791,
+        "passed": true,
+        "rows": 12,
+        "sample_rows": [
+          {
+            "cash_rv_usd": 151.42,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2025-10-09",
+            "qqq_rv_usd": 166.14,
+            "signal_date": "2025-10-08",
+            "spy_rv_usd": 177.7,
+            "strategy": "trend_long",
+            "ticker": "GLD",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 103.56,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": 170.83,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": 93.61,
+            "strategy": "trend_long",
+            "ticker": "GS",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": -103.42,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": -36.16,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": -113.37,
+            "strategy": "trend_long",
+            "ticker": "IWM",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 10.63,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": 77.9,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": 0.69,
+            "strategy": "trend_long",
+            "ticker": "JPM",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 992.48,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": 1059.74,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": 982.53,
+            "strategy": "trend_long",
+            "ticker": "PLTR",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 1756.72,
+            "decision": "slot_sliced",
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": 1823.99,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": 1746.78,
+            "strategy": "trend_long",
+            "ticker": "TSLA",
+            "window": "old_thin"
+          }
+        ]
+      }
+    },
+    "train_windows": [
+      "mid_weak",
+      "old_thin"
+    ]
+  },
+  "experiment_id": "exp-20260710-018",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "source_artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  },
+  "gate2": {
+    "complete_10d_rows": 130,
+    "passed": true,
+    "required_fields_checked": [
+      "ticker",
+      "window",
+      "decision",
+      "intended_entry_date",
+      "target_price",
+      "horizons.10d.replacement_value_vs_cash_usd",
+      "horizons.10d.replacement_value_vs_spy_usd",
+      "horizons.10d.replacement_value_vs_qqq_usd"
+    ],
+    "target_price_contract_changed": false
+  },
+  "gate3": {
+    "adds_filter": false,
+    "baseline_survival_rate": 0.823171,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+    "evaluation_type": "observed_only_train_before_test_no_strategy_change",
+    "passed": false,
+    "reason": "The train-before-test cohort gate did not validate; no candidate meta-label or entry-planning change is justified."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "candidate_meta_label train-before-test alpha: the leak-free canonical candidate ledger may contain an unselected entry-decision cohort that can be selected using only earlier chronological rows and then validated on later rows for positive 10d cash/SPY/QQQ replacement value versus entered candidates; if no cohort is train-selected and test-valid, candidate meta-label promotion remains blocked.",
+    "2_history_check": "exp-20260709-023 blocked model fitting, exp-20260709-024 materialized the first leak-free candidate ledger, and exp-20260709-025 rejected fixed batch decision cohorts. This run uses the playbook-allowed new gate shape: train-before-test.",
+    "3_single_causal_variable": "candidate_meta_label_train_selected_decision_cohort_validation_v1",
+    "4_acceptance_standard": "Observed-only lead only if old_thin+mid_weak can select exactly one unselected decision cohort using fixed train criteria, and that same cohort validates on late_strong with positive cash/SPY/QQQ 10d averages, cash win rate >=50%, cash average above entered late_strong candidates, >=3 holdout rows, and max single ticker share <=40%. No alpha can be accepted here.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_018_candidate_meta_label_train_before_test_cohort.py"
+  },
+  "headline_metrics": {
+    "complete_10d_rows": 130,
+    "failed_reasons": [
+      "avg_cash_positive",
+      "avg_spy_positive",
+      "avg_qqq_positive",
+      "cash_win_rate_gte_50pct",
+      "cash_avg_beats_entered"
+    ],
+    "holdout_passed": false,
+    "holdout_rows": 37,
+    "selected_train_cohort_decision": "slot_sliced",
+    "train_rows": 93
+  },
+  "hypothesis": "candidate_meta_label train-before-test alpha: the leak-free canonical candidate ledger may contain an unselected entry-decision cohort that can be selected using only earlier chronological rows and then validated on later rows for positive 10d cash/SPY/QQQ replacement value versus entered candidates; if no cohort is train-selected and test-valid, candidate meta-label promotion remains blocked.",
+  "implementation_mode": "candidate_meta_label_train_before_test_observed_only",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260709-023",
+    "exp-20260709-024",
+    "exp-20260709-025"
+  ],
+  "new_evidence_axis": "New gate shape explicitly allowed by the candidate_meta_label freeze: chronological train-before-test cohort selection and holdout validation on the existing leak-free ledger, not another decision-name reslice, threshold sweep, model fit, or response curve.",
+  "new_evidence_type": "new_gate_shape_train_before_test",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun this same ledger by changing train/holdout windows, min row thresholds, comparator set, decision names, model class, probability scalar, horizon, or response curve. Do not train a candidate_meta_label model until the exp024 readiness gate passes.",
+    "new_evidence_required": "A valid retry needs at least 300 complete candidate rows with 75 positive and 75 negative labels, materially new settled candidate rows from pipeline wiring, or a genuinely new non-oracle decision-time field.",
+    "why_result_happened": "The only legal candidate_meta_label reopen path tested here was a train-before-test gate. Any apparent cohort edge had to be selected from old_thin+mid_weak before late_strong was evaluated."
+  },
+  "prediction": {
+    "confidence_reason": "exp025 rejected fixed batch cohorts, but the playbook allows a train-before-test gate shape; sample remains small at 130 complete rows, so success probability is low and this cannot promote a model.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "train_segment_selects_no_cohort",
+      "holdout_window_instability",
+      "entered_candidates_remain_best",
+      "sample_too_thin"
+    ],
+    "recorded_at": "2026-07-10T17:05:35+00:00",
+    "success_probability": 0.21
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "model_trained": false,
+    "observed_only_attribution": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "No train-selected unselected cohort validated on late_strong holdout under the fixed cash/SPY/QQQ, entered-comparison, sample, and concentration gates.",
+  "related_files": [
+    "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "experiments/logs/exp-20260710-018.json",
+    "experiments/cards/exp-20260710-018.md",
+    "experiments/manifests/exp-20260710-018.json",
+    "experiments/tickets/exp-20260710-018.json",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  ],
+  "single_causal_variable": "candidate_meta_label_train_selected_decision_cohort_validation_v1",
+  "status": "observed_only_rejected_train_selected_cohort_fails_holdout",
+  "timestamp": "2026-07-10T17:09:33Z",
+  "trial_family": "candidate_meta_label_train_before_test_cohort_validation",
+  "trial_variant_id": "train_select_holdout_10d_v1"
+}

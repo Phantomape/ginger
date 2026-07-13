@@ -1,0 +1,329 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_010_news_event_exposure_split_outcome_repair.py",
+    "data/experiments/exp-20260710-010/exp_20260710_010_news_event_exposure_split_outcome_repair.json",
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+    "experiments/logs/exp-20260710-010.json",
+    "experiments/cards/exp-20260710-010.md",
+    "experiments/manifests/exp-20260710-010.json",
+    "experiments/tickets/exp-20260710-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-010.md",
+  "causal_components": [
+    "reuse news_event_exposure_observer entry/exit semantics",
+    "closed KLAC/CRWD exposure rows only",
+    "repaired OHLCV warehouse values from exp-20260709-008",
+    "no strategy, ranking, sizing, exit, or order behavior change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "news_event_exposure_split_contaminated_outcome_repair_v1",
+  "claimed_at": "2026-07-10T09:06:05+00:00",
+  "completed_at": "2026-07-10T09:14:06+00:00",
+  "created_at": "2026-07-10T09:05:55+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-010",
+  "experiment_uid": "expuid-f4f5f2510aa047af",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T09:05:55+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_event_exposure_split_outcome_repair"
+  },
+  "hypothesis": "Repair the news_event_exposure observer ledger rows contaminated by pre-exp-20260709-008 KLAC/CRWD warehouse split discontinuities so future second-order structured-news alpha reads use repaired OHLCV outcomes rather than stale impossible -90% excess returns.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "news_event_exposure_split_contaminated_outcome_repair_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260702-017",
+    "exp-20260702-018",
+    "exp-20260702-020",
+    "exp-20260709-008",
+    "exp-20260709-010"
+  ],
+  "new_evidence_type": "measurement_repair_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "news_event_exposure",
+      "field_tags": [
+        "alpha",
+        "by",
+        "contaminated",
+        "crwd",
+        "discontinuities",
+        "event",
+        "excess",
+        "exp",
+        "exposure",
+        "future",
+        "impossible",
+        "klac",
+        "ledger",
+        "news",
+        "observer",
+        "order",
+        "outcome",
+        "outcomes",
+        "pre",
+        "rather",
+        "reads",
+        "repair",
+        "repaired",
+        "returns",
+        "rows",
+        "second",
+        "so",
+        "split",
+        "stale",
+        "structured",
+        "than",
+        "use",
+        "warehouse"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_observer",
+        "reopen_condition": "More closed rows per (polarity x relation_type) cell — target >= 50 per cell — then one predeclared attribution read reusing the exp-20260702-017 baseline framework.",
+        "score": 0.5257,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_attribution",
+        "reopen_condition": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition.",
+        "score": 0.5149,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+        "score": 0.5056,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_second_order_exposure_top1_candidate_source",
+        "reopen_condition": "A valid retry needs materially more current closed rows from the daily observer, historical structured-news coverage across all canonical windows, or intraday timestamped execution semantics.",
+        "score": 0.4957,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_fingerprint_coverage",
+        "reopen_condition": "Do not run another news_event_exposure alias repair unless a concrete family still lands in other. Alpha on this surface still requires closed current/post-replay second-order rows, a distinct PIT relation/economic source, or a new execution gate shape.",
+        "score": 0.4932,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "news_event_exposure",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "news_event_exposure",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_news_event_exposure_split_outcomes_repaired",
+    "artifact": "data/experiments/exp-20260710-010/exp_20260710_010_news_event_exposure_split_outcome_repair.json",
+    "log": "experiments/logs/exp-20260710-010.json",
+    "runner": "quant/experiments/exp_20260710_010_news_event_exposure_split_outcome_repair.py",
+    "gate4": {
+      "acceptance_rule": "Accepted measurement repair if closed KLAC/CRWD news_event_exposure rows are recomputed against repaired warehouse OHLCV, impossible split-size excess values are reduced, the ledger remains schema-consistent, and no trading behavior changes.",
+      "accepted_alpha": false,
+      "decision": "accepted_measurement_repair_news_event_exposure_split_outcomes_repaired",
+      "failed_reasons": [],
+      "measurement_repair_only": true,
+      "passed": true,
+      "strategy_behavior_changed": false
+    },
+    "headline_metrics": {
+      "target_rows": 90,
+      "recomputed_rows": 90,
+      "changed_rows": 15,
+      "extreme_before": 15,
+      "extreme_after": 0
+    },
+    "summary": "measurement_repair_news_event_exposure_split_outcomes"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-010.json",
+  "single_causal_variable": "news_event_exposure_split_contaminated_outcome_repair_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260710-010.json",
+  "trial_family": "news_event_exposure_split_contaminated_outcome_repair",
+  "trial_variant_id": "news_event_exposure_klac_crwd_closed_outcome_recompute_v1",
+  "alpha_hypothesis": "Second-order structured-news exposure may support a future candidate-pool or LLM event-scoring alpha once its forward outcome rows are trustworthy and current-event closed rows materially increase.",
+  "implementation_mode": "closed_observer_outcome_recompute",
+  "new_evidence_axis": "Fault recovery for stale closed news_event_exposure rows named by exp-20260709-008 contamination audit; not a new alpha slice or threshold retune.",
+  "decision": "accepted_measurement_repair_news_event_exposure_split_outcomes_repaired",
+  "artifact": "data/experiments/exp-20260710-010/exp_20260710_010_news_event_exposure_split_outcome_repair.json",
+  "log": "experiments/logs/exp-20260710-010.json",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "exists": true,
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "note": "Measurement repair only; no strategy replay delta.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date": "recomputed by existing observer entry semantics",
+    "passed": true,
+    "runtime_fields": [
+      "event_date",
+      "entry_date",
+      "excess_5d",
+      "excess_10d",
+      "outcome_status",
+      "exposure_ticker"
+    ],
+    "target_price_scope": "not_applicable_fixed_horizon_observer_rows"
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "note": "No executable filter, rank, or sizing rule was added.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "acceptance_rule": "Accepted measurement repair if closed KLAC/CRWD news_event_exposure rows are recomputed against repaired warehouse OHLCV, impossible split-size excess values are reduced, the ledger remains schema-consistent, and no trading behavior changes.",
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_news_event_exposure_split_outcomes_repaired",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "data_ledger_repaired": true,
+    "live_ready": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another ID to recompute these same closed KLAC/CRWD news_event_exposure rows, and do not run alpha slices on this surface merely because the repaired values are clean.",
+    "new_evidence_required": "Future alpha work needs materially more closed current-event second-order rows under the daily observer, a distinct PIT relation/economic source, or a new execution gate shape.",
+    "why_result_happened": "The split repair fixed the OHLCV warehouse, but the observer ledger persisted closed outcomes by value. Recomputing closed KLAC/CRWD exposure rows removed stale split-boundary excess returns without changing row count or trading behavior."
+  },
+  "related_files": [
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260709-008.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_010_news_event_exposure_split_outcome_repair.py",
+    "data/experiments/exp-20260710-010/exp_20260710_010_news_event_exposure_split_outcome_repair.json",
+    "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+    "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+    "experiments/logs/exp-20260710-010.json",
+    "experiments/cards/exp-20260710-010.md",
+    "experiments/manifests/exp-20260710-010.json",
+    "experiments/tickets/exp-20260710-010.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260710_010_news_event_exposure_split_outcome_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_010_news_event_exposure_split_outcome_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T09:14:06+00:00"
+}

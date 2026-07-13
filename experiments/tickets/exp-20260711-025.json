@@ -1,0 +1,623 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_025_core_sign_persistence_monotonicity.py",
+    "data/experiments/exp-20260711-025/exp_20260711_025_core_sign_persistence_monotonicity.json",
+    "experiments/cards/exp-20260711-025.md",
+    "experiments/manifests/exp-20260711-025.json",
+    "experiments/tickets/exp-20260711-025.json",
+    "experiments/logs/exp-20260711-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-025.md",
+  "causal_components": [
+    "canonical saved core trades",
+    "PIT ticker OHLCV through signal close",
+    "20-session adjacent-return sign persistence",
+    "tercile monotonicity",
+    "cross-window direction check",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "ticker_return_sign_persistence20_monotonic_core_trade_quality_v1",
+  "claimed_at": "2026-07-11T22:15:21+00:00",
+  "completed_at": "2026-07-11T22:20:46+00:00",
+  "created_at": "2026-07-11T22:14:58+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-025",
+  "experiment_uid": "expuid-e4bd52c87aae4c33",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-025",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T22:14:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_sign_persistence_monotonicity"
+  },
+  "hypothesis": "Observed-only alpha attribution: among canonical core entries, a higher PIT 20-session adjacent-return sign-persistence score should identify cleaner trend continuation and show monotonic higher net trade returns across the three fixed windows; this is continuous attribution only and changes no selection, sizing, entry, or exit policy.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "ticker_return_sign_persistence20_monotonic_core_trade_quality_v1"
+  ],
+  "mechanism_family": "ohlcv_momentum_core_entry_path_persistence_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260615-023",
+    "exp-20260708-026"
+  ],
+  "new_evidence_type": "new_gate_shape_continuous_path_order_attribution",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "a",
+        "across",
+        "adjacent",
+        "alpha",
+        "among",
+        "attribution",
+        "canonical",
+        "changes",
+        "cleaner",
+        "continuation",
+        "continuous",
+        "core",
+        "entries",
+        "entry",
+        "exit",
+        "higher",
+        "identify",
+        "is",
+        "monotonic",
+        "monotonicity",
+        "net",
+        "no",
+        "observed",
+        "only",
+        "or",
+        "persistence",
+        "persistence20",
+        "pit",
+        "policy",
+        "return",
+        "returns",
+        "score",
+        "session",
+        "should",
+        "show",
+        "sign",
+        "sizing",
+        "this",
+        "three",
+        "ticker",
+        "trade",
+        "trend",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_monotonicity_audit",
+        "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+        "score": 0.5011,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_bucket_top_quartile_topup",
+        "reopen_condition": null,
+        "score": 0.482,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.482,
+        "status": "frozen_rejected",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": null,
+        "score": 0.4808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_deconcentration",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer risk-aware ranking component. Do not just mine alpha_score thresholds or cooldown lengths on the same frozen replay.",
+        "score": 0.4745,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: candidate-level continuous monotonic attribution of the temporal ordering of adjacent daily return signs on fixed executed core trades. Prior nearby work tested market-level Kaufman ER or high-vol/high-beta exclusion, not per-ticker sign-transition persistence, and this run makes no selection, threshold, sizing, or policy change.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 2,
+      "streak_experiments": [
+        "exp-20260708-024",
+        "exp-20260708-027"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: candidate-level continuous monotonic attribution of the temporal ordering of adjacent daily return signs on fixed executed core trades. Prior nearby work tested market-level Kaufman ER or high-vol/high-beta exclusion, not per-ticker sign-transition persistence, and this run makes no selection, threshold, sizing, or policy change.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: candidate-level continuous monotonic attribution of the temporal ordering of adjacent daily return signs on fixed executed core trades. Prior nearby work tested market-level Kaufman ER or high-vol/high-beta exclusion, not per-ticker sign-transition persistence, and this run makes no selection, threshold, sizing, or policy change.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "path_persistence_collinear_with_existing_momentum",
+      "small_core_trade_sample",
+      "window_sign_instability",
+      "no_monotonic_ladder"
+    ],
+    "confidence_reason": "The field uses the ordering of daily return signs rather than volatility, beta, return magnitude, or Kaufman efficiency, so it can separate alternating noisy paths from persistent trends at similar net momentum. Existing core entries are few and already selected, making window instability the main disconfirmer.",
+    "recorded_at": "2026-07-11T22:14:19Z"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "decision": "observed_only_rejected_core_sign_persistence_monotonicity",
+    "artifact": "data/experiments/exp-20260711-025/exp_20260711_025_core_sign_persistence_monotonicity.json",
+    "log": "experiments/logs/exp-20260711-025.json",
+    "summary": {
+      "status": "observed_only_rejected",
+      "rows": 60,
+      "spearman_score_vs_net_return": -0.08468923319863268,
+      "failed_reasons": [
+        "feature_coverage_incomplete",
+        "pooled_spearman_not_positive",
+        "aggregate_terciles_not_monotonic",
+        "fewer_than_two_windows_persistent_bucket_better"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-025.json",
+  "single_causal_variable": "ticker_return_sign_persistence20_monotonic_core_trade_quality_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260711-025.json",
+  "trial_family": "ohlcv_momentum_ticker_directional_sign_persistence_core_entry_attribution",
+  "trial_variant_id": "ticker_sign_persistence20_tercile_monotonicity_v1",
+  "timestamp": "2026-07-11T22:20:46Z",
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "alpha_ready": false,
+  "decision": "observed_only_rejected_core_sign_persistence_monotonicity",
+  "alpha_hypothesis": "Observed-only alpha attribution: among canonical core entries, a higher PIT 20-session adjacent-return sign-persistence score should identify cleaner trend continuation and show monotonic higher net trade returns across the three fixed windows; this is continuous attribution only and changes no selection, sizing, entry, or exit policy.",
+  "implementation_mode": "read_only_saved_trade_monotonicity",
+  "new_evidence_axis": "Candidate-level continuous monotonic attribution of the temporal ordering of adjacent daily return signs on fixed executed core trades. Prior nearby work tested market-level Kaufman ER or high-vol/high-beta exclusion, not per-ticker sign-transition persistence.",
+  "parameters": {
+    "lookback_returns": 20,
+    "minimum_nonzero_returns": 18,
+    "feature": "matching adjacent non-zero daily return signs / adjacent sign transitions",
+    "decision_time": "signal close before next-open entry",
+    "acceptance_rule": "positive pooled Spearman, aggregate noisy<middle<persistent net-return terciles, persistent-minus-noisy positive in >=2 windows, complete coverage, and >=12 rows/window"
+  },
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.25,
+    "brier_score": 0.0625,
+    "realized_failure_modes": [
+      "feature_coverage_incomplete",
+      "pooled_spearman_not_positive",
+      "aggregate_terciles_not_monotonic",
+      "fewer_than_two_windows_persistent_bucket_better"
+    ]
+  },
+  "gate1": {
+    "passed": true,
+    "accepted_reference": {
+      "expected_value_score_sum": 7.8941,
+      "total_pnl_sum": 234850.99
+    },
+    "saved_trade_artifacts": [
+      {
+        "label": "late_strong",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ],
+    "saved_expected_value_score_sum": 7.8941,
+    "saved_total_pnl_sum": 234850.99,
+    "saved_trade_count": 61,
+    "note": "Saved June-4 trade artifacts are the fixed attribution population and differ slightly from the current accepted aggregate; no strategy decision uses this diagnostic."
+  },
+  "gate2": {
+    "passed": true,
+    "entry_date_complete": 61,
+    "entry_date_expected": 61,
+    "feature_coverage_complete": false,
+    "target_price_note": "Closed-trade artifacts intentionally omit target_price; the canonical signal engine owns that sentinel and this read-only attribution changes no signal generation or exit rule.",
+    "required_feature_fields": [
+      "Date",
+      "Close",
+      "entry_date",
+      "pnl_pct_net"
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 61,
+    "signals_survived": 60,
+    "survival_rate": 0.983607,
+    "missing_reasons": {
+      "insufficient_nonzero_returns_17": 1
+    }
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_core_sign_persistence_monotonicity",
+    "failed_reasons": [
+      "feature_coverage_incomplete",
+      "pooled_spearman_not_positive",
+      "aggregate_terciles_not_monotonic",
+      "fewer_than_two_windows_persistent_bucket_better"
+    ],
+    "note": "No strategy behavior changed. A positive attribution would require a separate shared production/backtest policy and full Gate 1-4 replay."
+  },
+  "before_metrics": {
+    "accepted_reference": {
+      "expected_value_score_sum": 7.8941,
+      "total_pnl_sum": 234850.99
+    },
+    "saved_trade_artifacts": [
+      {
+        "label": "late_strong",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ],
+    "saved_expected_value_score_sum": 7.8941,
+    "saved_total_pnl_sum": 234850.99,
+    "saved_trade_count": 61,
+    "note": "Saved June-4 trade artifacts are the fixed attribution population and differ slightly from the current accepted aggregate; no strategy decision uses this diagnostic."
+  },
+  "after_metrics": {
+    "accepted_reference": {
+      "expected_value_score_sum": 7.8941,
+      "total_pnl_sum": 234850.99
+    },
+    "saved_trade_artifacts": [
+      {
+        "label": "late_strong",
+        "expected_value_score": 5.1628,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "expected_value_score": 2.1402,
+        "total_pnl": 78110.11,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "expected_value_score": 0.5911,
+        "total_pnl": 39667.96,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ],
+    "saved_expected_value_score_sum": 7.8941,
+    "saved_total_pnl_sum": 234850.99,
+    "saved_trade_count": 61,
+    "note": "Saved June-4 trade artifacts are the fixed attribution population and differ slightly from the current accepted aggregate; no strategy decision uses this diagnostic."
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "read_only_saved_trade_attribution"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The temporal ordering of adjacent daily return signs did not add a stable monotonic quality axis after the existing core selection stack; the saved sample is already highly selected and small.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing the 20-session lookback, zero-return handling, tercile cuts, persistence threshold, strategy/ticker/window slices, or by converting this result into a scalar on the same frozen trades.",
+    "new_evidence_required": "A positive lead requires a shared helper and full Gate 1-4. A rejected result requires materially more settled core forward rows or a genuinely new non-OHLCV path-quality source, not another sign-path statistic."
+  },
+  "rejection_reason": "feature_coverage_incomplete;pooled_spearman_not_positive;aggregate_terciles_not_monotonic;fewer_than_two_windows_persistent_bucket_better",
+  "next_retry_requires": [
+    "shared production/backtest helper plus full Gate 1-4 if positive",
+    "materially more settled core forward rows or a new non-OHLCV source if rejected",
+    "no lookback, bucket, threshold, ticker, strategy, or response retune"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260711_025_core_sign_persistence_monotonicity.py",
+    "data/experiments/exp-20260711-025/exp_20260711_025_core_sign_persistence_monotonicity.json",
+    "experiments/logs/exp-20260711-025.json",
+    "experiments/cards/exp-20260711-025.md",
+    "experiments/manifests/exp-20260711-025.json",
+    "experiments/tickets/exp-20260711-025.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+    "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_025_core_sign_persistence_monotonicity.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_025_core_sign_persistence_monotonicity.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "attribution": {
+    "aggregate": {
+      "rows": 60,
+      "spearman_score_vs_net_return": -0.08468923319863268,
+      "spearman_score_vs_pnl": 0.04389209428234783,
+      "terciles": {
+        "noisy_low": {
+          "count": 20,
+          "score_mean": 0.381579,
+          "pnl_pct_net_mean": 0.061803,
+          "pnl_mean": 3642.29,
+          "win_rate": 0.6
+        },
+        "middle": {
+          "count": 20,
+          "score_mean": 0.505263,
+          "pnl_pct_net_mean": 0.044076,
+          "pnl_mean": 3229.01,
+          "win_rate": 0.55
+        },
+        "persistent_high": {
+          "count": 20,
+          "score_mean": 0.616564,
+          "pnl_pct_net_mean": 0.047069,
+          "pnl_mean": 4562.34,
+          "win_rate": 0.55
+        },
+        "monotonic_net_return": false,
+        "persistent_minus_noisy_net_return": -0.014734
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "rows": 18,
+        "spearman_score_vs_net_return": -0.25626126172868385,
+        "spearman_score_vs_pnl": -0.18750824028928087,
+        "terciles": {
+          "noisy_low": {
+            "count": 6,
+            "score_mean": 0.425439,
+            "pnl_pct_net_mean": 0.120016,
+            "pnl_mean": 7989.86,
+            "win_rate": 1.0
+          },
+          "middle": {
+            "count": 6,
+            "score_mean": 0.530702,
+            "pnl_pct_net_mean": 0.067588,
+            "pnl_mean": 6378.16,
+            "win_rate": 0.833333
+          },
+          "persistent_high": {
+            "count": 6,
+            "score_mean": 0.675439,
+            "pnl_pct_net_mean": 0.069342,
+            "pnl_mean": 5144.13,
+            "win_rate": 0.666667
+          },
+          "monotonic_net_return": false,
+          "persistent_minus_noisy_net_return": -0.050674
+        }
+      },
+      "mid_weak": {
+        "rows": 20,
+        "spearman_score_vs_net_return": 0.0675013118136564,
+        "spearman_score_vs_pnl": 0.1800034981697504,
+        "terciles": {
+          "noisy_low": {
+            "count": 7,
+            "score_mean": 0.360902,
+            "pnl_pct_net_mean": 0.045344,
+            "pnl_mean": 3630.79,
+            "win_rate": 0.428571
+          },
+          "middle": {
+            "count": 7,
+            "score_mean": 0.488722,
+            "pnl_pct_net_mean": 0.07188,
+            "pnl_mean": 2573.16,
+            "win_rate": 0.571429
+          },
+          "persistent_high": {
+            "count": 6,
+            "score_mean": 0.535088,
+            "pnl_pct_net_mean": 0.036894,
+            "pnl_mean": 4750.72,
+            "win_rate": 0.5
+          },
+          "monotonic_net_return": false,
+          "persistent_minus_noisy_net_return": -0.00845
+        }
+      },
+      "old_thin": {
+        "rows": 22,
+        "spearman_score_vs_net_return": -0.30503143103333574,
+        "spearman_score_vs_pnl": 0.10034678852685437,
+        "terciles": {
+          "noisy_low": {
+            "count": 8,
+            "score_mean": 0.381579,
+            "pnl_pct_net_mean": 0.050152,
+            "pnl_mean": 2035.62,
+            "win_rate": 0.625
+          },
+          "middle": {
+            "count": 7,
+            "score_mean": 0.518797,
+            "pnl_pct_net_mean": 0.024514,
+            "pnl_mean": 2303.99,
+            "win_rate": 0.285714
+          },
+          "persistent_high": {
+            "count": 7,
+            "score_mean": 0.63379,
+            "pnl_pct_net_mean": -0.013923,
+            "pnl_mean": 1036.43,
+            "win_rate": 0.285714
+          },
+          "monotonic_net_return": false,
+          "persistent_minus_noisy_net_return": -0.064075
+        }
+      }
+    },
+    "windows_persistent_bucket_better": [],
+    "windows_monotonic": []
+  },
+  "updated_at": "2026-07-11T22:20:46+00:00"
+}

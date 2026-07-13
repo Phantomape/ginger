@@ -1,0 +1,511 @@
+{
+  "acceptance_rule": "Positive replay lead only if Gate 1 identity passes, aggregate EV and PnL improve, at least two of three windows improve EV, no window regresses EV or PnL, drawdown drift is <=0.5pp, target trades >=20 across all three windows, survival >=5%, and concentration gates pass; any positive result remains non-promoted until shared-paper-first implementation.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    "data/experiments/exp-20260711-001/**",
+    "experiments/tickets/exp-20260711-001.json",
+    "experiments/cards/exp-20260711-001.md",
+    "experiments/manifests/exp-20260711-001.json",
+    "experiments/logs/exp-20260711-001.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260711-001.md",
+  "causal_components": [
+    "fixed HYG/JNK/SPY/QQQ relief state",
+    "fixed stock leadership selector",
+    "next-open 10d paper replay",
+    "canonical costs and concentration gates"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "credit_relief_stock_leadership_candidate_source_v1_replay_with_full_hyg_jnk_coverage",
+  "claimed_at": "2026-07-11T00:11:07+00:00",
+  "completed_at": "2026-07-11T00:25:08+00:00",
+  "created_at": "2026-07-11T00:10:30+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260711-001",
+  "experiment_uid": "expuid-4d9538635a7a45a5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T00:10:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "credit_relief_hyg_jnk_full_coverage"
+  },
+  "hypothesis": "With newly materialized PIT HYG and JNK daily OHLCV covering all three canonical windows, the unchanged HYG/JNK/SPY/QQQ credit-relief stock-leadership top-2 next-open 10-day paper policy should add positive replacement value without window regression or concentration failure.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "HYG/JNK/SPY/QQQ thresholds",
+    "stock leadership thresholds",
+    "top-2",
+    "next-open",
+    "10d hold",
+    "costs",
+    "cooldown",
+    "notional",
+    "canonical windows"
+  ],
+  "mechanism_family": "production_visible_free_ohlcv_cross_asset_credit_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "live orders",
+    "ranking",
+    "sizing",
+    "exits",
+    "LLM decisions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260607-020",
+    "exp-20260620-021"
+  ],
+  "new_evidence_type": "new_pit_hyg_jnk_historical_coverage",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.64,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "score": 0.639,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6385,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "score": 0.6293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "paper_sleeve_forward_accumulation_integrity",
+        "score": 0.6286,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "add",
+        "all",
+        "asset",
+        "canonical",
+        "concentration",
+        "coverage",
+        "covering",
+        "credit",
+        "cross",
+        "daily",
+        "failure",
+        "full",
+        "hyg",
+        "jnk",
+        "leadership",
+        "materialized",
+        "newly",
+        "or",
+        "pit",
+        "policy",
+        "positive",
+        "qqq",
+        "regression",
+        "replacement",
+        "should",
+        "spy",
+        "stock",
+        "three",
+        "top",
+        "unchanged",
+        "value",
+        "window",
+        "windows",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.64,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.639,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6385,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "reopen_condition": null,
+        "score": 0.6293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "paper_sleeve_forward_accumulation_integrity",
+        "reopen_condition": "Future activation work should wait for more current-state closed replacement rows and should treat status=missing_comparator_bars or non_session_entry_fill rows as coverage blockers, not enriched comparator evidence.",
+        "score": 0.6286,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New PIT data coverage: HYG and JNK now each have 410 daily OHLCV rows spanning 2024-09-03 through 2026-04-22, covering all three canonical windows; prior exp-20260607-020 and exp-20260620-021 had zero HYG/JNK replay rows and explicitly required this backfill to reopen.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New PIT data coverage: HYG and JNK now each have 410 daily OHLCV rows spanning 2024-09-03 through 2026-04-22, covering all three canonical windows; prior exp-20260607-020 and exp-20260620-021 had zero HYG/JNK replay rows and explicitly required this backfill to reopen.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New PIT data coverage: HYG and JNK now each have 410 daily OHLCV rows spanning 2024-09-03 through 2026-04-22, covering all three canonical windows; prior exp-20260607-020 and exp-20260620-021 had zero HYG/JNK replay rows and explicitly required this backfill to reopen.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "credit_relief_is_generic_beta",
+      "thin_relief_day_sample",
+      "window_regression",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "confidence_reason": "Earlier attempts never observed the mechanism because HYG/JNK were absent, while accepted macro-relief analogs support cross-asset risk-relief leadership. Odds remain low because the fixed state may be sparse or merely relabel broad risk-on beta.",
+    "recorded_at": "2026-07-11T00:09:37+00:00"
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_credit_relief_full_coverage",
+    "artifact": "data/experiments/exp-20260711-001/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.json",
+    "log": "experiments/logs/exp-20260711-001.json",
+    "runner": "quant/experiments/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_credit_relief_stock_leadership_candidate_pool",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": -0.0114,
+      "aggregate_pnl_delta": -1030.29,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 1,
+      "windows_pnl_regressed": 2,
+      "target_trade_count": 28,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0164,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.268807,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.204365,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": false,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "credit_relief_is_generic_beta",
+        "thin_relief_day_sample",
+        "window_regression",
+        "concentration_failed",
+        "baseline_identity_drift"
+      ],
+      "predicted_failure_modes_hit": [
+        "window_regression"
+      ],
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "surprise_note": "Full HYG/JNK coverage removed the old blocker, but the fixed policy still failed its predeclared replay gates."
+    },
+    "summary": "HYG/JNK coverage removed the measurement blocker, but the fixed credit-relief state did not isolate durable stock continuation after next-open execution and costs; it behaved like sparse or generic risk-on beta."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-001.json",
+  "single_causal_variable": "credit_relief_stock_leadership_candidate_source_v1_replay_with_full_hyg_jnk_coverage",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260711-001.json",
+  "trial_family": "credit_relief_stock_leadership_candidate_pool",
+  "trial_variant_id": "hyg_jnk_full_coverage_fixed_policy_v1",
+  "implementation_mode": "private_replay_scout_newly_available_data_shape",
+  "new_evidence_axis": "HYG and JNK now each have daily OHLCV spanning every canonical window; exp-20260607-020 and exp-20260620-021 had zero replay rows and explicitly required this coverage before reopening the fixed policy.",
+  "decision": "observed_only_rejected_credit_relief_full_coverage",
+  "artifact": "data/experiments/exp-20260711-001/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.json",
+  "log": "experiments/logs/exp-20260711-001.json",
+  "aggregate_expected_value_delta": -0.0114,
+  "aggregate_strategy_total_pnl_delta": -1030.29,
+  "gate1": {
+    "passed": true,
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 10,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "JNK daily OHLCV",
+      "HYG daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The credit-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_credit_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "drawdown_drift_too_high"
+    ],
+    "aggregate_ev_delta": -0.0114,
+    "aggregate_pnl_delta": -1030.29,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2,
+    "target_trade_count": 28,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0164,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.268807,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.204365,
+      "positive_pnl_hhi_guardrail": 0.35
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "experiment_local_private_replay_scout"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "HYG/JNK coverage removed the measurement blocker, but the fixed credit-relief state did not isolate durable stock continuation after next-open execution and costs; it behaved like sparse or generic risk-on beta.",
+    "forbidden_near_neighbor_retry": "Do not retune HYG/JNK returns, close locations, SPY/QQQ confirmation, stock leadership thresholds, top-N, hold, cooldown, notional, windows, or response shape on these rows.",
+    "new_evidence_required": "A retry needs a genuinely different credit-risk-transfer source, materially more settled forward rows from a fixed shared helper, or a predeclared different candidate-source family."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    "quant/experiments/exp_20260607_020_credit_relief_stock_leadership.py",
+    "experiments/logs/exp-20260620-021.json",
+    "data/experiments/exp-20260711-001/hyg_jnk_daily_ohlcv.json",
+    "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    "data/experiments/exp-20260711-001/**",
+    "experiments/tickets/exp-20260711-001.json",
+    "experiments/cards/exp-20260711-001.md",
+    "experiments/manifests/exp-20260711-001.json",
+    "experiments/logs/exp-20260711-001.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "fingerprint_caveat": "Reservation overmatched forward_replacement_value; the true source is credit_risk_etf. This experiment adds the dedicated fingerprint key and tests.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_001_credit_relief_hyg_jnk_full_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T00:25:08+00:00"
+}

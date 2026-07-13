@@ -1,0 +1,311 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.py",
+    "quant/moomoo_open_positions.py",
+    "quant/test_moomoo_open_positions.py",
+    "operator_inputs/open_positions.json",
+    "data/experiments/exp-20260711-006/exp_20260711_006_moomoo_entry_date_live_drift_fallback.json",
+    "experiments/tickets/exp-20260711-006.json",
+    "experiments/logs/exp-20260711-006.json",
+    "data/experiments/exp-20260711-009/exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.json",
+    "experiments/cards/exp-20260711-009.md",
+    "experiments/manifests/exp-20260711-009.json",
+    "experiments/tickets/exp-20260711-009.json",
+    "experiments/logs/exp-20260711-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-009.md",
+  "causal_components": [
+    "current-quantity anchored backward fill reconstruction",
+    "full-close reopen semantics",
+    "focused regression",
+    "current snapshot correction",
+    "exp006 invalidation"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_current_lot_backward_fill_reconstruction_v1",
+  "claimed_at": "2026-07-11T04:43:27+00:00",
+  "completed_at": "2026-07-11T04:47:33+00:00",
+  "created_at": "2026-07-11T04:42:24+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-009",
+  "experiment_uid": "expuid-0e7cedad08734700",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T04:42:24+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_current_lot_entry_date_reconstruction"
+  },
+  "hypothesis": "Correct the invalid position-id entry-date fallback from exp-20260711-006: when broker deal history is incomplete and a ticker was fully closed then reopened, reconstruct the current long lot backward from current quantity and newest fills so SNXX resolves to its 2026-07-10 rebuy rather than the stale 2026-07-02 lot; this changes metadata only, never orders, prices, sizing, or exits.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "moomoo_current_lot_backward_fill_reconstruction_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "position quantity",
+    "average cost",
+    "target or stop levels",
+    "orders",
+    "ranking or sizing"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "backward",
+        "broker",
+        "changes",
+        "closed",
+        "correct",
+        "current",
+        "date",
+        "deal",
+        "entry",
+        "exits",
+        "exp",
+        "fallback",
+        "fill",
+        "fills",
+        "from",
+        "fully",
+        "history",
+        "id",
+        "incomplete",
+        "invalid",
+        "is",
+        "its",
+        "long",
+        "lot",
+        "metadata",
+        "moomoo",
+        "never",
+        "newest",
+        "only",
+        "or",
+        "orders",
+        "position",
+        "prices",
+        "quantity",
+        "rather",
+        "rebuy",
+        "reconstruct",
+        "reconstruction",
+        "reopened",
+        "resolves",
+        "sizing",
+        "snxx",
+        "so",
+        "stale",
+        "than",
+        "then",
+        "this",
+        "ticker",
+        "to",
+        "was",
+        "when"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.0267,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.0242,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.0216,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "forward_duplicate_exposure_attribution",
+        "reopen_condition": "Do not rerun this observed-only attribution on the same rows. A valid next step is either materially more closed duplicate rows or a separate shared-policy Gate 1-4 duplicate-exposure cap test with explicit production/backtest parity.",
+        "score": 0.0211,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_current_lot_backward_fill_reconstruction",
+    "artifact": "data\\experiments\\exp-20260711-009\\exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.json",
+    "checks": {
+      "broker_history_full_close_on_2026_07_08": true,
+      "broker_history_rebuy_on_2026_07_10": true,
+      "current_qty_anchored_reconstruction": true,
+      "current_snapshot_corrected": true,
+      "shares_preserved": true,
+      "average_cost_preserved": true,
+      "target_preserved": true
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-009.json",
+  "single_causal_variable": "moomoo_current_lot_backward_fill_reconstruction_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260711-009.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260711-009",
+  "decision": "accepted_measurement_repair_current_lot_backward_fill_reconstruction",
+  "invalidates_experiment": "exp-20260711-006",
+  "broker_evidence": {
+    "fills": [
+      {
+        "ticker": "US.SNXX",
+        "side": "BUY",
+        "qty": 200.0,
+        "date": "2026-07-02"
+      },
+      {
+        "ticker": "US.SNXX",
+        "side": "SELL",
+        "qty": 200.0,
+        "date": "2026-07-08"
+      },
+      {
+        "ticker": "US.SNXX",
+        "side": "BUY",
+        "qty": 50.0,
+        "date": "2026-07-10"
+      }
+    ],
+    "current_qty": 50.0,
+    "current_avg_cost": 28.06
+  },
+  "before": {
+    "entry_date": "2026-07-02",
+    "basis": "stale position-id ledger fallback"
+  },
+  "after": {
+    "entry_date": "2026-07-10",
+    "basis": "current-quantity anchored newest fills"
+  },
+  "checks": {
+    "broker_history_full_close_on_2026_07_08": true,
+    "broker_history_rebuy_on_2026_07_10": true,
+    "current_qty_anchored_reconstruction": true,
+    "current_snapshot_corrected": true,
+    "shares_preserved": true,
+    "average_cost_preserved": true,
+    "target_preserved": true
+  },
+  "production_impact": {
+    "measurement_only": true,
+    "orders_changed": false,
+    "prices_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Moomoo reused the same position_id after the 200-share lot was fully sold on July 8 and a new 50-share lot was bought July 10; a stale position-id ledger is therefore not lot identity.",
+    "forbidden_near_neighbor_retry": "Do not recover entry_date from position_id or ticker history without current-quantity and intervening-fill reconciliation.",
+    "new_evidence_required": "A future repair needs a concrete corporate-action, transfer, or incomplete-fill case that the current-quantity backward reconstruction cannot resolve."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_moomoo_open_positions.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.py"
+  ],
+  "lean_quality_passed": true,
+  "artifact": "data/experiments/exp-20260711-009/exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.json",
+  "updated_at": "2026-07-11T04:47:33+00:00"
+}

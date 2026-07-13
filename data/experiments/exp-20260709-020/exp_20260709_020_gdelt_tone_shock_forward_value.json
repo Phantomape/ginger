@@ -1,0 +1,588 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_020_gdelt_tone_shock_forward_value.py",
+    "data/experiments/exp-20260709-020/exp_20260709_020_gdelt_tone_shock_forward_value.json",
+    "data/experiments/exp-20260709-020/gdelt_timelines/",
+    "experiments/logs/exp-20260709-020.json",
+    "experiments/cards/exp-20260709-020.md",
+    "experiments/manifests/exp-20260709-020.json",
+    "experiments/tickets/exp-20260709-020.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "alpha_hypothesis": "Observed-only alpha: GDELT 2.0 DOC historical daily company-news tone/volume series are a genuinely new free PIT data source with full canonical-window archive coverage, so negative company tone shocks on elevated article volume should precede weaker forward 10d SPY-excess drift on the liquid core watchlist than same-ticker baseline days, giving the first historically replayable news-tone entry-risk context that the 2026-forward-only structured-news observers cannot evaluate.",
+  "alpha_ready": false,
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260709-020/exp_20260709_020_gdelt_tone_shock_forward_value.json",
+  "attribution": {
+    "negative_shock_ticker_counts": {},
+    "negative_shock_top_ticker_share": null,
+    "note": "attribution only; not part of the pass/fail rule",
+    "positive_tone_shock_days": 0,
+    "positive_tone_shock_mean_fwd10_demeaned_bps": null
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "blocked_reason": "gdelt_fetch_coverage_too_thin;gdelt_archive_not_materialized_remote_fetch_disabled_or_rate_limited;too_few_ticker_day_observations;too_few_negative_tone_shock_days",
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "company-name query ambiguity noise",
+      "tone merely relabels beta/attention (frozen event_attention prior)",
+      "GDELT API throttling blocks full window fetch",
+      "UTC publication day to trading day alignment leakage"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_modes": [
+      "gdelt_fetch_coverage_too_thin",
+      "gdelt_archive_not_materialized_remote_fetch_disabled_or_rate_limited",
+      "too_few_ticker_day_observations",
+      "too_few_negative_tone_shock_days"
+    ]
+  },
+  "causal_components": [
+    "fixed_gdelt_company_query_map",
+    "fixed_trailing_tone_volume_zscore_definition",
+    "fixed_next_open_10d_spy_excess_attribution",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_020_gdelt_tone_shock_forward_value.py",
+    "data/experiments/exp-20260709-020/exp_20260709_020_gdelt_tone_shock_forward_value.json",
+    "data/experiments/exp-20260709-020/gdelt_timelines/",
+    "experiments/logs/exp-20260709-020.json",
+    "experiments/cards/exp-20260709-020.md",
+    "experiments/manifests/exp-20260709-020.json",
+    "experiments/tickets/exp-20260709-020.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "changed_variable": "gdelt_tone_shock_forward_value_v1",
+  "claims": {
+    "claim_a": {
+      "claim": "negative_tone_volume_shock_underperforms_same_ticker_baseline_fwd10",
+      "passed": false,
+      "per_window": {
+        "late_strong": {
+          "non_shock_mean_fwd10_demeaned_bps": null,
+          "shock_days": 0,
+          "shock_mean_fwd10_demeaned_bps": null,
+          "sign_matches": false
+        },
+        "mid_weak": {
+          "non_shock_mean_fwd10_demeaned_bps": null,
+          "shock_days": 0,
+          "shock_mean_fwd10_demeaned_bps": null,
+          "sign_matches": false
+        },
+        "old_thin": {
+          "non_shock_mean_fwd10_demeaned_bps": null,
+          "shock_days": 0,
+          "shock_mean_fwd10_demeaned_bps": null,
+          "sign_matches": false
+        }
+      },
+      "pooled_non_shock_days": 0,
+      "pooled_shock_days": 0,
+      "pooled_shock_mean_fwd10_demeaned_bps": null,
+      "pooled_welch_t": null,
+      "required_t": -1.5,
+      "sign_consistent_windows": 0
+    },
+    "claim_b": {
+      "claim": "pooled_tone_z_positively_ranks_fwd5_spy_excess",
+      "n": 0,
+      "overlap_caveat": "5d horizons overlap across consecutive days; t is optimistic",
+      "passed": false,
+      "per_window": {
+        "late_strong": {
+          "n": 0,
+          "spearman": null
+        },
+        "mid_weak": {
+          "n": 0,
+          "spearman": null
+        },
+        "old_thin": {
+          "n": 0,
+          "spearman": null
+        }
+      },
+      "pooled_spearman": null,
+      "pooled_t": null,
+      "required_abs_t": 2.0
+    }
+  },
+  "decision": "blocked_gdelt_tone_shock_forward_value",
+  "delta_metrics": {
+    "claim_a_passed": false,
+    "claim_a_pooled_t": null,
+    "claim_b_passed": false,
+    "claim_b_pooled_spearman": null,
+    "claim_b_pooled_t": null,
+    "claims_passed": [],
+    "expected_value_score_sum_delta": 0.0,
+    "negative_shock_days": 0,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "ticker_day_observations": 0,
+    "tickers_failed": 37,
+    "tickers_fetched": 0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-020",
+  "fetch_errors": {
+    "AAPL": "fetch_halted_after_global_gdelt_blocker",
+    "AMD": "fetch_halted_after_global_gdelt_blocker",
+    "AMZN": "fetch_halted_after_global_gdelt_blocker",
+    "APP": "fetch_halted_after_global_gdelt_blocker",
+    "AVGO": "fetch_halted_after_global_gdelt_blocker",
+    "BKNG": "fetch_halted_after_global_gdelt_blocker",
+    "CAT": "fetch_halted_after_global_gdelt_blocker",
+    "COIN": "fetch_halted_after_global_gdelt_blocker",
+    "CRDO": "fetch_halted_after_global_gdelt_blocker",
+    "CVX": "fetch_halted_after_global_gdelt_blocker",
+    "DDOG": "fetch_halted_after_global_gdelt_blocker",
+    "DE": "fetch_halted_after_global_gdelt_blocker",
+    "DIS": "fetch_halted_after_global_gdelt_blocker",
+    "GE": "fetch_halted_after_global_gdelt_blocker",
+    "GOOG": "fetch_halted_after_global_gdelt_blocker",
+    "GS": "fetch_halted_after_global_gdelt_blocker",
+    "ISRG": "fetch_halted_after_global_gdelt_blocker",
+    "JPM": "fetch_halted_after_global_gdelt_blocker",
+    "LLY": "fetch_halted_after_global_gdelt_blocker",
+    "MA": "fetch_halted_after_global_gdelt_blocker",
+    "MCD": "fetch_halted_after_global_gdelt_blocker",
+    "META": "fetch_halted_after_global_gdelt_blocker",
+    "MSFT": "fetch_halted_after_global_gdelt_blocker",
+    "MU": "fetch_halted_after_global_gdelt_blocker",
+    "NFLX": "fetch_halted_after_global_gdelt_blocker",
+    "NOW": "fetch_halted_after_global_gdelt_blocker",
+    "NVDA": "GDELT cache missing and remote fetch disabled; set GINGER_GDELT_FETCH=1 to materialize the archive when the API is not rate-limited.",
+    "NVO": "fetch_halted_after_global_gdelt_blocker",
+    "PLTR": "fetch_halted_after_global_gdelt_blocker",
+    "RTX": "fetch_halted_after_global_gdelt_blocker",
+    "SNOW": "fetch_halted_after_global_gdelt_blocker",
+    "SPOT": "fetch_halted_after_global_gdelt_blocker",
+    "TSLA": "fetch_halted_after_global_gdelt_blocker",
+    "TSM": "fetch_halted_after_global_gdelt_blocker",
+    "UNH": "fetch_halted_after_global_gdelt_blocker",
+    "V": "fetch_halted_after_global_gdelt_blocker",
+    "XOM": "fetch_halted_after_global_gdelt_blocker"
+  },
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": false,
+    "entry_date_scope": "No trades and no signal objects; ticker-day attribution only.",
+    "fields_checked": [
+      "tone",
+      "volume",
+      "open",
+      "close",
+      "date"
+    ],
+    "passed": false,
+    "target_price_scope": "Not applicable; read-only diagnostic."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "Ticker-day observations, not signals; no production filter touched.",
+    "passed": false,
+    "signals_generated": 0,
+    "signals_survived": 0,
+    "survival_rate": null
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "blocked_gdelt_tone_shock_forward_value",
+    "measurement_blockers": [
+      "gdelt_fetch_coverage_too_thin",
+      "gdelt_archive_not_materialized_remote_fetch_disabled_or_rate_limited",
+      "too_few_ticker_day_observations",
+      "too_few_negative_tone_shock_days"
+    ],
+    "measurement_repair_only": false,
+    "passed": false,
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Observed-only alpha: GDELT 2.0 DOC historical daily company-news tone/volume series are a genuinely new free PIT data source with full canonical-window archive coverage, so negative company tone shocks on elevated article volume should precede weaker forward 10d SPY-excess drift on the liquid core watchlist than same-ticker baseline days, giving the first historically replayable news-tone entry-risk context that the 2026-forward-only structured-news observers cannot evaluate.",
+  "implementation_mode": "read_only_diagnostic_lead_generation",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260709-020.json",
+  "mechanism_family": "production_visible_gdelt_news_tone_context",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260521-019",
+    "exp-20260702-011",
+    "exp-20260630-006"
+  ],
+  "new_evidence_type": "new_data_source_gdelt_historical_news_tone_archive",
+  "next_retry_requires": [
+    "no same-window z/lookback/query re-slices",
+    "lead -> shared-paper-first Gate 1-4 overlay; rejected -> entity-resolution upgrade or forward rows"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "analysis_end": "2026-04-21",
+    "baseline_observations": 63,
+    "entry": "next trading day open after UTC publication day",
+    "excess_benchmark": "SPY same-entry open-to-close",
+    "fetch_start": "2024-06-01",
+    "forward_horizons_trading_days": [
+      5,
+      10
+    ],
+    "min_baseline_observations": 40,
+    "pit_note": "UTC day D closes ~19:00-20:00 ET; entry >= 09:30 ET next day",
+    "query_map": {
+      "AAPL": "\"Apple\"",
+      "AMD": "\"AMD\"",
+      "AMZN": "\"Amazon\"",
+      "APP": "\"AppLovin\"",
+      "AVGO": "\"Broadcom\"",
+      "BKNG": "\"Booking Holdings\"",
+      "CAT": "\"Caterpillar\"",
+      "COIN": "\"Coinbase\"",
+      "CRDO": "\"Credo Technology\"",
+      "CVX": "\"Chevron\"",
+      "DDOG": "\"Datadog\"",
+      "DE": "\"John Deere\"",
+      "DIS": "\"Disney\"",
+      "GE": "\"General Electric\"",
+      "GOOG": "\"Google\"",
+      "GS": "\"Goldman Sachs\"",
+      "ISRG": "\"Intuitive Surgical\"",
+      "JPM": "\"JPMorgan\"",
+      "LLY": "\"Eli Lilly\"",
+      "MA": "\"Mastercard\"",
+      "MCD": "\"McDonald's\"",
+      "META": "\"Meta Platforms\"",
+      "MSFT": "\"Microsoft\"",
+      "MU": "\"Micron\"",
+      "NFLX": "\"Netflix\"",
+      "NOW": "\"ServiceNow\"",
+      "NVDA": "\"Nvidia\"",
+      "NVO": "\"Novo Nordisk\"",
+      "PLTR": "\"Palantir\"",
+      "RTX": "\"Raytheon\"",
+      "SNOW": "\"Snowflake Inc\"",
+      "SPOT": "\"Spotify\"",
+      "TSLA": "\"Tesla\"",
+      "TSM": "\"TSMC\"",
+      "UNH": "\"UnitedHealth\"",
+      "V": "\"Visa Inc\"",
+      "XOM": "\"Exxon\""
+    },
+    "tone_shock_z": -1.0,
+    "volume_shock_z": 1.0,
+    "volume_transform": "log1p"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run with tweaked z thresholds, baseline lookbacks, volume transforms, query phrasings, horizons, or window slices on the same frozen windows. If lead: next step is a fixed shared-paper-first entry-risk overlay (downweight/exclude negative-tone-shock names) through Gate 1-4 against accepted comparators, plus daily GDELT snapshot wiring. If rejected: the tone axis needs either an entity-resolution upgrade (GDELT GKG org fields instead of phrase queries) or prospective forward rows, not a re-slice.",
+    "new_evidence_required": "A fixed deployable gate shape through Gate 1-4, GKG-based entity resolution, or prospective GDELT-tagged forward replacement rows.",
+    "why_result_happened": "The experiment did not reach alpha validation because the GDELT archive was not materialized (gdelt_fetch_coverage_too_thin; gdelt_archive_not_materialized_remote_fetch_disabled_or_rate_limited; too_few_ticker_day_observations; too_few_negative_tone_shock_days). No ticker-day tone/volume rows were available, so the predeclared Claim A/B statistics are intentionally null. This blocks the current alpha read; it does not prove or disprove the GDELT tone shock hypothesis. Measured throttle evidence (2026-07-09, this host): single full-span timelinetone requests DID succeed twice at day resolution (so 74 requests would cover all 37 names), but the host 429s at 15s spacing, kept 429ing across 120/240/480s backoffs spanning 14 minutes, and a single probe after 35 minutes of complete quiet still returned HTTP 429. The DOC API is effectively unusable from this IP at bulk-fetch cadence."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Observed-only alpha: GDELT 2.0 DOC historical daily company-news tone/volume series are a genuinely new free PIT data source with full canonical-window archive coverage, so negative company tone shocks on elevated article volume should precede weaker forward 10d SPY-excess drift on the liquid core watchlist than same-ticker baseline days, giving the first historically replayable news-tone entry-risk context that the 2026-forward-only structured-news observers cannot evaluate.",
+    "2_history_check": {
+      "L5_prior": "docs/alpha_next_direction_20260701.md deprioritized attention as context-not-signal; this test uses tone DIRECTION on shock days, predeclared to observed-only.",
+      "exp-20260521-019": "event attention persistence (news recency) rejected once; GDELT is a different source with tone direction and full history.",
+      "exp-20260702-011": "structured-news propagation lead is 2026-forward-only; GDELT adds the missing canonical-window replay axis."
+    },
+    "3_single_measurement_bundle": "gdelt_tone_shock_forward_value_v1",
+    "4_success_failure_standard": "Claim A shock underperformance (pooled Welch t <= -1.5, all 3 windows sign-consistent, >= 30 pooled shock days) AND Claim B pooled Spearman(tone_z, fwd5) > 0 with |t| >= 2. Both -> observed_only_lead; else observed_only_rejected. Never accepted alpha by itself.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_020_gdelt_tone_shock_forward_value.py"
+  },
+  "prediction": {
+    "confidence_reason": "New data source axis (a): free historical entity-level news tone archive covering all canonical windows; repo news surfaces are 2026-forward-only; prior attention family single-attempt rejected so direction uncertain",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "company-name query ambiguity noise",
+      "tone merely relabels beta/attention (frozen event_attention prior)",
+      "GDELT API throttling blocks full window fetch",
+      "UTC publication day to trading day alignment leakage"
+    ],
+    "recorded_at": "2026-07-09T17:03:57+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_new_data_source_forward_attribution",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "docs/alpha_next_direction_20260701.md",
+    "quant/broad_dispersion_features.py"
+  ],
+  "reopen_condition": {
+    "condition": "A single manual probe (one curl of the NVDA full-span timelinetone URL, not a new experiment ID) returns HTTP 200 from the runtime host - e.g. off-peak hours, a different egress IP, or after contacting GDELT. Then rerun this runner with GINGER_GDELT_FETCH=1; the per-ticker cache makes the fetch resumable. Alternative axis: materialize tone/volume offline from GDELT raw GKG/ngrams bulk files (unthrottled data.gdeltproject.org) or a BigQuery export, then rerun without any API dependency.",
+    "parked_at": "2026-07-10T00:11:36Z",
+    "probe_command": "curl -s -o /dev/null -w '%{http_code}' 'https://api.gdeltproject.org/api/v2/doc/doc?query=%22Nvidia%22&mode=timelinetone&startdatetime=20240601000000&enddatetime=20260421235959&format=json'",
+    "surface": "gdelt_doc_api_tone_volume_archive"
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_020_gdelt_tone_shock_forward_value.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "gdelt_tone_shock_forward_value_v1",
+  "status": "blocked",
+  "ticket_before": {
+    "claimed_at": "2026-07-09T17:03:57+00:00",
+    "created_at": "2026-07-09T16:17:42+00:00",
+    "hub_identity": {
+      "namespace": "ginger/experiments",
+      "repo_id": "ginger/experiments/exp-20260709-020",
+      "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+      "reserved_at": "2026-07-09T16:17:42+00:00",
+      "scheme": "hf_hub_local_v1",
+      "slug": "gdelt_tone_shock_forward_value"
+    },
+    "novelty": {
+      "blocking_matches": [],
+      "data_source_unclassified": true,
+      "enforced": true,
+      "fingerprint": {
+        "data_source": "other",
+        "field_tags": [
+          "a",
+          "alpha",
+          "archive",
+          "are",
+          "article",
+          "attribution",
+          "baseline",
+          "cannot",
+          "canonical",
+          "company",
+          "context",
+          "core",
+          "coverage",
+          "current",
+          "daily",
+          "data",
+          "doc",
+          "drift",
+          "elevated",
+          "entry",
+          "evaluate",
+          "excess",
+          "first",
+          "forward",
+          "full",
+          "gdelt",
+          "genuinely",
+          "giving",
+          "historical",
+          "historically",
+          "latency",
+          "liquid",
+          "min",
+          "negative",
+          "new",
+          "news",
+          "observed",
+          "observers",
+          "on",
+          "only",
+          "pit",
+          "precede",
+          "present",
+          "publication",
+          "replayable",
+          "risk",
+          "same",
+          "series",
+          "shock",
+          "shocks",
+          "should",
+          "so",
+          "spy",
+          "structured",
+          "than",
+          "that",
+          "ticker",
+          "tone",
+          "value",
+          "volume",
+          "watchlist",
+          "weaker",
+          "window"
+        ],
+        "gate_shape": "forward_attribution"
+      },
+      "nearest": [
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "sec_ftd_forward_replacement_context_attribution",
+          "reopen_condition": "Need materially more closed SEC_FTD_FINRA true-trigger forward rows, PIT borrow fee or loan-availability context, or a separate mature activation ledger before revisiting this lane.",
+          "score": 0.1864,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "observed_only_attribution",
+          "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+          "score": 0.1848,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "forward_replacement_stock_vs_etf_diversification",
+          "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+          "score": 0.18,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "form4_forward_replacement_context_attribution",
+          "reopen_condition": "Need materially more closed forward replacement rows from the shared daily Form4 helper, explicit Form 144 plan/float context, or executive ownership and compensation provenance before another Form4 conflict alpha attempt.",
+          "score": 0.179,
+          "status": "single_attempt",
+          "trials": 1
+        },
+        {
+          "accept_rate": 0.0,
+          "data_source": "forward_replacement_value",
+          "family_key": "market_state_family_replacement_value_attribution",
+          "reopen_condition": null,
+          "score": 0.179,
+          "status": "single_attempt",
+          "trials": 1
+        }
+      ],
+      "new_evidence_axis": null,
+      "observed_only_streak_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_probes": 3,
+        "override_accepted": false,
+        "rule": "AGENTS.md \u00a72.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+        "source": "other",
+        "streak": 0,
+        "streak_experiments": []
+      },
+      "override": false,
+      "reopen_condition_guard": {
+        "applicable": true,
+        "blocked": false,
+        "matched_conditions": [],
+        "new_evidence_axis": {
+          "axis": null,
+          "categories": [],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "override_accepted": false,
+        "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+      },
+      "routine_materialization_guard": {
+        "applicable": false,
+        "blocked": false,
+        "max_ids": 3,
+        "override_accepted": false,
+        "per_source_count": 0,
+        "recent_cross_surface_count": 0,
+        "recent_experiments": [],
+        "rule": "AGENTS.md \u00a72.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+        "window_days": 7
+      },
+      "saturated_source_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "saturated_source_override": false,
+      "source_saturation": {
+        "accept_rate": 0.0,
+        "accepts": 0,
+        "applicable": false,
+        "gate_shape": "forward_attribution",
+        "max_accept_rate": 0.05,
+        "min_trials": 12,
+        "saturated": false,
+        "source": "other",
+        "trials": 0
+      },
+      "warn": false,
+      "warn_threshold": 0.55
+    }
+  },
+  "timestamp": "2026-07-10T00:11:36Z",
+  "trial_family": "gdelt_news_tone_shock_forward_attribution",
+  "trial_variant_id": "gdelt_tone_shock_v1"
+}

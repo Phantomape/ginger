@@ -1,0 +1,324 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "candidate_pool/forward-attribution: SEC filing-feature source credibility, low-volume predictability, and text-direction-vs-price buckets may later explain filing-event replacement value, but current rows lack enough same-accession economic fields and settled forward outcomes.",
+  "alpha_readiness": {
+    "alpha_ready": false,
+    "blockers": [
+      "feature_rows_below_alpha_sample_floor",
+      "same_accession_companyfacts_rows_too_thin",
+      "economic_feature_fields_unpopulated"
+    ],
+    "note": "This run deliberately does not test an alpha. Current feature rows and same-accession/economic fields are too thin for a Gate 1-4 candidate-pool or forward-attribution read."
+  },
+  "causal_components": [
+    "sec_filing_features_data_source_keyword",
+    "fingerprint_regression_tests",
+    "readiness_blocker_record",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-013.json",
+    "experiments/cards/exp-20260710-013.md",
+    "experiments/manifests/exp-20260710-013.json",
+    "experiments/tickets/exp-20260710-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_filing_features_fingerprint_data_source_repair_v1",
+  "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+  "experiment_id": "exp-20260710-013",
+  "feature_summary": {
+    "exists": true,
+    "field_counts": {
+      "fcf_to_net_income_gap": 0,
+      "filer_status_category": 0,
+      "gross_margin_delta": 0,
+      "inventory_growth": 0,
+      "low_volume_predictability_bucket": 17,
+      "predictability_mosaic_bucket": 17,
+      "receivables_growth": 0,
+      "source_credibility_bucket": 17,
+      "text_direction_vs_price_bucket": 17
+    },
+    "filer_status_parse_counts": {
+      "blocked_no_cover_page_status_terms": 3,
+      "parsed_machine_readable_dei_fact": 14
+    },
+    "path": "data/non_ohlcv/sec_filing_features_summary_20260709.json",
+    "pit_caveat": "accepted_at/usable_trade_date gate event tradability; Companyfacts filed date is only a public-availability proxy for historical replay.",
+    "pit_safe_rows": 17,
+    "rows_with_filer_status": 14,
+    "rows_with_same_accession_facts": 0,
+    "rows_written": 17
+  },
+  "fingerprint_checks": {
+    "companyfacts_control": {
+      "actual": {
+        "data_source": "companyfacts_ratio",
+        "field_tags": [
+          "cash",
+          "companyfacts",
+          "flow",
+          "margin"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "companyfacts_ratio",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC Companyfacts free cash flow margin quality"
+    },
+    "feature_candidate_pool": {
+      "actual": {
+        "data_source": "sec_filing_features",
+        "field_tags": [
+          "bucket",
+          "feature",
+          "filing",
+          "low",
+          "mosaic",
+          "predictability",
+          "volume"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec_filing_features",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC filing feature mosaic low_volume_predictability_bucket candidate pool"
+    },
+    "feature_forward_attribution": {
+      "actual": {
+        "data_source": "sec_filing_features",
+        "field_tags": [
+          "attribution",
+          "bucket",
+          "credibility",
+          "features",
+          "filing",
+          "forward",
+          "mosaic",
+          "predictability",
+          "replacement",
+          "value"
+        ],
+        "gate_shape": "forward_attribution"
+      },
+      "expected_shape": "forward_attribution",
+      "expected_source": "sec_filing_features",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "sec_filing_features source_credibility_bucket predictability_mosaic_bucket forward replacement value attribution"
+    },
+    "feature_text_plus_companyfacts": {
+      "actual": {
+        "data_source": "sec_filing_features",
+        "field_tags": [
+          "bucket",
+          "companyfacts",
+          "direction",
+          "filing",
+          "plus",
+          "price",
+          "text"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_filing_features",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "sec_filing_text_plus_companyfacts text_direction_vs_price_bucket source"
+    },
+    "forward_replacement_control": {
+      "actual": {
+        "data_source": "forward_replacement_value",
+        "field_tags": [
+          "attribution",
+          "entry",
+          "exhaustion",
+          "forward",
+          "replacement",
+          "value"
+        ],
+        "gate_shape": "forward_attribution"
+      },
+      "expected_shape": "forward_attribution",
+      "expected_source": "forward_replacement_value",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "forward replacement value entry_exhaustion attribution"
+    },
+    "sec_contract_relation_control": {
+      "actual": {
+        "data_source": "sec_contract_relation",
+        "field_tags": [
+          "contract",
+          "item",
+          "provenance",
+          "relation"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec_contract_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC Item 1.01 contract-relation provenance candidate pool"
+    },
+    "sec_filer_status_control": {
+      "actual": {
+        "data_source": "sec_filer_status",
+        "field_tags": [
+          "cover",
+          "filer",
+          "page",
+          "status",
+          "upgrade"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec_filer_status",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "sec_cover_page_filer_status_upgrade_candidate_pool"
+    },
+    "sec_text_control": {
+      "actual": {
+        "data_source": "sec_text_event",
+        "field_tags": [
+          "entry",
+          "item",
+          "k",
+          "listing",
+          "noncompliance",
+          "risk"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_text_event",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 8-K item 3.01 listing noncompliance entry risk"
+    }
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals.",
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "sec_filing_features",
+      "sec_filing_text_plus_companyfacts",
+      "source_credibility_bucket",
+      "predictability_mosaic_bucket"
+    ]
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "note": "No buy/sell/filter/ranking behavior changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "acceptance_rule": "Accepted measurement repair if SEC filing-feature examples resolve to sec_filing_features, forward-attribution and candidate-pool gate shapes are preserved, generic SEC text remains sec_text_event, SEC filer status remains sec_filer_status, Companyfacts remains companyfacts_ratio, generic forward replacement remains forward_replacement_value, and no strategy/live behavior changes.",
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_sec_filing_features_fingerprint_coverage",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "checks_passed": 8,
+    "checks_total": 8,
+    "failed_checks": [],
+    "same_accession_companyfacts_rows": 0,
+    "sec_filing_feature_rows": 17,
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Repair SEC filing feature mosaic fingerprint coverage so sec_filing_features / sec_filing_text_plus_companyfacts can be tracked as its own data source before any future source-credibility or predictability alpha read.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260708-003",
+    "exp-20260708-014",
+    "exp-20260710-012"
+  ],
+  "new_evidence_axis": "Fingerprint classifier repair for a distinct SEC filing-feature mosaic surface; this changes novelty accounting only, not SEC item lists, text regexes, thresholds, candidate ranking, holds, notional, or alpha response shape.",
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "owner": "alpha-explore-automation",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Future sec_filing_features work still needs materially more PIT feature rows with same-accession/economic fields and settled cash/SPY/QQQ replacement value, or a distinct non-SEC data source. Do not sweep SEC forms/items, text regexes, credibility bucket labels, top-N, hold, cooldown, notional, or response shape on the current 17 rows.",
+    "new_evidence_required": "A valid next alpha ticket should fingerprint as sec_filing_features and provide enough settled rows and populated economic fields for Gate 1-4 or a declared observed-only replacement-value read.",
+    "why_result_happened": "The keyword table had specific keys for SEC filer status, SEC contract relation, generic SEC text, Companyfacts, and forward replacement rows, but not the combined SEC filing-feature mosaic. Proposals mentioning both SEC text, Companyfacts, and replacement value were therefore routed to the wrong source population."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "novelty_guard_accounting_changed": true,
+    "ranking_sizing_exits_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-013/exp_20260710_013_sec_filing_features_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-013.json",
+    "experiments/cards/exp-20260710-013.md",
+    "experiments/manifests/exp-20260710-013.json",
+    "experiments/tickets/exp-20260710-013.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\experiments\\exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_013_sec_filing_features_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_filing_features_fingerprint_data_source_repair_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-10T13:07:51Z",
+  "trial_family": "sec_filing_features_fingerprint_coverage",
+  "trial_variant_id": "sec_filing_features_source_key_v1"
+}

@@ -1,0 +1,255 @@
+{
+  "acceptance_rule": "Old actions cannot override a reopened lot; same-lot actions still repeat until share reconciliation; current strategy/backtest behavior is unchanged.",
+  "allowed_write_scope": [
+    "quant/pending_actions.py",
+    "quant/test_pending_actions.py",
+    "data/state/execution/pending_actions.json",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/logs",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-026.md",
+  "causal_components": [
+    "current-lot identity binding",
+    "legacy stale-action migration",
+    "lifecycle-aware reconciliation",
+    "focused regression tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "pending_action_position_lifecycle_binding_v1",
+  "claimed_at": "2026-07-11T22:34:02+00:00",
+  "completed_at": "2026-07-11T22:48:10+00:00",
+  "created_at": "2026-07-11T22:33:17+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-026",
+  "experiment_uid": "expuid-be9fbcabd83647ef",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-026",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T22:33:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pending_action_position_lifecycle_binding"
+  },
+  "hypothesis": "Pending actions bound only to ticker and share count can survive a full close and be applied to a reopened lot; binding every action to current-lot lifecycle identity and expiring lifecycle mismatches will prevent stale overrides without changing strategy rules or order submission.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "pending_action_position_lifecycle_binding_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "strategy thresholds",
+    "orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-006",
+    "exp-20260711-009"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "action",
+        "actions",
+        "applied",
+        "be",
+        "binding",
+        "bound",
+        "can",
+        "changing",
+        "close",
+        "count",
+        "current",
+        "every",
+        "expiring",
+        "full",
+        "identity",
+        "lifecycle",
+        "lot",
+        "mismatches",
+        "only",
+        "or",
+        "order",
+        "overrides",
+        "pending",
+        "position",
+        "prevent",
+        "reopened",
+        "rules",
+        "share",
+        "stale",
+        "strategy",
+        "submission",
+        "survive",
+        "ticker",
+        "to",
+        "will",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "diluted_share_count_contraction_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT shareholder-yield evidence such as explicit completion/progress fields, free cash flow coverage of buybacks, or closed forward replacement-value rows. Do not sweep share-count contraction thresholds, fact age, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.02,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.0195,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "current_ticker_pool_governance",
+        "reopen_condition": "Need broader forward/current-stack payment-network outcomes or a true business-model field before retrying this cohort.",
+        "score": 0.0186,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "tail_state_winner_continuation_candidate_pool",
+        "reopen_condition": "Revisit only with a materially new PIT tail-state or flow field and direct replacement-value evidence versus the accepted low-deployment ETF comparator.",
+        "score": 0.0186,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "breakout_without_2x_volume_precursor_full_stack",
+        "reopen_condition": "A valid retry needs settled forward replacement-value rows from a daily default-off precursor logger, daily snapshot parity, or an orthogonal PIT qualifier such as non-OHLCV flow/borrow/options context; not another OHLCV volume-threshold retune.",
+        "score": 0.0182,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted_measurement_repair_pending_action_position_lifecycle_binding",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260711-026/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260711-026/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-026.json",
+  "single_causal_variable": "pending_action_position_lifecycle_binding_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260711-026.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260711-026",
+  "decision": "accepted_measurement_repair_pending_action_position_lifecycle_binding",
+  "production_impact": {
+    "measurement_only": true,
+    "live_orders_changed": false,
+    "backtester_changed": false,
+    "strategy_thresholds_changed": false,
+    "execution_memory_identity_repaired": true
+  },
+  "verification": {
+    "focused_pending_action_tests_passed": 17,
+    "related_suite_tests_passed": 38,
+    "core_quant_tests_passed": 310,
+    "current_open_pending_actions": 0
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Ticker/share-only matching, non-persistent reconciliation, and reminder re-registration allowed an old action to survive a full exit and attach to a reopened lot; broker position_id reuse made that identifier unsafe too.",
+    "forbidden_near_neighbor_retry": "Do not restore ticker-only matching, use broker position_id as lot identity, or bootstrap historical actions from today's holdings without PIT snapshots.",
+    "new_evidence_required": "A concrete concurrent-writer loss, multi-account collision, corporate-action/transfer case, or sub-day broker fill identity."
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pending_actions.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_quant.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true
+}

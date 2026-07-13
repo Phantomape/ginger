@@ -1,0 +1,227 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_007_moomoo_entry_date_live_drift_fallback.py",
+    "data/experiments/exp-20260711-007/exp_20260711_007_moomoo_entry_date_live_drift_fallback.json",
+    "experiments/cards/exp-20260711-007.md",
+    "experiments/manifests/exp-20260711-007.json",
+    "experiments/tickets/exp-20260711-007.json",
+    "experiments/logs/exp-20260711-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-007.md",
+  "causal_components": [
+    "append-only live-drift fallback",
+    "position-id identity",
+    "focused regression",
+    "current null-field repair"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "moomoo_entry_date_live_drift_fallback_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-11T03:30:04+00:00",
+  "created_at": "2026-07-11T03:18:18+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-007",
+  "experiment_uid": "expuid-a7cf3a1d8b274b38",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T03:18:18+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "moomoo_entry_date_live_drift_fallback"
+  },
+  "hypothesis": "Repair the moomoo open-position entry-date contract so a currently held position whose recent deal reconstruction and prior snapshot both miss entry_date deterministically recovers the last known entry_date from the append-only live-drift ledger by position_id/ticker; this unblocks Gate 2 without changing trades, levels, sizing, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "moomoo_entry_date_live_drift_fallback_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260711-006"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "live_drift_reconciliation",
+      "field_tags": [
+        "a",
+        "append",
+        "both",
+        "by",
+        "changing",
+        "contract",
+        "currently",
+        "date",
+        "deal",
+        "deterministically",
+        "drift",
+        "entry",
+        "fallback",
+        "from",
+        "gate",
+        "held",
+        "id",
+        "known",
+        "last",
+        "ledger",
+        "levels",
+        "live",
+        "miss",
+        "moomoo",
+        "only",
+        "or",
+        "orders",
+        "position",
+        "prior",
+        "recent",
+        "reconstruction",
+        "recovers",
+        "repair",
+        "sizing",
+        "snapshot",
+        "so",
+        "this",
+        "ticker",
+        "trades",
+        "unblocks",
+        "whose",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_forward_observation_ledger",
+        "reopen_condition": "Closed forward rows with selected/sliced status, risk-intensity rank, realized PnL, and replacement value before any sizing promotion.",
+        "score": 0.0333,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "live_position_control",
+        "family_key": "live_position_control_ledger",
+        "reopen_condition": "A future promotion needs broker-confirmed open order inventory, daily run.py wiring for this state, or a materially different live control surface such as closed-trade exit drift.",
+        "score": 0.0267,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_structured_news_entry_date_contract",
+        "reopen_condition": "Reopen daily structured-news alpha only after production or an experiment-owned outcome ledger has at least 20 rows with entry_date plus closed cash/SPY/QQQ replacement values, or after a distinct PIT LLM scorer writes this same evidence-span schema. target_price remains non-applicable for this fixed-horizon observer.",
+        "score": 0.0261,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "forward_duplicate_exposure_attribution",
+        "reopen_condition": "Do not rerun this observed-only attribution on the same rows. A valid next step is either materially more closed duplicate rows or a separate shared-policy Gate 1-4 duplicate-exposure cap test with explicit production/backtest parity.",
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "live_drift_reconciliation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": true
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "live_drift_reconciliation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": null,
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected_duplicate_no_new_evidence_axis",
+    "reason": "Duplicate of exp-20260711-006; no work ran.",
+    "source_experiment": "exp-20260711-006",
+    "new_evidence": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-007.json",
+  "single_causal_variable": "moomoo_entry_date_live_drift_fallback_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260711-007.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exp-20260711-007",
+  "post_run_reflection": {
+    "why_result_happened": "The reservation duplicated the already claimed exp-20260711-006 repair for the identical locked variable before its ticket became visible. No second implementation or measurement ran.",
+    "forbidden_near_neighbor_retry": "Do not reserve another moomoo entry-date fallback repair for this incident.",
+    "new_evidence_required": "A new repair requires a different position-identity failure after the exp-20260711-006 fallback is in production."
+  },
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T03:30:04+00:00"
+}

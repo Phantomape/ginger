@@ -1,0 +1,223 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "Exit lifecycle and advisory outcome rows may eventually support LLM exit scoring or risk allocation once the observer has settled forward replacement-value evidence.",
+  "causal_components": [
+    "exit_lifecycle_data_source_keyword",
+    "fingerprint_regression_tests",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+    "experiments/logs/exp-20260710-008.json",
+    "experiments/cards/exp-20260710-008.md",
+    "experiments/manifests/exp-20260710-008.json",
+    "experiments/tickets/exp-20260710-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "exit_lifecycle_fingerprint_data_source_v1",
+  "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+  "experiment_id": "exp-20260710-008",
+  "fingerprint_checks": {
+    "exit_advisory_lifecycle": {
+      "actual": {
+        "data_source": "exit_lifecycle",
+        "field_tags": [
+          "advisory",
+          "attribution",
+          "breach",
+          "exit",
+          "forward",
+          "lifecycle",
+          "status"
+        ],
+        "gate_shape": "forward_attribution"
+      },
+      "expected_source": "exit_lifecycle",
+      "passed": true,
+      "source_ok": true,
+      "text": "exit advisory lifecycle breach_status forward attribution"
+    },
+    "exit_lifecycle_position_fields": {
+      "actual": {
+        "data_source": "exit_lifecycle",
+        "field_tags": [
+          "advisory",
+          "event",
+          "from",
+          "has",
+          "hwm",
+          "lifecycle",
+          "position",
+          "stop",
+          "trailing"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "exit_lifecycle",
+      "passed": true,
+      "source_ok": true,
+      "text": "has_advisory_event trailing_stop_from_hwm position lifecycle"
+    },
+    "exit_lifecycle_shadow_log": {
+      "actual": {
+        "data_source": "exit_lifecycle",
+        "field_tags": [
+          "daily",
+          "exit",
+          "lifecycle",
+          "log",
+          "position",
+          "rows",
+          "shadow"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "exit_lifecycle",
+      "passed": true,
+      "source_ok": true,
+      "text": "exit_lifecycle_shadow_log daily position lifecycle rows"
+    },
+    "intraday_advisory_shadow_action_control": {
+      "actual": {
+        "data_source": "intraday_advisory",
+        "field_tags": [
+          "action",
+          "advisory",
+          "attribution",
+          "intraday",
+          "review",
+          "risk",
+          "shadow"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "intraday_advisory",
+      "passed": true,
+      "source_ok": true,
+      "text": "intraday advisory shadow action risk-review attribution"
+    },
+    "intraday_primary_advisory_control": {
+      "actual": {
+        "data_source": "intraday_advisory",
+        "field_tags": [
+          "action",
+          "advisory",
+          "forward",
+          "outcome",
+          "primary",
+          "shadow"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_source": "intraday_advisory",
+      "passed": true,
+      "source_ok": true,
+      "text": "primary advisory shadow action forward outcome"
+    }
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals.",
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "exit_lifecycle",
+      "intraday_advisory"
+    ]
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "note": "No buy/sell/filter/ranking behavior changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "acceptance_rule": "Accepted measurement repair if exit lifecycle examples resolve to exit_lifecycle, existing intraday_advisory examples remain intraday_advisory, tests pass, and no strategy/live behavior changes.",
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "checks_passed": 5,
+    "checks_total": 5,
+    "failed_checks": [],
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Alpha blocker: exit lifecycle and LLM/advisory outcome rows may become an exit-scoring or risk-allocation evidence surface, but novelty fingerprints routed exit_lifecycle_shadow_log and exit advisory lifecycle text into intraday_advisory or other; repair the data_source key before future exit-lifecycle alpha or forward-row reopen checks.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "exit_lifecycle_advisory_outcome",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_axis": "New measurement surface key, not a strategy retune: exit_lifecycle_shadow_log rows are distinct from intraday advisory shadow actions.",
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Do not run exit lifecycle policy, LLM exit-scoring, threshold, or response curve experiments until the observer has settled forward replacement-value rows or another legal evidence axis.",
+    "new_evidence_required": "A future exit-lifecycle alpha needs settled forward rows under this repaired data_source, a distinct gate shape, or a new PIT field; fingerprint coverage alone is not signal.",
+    "why_result_happened": "The fingerprint keyword table had intraday advisory shadow action coverage but no dedicated exit_lifecycle key, so lifecycle rows and future exit/advisory outcome probes could share the wrong saturation population."
+  },
+  "pre_repair_observation": {
+    "pre_repair_data_source": "intraday_advisory",
+    "pre_repair_note": "The reservation fingerprint classified the repair hypothesis as intraday_advisory before the dedicated exit_lifecycle key existed.",
+    "source": "experiment.py new novelty output",
+    "text": "Alpha blocker: exit lifecycle and LLM/advisory outcome rows may become an exit-scoring or risk-allocation evidence surface, but novelty fingerprints routed exit_lifecycle_shadow_log and exit advisory lifecycle text into intraday_advisory or other; repair the data_source key before future exit-lifecycle alpha or forward-row reopen checks."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "novelty_guard_accounting_changed": true,
+    "ranking_sizing_exits_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+    "experiments/logs/exp-20260710-008.json",
+    "experiments/cards/exp-20260710-008.md",
+    "experiments/manifests/exp-20260710-008.json",
+    "experiments/tickets/exp-20260710-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\test_experiment_fingerprint.py quant\\experiments\\exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "exit_lifecycle_fingerprint_data_source_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-10T07:15:43Z",
+  "trial_family": "exit_lifecycle_fingerprint_coverage",
+  "trial_variant_id": "exit_lifecycle_data_source_key_v1"
+}

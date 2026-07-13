@@ -1,0 +1,1224 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "expected_value_score_sum": 12.2698,
+    "minimum_survival_rate": 0.7885,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 237852.27,
+    "trade_count_sum": 62,
+    "worst_max_drawdown_pct": 0.0975
+  },
+  "alpha_hypothesis": "Prospective first-seen entity-theme event decisions may retain the positive replacement-value lead from exp-20260713-001 without its historical Google News availability bias.",
+  "before_metrics": {
+    "expected_value_score_sum": 12.2698,
+    "minimum_survival_rate": 0.7885,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 237852.27,
+    "trade_count_sum": 62,
+    "worst_max_drawdown_pct": 0.0975
+  },
+  "calibration": {
+    "actual_success": true,
+    "brier_score": 0.0484,
+    "predicted_success_probability": 0.78,
+    "realized_failure_modes": []
+  },
+  "causal_components": [
+    "first-seen capture boundary",
+    "exact-URL stable decision ID",
+    "unique-ticker equal event allocation",
+    "36-hour operational freshness",
+    "next-session-open 10-session outcome",
+    "append-only idempotent ledger",
+    "daily fail-soft wiring"
+  ],
+  "change_type": "prospective_first_seen_event_forward_observer_wiring",
+  "changed_files": [
+    "quant/entity_theme_news_event_forward_observer.py",
+    "quant/test_entity_theme_news_event_forward_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260713_003_entity_theme_news_first_seen_forward_observer.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/entity_theme_news_event_forward_observer/state.json",
+    "data/non_ohlcv/entity_theme_news_event_forward_observer/ledger.jsonl",
+    "data/non_ohlcv/entity_theme_news_event_forward_observer/latest_summary.json",
+    "data/experiments/exp-20260713-003/exp_20260713_003_entity_theme_news_first_seen_forward_observer.json",
+    "experiments/logs/exp-20260713-003.json",
+    "experiments/cards/exp-20260713-003.md",
+    "experiments/manifests/exp-20260713-003.json",
+    "experiments/tickets/exp-20260713-003.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "changed_variable": "entity_theme_news_first_seen_url_shared_default_off_candidate_pool_v1",
+  "decision": "accepted_measurement_repair_entity_theme_news_first_seen_forward_observer",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260713-003",
+  "focused_tests": {
+    "helper_markers": {
+      "first_seen": true,
+      "fixed_exit": true,
+      "idempotent": true,
+      "notional": true
+    },
+    "helper_test": "quant/test_entity_theme_news_event_forward_observer.py",
+    "passed": true,
+    "run_markers": {
+      "fail_soft": true,
+      "wiring": true
+    },
+    "run_test": "quant/test_run_daily_wiring.py",
+    "source": "static_focused_test_contract"
+  },
+  "gate1": {
+    "after": {
+      "expected_value_score_sum": 12.2698,
+      "minimum_survival_rate": 0.7885,
+      "positive_ev_windows": 3,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "baseline_sha256_after": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "baseline_sha256_before": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "before": {
+      "expected_value_score_sum": 12.2698,
+      "minimum_survival_rate": 0.7885,
+      "positive_ev_windows": 3,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_contract": "A prospective decision is pending until next-session-open; it is not an executable backtester Position or signal.",
+    "passed": true,
+    "required_observer_fields": [
+      "event_decision_id",
+      "candidate_ticker",
+      "first_seen_at",
+      "published_at",
+      "paper_notional_usd",
+      "target_price",
+      "holding_sessions",
+      "trade_enabled"
+    ],
+    "target_price_contract": "Explicit null by design because the observer uses a fixed-time 10-session paper outcome and cannot drive a target exit."
+  },
+  "gate3": {
+    "baseline_minimum_survival_rate_unchanged": 0.7885,
+    "new_strategy_filter_added": false,
+    "passed": true,
+    "signals_generated": 62,
+    "signals_survived": 62,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "all_rows_trade_disabled": true,
+      "baseline_file_before_after_identical": true,
+      "each_event_leg_notional_sums_to_4000": true,
+      "first_run_appended_rows": true,
+      "first_seen_at_is_policy_availability": true,
+      "fixed_10_session_exit_is_explicit": true,
+      "focused_tests_passed_or_statically_verified": true,
+      "latest_input_first_run_exactly_10_events": true,
+      "latest_input_first_run_exactly_60_unique_ticker_legs": true,
+      "ledger_has_exactly_10_event_groups": true,
+      "no_outcome_settled_before_10_sessions": true,
+      "published_at_is_metadata_only": true,
+      "rerun_appends_zero_rows": true,
+      "rerun_creates_zero_new_decisions": true,
+      "run_py_wiring_is_fail_soft": true,
+      "target_price_is_explicitly_null": true
+    },
+    "accepted_alpha": false,
+    "applicable_to_alpha": false,
+    "decision": "accepted_measurement_repair_entity_theme_news_first_seen_forward_observer",
+    "failed_reasons": [],
+    "measurement_repair_acceptance_rule": "Accept only as alpha-enabling measurement repair if the shared helper uses policy-observed first_seen_at rather than published_at for availability; the latest saved daily input emits exactly 10 unseen fresh URL decisions and 60 unique ticker legs; every event's leg notionals sum to 4000 USD; rerun appends zero duplicate decisions; no outcome settles before 10 trading sessions; run.py wiring is fail-soft; trade_enabled, orders, live ranking, sizing and exits remain unchanged; focused parity tests pass and the post-MTM baseline remains identical. accepted_alpha must remain false. Park performance evaluation until at least 75 settled prospective unique URL events across 15 decision dates and 3 themes with max theme share <=30% and complete cash/SPY/QQQ outcomes.",
+    "passed": true
+  },
+  "headline_metrics": {
+    "event_notional_usd": 4000.0,
+    "first_run_decisions": 10,
+    "first_run_legs": 60,
+    "rerun_rows_appended": 0,
+    "settled_count": 0,
+    "trade_enabled": false
+  },
+  "hypothesis": "Alpha-enabling PIT repair for the entity_theme_news money hypothesis: persist a shared default-off first-seen exact-URL candidate pool so each newly observed URL becomes one next-session-open, 10-session paper event with unique mapped tickers sharing one fixed event notional; this creates prospective evidence without re-scoring frozen July outcomes or changing live trading.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_entity_theme_news_prospective_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260713-001",
+    "exp-20260703-001",
+    "exp-20260703-013"
+  ],
+  "new_evidence_axis": "New gate shape and rows: a production-visible shared default-off candidate-pool/forward-observer persists policy-time first_seen_at per exact URL and starts append-only prospective decisions; unlike exp-20260713-001, it does not reuse published_at as availability or re-score frozen July outcomes.",
+  "new_evidence_type": "new_gate_shape_and_prospective_forward_rows",
+  "next_retry_requires": [
+    ">=75 settled prospective unique-URL events",
+    ">=15 first-seen decision dates",
+    ">=3 themes with max theme share <=30%",
+    "complete cash/SPY/QQQ replacement values"
+  ],
+  "owner": "alpha-explore",
+  "parameters": {
+    "availability_time": "policy-observed first_seen_at",
+    "entry_rule": "next session open",
+    "event_key": "exact URL stable decision id",
+    "event_notional_usd": 4000.0,
+    "exit_rule": "fixed 10 trading sessions",
+    "freshness_hours": 36,
+    "proof_observed_at": "2026-07-13T06:45:17Z",
+    "proof_today": "20260713",
+    "published_at_role": "source metadata only",
+    "trade_enabled": false,
+    "within_event_allocation": "equal unique ticker legs"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not evaluate returns, slice themes, change URL normalization, retune freshness/notional/hold days, or reuse published_at as availability while this prospective ledger is below its fixed reopen threshold.",
+    "new_evidence_required": "Reopen performance evaluation only after at least 75 settled prospective unique-URL events across at least 15 first-seen decision dates and 3 themes, max theme share <=30%, with complete cash/SPY/QQQ replacement values.",
+    "why_result_happened": "The shared helper records availability at policy observation time, freezes one exact-URL event allocation, and reuses stable decision IDs so a same-input rerun cannot duplicate evidence."
+  },
+  "prediction": {
+    "confidence_reason": "Eleven persisted daily snapshots make first-seen deduplication directly testable, and the latest pre-market snapshot contains ten fresh unseen URLs; implementation risk remains in idempotent settlement and dirty run.py integration.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "fresh_url_count_not_10",
+      "cross_day_duplicate_decisions",
+      "published_at_availability_leak",
+      "event_notional_sum_drift",
+      "premature_settlement",
+      "run_wiring_failure",
+      "baseline_identity_drift"
+    ],
+    "recorded_at": "2026-07-13T06:44:55+00:00",
+    "success_probability": 0.78
+  },
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "scope": "prospective_default_off_first_seen_observer_only",
+    "shared_default_off_observer_added": true,
+    "sizing_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false
+  },
+  "proof": {
+    "baseline_sha256_after": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "baseline_sha256_before": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "checks": {
+      "all_rows_trade_disabled": true,
+      "baseline_file_before_after_identical": true,
+      "each_event_leg_notional_sums_to_4000": true,
+      "first_run_appended_rows": true,
+      "first_seen_at_is_policy_availability": true,
+      "fixed_10_session_exit_is_explicit": true,
+      "latest_input_first_run_exactly_10_events": true,
+      "latest_input_first_run_exactly_60_unique_ticker_legs": true,
+      "ledger_has_exactly_10_event_groups": true,
+      "no_outcome_settled_before_10_sessions": true,
+      "published_at_is_metadata_only": true,
+      "rerun_appends_zero_rows": true,
+      "rerun_creates_zero_new_decisions": true,
+      "target_price_is_explicitly_null": true
+    },
+    "first_run_summary": {
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "as_of_date": "2026-07-13",
+      "availability_timestamp_field": "first_seen_at",
+      "availability_timestamp_source": "first_seen_at",
+      "decision_count": 10,
+      "decision_count_total": 10,
+      "decision_leg_count_total": 60,
+      "decision_rows_appended": 60,
+      "decisions": [
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "99f31f772b31b85779ef6f544253b63e0bcc347f25c25aa3b909881cb95f9f5d",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "99f31f772b31b85779ef6f544253b63e0bcc347f25c25aa3b909881cb95f9f5d",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 5.009167,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-13T01:44:44Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "SpaceX gears up for Starship Flight 13 - SpaceNews",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1GeG5zTmd1V0R5WVk1ZGZRUHg2RThMYVVDM3l2TzczNTJDMmhOTHY1NnBPS0lYa0R2eXJTXzRFTzNfMHhKLXI1NWwybkNyT0hpbktucXBUTHNuZ2hkZzBkTTF4bjY1YkZqTDRudHV3?oc=5",
+          "url_sha256": "99f31f772b31b85779ef6f544253b63e0bcc347f25c25aa3b909881cb95f9f5d"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "318b1f31d0477d05930b3ee2041d996ac589fab688988ac7ff72136c42d28c12",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "318b1f31d0477d05930b3ee2041d996ac589fab688988ac7ff72136c42d28c12",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 6.231111,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-13T00:31:25Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "SpaceX reveals Starship Flight 13 launch date - Teslarati",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5lTVFrZ1RpUVd3bEdSbE5RY2p1SXBubm1pS3FfSjA3c0pQdG5leE1XaUNqa2RhanY5bzlBVUI0Y29qR3FPdmxtUkpkOV83UmE4OHFXVTFQX25fUmJGRG1qa2RKMTE5SFByQ3hhRExtbWtRMkFtdzM1andKMzM?oc=5",
+          "url_sha256": "318b1f31d0477d05930b3ee2041d996ac589fab688988ac7ff72136c42d28c12"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "3fde3c91bda0dd486ea583847a9dc6405aa6a4ab308ac849b8bd3a9acc709c1b",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "3fde3c91bda0dd486ea583847a9dc6405aa6a4ab308ac849b8bd3a9acc709c1b",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 10.504722,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T20:15:00Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "SpaceX rocket launch in Cape Canaveral: Will it be visible in Tallahassee? - Tallahassee Democrat",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOOFdrYmNKZzJLM3R0VjhTb2UyTS04dlI3VnlrcmZyMTBzUy1lMWUwcXlLejhOVVZrejh0aUc2VUMyS1R1bkViRGFtbGh1NUtvaDFqdkxaRUxnb3pTQkZtTzVYa2ZRemRyNU1IWU0wcXRDSlFIcVJIUHdaZUlNM0tLTEkxdF9wSDItUFNlMmlUVHZsVXNybm1ucl9LaE5SV0dMWHc5Q0kzMWE3a21yRDFGeURuQXJaZUd4cEVjNE9nUHRJR183b0l5UW5NZw?oc=5",
+          "url_sha256": "3fde3c91bda0dd486ea583847a9dc6405aa6a4ab308ac849b8bd3a9acc709c1b"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "bff8b2b5db21cd91fc2591392d566cdbe9be8218cf7310097f21ceeb3b5fce51",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "bff8b2b5db21cd91fc2591392d566cdbe9be8218cf7310097f21ceeb3b5fce51",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 14.315278,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T16:26:22Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "Goldman Sachs’ Insane SpaceX AI Forecast Has One Clear Winner: Micron Technology - 24/7 Wall St.",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOUFJWdHZlQy1ZRHBkLWhORThoMGV4TFZXZTFMcEF0S3RLbmNVVDRESHF1dmJJUXRkZHF3NHVLNEZySWtwU20wSlF1TEI0UFZnQXhCaS1LbXF5OGlTN0JrVDhfdU1SWmxIWFQ5VXJXblg2SXhTVk81MWROcVc3SmZqVloydDhRdUlhckVoRzhMMUw0OVgxa1d0V2dvdm80UDZNbllDVXVLNl9OZ3JrWEJ6cGNQOXc5NHhiLUc0UHdNOA?oc=5",
+          "url_sha256": "bff8b2b5db21cd91fc2591392d566cdbe9be8218cf7310097f21ceeb3b5fce51"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "dc16cd0ae4a0e20244e7a49a27695c5cfb95e485521ecff095b10c448d88dce7",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "dc16cd0ae4a0e20244e7a49a27695c5cfb95e485521ecff095b10c448d88dce7",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 15.221389,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T15:32:00Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "Late-night SpaceX rocket launch in Florida. What time is liftoff? - Daytona Beach News-Journal",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQd0JlaU9NZ3A5Qkstd2pvam9fYk9WMVVfT2VySlUzU0JncXUwdHVMM09rX0NlQUU1d3NpYkNCQ3JaZm5DSk53WHVPSjBxV0IzcHJfTkMzY3ZGUFlXXzRGOHp6Z3cwam5BNG5VaVNWaEhWekVzbC1qeTZ2eFhNYVRZVzNHMnozSzd0N1dWeDllcTF1eGNyOHVobVNaNXlUZFFsMTNldlVpcWlDSVFEYVFpWEQ3RHhjbGk5dVRNUURrUV82dTVId1pTak5LSHdNSDVreE1QVkc0UTd2dHFq?oc=5",
+          "url_sha256": "dc16cd0ae4a0e20244e7a49a27695c5cfb95e485521ecff095b10c448d88dce7"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "608761f712d6f98f97ea3834a62bf974895ddb528a92016c8ec30379a874618f",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "608761f712d6f98f97ea3834a62bf974895ddb528a92016c8ec30379a874618f",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 19.751111,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T11:00:13Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "Long March 10B Debut Highlights 4-Launch Week | KeepTrack Week in Review - KeepTrack",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE8tTW5OcUh3ekU3NG4tazdkVFFHR1NsdXFvZGpxdkNYNF9oaTZUYU1FbXpacnRMZW1NeU16d2cyN2xYY05oN3ZDQ05SOXFDcTJmbDNQbnJYNWJoZjBvTERrcnFZbnY0R0kwRDY2WEVR?oc=5",
+          "url_sha256": "608761f712d6f98f97ea3834a62bf974895ddb528a92016c8ec30379a874618f"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "50a8c80d747c57c99fb397891b19a1a31ed414f2d6600c62891ec943fd50eb55",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "50a8c80d747c57c99fb397891b19a1a31ed414f2d6600c62891ec943fd50eb55",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 20.835,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T09:55:11Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "SpaceX Launches 29 Starlink Satellites On Falcon 9 Rocket - Aero-News Network",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPTFllX0tGT0w0WmRhRzRHZGZWUFJIZC1CODJMYlNxbmY5VFJWUm5na3RuVVhteEItbFNocjNBM1ZRVDAzdXh2SXlzdlhoc01fMXlJd2RDbDNxWVNzNHJYbTdOM0ZYTmtSaWpoUmt4bHRGQXJDal9mRURPZHVTd0YxRENBNlpUbWZobUZwRTdpME8yeG1ydklz?oc=5",
+          "url_sha256": "50a8c80d747c57c99fb397891b19a1a31ed414f2d6600c62891ec943fd50eb55"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "09501fb195bedb06adef0ad1758ea0c52331b65a35d730945d1e95ae55eb4b84",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "09501fb195bedb06adef0ad1758ea0c52331b65a35d730945d1e95ae55eb4b84",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 21.651667,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T09:06:11Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "Falcon 9 Booster Flies 35th Mission, Deploys 29 Starlinks - KeepTrack",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5BQW1HQ0tBS0I0RDVVelktTXJSUkVxcjhuRW5uQ1ZOX3cwLVlxZnp6eGJpLVI2UzRsWXVCa2ZJZ0Iydnctb2VuU2stU09ZMTlIR3FSR0ZPb3NnalltRHFlczgzck92cEk?oc=5",
+          "url_sha256": "09501fb195bedb06adef0ad1758ea0c52331b65a35d730945d1e95ae55eb4b84"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "aef80287e84fb35872487b27da8cd6d2a83c50dab59b75b961b4f4ce86d472c9",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "aef80287e84fb35872487b27da8cd6d2a83c50dab59b75b961b4f4ce86d472c9",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 21.822778,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T08:55:55Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "Starship Flight 13: Most powerful rocket to fly with 20 Starlink satellites on this date - India Today",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxNdF93TWNKbDNqZXpoLXM2WGgyREtDa3lHZEVzTG40dm4xWHdsYkVwMUhqRVRaUlZ3MkZXeTRVSlNzdl8wTEs2dWFwSzNTV0d3dFpnZ0ZSQW9kNUE3bHlYNk9INjg3aU40bm93R21DaFg3ellLQ3lCRkNEVjhLWnR4YmdsemV2WHNOdXFtVDVFZ3lSWGhTZ1JUb0g4YzM0VWF4SVJpSnlZaEtya3llMldxNXotYXo1SVM4MmI1Y3lhWXlLVlM4M1hOQVp5LTB1UVBhTEl2QkxzcHJMQ1FQUUwtNGEzcG1ObTdwYkEyaTY0a3dYYmhoUHFWd3Z30gH_AUFVX3lxTFAzNm1LQXRlazdydkRGTkRRWkZ4cHZxWUU1eWVCTXhIOGpfVUJPcmgxY0xsSnJneVlfMlQ0Si1XNnlHTDlBcTBQYnBaMWxOUGdNWkVJMmtlNGNZNHpIYjM3cGdxMmJVVE90ZHRqa1FtWDV1aEphZFJBeXF0SGNWZHoxUGNSWTdtbXBPb21mNU1Qa1BhSkRoVlNKbU94OWRRS1lKSC05ZDJULW9FQnBDdXVJY2RBaF9ENWdVUThSMkIzOFZsV29uUmxEdjE1QUVEMnNEcG9QU2dSajZveUYxYXhNb0U4M2EtSmVHdHdVWlh4MHBpdHJIV0VmN3FVWnRkOA?oc=5",
+          "url_sha256": "aef80287e84fb35872487b27da8cd6d2a83c50dab59b75b961b4f4ce86d472c9"
+        },
+        {
+          "availability_timestamp_field": "first_seen_at",
+          "availability_timestamp_source": "first_seen_at",
+          "candidate_tickers": [
+            "ASTS",
+            "BA",
+            "LMT",
+            "LUNR",
+            "NOC",
+            "RKLB"
+          ],
+          "decision_id": "3610ce60b5310f7a38c5c3c387a651f00bc60e8d95d572a57cd731ee71618312",
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "entry_date": null,
+          "entry_date_status": "pending_next_session_open_after_first_seen_at",
+          "entry_rule": "next_trading_session_open_after_first_seen_at",
+          "event_id": "3610ce60b5310f7a38c5c3c387a651f00bc60e8d95d572a57cd731ee71618312",
+          "event_notional_usd": 4000.0,
+          "event_paper_notional_usd": 4000.0,
+          "exit_rule": "close_after_10_trading_sessions",
+          "first_seen_at": "2026-07-13T06:45:17Z",
+          "freshness_age_hours": 30.644722,
+          "freshness_limit_hours": 36.0,
+          "hold_sessions": 10,
+          "leg_count": 6,
+          "legs": [
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "ASTS"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "BA"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LMT"
+            },
+            {
+              "paper_notional_usd": 666.67,
+              "ticker": "LUNR"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "NOC"
+            },
+            {
+              "paper_notional_usd": 666.66,
+              "ticker": "RKLB"
+            }
+          ],
+          "observed_at": "2026-07-13T06:45:17Z",
+          "observer_name": "entity_theme_news_event_forward_observer",
+          "observer_only": true,
+          "outcome_status": "pending_10_trading_sessions",
+          "paper_event_notional_usd": 4000.0,
+          "primary_entity": "SpaceX",
+          "published_at": "2026-07-12T00:06:36Z",
+          "published_at_role": "freshness_metadata_only_not_availability",
+          "relation_type": "private_entity_to_public_space_exposure",
+          "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+          "schema_version": 1,
+          "source_daily_file": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+          "target_price": null,
+          "target_price_status": "fixed_10_session_time_exit_not_target_driven",
+          "theme": "private_space_contracts",
+          "title": "SpaceX announces date for 13th Starship launch - KRGV",
+          "trade_enabled": false,
+          "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPc3dyZVdqcklBSFVKa2lzTlYtQnZaRXlUd0ZpaTdqTDl6aDVkWlowNlZFNU9Jd2lnRXIxM21nYjRCUngxSmpaQUNTVk5uYUNsMFpjYW9UX0pXaUZzdjRjWUNBSmdMeFgzRmxqTHd3dXFHaGpmT2JqV3oySVdhWEQ5MA?oc=5",
+          "url_sha256": "3610ce60b5310f7a38c5c3c387a651f00bc60e8d95d572a57cd731ee71618312"
+        }
+      ],
+      "event_count": 10,
+      "event_notional_usd": 4000.0,
+      "freshness_hours": 36.0,
+      "hold_sessions": 10,
+      "ledger_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\ledger.jsonl",
+      "leg_count": 60,
+      "new_event_count": 10,
+      "observed_at": "2026-07-13T06:45:17Z",
+      "observer_name": "entity_theme_news_event_forward_observer",
+      "observer_only": true,
+      "outcome_rows_appended": 0,
+      "pending_count": 60,
+      "pending_status_counts": {
+        "next_session_not_available": 60
+      },
+      "prior_daily_file_count": 10,
+      "published_at_role": "freshness_metadata_only_not_availability",
+      "rows_appended": 60,
+      "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+      "schema_version": 1,
+      "settled_count": 0,
+      "settled_event_count": 0,
+      "skipped_counts": {
+        "already_seen": 500,
+        "outside_freshness_window": 10
+      },
+      "source_daily_path": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+      "source_item_count": 520,
+      "state_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\state.json",
+      "status": "ok",
+      "strategy_behavior_changed": false,
+      "summary_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\summary.json",
+      "ticker_leg_count": 60,
+      "trade_enabled": false,
+      "warehouse": {
+        "date_max": "2026-07-10",
+        "date_min": "2023-08-29",
+        "requested_tickers": 8,
+        "returned_rows": 4949,
+        "returned_tickers": 8,
+        "sources": [
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+            "returned_rows": 1537,
+            "tables": [
+              {
+                "returned_rows": 1537,
+                "row_count": 71020,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+            "returned_rows": 7243,
+            "tables": [
+              {
+                "returned_rows": 4809,
+                "row_count": 5015715,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 2434,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\experiments\\exp-20260519-030\\warehouse_main.sqlite",
+            "returned_rows": 2434,
+            "tables": [
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 2434,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          }
+        ],
+        "status": "ok"
+      }
+    },
+    "ledger_contract": {
+      "event_count": 10,
+      "event_notional_sums_usd": {
+        "09501fb195bedb06adef0ad1758ea0c52331b65a35d730945d1e95ae55eb4b84": 4000.0,
+        "318b1f31d0477d05930b3ee2041d996ac589fab688988ac7ff72136c42d28c12": 4000.0,
+        "3610ce60b5310f7a38c5c3c387a651f00bc60e8d95d572a57cd731ee71618312": 4000.0,
+        "3fde3c91bda0dd486ea583847a9dc6405aa6a4ab308ac849b8bd3a9acc709c1b": 4000.0,
+        "50a8c80d747c57c99fb397891b19a1a31ed414f2d6600c62891ec943fd50eb55": 4000.0,
+        "608761f712d6f98f97ea3834a62bf974895ddb528a92016c8ec30379a874618f": 4000.0,
+        "99f31f772b31b85779ef6f544253b63e0bcc347f25c25aa3b909881cb95f9f5d": 4000.0,
+        "aef80287e84fb35872487b27da8cd6d2a83c50dab59b75b961b4f4ce86d472c9": 4000.0,
+        "bff8b2b5db21cd91fc2591392d566cdbe9be8218cf7310097f21ceeb3b5fce51": 4000.0,
+        "dc16cd0ae4a0e20244e7a49a27695c5cfb95e485521ecff095b10c448d88dce7": 4000.0
+      },
+      "leg_count": 60,
+      "row_count": 60,
+      "unique_event_ticker_pairs": 60
+    },
+    "rerun_summary": {
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "as_of_date": "2026-07-13",
+      "availability_timestamp_field": "first_seen_at",
+      "availability_timestamp_source": "first_seen_at",
+      "decision_count": 0,
+      "decision_count_total": 10,
+      "decision_leg_count_total": 60,
+      "decision_rows_appended": 0,
+      "decisions": [],
+      "event_count": 0,
+      "event_notional_usd": 4000.0,
+      "freshness_hours": 36.0,
+      "hold_sessions": 10,
+      "ledger_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\ledger.jsonl",
+      "leg_count": 0,
+      "new_event_count": 0,
+      "observed_at": "2026-07-13T06:45:17Z",
+      "observer_name": "entity_theme_news_event_forward_observer",
+      "observer_only": true,
+      "outcome_rows_appended": 0,
+      "pending_count": 60,
+      "pending_status_counts": {
+        "next_session_not_available": 60
+      },
+      "prior_daily_file_count": 10,
+      "published_at_role": "freshness_metadata_only_not_availability",
+      "rows_appended": 0,
+      "rule_version": "entity_theme_news_first_seen_exact_url_event_v1",
+      "schema_version": 1,
+      "settled_count": 0,
+      "settled_event_count": 0,
+      "skipped_counts": {
+        "already_seen": 520
+      },
+      "source_daily_path": "D:\\Github\\ginger\\data\\non_ohlcv\\entity_theme_news_observer\\daily\\entity_theme_news_observer_20260712.json",
+      "source_item_count": 520,
+      "state_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\state.json",
+      "status": "ok",
+      "strategy_behavior_changed": false,
+      "summary_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260713-003\\first-seen-proof-0s8m3crv\\summary.json",
+      "ticker_leg_count": 0,
+      "trade_enabled": false,
+      "warehouse": {
+        "date_max": "2026-07-10",
+        "date_min": "2023-08-29",
+        "requested_tickers": 8,
+        "returned_rows": 4949,
+        "returned_tickers": 8,
+        "sources": [
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+            "returned_rows": 1537,
+            "tables": [
+              {
+                "returned_rows": 1537,
+                "row_count": 71020,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main.sqlite",
+            "returned_rows": 7243,
+            "tables": [
+              {
+                "returned_rows": 4809,
+                "row_count": 5015715,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 2434,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          },
+          {
+            "exists": true,
+            "path": "D:\\Github\\ginger\\data\\experiments\\exp-20260519-030\\warehouse_main.sqlite",
+            "returned_rows": 2434,
+            "tables": [
+              {
+                "returned_rows": 0,
+                "row_count": 0,
+                "table": "ohlcv"
+              },
+              {
+                "returned_rows": 2434,
+                "row_count": 64561,
+                "table": "ohlcv_snapshot_versions"
+              }
+            ]
+          }
+        ],
+        "status": "ok"
+      }
+    }
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/non_ohlcv/entity_theme_news_observer/daily/entity_theme_news_observer_20260712.json",
+    "quant/entity_theme_news_event_forward_observer.py",
+    "quant/run.py",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "reopen_condition": ">=75 settled prospective unique-URL events across >=15 decision dates and >=3 themes, max theme share <=30%, with complete cash/SPY/QQQ replacement-value outcomes",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\entity_theme_news_event_forward_observer.py quant\\run.py quant\\experiments\\exp_20260713_003_entity_theme_news_first_seen_forward_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_entity_theme_news_event_forward_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_run_daily_wiring.py -k entity_theme_news_event_forward_observer",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260713_003_entity_theme_news_first_seen_forward_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "run_wiring": {
+    "checks": {
+      "daily_helper_present": true,
+      "fail_soft_unavailable": true,
+      "shared_persist_called": true,
+      "strategy_unchanged_fallback": true,
+      "trade_disabled_fallback": true
+    },
+    "passed": true,
+    "path": "quant/run.py"
+  },
+  "single_causal_variable": "entity_theme_news_first_seen_url_shared_default_off_candidate_pool_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-13T06:56:20Z",
+  "trial_family": "entity_theme_news_prospective_first_seen_forward_observer",
+  "trial_variant_id": "exact_url_event_4000usd_10d_v1"
+}

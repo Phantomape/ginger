@@ -1,0 +1,1390 @@
+You are an INTRADAY RISK REVIEW assistant for a daily-cadence
+long-equity system. This is a midday (10:00 PT / 13:00 ET) advisory check of
+EXISTING risk rules at intraday prices — it is NOT a trading-signal session.
+
+Hard constraints on your recommendations:
+- Allowed outputs per position: HOLD, or early execution of an ALREADY
+  TRIGGERED existing rule (EXIT / REDUCE per the rule's semantics), or
+  tightening override_stop_price.
+- Do NOT recommend opening new positions or adding to positions.
+- Do NOT invent new exit rules; "approaching" flags are informational only.
+- Intraday quotes are not closing prices; flag anything marked STALE or
+  QUOTE UNAVAILABLE for manual verification instead of acting on it.
+
+AS OF: 2026-07-09 13:03 ET (10:03 PT)
+
+MACRO EVENT CONTEXT:
+{
+  "today": [],
+  "upcoming": [
+    {
+      "date": "2026-07-14",
+      "family": "CPI",
+      "label": "Jun 2026 CPI"
+    }
+  ],
+  "family_coverage_end": {
+    "NFP": "2026-12-04",
+    "CPI": "2026-12-10",
+    "FOMC": "2027-12-08"
+  },
+  "stale_families": []
+}
+
+MARKET REGIME (intraday-price basis vs last-close basis):
+{
+  "regime": "BULL",
+  "eod_basis_regime": "BULL",
+  "regime_flip_intraday": false,
+  "note": "Intraday-price basis: BULL (last-close basis: BULL).",
+  "indices": {
+    "SPY": {
+      "ticker": "SPY",
+      "close": 745.4,
+      "ma200": 690.16,
+      "above_ma": true,
+      "pct_from_ma": 0.0878,
+      "momentum_10d_pct": 0.0161,
+      "intraday_price": 750.76,
+      "price_source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "eod_above_ma": true,
+      "eod_close": 745.4
+    },
+    "QQQ": {
+      "ticker": "QQQ",
+      "close": 711.44,
+      "ma200": 635.37,
+      "above_ma": true,
+      "pct_from_ma": 0.1371,
+      "momentum_10d_pct": -0.0031,
+      "intraday_price": 722.46,
+      "price_source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "eod_above_ma": true,
+      "eod_close": 711.44
+    }
+  }
+}
+
+PORTFOLIO HEAT (intraday prices):
+{
+  "portfolio_value_usd": 66163.28,
+  "total_at_risk_usd": 3012.46,
+  "portfolio_heat_pct": 0.0455,
+  "max_heat_pct": 0.08,
+  "can_add_new_positions": true,
+  "heat_note": "Heat 4.6% < 8% cap — new positions permitted",
+  "position_breakdown": [
+    {
+      "ticker": "CRDO",
+      "shares": 15.0,
+      "current_price": 273.9,
+      "hard_stop": 230.56,
+      "effective_stop": 231.83,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 631.05,
+      "at_risk_pct": 0.0095
+    },
+    {
+      "ticker": "DDOG",
+      "shares": 15.0,
+      "current_price": 267.07,
+      "hard_stop": 224.73,
+      "effective_stop": 248.25,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 282.3,
+      "at_risk_pct": 0.0043
+    },
+    {
+      "ticker": "GEV",
+      "shares": 3.0,
+      "current_price": 1080.49,
+      "hard_stop": 1020.8,
+      "effective_stop": 1020.8,
+      "effective_stop_source": "default",
+      "at_risk_usd": 179.07,
+      "at_risk_pct": 0.0027
+    },
+    {
+      "ticker": "HOOD",
+      "shares": 31.0,
+      "current_price": 116.66,
+      "hard_stop": 92.58,
+      "effective_stop": 106.68,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 309.38,
+      "at_risk_pct": 0.0047
+    },
+    {
+      "ticker": "MCD",
+      "shares": 15.0,
+      "current_price": 277.38,
+      "hard_stop": 245.3,
+      "effective_stop": 268.26,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 136.8,
+      "at_risk_pct": 0.0021
+    },
+    {
+      "ticker": "NVDA",
+      "shares": 31.0,
+      "current_price": 202.15,
+      "hard_stop": 155.97,
+      "effective_stop": 191.46,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 331.39,
+      "at_risk_pct": 0.005
+    },
+    {
+      "ticker": "TQQQ",
+      "shares": 50.0,
+      "current_price": 76.14,
+      "hard_stop": 66.72,
+      "effective_stop": 68.52,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 381.25,
+      "at_risk_pct": 0.0058
+    },
+    {
+      "ticker": "UNH",
+      "shares": 10.0,
+      "current_price": 430.12,
+      "hard_stop": 376.06,
+      "effective_stop": 415.03,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 150.9,
+      "at_risk_pct": 0.0023
+    },
+    {
+      "ticker": "APP",
+      "shares": 12.0,
+      "current_price": 516.04,
+      "hard_stop": 448.66,
+      "effective_stop": 465.18,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 610.32,
+      "at_risk_pct": 0.0092
+    }
+  ]
+}
+
+HELD POSITIONS (existing-rule re-check at intraday prices):
+[
+  {
+    "ticker": "APP",
+    "status": "BREACHED",
+    "quote": {
+      "price": 516.0399780273438,
+      "day_high": 529.8800048828125,
+      "day_low": 500.5,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1306,
+    "distance_to_atr_stop_pct": 0.1106,
+    "distance_to_trailing_stop_pct": -0.3293,
+    "distance_to_target_pct": 0.1856,
+    "position_context": {
+      "shares": 12.0,
+      "avg_cost": 509.84,
+      "market_value_usd": 6192.48,
+      "unrealized_pnl_pct": 0.0122,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 448.66,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 611.81,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 611.81,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 458.98,
+        "atr_stop_pct": -0.0998
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": [
+          {
+            "rule": "TIME_STOP",
+            "urgency": "REVIEW",
+            "message": "Position held ~345 trading days with insufficient progress below halfway to diagnostic profit target 611.81"
+          }
+        ]
+      },
+      "daily_high": 529.88,
+      "prev_close": 522.18,
+      "daily_return_pct": -0.0118,
+      "trailing_stop_from_20d_high": 685.96,
+      "drawdown_from_20d_high_pct": -0.3079,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "CRDO",
+    "status": "OK",
+    "quote": {
+      "price": 273.8999938964844,
+      "day_high": 279.20001220703125,
+      "day_low": 261.3299865722656,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1582,
+    "distance_to_atr_stop_pct": 0.197,
+    "distance_to_trailing_stop_pct": -0.0368,
+    "distance_to_target_pct": 0.1479,
+    "position_context": {
+      "shares": 15.0,
+      "avg_cost": 262.0,
+      "market_value_usd": 4108.5,
+      "unrealized_pnl_pct": 0.0454,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 230.56,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 314.4,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 314.4,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 219.93,
+        "atr_stop_pct": -0.1606
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 279.2,
+      "prev_close": 258.69,
+      "daily_return_pct": 0.0588,
+      "trailing_stop_from_20d_high": 283.98,
+      "drawdown_from_20d_high_pct": -0.1126,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "DDOG",
+    "status": "OK",
+    "quote": {
+      "price": 267.07000732421875,
+      "day_high": 271.2699890136719,
+      "day_low": 256.0,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1585,
+    "distance_to_atr_stop_pct": 0.1142,
+    "distance_to_trailing_stop_pct": 0.0655,
+    "distance_to_target_pct": 0.1475,
+    "position_context": {
+      "shares": 15.0,
+      "avg_cost": 255.38,
+      "market_value_usd": 4006.05,
+      "unrealized_pnl_pct": 0.0458,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 224.73,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 306.46,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 306.46,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 236.56,
+        "atr_stop_pct": -0.0737
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 271.27,
+      "prev_close": 261.09,
+      "daily_return_pct": 0.0229,
+      "trailing_stop_from_20d_high": 249.57,
+      "drawdown_from_20d_high_pct": -0.0155,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "GEV",
+    "status": "APPROACHING",
+    "quote": {
+      "price": 1080.489990234375,
+      "day_high": 1115.074951171875,
+      "day_low": 1068.27001953125,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [
+      "NEAR_ATR_STOP"
+    ],
+    "distance_to_hard_stop_pct": 0.0552,
+    "distance_to_atr_stop_pct": 0.0105,
+    "distance_to_trailing_stop_pct": -0.0183,
+    "distance_to_target_pct": 0.2883,
+    "position_context": {
+      "shares": 3.0,
+      "avg_cost": 1160.0,
+      "market_value_usd": 3241.47,
+      "unrealized_pnl_pct": -0.0685,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 1020.8,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 1392.0,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 1392.0,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 1069.16,
+        "atr_stop_pct": -0.0783
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 1115.07,
+      "prev_close": 1070.99,
+      "daily_return_pct": 0.0089,
+      "trailing_stop_from_20d_high": 1100.26,
+      "drawdown_from_20d_high_pct": -0.0965,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "HOOD",
+    "status": "OK",
+    "quote": {
+      "price": 116.66000366210938,
+      "day_high": 117.6500015258789,
+      "day_low": 111.62999725341797,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.2064,
+    "distance_to_atr_stop_pct": 0.1838,
+    "distance_to_trailing_stop_pct": 0.0532,
+    "distance_to_target_pct": 0.0821,
+    "position_context": {
+      "shares": 31.0,
+      "avg_cost": 105.2,
+      "market_value_usd": 3616.46,
+      "unrealized_pnl_pct": 0.1089,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 92.58,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 126.24,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 126.24,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 95.22,
+        "atr_stop_pct": -0.0949
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 117.65,
+      "prev_close": 113.53,
+      "daily_return_pct": 0.0276,
+      "trailing_stop_from_20d_high": 110.45,
+      "drawdown_from_20d_high_pct": -0.0282,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "MCD",
+    "status": "OK",
+    "quote": {
+      "price": 277.3800048828125,
+      "day_high": 277.5799865722656,
+      "day_low": 272.9200134277344,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1157,
+    "distance_to_atr_stop_pct": 0.0279,
+    "distance_to_trailing_stop_pct": 0.0659,
+    "distance_to_target_pct": 0.2059,
+    "position_context": {
+      "shares": 15.0,
+      "avg_cost": 278.75,
+      "market_value_usd": 4160.7,
+      "unrealized_pnl_pct": -0.0049,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 245.3,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 334.5,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 334.5,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 269.63,
+        "atr_stop_pct": -0.0327
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 277.58,
+      "prev_close": 278.25,
+      "daily_return_pct": -0.0031,
+      "trailing_stop_from_20d_high": 259.09,
+      "drawdown_from_20d_high_pct": -0.0151,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "NVDA",
+    "status": "OK",
+    "quote": {
+      "price": 202.14999389648438,
+      "day_high": 204.4600067138672,
+      "day_low": 198.97000122070312,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.2284,
+    "distance_to_atr_stop_pct": 0.1761,
+    "distance_to_trailing_stop_pct": -0.0765,
+    "distance_to_target_pct": 0.0521,
+    "position_context": {
+      "shares": 31.0,
+      "avg_cost": 177.24,
+      "market_value_usd": 6266.65,
+      "unrealized_pnl_pct": 0.1405,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 155.97,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 212.69,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 212.69,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 166.55,
+        "atr_stop_pct": -0.0603
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 204.46,
+      "prev_close": 204.12,
+      "daily_return_pct": -0.0097,
+      "trailing_stop_from_20d_high": 217.62,
+      "drawdown_from_20d_high_pct": -0.1454,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "TQQQ",
+    "status": "APPROACHING",
+    "quote": {
+      "price": 76.1449966430664,
+      "day_high": 76.22989654541016,
+      "day_low": 73.88999938964844,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [
+      "NEAR_TRAILING_STOP"
+    ],
+    "distance_to_hard_stop_pct": 0.1238,
+    "distance_to_atr_stop_pct": 0.1045,
+    "distance_to_trailing_stop_pct": 0.0148,
+    "distance_to_target_pct": 0.1948,
+    "position_context": {
+      "shares": 50.0,
+      "avg_cost": 75.82,
+      "market_value_usd": 3807.25,
+      "unrealized_pnl_pct": 0.0043,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 66.72,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 90.98,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 90.98,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 68.19,
+        "atr_stop_pct": -0.1006
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 76.23,
+      "prev_close": 72.72,
+      "daily_return_pct": 0.0471,
+      "trailing_stop_from_20d_high": 75.02,
+      "drawdown_from_20d_high_pct": -0.0662,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "UNH",
+    "status": "OK",
+    "quote": {
+      "price": 430.1199951171875,
+      "day_high": 434.2998962402344,
+      "day_low": 423.5159912109375,
+      "source": "fast_info",
+      "quote_time_et": null,
+      "capture_time_et": "2026-07-09 13:03 ET",
+      "decision_time_et": "2026-07-09 13:03 ET",
+      "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1257,
+    "distance_to_atr_stop_pct": 0.0415,
+    "distance_to_trailing_stop_pct": 0.071,
+    "distance_to_target_pct": 0.1922,
+    "position_context": {
+      "shares": 10.0,
+      "avg_cost": 427.34,
+      "market_value_usd": 4301.2,
+      "unrealized_pnl_pct": 0.0065,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 376.06,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 512.81,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 512.81,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 412.25,
+        "atr_stop_pct": -0.0353
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 434.3,
+      "prev_close": 425.6,
+      "daily_return_pct": 0.0106,
+      "trailing_stop_from_20d_high": 399.56,
+      "drawdown_from_20d_high_pct": -0.0096,
+      "high_water_mark_source": "entry_date_high"
+    }
+  }
+]
+
+ADVISORY SHADOW ACTIONS (existing-rule projection; no orders):
+[
+  {
+    "ticker": "APP",
+    "status": "BREACHED",
+    "rule": "TIME_STOP",
+    "urgency": "REVIEW",
+    "shadow_action": "REVIEW",
+    "shares_to_sell": null,
+    "message": "Position held ~345 trading days with insufficient progress below halfway to diagnostic profit target 611.81",
+    "triggered_rule_index": 0,
+    "quote_price": 516.0399780273438,
+    "quote_source": "fast_info",
+    "quote_time_et": null,
+    "capture_time_et": "2026-07-09 13:03 ET",
+    "decision_time_et": "2026-07-09 13:03 ET",
+    "quote_time_basis": "capture_time_fast_info_no_source_timestamp",
+    "source_quote_time_available": false,
+    "trade_enabled": false,
+    "creates_order": false,
+    "pending_action": false,
+    "advisory_only": true,
+    "order_semantics": "none_shadow_only",
+    "shadow_action_count": 1,
+    "is_primary_shadow_action": true
+  }
+]
+
+OPEN PENDING ACTIONS (unexecuted prior advice):
+[
+  {
+    "id": "20260414:MCD:REDUCE:TRAILING_STOP",
+    "status": "open",
+    "first_advice_date": "20260414",
+    "last_seen_date": "20260414",
+    "ticker": "MCD",
+    "action": "REDUCE",
+    "shares_to_sell": 11,
+    "original_shares": 22.0,
+    "expected_remaining_shares": 11.0,
+    "exit_rule_triggered": "TRAILING_STOP",
+    "original_reason": "TRAILING_STOP triggered; code advised reducing position",
+    "decision_mode": "forced_rule",
+    "source_file": "llm_prompt_resp_20260414.json"
+  }
+]
+
+NEWS TEXT SANITATION:
+{
+  "rule_version": "intraday_news_text_sanitation_contract_v1",
+  "hash_algorithm": "sha256_16",
+  "items": 10,
+  "flagged_items": 10,
+  "changed_items": 10,
+  "status_counts": {
+    "changed": 10
+  },
+  "flag_counts": {
+    "html_entity_unescaped": 10
+  },
+  "ticker_entity_status_counts": {
+    "explicit_text_match": 10
+  },
+  "all_clear": false
+}
+
+INTRADAY NEWS (trade-filtered, 10 item(s) shown):
+[
+  {
+    "source": "google_news",
+    "title": "Goldman Sachs sees AMD entering earnings with 1 powerful advantage - thestreet.com",
+    "summary": "Goldman Sachs sees AMD entering earnings with 1 powerful advantage&nbsp;&nbsp;thestreet.com",
+    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNWnQzcWJmZHpiQXR3X3ExLXp2WElaOHFabERNbkFJWklnSlNteWc2WmRzSUhURnNPYXVpLVNhREk1RExMMjNTb0w1Zk1kTW5HdjYtQUluWDAtMWMwa3VacXdhbDFFVjBxeXpIc2M0OEU0djRJWE5KeFpreXhoVTMzcW8xTDFoNTEtUmV6eTJ3bERuQTFKSDVpX0dKMG9ScjNUOU54WlZRMGR1czJLcG9YSENjNWFxNGhWemttRg?oc=5",
+    "published_at": "2026-07-09T15:03:00+00:00",
+    "tickers": [
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "AMD"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 82,
+          "sanitized_length": 82,
+          "pre_sanitize_hash": "2fc50f3a1aaace98",
+          "post_sanitize_hash": "2fc50f3a1aaace98",
+          "sanitized_text": "Goldman Sachs sees AMD entering earnings with 1 powerful advantage - thestreet.com"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 91,
+          "sanitized_length": 80,
+          "pre_sanitize_hash": "6222cf10c3c5f3db",
+          "post_sanitize_hash": "e1efe898768506c8",
+          "sanitized_text": "Goldman Sachs sees AMD entering earnings with 1 powerful advantage thestreet.com"
+        }
+      },
+      "pre_sanitize_hash": "759313b20195e9e9",
+      "post_sanitize_hash": "192a771ce089a02b",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "AMD"
+        ],
+        "matched_tickers": [
+          "AMD"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "COIN, SBET Stocks Get Price Target Cuts – Analyst Still Sees Massive Triple-Digit Upside - Stocktwits",
+    "summary": "COIN, SBET Stocks Get Price Target Cuts – Analyst Still Sees Massive Triple-Digit Upside&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOcUM0MWpiYTFTMkpOTUg3N0J1aDNqUEZzaW04bG94YUt1cEpzaGx0VjFDeGstaDlzWXVraWlNVzhCX1FVXzhTWlNKMUhLUFdOeVZxNy1BWWwxRWhZNmpfZU1CMVBFVzFxcS1YOENlcGQxNmI3UWdhUzNFZktVUUd3eWVzbjZFSTJ2NTYxSzB1MzZ1NlVteHBoR1lXSWtadVNaVWI2MFdkc3NLeG1RakJhemFzV24xZi1HOFhlRlNTeEZrRmRwQWNCTkpBQk9tNmp5SkpVSw?oc=5",
+    "published_at": "2026-07-09T12:21:00+00:00",
+    "tickers": [
+      "COIN"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "COIN"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 101,
+          "sanitized_length": 101,
+          "pre_sanitize_hash": "6d190f77b34bbf82",
+          "post_sanitize_hash": "6d190f77b34bbf82",
+          "sanitized_text": "COIN, SBET Stocks Get Price Target Cuts – Analyst Still Sees Massive Triple-Digit Upside - Stocktwits"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 110,
+          "sanitized_length": 99,
+          "pre_sanitize_hash": "6c1329930ff3cfd9",
+          "post_sanitize_hash": "e8324c34a2836616",
+          "sanitized_text": "COIN, SBET Stocks Get Price Target Cuts – Analyst Still Sees Massive Triple-Digit Upside Stocktwits"
+        }
+      },
+      "pre_sanitize_hash": "4a179f6de2594f13",
+      "post_sanitize_hash": "addbcf626890cd3e",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "COIN"
+        ],
+        "matched_tickers": [
+          "COIN"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Meta (META) Stock Falls Despite Strong Q1 Earnings and Advertising Growth - FXLeaders",
+    "summary": "Meta (META) Stock Falls Despite Strong Q1 Earnings and Advertising Growth&nbsp;&nbsp;FXLeaders",
+    "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNcHc1aGF2WlJBZFQ5YkxpeUxzQmVsWVJDS0t0a0FtYjgyTG1scjcwSzV6UjhTQm1BYmhhZlRocnpYQmJ3RXo2TG9vWmtBMURQWTFidVBRU3FISVJfUF9RenNvLUlrdVFKNEZVMGNnS3RUZ3NMODVWM2ZxZEt3cFRKN0I5ZG5XUThScUJVNXpCaVhrS2FyRDJGcnN4VHNxNV9XZnVvcHR1eE5LbnlDZjJ0Y1lsV08?oc=5",
+    "published_at": "2026-07-09T09:15:32+00:00",
+    "tickers": [
+      "META"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "META"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 85,
+          "sanitized_length": 85,
+          "pre_sanitize_hash": "18eb3c0080f713c8",
+          "post_sanitize_hash": "18eb3c0080f713c8",
+          "sanitized_text": "Meta (META) Stock Falls Despite Strong Q1 Earnings and Advertising Growth - FXLeaders"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 94,
+          "sanitized_length": 83,
+          "pre_sanitize_hash": "cd13e6d51ed0a6c4",
+          "post_sanitize_hash": "aaaec518858a8421",
+          "sanitized_text": "Meta (META) Stock Falls Despite Strong Q1 Earnings and Advertising Growth FXLeaders"
+        }
+      },
+      "pre_sanitize_hash": "4ce8256757a97bac",
+      "post_sanitize_hash": "e583c39bc52e36a5",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "META"
+        ],
+        "matched_tickers": [
+          "META"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Netflix (NFLX) Expected to Release Quarterly Earnings on Thursday - MarketBeat",
+    "summary": "Netflix (NFLX) Expected to Release Quarterly Earnings on Thursday&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNanJuNjNJQW42UzlIeWt4NmRHVVdrMDBTUUdTWjByanpOMnVtaWFNQVVqZG1hZnhUZG1GamdPZENwUDl0MFBkMnlibGY2UklvR0U4WGZiTjMyRUhNbTEzNzBBSTV6YUFESWtuTU9EY05ZUjNFR3d3ODJrcHZNcURHeENoN1F5RFdTYUZpdThSU1NiSHlrV0p0THFnYUFjb0dNa1IxOF9SNW1QUHYtOUR5QzNyMVRQMHIt?oc=5",
+    "published_at": "2026-07-09T05:29:53+00:00",
+    "tickers": [
+      "NFLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NFLX"
+      ]
+    },
+    "tier": "T1",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 78,
+          "sanitized_length": 78,
+          "pre_sanitize_hash": "384dcca0e3a73a54",
+          "post_sanitize_hash": "384dcca0e3a73a54",
+          "sanitized_text": "Netflix (NFLX) Expected to Release Quarterly Earnings on Thursday - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 87,
+          "sanitized_length": 76,
+          "pre_sanitize_hash": "f413896ac7f0333c",
+          "post_sanitize_hash": "09f010854df9720c",
+          "sanitized_text": "Netflix (NFLX) Expected to Release Quarterly Earnings on Thursday MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "c318583db766af62",
+      "post_sanitize_hash": "8b26f7dce2679a7b",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "NFLX"
+        ],
+        "matched_tickers": [
+          "NFLX"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Micron Technology (MU) Stock Forecast: AI Memory Boom Keeps Bulls Focused on $1,100 After Trendline Rebound - TradingKey",
+    "summary": "Micron Technology (MU) Stock Forecast: AI Memory Boom Keeps Bulls Focused on $1,100 After Trendline Rebound&nbsp;&nbsp;TradingKey",
+    "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNbGxOTnM0SmR6MmFGbzdMbU5IWlRGLXo3azZvRWx6ZXRzS0NpdHdyblp6OU0yZjdaVUo1SElyTlBKODc5cHhXT0RMTXlmeWV0SmxibEN3VS14a1V3SjJkdHFzOVRFdnZBcllqT3VNbXZpSXh6THMwZnVkMVkzWVhMdThuSWpfQXdWM2JNNnVMbE1YcjVENFdMaWRrUFd0NlFPUHRzekpSVVJHWXBoTHZzRkx2MGg5WDJncU9kQjhqbW1qbGM5M0xCY2VmMnV2Uk50UjB5SDdR?oc=5",
+    "published_at": "2026-07-09T02:04:33+00:00",
+    "tickers": [
+      "MU"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MU+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MU"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 120,
+          "sanitized_length": 120,
+          "pre_sanitize_hash": "64a6d9ed77c61218",
+          "post_sanitize_hash": "64a6d9ed77c61218",
+          "sanitized_text": "Micron Technology (MU) Stock Forecast: AI Memory Boom Keeps Bulls Focused on $1,100 After Trendline Rebound - TradingKey"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 129,
+          "sanitized_length": 118,
+          "pre_sanitize_hash": "a517bb6f09208316",
+          "post_sanitize_hash": "c469a81158c7d9c0",
+          "sanitized_text": "Micron Technology (MU) Stock Forecast: AI Memory Boom Keeps Bulls Focused on $1,100 After Trendline Rebound TradingKey"
+        }
+      },
+      "pre_sanitize_hash": "813d99b36e96a1ff",
+      "post_sanitize_hash": "b4e65b5d338f9f4e",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "MU"
+        ],
+        "matched_tickers": [
+          "MU"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "NVIDIA (NVDA) Stock Forecast: DeepSeek Building Its Own Chip - Is $197 the Bottom? - TradingKey",
+    "summary": "NVIDIA (NVDA) Stock Forecast: DeepSeek Building Its Own Chip - Is $197 the Bottom?&nbsp;&nbsp;TradingKey",
+    "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNYUNNenNNX2tYZFR5Z0N5Wm9ZWTMxZ1J4MWJxcmlDV2pFWlY0VEJBZXI1bUg1QzNTV00xRGNCdnlIcFBWN3BLZjZxX3ZlbWZ4bmd1V1dOLTdtNFNoSVBPaFBrd1hINHFHcnBLRVZMWGMwb3JvUjVGLUh5dWR0ZWsyX2IweDhXVHByaGthUE0xOVAwVFhMWjFQdF9pU1JwWDBLc3RFZUJ2bXltS3JTOHlHUi1ReW5neElHZ2JyNDVGc3ZtXzlTZmFVOTZzQk1LRkxO?oc=5",
+    "published_at": "2026-07-09T00:44:27+00:00",
+    "tickers": [
+      "NVDA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NVDA"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 95,
+          "sanitized_length": 95,
+          "pre_sanitize_hash": "e1593b9523ff04fb",
+          "post_sanitize_hash": "e1593b9523ff04fb",
+          "sanitized_text": "NVIDIA (NVDA) Stock Forecast: DeepSeek Building Its Own Chip - Is $197 the Bottom? - TradingKey"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 104,
+          "sanitized_length": 93,
+          "pre_sanitize_hash": "1acdda9871a192d2",
+          "post_sanitize_hash": "5f5e3e1a8012bc0d",
+          "sanitized_text": "NVIDIA (NVDA) Stock Forecast: DeepSeek Building Its Own Chip - Is $197 the Bottom? TradingKey"
+        }
+      },
+      "pre_sanitize_hash": "91195827813b2348",
+      "post_sanitize_hash": "625de36374522d0d",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "NVDA"
+        ],
+        "matched_tickers": [
+          "NVDA"
+        ]
+      },
+      "watched_ticker_overlap": [
+        "NVDA"
+      ]
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "TSLA Stock Rises Overnight: JPMorgan Says Tesla-SpaceX Merger Looks ‘Coherent On Paper’ — But China Approval Risks Loom - Stocktwits",
+    "summary": "TSLA Stock Rises Overnight: JPMorgan Says Tesla-SpaceX Merger Looks ‘Coherent On Paper’ — But China Approval Risks Loom&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQSGdaUkJ2bHB1cWluVWdERFBaVVdxc3NyQVVSYWM2R2l5b05qR2diWElYeUtLV3Q1X3NTLVpnQU8yZElmSTBZbVVNNTZJOFRST0Q0akYycTk1Ti1sMmYtUVMwcUcyQURKZW1sRWJWWERxdjNoYlcxc21idmVIeHBQTmZ2aDZRbkg5amdLV2JHb1hydW82eU82MW5ITl9qd28zdWFzaXdn?oc=5",
+    "published_at": "2026-07-08T22:16:42+00:00",
+    "tickers": [
+      "TSLA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "TSLA"
+      ]
+    },
+    "tier": "T1",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 132,
+          "sanitized_length": 132,
+          "pre_sanitize_hash": "0a953bca34492288",
+          "post_sanitize_hash": "0a953bca34492288",
+          "sanitized_text": "TSLA Stock Rises Overnight: JPMorgan Says Tesla-SpaceX Merger Looks ‘Coherent On Paper’ — But China Approval Risks Loom - Stocktwits"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 141,
+          "sanitized_length": 130,
+          "pre_sanitize_hash": "56d5d95c97def2d2",
+          "post_sanitize_hash": "13a2738f70addb11",
+          "sanitized_text": "TSLA Stock Rises Overnight: JPMorgan Says Tesla-SpaceX Merger Looks ‘Coherent On Paper’ — But China Approval Risks Loom Stocktwits"
+        }
+      },
+      "pre_sanitize_hash": "e5cba4304b965401",
+      "post_sanitize_hash": "84cc4f8e1fedd248",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "TSLA"
+        ],
+        "matched_tickers": [
+          "TSLA"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "SA analyst upgrades/downgrades: MU, NFLX, V, ADBE (SP500:) (V:NYSE) - Seeking Alpha",
+    "summary": "SA analyst upgrades/downgrades: MU, NFLX, V, ADBE (SP500:) (V:NYSE)&nbsp;&nbsp;Seeking Alpha",
+    "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOd3AwNDdlb2R3dWUxZmQ0a2oxbEVyYV9oeFM0VTVzZnJ0RDFOQjZEUFk0UmdCcEtpdEdZeVZZbXpzeTNWd3lSS2RRYWhhR1c4SUw4bWpLd0lLNFNpbTZCWEh2MDNmU0wtbDdfMUt2bmJ2eFVVbEJaMEJlVGMycGpQOGc1aHViVXh5dVBz?oc=5",
+    "published_at": "2026-07-08T16:01:17+00:00",
+    "tickers": [
+      "NFLX",
+      "ADBE",
+      "V",
+      "MU"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NFLX"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 83,
+          "sanitized_length": 83,
+          "pre_sanitize_hash": "c6a0f40d61ae4f96",
+          "post_sanitize_hash": "c6a0f40d61ae4f96",
+          "sanitized_text": "SA analyst upgrades/downgrades: MU, NFLX, V, ADBE (SP500:) (V:NYSE) - Seeking Alpha"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 92,
+          "sanitized_length": 81,
+          "pre_sanitize_hash": "9fe92648ba234eb4",
+          "post_sanitize_hash": "47c3738bf40b8979",
+          "sanitized_text": "SA analyst upgrades/downgrades: MU, NFLX, V, ADBE (SP500:) (V:NYSE) Seeking Alpha"
+        }
+      },
+      "pre_sanitize_hash": "90b874f788dcdc31",
+      "post_sanitize_hash": "36407558ac920097",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "NFLX",
+          "ADBE",
+          "V",
+          "MU"
+        ],
+        "matched_tickers": [
+          "NFLX",
+          "ADBE",
+          "V",
+          "MU"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Cvfg LLC Raises Stock Holdings in McDonald's Corporation $MCD - MarketBeat",
+    "summary": "Cvfg LLC Raises Stock Holdings in McDonald's Corporation $MCD&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOOXFkbGZscU9sVFg0bEFjTXVDTnNnZXhCUEwzQlAwbk5IRWx4Y0VIOGs3TjhlR05OYUl2cXNsdHphZjhZREVDUk9RR2xsXzVBV3U0VmQ3Um1LOWtRMGJMQzcyMlFNUm5CYmpON2ZQYmE3c0VyOWlJS19YN1o1QkdzeFQzS19mUWhzcHJ1WXhURzFvX1d0Q291WWd2WTJXUE5LTXJHZnF1TzY0M2FFQzVkcjRWS3A4LW8xcnZBNw?oc=5",
+    "published_at": "2026-07-08T08:28:58+00:00",
+    "tickers": [
+      "MCD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MCD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MCD"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 74,
+          "sanitized_length": 74,
+          "pre_sanitize_hash": "8adf0ddba364d7e3",
+          "post_sanitize_hash": "8adf0ddba364d7e3",
+          "sanitized_text": "Cvfg LLC Raises Stock Holdings in McDonald's Corporation $MCD - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 83,
+          "sanitized_length": 72,
+          "pre_sanitize_hash": "e3c7d4712a2ed375",
+          "post_sanitize_hash": "d4f008a866b455fc",
+          "sanitized_text": "Cvfg LLC Raises Stock Holdings in McDonald's Corporation $MCD MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "6549381701584a36",
+      "post_sanitize_hash": "066e197b39e05a64",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "MCD"
+        ],
+        "matched_tickers": [
+          "MCD"
+        ]
+      },
+      "watched_ticker_overlap": [
+        "MCD"
+      ]
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "MCD, PEP Stocks In Focus: UBS Reportedly Believes Defensive Dividend Names Could Be Ready For A Comeback - Stocktwits",
+    "summary": "MCD, PEP Stocks In Focus: UBS Reportedly Believes Defensive Dividend Names Could Be Ready For A Comeback&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxNLVZpaVAxNVdJTHQtZEJUNC0yLWVBRENOUXdWOEJ5X1Q0NmRtbUdLV3NQV1R5elYyVy04MTNKM1NxZm5rM1pUbGhtcnZzbVZWb3FsVWQ0dGdVcXhrOUVKUHFDWWF4Z2Q0dk5jZERId0taVmYxUHNzaWp2ZzZTcTdmdExsU0pFU0VDOUZTMGRld3hMX1lnbGpqUUJuVU56b19YYlpMZjZqYW1FUlRLQzNNUzZuSm5oNXlVX190MjdwZG5NeDZScGxPQ1ZNU3ZIeFYxQVdrTDlKNkRSc1hHY2l0LXJCc2pIbUV0eUJYcUNZTWlsY0J4cGU4aV9R?oc=5",
+    "published_at": "2026-07-07T23:43:18+00:00",
+    "tickers": [
+      "MCD",
+      "PEP"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MCD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MCD"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 117,
+          "sanitized_length": 117,
+          "pre_sanitize_hash": "4caf2f5f8c3785d8",
+          "post_sanitize_hash": "4caf2f5f8c3785d8",
+          "sanitized_text": "MCD, PEP Stocks In Focus: UBS Reportedly Believes Defensive Dividend Names Could Be Ready For A Comeback - Stocktwits"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 126,
+          "sanitized_length": 115,
+          "pre_sanitize_hash": "621db05955958dd6",
+          "post_sanitize_hash": "34a8815b2d342316",
+          "sanitized_text": "MCD, PEP Stocks In Focus: UBS Reportedly Believes Defensive Dividend Names Could Be Ready For A Comeback Stocktwits"
+        }
+      },
+      "pre_sanitize_hash": "87727f0b7f15f61a",
+      "post_sanitize_hash": "30c0460ab232a563",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "MCD",
+          "PEP"
+        ],
+        "matched_tickers": [
+          "MCD",
+          "PEP"
+        ]
+      },
+      "watched_ticker_overlap": [
+        "MCD"
+      ]
+    }
+  }
+]
+
+TASK: For each held position, output HOLD / EXIT / REDUCE / TIGHTEN_STOP
+with a one-sentence reason. Only EXIT/REDUCE where an existing rule has
+already triggered (status BREACHED). Then give a one-paragraph portfolio
+risk summary for the rest of today's session.

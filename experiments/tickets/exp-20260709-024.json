@@ -1,0 +1,372 @@
+{
+  "acceptance_rule": "Accepted measurement repair if the runner creates reproducible candidate event artifacts, enriches rows with fixed-horizon cash/SPY/QQQ labels where available, records readiness counts versus the exp-20260709-023 gate, and changes no strategy behavior.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "experiments/logs/exp-20260709-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-024.md",
+  "causal_components": [
+    "canonical_backtest_candidate_events",
+    "fixed_horizon_labels",
+    "training_table_readiness_gate",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "candidate_meta_label_training_ledger_materialization_v1",
+  "claimed_at": "2026-07-09T22:10:56+00:00",
+  "completed_at": "2026-07-09T22:18:08+00:00",
+  "created_at": "2026-07-09T22:09:22+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-024",
+  "experiment_uid": "expuid-926d372455b04537",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-024",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T22:09:22+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "candidate_training_ledger_materialization"
+  },
+  "hypothesis": "Alpha blocker: candidate-entry meta-labeling is blocked by missing leak-free candidate decision rows; first-build a canonical-window candidate training ledger by saving full backtester entry candidate events and fixed-horizon cash/SPY/QQQ labels without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "candidate_meta_label_training_ledger_materialization_v1"
+  ],
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-023"
+  ],
+  "new_evidence_type": "new_training_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "candidate_meta_label",
+      "field_tags": [
+        "a",
+        "alpha",
+        "backtester",
+        "behavior",
+        "blocked",
+        "blocker",
+        "build",
+        "by",
+        "canonical",
+        "cash",
+        "changing",
+        "decision",
+        "entry",
+        "events",
+        "first",
+        "full",
+        "horizon",
+        "is",
+        "label",
+        "labeling",
+        "labels",
+        "leak",
+        "ledger",
+        "materialization",
+        "meta",
+        "missing",
+        "qqq",
+        "rows",
+        "saving",
+        "spy",
+        "strategy",
+        "training",
+        "window",
+        "without"
+      ],
+      "gate_shape": "model_readiness"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_forward_rv_readiness",
+        "reopen_condition": "At least 30 closed alpha_score_market_regime paper rows with cash/SPY/QQQ replacement values, materially lower single-name positive contribution concentration, and entries outside the current all-risk_on_trend cohort; alternatively a genuinely different production-visible PIT source.",
+        "score": 0.0488,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_full_trade_rows",
+        "reopen_condition": "A valid exit-policy alpha retry now needs a shared production/backtest exit helper using only pre-exit fields, or prospective shadow exit advisory rows with settled replacement value. Oracle exit dates/prices remain future-only labels.",
+        "score": 0.0432,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_full_trade_oracle_rows",
+        "reopen_condition": "A valid retry needs new settled trade rows, a shared pre-exit helper using production-visible fields, or prospective shadow exit-advisory rows with settled replacement value.",
+        "score": 0.0421,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0293,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "False-positive routine guard override: this is the first canonical candidate-training ledger contract for candidate_meta_label, not a routine delta append to an accepted observer or default-off forward ledger; it should create new non-oracle candidate decision rows across three fixed windows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "candidate_meta_label",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": true,
+      "per_source_count": 33,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": true
+      },
+      "proposal_surface_tokens": [
+        "and",
+        "backtester",
+        "behavior",
+        "blocked",
+        "blocker",
+        "build",
+        "canonical",
+        "cash",
+        "changing",
+        "decision",
+        "events",
+        "first",
+        "fixed",
+        "free",
+        "full",
+        "horizon",
+        "label",
+        "labeling",
+        "labels",
+        "leak",
+        "meta",
+        "missing",
+        "qqq",
+        "saving",
+        "spy",
+        "strategy",
+        "training",
+        "window",
+        "without"
+      ],
+      "recent_cross_surface_count": 10,
+      "recent_experiments": [
+        "exp-20260702-007",
+        "exp-20260703-004",
+        "exp-20260704-020",
+        "exp-20260704-021",
+        "exp-20260704-022",
+        "exp-20260704-024",
+        "exp-20260704-026",
+        "exp-20260705-007"
+      ],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "False-positive routine guard override: this is the first canonical candidate-training ledger contract for candidate_meta_label, not a routine delta append to an accepted observer or default-off forward ledger; it should create new non-oracle candidate decision rows across three fixed windows.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "model_readiness",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "candidate_meta_label",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_candidate_training_ledger_materialized_model_still_blocked",
+    "artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "log": "experiments/logs/exp-20260709-024.json",
+    "runner": "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "gate4": {
+      "passed": false,
+      "strategy_behavior_changed": false,
+      "canonical_backtest_required": false,
+      "reason": "No alpha is accepted; this materializes measurement rows only. A future meta-label model remains blocked unless readiness passes."
+    },
+    "headline_metrics": {
+      "training_ledger_rows": 138,
+      "complete_10d_candidate_rows": 130,
+      "complete_20d_candidate_rows": 123,
+      "positive_10d_cash_labels": 76,
+      "negative_10d_cash_labels": 54,
+      "selected_complete_10d_rows": 59,
+      "rejected_or_unselected_complete_10d_rows": 71,
+      "readiness_gate_passed": false,
+      "readiness_failed_criteria": [
+        "complete_candidate_rows_gte_300",
+        "negative_labels_gte_75",
+        "each_fold_has_at_least_50_test_rows"
+      ],
+      "strategy_behavior_changed": false
+    },
+    "summary": "measurement_repair_materialized_candidate_training_ledger"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-024.json",
+  "single_causal_variable": "candidate_meta_label_training_ledger_materialization_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260709-024.json",
+  "trial_family": "candidate_meta_label_training_ledger_materialization",
+  "trial_variant_id": "candidate_training_ledger_v1",
+  "alpha_hypothesis": "Alpha blocker: candidate-entry meta-labeling is blocked by missing leak-free candidate decision rows; first-build a canonical-window candidate training ledger by saving full backtester entry candidate events and fixed-horizon cash/SPY/QQQ labels without changing strategy behavior.",
+  "implementation_mode": "canonical_candidate_training_ledger_materialization",
+  "new_evidence_axis": "False-positive routine guard override: this is the first canonical candidate-training ledger contract for candidate_meta_label, not a routine delta append to an accepted observer or default-off forward ledger; it creates non-oracle candidate decision rows across the three fixed windows.",
+  "decision": "accepted_measurement_repair_candidate_training_ledger_materialized_model_still_blocked",
+  "artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+  "log": "experiments/logs/exp-20260709-024.json",
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    },
+    "note": "Read-only measurement repair; no before/after strategy metric change."
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields_checked": [
+      "signal_date",
+      "ticker",
+      "decision",
+      "intended_entry_date",
+      "target_price",
+      "fixed_horizon_cash_spy_qqq_labels"
+    ],
+    "entry_date_target_price_sentinel": {
+      "entry_date_present_count": 137,
+      "entry_date_missing_count": 1,
+      "target_price_present_count": 138,
+      "target_price_missing_count": 0
+    }
+  },
+  "gate3": {
+    "passed": true,
+    "adds_filter": false,
+    "survival_rate_not_applicable": true,
+    "baseline_survival_rate": 0.823171
+  },
+  "gate4": {
+    "passed": false,
+    "strategy_behavior_changed": false,
+    "canonical_backtest_required": false,
+    "reason": "No alpha is accepted; this materializes measurement rows only. A future meta-label model remains blocked unless readiness passes."
+  },
+  "production_impact": {
+    "accepted_measurement_repair": true,
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "shared_policy_changed": false,
+    "llm_change_scope": "none",
+    "artifact_only": true
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The existing backtester entry-candidate hook produced a canonical candidate-decision population and fixed-horizon non-oracle labels. The ledger repairs the measurement gap from exp-20260709-023, but the sample gate still blocks model fitting until the row/class/fold thresholds pass.",
+    "forbidden_near_neighbor_retry": "Do not train or tune a candidate meta-label model on this ledger unless the readiness gate passes. Do not retune thresholds, model class, probability scalar, or response function to bypass the row/class/fold requirements.",
+    "new_evidence_required": "A model experiment needs at least 300 complete candidate rows, 75 positive and 75 negative fixed-horizon labels, selected and rejected/unselected coverage, three chronological folds with >=50 test rows and both classes, and no single ticker above 20% of complete rows.",
+    "next_evidence_needed": "If the gate still fails, the next legal step is pipeline wiring or additional settled candidate rows, not model fitting."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/logs/exp-20260709-024.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/logs/exp-20260709-024.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-09T22:18:08+00:00"
+}

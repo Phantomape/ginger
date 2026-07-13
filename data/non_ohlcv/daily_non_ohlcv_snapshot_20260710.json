@@ -1,0 +1,1594 @@
+{
+  "asof_date": "2026-07-10",
+  "borrow_availability": {
+    "manifest_path": "D:/Github/ginger/data/non_ohlcv/borrow_availability/manifest.json",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "borrow_availability_data_collection_skipped",
+      "shared_policy_changed": false
+    },
+    "reason": "refresh_borrow_availability_false",
+    "rows_path": "D:/Github/ginger/data/non_ohlcv/borrow_availability/rows.jsonl",
+    "status": "skipped"
+  },
+  "date_range": {
+    "end": "2026-07-10",
+    "start": "2026-06-30"
+  },
+  "date_tag": "20260710",
+  "form144_planned_sale_context": {
+    "daily_snapshot_wired": true,
+    "output_path": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_20260710.jsonl",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "form144_planned_sale_context_collection_skipped",
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "reason": "refresh_form144_context_false",
+    "status": "skipped",
+    "summary_output": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_summary_20260710.json",
+    "trade_enabled": false
+  },
+  "form4_sale_overhang_context": {
+    "asof_date": "2026-07-10",
+    "daily_snapshot_wired": true,
+    "entry_context_schema": {
+      "context_fields": [
+        "form4_context_rows",
+        "form4_sale_overhang_bucket",
+        "form4_high_sale_overhang",
+        "form4_sale_rows",
+        "form4_ten_b5_sale_rows",
+        "form4_officer_sale_rows",
+        "form4_sale_value_usd",
+        "form4_latest_usable_trade_date",
+        "form4_context_as_of"
+      ],
+      "keys": [
+        "ticker",
+        "entry_date"
+      ],
+      "pit_filter": "context_as_of <= entry_date and underlying Form4 usable_trade_date <= context_as_of"
+    },
+    "form4_sale_overhang_bucket_counts": {
+      "high_sale_overhang": 19,
+      "moderate_or_routine_disposal": 8,
+      "no_sale_overhang": 9
+    },
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_sale_overhang_forward_rows_min": 8,
+      "park_after_materialization_runs_without_new_closable_rows": 3,
+      "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_share_max": 0.4
+    },
+    "forward_reopen_progress": {
+      "closed_forward_rows_current": 0,
+      "closed_forward_rows_without_required_replacement_values": 0,
+      "context_rows_current": 36,
+      "gate": {
+        "closed_forward_rows_min": 25,
+        "high_sale_overhang_forward_rows_min": 8,
+        "park_after_materialization_runs_without_new_closable_rows": 3,
+        "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "single_ticker_share_max": 0.4
+      },
+      "gate_ready": false,
+      "high_sale_overhang_closed_forward_rows_current": 0,
+      "high_sale_overhang_context_rows_current": 19,
+      "max_single_ticker_closed_forward_row_share": null,
+      "not_ready_reasons": [
+        "closed_forward_rows_below_min",
+        "high_sale_overhang_forward_rows_below_min"
+      ],
+      "replacement_value_complete_closed_rows_current": 0,
+      "unique_tickers_closed_forward_rows": 0
+    },
+    "generated_at": "2026-07-11T04:22:15+00:00",
+    "lookback_days": 10,
+    "max_latest_usable_trade_date": "2026-07-10",
+    "min_latest_usable_trade_date": "2026-07-02",
+    "outcome_join_schema": {
+      "forward_outcome_fields": [
+        "cash_replacement_value_10d",
+        "cash_replacement_value_20d",
+        "spy_replacement_value_10d",
+        "spy_replacement_value_20d",
+        "qqq_replacement_value_10d",
+        "qqq_replacement_value_20d",
+        "closed_forward_row"
+      ],
+      "join_keys": [
+        "ticker",
+        "entry_date",
+        "context_as_of_lte_entry_date",
+        "form4_latest_usable_trade_date_lte_context_as_of"
+      ],
+      "pit_guard": "Only context rows with context_as_of <= entry_date and underlying Form 4 usable_trade_date <= context_as_of are eligible for an entry join."
+    },
+    "output_path": "D:/Github/ginger/data/non_ohlcv/form4_sale_overhang_context_20260710.jsonl",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "form4_sale_overhang_context_collection",
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "rows_with_form4_sale_rows": 20,
+    "rows_with_high_sale_overhang": 19,
+    "rows_with_officer_sale": 16,
+    "rows_with_ten_b5_sale": 17,
+    "rows_written": 36,
+    "rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+    "schema_version": 1,
+    "source_audit": {
+      "asof_date": "2026-07-10",
+      "bad_json_rows": 0,
+      "deduped_rows_loaded": 31705,
+      "form4_dir": "D:/Github/ginger/data/non_ohlcv",
+      "max_usable_trade_date": "2026-07-10",
+      "min_usable_trade_date": "2024-09-24",
+      "raw_jsonl_rows": 293980,
+      "sample_source_files_used": [
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260703.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260704.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260705.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260706.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260707.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260708.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260709.jsonl",
+        "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260710.jsonl"
+      ],
+      "source_file_count": 482,
+      "source_files_skipped_future": 0,
+      "source_files_used": 482,
+      "ticker_count": 49,
+      "transaction_code_counts": {
+        "A": 2959,
+        "C": 1388,
+        "D": 83,
+        "E": 172,
+        "F": 2335,
+        "G": 448,
+        "H": 1,
+        "I": 25,
+        "J": 250,
+        "M": 5932,
+        "P": 328,
+        "S": 17768,
+        "X": 16
+      }
+    },
+    "status": "ok",
+    "summary_output": "D:/Github/ginger/data/non_ohlcv/form4_sale_overhang_context_summary_20260710.json",
+    "ticker_count": 36,
+    "trade_enabled": false
+  },
+  "form4_transactions": {
+    "date_range": {
+      "end": "2026-07-10",
+      "start": "2026-06-30"
+    },
+    "documents_fetched_or_read": 211,
+    "error_count": 0,
+    "errors": [],
+    "excluded_external_issuer_rows": 20,
+    "external_issuer_examples": [
+      {
+        "accession_number": "0001193125-26-296465",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296453",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296382",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296351",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296327",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296291",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-296243",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-292904",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001193125-26-290710",
+        "issuer_name": "Alphabet Inc.",
+        "issuer_ticker": "GOOGL",
+        "submission_ticker": "GOOG"
+      }
+    ],
+    "filings_seen": 211,
+    "generated_at": "2026-07-11T04:22:07+00:00",
+    "missing_cik_tickers": [
+      "SNXX"
+    ],
+    "open_market_purchase_count": 34,
+    "option_exercise_count": 117,
+    "output_path": "data/non_ohlcv/form4_transactions_20260710.jsonl",
+    "pit_safe_count": 735,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "production_impact": "data_backfill_only",
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "row_counts_by_ticker": {
+      "AMZN": 1,
+      "APLD": 5,
+      "APP": 9,
+      "AVGO": 3,
+      "BE": 3,
+      "CAT": 1,
+      "CIFR": 32,
+      "COHR": 1,
+      "COIN": 14,
+      "CORZ": 6,
+      "CRDO": 53,
+      "CRWV": 210,
+      "DDOG": 33,
+      "DIS": 11,
+      "GE": 2,
+      "IREN": 10,
+      "JPM": 4,
+      "LITE": 6,
+      "MA": 11,
+      "MARA": 3,
+      "MCD": 6,
+      "META": 11,
+      "MU": 71,
+      "NFLX": 11,
+      "NVDA": 1,
+      "PLTR": 4,
+      "RIOT": 12,
+      "RTX": 1,
+      "SNDK": 1,
+      "SNOW": 94,
+      "SPOT": 30,
+      "TRIP": 16,
+      "TSM": 36,
+      "UNH": 9,
+      "V": 10,
+      "WULF": 4
+    },
+    "rows_written": 735,
+    "segments": [
+      "core",
+      "pilot",
+      "observation"
+    ],
+    "source": "SEC EDGAR company submissions + Form 4 primary documents",
+    "status": "ok",
+    "ten_b5_1_count": 456,
+    "tickers_mapped": 51,
+    "tickers_requested": 52,
+    "transaction_code_counts": {
+      "A": 90,
+      "C": 43,
+      "F": 40,
+      "G": 5,
+      "M": 77,
+      "P": 34,
+      "S": 446
+    },
+    "xml_cache_dir": "data/cache/sec/form4_xml"
+  },
+  "generated_at": "2026-07-11T04:21:28+00:00",
+  "lookback_days": 10,
+  "options_onclickmedia": {
+    "by_date": {
+      "2026-07-10": 5788
+    },
+    "by_ticker": {
+      "AAPL": 100,
+      "AMD": 100,
+      "AMZN": 98,
+      "APLD": 100,
+      "APP": 100,
+      "AVGO": 100,
+      "BE": 100,
+      "BKNG": 95,
+      "CAT": 100,
+      "COHR": 100,
+      "COIN": 100,
+      "CRDO": 100,
+      "CVX": 100,
+      "DDOG": 100,
+      "DE": 100,
+      "DIS": 100,
+      "GE": 100,
+      "GEV": 100,
+      "GLD": 100,
+      "GOOG": 100,
+      "GS": 100,
+      "HOOD": 100,
+      "IAU": 100,
+      "INTC": 100,
+      "ISRG": 100,
+      "IWM": 100,
+      "JPM": 100,
+      "LITE": 100,
+      "LLY": 100,
+      "MA": 100,
+      "MCD": 100,
+      "META": 100,
+      "MRVL": 100,
+      "MSFT": 100,
+      "MTSI": 100,
+      "MU": 100,
+      "NFLX": 100,
+      "NOW": 100,
+      "NVDA": 100,
+      "NVO": 100,
+      "PLTR": 100,
+      "QQQ": 100,
+      "RBLX": 100,
+      "RTX": 95,
+      "SLV": 100,
+      "SNOW": 100,
+      "SNXX": 100,
+      "SOFI": 100,
+      "SPOT": 100,
+      "SPY": 100,
+      "TQQQ": 100,
+      "TSLA": 100,
+      "TSM": 100,
+      "UNH": 100,
+      "V": 100,
+      "VRT": 100,
+      "WDC": 100,
+      "XOM": 100
+    },
+    "collection_mode": "forward_daily",
+    "date_range": {
+      "end": "2026-07-10",
+      "start": "2026-07-10"
+    },
+    "error_count": 0,
+    "errors": [],
+    "generated_at": "2026-07-11T04:22:16+00:00",
+    "option_liquidity_pass_rate": 0.8544,
+    "option_liquidity_pass_rows": 4945,
+    "output_path": "data/non_ohlcv/options_onclickmedia_chain_20260710.jsonl",
+    "parameters": {
+      "append": false,
+      "include_weekends": true,
+      "max_expirations": 2,
+      "max_strikes_per_side": 12,
+      "refresh": false
+    },
+    "per_ticker_date": [
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 151,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "AAPL",
+        "underlying_price": 315.32000732421875
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-17"
+        ],
+        "raw_rows_seen": 383,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "AMD",
+        "underlying_price": 557.8900146484375
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 117,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 98,
+        "rows_written": 98,
+        "ticker": "AMZN",
+        "underlying_price": 245.33999633789062
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 212,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "APLD",
+        "underlying_price": 31.149999618530273
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 393,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "APP",
+        "underlying_price": 506.9800109863281
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 239,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "AVGO",
+        "underlying_price": 399.9700012207031
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 451,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "BE",
+        "underlying_price": 244.61000061035156
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 633,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 95,
+        "rows_written": 95,
+        "ticker": "BKNG",
+        "underlying_price": 178.38999938964844
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 409,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "CAT",
+        "underlying_price": 952.4099731445312
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 316,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "COHR",
+        "underlying_price": 324.5
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 256,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "COIN",
+        "underlying_price": 159.07000732421875
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 281,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "CRDO",
+        "underlying_price": 257.7900085449219
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 124,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "CVX",
+        "underlying_price": 176.39999389648438
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 255,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "DDOG",
+        "underlying_price": 257.5400085449219
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 184,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "DE",
+        "underlying_price": 586.8599853515625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 138,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "DIS",
+        "underlying_price": 95.62000274658203
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 213,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "GE",
+        "underlying_price": 359.2699890136719
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 581,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "GEV",
+        "underlying_price": 1091.5699462890625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 272,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "GLD",
+        "underlying_price": 377.010009765625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 282,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "GOOG",
+        "underlying_price": 355.0299987792969
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 480,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "GS",
+        "underlying_price": 1055.1800537109375
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 258,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "HOOD",
+        "underlying_price": 111.97000122070312
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 229,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "IAU",
+        "underlying_price": 77.26000213623047
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-17"
+        ],
+        "raw_rows_seen": 269,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "INTC",
+        "underlying_price": 109.83999633789062
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 233,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "ISRG",
+        "underlying_price": 406.7799987792969
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-14"
+        ],
+        "raw_rows_seen": 177,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "IWM",
+        "underlying_price": 295.989990234375
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 210,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "JPM",
+        "underlying_price": 336.4700012207031
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 538,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "LITE",
+        "underlying_price": 802.010009765625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 400,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "LLY",
+        "underlying_price": 1188.5799560546875
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 235,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MA",
+        "underlying_price": 526.739990234375
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 152,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MCD",
+        "underlying_price": 274.6000061035156
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 310,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "META",
+        "underlying_price": 669.2100219726562
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 397,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MRVL",
+        "underlying_price": 235.80999755859375
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 187,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MSFT",
+        "underlying_price": 385.1000061035156
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-08-21"
+        ],
+        "raw_rows_seen": 194,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MTSI",
+        "underlying_price": 308.5199890136719
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-17"
+        ],
+        "raw_rows_seen": 661,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "MU",
+        "underlying_price": 979.2999877929688
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 216,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "NFLX",
+        "underlying_price": 73.37000274658203
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 228,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "NOW",
+        "underlying_price": 107.70999908447266
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 137,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "NVDA",
+        "underlying_price": 210.9600067138672
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 153,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "NVO",
+        "underlying_price": 49.47999954223633
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 303,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "PLTR",
+        "underlying_price": 126.79000091552734
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-14"
+        ],
+        "raw_rows_seen": 389,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "QQQ",
+        "underlying_price": 725.510009765625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 176,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "RBLX",
+        "underlying_price": 55.349998474121094
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 117,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 95,
+        "rows_written": 95,
+        "ticker": "RTX",
+        "underlying_price": 195.92999267578125
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 209,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SLV",
+        "underlying_price": 53.95000076293945
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 222,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SNOW",
+        "underlying_price": 261.45001220703125
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-08-21"
+        ],
+        "raw_rows_seen": 377,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SNXX",
+        "underlying_price": 28.059999465942383
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 152,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SOFI",
+        "underlying_price": 18.780000686645508
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 291,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SPOT",
+        "underlying_price": 479.7699890136719
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-14"
+        ],
+        "raw_rows_seen": 368,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "SPY",
+        "underlying_price": 754.9500122070312
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 216,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "TQQQ",
+        "underlying_price": 77.02999877929688
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-13",
+          "2026-07-15"
+        ],
+        "raw_rows_seen": 391,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "TSLA",
+        "underlying_price": 407.760009765625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 387,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "TSM",
+        "underlying_price": 434.1099853515625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 291,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "UNH",
+        "underlying_price": 424.6199951171875
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 192,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "V",
+        "underlying_price": 348.9700012207031
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 274,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "VRT",
+        "underlying_price": 318.8599853515625
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 486,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "WDC",
+        "underlying_price": 582.5900268554688
+      },
+      {
+        "date": "2026-07-10",
+        "errors": [],
+        "expiration_count": 2,
+        "expirations": [
+          "2026-07-17",
+          "2026-07-24"
+        ],
+        "raw_rows_seen": 171,
+        "requests_attempted": 5,
+        "rows_after_strike_window": 100,
+        "rows_written": 100,
+        "ticker": "XOM",
+        "underlying_price": 138.8800048828125
+      }
+    ],
+    "pit_notes": [
+      "Historical backfills lack vendor publication/as-of metadata and are marked pit_safe=false.",
+      "Forward daily snapshots are usable no earlier than the next weekday.",
+      "Open interest may have exchange/vendor lag and should not be used same-day.",
+      "OnclickMedia is a free public-source aggregation feed; use coverage and quality audits before alpha claims."
+    ],
+    "pit_safe_rows": 5788,
+    "pit_unsafe_rows": 0,
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "options_data_collection_only",
+      "shared_policy_changed": false
+    },
+    "rows_written": 5788,
+    "schema_version": 1,
+    "source": "onclickmedia_options",
+    "source_url_base": "https://api.onclickmedia.com/options/",
+    "status": "ok",
+    "summary_output": "data/non_ohlcv/options_onclickmedia_summary_20260710.json",
+    "ticker_date_requests": 58,
+    "tickers_requested": [
+      "AAPL",
+      "AMD",
+      "AMZN",
+      "APLD",
+      "APP",
+      "AVGO",
+      "BE",
+      "BKNG",
+      "CAT",
+      "COHR",
+      "COIN",
+      "CRDO",
+      "CVX",
+      "DDOG",
+      "DE",
+      "DIS",
+      "GE",
+      "GEV",
+      "GLD",
+      "GOOG",
+      "GS",
+      "HOOD",
+      "IAU",
+      "INTC",
+      "ISRG",
+      "IWM",
+      "JPM",
+      "LITE",
+      "LLY",
+      "MA",
+      "MCD",
+      "META",
+      "MRVL",
+      "MSFT",
+      "MTSI",
+      "MU",
+      "NFLX",
+      "NOW",
+      "NVDA",
+      "NVO",
+      "PLTR",
+      "QQQ",
+      "RBLX",
+      "RTX",
+      "SLV",
+      "SNOW",
+      "SNXX",
+      "SOFI",
+      "SPOT",
+      "SPY",
+      "TQQQ",
+      "TSLA",
+      "TSM",
+      "UNH",
+      "V",
+      "VRT",
+      "WDC",
+      "XOM"
+    ],
+    "trading_dates_requested": [
+      "2026-07-10"
+    ]
+  },
+  "paths": {
+    "borrow_availability_manifest": "D:/Github/ginger/data/non_ohlcv/borrow_availability/manifest.json",
+    "borrow_availability_rows": "D:/Github/ginger/data/non_ohlcv/borrow_availability/rows.jsonl",
+    "form144_planned_sale_context": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_20260710.jsonl",
+    "form144_planned_sale_context_summary": "D:/Github/ginger/data/non_ohlcv/form144_planned_sale_context_summary_20260710.json",
+    "form4_sale_overhang_context": "D:/Github/ginger/data/non_ohlcv/form4_sale_overhang_context_20260710.jsonl",
+    "form4_sale_overhang_context_summary": "D:/Github/ginger/data/non_ohlcv/form4_sale_overhang_context_summary_20260710.json",
+    "form4_summary": "D:/Github/ginger/data/non_ohlcv/form4_backfill_summary_20260710.json",
+    "form4_transactions": "D:/Github/ginger/data/non_ohlcv/form4_transactions_20260710.jsonl",
+    "options_onclickmedia_chain": "D:/Github/ginger/data/non_ohlcv/options_onclickmedia_chain_20260710.jsonl",
+    "options_onclickmedia_summary": "D:/Github/ginger/data/non_ohlcv/options_onclickmedia_summary_20260710.json",
+    "sec_filing_events": "D:/Github/ginger/data/non_ohlcv/sec_filing_events_20260710.jsonl",
+    "sec_filing_summary": "D:/Github/ginger/data/non_ohlcv/sec_filing_backfill_summary_20260710.json",
+    "sec_filing_text": "D:/Github/ginger/data/non_ohlcv/sec_filing_text_20260710.jsonl",
+    "sec_filing_text_summary": "D:/Github/ginger/data/non_ohlcv/sec_filing_text_backfill_summary_20260710.json",
+    "summary": "D:/Github/ginger/data/non_ohlcv/daily_non_ohlcv_snapshot_20260710.json"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "daily_non_ohlcv_data_refresh_only",
+    "shared_policy_changed": false
+  },
+  "schema_version": 1,
+  "sec_filing_events": {
+    "cache_dir": "data/cache/sec/submissions",
+    "date_range": {
+      "end": "2026-07-10",
+      "start": "2026-06-30"
+    },
+    "error_count": 0,
+    "errors": [],
+    "experiment_id": "exp-20260503-050",
+    "forms": [
+      "10-K",
+      "10-K/A",
+      "10-Q",
+      "10-Q/A",
+      "6-K",
+      "6-K/A",
+      "8-K",
+      "8-K/A"
+    ],
+    "generated_at": "2026-07-11T04:21:47+00:00",
+    "missing_cik_tickers": [
+      "SNXX"
+    ],
+    "output_path": "data/non_ohlcv/sec_filing_events_20260710.jsonl",
+    "pit_caveat": "This backfills SEC public availability by accepted_at/accession metadata. It is not a replay of what the local news pipeline or LLM actually observed.",
+    "pit_safe_rows": 16,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "production_impact": "sec_public_pit_backfill_only",
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "row_counts_by_form": {
+      "6-K": 2,
+      "8-K": 14
+    },
+    "row_counts_by_source": {
+      "sec_submissions_recent": 16
+    },
+    "row_counts_by_ticker": {
+      "AMD": 1,
+      "AMZN": 1,
+      "AVGO": 1,
+      "BE": 1,
+      "COIN": 1,
+      "IREN": 1,
+      "MARA": 1,
+      "NVDA": 2,
+      "NVO": 1,
+      "SNOW": 1,
+      "TRIP": 1,
+      "TSLA": 1,
+      "TSM": 1,
+      "WULF": 1,
+      "XOM": 1
+    },
+    "rows_written": 16,
+    "segments": [
+      "core",
+      "pilot",
+      "observation"
+    ],
+    "source": "SEC EDGAR submissions API",
+    "status": "ok",
+    "submission_chunks_listed": 157,
+    "submission_chunks_overlap_window": 0,
+    "submission_chunks_read": 0,
+    "submission_chunks_skipped_recent_covers_window": 0,
+    "tickers_mapped": 51,
+    "tickers_requested": 52
+  },
+  "sec_filing_text": {
+    "accessions": 16,
+    "cache_dir": "D:\\Github\\ginger\\data\\cache\\sec\\filing_text",
+    "dei_cover_status_parse_counts": {
+      "blocked_no_cover_page_status_terms": 2,
+      "parsed_machine_readable_dei_fact": 14
+    },
+    "documents_fetched": 62,
+    "events_input": 16,
+    "forms": [
+      "10-K",
+      "10-Q",
+      "6-K",
+      "8-K"
+    ],
+    "item_codes": [
+      "all"
+    ],
+    "limit": null,
+    "matched_events_input": 16,
+    "matched_form_counts": {
+      "6-K": 2,
+      "8-K": 14
+    },
+    "rows_with_dei_cover_status": 14,
+    "rows_written": 16,
+    "selected_form_counts": {
+      "6-K": 2,
+      "8-K": 14
+    },
+    "selected_periodic_rows": 0,
+    "source_events": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260710.jsonl",
+    "source_events_input": 16,
+    "source_form_counts": {
+      "6-K": 2,
+      "8-K": 14
+    },
+    "status": "ok",
+    "status_counts": {
+      "ok": 16
+    },
+    "text_char_count": 366679,
+    "tickers": 15
+  },
+  "status": "ok"
+}

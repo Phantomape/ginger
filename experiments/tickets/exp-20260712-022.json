@@ -1,0 +1,558 @@
+{
+  "acceptance_rule": "Observed-only positive lead only if all 26 frozen canonical pages have 629/629 daily rows, all 50 eligible common-stock baseline trades join with source day plus three calendar days on or before entry, pooled positive and non-positive groups each have at least 10 trades and each window has at least 3 per group, pooled positive-minus-non-positive mean pnl_pct_net is positive, pooled Spearman is positive, and the mean difference is positive in at least two of three windows. Any failure is observed_only_rejected. A full pass is only observed_only_positive_lead_not_promoted and requires timestamped forward snapshots before any policy test.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_022_wikimedia_company_attention.py",
+    "data/experiments/exp-20260712-022",
+    "experiments/tickets/exp-20260712-022.json",
+    "experiments/logs/exp-20260712-022.json",
+    "experiments/cards/exp-20260712-022.md",
+    "experiments/manifests/exp-20260712-022.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260712-022.md",
+  "causal_components": [
+    "26 fixed common-stock issuer pages",
+    "enwiki all-access user pageviews",
+    "log1p daily views",
+    "median prior eight same-weekday observations",
+    "three-calendar-day conservative availability lag",
+    "positive versus non-positive sign",
+    "continuous Spearman",
+    "accepted baseline trade pnl_pct_net"
+  ],
+  "change_type": "wikimedia_pageviews_company_attention_surprise_observed_only",
+  "changed_variable": "wikimedia_company_page_log_surprise_prior8_same_weekday_three_day_lag_sign_v1",
+  "claimed_at": "2026-07-13T03:42:44+00:00",
+  "completed_at": "2026-07-13T03:51:54+00:00",
+  "created_at": "2026-07-13T03:42:31+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260712-022",
+  "experiment_uid": "expuid-a2445a0a6dbb4a64",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-022",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T03:42:31+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "wikimedia_company_attention"
+  },
+  "hypothesis": "Observed-only ticker-level attention attribution: among the 26 common-stock issuers appearing in the accepted post-MTM core trades, a strictly lagged Wikimedia Analytics API canonical-company-page attention surprise should identify stronger information persistence; trades with positive log pageview surprise should earn higher pnl_pct_net than non-positive surprise trades, and the continuous surprise should be positively monotonic across all three canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "26 exact common-stock issuer page mappings",
+    "exclude ETF trust product brand and subsidiary pages",
+    "en.wikipedia.org",
+    "all-access",
+    "user agent class",
+    "daily views",
+    "log1p current minus median prior eight same-weekday log1p observations",
+    "three-calendar-day availability lag",
+    "latest available date on or before entry date",
+    "positive versus non-positive split",
+    "continuous Spearman",
+    "no alias aggregation",
+    "no page search",
+    "no threshold field lag or response sweep",
+    "observed-only accepted baseline trades"
+  ],
+  "mechanism_family": "wikimedia_company_attention_information_persistence",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "shared strategy policy",
+    "production orders",
+    "ranking",
+    "eligibility",
+    "sizing",
+    "exits",
+    "LLM/news rules"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260521-019",
+    "exp-20260623-024",
+    "exp-20260709-020",
+    "exp-20260712-021"
+  ],
+  "new_evidence_type": "new_data_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "a",
+        "accepted",
+        "across",
+        "all",
+        "among",
+        "analytics",
+        "api",
+        "appearing",
+        "attention",
+        "attribution",
+        "be",
+        "canonical",
+        "common",
+        "company",
+        "continuous",
+        "core",
+        "earn",
+        "higher",
+        "identify",
+        "in",
+        "information",
+        "issuer",
+        "issuers",
+        "lag",
+        "lagged",
+        "level",
+        "log",
+        "monotonic",
+        "mtm",
+        "net",
+        "non",
+        "observed",
+        "only",
+        "page",
+        "pageview",
+        "pageviews",
+        "pct",
+        "persistence",
+        "pnl",
+        "positive",
+        "positively",
+        "post",
+        "prior8",
+        "same",
+        "should",
+        "sign",
+        "stock",
+        "strictly",
+        "stronger",
+        "surprise",
+        "than",
+        "three",
+        "ticker",
+        "trades",
+        "weekday",
+        "wikimedia",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_drift_candidate_pool",
+        "reopen_condition": "If revisited, use closed forward replacement-value rows or a richer production-visible event-quality field such as guidance direction, same-event revenue/EPS mix, or audited filing/news tone.",
+        "score": 0.4703,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_underpriced_shared_adapter",
+        "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+        "score": 0.47,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "pead_continuation_three_round",
+        "reopen_condition": "Keep candidate-hit lag as read-only until it has enough positive revision conversions and earnings-date context.",
+        "score": 0.4694,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_underreaction_candidate_pool",
+        "reopen_condition": "If revisited, require closed forward replacement-value rows or a richer production-visible event-quality field such as revenue/EPS mix, guidance direction, or audited filing/news tone.",
+        "score": 0.4694,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_drift_monotonicity",
+        "reopen_condition": null,
+        "score": 0.4688,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: Wikimedia Analytics API human-user daily pageviews for exact canonical issuer pages have no prior experiment or fingerprint surface in the repository. The prior event-attention scalar used repeat event rows, GDELT used news tone/volume, and CFTC used market-wide weekly positioning; none uses reader attention to issuer pages. The ticket adds the new fingerprint key and tests in the same first-build experiment.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "revision_expectation",
+      "streak": 1,
+      "streak_experiments": [
+        "exp-20260709-011"
+      ]
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: Wikimedia Analytics API human-user daily pageviews for exact canonical issuer pages have no prior experiment or fingerprint surface in the repository. The prior event-attention scalar used repeat event rows, GDELT used news tone/volume, and CFTC used market-wide weekly positioning; none uses reader attention to issuer pages. The ticket adds the new fingerprint key and tests in the same first-build experiment.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: Wikimedia Analytics API human-user daily pageviews for exact canonical issuer pages have no prior experiment or fingerprint surface in the repository. The prior event-attention scalar used repeat event rows, GDELT used news tone/volume, and CFTC used market-wide weekly positioning; none uses reader attention to issuer pages. The ticket adds the new fingerprint key and tests in the same first-build experiment.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "attention is contemporaneous not predictive",
+      "negative news drives pageviews",
+      "window sign instability",
+      "page title history breaks canonical series",
+      "API availability is not historically auditable",
+      "small selected trade sample"
+    ],
+    "confidence_reason": "The source is independent with complete preflight coverage, but pageviews are direction agnostic and historical API load timestamps are absent.",
+    "recorded_at": "2026-07-13T03:42:08Z"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "blocked_external_wikimedia_freeze_approval_service_capacity",
+    "artifact": "data/experiments/exp-20260712-022/exp_20260712_022_wikimedia_company_attention.json",
+    "log": "experiments/logs/exp-20260712-022.json",
+    "summary": {}
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-022.json",
+  "single_causal_variable": "wikimedia_company_page_log_surprise_prior8_same_weekday_three_day_lag_sign_v1",
+  "status": "blocked",
+  "ticket_file": "experiments/tickets/exp-20260712-022.json",
+  "trial_family": "wikimedia_pageviews_canonical_issuer_attention_surprise",
+  "trial_variant_id": "prior8_same_weekday_log_surprise_sign_observed_only_v1",
+  "timestamp": "2026-07-13T03:51:54Z",
+  "decision": "blocked_external_wikimedia_freeze_approval_service_capacity",
+  "accepted": false,
+  "accepted_alpha": false,
+  "observed_only_lead": false,
+  "alpha_hypothesis": "Observed-only ticker-level attention attribution: among the 26 common-stock issuers appearing in the accepted post-MTM core trades, a strictly lagged Wikimedia Analytics API canonical-company-page attention surprise should identify stronger information persistence; trades with positive log pageview surprise should earn higher pnl_pct_net than non-positive surprise trades, and the continuous surprise should be positively monotonic across all three canonical windows.",
+  "new_evidence_axis": "Wikimedia human-user issuer-page attention is a new repository source with a dedicated fingerprint key.",
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.2,
+    "brier_score": null,
+    "realized_failure_modes": [
+      "external_approval_service_capacity"
+    ],
+    "not_scored_reason": "The hypothesis was not evaluated."
+  },
+  "blocking_condition": "The official Wikimedia freeze command was rejected before process start because the automatic escalation-review model was at capacity; no external request or data write occurred.",
+  "fingerprint_caveat": {
+    "reservation_data_source": "revision_expectation",
+    "misclassification_reason": "The generic word surprise matched revision_expectation before the first-build source key existed.",
+    "real_data_source": "wikimedia_pageviews",
+    "post_implementation": {
+      "data_source": "wikimedia_pageviews",
+      "field_tags": [
+        "a",
+        "accepted",
+        "across",
+        "all",
+        "among",
+        "analytics",
+        "api",
+        "appearing",
+        "attention",
+        "attribution",
+        "be",
+        "canonical",
+        "common",
+        "company",
+        "continuous",
+        "core",
+        "earn",
+        "higher",
+        "identify",
+        "in",
+        "information",
+        "issuers",
+        "lagged",
+        "level",
+        "log",
+        "monotonic",
+        "mtm",
+        "net",
+        "non",
+        "observed",
+        "only",
+        "page",
+        "pageview",
+        "pct",
+        "persistence",
+        "pnl",
+        "positive",
+        "positively",
+        "post",
+        "should",
+        "stock",
+        "strictly",
+        "stronger",
+        "surprise",
+        "than",
+        "three",
+        "ticker",
+        "trades",
+        "wikimedia",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "required_post_close_check": "docs/frozen_families.jsonl must classify this family as wikimedia_pageviews after rebuild"
+  },
+  "gate1": {
+    "passed": true,
+    "summary_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "summary_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "aggregate": {
+      "expected_value_score_sum": 12.2698,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.7885,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0594,
+        "trade_rows_sha256": "10e32056090c13c3334dca251de35897e18b0c512259e6087384bbdaafafeb36"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "max_drawdown_pct": 0.0502,
+        "trade_rows_sha256": "a4144004a161c98bafe83714f2b7197ce70a1ffa5fc1075c320a9cd509943662"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "max_drawdown_pct": 0.0975,
+        "trade_rows_sha256": "9c29588c11c13dcc4ee93d025866e373fc2707e9f4b417e9d597b225776c773e"
+      }
+    ]
+  },
+  "gate2": {
+    "applicable": false,
+    "passed": false,
+    "reason": "The official Wikimedia freeze command was rejected before process start because the automatic escalation-review model was at capacity; no external request or data write occurred."
+  },
+  "gate3": {
+    "applicable": false,
+    "passed": false,
+    "new_filter_added": false
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "not_run",
+    "failed_reasons": [
+      "external_source_not_frozen"
+    ]
+  },
+  "before_metrics": {
+    "summary_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "summary_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "aggregate": {
+      "expected_value_score_sum": 12.2698,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.7885,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0594,
+        "trade_rows_sha256": "10e32056090c13c3334dca251de35897e18b0c512259e6087384bbdaafafeb36"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "max_drawdown_pct": 0.0502,
+        "trade_rows_sha256": "a4144004a161c98bafe83714f2b7197ce70a1ffa5fc1075c320a9cd509943662"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "max_drawdown_pct": 0.0975,
+        "trade_rows_sha256": "9c29588c11c13dcc4ee93d025866e373fc2707e9f4b417e9d597b225776c773e"
+      }
+    ]
+  },
+  "after_metrics": {},
+  "delta_metrics": {},
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "no external execution; blocked before source freeze"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The experiment was not run; approval infrastructure capacity blocked the official source freeze.",
+    "forbidden_near_neighbor_retry": "Do not treat preflight coverage as an alpha result, change the feature, or reserve another ID for the same source while this exact ticket can be reopened.",
+    "new_evidence_required": "Reopen this ticket only after explicit approval allows the existing runner to freeze the 26 official Wikimedia series; then execute the unchanged policy bundle and acceptance rule."
+  },
+  "next_retry_requires": [
+    "explicit approval for the existing official Wikimedia source-freeze command"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260712_022_wikimedia_company_attention.py",
+    "data/experiments/exp-20260712-022/exp_20260712_022_wikimedia_company_attention.json",
+    "experiments/logs/exp-20260712-022.json",
+    "experiments/cards/exp-20260712-022.md",
+    "experiments/manifests/exp-20260712-022.json",
+    "experiments/tickets/exp-20260712-022.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_022_wikimedia_company_attention.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_022_wikimedia_company_attention.py --close-blocked",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-13T03:51:54+00:00"
+}
