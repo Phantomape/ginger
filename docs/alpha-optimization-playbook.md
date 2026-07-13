@@ -2355,6 +2355,14 @@ production-visible field:
   contemporaneous public-sponsor mapping and complete next-open/10-session
   cash/SPY/QQQ outcomes, or after obtaining an independently auditable official
   historical PIT snapshot archive;
+- Wikimedia issuer-page attention retries that only change canonical page
+  aliases, same-weekday baselines, lag days, sign thresholds, top-N, hold,
+  cooldown, or response shape on the fixed 26-page accepted-core universe.
+  July 13 achieved complete 26-page coverage and 50 joined trades, but the
+  pooled positive surprise cohort underperformed non-positive surprise and
+  continuous surprise was negatively monotonic. Reopen only with timestamped
+  forward snapshots plus materially more settled replacement-value rows, or a
+  genuinely different attention/provenance source;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

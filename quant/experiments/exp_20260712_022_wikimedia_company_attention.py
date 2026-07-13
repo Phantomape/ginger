@@ -153,6 +153,22 @@ def ssl_context() -> ssl.SSLContext:
         return ssl.create_default_context()
 
 
+def http_get(url: str) -> bytes:
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "ginger-alpha-research/1.0 (Codex local experiment)"},
+    )
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(request, timeout=60, context=ssl_context()) as response:
+                return response.read()
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 or attempt == 4:
+                raise
+            time.sleep(5 * (attempt + 1))
+    raise RuntimeError("unreachable")
+
+
 def fetch_json(url: str, cache_path: Path, *, throttle: bool = False) -> tuple[dict[str, Any], dict[str, Any]]:
     if cache_path.exists():
         body = cache_path.read_bytes()
@@ -163,24 +179,71 @@ def fetch_json(url: str, cache_path: Path, *, throttle: bool = False) -> tuple[d
             "bytes": len(body),
             "cache_hit": True,
         }
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "ginger-alpha-research/1.0 (Codex local experiment)"},
-    )
-    for attempt in range(5):
-        try:
-            with urllib.request.urlopen(request, timeout=60, context=ssl_context()) as response:
-                body = response.read()
-            break
-        except urllib.error.HTTPError as exc:
-            if exc.code != 429 or attempt == 4:
-                raise
-            time.sleep(5 * (attempt + 1))
+    body = http_get(url)
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_bytes(body)
     if throttle:
         time.sleep(1.0)
     return json.loads(body.decode("utf-8")), {
+        "url": url,
+        "path": repo_rel(cache_path),
+        "sha256": sha256_bytes(body),
+        "bytes": len(body),
+        "cache_hit": False,
+    }
+
+
+def fetch_pageview_items(article: str, start: dt.date, end: dt.date, depth: int = 0) -> list[dict[str, Any]]:
+    """Fetch one per-article daily range, bisecting on backend 404s.
+
+    The REST backend intermittently 404s specific large ranges for specific
+    articles while every sub-range succeeds; recursive bisection recovers the
+    identical row set without touching feature or evaluation policy.
+    """
+    url = (
+        "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
+        f"en.wikipedia.org/all-access/user/{article}/daily/"
+        f"{start:%Y%m%d}/{end:%Y%m%d}"
+    )
+    try:
+        payload = json.loads(http_get(url).decode("utf-8"))
+        return list(payload.get("items") or [])
+    except urllib.error.HTTPError as exc:
+        if exc.code != 404 or start >= end or depth >= 12:
+            raise
+        midpoint = start + dt.timedelta(days=(end - start).days // 2)
+        time.sleep(0.5)
+        left = fetch_pageview_items(article, start, midpoint, depth + 1)
+        time.sleep(0.5)
+        right = fetch_pageview_items(article, midpoint + dt.timedelta(days=1), end, depth + 1)
+        return left + right
+
+
+def fetch_pageviews_cached(article: str, cache_path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    url = (
+        "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
+        f"en.wikipedia.org/all-access/user/{article}/daily/"
+        f"{START_DAY:%Y%m%d}/{END_DAY:%Y%m%d}"
+    )
+    if cache_path.exists():
+        body = cache_path.read_bytes()
+        return json.loads(body.decode("utf-8")), {
+            "url": url,
+            "path": repo_rel(cache_path),
+            "sha256": sha256_bytes(body),
+            "bytes": len(body),
+            "cache_hit": True,
+        }
+    items = fetch_pageview_items(article, START_DAY, END_DAY)
+    seen: dict[str, dict[str, Any]] = {}
+    for item in items:
+        seen[str(item["timestamp"])] = item
+    merged = {"items": [seen[key] for key in sorted(seen)]}
+    body = json.dumps(merged, sort_keys=True).encode("utf-8")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_bytes(body)
+    time.sleep(1.0)
+    return merged, {
         "url": url,
         "path": repo_rel(cache_path),
         "sha256": sha256_bytes(body),
@@ -232,12 +295,7 @@ def load_pageviews(metadata: dict[str, dict[str, Any]]) -> tuple[dict[str, dict[
     for ticker in sorted(metadata):
         title = metadata[ticker]["title"]
         article = urllib.parse.quote(title.replace(" ", "_"), safe="")
-        url = (
-            "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
-            f"en.wikipedia.org/all-access/user/{article}/daily/"
-            f"{START_DAY:%Y%m%d}/{END_DAY:%Y%m%d}"
-        )
-        payload, source = fetch_json(url, RAW_DIR / f"{ticker}.json", throttle=True)
+        payload, source = fetch_pageviews_cached(article, RAW_DIR / f"{ticker}.json")
         rows: dict[dt.date, int] = {}
         for item in payload.get("items") or []:
             day = dt.datetime.strptime(str(item["timestamp"])[:8], "%Y%m%d").date()
