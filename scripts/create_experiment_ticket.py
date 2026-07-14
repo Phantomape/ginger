@@ -750,6 +750,144 @@ def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
     return result
 
 
+_IN_FLIGHT_OPEN_STATUSES = {"proposed", "claimed", "running"}
+
+
+def _field_tag_jaccard(fp_a, fp_b):
+    """Raw field-tag overlap in [0,1], independent of source classification.
+
+    The classified fingerprint distance under-scores verbatim duplicates whose
+    data_source falls to "other" (the same classifier escape AGENTS.md §2.4
+    warns about): two identical unclassified hypotheses score at most
+    0.40 (Jaccard weight) + 0.15 (gate shape). Duplicate reservations share
+    near-verbatim hypothesis text, so raw tag Jaccard is the reliable signal.
+    """
+    a = set(fp_a.get("field_tags") or [])
+    b = set(fp_b.get("field_tags") or [])
+    if not (a or b):
+        return 0.0
+    return round(len(a & b) / len(a | b), 4)
+
+
+def evaluate_in_flight_duplicate_guard(args, fingerprint, repo_root=None, today=None):
+    """Machine form of the AGENTS.md §7 concurrent-duplicate-reservation rule.
+
+    The frozen-family novelty gate only sees CLOSED experiments
+    (docs/frozen_families.jsonl), so concurrent agents reserve the same
+    hypothesis twice and the loser burns the ID as
+    duplicate_reservation_accounting (7 duplicate tickets = 27% of the
+    2026-07-10/11 window; recurrence exp-20260713-002). This guard scans OPEN
+    tickets (proposed/claimed/running) reserved within a recent window and
+    blocks when the proposal's fingerprint is a strong near-duplicate of one,
+    for every lane — the documented duplicate pairs include measurement
+    repairs (exp-20260711-021/022).
+
+    Recency uses the ticket ID's date prefix so stale months-old proposed
+    tickets cannot false-block new work. Thresholds tunable via
+    GINGER_IN_FLIGHT_DUP_THRESHOLD / GINGER_IN_FLIGHT_WINDOW_DAYS. Fails safe:
+    any error leaves the guard inapplicable.
+
+    Default threshold 0.65, calibrated on real ticket pairs (2026-07-14):
+    known duplicate pairs score 0.75-0.95 (and the weakest, a rephrased
+    duplicate, scores just under 0.75 at check time because trial/mechanism
+    family default-fill happens at reserve time); distinct same-day
+    hypotheses score <= 0.28; related-but-legitimately-distinct neighbors in
+    one sleeve family score 0.49-0.51. 0.65 sits inside the separation gap.
+    """
+    try:
+        threshold = float(os.environ.get("GINGER_IN_FLIGHT_DUP_THRESHOLD", "0.65"))
+    except (TypeError, ValueError):
+        threshold = 0.65
+    try:
+        window_days = int(os.environ.get("GINGER_IN_FLIGHT_WINDOW_DAYS", "7"))
+    except (TypeError, ValueError):
+        window_days = 7
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "threshold": threshold,
+        "window_days": window_days,
+        "matches": [],
+        "rule": (
+            "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see "
+            "in-flight tickets, so reservation re-checks open "
+            "proposed/claimed/running tickets from the last "
+            f"{window_days} days and blocks fingerprint near-duplicates "
+            f"(score >= {threshold}). Coordinate via scripts/list_experiments.py "
+            "and scripts/agent_mailbox.py instead of racing."
+        ),
+    }
+    try:
+        import experiment_fingerprint as efp
+
+        root = Path(repo_root) if repo_root else _repo_root()
+        tickets_dir = root / "experiments" / "tickets"
+        if not tickets_dir.is_dir():
+            return result
+        result["applicable"] = True
+
+        import datetime as _dt
+
+        current = today or _dt.date.today()
+        cutoff = current - _dt.timedelta(days=window_days)
+        own_id = str(getattr(args, "experiment_id", "") or "")
+
+        matches = []
+        for path in sorted(tickets_dir.glob("exp-*.json")):
+            match = re.match(r"exp-(\d{8})-\d+$", path.stem)
+            if not match:
+                continue
+            try:
+                ticket_date = _dt.datetime.strptime(match.group(1), "%Y%m%d").date()
+            except ValueError:
+                continue
+            if ticket_date < cutoff:
+                continue
+            if own_id and path.stem == own_id:
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if data.get("status") not in _IN_FLIGHT_OPEN_STATUSES:
+                continue
+            open_fp = efp.infer_fingerprint(
+                data.get("hypothesis") or "",
+                data.get("single_causal_variable") or "",
+                data.get("trial_family") or "",
+                data.get("mechanism_family") or "",
+                data.get("changed_variable") or "",
+            )
+            score = max(
+                efp.distance(fingerprint, open_fp),
+                _field_tag_jaccard(fingerprint, open_fp),
+            )
+            if score >= threshold:
+                matches.append(
+                    {
+                        "experiment_id": data.get("experiment_id") or path.stem,
+                        "status": data.get("status"),
+                        "owner": data.get("owner"),
+                        "score": score,
+                        "hypothesis": (data.get("hypothesis") or "")[:160],
+                    }
+                )
+        matches.sort(key=lambda item: -item["score"])
+        result["matches"] = matches[:5]
+        if not matches:
+            return result
+        if getattr(args, "in_flight_duplicate_override", False):
+            result["override_accepted"] = True
+            return result
+        result["blocked"] = True
+    except Exception:
+        result["applicable"] = False
+        result["blocked"] = False
+        return result
+    return result
+
+
 def _novelty_check(args):
     """Advisory near-neighbor check at reservation time. Fails safe.
 
@@ -989,6 +1127,45 @@ def _novelty_check(args):
     if routine_guard.get("override_accepted"):
         print("[routine-materialization] override accepted.", file=sys.stderr)
 
+    in_flight_guard = evaluate_in_flight_duplicate_guard(args, fingerprint)
+    out["in_flight_duplicate_guard"] = in_flight_guard
+    if in_flight_guard.get("matches"):
+        top = in_flight_guard["matches"][0]
+        print(
+            f"[in-flight] open-ticket near-duplicate(s) within "
+            f"{in_flight_guard['window_days']}d (threshold "
+            f"{in_flight_guard['threshold']}): "
+            + ", ".join(
+                f"{m['experiment_id']}[{m['status']}] score={m['score']:.3f}"
+                for m in in_flight_guard["matches"][:3]
+            ),
+            file=sys.stderr,
+        )
+        print(
+            f"[in-flight]   closest hypothesis: {top['hypothesis']}",
+            file=sys.stderr,
+        )
+    # Blocks on EVERY lane when enforcement is on: the documented duplicate
+    # pairs include measurement repairs (exp-20260711-021/022), not just alpha.
+    if in_flight_guard.get("blocked") and enforce:
+        top = (in_flight_guard.get("matches") or [{}])[0]
+        raise SystemExit(
+            "in-flight duplicate gate blocked this reservation: open ticket "
+            f"{top.get('experiment_id')} [{top.get('status')}, owner "
+            f"{top.get('owner') or '-'}] is already a fingerprint "
+            f"near-duplicate (score {top.get('score')}) of this hypothesis. "
+            "The novelty gate cannot see in-flight tickets, so this is the "
+            "machine form of the AGENTS.md §7 pre-reserve self-check. Next "
+            "steps: read the open ticket via scripts/list_experiments.py; if "
+            "another agent owns it, coordinate via scripts/agent_mailbox.py or "
+            "pick different work; if it is your own orphaned reservation, "
+            "close it as duplicate_reservation_accounting first. To proceed "
+            "anyway (e.g. the open ticket is genuinely different work), re-run "
+            "with --in-flight-duplicate-override."
+        )
+    if in_flight_guard.get("override_accepted"):
+        print("[in-flight] duplicate override accepted.", file=sys.stderr)
+
     if result.get("warn") and enforce and alpha_lane:
         if not (args.novelty_override and (args.new_evidence_axis or "").strip()):
             raise SystemExit(
@@ -1211,6 +1388,19 @@ def main(description=__doc__):
             "that wires the materialization into run.py / the settlement "
             "pipeline, or that names a genuine fault recovery — both pass the "
             "gate without an override."
+        ),
+    )
+    parser.add_argument(
+        "--in-flight-duplicate-override",
+        action="store_true",
+        help=(
+            "Proceed despite an open-ticket fingerprint near-duplicate "
+            "(AGENTS.md §7 concurrent-reservation gate). Use only after "
+            "confirming the open proposed/claimed ticket is genuinely "
+            "different work — if another agent owns the same hypothesis, "
+            "coordinate via scripts/agent_mailbox.py instead of racing, and "
+            "close your own orphaned duplicates as "
+            "duplicate_reservation_accounting."
         ),
     )
     parser.add_argument(

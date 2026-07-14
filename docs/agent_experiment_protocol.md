@@ -102,6 +102,24 @@ Escape hatches: `--no-enforce-novelty` makes a single reservation warn-only;
 missing it silently skips. Check ad hoc with
 `scripts/check_experiment_novelty.py --describe "..." --trial-family ...`.
 
+### In-flight duplicate gate (concurrent/self-retry reservations)
+
+The frozen-family data above only covers **closed** experiments, so two
+concurrent agents — or one agent retrying a reserve call that actually
+succeeded asynchronously — could reserve the same hypothesis twice; the loser
+burned the ID as `duplicate_reservation_accounting` (AGENTS.md §7). Since
+exp-20260714-007, `experiment.py new` also fingerprints every **open**
+(proposed/claimed/running) ticket whose ID date is within the last 7 days and
+**refuses the reservation on every lane** when the best score (classified
+distance or raw field-tag Jaccard, whichever is higher) reaches **0.65**.
+Calibration on real pairs: true duplicates score 0.75–0.95, related but
+legitimately distinct same-family neighbors ≤ 0.51. Stale proposed tickets
+older than the window never block. Tune with `GINGER_IN_FLIGHT_DUP_THRESHOLD`
+/ `GINGER_IN_FLIGHT_WINDOW_DAYS`; if the open ticket is genuinely different
+work, re-run with `--in-flight-duplicate-override` (recorded on the ticket).
+When it fires, the right response is usually to read the open ticket and
+coordinate via `scripts/agent_mailbox.py`, not to override.
+
 ### Source-saturation gate (anti-field-churn)
 
 The near-neighbor gate sees each new field as a distinct fingerprint, so it

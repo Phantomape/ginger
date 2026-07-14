@@ -1,0 +1,124 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "stale_proposed_false_positives",
+      "fingerprint_too_coarse_blocks_distinct_work",
+      "guard_fails_open_silently"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The first end-to-end verification exposed a real calibration miss: a rephrased duplicate scored just under the initial 0.75 threshold because trial/mechanism family default-fill happens at reserve time, not check time; the accidental live specimen (exp-20260714-008) pinned the true-duplicate floor at 0.75 ticket-vs-ticket and the threshold was moved to 0.65, inside the measured 0.51-0.75 separation gap."
+  },
+  "causal_components": [
+    "open ticket scan",
+    "fingerprint distance reuse",
+    "recency window",
+    "alpha-lane block with override",
+    "warn-only for non-alpha lanes",
+    "tests"
+  ],
+  "change_summary": "experiment.py new now machine-enforces the AGENTS.md section 7 in-flight duplicate rule: evaluate_in_flight_duplicate_guard fingerprints open proposed/claimed/running tickets from the last 7 days and refuses near-duplicate reservations on every lane at score >= 0.65 (max of classified distance and raw field-tag Jaccard, catching unclassified 'other' verbatim duplicates), with --in-flight-duplicate-override recorded on the ticket and GINGER_IN_FLIGHT_DUP_THRESHOLD / GINGER_IN_FLIGHT_WINDOW_DAYS tunables. Calibration on real pairs: duplicates 0.75-0.95, distinct same-day <= 0.28, related-but-distinct 0.49-0.51, zero false positives. End-to-end verified: rephrased duplicate blocked with exit 1 before ticket creation. No strategy, backtest, or production trading behavior changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1",
+  "component": "scripts/create_experiment_ticket.py, quant/test_create_experiment_ticket_guards.py, quant/experiments/exp_20260714_007_in_flight_duplicate_guard.py, data/experiments/exp-20260714-007/, experiments/cards/exp-20260714-007.md, experiments/manifests/exp-20260714-007.json, experiments/tickets/exp-20260714-007.json, experiments/logs/exp-20260714-007.json, docs/experiment_registry.json, docs/frozen_families.jsonl, docs/agent_experiment_protocol.md, AGENTS.md",
+  "date_range": {},
+  "decision": "accepted_measurement_repair_in_flight_duplicate_reservation_guard",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260714-007",
+  "hypothesis": "Machine-enforce the AGENTS.md section 7 in-flight duplicate rule: experiment.py new currently checks fingerprint near-neighbors only against closed experiments in docs/frozen_families.jsonl, so concurrent agents reserve duplicate hypotheses (7 duplicate tickets, 27 percent of IDs, in the 2026-07-10/11 window); adding a recency-windowed fingerprint near-neighbor guard over open proposed/claimed tickets at reservation time should block these duplicates at the machine layer instead of prose self-checks.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260711-021",
+    "exp-20260713-002",
+    "exp-20260712-016"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Before and after point to the same baseline artifact (zero strategy deltas; this is registry-tooling repair). Evidence artifact: data/experiments/exp-20260714-007/exp_20260714_007_in_flight_duplicate_guard.json. Tests: 10 new in quant/test_create_experiment_ticket_guards.py; 77 total pass across ticket/registry suites. Docs: AGENTS.md section 7 updated from pending-machine-fix to enforced; docs/agent_experiment_protocol.md gained the in-flight duplicate gate section.",
+  "parameters": {
+    "locked_variables": [
+      "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1"
+    ],
+    "single_causal_variable": "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to retune the 0.65 threshold, the 7-day window, the open-status set, or the score formula on the same calibration pairs; do not re-verify the guard with additional throwaway reservations. Threshold drift without a new false-positive or false-negative specimen is churn.",
+    "new_evidence_required": "Reopen only with a concrete new specimen the guard misclassifies in live use: a real duplicate reservation that scored below 0.65, or a genuinely distinct hypothesis blocked above it (record the ticket pair and scores in the reopen note). Routine operation needs no IDs.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The first end-to-end verification exposed a real calibration miss: a rephrased duplicate scored just under the initial 0.75 threshold because trial/mechanism family default-fill happens at reserve time, not check time; the accidental live specimen (exp-20260714-008) pinned the true-duplicate floor at 0.75 ticket-vs-ticket and the threshold was moved to 0.65, inside the measured 0.51-0.75 separation gap."
+  },
+  "prediction": {
+    "confidence_reason": "Deterministic code change reusing the existing fingerprint distance and threshold; the duplicate-reservation failure mode is documented with concrete cases (exp-20260711-021, exp-20260713-002); main risk is calibrating the recency window against stale April proposed tickets, which a created_at cutoff addresses.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "stale_proposed_false_positives",
+      "fingerprint_too_coarse_blocks_distinct_work",
+      "guard_fails_open_silently"
+    ],
+    "recorded_at": "2026-07-14T16:18:58+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-14T16:31:09+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260714-007",
+  "changed_files": [
+    "scripts/create_experiment_ticket.py",
+    "quant/test_create_experiment_ticket_guards.py",
+    "quant/experiments/exp_20260714_007_in_flight_duplicate_guard.py",
+    "data/experiments/exp-20260714-007/exp_20260714_007_in_flight_duplicate_guard.json",
+    "AGENTS.md",
+    "docs/agent_experiment_protocol.md",
+    "experiments/logs/exp-20260714-007.json",
+    "experiments/logs/exp-20260714-008.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ]
+}

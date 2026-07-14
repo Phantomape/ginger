@@ -221,8 +221,12 @@ exp-20260713-002/005/009、exp-20260714-001 均为单 agent 自我重试竞态�
 发现自己是输家时必须**立刻**把票据以
 `duplicate_reservation_accounting` 关闭，不得悬挂在 proposed——悬挂的重复票据会污染
 pre-reserve 检查面 `list_experiments` 本身（案例：2026-07-11 exp-021 与已接受的 exp-022
-同假设，至 07-12 仍 proposed）。让 `experiment.py new` 对 open 票据也做
-指纹近邻拦截是待办的机器强制修复——落码前本条是 ⚠️ 自查。
+同假设，至 07-12 仍 proposed）。本条已机器强制（exp-20260714-007）：`experiment.py new`
+对近 7 天内 open（proposed/claimed/running）票据做指纹近邻拦截，全部 lane 适用，得分
+≥0.65 即阻断（校准：真重复对 0.75–0.95，同族合法邻居 ≤0.51；阈值/窗口可用
+`GINGER_IN_FLIGHT_DUP_THRESHOLD` / `GINGER_IN_FLIGHT_WINDOW_DAYS` 调整）；确认 open
+票据确属不同工作时用 `--in-flight-duplicate-override`。7 天窗口外的陈旧 proposed
+票据不参与拦截；mailbox 分工与"输家立刻关闭"仍是 ⚠️ 自查。
 
 关闭实验时必须留下：
 
