@@ -582,6 +582,8 @@ def _persist_drugsfda_approval_observer(today):
         "strategy_behavior_changed": False,
         "trade_enabled": False,
         "alters_orders": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
         "alters_ranking": False,
         "alters_sizing": False,
         "alters_exits": False,
@@ -621,6 +623,65 @@ def _persist_drugsfda_approval_observer(today):
         return {
             "status": "unavailable",
             "error": str(e),
+            **behavior_contract,
+        }
+
+
+def _persist_usaspending_obligation_observer(today):
+    """Refresh the default-off USAspending observer from a local snapshot only."""
+    behavior_contract = {
+        "strategy_behavior_changed": False,
+        "trade_enabled": False,
+        "alters_orders": False,
+        "alters_ranking": False,
+        "alters_sizing": False,
+        "alters_exits": False,
+    }
+    configured_path = os.environ.get("GINGER_USASPENDING_TRANSACTION_SNAPSHOT")
+    if not configured_path:
+        return {
+            "status": "skipped",
+            "reason": "transaction_snapshot_not_configured",
+            "snapshot_path": None,
+            **behavior_contract,
+        }
+    snapshot_path = Path(configured_path)
+    if not snapshot_path.is_file():
+        return {
+            "status": "skipped",
+            "reason": (
+                "transaction_snapshot_missing"
+                if configured_path
+                else "default_transaction_snapshot_missing"
+            ),
+            "snapshot_path": str(snapshot_path),
+            **behavior_contract,
+        }
+
+    try:
+        from usaspending_obligation_observer import run_observer
+
+        summary = dict(
+            run_observer(
+                snapshot_path=str(snapshot_path),
+                observed_at=None,
+            )
+            or {}
+        )
+        summary.update(behavior_contract)
+        log.info(
+            "USAspending obligation observer: ledger_rows=%s appended=%s forward=%s",
+            summary.get("ledger_row_count"),
+            summary.get("rows_appended"),
+            summary.get("new_forward_rows_appended"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"USAspending obligation observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "snapshot_path": str(snapshot_path),
             **behavior_contract,
         }
 
@@ -3361,6 +3422,7 @@ def main():
         _persist_entity_theme_news_observer(today)
         _persist_entity_theme_news_event_forward_observer(today)
         _persist_drugsfda_approval_observer(today)
+        _persist_usaspending_obligation_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
         _persist_prediction_market_event_outcomes(today)
@@ -4659,6 +4721,7 @@ def main():
         _persist_entity_theme_news_observer(today)
         _persist_entity_theme_news_event_forward_observer(today)
         _persist_drugsfda_approval_observer(today)
+        _persist_usaspending_obligation_observer(today)
         _persist_entity_theme_news_outcomes(today)
         _persist_prediction_market_event_observer(today)
         _persist_prediction_market_event_outcomes(today)

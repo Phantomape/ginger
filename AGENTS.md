@@ -214,7 +214,11 @@ moomoo 实盘持仓与回测模型期望（fill drift / trajectory drift，口�
 reserve，输家只能以 `duplicate_reservation_accounting` 收尾、白烧 ID（案例：2026-07-10/11
 窗口 7 个重复票据，占当窗 26 个 ID 的 27%）。reserve 前先用 `scripts/list_experiments.py`
 核对 proposed / claimed 中是否已有同假设票据；确认有并发 agent 在场时用
-`scripts/agent_mailbox.py` 分工，而不是各自抢跑。发现自己是输家时必须**立刻**把票据以
+`scripts/agent_mailbox.py` 分工，而不是各自抢跑。**自我重试是同等祸源**：reserve 是异步
+完成的，首个输出/警告之后票据仍可能落盘；调用看似超时或只回显部分输出时，重试前必须先
+`list_experiments` 核对首次 reserve 是否已成功（案例：2026-07-13/14 窗口全部 4 张重复票据
+exp-20260713-002/005/009、exp-20260714-001 均为单 agent 自我重试竞态，而非双 agent 抢跑）。
+发现自己是输家时必须**立刻**把票据以
 `duplicate_reservation_accounting` 关闭，不得悬挂在 proposed——悬挂的重复票据会污染
 pre-reserve 检查面 `list_experiments` 本身（案例：2026-07-11 exp-021 与已接受的 exp-022
 同假设，至 07-12 仍 proposed）。让 `experiment.py new` 对 open 票据也做

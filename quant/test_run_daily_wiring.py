@@ -28,6 +28,7 @@ from run import (  # noqa: E402
     _persist_prediction_market_event_outcomes,
     _persist_sec_contract_relation_provenance,
     _persist_sec_corporate_event_stream,
+    _persist_usaspending_obligation_observer,
     _refresh_estimate_revision_ledger_after_quant_signals,
     _refresh_live_position_control_after_report,
     _refresh_options_forward_ledger_after_quant_signals,
@@ -988,6 +989,8 @@ def test_drugsfda_approval_observer_daily_wiring_calls_only_with_local_zip(
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
     assert summary["alters_orders"] is False
+    assert summary["alters_signal_generation"] is False
+    assert summary["alters_candidate_ranking"] is False
     assert summary["alters_ranking"] is False
     assert summary["alters_sizing"] is False
     assert summary["alters_exits"] is False
@@ -1019,6 +1022,8 @@ def test_drugsfda_approval_observer_skips_without_local_zip(monkeypatch, tmp_pat
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
     assert summary["alters_orders"] is False
+    assert summary["alters_signal_generation"] is False
+    assert summary["alters_candidate_ranking"] is False
     assert summary["alters_ranking"] is False
     assert summary["alters_sizing"] is False
     assert summary["alters_exits"] is False
@@ -1071,6 +1076,158 @@ def test_drugsfda_approval_observer_is_wired_in_both_daily_paths():
         and isinstance(node.value, ast.Call)
         and getattr(node.value.func, "id", None)
         == "_persist_drugsfda_approval_observer"
+    ]
+
+    assert len(call_expressions) == 2
+    assert all(
+        isinstance(expression.value, ast.Call)
+        and len(expression.value.args) == 1
+        and isinstance(expression.value.args[0], ast.Name)
+        and expression.value.args[0].id == "today"
+        for expression in call_expressions
+    )
+
+
+def test_usaspending_obligation_observer_calls_only_with_local_snapshot(
+    monkeypatch, tmp_path
+):
+    snapshot_path = tmp_path / "usaspending_transactions.json"
+    snapshot_path.write_text("{}", encoding="utf-8")
+    calls = []
+
+    def fake_run_observer(**kwargs):
+        calls.append(kwargs)
+        return {
+            "status": "ok",
+            "row_count": 23,
+            "rows_appended": 4,
+            "first_seen_count": 4,
+            "strategy_behavior_changed": True,
+            "trade_enabled": True,
+            "alters_orders": True,
+        }
+
+    monkeypatch.setenv(
+        "GINGER_USASPENDING_TRANSACTION_SNAPSHOT",
+        str(snapshot_path),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(run_observer=fake_run_observer),
+    )
+
+    summary = _persist_usaspending_obligation_observer("20260713")
+
+    assert calls == [
+        {
+            "snapshot_path": str(snapshot_path),
+            "observed_at": None,
+        }
+    ]
+    assert summary["status"] == "ok"
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    assert summary["alters_ranking"] is False
+    assert summary["alters_sizing"] is False
+    assert summary["alters_exits"] is False
+
+
+def test_usaspending_obligation_observer_skips_without_configuration(monkeypatch):
+    calls = []
+
+    def fake_run_observer(**kwargs):
+        calls.append(kwargs)
+        return {"status": "ok"}
+
+    monkeypatch.delenv("GINGER_USASPENDING_TRANSACTION_SNAPSHOT", raising=False)
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(run_observer=fake_run_observer),
+    )
+
+    summary = _persist_usaspending_obligation_observer("20260713")
+
+    assert calls == []
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "transaction_snapshot_not_configured"
+    assert summary["snapshot_path"] is None
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+
+
+def test_usaspending_obligation_observer_skips_when_snapshot_is_missing(
+    monkeypatch, tmp_path
+):
+    snapshot_path = tmp_path / "missing_usaspending_transactions.json"
+    calls = []
+
+    def unexpected_run_observer(**kwargs):
+        calls.append(kwargs)
+
+    monkeypatch.setenv(
+        "GINGER_USASPENDING_TRANSACTION_SNAPSHOT",
+        str(snapshot_path),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(run_observer=unexpected_run_observer),
+    )
+
+    summary = _persist_usaspending_obligation_observer("20260713")
+
+    assert calls == []
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "transaction_snapshot_missing"
+    assert summary["snapshot_path"] == str(snapshot_path)
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+
+
+def test_usaspending_obligation_observer_daily_wiring_is_fail_soft(
+    monkeypatch, tmp_path
+):
+    snapshot_path = tmp_path / "usaspending_transactions.json"
+    snapshot_path.write_text("{}", encoding="utf-8")
+
+    def failing_run_observer(**kwargs):
+        raise RuntimeError("USAspending observer unavailable")
+
+    monkeypatch.setenv(
+        "GINGER_USASPENDING_TRANSACTION_SNAPSHOT",
+        str(snapshot_path),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(run_observer=failing_run_observer),
+    )
+
+    summary = _persist_usaspending_obligation_observer("20260713")
+
+    assert summary["status"] == "unavailable"
+    assert "USAspending observer unavailable" in summary["error"]
+    assert summary["snapshot_path"] == str(snapshot_path)
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    assert summary["alters_ranking"] is False
+    assert summary["alters_sizing"] is False
+    assert summary["alters_exits"] is False
+
+
+def test_usaspending_obligation_observer_is_wired_in_both_daily_paths():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    call_expressions = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        == "_persist_usaspending_obligation_observer"
     ]
 
     assert len(call_expressions) == 2

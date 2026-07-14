@@ -299,6 +299,19 @@ def test_portfolio_covariance_daily_equity_gate_shape():
     assert fingerprint["gate_shape"] == "portfolio_daily_equity_overlay"
 
 
+def test_rejected_joint_preflight_stays_on_parked_portfolio_surface():
+    """Frozen-family rebuild sees family/variable/variant, not the hypothesis."""
+
+    fingerprint = fp.infer_fingerprint(
+        "joint_chronological_covariance_capacity_portfolio_overlay",
+        "old_train_frozen_joint_covariance_capacity_weights_v1",
+        "old_train_capped_inverse_vol_core_corr_10pct_v1",
+    )
+
+    assert fingerprint["data_source"] == "portfolio_covariance_lane"
+    assert fingerprint["gate_shape"] == "portfolio_daily_equity_overlay"
+
+
 def test_microstructure_viability_attribution_gate_shape():
     fingerprint = fp.infer_fingerprint(
         "tick_to_atr vol_normalized_tick microstructure viability attribution"
@@ -679,3 +692,340 @@ def test_generic_fda_approval_news_does_not_claim_drugsfda_source():
     )
 
     assert result["data_source"] == "other"
+
+
+def test_clinicaltrials_results_use_distinct_versioned_source():
+    assert fp.infer_fingerprint(
+        "ClinicalTrials.gov Phase 3 ResultsFirstPostDate candidate pool"
+    )["data_source"] == "clinicaltrials_results"
+    assert fp.infer_fingerprint(
+        "clinicaltrials_results version-history replay"
+    )["data_source"] == "clinicaltrials_results"
+    assert fp.infer_fingerprint(
+        "results_first_post_date shared paper snapshot"
+    )["data_source"] == "clinicaltrials_results"
+
+
+def test_duplicate_reservation_accounting_does_not_consume_named_source():
+    result = fp.infer_fingerprint(
+        "duplicate_reservation_accounting for a ClinicalTrials.gov Phase 3 "
+        "ResultsFirstPostDate candidate pool"
+    )
+
+    assert result["data_source"] == "duplicate_reservation_accounting"
+
+
+def test_clinicaltrials_keywords_do_not_capture_adjacent_surfaces():
+    assert fp.infer_fingerprint(
+        "Drugs@FDA original NDA/BLA approval"
+    )["data_source"] == "drugsfda_approval"
+    assert fp.infer_fingerprint(
+        "generic Phase 3 trial results biotech news"
+    )["data_source"] != "clinicaltrials_results"
+    for text in (
+        "supplier contract event candidate pool",
+        "Python function result observer",
+        "distinct issuer ranking",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] != "clinicaltrials_results"
+
+
+def test_usaspending_obligation_fields_use_distinct_transaction_source():
+    ticket = fp.infer_fingerprint(
+        "A non-DoD federal contract transaction first visible in USAspending "
+        "adds positive federal_action_obligation while "
+        "base_and_all_options_value does not increase."
+    )
+
+    assert ticket["data_source"] == "usaspending_obligation"
+    assert fp.infer_fingerprint(
+        "base_and_all_options_value obligation conversion first-seen observer"
+    )["data_source"] == "usaspending_obligation"
+
+
+def test_usaspending_keywords_do_not_capture_generic_or_dod_contracts():
+    assert fp.infer_fingerprint(
+        "DoD contract award winner revenue materiality"
+    )["data_source"] == "dod_contract_award"
+    assert fp.infer_fingerprint(
+        "generic federal contract award news"
+    )["data_source"] != "usaspending_obligation"
+
+
+def test_fda_device_enforcement_uses_distinct_official_source():
+    for text in (
+        "official_openfda_device_enforcement_report_class1 candidate pool",
+        "openFDA device enforcement Class I report_date replay",
+        "FDA weekly Device Enforcement Report Class 1 paper snapshot",
+        "fda_device_enforcement event-level dedupe",
+        "production_visible_fda_device_class1_enforcement_candidate_pool",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] == "fda_device_enforcement"
+
+
+def test_fda_device_enforcement_keywords_do_not_capture_adjacent_surfaces():
+    assert fp.infer_fingerprint(
+        "Drugs@FDA original NDA/BLA approval"
+    )["data_source"] == "drugsfda_approval"
+    for text in (
+        "generic Class I medical-device recall news",
+        "FDA drug approval enforcement news",
+        "report_date based candidate pool",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] != "fda_device_enforcement"
+
+
+def test_federal_product_safety_batch_uses_distinct_official_surface():
+    hypothesis = (
+        "Batch private scout: across the complete audit-ready remaining federal "
+        "product-safety sources, NHTSA defect-investigation openings and CPSC "
+        "recall publications, an issuer that is green and ahead of SPY on the "
+        "first strictly subsequent trading session may show absorbed adverse "
+        "news and continue from the next open through the tenth-session close."
+    )
+
+    assert fp.infer_fingerprint(hypothesis)["data_source"] == (
+        "federal_product_safety_official_events"
+    )
+    for text in (
+        "NHTSA ODATE defect-investigation opening PIT surface",
+        "CPSC RecallDate LastPublishDate recall publication PIT surface",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] == (
+            "federal_product_safety_official_events"
+        )
+
+
+def test_federal_product_safety_keywords_do_not_capture_fda_or_clinicaltrials():
+    fda_hypothesis = (
+        "After an FDA weekly Device Enforcement Report publicly lists a mapped "
+        "issuer's Class I recall, an issuer that closes green and ahead of SPY "
+        "on the first strictly subsequent trading session should continue."
+    )
+    clinicaltrials_hypothesis = (
+        "A mapped public drug sponsor's first ClinicalTrials.gov Phase 3 "
+        "ResultsFirstPostDate, confirmed by a green day ahead of SPY, should "
+        "continue from the next open through the tenth close."
+    )
+
+    assert fp.infer_fingerprint(fda_hypothesis)["data_source"] == (
+        "fda_device_enforcement"
+    )
+    assert fp.infer_fingerprint(clinicaltrials_hypothesis)["data_source"] == (
+        "clinicaltrials_results"
+    )
+
+
+def test_fdic_call_report_candidate_pool_precedes_companyfacts_and_allocator():
+    hypothesis = (
+        "Shared-paper-first candidate-pool alpha: after each official FDIC "
+        "Quarterly Banking Profile release, publicly listed bank parents whose "
+        "dominant insured-bank subsidiary exceeds 10 billion USD assets, grows "
+        "core deposits year over year, and lowers its uninsured-deposit share "
+        "year over year may have a strengthening deposit franchise that "
+        "continues to reprice; exclude merger-like asset jumps, rank the five "
+        "largest uninsured-share improvements, enter the first strictly later "
+        "open, and hold 20 sessions."
+    )
+    result = fp.infer_fingerprint(
+        hypothesis,
+        "fdic_qbp_deposit_franchise_repair_candidate_pool",
+        "fdic_deposit_franchise_repair_quarterly_ranking",
+        "production_visible_fdic_call_report_deposit_quality_candidate_pool",
+    )
+
+    assert result["data_source"] == "fdic_call_report_financials"
+    assert result["data_source"] != "companyfacts_ratio"
+    assert result["gate_shape"] == "candidate_pool_top5_20d"
+    assert result["gate_shape"] != "allocator_source"
+
+
+def test_fdic_frozen_family_builder_inputs_keep_the_real_source_key():
+    """The derived-memory builder fingerprints family/variable/variant only."""
+
+    result = fp.infer_fingerprint(
+        "fdic_qbp_deposit_franchise_repair_candidate_pool",
+        "fdic_deposit_franchise_repair_quarterly_ranking",
+        "coredep_growth_uninsured_share_improvement_top5_20d_v1",
+    )
+
+    assert result["data_source"] == "fdic_call_report_financials"
+    assert result["gate_shape"] == "candidate_pool_top5_20d"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "fdic_call_report_financials quarterly candidate pool",
+        "FDIC Quarterly Banking Profile deposit-franchise ranking",
+        "FDIC QBP deposit quality candidate pool",
+        "BankFind Call Report quarterly bank ranking",
+    ],
+)
+def test_fdic_call_report_compound_source_spellings(text):
+    assert fp.infer_fingerprint(text)["data_source"] == (
+        "fdic_call_report_financials"
+    )
+
+
+def test_fdic_keywords_do_not_capture_bare_asset_or_deposit_language():
+    assert fp.infer_fingerprint(
+        "SEC Companyfacts asset_growth and deposit liabilities candidate pool"
+    )["data_source"] == "companyfacts_ratio"
+    assert fp.infer_fingerprint(
+        "accepted helper deposit source_priority allocator"
+    )["data_source"] == "allocator"
+
+
+def test_eia_wpsr_event_basket_precedes_inventory_and_notional_fallbacks():
+    hypothesis = (
+        "Shared-paper-first candidate-pool alpha: an official EIA WPSR "
+        "first-release broad de-stocking shock across commercial crude, "
+        "gasoline, and distillate inventories enters a fixed equal-notional "
+        "energy equity basket for ten sessions."
+    )
+    result = fp.infer_fingerprint(
+        hypothesis,
+        "eia_wpsr_first_release_destocking_energy_basket",
+        "eia_wpsr_physical_inventory_shock_candidate_pool",
+        "production_visible_eia_wpsr_physical_supply_shock_energy_basket",
+    )
+
+    assert result["data_source"] == "eia_wpsr_inventory"
+    assert result["data_source"] != "companyfacts_ratio"
+    assert result["gate_shape"] == "event_basket_10d"
+    assert result["gate_shape"] != "notional_scalar"
+    assert result["gate_shape"] != "candidate_pool_top1_10d"
+
+
+def test_eia_wpsr_frozen_family_builder_inputs_keep_distinct_fingerprint():
+    """The derived-memory builder fingerprints family/variable/variant only."""
+
+    result = fp.infer_fingerprint(
+        "eia_wpsr_first_release_destocking_energy_basket",
+        "eia_wpsr_physical_inventory_shock_candidate_pool",
+        "three_series_seasonal_p80_fixed10_10d_v1",
+    )
+
+    assert result["data_source"] == "eia_wpsr_inventory"
+    assert result["gate_shape"] == "event_basket_10d"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "EIA Weekly Petroleum Status Report first-release inventory shock",
+        "eia_wpsr_inventory archived issue replay",
+        "WPSR Table 4 first-release physical-supply event",
+    ],
+)
+def test_eia_wpsr_compound_source_spellings(text):
+    assert fp.infer_fingerprint(text)["data_source"] == "eia_wpsr_inventory"
+
+
+def test_eia_wpsr_keywords_do_not_capture_adjacent_inventory_surfaces():
+    assert fp.infer_fingerprint(
+        "SEC Companyfacts inventory turnover candidate pool"
+    )["data_source"] == "companyfacts_ratio"
+    for text in (
+        "generic crude oil inventory news candidate pool",
+        "EIA Short-Term Energy Outlook candidate pool",
+        "petroleum producer inventory accounting",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] != "eia_wpsr_inventory"
+
+
+def test_usda_fas_export_sales_event_basket_precedes_fallbacks():
+    hypothesis = (
+        "Shared-paper-first alpha: USDA Foreign Agricultural Service weekly "
+        "Export Sales Reporting as-published archived corn and soybean "
+        "current-plus-next marketing-year net-sales strength, measured only "
+        "against prior seasonal observations and prior composite scores, may "
+        "add after-cost ten-session value through one fixed ten-leg agriculture "
+        "value-chain event basket entered at the first regular open after the "
+        "official 08:30 ET publication; no revised API values, price "
+        "confirmation, or post-result retuning."
+    )
+    result = fp.infer_fingerprint(
+        hypothesis,
+        "usda_fas_export_sales_as_published_agriculture_basket",
+        "usda_fas_export_sales_physical_demand_candidate_pool",
+        "corn_soy_seasonal_midrank_prior104_p75_fixed10_10d_v1",
+        "production_visible_usda_fas_export_sales_physical_demand_agriculture_basket",
+    )
+
+    assert fp.infer_fingerprint(hypothesis)["data_source"] == (
+        "usda_fas_export_sales"
+    )
+    assert result["data_source"] == "usda_fas_export_sales"
+    assert result["data_source"] != "companyfacts_ratio"
+    assert result["gate_shape"] == "event_basket_10d"
+    assert result["gate_shape"] != "notional_scalar"
+    assert result["gate_shape"] != "allocator_source"
+
+
+def test_usda_fas_frozen_family_builder_inputs_keep_distinct_fingerprint():
+    """The derived-memory builder fingerprints family/variable/variant only."""
+
+    result = fp.infer_fingerprint(
+        "usda_fas_export_sales_as_published_agriculture_basket",
+        "usda_fas_export_sales_physical_demand_candidate_pool",
+        "corn_soy_seasonal_midrank_prior104_p75_fixed10_10d_v1",
+    )
+
+    assert result["data_source"] == "usda_fas_export_sales"
+    assert result["gate_shape"] == "event_basket_10d"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "usda_fas_export_sales as-published archive",
+        "USDA FAS Export Sales Reporting weekly release",
+        "USDA Foreign Agricultural Service weekly Export Sales Reporting",
+        "Foreign Agricultural Service Export Sales Reporting Program",
+        "USDA weekly export sales report",
+    ],
+)
+def test_usda_fas_export_sales_compound_source_spellings(text):
+    assert fp.infer_fingerprint(text)["data_source"] == "usda_fas_export_sales"
+
+
+def test_usda_fas_keywords_do_not_capture_adjacent_sources():
+    assert fp.infer_fingerprint(
+        "USAspending USDA federal_action_obligation transaction"
+    )["data_source"] == "usaspending_obligation"
+    assert fp.infer_fingerprint(
+        "SEC Companyfacts revenue and company export-sales growth candidate_pool"
+    )["data_source"] == "companyfacts_ratio"
+    for text in (
+        "USDA WASDE crop balance candidate_pool",
+        "U.S. Census Bureau monthly exports candidate_pool",
+        "company export-sales growth candidate_pool",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] != (
+            "usda_fas_export_sales"
+        )
+
+
+def test_usda_fas_top1_policy_does_not_claim_event_basket_gate():
+    result = fp.infer_fingerprint(
+        "USDA Foreign Agricultural Service weekly Export Sales Reporting "
+        "candidate_pool top1 issuer continuation"
+    )
+
+    assert result["data_source"] == "usda_fas_export_sales"
+    assert result["gate_shape"] == "candidate_pool_top1_10d"
+    assert result["gate_shape"] != "event_basket_10d"
+
+
+def test_event_basket_10d_keywords_do_not_capture_adjacent_gate_shapes():
+    assert fp.infer_fingerprint(
+        "entity_theme_news event-decision-basket URL event basket"
+    )["gate_shape"] == "event_decision_basket"
+    assert fp.infer_fingerprint(
+        "macro relief candidate_pool top1 ten-day leadership"
+    )["gate_shape"] == "candidate_pool_top1_10d"
+    assert fp.infer_fingerprint(
+        "fixed equal-notional energy basket held for ten sessions"
+    )["gate_shape"] == "notional_scalar"

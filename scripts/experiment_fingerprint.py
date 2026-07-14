@@ -15,6 +15,54 @@ from typing import Any
 
 # Ordered: first matching source wins. Keep specific before generic.
 _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    # Duplicate reservations are accounting rows, not evidence from the
+    # substantive source named in the losing ticket. Route them first so one
+    # duplicate cannot relabel the shared accounting family and consume that
+    # source's saturation budget.
+    ("duplicate_reservation_accounting", (
+        "duplicate_reservation_accounting", "duplicate reservation accounting",
+    )),
+    # NHTSA defect-investigation openings and CPSC recall publications are one
+    # federal product-safety event surface. Keep agency names coupled to their
+    # official event/field spellings: bare words such as "recall", "defect",
+    # or "investigation" would collide with FDA enforcement and generic news.
+    ("federal_product_safety_official_events", (
+        "federal_product_safety_official_events",
+        "federal product safety official events",
+        "official_product_safety_event", "official product safety event",
+        "remaining_official_safety_source_batch",
+        "remaining official safety source batch",
+        "nhtsa defect-investigation", "nhtsa defect investigation",
+        "nhtsa investigation opening", "nhtsa investigation openings",
+        "nhtsa odate",
+        "cpsc recall publication", "cpsc recall publications",
+        "cpsc recalldate", "cpsc lastpublishdate",
+    )),
+    # ClinicalTrials.gov first-result postings are a versioned regulatory
+    # event source, distinct from generic biotech news and Drugs@FDA approval
+    # records. Keep the official source/field spellings near the front and do
+    # not use broad fragments such as "trial", "phase3", or "results".
+    ("clinicaltrials_results", (
+        "clinicaltrials_results", "clinicaltrials results",
+        "clinicaltrials.gov", "clinicaltrials gov", "clinicaltrials",
+        "resultsfirstpostdate", "results_first_post_date",
+    )),
+    # FDA Device Enforcement Reports are a weekly, public recall source,
+    # distinct from Drugs@FDA application approvals and generic recall news.
+    # Keep only compound official-source phrases here: broad fragments such as
+    # "FDA", "Class I", "recall", or "report_date" would over-match adjacent
+    # regulatory and news surfaces.
+    ("fda_device_enforcement", (
+        "fda_device_enforcement", "fda device enforcement",
+        "fda_device_class1_enforcement", "fda device class i enforcement",
+        "fda device class 1 enforcement",
+        "openfda_device_enforcement", "openfda device enforcement",
+        "official_openfda_device_enforcement",
+        "official openfda device enforcement",
+        "fda weekly device enforcement report",
+        "device enforcement report class i",
+        "device enforcement report class 1",
+    )),
     # A complete, aligned panel of attempted strategy return streams is its
     # own research-governance surface.  Keep it ahead of generic OHLCV and
     # portfolio MTM wording so DSR/PSR work cannot silently fall into `other`.
@@ -156,6 +204,16 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("gdelt_news_tone", (
         "gdelt", "gdelt_news_tone", "gdelt news tone", "news_tone_archive",
         "tone_shock", "tone shock",
+    )),
+    # USAspending transaction obligations are a structured federal-spending
+    # source, distinct from agency-authored DoD contract announcements. Keep
+    # its source/field names ahead of the DoD press-release family and avoid
+    # broad words such as "contract", "award", or "obligation" on their own.
+    ("usaspending_obligation", (
+        "usaspending_obligation", "usaspending obligation",
+        "usaspending", "usaspending.gov", "usaspending gov",
+        "federal_action_obligation", "federal action obligation",
+        "base_and_all_options_value", "base and all options value",
     )),
     # Official DoD/war.gov daily Contracts press release (exp-20260711-020):
     # the awarding agency's own same-day publication, not SEC filing text.
@@ -323,6 +381,8 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "portfolio_covariance", "portfolio covariance", "portfolio-lane", "portfolio lane",
         "daily_equity_overlay", "daily equity overlay", "mark_to_market", "mark-to-market",
         "daily mark to market", "mtm_overlay", "mtm overlay",
+        "joint_chronological_covariance_capacity_portfolio_overlay",
+        "old_train_frozen_joint_covariance_capacity_weights",
     )),
     ("microstructure_viability", (
         "microstructure_viability", "microstructure viability", "vol_normalized_tick",
@@ -379,6 +439,42 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "customer supplier graph",
     )),
     ("sec_text_event", ("sec_text", "8k", "item", "filing_text", "contract_economics", "backlog", "rpo", "guidance", "narrative", "complexity", "submissions")),
+    # USDA Foreign Agricultural Service Export Sales Reporting releases are
+    # an official physical-demand source, distinct from issuer accounting and
+    # generic trade data. Keep only compound program/source spellings here:
+    # bare agency, commodity, export, or sales words would over-match adjacent
+    # USDA reports, Census trade data, and Companyfacts growth hypotheses.
+    ("usda_fas_export_sales", (
+        "usda_fas_export_sales", "usda fas export sales",
+        "usda foreign agricultural service weekly export sales reporting",
+        "usda foreign agricultural service export sales reporting",
+        "foreign agricultural service weekly export sales reporting",
+        "foreign agricultural service export sales reporting program",
+        "usda weekly export sales report",
+    )),
+    # EIA Weekly Petroleum Status Report first-release inventory rows are an
+    # official physical-supply event source, distinct from SEC Companyfacts
+    # inventory accounting. Keep agency and report names coupled: bare "EIA",
+    # "inventory", "crude", or "petroleum" would capture adjacent surfaces.
+    ("eia_wpsr_inventory", (
+        "eia_wpsr_inventory", "eia wpsr inventory",
+        "eia_wpsr", "eia wpsr",
+        "eia weekly petroleum status report",
+        "weekly petroleum status report",
+        "wpsr table 4", "wpsr first-release", "wpsr first release",
+    )),
+    # FDIC Call Report financials and their official QBP publication calendar
+    # are a bank-funding source distinct from SEC Companyfacts ratios. Keep
+    # compound source phrases ahead of generic asset/debt/allocator wording;
+    # bare "asset" or "deposit" would over-match unrelated fundamentals.
+    ("fdic_call_report_financials", (
+        "fdic_call_report_financials", "fdic call report financials",
+        "fdic_call_report_deposit", "fdic call report deposit",
+        "fdic_qbp_deposit", "fdic qbp deposit",
+        "fdic_deposit_franchise", "fdic deposit franchise",
+        "fdic quarterly banking profile",
+        "bankfind call report",
+    )),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",
         "inventory", "dso", "dio", "dpo", "margin", "liability", "gross_profit", "cash_conversion",
@@ -409,6 +505,25 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "effective trial count", "selection pool complete",
         "trial_adjusted_sharpe",
     )),
+    # One publication event enters a fixed basket and holds it for ten
+    # sessions. This is neither per-name top-1 candidate selection nor a
+    # notional scalar; use only explicit policy-family spellings so generic
+    # event, basket, energy, or holding-period text keeps its existing route.
+    ("event_basket_10d", (
+        "event_basket_10d", "event basket 10d", "event-to-basket 10d",
+        "event to basket 10d", "fixed_event_basket_10d",
+        "fixed event basket 10d",
+        "eia_wpsr_first_release_destocking_energy_basket",
+        "eia wpsr first release destocking energy basket",
+        "production_visible_eia_wpsr_physical_supply_shock_energy_basket",
+        "production visible eia wpsr physical supply shock energy basket",
+        "eia_wpsr_first_release_three_inventory_destocking_fixed_energy_basket_10d",
+        "usda_fas_export_sales_as_published_agriculture_basket",
+        "usda fas export sales as published agriculture basket",
+        "production_visible_usda_fas_export_sales_physical_demand_agriculture_basket",
+        "production visible usda fas export sales physical demand agriculture basket",
+        "usda_fas_export_sales_physical_demand_candidate_pool",
+    )),
     ("peer_propagation_top1_10d", (
         "peer_propagation_top1_10d", "peer propagation top1 10d",
         "peer-substitution", "peer substitution", "peer_substitution",
@@ -422,6 +537,15 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "kill-switch", "kill switch", "reentry next open",
         "re-entry next-open", "relief invalidation exit",
         "relief_kill_switch", "sma20_reentry_next_open_kill_switch",
+    )),
+    # The FDIC policy is a fixed quarterly top-5 / 20-session candidate pool,
+    # not an instance of the older top-1 / 10-day saturation cell. Keep only
+    # its compound policy-family spellings here and ahead of generic ranking.
+    ("candidate_pool_top5_20d", (
+        "fdic_qbp_deposit_franchise_repair",
+        "fdic qbp deposit franchise repair",
+        "fdic_call_report_deposit_quality_candidate_pool",
+        "fdic call report deposit quality candidate pool",
     )),
     # This source is first introduced as a fixed top-2 candidate pool. Keep
     # its explicit family key above generic "replacement value" wording so
@@ -462,6 +586,8 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "portfolio_covariance", "portfolio covariance", "daily_equity_overlay",
         "daily equity overlay", "mark_to_market", "mark-to-market",
         "daily mark to market", "mtm_overlay", "mtm overlay",
+        "joint_chronological_covariance_capacity_portfolio_overlay",
+        "old_train_frozen_joint_covariance_capacity_weights",
     )),
     # One exact URL is one event-level portfolio decision. Require explicit
     # basket wording so ordinary entity-theme row attribution continues to use

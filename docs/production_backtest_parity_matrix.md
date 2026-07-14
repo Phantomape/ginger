@@ -19,6 +19,22 @@ publishes the previously omitted deep-drawdown rebound surface.
 | --- | --- | --- | --- | --- |
 | Paper evidence notional vs executable experiment amount | `paper_sleeve_execution_contract.py`, five event-ledger adapters, `run.py` | core backtests and existing paper replays keep their original notional and PnL rules; this measurement repair does not alter selection, sizing, exits, or Gate-1 metrics | daily snapshots label paper notionals as evidence-only and emit `experiment_notional_usd=null` unless a complete envelope, passed forward gate, and enabled trade adapter are all present | paper surfaces may have different evidence notionals by design; no paper notional may silently become an order size, and live activation still requires its own declared and measured execution envelope |
 
+## USAspending Obligation-Conversion First-Seen Observer
+
+`exp-20260713-007` adds a shared, default-off observer over a locally frozen
+official USAspending transaction snapshot. The historical current snapshot is
+seed-only: agency action dates are regulatory metadata and may not be used as
+policy availability. Availability begins only at the locally persisted
+`first_seen_at`. This means local first observation, not proof of first public
+availability. The observation clock must be monotonic, later rows must pass a
+post-initialization `initial_report_date` freshness guard before they can count
+as prospective evidence, Department of Defense and USACE transactions are
+excluded, and the observer remains `trade_enabled=false`.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off USAspending obligation-conversion first-seen observer | `usaspending_obligation_observer.py`, `data/non_ohlcv/usaspending_obligation_observer/`, `run.py` | canonical backtests do not consume the historical current snapshot; all initial rows are `seed_not_forward`, action dates cannot backdate availability, and a replay may begin only from persisted local `first_seen_at` rows after the seed that also passed the source-freshness guard | daily run skips unless an explicit local snapshot path is configured, fails soft on missing/invalid snapshots, and persists unseen non-DoD/non-USACE keys with a monotonic local clock; every row remains observer-only and `trade_enabled=false`, so it cannot alter candidates, orders, ranking, sizing, or exits | production may accumulate eligible prospective rows while backtests have no eligible historical rows; performance evaluation remains parked until >=75 settled unique eligible events across >=15 local first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete cash/SPY/QQQ outcomes |
+
 ## Drugs@FDA Original NDA/BLA First-Seen Observer
 
 `exp-20260713-006` adds a fail-soft, default-off observer over the locally
