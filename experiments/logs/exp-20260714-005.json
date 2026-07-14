@@ -1,0 +1,217 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.224,
+    "max_drawdown_pct": 0.0978,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237355.47,
+    "total_return_pct": 2.3736,
+    "trade_count": 212,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.0458,
+    "actual_pnl_delta": -496.8,
+    "actual_success": 0,
+    "brier_score": 0.0144,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.1658,
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2000.0,
+    "pnl_prediction_error": -2496.8,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "event_cluster_sample_too_small",
+      "official_pdf_parse_gap",
+      "old_window_regression",
+      "agriculture_beta_not_incremental",
+      "direct_commodity_benchmark_not_beaten",
+      "accepted_comparator_not_beaten",
+      "top5_concentration",
+      "low_volume_etf_execution"
+    ],
+    "predicted_success_probability": 0.12,
+    "realized_failure_mode": "agriculture_beta_not_incremental",
+    "surprise_level": "very_low",
+    "surprise_note": "The sample floor passed at 15 events, but breadth collapsed to three positive tickers; even the positive late-window PnL retained negative EV and lost SPY and QQQ."
+  },
+  "causal_components": [
+    "shared default-off helper",
+    "official ESRQS archive collector",
+    "historical PIT replay",
+    "daily paper snapshot",
+    "fixed ten-leg basket",
+    "execution envelope",
+    "full-stack gates",
+    "DSR evidence",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Test the fixed USDA FAS as-published corn/soy export-sales p75 composite as a shared default-off ten-leg agriculture event basket under the standard three-window full-stack protocol.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "usda_fas_export_sales_physical_demand_candidate_pool",
+  "component": "quant/usda_fas_export_sales_paper_sleeve.py, quant/test_usda_fas_export_sales_paper_sleeve.py, quant/experiments/, data/non_ohlcv/usda_fas_export_sales/, data/experiments/, data/paper_sleeves/usda_fas_export_sales_agriculture_basket/, experiments/artifacts/, experiments/cards/, experiments/manifests/, experiments/tickets/, experiments/logs/, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/production_backtest_parity_matrix.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.0458,
+    "max_drawdown_pct": 0.0003,
+    "survival_rate": 0.0,
+    "total_pnl": -496.8,
+    "total_return_pct": -0.0049,
+    "trade_count": 150
+  },
+  "experiment_id": "exp-20260714-005",
+  "hypothesis": "Shared-paper-first alpha: USDA Foreign Agricultural Service weekly Export Sales Reporting as-published archived corn and soybean current-plus-next marketing-year net-sales strength, measured only against prior seasonal observations and prior composite scores, may add after-cost ten-session value through one fixed ten-leg agriculture value-chain event basket entered at the first regular open after the official 08:30 ET publication; no revised API values, price confirmation, or post-result retuning.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_usda_fas_export_sales_physical_demand_agriculture_basket",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260714-004",
+    "exp-20260608-001",
+    "exp-20260620-001"
+  ],
+  "new_evidence_type": "new_data_source",
+  "next_retry_requires": [
+    "At least 10 additional prospectively settled releases selected by the unchanged frozen policy, bringing the settled count from 15 to at least 25 (+66.7% and +10), accumulated before outcome inspection and evaluated once under a preregistered cutoff.",
+    "Alternatively, a genuinely independent point-in-time data source or signal, not another USDA ESR field or subtype, with at least 12 settled events and at least 3 per standard window."
+  ],
+  "notes": "Rejected: aggregate EV -0.0458 and PnL -496.80; all three windows regressed on EV, only 3 of 10 tickers contributed positively, concentration caps failed, and the target lost every required aggregate matched comparator. Fifteen independent settled releases and Gate2/Gate3 passed. DSR is honestly not computable for one trial. No run.py or live behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "official ESRQS archived weekly PDF bytes and sha256;Corn and Soybeans current plus next marketing-year net sales;prior-five-calendar-year same-ISO-week plus-minus-two empirical midrank percentile with minimum fifteen observations;equal mean of corn and soybean percentiles;strictly above nearest-rank p75 of exactly prior 104 valid composites;ten-session event cooldown;fixed basket CORN SOYB DBA ADM BG CTVA DE MOS NTR CF;500 USD per eligible leg with no redistribution;all ten legs required;ETF ADV20 at least 250000 USD and notional at most 0.2 percent ADV;equity ADV20 at least 50000000 USD;price at least 10 USD;official Thursday 08:30 ET availability and first regular open at or after release;3.5 ATR14 target otherwise tenth-session close;35 bps round-trip cost;cash SPY QQQ DBA and equal CORN-SOYB matched benchmarks;no threshold basket weight hold cost or window retune"
+    ],
+    "single_causal_variable": "usda_fas_export_sales_as_published_fixed_event_basket_10d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Park this USDA ESR signal surface. Do not spend another ID on percentile, seasonal/lookback, cooldown, corn-only/soy-only, report-field/subtype, late-window, basket member/weight, hold, ATR-target, cost, response-shape, or price-confirmation retunes. The late-window positive PnL is not a rescue lead because its EV remained negative and it lost SPY and QQQ.",
+    "new_evidence_required": "Reopen only after at least 10 additional prospectively settled unchanged-policy releases (15 to at least 25), or with a genuinely independent PIT data source/signal rather than another USDA ESR field or subtype. Until then, readiness checks are one-line counts and do not reserve an experiment ID.",
+    "realized_failure_mode": "agriculture_beta_not_incremental",
+    "why_result_happened": "A high seasonal level of weekly corn/soy export sales was not an unanticipated price-relevant demand shock. The fixed basket mixed commodity, processor, fertilizer, seed, and equipment exposures that did not move together: only 3 of 10 tickers contributed positively, every window lost EV, and all required aggregate matched benchmarks beat the target."
+  },
+  "prediction": {
+    "confidence_reason": "The source is genuinely new and the no-ID preflight lower bound already yields 13 independent p75/cooldown events with 6/3/4 window coverage and complete ten-leg prices after replacing missing MOO with CF, but recent official-source baskets repeatedly failed concentration and comparator gates.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "event_cluster_sample_too_small",
+      "official_pdf_parse_gap",
+      "old_window_regression",
+      "agriculture_beta_not_incremental",
+      "direct_commodity_benchmark_not_beaten",
+      "accepted_comparator_not_beaten",
+      "top5_concentration",
+      "low_volume_etf_execution"
+    ],
+    "recorded_at": "2026-07-14T06:44:43+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Gate 4 rejected aggregate EV -0.0458 and PnL -496.80: all three windows lost EV; only the late window improved PnL; breadth and all three concentration caps failed; every required aggregate matched benchmark and both accepted candidate-pool bars were not beaten.",
+  "related_files": [
+    "data/experiments/exp-20260714-005/before.json",
+    "data/experiments/exp-20260714-005/after.json",
+    "data/experiments/exp-20260714-005/usda_fas_export_sales_agriculture_basket_replay.json",
+    "data/experiments/exp-20260714-005/deflated_sharpe_report.json",
+    "data/non_ohlcv/usda_fas_export_sales/normalized_records.json",
+    "data/non_ohlcv/usda_fas_export_sales/source_manifest.json",
+    "data/paper_sleeves/usda_fas_export_sales_agriculture_basket/latest_snapshot.json",
+    "experiments/artifacts/exp-20260714-005_usda_fas_export_sales_agriculture_basket.md"
+  ],
+  "gate_evidence": {
+    "gate2_passed": true,
+    "gate3_event_survival_rate": 0.197531,
+    "selected_event_count": 16,
+    "settled_event_count": 15,
+    "settled_events_by_window": {
+      "old_thin": 7,
+      "mid_weak": 3,
+      "late_strong": 5
+    },
+    "aggregate_ev_delta": -0.0458,
+    "aggregate_pnl_delta": -496.8,
+    "windows_ev_regressed": 3,
+    "windows_pnl_regressed": 2,
+    "positive_contribution_ticker_count": 3,
+    "single_ticker_positive_share": 0.512105,
+    "top_5_contribution_pct": 1.0,
+    "hhi_concentration": 0.456151,
+    "failed_matched_benchmarks": [
+      "CASH",
+      "SPY",
+      "QQQ",
+      "DBA",
+      "CORN_SOYB_DIRECT"
+    ],
+    "dsr_status": "not_computable",
+    "dsr_reason": "trial_panel_needs_at_least_two_trials"
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "run_adapter_changed": false,
+    "live_orders_changed": false,
+    "core_ranking_changed": false,
+    "core_sizing_changed": false,
+    "core_exits_changed": false,
+    "daily_snapshot_role": "one-shot default-off parity artifact only"
+  },
+  "measurement_limitations": [
+    "The repository retains each PDF endpoint, raw SHA-256, exact crop excerpts, page indices, and derivation evidence, but not the complete PDF bytes. Future USDA replacement or withdrawal is detectable as hash drift, yet a full offline reparse would require refetching the matching bytes.",
+    "The official archive contains only 47 canonical 2019 weeks and 51 canonical 2022 weeks after audit exclusions. Seasonal comparisons still satisfy the locked minimum of 15 observations, but finite-sample uncertainty remains.",
+    "Only one preregistered policy was attempted, so Deflated Sharpe is correctly not computable and supplies no live-readiness evidence."
+  ],
+  "fingerprint_caveat": "Reservation-time classification routed the genuinely new USDA source to other/event_basket_10d. This experiment added narrow usda_fas_export_sales/event_basket_10d coverage; the rebuilt frozen-family entry must use the corrected source key.",
+  "changed_files": [
+    "quant/usda_fas_export_sales_paper_sleeve.py",
+    "quant/test_usda_fas_export_sales_paper_sleeve.py",
+    "quant/experiments/exp_20260714_005_usda_fas_export_sales_agriculture_basket.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/non_ohlcv/usda_fas_export_sales/",
+    "data/experiments/exp-20260714-005/",
+    "data/paper_sleeves/usda_fas_export_sales_agriculture_basket/",
+    "experiments/artifacts/exp-20260714-005_usda_fas_export_sales_agriculture_basket.md",
+    "experiments/cards/exp-20260714-005.md",
+    "experiments/tickets/exp-20260714-005.json",
+    "experiments/logs/exp-20260714-005.json",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_005_usda_fas_export_sales_agriculture_basket.py --offline --source-only",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_005_usda_fas_export_sales_agriculture_basket.py --offline",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant\\test_usda_fas_export_sales_paper_sleeve.py quant\\test_eia_wpsr_destocking_energy_basket_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_full_stack_candidate_pool.py quant\\test_sharpe_inference.py quant\\test_deflated_sharpe_cli.py -q"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T07:43:57+00:00",
+  "trial_family": "usda_fas_export_sales_as_published_agriculture_basket",
+  "trial_variant_id": "corn_soy_seasonal_midrank_prior104_p75_fixed10_10d_v1"
+}

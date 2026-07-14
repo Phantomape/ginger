@@ -1,0 +1,298 @@
+{
+  "acceptance_rule": "Canonical three-window Gate 1-4 after costs; at least 20 target trades across all three windows and at least 3 tickers; beat the closest accepted candidate-pool comparator without unacceptable drawdown or concentration; default-off only.",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260713-009.json",
+    "experiments/cards/exp-20260713-009.md",
+    "experiments/manifests/exp-20260713-009.json",
+    "experiments/logs/exp-20260713-009.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260713-009.md",
+  "causal_components": [
+    "versioned ResultsFirstPostDate",
+    "exact lead-sponsor ticker map",
+    "Phase 3 eligibility",
+    "green and SPY-relative signal-day confirmation",
+    "top-1 excess-return rank",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "clinicaltrials_phase3_results_green_spy_relative_top1_10d_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-13T23:36:51+00:00",
+  "created_at": "2026-07-13T23:35:40+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260713-009",
+  "experiment_uid": "expuid-6b863e6c197b4960",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260713-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T23:35:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "clinicaltrials_phase3_results_green_spy_relative_top1_10d_v1"
+  },
+  "hypothesis": "candidate_pool: a mapped public drug sponsor's first ClinicalTrials.gov Phase 3 results posting, confirmed by an issuer green day that outperforms SPY, should reveal underreaction that continues from the next open through the tenth trading-day close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "sponsor map",
+    "Phase 3 eligibility",
+    "first-post history version",
+    "green and SPY-relative confirmation",
+    "top-1 rank",
+    "cooldown",
+    "hold",
+    "notional",
+    "cost"
+  ],
+  "mechanism_family": "duplicate_reservation_accounting",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM trend_signals"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-006"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "an",
+        "by",
+        "clinicaltrials",
+        "close",
+        "confirmed",
+        "continues",
+        "drug",
+        "first",
+        "from",
+        "gov",
+        "green",
+        "issuer",
+        "mapped",
+        "outperforms",
+        "phase",
+        "phase3",
+        "posting",
+        "price",
+        "public",
+        "relative",
+        "results",
+        "reveal",
+        "s",
+        "should",
+        "sponsor",
+        "spy",
+        "tenth",
+        "that",
+        "through",
+        "trading",
+        "underreaction"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_price_alignment_issuer_continuation_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1729,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "issuer_8k_public_counterparty_relation_candidate_pool",
+        "reopen_condition": "A retry needs materially stronger relation identity evidence, such as CIK-level counterparty extraction from exhibits, a customer/supplier graph, deal target/holder role labels, or closed forward replacement rows. Do not sweep public-name alias lists, relation phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_capital_market_financing_confirmation_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence separating growth financing from distress/dilution, such as use-of-proceeds text, covenant maturity context, forward daily replacement value, or a shared default-off source with daily parity observations. Pure subtype/threshold retunes stay frozen.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "sec_periodic_filing_timing_surprise_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT timing evidence, such as ticker-specific historical filing cadence relative to its own prior deadlines, auditor-change context, or forward daily replacement value from a shared default-off adapter. Pure 10-Q/10-K lag threshold retunes stay frozen.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "broad_full_liquid_reversal_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1716,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New official data source: versioned ClinicalTrials.gov Phase 3 ResultsFirstPostDate records, with exact first-post history snapshots; 74 non-inert fixed-rule candidates span 12 issuers and all three canonical windows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New official data source: versioned ClinicalTrials.gov Phase 3 ResultsFirstPostDate records, with exact first-post history snapshots; 74 non-inert fixed-rule candidates span 12 issuers and all three canonical windows.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New official data source: versioned ClinicalTrials.gov Phase 3 ResultsFirstPostDate records, with exact first-post history snapshots; 74 non-inert fixed-rule candidates span 12 issuers and all three canonical windows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "No prior ClinicalTrials.gov source exists; readiness found 250 Phase 3 first-post events and 74 fixed-rule candidates across 12 tickers and all three windows, while exact Record History versions make the first-post fields auditable. The main disconfirmers are delayed disclosure and sector concentration.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "stale_results_disclosure",
+      "pharma_ticker_concentration",
+      "accepted_comparator_not_beaten",
+      "current_record_revision_leakage"
+    ],
+    "recorded_at": "2026-07-13T23:35:01+00:00",
+    "success_probability": 0.3
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.3,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.3,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "stale_results_disclosure",
+        "pharma_ticker_concentration",
+        "accepted_comparator_not_beaten",
+        "current_record_revision_leakage"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The asynchronous reserve completed after its wrapper returned a session id, so the retry raced with a successful first reservation."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260713-009.json",
+  "single_causal_variable": "clinicaltrials_phase3_results_green_spy_relative_top1_10d_v1",
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "duplicate_of": "exp-20260713-008",
+  "rejection_reason": "duplicate_reservation_accounting",
+  "lean_quality_passed": true,
+  "production_impact": {
+    "changes_live_orders": false,
+    "changes_default_ranking": false,
+    "changes_default_sizing": false,
+    "changes_default_exits": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The asynchronous reserve completed after its wrapper returned a session id, so the retry raced with the successful exp-20260713-008 reservation.",
+    "forbidden_near_neighbor_retry": "Do not create another reservation for this ClinicalTrials.gov policy bundle.",
+    "new_evidence_required": "Use exp-20260713-008 as the sole owner of all substantive work."
+  },
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260713-009.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "duplicate_of_exp_20260713_008"
+}

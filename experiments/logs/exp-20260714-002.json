@@ -1,0 +1,180 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.251,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.320513,
+    "total_pnl": 237698.63,
+    "total_return_pct": 2.377,
+    "trade_count": 84,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.0188,
+    "actual_pnl_delta": -153.64,
+    "actual_success": 0,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.1188,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1000.0,
+    "pnl_prediction_error": -1153.64,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "source_shards_too_small",
+      "parent_mapping_survivorship",
+      "incomplete_historical_dsr_panel"
+    ],
+    "predicted_success_probability": 0.1,
+    "realized_failure_mode": "aggregate_ev_not_positive",
+    "surprise_level": "very_low",
+    "surprise_note": "CPSC was positive in aggregate (+1583.24) despite only 8 settled trades, but old_thin regressed and the signal was far below comparator and concentration bars; NHTSA losses more than offset it in the pooled policy."
+  },
+  "causal_components": [
+    "NHTSA ODATE PIT surface",
+    "CPSC max RecallDate LastPublishDate PIT surface",
+    "exact issuer mapping",
+    "first subsequent session green and SPY relative confirmation",
+    "top1 per day",
+    "10-session cooldown",
+    "next-open entry",
+    "10-session close",
+    "4000 USD notional",
+    "35bps costs"
+  ],
+  "change_summary": "Mandatory one-ID batch consumed the remaining audit-ready NHTSA defect-investigation and CPSC recall sources under one locked green/SPY-relative top1/day next-open 10-session 4k/35bps recipe. The pooled 22 settled trades produced EV -0.0188 and PnL -153.64, so the policy is rejected and the fixed official-source enumeration lane is parked.",
+  "change_type": "candidate_pool_batch_private_scout",
+  "changed_variable": "remaining_official_safety_source_batch",
+  "component": "quant/experiments/exp_20260714_002_official_safety_event_response_batch.py, data/experiments/exp-20260714-002, data/non_ohlcv/nhtsa_defect_investigations, data/non_ohlcv/cpsc_recalls, experiments/artifacts/exp-20260714-002_official_safety_event_response_batch.md, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.0188,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": -0.467987,
+    "total_pnl": -153.64,
+    "total_return_pct": -0.0015,
+    "trade_count": 22
+  },
+  "experiment_id": "exp-20260714-002",
+  "hypothesis": "Batch private scout: across the complete audit-ready remaining federal product-safety sources, NHTSA defect-investigation openings and CPSC recall publications, an issuer that is green and ahead of SPY on the first strictly subsequent trading session may show absorbed adverse news and continue from the next open through the tenth-session close; run both source shards and their pooled policy exactly once under one fixed protocol, with any positive result remaining a lead only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_official_product_safety_event_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260711-019",
+    "exp-20260711-020",
+    "exp-20260711-023",
+    "exp-20260712-009",
+    "exp-20260713-008",
+    "exp-20260713-010"
+  ],
+  "new_evidence_type": "new_data_source_batch",
+  "next_retry_requires": [
+    "At least three newly audit-ready official sources, each spanning all three canonical windows and contributing at least 20 expected settled trades, evaluated together in one batch",
+    "Or a materially different gate shape; source-specific threshold, mapping, confirmation, cooldown, hold, cost, or window retunes do not qualify"
+  ],
+  "notes": "Preflight selected 25 rows; three were correctly unsettled at canonical-window boundaries, leaving 22 Gate-4 trades across 12 tickers and 9/7/6 windows. NHTSA lost 1736.87 on 14 trades; CPSC gained 1583.24 on only 8 trades but regressed old_thin and failed sample, concentration, and accepted-comparator bars. Gate 3 passed at 25/78=32.0513%. Gate 5 is honestly not_computable/fail-closed because only 3 of 9 same-lane return streams are available. Eight curated source files, the auxiliary OHLCV rowset, runner, and critical calculation helpers are hash-bound. Residual unknown: complete official raw responses are represented by hashes rather than stored bytes, and NHTSA report-date version history cannot be reconstructed. No shared helper, daily wiring, live order, ranking, sizing, or exit change is retained. Reopen only after at least three newly audit-ready official sources each have all three windows and >=20 expected settled trades, then run one batch, or use a materially different gate shape.",
+  "parameters": {
+    "locked_variables": [
+      "source manifests and exact issuer maps; PIT dates; green and SPY-relative confirmation; top1/day; cooldown=10; hold=10; notional=4000; round-trip cost=0.0035; no threshold or source-specific retune"
+    ],
+    "single_causal_variable": "remaining_official_safety_event_green_spy_response_top1_10d_batch_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this fixed official-source response recipe by changing one source, issuer map, point-in-time date, green/SPY confirmation, rank, cooldown, holding period, notional, cost, or window at a time; do not reserve one experiment ID per additional official source.",
+    "new_evidence_required": "Reopen only when at least three newly audit-ready official sources each cover all three canonical windows and contribute at least 20 expected settled trades, then evaluate them in one batch, or when a materially different gate shape is proposed.",
+    "realized_failure_mode": "aggregate_ev_not_positive",
+    "why_result_happened": "CPSC was positive in aggregate (+1583.24) despite only 8 settled trades, but old_thin regressed and the signal was far below comparator and concentration bars; NHTSA losses more than offset it in the pooled policy."
+  },
+  "prediction": {
+    "confidence_reason": "Both new sources are audit-ready and pooled pre-outcome sample is 25 across 9/9/7 windows, but the prior six official-source variants all failed and each new shard is individually thin.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "source_shards_too_small",
+      "parent_mapping_survivorship",
+      "incomplete_historical_dsr_panel"
+    ],
+    "recorded_at": "2026-07-14T02:45:10+00:00",
+    "success_probability": 0.1
+  },
+  "prior_trial_count": 6,
+  "rejection_reason": "The pooled policy had non-positive aggregate EV (-0.0188) and PnL (-153.64), regressed in old_thin, failed the accepted-distribution EV/PnL comparators, and failed the top-five positive-contribution concentration cap; therefore it did not pass Gate 4.",
+  "related_files": [
+    "quant/experiments/exp_20260714_002_official_safety_event_response_batch.py",
+    "data/experiments/exp-20260714-002/before.json",
+    "data/experiments/exp-20260714-002/after.json",
+    "data/experiments/exp-20260714-002/auxiliary_ohlcv.json",
+    "data/experiments/exp-20260714-002/deflated_sharpe_panel.json",
+    "data/experiments/exp-20260714-002/deflated_sharpe_report.json",
+    "data/experiments/exp-20260714-002/official_safety_event_response_batch_replay.json",
+    "data/non_ohlcv/nhtsa_defect_investigations/events.json",
+    "data/non_ohlcv/nhtsa_defect_investigations/issuer_map.json",
+    "data/non_ohlcv/nhtsa_defect_investigations/selected_raw_rows.json",
+    "data/non_ohlcv/nhtsa_defect_investigations/source_manifest.json",
+    "data/non_ohlcv/cpsc_recalls/events.json",
+    "data/non_ohlcv/cpsc_recalls/issuer_map.json",
+    "data/non_ohlcv/cpsc_recalls/selected_raw_rows.json",
+    "data/non_ohlcv/cpsc_recalls/source_manifest.json",
+    "experiments/artifacts/exp-20260714-002_official_safety_event_response_batch.md",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "production_impact": {
+    "trade_enabled": false,
+    "retained_shared_policy_change": false,
+    "summary": "Private replay scout only. No shared helper or daily wiring was retained, and live/default orders, ranking, sizing, exits, and risk budgets are unchanged."
+  },
+  "reopen_condition": "Park the fixed official-source enumeration lane until at least three newly audit-ready official sources each span all three canonical windows and contribute at least 20 expected settled trades, then consume them in one batch; alternatively reopen for a materially different gate shape.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_002_official_safety_event_response_batch.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "gate_evidence": {
+    "gate_1": "Used the active July 12 post-MTM baseline under the canonical three-window protocol.",
+    "gate_2": "entry_date and target_price sentinel fields were present for every generated signal.",
+    "gate_3": "Passed: 25 of 78 candidate rows survived (32.0513%).",
+    "gate_4": "Rejected: 22 settled trades produced pooled EV -0.0188 and PnL -153.64, with old_thin regression plus comparator and concentration failures.",
+    "gate_5": "Fail-closed and independent of Gate 4: DSR was not computable because only 3 of 9 expected same-lane return streams were available."
+  },
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T03:09:37+00:00",
+  "trial_family": "official_event_green_spy_response_top1_10d_batch",
+  "trial_variant_id": "nhtsa_cpsc_complete_remaining_batch_v1"
+}

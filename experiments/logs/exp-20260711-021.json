@@ -1,0 +1,123 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "no_finalized_decisions",
+      "insufficient_5m_history",
+      "ambiguous_action_sizing",
+      "correlated_repeat_decisions"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "not_scored",
+    "surprise_note": "A concurrent reservation left this losing duplicate proposed after exp-20260711-022 completed the same repair."
+  },
+  "causal_components": [
+    "fixed execution contract",
+    "action counterfactuals",
+    "forward outcome ledger",
+    "daily scorecard",
+    "idempotent runner",
+    "tests",
+    "documentation"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260711-022 owns and completed the identical intraday triage settlement repair.",
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "intraday_triage_counterfactual_outcome_settlement_v1",
+  "component": "quant/intraday_backtester.py, quant/run_intraday_backtest.py, quant/intraday_triage.py, quant/finalize_intraday_decision.py, quant/run_intraday.py, quant/test_intraday_backtester.py, quant/test_intraday_triage.py, docs/intraday_code_driven_triage.md, README.md, data/daily/intraday/backtests, data/experiments",
+  "date_range": {},
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260711-021",
+  "duplicate_of": "exp-20260711-022",
+  "hypothesis": "Alpha-enabling measurement repair: finalized code-driven intraday ADD/WAIT/HOLD/REDUCE decisions cannot be evaluated credibly until fixed next-5m execution, transaction costs, and machine-default/no-adjustment/proxy counterfactuals are settled into a separate daily scorecard; this framework will test whether the eventual triage policy has positive net incremental decision value without changing orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "intraday_discretionary_triage_outcome_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260707-024",
+    "exp-20260710-009",
+    "exp-20260704-024"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "next_retry_requires": [
+    "Do not reopen exp-20260711-021 or reserve another copy; exp-20260711-022 is the sole substantive owner of this repair."
+  ],
+  "notes": "No implementation or new evidence. exp-20260711-021 duplicated exp-20260711-022 byte-for-byte in hypothesis, changed_variable, owner, and policy scope; this closeout removes the stale proposed ticket from pre-reserve checks.",
+  "parameters": {
+    "locked_variables": [
+      "intraday_triage_counterfactual_outcome_settlement_v1"
+    ],
+    "single_causal_variable": "intraday_triage_counterfactual_outcome_settlement_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun intraday_triage_counterfactual_outcome_settlement_v1 under exp-20260711-021 or reserve another duplicate; follow exp-20260711-022.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened; any future alpha work must use newly settled rows under the implementation retained by exp-20260711-022.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "A concurrent reservation left this losing duplicate proposed after exp-20260711-022 completed the same repair."
+  },
+  "prediction": {
+    "confidence_reason": "The finalized decision schema and OpenD bar adapter now exist, so a deterministic settlement layer is engineering-feasible; the main uncertainty is forward sample availability, not implementation, and no alpha acceptance will be claimed from zero or thin rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_finalized_decisions",
+      "insufficient_5m_history",
+      "ambiguous_action_sizing",
+      "correlated_repeat_decisions"
+    ],
+    "recorded_at": "2026-07-11T16:43:53+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "production_impact": "Accounting-only closeout; no implementation, data, live orders, ranking, sizing, exits, or backtest behavior changed.",
+  "rejection_reason": "duplicate_reservation_accounting",
+  "related_files": [
+    "data/experiments/exp-20260711-022/zero_row_scorecard.json",
+    "data/experiments/exp-20260711-022/zero_row_scorecard.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B scripts\\list_experiments.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-07-14T15:20:40+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "next_5m_machine_default_no_adjustment_proxy_v1"
+}

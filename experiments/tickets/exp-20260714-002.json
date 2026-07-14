@@ -1,0 +1,316 @@
+{
+  "acceptance_rule": "Private scout only: pooled NHTSA+CPSC policy must have >=20 trades, >=3 tickers, all 3 windows, positive aggregate EV and PnL, no window EV/PnL regression, drawdown drift <=0.5pp, concentration guards pass, and beat accepted distribution EV/PnL comparators; even a numeric pass is observed_only_positive_lead pending a shared-paper-first promotion. Gate5 fails closed unless the complete historical same-lane return panel is reconstructed.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260714_002_official_safety_event_response_batch.py",
+    "data/experiments/exp-20260714-002",
+    "data/non_ohlcv/nhtsa_defect_investigations",
+    "data/non_ohlcv/cpsc_recalls",
+    "experiments/artifacts/exp-20260714-002_official_safety_event_response_batch.md",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260714-002.md",
+  "causal_components": [
+    "NHTSA ODATE PIT surface",
+    "CPSC max RecallDate LastPublishDate PIT surface",
+    "exact issuer mapping",
+    "first subsequent session green and SPY relative confirmation",
+    "top1 per day",
+    "10-session cooldown",
+    "next-open entry",
+    "10-session close",
+    "4000 USD notional",
+    "35bps costs"
+  ],
+  "change_type": "candidate_pool_batch_private_scout",
+  "changed_variable": "remaining_official_safety_source_batch",
+  "claimed_at": "2026-07-14T02:45:48+00:00",
+  "completed_at": "2026-07-14T03:09:36+00:00",
+  "created_at": "2026-07-14T02:45:30+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260714-002",
+  "experiment_uid": "expuid-810c442a100948ec",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260714-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T02:45:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "remaining_official_safety_event_green_spy_response_top1_10d_batch_v1"
+  },
+  "hypothesis": "Batch private scout: across the complete audit-ready remaining federal product-safety sources, NHTSA defect-investigation openings and CPSC recall publications, an issuer that is green and ahead of SPY on the first strictly subsequent trading session may show absorbed adverse news and continue from the next open through the tenth-session close; run both source shards and their pooled policy exactly once under one fixed protocol, with any positive result remaining a lead only.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source manifests and exact issuer maps; PIT dates; green and SPY-relative confirmation; top1/day; cooldown=10; hold=10; notional=4000; round-trip cost=0.0035; no threshold or source-specific retune"
+  ],
+  "mechanism_family": "production_visible_official_product_safety_event_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "live orders",
+    "accepted shared helpers"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-019",
+    "exp-20260711-020",
+    "exp-20260711-023",
+    "exp-20260712-009",
+    "exp-20260713-008",
+    "exp-20260713-010"
+  ],
+  "new_evidence_type": "new_data_source_batch",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "absorbed",
+        "across",
+        "adverse",
+        "ahead",
+        "an",
+        "any",
+        "audit",
+        "batch",
+        "both",
+        "close",
+        "complete",
+        "continue",
+        "cpsc",
+        "defect",
+        "event",
+        "exactly",
+        "federal",
+        "first",
+        "from",
+        "green",
+        "investigation",
+        "is",
+        "issuer",
+        "lead",
+        "may",
+        "news",
+        "nhtsa",
+        "of",
+        "official",
+        "on",
+        "once",
+        "one",
+        "only",
+        "openings",
+        "policy",
+        "pooled",
+        "positive",
+        "private",
+        "product",
+        "protocol",
+        "publications",
+        "ready",
+        "recall",
+        "remaining",
+        "response",
+        "result",
+        "run",
+        "safety",
+        "session",
+        "shards",
+        "show",
+        "sources",
+        "spy",
+        "strictly",
+        "subsequent",
+        "tenth",
+        "that",
+        "their",
+        "through",
+        "trading",
+        "under"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1674,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "duplicate_reservation_accounting",
+        "family_key": "duplicate_reservation_accounting",
+        "reopen_condition": "Use exp-20260713-010 as the sole owner of all substantive work.",
+        "score": 0.1669,
+        "status": "frozen_rejected",
+        "trials": 12
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "post_earnings_positive_surprise_pre_event_underpricing_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially richer post-earnings event-quality field; do not simply retune the pre-event RS threshold.",
+        "score": 0.1669,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item801_adverse_drift_inverse_candidate_pool",
+        "reopen_condition": "Do not activate inverse/short behavior without borrow, locate, gap-risk, and forward replacement-value evidence. If rejected, do not retry nearby Item 8.01 reaction thresholds on these windows without filing-body subtype data.",
+        "score": 0.1621,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_sector_event_breadth_peer_transfer_candidate_pool",
+        "reopen_condition": "Forward rows or a materially stronger cross-ticker relation source such as customer/supplier links, audited theme propagation, or multi-season event co-movement.",
+        "score": 0.1621,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Two genuinely new official PIT data sources, NHTSA defect-investigation ODATE and CPSC RecallDate/LastPublishDate, are consumed together in the mandatory one-ID batch after the fixed-recipe enumeration lane reached five consecutive rejections.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Two genuinely new official PIT data sources, NHTSA defect-investigation ODATE and CPSC RecallDate/LastPublishDate, are consumed together in the mandatory one-ID batch after the fixed-recipe enumeration lane reached five consecutive rejections.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Two genuinely new official PIT data sources, NHTSA defect-investigation ODATE and CPSC RecallDate/LastPublishDate, are consumed together in the mandatory one-ID batch after the fixed-recipe enumeration lane reached five consecutive rejections.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Both new sources are audit-ready and pooled pre-outcome sample is 25 across 9/9/7 windows, but the prior six official-source variants all failed and each new shard is individually thin.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "source_shards_too_small",
+      "parent_mapping_survivorship",
+      "incomplete_historical_dsr_panel"
+    ],
+    "recorded_at": "2026-07-14T02:45:10+00:00",
+    "success_probability": 0.1
+  },
+  "prior_trial_count": 6,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260714-002/before.json",
+    "after_result_file": "data/experiments/exp-20260714-002/after.json",
+    "delta_metrics": {
+      "expected_value_score": -0.0188,
+      "total_return_pct": -0.0015,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 22,
+      "survival_rate": -0.467987,
+      "total_pnl": -153.64
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.1,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.1,
+      "actual_ev_delta": -0.0188,
+      "ev_prediction_error": -0.1188,
+      "expected_pnl_delta": 1000.0,
+      "actual_pnl_delta": -153.64,
+      "pnl_prediction_error": -1153.64,
+      "predicted_failure_modes": [
+        "window_regression",
+        "accepted_comparator_not_beaten",
+        "source_shards_too_small",
+        "parent_mapping_survivorship",
+        "incomplete_historical_dsr_panel"
+      ],
+      "realized_failure_mode": "aggregate_ev_not_positive",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "CPSC was positive in aggregate (+1583.24) despite only 8 settled trades, but old_thin regressed and the signal was far below comparator and concentration bars; NHTSA losses more than offset it in the pooled policy."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260714-002.json",
+  "single_causal_variable": "remaining_official_safety_event_green_spy_response_top1_10d_batch_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260714-002.json",
+  "trial_family": "official_event_green_spy_response_top1_10d_batch",
+  "trial_variant_id": "nhtsa_cpsc_complete_remaining_batch_v1"
+}

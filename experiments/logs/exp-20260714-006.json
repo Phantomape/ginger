@@ -1,0 +1,114 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "alpha_ready": false,
+  "calibration": {
+    "actual_decision": "rejected_governance_and_temporal_leakage_preflight",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0784,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_mode_hit_detail": "candidate_universe_selection_contamination",
+    "predicted_success_probability": 0.28,
+    "realized_failure_mode": "invalid_park_reopen_and_temporal_boundary_leakage",
+    "surprise_level": "high",
+    "surprise_note": "The independent pre-run audit found governance, calendar-boundary, protocol, DSR-scope, cost-timing, and capital-normalization defects before any result was computed."
+  },
+  "change_summary": "Pre-run governance and chronology audit of the proposed 11-family old-trained joint portfolio allocator.",
+  "change_type": "invalid_reservation_accounting",
+  "changed_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260714-006/governance_preflight_rejection.json",
+    "experiments/artifacts/exp-20260714-006_joint_chronological_covariance_capacity.md",
+    "experiments/cards/exp-20260714-006.md",
+    "experiments/manifests/exp-20260714-006.json",
+    "experiments/tickets/exp-20260714-006.json",
+    "experiments/logs/exp-20260714-006.json",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_variable": "old_train_frozen_joint_covariance_capacity_weights_v1",
+  "decision": "rejected_governance_and_temporal_leakage_preflight",
+  "evaluation_ran": false,
+  "experiment_id": "exp-20260714-006",
+  "hypothesis": "Chronological joint portfolio alpha: freeze the eleven already materialized rejected-positive candidate families, use only old_thin daily mark-to-market paths to select positive-training families and assign nonnegative capped inverse-volatility/core-correlation capacity weights, then hold those weights fixed as one total 10 percent overlay through mid_weak and late_strong.",
+  "fingerprint_caveat": "The frozen-family builder fingerprints family/variable/variant without the hypothesis or mechanism. Narrow keywords were added so this rejected preflight remains on portfolio_covariance_lane/portfolio_daily_equity_overlay rather than escaping through other; no new gate shape was registered.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "portfolio_covariance_lane",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260706-022",
+    "exp-20260706-023",
+    "exp-20260707-017"
+  ],
+  "new_evidence_type": "none_invalid_reopen_preflight",
+  "notes": "Rejected before implementation or outcome inspection. The attempted owner-doc and fingerprint changes were reverted; no runner/backtest was executed and no production behavior changed.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not run an 11-family subset, extend old_thin MTM paths past 2025-04-22 for training, combine 20260604 overlay summaries with the active 20260712 post-MTM baseline, or claim a 12-row candidates-plus-joint DSR panel is the complete selection surface.",
+    "new_evidence_required": "An independently authorized prospective owner contract plus the complete required family scope on one active real-calendar protocol, with leakage-free open-position state transfer and a declared complete DSR selection panel; alternatively, leave this parked surface and use a genuinely new data source/gate.",
+    "realized_failure_mode": "invalid_park_reopen_and_temporal_boundary_leakage",
+    "why_result_happened": "The preflight correctly stopped a tempting portfolio synthesis before performance was computed: the design tried to self-authorize a parked-lane reopen, used a historically selected 11-of-31 subset, and treated source lifecycles crossing the train/holdout boundary as training data."
+  },
+  "prediction": {
+    "confidence_reason": "Ten of eleven prior single-source 10 percent overlays had positive aggregate EV and all had positive PnL with low core correlation, but their strongest window differed and the candidate universe was selected on the canonical sample; a frozen old-only joint model may diversify noise, yet selection contamination and weak out-of-time transfer keep confidence low.",
+    "expected_ev_delta": 0.04,
+    "expected_pnl_delta": 700.0,
+    "main_failure_modes": [
+      "old_train_weights_do_not_transfer",
+      "holdout_ev_regression",
+      "holdout_pnl_regression",
+      "covariance_instability",
+      "dsr_below_095",
+      "candidate_universe_selection_contamination",
+      "missing_daily_mtm_path"
+    ],
+    "recorded_at": "2026-07-14T08:08:16+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 12,
+  "production_impact": {
+    "core_exits_changed": false,
+    "core_ranking_changed": false,
+    "core_sizing_changed": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "realized_failure_modes": [
+    "owner_reopen_not_independently_authorized",
+    "incomplete_31_family_batch_scope",
+    "old_train_crosses_holdout_boundary",
+    "cross_protocol_comparison_prohibited",
+    "dsr_selection_panel_incomplete",
+    "weight_constraints_can_be_infeasible",
+    "marginal_score_mislabeled_as_joint_covariance",
+    "source_notional_and_name_exposure_not_normalized",
+    "cost_timing_not_causal_at_training_boundary",
+    "candidate_selection_contaminates_later_pseudo_holdouts"
+  ],
+  "rejection_reason": "Governance and temporal-validity preflight failed before evaluation; any resulting EV, PnL, Sharpe, drawdown, or DSR number would be non-comparable or leakage-contaminated.",
+  "related_files": [
+    "data/experiments/exp-20260714-006/governance_preflight_rejection.json",
+    "experiments/artifacts/exp-20260714-006_joint_chronological_covariance_capacity.md",
+    "docs/portfolio_covariance_lane.md",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/experiments/exp-20260707-017/exp_20260707_017_portfolio_lane_gate_calibration_joint_verdict.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "old_train_frozen_joint_covariance_capacity_weights_v1",
+  "status": "rejected",
+  "timestamp": "2026-07-14T08:22:19Z",
+  "trial_family": "joint_chronological_covariance_capacity_portfolio_overlay",
+  "trial_variant_id": "old_train_capped_inverse_vol_core_corr_10pct_v1"
+}

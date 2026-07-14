@@ -1,0 +1,218 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.3405,
+    "max_drawdown_pct": 0.0978,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.160494,
+    "total_pnl": 239233.17,
+    "total_return_pct": 2.3923,
+    "trade_count": 172,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0707,
+    "actual_pnl_delta": 1380.9,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.0293,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "pnl_prediction_error": -119.1,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "event_cluster_sample_too_small",
+      "seasonal_baseline_instability",
+      "energy_beta_not_incremental",
+      "basket_survivorship",
+      "current_warehouse_revision",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "event_cluster_sample_too_small",
+    "surprise_level": "very_low",
+    "surprise_note": "The locked basket was positive and beat cash, XLE, SPY, and QQQ, but the gain was too thin and concentrated and USO earned roughly twice the matched PnL."
+  },
+  "causal_components": [
+    "shared helper",
+    "historical PIT replay",
+    "versioned EIA archive collector",
+    "daily default-off snapshot",
+    "fixed energy basket",
+    "execution envelope",
+    "full-stack verdict",
+    "DSR evidence",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Test locked first-release EIA WPSR three-inventory de-stocking composite as a fixed equal-notional 10-stock energy basket with shared historical/daily helper and full-stack gates.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "eia_wpsr_physical_inventory_shock_candidate_pool",
+  "component": "quant/experiments/exp_*_eia_wpsr_destocking_energy_basket.py, data/experiments/exp-20260714-004/, experiments/artifacts/exp-20260714-004_eia_wpsr_destocking_energy_basket.md, quant/eia_wpsr_destocking_energy_basket_paper_sleeve.py, quant/test_eia_wpsr_destocking_energy_basket_paper_sleeve.py, data/non_ohlcv/eia_wpsr/, data/paper_sleeves/eia_wpsr_destocking_energy_basket/, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl, docs/production_backtest_parity_matrix.md, experiments/cards/exp-20260714-004.md, experiments/manifests/exp-20260714-004.json, experiments/tickets/exp-20260714-004.json, experiments/logs/exp-20260714-004.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0707,
+    "max_drawdown_pct": 0.0003,
+    "survival_rate": -0.628006,
+    "total_pnl": 1380.9,
+    "total_return_pct": 0.0138,
+    "trade_count": 110
+  },
+  "experiment_id": "exp-20260714-004",
+  "hypothesis": "Shared-paper-first candidate-pool alpha: an official EIA WPSR first-release broad de-stocking shock across commercial crude excluding SPR, total motor gasoline, and distillate inventories may precede ten-session excess returns in a fixed equal-notional diversified U.S. energy equity basket; use only archived issue bytes and actual release availability, enter the first strictly later regular-session open, and never split or retune the three-series composite.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_eia_wpsr_physical_supply_shock_energy_basket",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260428-035",
+    "exp-20260504-045",
+    "exp-20260606-019",
+    "exp-20260712-014"
+  ],
+  "new_evidence_type": "new_data_source_and_gate_shape",
+  "next_retry_requires": [
+    "At least 30 prospectively closed decisions under the unchanged first-release policy, with positive replacement value against cash, XLE, USO, SPY, and QQQ.",
+    "Alternatively, a genuinely new physical-supply signal or data source; changing a threshold, series subset, basket weight, response shape, hold, or cost is not new evidence."
+  ],
+  "notes": "Rejected despite +0.0707 aggregate EV and +$1,380.90: only 11 settled release events, old_thin EV/PnL regression, top-5 positive contribution 75.55%, USO comparator loss, and accepted comparator not beaten. Gate2/source PIT and Gate3 16.05% passed. DSR is not computable for one honest attempt; no run.py or live behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "versioned archived EIA WPSR Table 4 first-release bytes and actual release availability",
+      "three rows fixed to Commercial Excluding SPR Total Motor Gasoline and Distillate Fuel Oil",
+      "weekly percent change minus prior-five-year same-ISO-week-plus-minus-two median with at least fifteen observations",
+      "composite equals negative equal-weight mean of the three seasonal excess changes",
+      "trigger requires at least two negative excess changes and composite strictly above trailing-104-issue 80th percentile",
+      "ten-trading-session event cooldown",
+      "fixed basket XOM CVX COP EOG OXY SLB BKR MPC VLO PSX",
+      "1000 USD per eligible leg and no missing-leg redistribution",
+      "event requires at least eight of ten legs with price at least 10 USD ADV20 at least 50 million USD and complete bars",
+      "entry first regular-session open strictly after release",
+      "3.5 ATR14 target otherwise tenth-session close",
+      "35bps round-trip cost",
+      "matched XLE USO SPY QQQ cash and accepted-comparator checks",
+      "no series threshold percentile basket hold cost or window retune"
+    ],
+    "single_causal_variable": "eia_wpsr_first_release_three_inventory_destocking_fixed_energy_basket_10d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not split the three-series composite or retune the seasonal radius/history, breadth, p80, cooldown, fixed basket, weights, liquidity, ATR target, 10-session hold, cost, or canonical windows on this frozen sample.",
+    "new_evidence_required": "Reopen only after at least 30 prospectively closed unchanged-policy EIA decisions with positive matched replacement value, or with a genuinely new physical-supply signal/data source.",
+    "realized_failure_mode": "event_cluster_sample_too_small",
+    "why_result_happened": "The locked basket was positive and beat cash, XLE, SPY, and QQQ, but the gain was too thin and concentrated and USO earned roughly twice the matched PnL."
+  },
+  "prediction": {
+    "confidence_reason": "The source and release vintages are genuinely new and the archive provides 81 canonical-window issues with complete fixed-basket OHLCV, but the policy will likely retain only about one fifth of weekly event clusters and energy beta may already be fully priced by the next open.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "event_cluster_sample_too_small",
+      "seasonal_baseline_instability",
+      "energy_beta_not_incremental",
+      "basket_survivorship",
+      "current_warehouse_revision",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-07-14T05:08:31+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "The locked policy had positive aggregate EV/PnL but failed Gate 4 on one regressed window, only 11/12 settled events, 75.55% top-five contribution, USO outperformance, and both accepted-candidate comparator bars.",
+  "related_files": [
+    "data/experiments/exp-20260714-004/before.json",
+    "data/experiments/exp-20260714-004/after.json",
+    "data/experiments/exp-20260714-004/eia_wpsr_destocking_energy_basket_replay.json",
+    "data/experiments/exp-20260714-004/deflated_sharpe_panel.json",
+    "data/experiments/exp-20260714-004/deflated_sharpe_report.json",
+    "data/non_ohlcv/eia_wpsr/source_manifest.json",
+    "data/paper_sleeves/eia_wpsr_destocking_energy_basket/latest_snapshot.json",
+    "experiments/artifacts/exp-20260714-004_eia_wpsr_destocking_energy_basket.md"
+  ],
+  "gate_evidence": {
+    "gate2_passed": true,
+    "gate3_event_survival_rate": 0.160494,
+    "settled_event_count": 11,
+    "settled_events_by_window": {
+      "old_thin": 4,
+      "mid_weak": 3,
+      "late_strong": 4
+    },
+    "aggregate_ev_delta": 0.0707,
+    "aggregate_pnl_delta": 1380.9,
+    "windows_ev_regressed": 1,
+    "windows_pnl_regressed": 1,
+    "top_5_contribution_pct": 0.755466,
+    "failed_matched_benchmarks": [
+      "USO"
+    ],
+    "dsr_status": "not_computable",
+    "dsr_reason": "trial_panel_needs_at_least_two_trials"
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "run_adapter_changed": false,
+    "live_orders_changed": false,
+    "core_ranking_changed": false,
+    "core_sizing_changed": false,
+    "core_exits_changed": false,
+    "daily_snapshot_role": "one-shot default-off parity artifact only"
+  },
+  "fingerprint_caveat": "Reservation-time classification incorrectly routed the new EIA source to companyfacts_ratio/notional_scalar. This experiment added narrow eia_wpsr_inventory/event_basket_10d fingerprint coverage; the rebuilt frozen-family entry uses the corrected key.",
+  "changed_files": [
+    "quant/eia_wpsr_destocking_energy_basket_paper_sleeve.py",
+    "quant/test_eia_wpsr_destocking_energy_basket_paper_sleeve.py",
+    "quant/experiments/exp_20260714_004_eia_wpsr_destocking_energy_basket.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/non_ohlcv/eia_wpsr/",
+    "data/experiments/exp-20260714-004/",
+    "data/paper_sleeves/eia_wpsr_destocking_energy_basket/",
+    "experiments/artifacts/exp-20260714-004_eia_wpsr_destocking_energy_basket.md",
+    "experiments/cards/exp-20260714-004.md",
+    "experiments/tickets/exp-20260714-004.json",
+    "experiments/logs/exp-20260714-004.json",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_004_eia_wpsr_destocking_energy_basket.py --offline --source-only",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_004_eia_wpsr_destocking_energy_basket.py --offline",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant\\test_eia_wpsr_destocking_energy_basket_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_full_stack_candidate_pool.py quant\\test_sharpe_inference.py quant\\test_deflated_sharpe_cli.py -q"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T06:04:38+00:00",
+  "trial_family": "eia_wpsr_first_release_destocking_energy_basket",
+  "trial_variant_id": "three_series_seasonal_p80_fixed10_10d_v1"
+}
