@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-13.
+Last refreshed: 2026-07-14.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,170 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### Correlation Structure Needs Denoising Before Portfolio Claims
+
+Recent network-correlation work separates empirical correlation matrices into
+structured eigenmodes above Marchenko-Pastur bounds and noise-dominated modes,
+then shows more stable core-periphery networks and peripheral-asset portfolios.
+This maps directly to Ginger's rejected portfolio-covariance lane: a portfolio
+overlay is not valid because individual shards are positive. It needs a
+predeclared denoising protocol, full candidate scope, and out-of-time replay.
+
+Implementable fields:
+
+- `correlation_denoising_protocol_id`
+- `mp_structured_eigenmode_count`
+- `random_matrix_noise_share`
+- `core_periphery_membership_bucket`
+- `network_peripheral_candidate_flag`
+- `subsample_stability_score`
+- `denoised_covariance_replacement_value`
+- `portfolio_scope_completeness_flag`
+
+Controls:
+
+- estimate correlation structure only from training data available before the
+  holdout window;
+- compare denoised covariance weights against equal weight, the current
+  accepted allocator, and cash/SPY/QQQ replacement paths;
+- report Monte Carlo or rolling-subsample stability before claiming a joint
+  overlay;
+- reject any portfolio synthesis that omits losing candidate families or mixes
+  baseline protocols.
+
+Source: <https://arxiv.org/abs/2607.10297>
+
+### Robust Optimizers Need Adaptive Ambiguity And Naive-Weight Diagnostics
+
+Two July 2026 portfolio papers sharpen a practical rule. Learned predictive
+ambiguity sets argue for state-dependent uncertainty radii instead of point
+forecasts or fixed Wasserstein radii. A naive-diversification diagnostic argues
+that equal weight is rational when forecast-error covariance has a uniform
+eigenstructure, and optimized weights regain value only when that condition
+breaks. Ginger's translation: learned allocation, source routing, and sleeve
+capacity should expose uncertainty radius and a naive-weight diagnostic before
+they beat the one-slot accepted allocator.
+
+Implementable fields:
+
+- `predictive_ambiguity_set_version`
+- `state_dependent_wasserstein_radius`
+- `scenario_distribution_hash`
+- `ambiguity_radius_calibration_error`
+- `forecast_error_uniform_eigenstructure_score`
+- `naive_weight_diagnostic_bucket`
+- `optimizer_vs_equal_weight_replacement_value`
+- `robust_optimizer_tail_loss_delta`
+
+Controls:
+
+- compare learned or optimized weights against equal weight, current source
+  priority, and accepted-helper comparators on the same rows;
+- train uncertainty radii only on prior data and record calibration loss;
+- require tail-loss and drawdown improvement, not just higher average PnL;
+- default to equal weight or fixed accepted source priority when the diagnostic
+  says forecast-error structure is too uniform or too unstable.
+
+Sources:
+
+- <https://arxiv.org/abs/2607.09820>
+- <https://arxiv.org/abs/2607.11054>
+
+### Tail And Benchmark-Relative Duration Are Activation Metrics
+
+New tail-learning and drawdown-duration work is most useful as execution and
+activation governance. SS-GEN learns rare-event laws by separating radial tail
+size from angular dependence, while benchmark-relative drawdown-duration
+penalizes time spent underperforming a benchmark. For Ginger, these are not
+new entry signals. They are better stress and activation-envelope metrics for
+accepted default-off helpers before notional or live capital increases.
+
+Implementable fields:
+
+- `tail_stress_protocol_id`
+- `tail_radial_component_bucket`
+- `tail_angular_dependence_hash`
+- `rare_event_probability_estimate`
+- `benchmark_relative_drawdown_duration`
+- `occupation_time_under_benchmark`
+- `stress_scenario_replacement_value`
+- `activation_tail_guard_passed`
+
+Controls:
+
+- evaluate candidate activation envelopes under simulated multivariate tail
+  scenarios and historical tail windows;
+- report drawdown duration versus SPY/QQQ or the displaced helper, not only
+  max drawdown;
+- use tail/duration metrics as kill-switch and capacity evidence, not as a
+  reason to retune entries on frozen rows;
+- require the same stress protocol for before/after activation tests.
+
+Sources:
+
+- <https://arxiv.org/abs/2607.10700>
+- <https://arxiv.org/abs/2607.11335>
+
+### Liquidity Impact Is Matrix-Valued Capacity State
+
+The latest multidimensional Kyle-model work treats liquidity depth and price
+impact as matrix-valued, stochastic, cross-asset state. Combined with recent
+order-flow impact lessons already in this map, the local rule is stricter:
+flow and liquidity rows should estimate capacity, cross-asset impact, and
+execution risk before they influence ranking or notional.
+
+Implementable fields:
+
+- `matrix_liquidity_depth_version`
+- `cross_asset_impact_bucket`
+- `stochastic_liquidity_state_bucket`
+- `private_information_liquidation_speed_proxy`
+- `impact_common_eigenbasis_bucket`
+- `liquidity_capacity_notional_cap`
+- `cross_impact_replacement_value_delta`
+
+Controls:
+
+- estimate liquidity and cross-impact from pre-decision data only;
+- separate directional order-flow edge from capacity and cross-impact state;
+- run notional/capacity changes through cost scenarios and accepted-helper
+  displacement checks;
+- fail closed when liquidity state is missing, stale, or vendor-specific.
+
+Source: <https://arxiv.org/abs/2607.10934>
+
+### Supply-Chain Macro Shocks Need Network Exposure Provenance
+
+A July 2026 maritime chokepoint model shows that trade disruptions can hit
+countries and sectors that do not directly transit the blocked passage because
+intermediate inputs are complementary and re-matching is asymmetric. For
+Ginger, macro supply shocks should not be traded as broad headlines. They need
+issuer-level customer/supplier/route exposure provenance and matched
+replacement value.
+
+Implementable fields:
+
+- `supply_chain_network_version`
+- `maritime_chokepoint_exposure_bucket`
+- `intermediate_input_complementarity_score`
+- `buyer_resourcing_flexibility_bucket`
+- `seller_market_concentration_bucket`
+- `joint_closure_interaction_bucket`
+- `issuer_supply_route_evidence_hash`
+- `supply_shock_replacement_value_delta`
+
+Controls:
+
+- store the relation path from shock source to issuer before scoring outcomes;
+- distinguish direct route exposure from second-order supplier/customer
+  exposure;
+- compare against commodity, sector ETF, and accepted relation helpers after
+  costs;
+- avoid broad macro proxy retunes unless a new PIT network-exposure source is
+  present.
+
+Source: <https://arxiv.org/abs/2607.09951>
 
 ### Useful Alphas Need Live-Cap And Cost Reality
 

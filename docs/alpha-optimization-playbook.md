@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-13.
+Last refreshed: 2026-07-14.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -1018,6 +1018,22 @@ source, but it is only a prospective observer until first-seen approvals,
 public-sponsor mapping, and next-open/10-session outcomes mature. Default next
 work is prospective settlement and relation/economic provenance, not source
 filter, theme, approval-type, URL, or wrapper-identity retunes.
+
+The July 14 batch says the new-data-source bar is working, but official-source
+novelty is not enough by itself. USAspending non-DoD obligations joined the
+right queue only as a prospective first-seen observer; performance must wait for
+settled, mapped forward rows. ClinicalTrials, FDA device Class I recalls, CPSC /
+NHTSA safety events, FDIC call-report deposit repair, EIA WPSR de-stocking, and
+USDA FAS export-sales all failed the frozen-window promotion bar for the same
+mechanism reasons: weak after-cost replacement value, old-window regression,
+cluster-thin events, concentration, direct commodity/sector benchmark loss, or
+non-PIT current-vintage mappings. FDIC also hit the Gate 3 survival floor, so
+adding filters is explicitly forbidden. The portfolio covariance preflight
+added a governance lesson: parked positive overlay shards cannot be recombined
+through a historically selected subset or cross-protocol baseline. Default next
+work is prospective first-seen settlement, first-release/as-of source vintages,
+and independently authorized joint portfolio protocols; not field, basket,
+threshold, hold, notional, or benchmark-retune loops on the same rows.
 
 ## Detail Sources
 
@@ -2363,6 +2379,42 @@ production-visible field:
   continuous surprise was negatively monotonic. Reopen only with timestamped
   forward snapshots plus materially more settled replacement-value rows, or a
   genuinely different attention/provenance source;
+- USAspending non-DoD obligation conversion alpha retries before the prospective
+  first-seen observer matures. The July 13 surface is retained only for forward
+  evidence. Reopen performance after at least 75 settled unique eligible events
+  across at least 15 first-seen dates and 3 mapped public-company tickers, max
+  ticker share <=30%, with complete next-open/10-session cash/SPY/QQQ outcomes;
+- ClinicalTrials Phase 3, FDA device Class I recall, CPSC recall, and NHTSA
+  defect-investigation retries that only sweep sponsor maps, severity wording,
+  green/SPY-relative confirmation, source batches, top-N, hold, cooldown, or
+  notional. July 13-14 official safety/medical reads were directionally weak or
+  concentrated and did not beat accepted comparators. Reopen with a materially
+  new PIT endpoint/severity/issuer-financial-materiality field, at least 30
+  closed forward replacement-value rows, or a batch of at least 3 newly
+  audit-ready official sources each covering all windows and contributing at
+  least 20 expected settled trades;
+- FDIC Call Report deposit-franchise candidate-pool retries that change
+  DEPDOM/DEPUNINS fields, bank-size gates, dominant-bank share, merger filters,
+  top-N, rank, hold, cost, mapping, or windows on the current-vintage sample.
+  July 14 failed Gate 3 at 28/654 survived rows and also failed PIT validity.
+  Reopen only with first-release/as-of FDIC vintages plus historical
+  CERT/RSSDHCR/security mapping and exact-top5 sensitivity, or with materially
+  sufficient prospectively first-seen settled QBP quarters;
+- EIA WPSR and USDA FAS official physical-flow retries that only change series
+  subsets, seasonal baselines, percentiles, baskets, weights, response shape,
+  hold, cooldown, notional, or costs. July 14 EIA was positive but too thin and
+  lost USO; USDA export sales lost cash/SPY/QQQ/DBA and direct corn-soy
+  benchmarks. Reopen EIA after at least 30 prospectively closed unchanged-policy
+  decisions with positive matched replacement value, and USDA only after at
+  least 10 additional prospectively settled unchanged-policy releases or a
+  genuinely independent PIT physical-supply/demand data source;
+- joint covariance / portfolio-overlay synthesis retries that self-authorize a
+  parked-lane reopen, select a subset from known winners, cross calendar
+  boundaries, mix pre/post-MTM protocols, omit the complete family scope, or
+  claim an incomplete DSR selection panel. July 14 stopped this before
+  performance was computed. Reopen only with an independently authorized owner
+  contract, complete required family scope on one active real-calendar
+  protocol, leakage-free state transfer, and a declared complete DSR panel;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

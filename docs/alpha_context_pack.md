@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1530`
-- Raw records loaded by meta report: `5070`
-- History fingerprint: `64fbf22642601bef`
+- Strategy records counted: `1532`
+- Raw records loaded by meta report: `5092`
+- History fingerprint: `bb71901912d9806b`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -42,8 +42,8 @@ facts before changing strategy behavior.
 - `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
   Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5654`: experiments `350`, accept `24.57%`, sum EV `+82.6798`, sum PnL `$1,483,485.70`.
-  Reason: 18/350 records have sample >= 10; 334/350 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5647`: experiments `352`, accept `24.43%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
+  Reason: 20/352 records have sample >= 10; 336/352 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `24`, accept `33.33%`, sum EV `+0.0570`, sum PnL `$912.60`.
   Reason: 24/24 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260711-013` `rejected_high_yield_oas_credit_relief_shared_paper`: EV `+0.0000`, PnL `$0.00`, family `production_visible_direct_credit_spread_relief_candidate_pool`, trial `high_yield_oas_credit_relief_shared_paper_candidate_pool`.
-  Lesson: Direct high-yield OAS compression did not add robust incremental value over the accepted relief comparator after costs; it remained beta-like or window fragile. Do not retry by changing the OAS moving-average span, ad...
-- `exp-20260711-015` `rejected_move_duration_priority_ranking`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_candidate_pool`, trial `move_rate_volatility_relief_sector_priority_ranking`.
-  Lesson: The duration-sensitive sector priority did not materially and consistently beat the accepted MOVE v1 helper. Do not retry MOVE sector lists, sector tiers, score bonuses, thresholds, top-N, hold, cooldown, notional, or...
 - `exp-20260711-018` `rejected_move_relief_kill_switch`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_exit_policy`, trial `move_rate_volatility_relief_kill_switch`.
   Lesson: The opposite MOVE20 cross was not a reliable thesis invalidation event; it truncated winners or whipsawed too late to beat the accepted fixed-horizon sleeve. Do not retry MOVE exit thresholds, SMA spans, persistence,...
 - `exp-20260711-019` `rejected_sec13f_chronological_manager_skill_candidate_pool`: EV `+0.1786`, PnL `$5,132.60`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_manager_skill_candidate_pool`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The prior-month MAX-residual exclusion did not add robust multi-window value; the removed lottery-like breakouts were not consistently worse than their replacements or empty slots. Do not retry 10/40/60-session lookba...
 - `exp-20260712-020` `rejected_core_amihud_scarce_slot_ranking`: EV `+0.0000`, PnL `$0.00`, family `real_ohlcv_relation_price_impact_quality_ranking`, trial `core_amihud_illiquidity_scarce_slot_ranking`.
   Lesson: Lower prior-20-session Amihud price impact did not improve scarce-slot choices robustly; baseline momentum/quality ordering was as good or better across the canonical windows. Do not retry 10/40/60-session Amihud, med...
+- `exp-20260714-002` `rejected`: EV `-0.0188`, PnL `$-153.64`, family `production_visible_official_product_safety_event_candidate_pool`, trial `official_event_green_spy_response_top1_10d_batch`.
+  Lesson: CPSC was positive in aggregate (+1583.24) despite only 8 settled trades, but old_thin regressed and the signal was far below comparator and concentration bars; NHTSA losses more than offset it in the pooled policy. Do...
+- `exp-20260714-006` `rejected_governance_and_temporal_leakage_preflight`: EV `+0.0000`, PnL `$0.00`, family `portfolio_covariance_lane`, trial `joint_chronological_covariance_capacity_portfolio_overlay`.
+  Lesson: The preflight correctly stopped a tempting portfolio synthesis before performance was computed: the design tried to self-authorize a parked-lane reopen, used a historically selected 11-of-31 subset, and treated source...
 
 ## Highest-Signal Historical Records
 
