@@ -1,0 +1,360 @@
+{
+  "acceptance_rule": "Gate2 PIT and runtime fields pass; >=20 target trades across all 3 windows and >=10 target tickers; survival >=5%; aggregate EV and PnL deltas beat accepted comparator +0.5286 and +$10,432.91; old_thin EV/PnL nonnegative; drawdown worsening <=0.5pp; top5 positive contribution <=60% and single ticker <=50%; otherwise roll back production wiring and reject",
+  "allowed_write_scope": [
+    "quant/fda_510k_clearance_paper_sleeve.py",
+    "quant/test_fda_510k_clearance_paper_sleeve.py",
+    "quant/experiments/",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/non_ohlcv/fda_510k_clearance/",
+    "data/paper_sleeves/fda_510k_clearance/",
+    "data/experiments/",
+    "experiments/tickets/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/logs/",
+    "experiments/artifacts/",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260714-009.md",
+  "causal_components": [
+    "official releasable 510(k) records",
+    "exact public-parent mapping",
+    "Traditional clearance eligibility",
+    "14-calendar-day weekly-release envelope",
+    "one issuer-day event",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "$4k paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity test",
+    "execution envelope",
+    "Gate1-4 and DSR evidence"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_510k_traditional_clearance_14d_nextopen_10d_v1",
+  "claimed_at": "2026-07-14T19:17:58+00:00",
+  "completed_at": "2026-07-14T19:47:09+00:00",
+  "created_at": "2026-07-14T19:17:24+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260714-009",
+  "experiment_uid": "expuid-9d45589875c5496b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260714-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T19:17:24+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fda_510k_traditional_clearance_14d_nextopen_10d_v1"
+  },
+  "hypothesis": "Shared-paper-first candidate_pool: a Traditional FDA 510(k) clearance removes a listed medical-device issuer's commercialization constraint; after a conservative 14-calendar-day envelope for FDA's weekly public database inclusion, the issuer should retain positive drift from the next open through the tenth session close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "Traditional-only",
+    "exact issuer mapping",
+    "decision_date plus 14 calendar days",
+    "one issuer-day event",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "$4,000 notional",
+    "35bps cost",
+    "no threshold or subtype sweep"
+  ],
+  "mechanism_family": "production_visible_fda_510k_clearance_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "quant/backtester.py",
+    "quant/run_backtest.py",
+    "live/default orders",
+    "ranking",
+    "sizing",
+    "exits"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-010",
+    "exp-20260713-008"
+  ],
+  "new_evidence_type": "official_fda_releasable_510k_traditional_clearance",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "industry_peer_moderate_shock_candidate_pool",
+        "score": 0.6105,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "same_industry_peer_shock_candidate_pool",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "same_sector_peer_shock_candidate_pool",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_sector_event_breadth_peer_transfer_candidate_pool",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "14d",
+        "510k",
+        "a",
+        "after",
+        "calendar",
+        "clearance",
+        "close",
+        "commercialization",
+        "conservative",
+        "constraint",
+        "database",
+        "device",
+        "drift",
+        "envelope",
+        "fda",
+        "first",
+        "from",
+        "inclusion",
+        "issuer",
+        "k",
+        "listed",
+        "medical",
+        "nextopen",
+        "positive",
+        "public",
+        "removes",
+        "retain",
+        "s",
+        "session",
+        "should",
+        "tenth",
+        "through",
+        "traditional",
+        "weekly"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_peer_moderate_shock_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger non-price relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+        "score": 0.6105,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_industry_peer_shock_candidate_pool",
+        "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger non-price peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_sector_peer_shock_candidate_pool",
+        "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "sec_sector_event_breadth_peer_transfer_candidate_pool",
+        "reopen_condition": "Forward rows or a materially stronger cross-ticker relation source such as customer/supplier links, audited theme propagation, or multi-season event co-movement.",
+        "score": 0.6103,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_up_hold_high_close_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new_data_source: the official FDA releasable 510(k) clearance database and its applicant, clearance_type, k_number, product_code, decision_date rows have never been evaluated; this is distinct from the frozen Device Class-I enforcement-report surface",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "new_data_source: the official FDA releasable 510(k) clearance database and its applicant, clearance_type, k_number, product_code, decision_date rows have never been evaluated; this is distinct from the frozen Device Class-I enforcement-report surface",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new_data_source: the official FDA releasable 510(k) clearance database and its applicant, clearance_type, k_number, product_code, decision_date rows have never been evaluated; this is distinct from the frozen Device Class-I enforcement-report surface",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.051,
+      "accepts": 5,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 98
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "A genuinely new official source passes conservative Traditional-clearance density in every window (92/75/79 mapped rows, 18/15/16 tickers, top1 14-17%) and warehouse OHLCV covers 33 mapped tickers, but the 14-day public-release envelope can remove immediate catalyst alpha.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "weekly_release_delay_erases_drift",
+      "routine_clearances_are_immaterial",
+      "parent_mapping_survivorship",
+      "ticker_concentration",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-07-14T19:16:45+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260714-009/before.json",
+    "after_result_file": "data/experiments/exp-20260714-009/after.json",
+    "delta_metrics": {
+      "expected_value_score": -0.2697,
+      "total_return_pct": -0.0106,
+      "max_drawdown_pct": -0.0008,
+      "trade_count": 242,
+      "survival_rate": -0.109553,
+      "total_pnl": -1066.78
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.2,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.3,
+      "actual_ev_delta": -0.2697,
+      "ev_prediction_error": -0.5697,
+      "expected_pnl_delta": 4000.0,
+      "actual_pnl_delta": -1066.78,
+      "pnl_prediction_error": -5066.78,
+      "predicted_failure_modes": [
+        "weekly_release_delay_erases_drift",
+        "routine_clearances_are_immaterial",
+        "parent_mapping_survivorship",
+        "ticker_concentration",
+        "accepted_comparator_not_beaten"
+      ],
+      "realized_failure_mode": "routine_clearances_are_immaterial",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Low surprise: the conservative fourteen-day public-release envelope and routine nature of 510(k) clearances left no durable risk-adjusted continuation edge."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260714-009.json",
+  "single_causal_variable": "fda_510k_traditional_clearance_14d_nextopen_10d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260714-009.json",
+  "trial_family": "fda_510k_traditional_clearance_candidate_pool",
+  "trial_variant_id": "traditional_14d_nextopen_10d_v1"
+}

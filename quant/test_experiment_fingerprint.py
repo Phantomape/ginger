@@ -775,6 +775,36 @@ def test_fda_device_enforcement_keywords_do_not_capture_adjacent_surfaces():
         assert fp.infer_fingerprint(text)["data_source"] != "fda_device_enforcement"
 
 
+def test_fda_510k_clearance_uses_distinct_official_source():
+    for text in (
+        "official FDA 510(k) clearance decision-date candidate pool",
+        "Releasable 510(k) database k_number historical replay",
+        "openFDA device clearance shared default-off observer",
+        "fda_510k_clearance issuer mapping",
+        "fda_510k_traditional_clearance_candidate_pool",
+        "open.fda.gov/apis/device/510k decision surface",
+    ):
+        assert fp.infer_fingerprint(text)["data_source"] == "fda_510k_clearance"
+
+
+def test_fda_510k_clearance_precedes_relation_without_adjacent_overmatch():
+    assert fp.infer_fingerprint(
+        "openFDA device clearance issuer peer relation candidate pool"
+    )["data_source"] == "fda_510k_clearance"
+    assert fp.infer_fingerprint(
+        "openFDA device enforcement Class I report_date replay"
+    )["data_source"] == "fda_device_enforcement"
+    assert fp.infer_fingerprint(
+        "Drugs@FDA original NDA/BLA approval"
+    )["data_source"] == "drugsfda_approval"
+    assert fp.infer_fingerprint(
+        "generic medical-device clearance news"
+    )["data_source"] != "fda_510k_clearance"
+    assert fp.infer_fingerprint(
+        "peer relation medical-device candidate pool"
+    )["data_source"] == "ohlcv_relation"
+
+
 def test_federal_product_safety_batch_uses_distinct_official_surface():
     hypothesis = (
         "Batch private scout: across the complete audit-ready remaining federal "

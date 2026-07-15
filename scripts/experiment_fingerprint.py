@@ -47,6 +47,20 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "clinicaltrials.gov", "clinicaltrials gov", "clinicaltrials",
         "resultsfirstpostdate", "results_first_post_date",
     )),
+    # FDA 510(k) clearances are a releasable device-decision source, distinct
+    # from weekly Device Enforcement Reports and generic device/news wording.
+    # Keep compound source phrases ahead of enforcement and OHLCV relations;
+    # never use bare "FDA", "device", "clearance", or "510" fragments.
+    ("fda_510k_clearance", (
+        "fda_510k_clearance", "fda 510k clearance",
+        "fda_510k_traditional_clearance", "fda 510k traditional clearance",
+        "fda 510(k) clearance", "fda 510k", "fda 510(k)",
+        "releasable_510k", "releasable 510k", "releasable 510(k)",
+        "releasable 510(k) database", "releasable 510k database",
+        "openfda_device_clearance", "openfda device clearance",
+        "openfda device 510k", "openfda device 510(k)",
+        "open.fda.gov/apis/device/510k", "open.fda.gov device 510k",
+    )),
     # FDA Device Enforcement Reports are a weekly, public recall source,
     # distinct from Drugs@FDA application approvals and generic recall news.
     # Keep only compound official-source phrases here: broad fragments such as
