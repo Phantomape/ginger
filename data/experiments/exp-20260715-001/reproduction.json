@@ -1,0 +1,41 @@
+{
+  "schema": "exp_20260715_001_reproduction_v1",
+  "experiment_id": "exp-20260715-001",
+  "base_commit": "df73a923c9597f4c3872012cf47dbbfedb549863",
+  "restore_state": "All seven tracked shared-strategy and test files were restored after Gate 4 rejection.",
+  "apply_order": [
+    "data/experiments/exp-20260715-001/rejected_shared_strategy.patch",
+    "data/experiments/exp-20260715-001/rejected_strategy_tests.patch"
+  ],
+  "patches": [
+    {
+      "path": "data/experiments/exp-20260715-001/rejected_shared_strategy.patch",
+      "sha256": "457c14123a19cee5a9a5756d0e87edf0936d507d890e3589a1a57fe8ef34ebbb"
+    },
+    {
+      "path": "data/experiments/exp-20260715-001/rejected_strategy_tests.patch",
+      "sha256": "e04ba91b55c2e84c0b0d880f6ca348f80af335bedf852e194a35e2e42dc04ca4"
+    }
+  ],
+  "evidence": {
+    "preflight": {
+      "path": "data/experiments/exp-20260715-001/preflight.json",
+      "sha256": "c607ea6587f2e6d460bc9878db9ad97f2c7fdbb47d91055ff70daff5508b83ab"
+    },
+    "full": {
+      "path": "data/experiments/exp-20260715-001/full.json",
+      "sha256": "c6a75952bce60cea65f3df946c4e78ce2c32631d04ffca1a9d80aa476bdeff15"
+    },
+    "frozen_input_contract": {
+      "path": "data/experiments/exp-20260715-001/inputs/contract.json",
+      "sha256": "cb9b9ce06d54438f58c10a135a1fbd9f7045bbe8cfe52bfc5ba89a732bee7b7b"
+    }
+  },
+  "replay": [
+    "git apply --check data/experiments/exp-20260715-001/rejected_shared_strategy.patch",
+    "git apply data/experiments/exp-20260715-001/rejected_shared_strategy.patch",
+    "git apply data/experiments/exp-20260715-001/rejected_strategy_tests.patch",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260715_001_accepted_allocator_source_relative_shadow_quarantine.py --phase full"
+  ],
+  "production_impact": "Rejected policy is absent from the shared runtime after restore; no live orders, allocator state migration, source-quarantine state, ranking, sizing, or exit behavior remains enabled."
+}
