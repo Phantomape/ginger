@@ -180,6 +180,39 @@ recoverable from `data/experiments/exp-20260712-015/source_bundle.zip`, but the
 MTM/inference stack is not represented by a clean committed tree. That release
 label does not affect its use as the same-context Gate-1 comparison anchor.
 
+### Execution-date cash ledger (exp-20260715-008)
+
+The canonical engine historically booked core entries and add-ons with no
+execution-date cash constraint. `exp-20260715-008` added a cash ledger to
+`quant/backtester.py` behind `CASH_LEDGER_ENFORCED` (default `False`, so every
+existing baseline stays byte-identical; the audit-only ledger is attached to
+`result["cash_ledger"]` on every run). Under the exp-20260712-015 frozen
+inputs, the audit-only replay reproduced the post-MTM baseline identity
+exactly while recording 17-18 negative-cash events per window with peak
+overdrafts of -$166,598 / -$188,621 / -$188,512 on $100,000 initial capital —
+at those moments the champion had booked ~$167k-$189k more entry basis than
+its settled cash could fund. With
+`CASH_LEDGER_ENFORCED=True` (unaffordable entries deterministically scaled
+down or skipped, exits release basis plus pnl, exact cash conservation):
+
+| Label | EV score | Total PnL | Max DD | Trades | Survival |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `late_strong` | 4.1067 | $70,075 | 3.94% | 13 | 88.89% |
+| `mid_weak` | 1.9908 | $51,976 | 6.61% | 13 | 81.16% |
+| `old_thin` | 0.1082 | $8,941 | 8.89% | 23 | 92.31% |
+
+Aggregate EV `6.2057` (-49.4% vs the unenforced champion), aggregate PnL
+`$130,992` (-$106,860). Artifact:
+`data/experiments/exp-20260715-008/exp_20260715_008_cash_constrained_core_admission.json`.
+
+The active Gate-1 anchor remains the (unenforced) post-MTM table above until
+an explicit follow-up re-baseline decision flips the default; keep before and
+after passes of any experiment on the same flag value. Treat unenforced EV/PnL
+levels as leverage-inflated upper bounds, and treat any capital-allocation
+comparison against the unenforced champion (e.g. sleeve displacement or
+opportunity-cost tests such as exp-20260715-002/-005) as biased against the
+challenger.
+
 ### Archived pre-MTM baseline
 
 The table below is the archived pre-repair baseline. Its `sharpe_daily`,

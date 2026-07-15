@@ -1,0 +1,695 @@
+{
+  "schema": "cash_constrained_core_admission_v1",
+  "experiment_id": "exp-20260715-008",
+  "generated_at": "2026-07-15T16:40:39.817288+00:00",
+  "hypothesis": "Enforcing an execution-date cash ledger with deterministic scale-down or rejection of unaffordable core entries and add-ons repairs the negative-cash parity defect quantified by exp-20260715-005.",
+  "frozen_behavior_inputs": {
+    "path": "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+    "behavior_sha256": "ff0f232a2c075a7f330b28ddff8661d25108e45eeb9f4322c3f99574e338ffa6"
+  },
+  "baseline_summary": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "default_config_flag": "CASH_LEDGER_ENFORCED stays False; canonical default flip and re-baseline are a follow-up decision.",
+  "windows": {
+    "late_strong": {
+      "window": {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json"
+      },
+      "before": {
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "sharpe_daily": 6.16,
+        "max_drawdown_pct": 0.0594,
+        "win_rate": 0.8333,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "trade_count": 18
+      },
+      "after": {
+        "expected_value_score": 4.1067,
+        "total_pnl": 70075.18,
+        "sharpe_daily": 5.86,
+        "max_drawdown_pct": 0.0394,
+        "win_rate": 0.8462,
+        "signals_generated": 54,
+        "signals_survived": 48,
+        "survival_rate": 0.8889,
+        "trade_count": 13
+      },
+      "delta": {
+        "expected_value_score": -3.1048,
+        "total_pnl": -46997.74,
+        "sharpe_daily": -0.3,
+        "max_drawdown_pct": -0.02,
+        "win_rate": 0.0129,
+        "signals_generated": 3,
+        "signals_survived": 7,
+        "survival_rate": 0.085,
+        "trade_count": -5
+      },
+      "before_cash_audit": {
+        "enforced": false,
+        "initial_cash": 100000.0,
+        "min_cash": -166597.69,
+        "min_cash_date": "2026-02-04",
+        "negative_cash_event_count": 17,
+        "scaled_entry_count": 0,
+        "skipped_entry_count": 0,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 0,
+        "ending_cash": 217072.91,
+        "core_realized_pnl": 117072.91,
+        "cash_conservation_error": 0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [
+          {
+            "date": "2025-11-04",
+            "kind": "core_entry",
+            "ticker": "LLY",
+            "amount": -51565.48,
+            "cash_after": -1649.4
+          },
+          {
+            "date": "2025-11-07",
+            "kind": "core_addon",
+            "ticker": "LLY",
+            "amount": -5572.44,
+            "cash_after": -7221.84
+          },
+          {
+            "date": "2025-12-15",
+            "kind": "core_entry",
+            "ticker": "IAU",
+            "amount": -65933.5,
+            "cash_after": -5473.85
+          },
+          {
+            "date": "2025-12-15",
+            "kind": "core_entry",
+            "ticker": "GLD",
+            "amount": -65663.4,
+            "cash_after": -71137.25
+          },
+          {
+            "date": "2026-01-06",
+            "kind": "core_entry",
+            "ticker": "CVX",
+            "amount": -62730.24,
+            "cash_after": -69554.11
+          }
+        ],
+        "admission_events_sample": []
+      },
+      "after_cash_audit": {
+        "enforced": true,
+        "initial_cash": 100000.0,
+        "min_cash": 11.95,
+        "min_cash_date": "2025-12-15",
+        "negative_cash_event_count": 0,
+        "scaled_entry_count": 7,
+        "skipped_entry_count": 10,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 2,
+        "ending_cash": 170075.17,
+        "core_realized_pnl": 70075.17,
+        "cash_conservation_error": 0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [],
+        "admission_events_sample": [
+          {
+            "date": "2025-11-04",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "LLY",
+            "requested_shares": 58,
+            "admitted_shares": 56,
+            "fill_price": 889.0639,
+            "available_cash": 49916.08
+          },
+          {
+            "date": "2025-11-07",
+            "kind": "addon",
+            "action": "skipped",
+            "ticker": "LLY",
+            "requested_shares": 8,
+            "admitted_shares": 0,
+            "fill_price": 928.7193,
+            "available_cash": 128.72
+          },
+          {
+            "date": "2025-12-15",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "IAU",
+            "requested_shares": 805,
+            "admitted_shares": 738,
+            "fill_price": 81.5007,
+            "available_cash": 60158.95
+          },
+          {
+            "date": "2025-12-15",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "GLD",
+            "requested_shares": 164,
+            "admitted_shares": 0,
+            "fill_price": 397.9589,
+            "available_cash": 11.95
+          },
+          {
+            "date": "2026-01-06",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "XOM",
+            "requested_shares": 498,
+            "admitted_shares": 12,
+            "fill_price": 124.5823,
+            "available_cash": 1541.27
+          },
+          {
+            "date": "2026-01-06",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "GS",
+            "requested_shares": 8,
+            "admitted_shares": 0,
+            "fill_price": 944.9118,
+            "available_cash": 46.31
+          },
+          {
+            "date": "2026-01-15",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "XOM",
+            "requested_shares": 677,
+            "admitted_shares": 613,
+            "fill_price": 128.3391,
+            "available_cash": 78753.47
+          },
+          {
+            "date": "2026-01-16",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "GS",
+            "requested_shares": 90,
+            "admitted_shares": 0,
+            "fill_price": 968.3901,
+            "available_cash": 81.05
+          },
+          {
+            "date": "2026-01-22",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "GLD",
+            "requested_shares": 138,
+            "admitted_shares": 0,
+            "fill_price": 444.0619,
+            "available_cash": 81.05
+          },
+          {
+            "date": "2026-01-22",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "IAU",
+            "requested_shares": 676,
+            "admitted_shares": 0,
+            "fill_price": 90.9555,
+            "available_cash": 81.05
+          }
+        ]
+      },
+      "gate1_identity": {
+        "trade_rows_sha256_match": true,
+        "daily_return_series_sha256_match": true,
+        "expected_value_score_match": true,
+        "total_pnl_match": true,
+        "trade_count_match": true,
+        "all_match": true
+      }
+    },
+    "mid_weak": {
+      "window": {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json"
+      },
+      "before": {
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "sharpe_daily": 4.81,
+        "max_drawdown_pct": 0.0502,
+        "win_rate": 0.5238,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "trade_count": 21
+      },
+      "after": {
+        "expected_value_score": 1.9908,
+        "total_pnl": 51976.41,
+        "sharpe_daily": 3.83,
+        "max_drawdown_pct": 0.0661,
+        "win_rate": 0.5385,
+        "signals_generated": 69,
+        "signals_survived": 56,
+        "survival_rate": 0.8116,
+        "trade_count": 13
+      },
+      "delta": {
+        "expected_value_score": -1.7538,
+        "total_pnl": -25869.12,
+        "sharpe_daily": -0.98,
+        "max_drawdown_pct": 0.0159,
+        "win_rate": 0.0147,
+        "signals_generated": 17,
+        "signals_survived": 15,
+        "survival_rate": 0.0231,
+        "trade_count": -8
+      },
+      "before_cash_audit": {
+        "enforced": false,
+        "initial_cash": 100000.0,
+        "min_cash": -188620.98,
+        "min_cash_date": "2025-09-12",
+        "negative_cash_event_count": 18,
+        "scaled_entry_count": 0,
+        "skipped_entry_count": 0,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 0,
+        "ending_cash": 177845.54,
+        "core_realized_pnl": 77845.54,
+        "cash_conservation_error": -0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [
+          {
+            "date": "2025-06-03",
+            "kind": "core_entry",
+            "ticker": "SLV",
+            "amount": -49500.78,
+            "cash_after": -2124.62
+          },
+          {
+            "date": "2025-06-06",
+            "kind": "core_addon",
+            "ticker": "SLV",
+            "amount": -7910.44,
+            "cash_after": -10035.06
+          },
+          {
+            "date": "2025-06-11",
+            "kind": "core_entry",
+            "ticker": "DIS",
+            "amount": -1522.82,
+            "cash_after": -11557.88
+          },
+          {
+            "date": "2025-06-17",
+            "kind": "core_entry",
+            "ticker": "AMD",
+            "amount": -4351.66,
+            "cash_after": -15909.54
+          },
+          {
+            "date": "2025-06-23",
+            "kind": "core_entry",
+            "ticker": "GS",
+            "amount": -54785.64,
+            "cash_after": -70695.18
+          }
+        ],
+        "admission_events_sample": []
+      },
+      "after_cash_audit": {
+        "enforced": true,
+        "initial_cash": 100000.0,
+        "min_cash": 0.44,
+        "min_cash_date": "2025-09-29",
+        "negative_cash_event_count": 0,
+        "scaled_entry_count": 5,
+        "skipped_entry_count": 18,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 1,
+        "ending_cash": 151976.42,
+        "core_realized_pnl": 51976.42,
+        "cash_conservation_error": 0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [],
+        "admission_events_sample": [
+          {
+            "date": "2025-06-03",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "SLV",
+            "requested_shares": 1582,
+            "admitted_shares": 1514,
+            "fill_price": 31.2856,
+            "available_cash": 47376.16
+          },
+          {
+            "date": "2025-06-06",
+            "kind": "addon",
+            "action": "skipped",
+            "ticker": "SLV",
+            "requested_shares": 308,
+            "admitted_shares": 0,
+            "fill_price": 32.9365,
+            "available_cash": 3.1
+          },
+          {
+            "date": "2025-06-11",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "DIS",
+            "requested_shares": 13,
+            "admitted_shares": 0,
+            "fill_price": 117.1437,
+            "available_cash": 3.1
+          },
+          {
+            "date": "2025-06-17",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "AMD",
+            "requested_shares": 34,
+            "admitted_shares": 0,
+            "fill_price": 127.994,
+            "available_cash": 3.1
+          },
+          {
+            "date": "2025-06-23",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "GS",
+            "requested_shares": 87,
+            "admitted_shares": 0,
+            "fill_price": 629.7218,
+            "available_cash": 3.1
+          },
+          {
+            "date": "2025-06-30",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "AMZN",
+            "requested_shares": 303,
+            "admitted_shares": 16,
+            "fill_price": 223.6318,
+            "available_cash": 3674.38
+          },
+          {
+            "date": "2025-07-07",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "DDOG",
+            "requested_shares": 381,
+            "admitted_shares": 0,
+            "fill_price": 155.0775,
+            "available_cash": 96.3
+          },
+          {
+            "date": "2025-07-18",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "TSM",
+            "requested_shares": 1,
+            "admitted_shares": 0,
+            "fill_price": 243.3165,
+            "available_cash": 96.3
+          },
+          {
+            "date": "2025-08-25",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "IWM",
+            "requested_shares": 341,
+            "admitted_shares": 236,
+            "fill_price": 232.4003,
+            "available_cash": 55068.52
+          },
+          {
+            "date": "2025-08-29",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "SNOW",
+            "requested_shares": 26,
+            "admitted_shares": 0,
+            "fill_price": 237.0485,
+            "available_cash": 222.12
+          }
+        ]
+      },
+      "gate1_identity": {
+        "trade_rows_sha256_match": true,
+        "daily_return_series_sha256_match": true,
+        "expected_value_score_match": true,
+        "total_pnl_match": true,
+        "trade_count_match": true,
+        "all_match": true
+      }
+    },
+    "old_thin": {
+      "window": {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+      },
+      "before": {
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "sharpe_daily": 3.06,
+        "max_drawdown_pct": 0.0975,
+        "win_rate": 0.4348,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "trade_count": 23
+      },
+      "after": {
+        "expected_value_score": 0.1082,
+        "total_pnl": 8940.77,
+        "sharpe_daily": 1.21,
+        "max_drawdown_pct": 0.0889,
+        "win_rate": 0.3043,
+        "signals_generated": 65,
+        "signals_survived": 60,
+        "survival_rate": 0.9231,
+        "trade_count": 23
+      },
+      "delta": {
+        "expected_value_score": -1.2055,
+        "total_pnl": -33993.05,
+        "sharpe_daily": -1.85,
+        "max_drawdown_pct": -0.0086,
+        "win_rate": -0.1305,
+        "signals_generated": 3,
+        "signals_survived": 4,
+        "survival_rate": 0.0199,
+        "trade_count": 0
+      },
+      "before_cash_audit": {
+        "enforced": false,
+        "initial_cash": 100000.0,
+        "min_cash": -188511.58,
+        "min_cash_date": "2025-01-31",
+        "negative_cash_event_count": 18,
+        "scaled_entry_count": 0,
+        "skipped_entry_count": 0,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 0,
+        "ending_cash": 142933.83,
+        "core_realized_pnl": 42933.83,
+        "cash_conservation_error": -0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [
+          {
+            "date": "2024-10-14",
+            "kind": "core_entry",
+            "ticker": "JPM",
+            "amount": -55230.45,
+            "cash_after": -7600.3
+          },
+          {
+            "date": "2024-10-21",
+            "kind": "core_entry",
+            "ticker": "NFLX",
+            "amount": -51481.92,
+            "cash_after": -23171.7
+          },
+          {
+            "date": "2024-10-25",
+            "kind": "core_entry",
+            "ticker": "NOW",
+            "amount": -7853.55,
+            "cash_after": -31025.25
+          },
+          {
+            "date": "2024-11-01",
+            "kind": "core_entry",
+            "ticker": "BKNG",
+            "amount": -48589.25,
+            "cash_after": -65873.17
+          },
+          {
+            "date": "2024-11-04",
+            "kind": "core_entry",
+            "ticker": "AMZN",
+            "amount": -48154.75,
+            "cash_after": -114027.92
+          }
+        ],
+        "admission_events_sample": []
+      },
+      "after_cash_audit": {
+        "enforced": true,
+        "initial_cash": 100000.0,
+        "min_cash": 5.12,
+        "min_cash_date": "2024-10-31",
+        "negative_cash_event_count": 0,
+        "scaled_entry_count": 9,
+        "skipped_entry_count": 7,
+        "scaled_addon_count": 0,
+        "skipped_addon_count": 4,
+        "ending_cash": 108940.76,
+        "core_realized_pnl": 8940.76,
+        "cash_conservation_error": -0.0,
+        "cash_conservation_passed": true,
+        "negative_cash_events_sample": [],
+        "admission_events_sample": [
+          {
+            "date": "2024-10-14",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "JPM",
+            "requested_shares": 255,
+            "admitted_shares": 219,
+            "fill_price": 216.5919,
+            "available_cash": 47630.15
+          },
+          {
+            "date": "2024-10-21",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "NFLX",
+            "requested_shares": 672,
+            "admitted_shares": 471,
+            "fill_price": 76.6143,
+            "available_cash": 36107.46
+          },
+          {
+            "date": "2024-10-25",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "NOW",
+            "requested_shares": 41,
+            "admitted_shares": 0,
+            "fill_price": 191.5477,
+            "available_cash": 24.15
+          },
+          {
+            "date": "2024-10-28",
+            "kind": "entry",
+            "action": "skipped",
+            "ticker": "TSLA",
+            "requested_shares": 162,
+            "admitted_shares": 0,
+            "fill_price": 270.135,
+            "available_cash": 24.15
+          },
+          {
+            "date": "2024-10-31",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "GOOG",
+            "requested_shares": 270,
+            "admitted_shares": 10,
+            "fill_price": 173.8097,
+            "available_cash": 1743.22
+          },
+          {
+            "date": "2024-11-01",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "BKNG",
+            "requested_shares": 263,
+            "admitted_shares": 65,
+            "fill_price": 184.7469,
+            "available_cash": 12027.38
+          },
+          {
+            "date": "2024-11-04",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "AMZN",
+            "requested_shares": 245,
+            "admitted_shares": 8,
+            "fill_price": 196.5482,
+            "available_cash": 1705.01
+          },
+          {
+            "date": "2024-11-06",
+            "kind": "addon",
+            "action": "skipped",
+            "ticker": "BKNG",
+            "requested_shares": 32,
+            "admitted_shares": 0,
+            "fill_price": 199.294,
+            "available_cash": 132.61
+          },
+          {
+            "date": "2024-11-08",
+            "kind": "entry",
+            "action": "scaled",
+            "ticker": "APP",
+            "requested_shares": 215,
+            "admitted_shares": 42,
+            "fill_price": 249.2145,
+            "available_cash": 10698.63
+          },
+          {
+            "date": "2024-11-12",
+            "kind": "addon",
+            "action": "skipped",
+            "ticker": "GS",
+            "requested_shares": 34,
+            "admitted_shares": 0,
+            "fill_price": 580.4367,
+            "available_cash": 231.81
+          }
+        ]
+      },
+      "gate1_identity": {
+        "trade_rows_sha256_match": true,
+        "daily_return_series_sha256_match": true,
+        "expected_value_score_match": true,
+        "total_pnl_match": true,
+        "trade_count_match": true,
+        "all_match": true
+      }
+    }
+  },
+  "aggregate": {
+    "before_ev_sum": 12.2698,
+    "after_ev_sum": 6.2057,
+    "before_pnl_sum": 237852.27,
+    "after_pnl_sum": 130992.36,
+    "ev_delta": -6.0641,
+    "pnl_delta": -106859.91,
+    "ev_delta_pct": -0.49423
+  },
+  "acceptance": {
+    "gate1_before_identity_all_windows": true,
+    "after_zero_negative_cash_events": true,
+    "after_cash_conservation_passed": true,
+    "before_cash_conservation_passed": true,
+    "before_reproduces_overdraft_phenomenon": true,
+    "after_admission_events_logged": true,
+    "accepted_measurement_repair": true
+  },
+  "reproduction": {
+    "command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260715_008_cash_constrained_core_admission.py"
+  }
+}

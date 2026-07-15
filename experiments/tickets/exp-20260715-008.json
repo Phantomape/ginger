@@ -29,7 +29,7 @@
   "change_type": "identity_or_measurement_repair",
   "changed_variable": "execution_date_cash_constrained_core_order_admission",
   "claimed_at": "2026-07-15T16:28:06+00:00",
-  "completed_at": null,
+  "completed_at": "2026-07-15T16:43:59+00:00",
   "created_at": "2026-07-15T16:26:16+00:00",
   "evaluation_windows": [
     {
@@ -305,11 +305,39 @@
     "success_probability": 0.6
   },
   "prior_trial_count": 0,
-  "result": null,
+  "result": {
+    "acceptance_reasons": [],
+    "after_result_file": "data/experiments/exp-20260715-008/after.json",
+    "before_result_file": "data/experiments/exp-20260715-008/before.json",
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_ev_delta": null,
+      "actual_pnl_delta": null,
+      "actual_success": null,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "ev_prediction_error": null,
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_mode_hit": false,
+      "predicted_failure_modes": [
+        "cash_scaling_changes_champion_materially",
+        "addon_partial_reduce_basis_drift",
+        "frozen_input_identity_break"
+      ],
+      "predicted_success_probability": 0.6,
+      "realized_failure_mode": "none_all_acceptance_checks_passed",
+      "surprise_level": "not_scored",
+      "surprise_note": "The inline ledger shows peak overdrafts of -188k, roughly 8x deeper than exp-20260715-005's closed-rows reconstruction (-23k), because add-on fills and marked-value position sizing compound: the champion books up to 189k more basis than settled cash at peaks; old_thin EV nearly vanishes (1.31->0.11) under enforcement."
+    },
+    "decision": "accepted_measurement_repair",
+    "delta_metrics": {}
+  },
   "revision_manifest_file": "experiments/manifests/exp-20260715-008.json",
   "scope_note": "allowed_write_scope extended at claim time by owner claude-cash-ledger: the repair necessarily edits quant/backtester.py (the measured surface), adds a unit test, and documents the flag in docs/backtesting.md. DEFAULT_CONFIG['CASH_LEDGER_ENFORCED'] stays False so all existing baselines remain byte-identical.",
   "single_causal_variable": "execution_date_cash_constrained_core_order_admission",
-  "status": "claimed",
+  "status": "accepted",
   "ticket_file": "experiments/tickets/exp-20260715-008.json",
   "trial_family": "identity_or_measurement_repair",
   "trial_variant_id": "exp-20260715-008"

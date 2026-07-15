@@ -205,6 +205,14 @@ DEFAULT_CONFIG = {
     # square-root impact). Default False to keep prior backtests byte-identical;
     # flip after a before/after multi-window measurement_repair validation.
     "LIQUIDITY_AWARE_SLIPPAGE": False,
+    # Execution-date cash ledger: when True, core entries and add-ons are
+    # deterministically scaled down (or skipped) so booked fills never exceed
+    # available settled cash; exits and partial reduces release cash. Default
+    # False to keep prior backtests byte-identical; flip only after the
+    # exp-20260715-008 before/after multi-window measurement_repair validation
+    # and an explicit canonical re-baseline decision. The unenforced run still
+    # tracks the ledger and reports overdraft events under result["cash_ledger"].
+    "CASH_LEDGER_ENFORCED": False,
     "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
     "REGIME_AWARE_EXIT":   REGIME_AWARE_EXIT,  # smooth target width by entry-day regime strength
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
@@ -1687,6 +1695,71 @@ class BacktestEngine:
         positions     = []          # list[Position]
         closed        = []          # list[dict]
         equity_curve  = []
+
+        # Execution-date cash ledger (exp-20260715-008). Core fills debit cash
+        # at booked entry price; exits/partial reduces credit basis + pnl.
+        # Enforcement scales/rejects unaffordable core orders; the unenforced
+        # ledger is audit-only and cannot change any fill.
+        cash_ledger_enforced = bool(self.config.get("CASH_LEDGER_ENFORCED", False))
+        cash_balance = capital
+        cash_ledger_audit = {
+            "enforced": cash_ledger_enforced,
+            "initial_cash": capital,
+            "min_cash": capital,
+            "min_cash_date": None,
+            "negative_cash_event_count": 0,
+            "negative_cash_events": [],
+            "scaled_entry_count": 0,
+            "skipped_entry_count": 0,
+            "scaled_addon_count": 0,
+            "skipped_addon_count": 0,
+            "admission_events": [],
+        }
+        _CASH_EVENT_CAP = 200
+
+        def _cash_debit(amount, today, kind, ticker):
+            nonlocal cash_balance
+            cash_balance -= amount
+            if cash_balance < cash_ledger_audit["min_cash"]:
+                cash_ledger_audit["min_cash"] = round(cash_balance, 2)
+                cash_ledger_audit["min_cash_date"] = str(
+                    today.date() if hasattr(today, "date") else today
+                )
+            if cash_balance < -1e-6:
+                cash_ledger_audit["negative_cash_event_count"] += 1
+                if len(cash_ledger_audit["negative_cash_events"]) < _CASH_EVENT_CAP:
+                    cash_ledger_audit["negative_cash_events"].append({
+                        "date": str(today.date() if hasattr(today, "date") else today),
+                        "kind": kind,
+                        "ticker": ticker,
+                        "amount": round(-amount, 2),
+                        "cash_after": round(cash_balance, 2),
+                    })
+
+        core_realized_pnl_ledger = 0.0
+
+        def _cash_credit(amount, pnl=None):
+            nonlocal cash_balance, core_realized_pnl_ledger
+            cash_balance += amount
+            if pnl is not None:
+                core_realized_pnl_ledger += pnl
+
+        def _cash_admission_event(today, kind, ticker, requested_shares,
+                                  admitted_shares, fill_price):
+            key = ("scaled" if admitted_shares > 0 else "skipped")
+            counter = f"{key}_{kind}_count"
+            cash_ledger_audit[counter] += 1
+            if len(cash_ledger_audit["admission_events"]) < _CASH_EVENT_CAP:
+                cash_ledger_audit["admission_events"].append({
+                    "date": str(today.date() if hasattr(today, "date") else today),
+                    "kind": kind,
+                    "action": key,
+                    "ticker": ticker,
+                    "requested_shares": requested_shares,
+                    "admitted_shares": admitted_shares,
+                    "fill_price": round(fill_price, 4),
+                    "available_cash": round(cash_balance, 2),
+                })
         total_signals_generated = 0
         total_signals_survived  = 0
         sizing_rule_signal_attribution = {}
@@ -2324,7 +2397,30 @@ class BacktestEngine:
                     continue
 
                 entry_fill = apply_entry_fill(raw_open)
+                pos_is_core = getattr(pos, "sleeve", "core") == "core"
+                if pos_is_core and cash_ledger_enforced and entry_fill > 0:
+                    affordable = int(math.floor(
+                        max(0.0, cash_balance) / entry_fill))
+                    if affordable <= 0:
+                        _cash_admission_event(
+                            today, "addon", pos.ticker,
+                            addon_shares, 0, entry_fill)
+                        addon_skipped_count += 1
+                        addon_events.append({
+                            **addon,
+                            "status": "skipped_insufficient_cash",
+                            "raw_open": round(raw_open, 4),
+                            "requested_shares": requested,
+                            "available_cash": round(cash_balance, 2),
+                        })
+                        continue
+                    if affordable < addon_shares:
+                        _cash_admission_event(
+                            today, "addon", pos.ticker,
+                            addon_shares, affordable, entry_fill)
+                        addon_shares = affordable
                 old_shares = pos.shares
+                addon_basis_before = pos.entry_price * old_shares
                 new_shares = old_shares + addon_shares
                 pos.entry_price = round(
                     ((pos.entry_price * old_shares) + (entry_fill * addon_shares))
@@ -2337,6 +2433,13 @@ class BacktestEngine:
                     4,
                 )
                 pos.shares = new_shares
+                if pos_is_core:
+                    # Debit the booked basis delta (post re-averaging rounding)
+                    # so ledger cash stays exactly consistent with the basis
+                    # that exits will later release.
+                    _cash_debit(
+                        pos.entry_price * new_shares - addon_basis_before,
+                        today, "core_addon", pos.ticker)
                 pos.addon_count += 1
                 max_addon_count = 2 if self.config.get("SECOND_ADDON_ENABLED") else 1
                 pos.addon_done = pos.addon_count >= max_addon_count
@@ -2446,6 +2549,10 @@ class BacktestEngine:
                     pos, shares_to_sell, raw_open, today, action
                 )
                 equity += pnl
+                if getattr(pos, "sleeve", "core") == "core":
+                    # Release average-cost basis plus realized pnl (equals net
+                    # sale proceeds after round-trip cost).
+                    _cash_credit(pos.entry_price * shares_to_sell + pnl, pnl=pnl)
                 pos.shares -= shares_to_sell
                 if action.get("exit_reason") == "partial_reduce_post_addon_weakness":
                     addon_before = int(pos.addon_shares or 0)
@@ -3037,6 +3144,8 @@ class BacktestEngine:
                     cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
                     pnl  = (exit_price - pos.entry_price) * pos.shares - cost
                     equity += pnl
+                    if getattr(pos, "sleeve", "core") == "core":
+                        _cash_credit(pos.entry_price * pos.shares + pnl, pnl=pnl)
                     # Entry-side slippage dollars were already baked into
                     # pos.entry_price at open time, but the raw Open was stored
                     # on Position so we can surface total slippage_cost here.
@@ -3577,6 +3686,39 @@ class BacktestEngine:
                 entry_fill = apply_entry_fill(
                     fill_price, adv_dollar=adv_dollar, notional=fill_price * shares
                 )   # buy-side slippage (liquidity-aware when enabled)
+
+                requested_shares = shares
+                booked_entry_price = round(entry_fill, 2)
+                if cash_ledger_enforced and booked_entry_price > 0:
+                    affordable = int(math.floor(
+                        max(0.0, cash_balance) / booked_entry_price))
+                    if affordable <= 0:
+                        _cash_admission_event(
+                            fill_date, "entry", ticker,
+                            requested_shares, 0, entry_fill)
+                        _record_entry_decision(
+                            today,
+                            sig,
+                            "insufficient_cash",
+                            slots,
+                            rank,
+                            {
+                                "requested_shares": requested_shares,
+                                "entry_fill": round(entry_fill, 4),
+                                "available_cash": round(cash_balance, 2),
+                            },
+                        )
+                        continue
+                    if affordable < shares:
+                        shares = affordable
+                        _cash_admission_event(
+                            fill_date, "entry", ticker,
+                            requested_shares, shares, entry_fill)
+                # Debit the booked (rounded) entry price so the ledger stays
+                # exactly consistent with Position basis accounting.
+                _cash_debit(
+                    booked_entry_price * shares, fill_date, "core_entry", ticker)
+
                 sizing = sig.get("sizing") or {}
                 positions.append(Position(
                     ticker=ticker,
@@ -3760,6 +3902,8 @@ class BacktestEngine:
             cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
             pnl  = (exit_price - pos.entry_price) * pos.shares - cost
             equity += pnl
+            if getattr(pos, "sleeve", "core") == "core":
+                _cash_credit(pos.entry_price * pos.shares + pnl, pnl=pnl)
             entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
             exit_slip  = (exit_raw_price  - exit_price)           * pos.shares
             pnl_pct_net = ((exit_price - pos.entry_price) / pos.entry_price
@@ -4418,6 +4562,18 @@ class BacktestEngine:
             entry_decision_events
         )
 
+        # Cash-ledger closeout (exp-20260715-008). After force-close every core
+        # position is flat, so ending cash must equal initial capital plus the
+        # realized pnl of core trades; any residual is a bookkeeping defect.
+        cash_ledger_audit["ending_cash"] = round(cash_balance, 2)
+        cash_ledger_audit["core_realized_pnl"] = round(core_realized_pnl_ledger, 2)
+        cash_ledger_audit["cash_conservation_error"] = round(
+            cash_balance - (capital + core_realized_pnl_ledger), 6
+        )
+        cash_ledger_audit["cash_conservation_passed"] = (
+            abs(cash_ledger_audit["cash_conservation_error"]) < 1e-4
+        )
+
         result = {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
             "trading_days":        len(sim_dates),
@@ -4452,6 +4608,7 @@ class BacktestEngine:
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
             "pilot_sleeve_replay": pilot_sleeve_replay,
+            "cash_ledger":         cash_ledger_audit,
             "equity_curve_integrity": equity_curve_integrity,
             "caveats": (
                 [
