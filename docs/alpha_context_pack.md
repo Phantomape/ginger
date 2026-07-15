@@ -8,8 +8,8 @@ facts before changing strategy behavior.
 ## Source Snapshot
 
 - Strategy records counted: `1535`
-- Raw records loaded by meta report: `5109`
-- History fingerprint: `1352e961d07f4fe2`
+- Raw records loaded by meta report: `5112`
+- History fingerprint: `09c92cd2147e8cc4`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -86,8 +86,8 @@ facts before changing strategy behavior.
   Lesson: Routine Traditional clearances produced 242 broadly distributed trades, but the two-week public-release envelope left aggregate PnL negative, all three window EVs lower, old_thin materially negative, and positive cont...
 - `exp-20260715-002` `rejected`: EV `-0.9493`, PnL `$-19,348.24`, family `portfolio_covariance_lane`, trial `portfolio_contribution_gate_complete_panel_v1`.
   Lesson: Cash-relative sleeve value was common, but no candidate covered the opportunity cost of displacing 10 percent of the active core; the best formal EV and PnL deltas remained negative. Do not change weight, thresholds,...
-- `exp-20260715-005` `rejected`: EV `+0.0000`, PnL `$0.00`, family `low_deployment_dynamic_etf_overlay_allocation`, trial `cash_ledger_reopen`.
-  Lesson: The ETF remained positive in every window after core-priority forced exits, but the canonical core reached substantially negative reconstructed cash. TODO TODO
+- `exp-20260715-005` `rejected`: EV `+0.1720`, PnL `$2,827.84`, family `low_deployment_dynamic_etf_overlay_allocation`, trial `cash_ledger_reopen`.
+  Lesson: The ETF remained positive in every window after core-priority forced exits, but the canonical core reached substantially negative reconstructed cash. Do not sweep ETF cap, hold period, universe, SMA/momentum threshold...
 
 ## Highest-Signal Historical Records
 

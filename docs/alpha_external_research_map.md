@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-14.
+Last refreshed: 2026-07-15.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,141 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### One-Switch Leakage Tests Before Learned Alpha
+
+A May 2026 leakage benchmark gives Ginger a concrete preflight shape: hold the
+data panel, split, model, horizon, portfolio rule, and costs fixed, then toggle
+one decision-time convention around a clean `t+1` open reference. The important
+finding is selective inflation: centered temporal features and same-day-open
+execution using post-open daily-bar information create stable metric inflation,
+while some other suspected leakages are weak. Ginger should use this as a
+zero-ID diagnostic before any learned ranking, LLM forecast, or graph feature
+claims alpha.
+
+Implementable fields:
+
+- `one_switch_leakage_protocol_id`
+- `clean_tplus1_open_reference_hash`
+- `leakage_toggle_name`
+- `leakage_metric_inflation_ev`
+- `leakage_metric_inflation_pnl`
+- `same_day_bar_information_flag`
+- `centered_temporal_feature_flag`
+- `leakage_preflight_passed`
+
+Controls:
+
+- run the one-switch diagnostic before reserving an alpha ID when a learned
+  field touches same-day bars, centered windows, graph structure, or model
+  normalization;
+- keep universe, split, horizon, portfolio rule, and costs identical across the
+  clean and toggled runs;
+- reject any signal whose apparent edge disappears under the clean `t+1` open
+  reference;
+- store the diagnostic as preflight evidence, not as an accepted strategy.
+
+Source: <https://arxiv.org/abs/2605.23959>
+
+### Impact Models Can Reorder The Algorithm Leaderboard
+
+Recent trading-environment work shows that replacing fixed bps costs with
+Almgren-Chriss / square-root impact can materially change absolute results,
+turnover, and even which RL algorithm looks best. This maps to Ginger's
+activation-envelope discipline: a sleeve that is positive under fixed paper
+costs still needs a realistic impact and turnover envelope before notional or
+live promotion. Cost modeling is a policy boundary, not a reporting footnote.
+
+Implementable fields:
+
+- `impact_model_family`
+- `impact_model_parameter_hash`
+- `square_root_impact_bucket`
+- `permanent_impact_decay_bucket`
+- `turnover_penalty_protocol_id`
+- `cost_model_rank_stability_delta`
+- `pathological_turnover_flag`
+- `impact_adjusted_replacement_value`
+
+Controls:
+
+- compare fixed-bps, spread-aware, and square-root-impact scenarios on the same
+  selected rows before increasing paper notional or live sizing;
+- report whether a candidate's rank survives the cost-model change;
+- fail closed when turnover or impact estimates are missing for a ticker/date;
+- use Optuna or other tuning only inside a predeclared train window, never on
+  the fixed Gate-4 evaluation rows.
+
+Source: <https://arxiv.org/abs/2603.29086>
+
+### LLM News Models Need Relevance Pooling And Coverage Accounting
+
+A March 2026 multi-stock news-fusion paper uses stock-name embeddings and
+attention pooling to filter news relevance before combining text embeddings
+with price history. The useful Ginger lesson is not to train a black-box price
+model; it is to make relevance selection auditable. Raw article sentiment and
+headline matching should be replaced by source spans, entity relevance scores,
+and coverage denominators before an LLM/news row can enter a candidate helper.
+
+Implementable fields:
+
+- `news_relevance_model_version`
+- `issuer_name_embedding_hash`
+- `article_entity_attention_score`
+- `article_position_attention_score`
+- `news_relevance_pooling_method`
+- `news_source_coverage_denominator`
+- `relevance_filtered_event_count`
+- `news_fusion_replacement_value_delta`
+
+Controls:
+
+- keep relevance pooling separate from direction/sentiment scoring;
+- persist article ids, source timestamps, entity spans, and attention/relevance
+  scores before outcome evaluation;
+- benchmark relevance-filtered rows against simple ticker mention, accepted
+  structured-event, and current entity/theme observers;
+- require after-cost replacement value, not prediction-loss improvement alone.
+
+Source: <https://arxiv.org/abs/2603.19286>
+
+### Constrained Portfolio Optimizers Are Benchmarks, Not Shortcut Alpha
+
+Two 2026 constrained-portfolio papers are useful as infrastructure guidance.
+Global-equity SAC with transaction costs, turnover penalties, diversification
+constraints, and walk-forward folds found only partial cross-market success;
+quantum annealing work similarly frames constrained allocation as a benchmarked
+optimization problem with business and computational metrics. Ginger should
+use these ideas to benchmark allocation tooling, not to reopen parked overlay
+families without a new owner contract and leakage-free complete panel.
+
+Implementable fields:
+
+- `constrained_optimizer_protocol_id`
+- `allocation_constraint_set_hash`
+- `walk_forward_fold_id`
+- `hac_robust_excess_return_pvalue`
+- `turnover_penalty_weight`
+- `diversification_constraint_passed`
+- `class_exposure_bound_passed`
+- `optimizer_compute_budget_bucket`
+- `optimizer_vs_current_allocator_delta`
+
+Controls:
+
+- evaluate optimizers against equal weight, cash, and the current accepted
+  source allocator under identical cost and turnover assumptions;
+- report fold-level robustness and HAC-style inference before claiming excess
+  return;
+- separate business performance from solver novelty or computational
+  performance;
+- keep quantum or RL optimizers in research tooling until they beat the current
+  allocator on a complete pre-frozen panel.
+
+Sources:
+
+- <https://arxiv.org/abs/2605.17307>
+- <https://arxiv.org/abs/2607.03218>
 
 ### Correlation Structure Needs Denoising Before Portfolio Claims
 
