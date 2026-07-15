@@ -1188,6 +1188,18 @@ or fixed forward rows, not another award/revenue threshold. Static accruals /
 cash-conversion remains a rejected clue under schema-v1 MTM unless a new PIT
 quality discriminator or forward replacement evidence appears.
 
+July 14 intraday early readout (`exp-20260714-010`): the counterfactual
+scorecard had counted Saturday and Sunday reviews that mapped to the same
+ticker/next-open execution as independent evidence. Latest-pre-execution
+economic-cohort aggregation preserves all 33 raw settled rows but leaves 22
+effective next-close cohorts (11 duplicates excluded). On those effective
+cohorts the fixed policy is `-$108.47` versus no adjustment and `-$66.53`
+versus always adding; all 22 final actions equal the machine default, so
+semantic lift is exactly zero and the LLM component is not identified. Keep
+this as an early negative observed-only read. Review again at 50 effective
+cohorts; do not reserve a frozen promotion hypothesis before 100 effective
+cohorts, and do not treat raw ticker-day counts as independent sample size.
+
 June 15 status: low-deployment ETF has only 17 positive closed rows and its
 threshold/list/hold/notional retunes are frozen; the state-surface sleeve has
 only 3 relevant rows; and the analyst-revision ledger has 1246 rows but zero
@@ -2415,6 +2427,99 @@ production-visible field:
   performance was computed. Reopen only with an independently authorized owner
   contract, complete required family scope on one active real-calendar
   protocol, leakage-free state transfer, and a declared complete DSR panel;
+- historical borrow-fee / availability evaluation of the fixed
+  `exp-20260712-013` old-thin admission policy before an explicitly licensed,
+  redistributable PIT source covers `old_thin`. The local panel available on
+  July 14 has 232,916 rows across 908 tickers but begins only on 2025-07-14, so
+  it cannot repair the missing 2024-10-02 to 2025-04-22 evidence. Reopen only
+  after the source owner, permitted use, point-in-time semantics, and all three
+  canonical-window coverage are recorded;
+- USPTO patent-grant observer reservation before an accessible official weekly
+  XML archive covers all three canonical windows. On July 14 the official bulk
+  host was unavailable from the research environment, the replacement data
+  portal required authentication, and the locally reachable PatentsView
+  surface ended before `late_strong`. A connectivity or row-count recheck does
+  not consume an experiment ID. Reopen only when a hashable grant XML source
+  covers every window and the fixed issuer-mapping preflight reaches at least
+  20 issuer-weeks, 10 tickers, and top-1 share <=30% in each window;
+- CMS NADAC brand-WAC price-increase candidate-pool reservation before an
+  auditable issuer map and public-release clock pass the same three-window
+  density gate. A July 15 zero-ID preflight joined the public NADAC Comparison
+  dataset to the FDA NDC package/product directory by exact full NDC11; join
+  coverage was 86.51%/92.41%/89.34%. After positive-change filtering and a
+  fail-closed exact labeler-to-SEC-title map, old/mid/late contained only
+  25/5/23 issuer-weeks across 24/4/22 tickers, with top-1 shares
+  8.0%/40.0%/8.7%. `mid_weak` therefore fails both the >=20 issuer-week and
+  >=10-ticker bars and exceeds the <=30% concentration bar. Do not reserve an
+  ID for alias expansion or row recounting. Reopen only with a hash-bound
+  weekly first-public/version archive plus an effective-dated, evidenced
+  NDC-labeler-to-economic-parent/ticker map that independently clears all three
+  bars in every window; a current NDC/SEC snapshot and the consolidated
+  comparison `end_date` are not historical PIT proof, and a labeler may be a
+  repackager, relabeler, or private-label distributor rather than the economic
+  manufacturer;
+- MSHA immediately-reportable accident peer-substitution observers that infer
+  supply loss from `IMMED_NOTIFY_CD` alone or use the current full-replacement
+  accident/mine files as historical PIT snapshots. The July 14 zero-ID
+  preflight found adequate raw density (74/97/58 mapped issuer-weeks); a strict
+  coal peer pool produced 323/291/221 candidate legs but only 9 peer tickers in
+  every window, while the broader 776/752/594-leg pool mixed economically
+  different commodities. Immediate-reporting status does not establish an
+  operating interruption, and `DOCUMENT_NO` assignment dates do not establish
+  first-publication dates. Reopen only with a hash-bound effective-dated
+  controller-to-ticker and commodity/region peer graph, at least two ex-ante
+  substitutes per event, and independent interruption materiality such as a
+  matched 107(a) withdrawal/termination or at least 5% of issuer commodity
+  capacity affected. Historical evaluation must then clear, in every window,
+  20 settled event-peer trades, 8 target tickers, 3 commodity buckets, top-1
+  ticker <=25%, and top-1 bucket <=40%; without historical weekly vintages,
+  evaluate only after a prospective first-seen ledger reaches 30 closed rows
+  across 10 peer tickers;
+- Federal Register Commerce AD/CVD final-determination or order event retries,
+  and the corresponding USITC final-injury petitioner-beneficiary observer,
+  before both the economic decision clock and cross-window issuer density are
+  valid. A July 14 zero-ID preflight reduced 1,548 Commerce documents to
+  20/26/30 independent product-days, but only 12/9/6 mapped issuer-event legs
+  across 8/8/6 tickers; top-product shares were 33%/50%/100%. Commerce final
+  determinations are not the common economic clock: preliminary affirmative
+  findings can start cash deposits, final determinations still await the ITC,
+  and the later order is administrative. Moving to the USITC final vote did
+  not rescue the surface: mapped legs were 23/63/2 across 3/11/1 tickers, with
+  top-ticker shares 78.26%/22.22%/100% and top-product shares
+  78.26%/44.44%/100%. USITC news pages also expose only a date and can be
+  overwritten by a later revote. Reopen only with immutable official
+  `published_at` plus version history and, in every window, at least 20 mapped
+  legs, 10 effective listed tickers, 3 products, top-ticker share <=30%, and
+  top-product share <=40%; otherwise wait for at least 30 settled prospective
+  first-seen rows under one frozen policy;
+- USPTO patent-assignment recordation as a historical corporate-technology-
+  acquisition source before public visibility and ownership relations are
+  auditable. An 18-issuer July 14 sample superficially produced 226/162/108
+  issuer-weeks across 18/18/15 tickers, but the public endpoint truncated or
+  unsorted large aliases and ordinary inventor-to-employer assignments made up
+  the apparent density; zero rows were verified as gate-ready external
+  corporate-assignor acquisitions. More importantly, `recordationDate` is not
+  first-publication time, and documents involving unpublished applications can
+  appear later while retaining an older recordation date. The official
+  research dataset ends in 2023 and the current export service is scheduled to
+  migrate on July 24, 2026. Reopen only after the replacement API has stable,
+  complete pagination and an immutable first-publication/version contract,
+  effective-dated assignor/assignee parent mapping, and each window has at
+  least 20 verified external corporate-assignor issuer-weeks, 10 tickers, and
+  top-1 share <=30%. Without historical snapshots, seed the then-current set
+  and evaluate only after at least 30 settled forward first-seen events across
+  10 tickers and 15 decision dates;
+- GAO bid-protest decision-date replays before a historical public-release
+  clock exists. GAO says an unprotected decision is normally released one or
+  two days after the parties are notified, while a redacted decision may lag
+  two or three weeks and occasionally months; the current product page and PDF
+  do not expose a historical `first_public_at` or version ledger. Using the
+  decision date for next-open execution would therefore be forward-looking.
+  FY2025 had only 53 sustains across public and private protesters, so mapping
+  cannot repair the missing clock and the listed-company per-window upper bound
+  is already small. Reopen only with per-decision first-publication/version
+  snapshots covering all windows, then require at least 20 listed-protester
+  issuer-days, 10 tickers, and top-1 share <=30% in every window;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

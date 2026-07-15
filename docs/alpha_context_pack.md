@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1532`
-- Raw records loaded by meta report: `5094`
-- History fingerprint: `bb71901912d9806b`
+- Strategy records counted: `1533`
+- Raw records loaded by meta report: `5097`
+- History fingerprint: `f24d3924427dad31`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -64,8 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260711-018` `rejected_move_relief_kill_switch`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_exit_policy`, trial `move_rate_volatility_relief_kill_switch`.
-  Lesson: The opposite MOVE20 cross was not a reliable thesis invalidation event; it truncated winners or whipsawed too late to beat the accepted fixed-horizon sleeve. Do not retry MOVE exit thresholds, SMA spans, persistence,...
 - `exp-20260711-019` `rejected_sec13f_chronological_manager_skill_candidate_pool`: EV `+0.1786`, PnL `$5,132.60`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_manager_skill_candidate_pool`.
   Lesson: Prior-quarter manager alpha did not persist strongly enough after the 13F disclosure delay and unchanged next-open execution rules. Do not retry 13F manager skill by changing training sample count, median cutoff, retu...
 - `exp-20260711-020` `rejected_dod_contract_award_candidate_pool`: EV `-0.0083`, PnL `$-714.16`, family `production_visible_dod_contract_award_candidate_pool`, trial `dod_daily_contract_award_candidate_pool`.
@@ -88,6 +86,8 @@ facts before changing strategy behavior.
   Lesson: CPSC was positive in aggregate (+1583.24) despite only 8 settled trades, but old_thin regressed and the signal was far below comparator and concentration bars; NHTSA losses more than offset it in the pooled policy. Do...
 - `exp-20260714-006` `rejected_governance_and_temporal_leakage_preflight`: EV `+0.0000`, PnL `$0.00`, family `portfolio_covariance_lane`, trial `joint_chronological_covariance_capacity_portfolio_overlay`.
   Lesson: The preflight correctly stopped a tempting portfolio synthesis before performance was computed: the design tried to self-authorize a parked-lane reopen, used a historically selected 11-of-31 subset, and treated source...
+- `exp-20260714-009` `rejected`: EV `-0.2697`, PnL `$-1,066.78`, family `production_visible_fda_510k_clearance_candidate_pool`, trial `fda_510k_traditional_clearance_candidate_pool`.
+  Lesson: Routine Traditional clearances produced 242 broadly distributed trades, but the two-week public-release envelope left aggregate PnL negative, all three window EVs lower, old_thin materially negative, and positive cont...
 
 ## Highest-Signal Historical Records
 
