@@ -47,6 +47,22 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "clinicaltrials.gov", "clinicaltrials gov", "clinicaltrials",
         "resultsfirstpostdate", "results_first_post_date",
     )),
+    # FDA Orange Book monthly Additions/Deletions PDFs are a versioned drug-
+    # product release source, distinct from the current-snapshot Drugs@FDA
+    # application table and generic FDA approval news.  Keep this ahead of
+    # Companyfacts because the word "release" contains its broad "lease"
+    # keyword and would otherwise route the source into the wrong population.
+    ("fda_orange_book_monthly_additions_deletions", (
+        "fda_orange_book", "fda orange book",
+        "orange_book_newa", "orange book newa",
+        "orange_book_newa_release_basket",
+        "orange book newa release basket",
+        "orange book monthly additions/deletions",
+        "orange book monthly additions deletions",
+        "fda orange book additions/deletions",
+        "fda orange book additions deletions",
+        "official fda orange book",
+    )),
     # FDA 510(k) clearances are a releasable device-decision source, distinct
     # from weekly Device Enforcement Reports and generic device/news wording.
     # Keep compound source phrases ahead of enforcement and OHLCV relations;
@@ -121,6 +137,25 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "wikipedia page views", "enwiki pageviews", "enwiki page views",
         "pageviews per article", "pageviews/per-article",
         "canonical issuer pageviews", "canonical company pageviews",
+    )),
+    # Official Treasury auction-result XML is a discrete demand/microstructure
+    # source, not FRED yield-curve context or generic forward replacement
+    # attribution. Keep compound auction-result and bid-to-cover spellings near
+    # the front; avoid bare "Treasury" or "auction" tokens, which would collide
+    # with curve/macroeconomic studies and unrelated auction mechanisms.
+    ("treasury_auction_results", (
+        "treasury_auction_results", "treasury auction results",
+        "official treasury auction result xml",
+        "official treasury auction results xml",
+        "treasury auction result xml", "treasury auction results xml",
+        "treasury_auction_bid_to_cover", "treasury auction bid-to-cover",
+        "treasury auction bid to cover", "auction bid-to-cover",
+        "auction bid to cover", "treasury_nominal_auction_btc",
+        "treasury nominal auction btc", "bid-to-cover microstructure",
+        "bid to cover microstructure", "auction demand microstructure",
+        "treasury auction demand", "treasury auction microstructure",
+        "bid_to_cover_ratio", "indirect_bidder_accepted",
+        "direct_bidder_accepted", "primary_dealer_accepted",
     )),
     # Chicago Fed NFCI is an official weekly composite of money, debt,
     # equity, and banking conditions. Keep it ahead of generic Companyfacts
@@ -393,6 +428,8 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     )),
     ("portfolio_covariance_lane", (
         "portfolio_covariance", "portfolio covariance", "portfolio-lane", "portfolio lane",
+        "portfolio_contribution", "portfolio contribution", "portfolio-contribution",
+        "portfolio_contribution_gate", "gate 4-p",
         "daily_equity_overlay", "daily equity overlay", "mark_to_market", "mark-to-market",
         "daily mark to market", "mtm_overlay", "mtm overlay",
         "joint_chronological_covariance_capacity_portfolio_overlay",
@@ -519,6 +556,24 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "effective trial count", "selection pool complete",
         "trial_adjusted_sharpe",
     )),
+    # A publication-dated Treasury auction event drives one inverse-duration
+    # ETF position from the next session open through the fifth session close.
+    # Require the explicit policy/family or TBT-event spelling so generic 5d,
+    # ETF, replacement-value, and macro-event experiments keep their routes.
+    ("event_driven_inverse_treasury_etf_5d", (
+        "event_driven_inverse_treasury_etf_5d",
+        "event driven inverse treasury etf 5d",
+        "event-driven inverse treasury etf 5d",
+        "treasury_auction_bid_to_cover_tbt_event_response",
+        "treasury auction bid-to-cover tbt event response",
+        "treasury auction bid to cover tbt event response",
+        "treasury_nominal_auction_btc_trailing12_weak_tbt_5session",
+        "treasury nominal auction btc trailing12 weak tbt 5session",
+        "tbt event response", "tbt_event_response",
+        "tbt 5-session event sleeve", "tbt five-session event sleeve",
+        "next-session-open to fifth-session-close tbt",
+        "next session open to fifth session close tbt",
+    )),
     # One publication event enters a fixed basket and holds it for ten
     # sessions. This is neither per-name top-1 candidate selection nor a
     # notional scalar; use only explicit policy-family spellings so generic
@@ -537,6 +592,11 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "production_visible_usda_fas_export_sales_physical_demand_agriculture_basket",
         "production visible usda fas export sales physical demand agriculture basket",
         "usda_fas_export_sales_physical_demand_candidate_pool",
+        "orange_book_newa_release_basket",
+        "orange book newa release basket",
+        "fda orange book monthly additions/deletions pdf newa basket",
+        "fda orange book monthly additions deletions pdf newa basket",
+        "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
     )),
     ("peer_propagation_top1_10d", (
         "peer_propagation_top1_10d", "peer propagation top1 10d",
@@ -595,6 +655,12 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "microstructure_viability", "microstructure viability", "vol_normalized_tick",
         "vol-normalized tick", "tick_to_atr", "tick-to-atr", "tick_size_atr",
         "tick size atr", "spread_to_atr", "spread-to-atr",
+    )),
+    ("portfolio_contribution", (
+        "portfolio_contribution", "portfolio contribution",
+        "portfolio_contribution_gate", "funded portfolio contribution",
+        "capital_conserving_portfolio_contribution",
+        "capital-conserving portfolio-contribution", "gate 4-p",
     )),
     ("portfolio_daily_equity_overlay", (
         "portfolio_covariance", "portfolio covariance", "daily_equity_overlay",

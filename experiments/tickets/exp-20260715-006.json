@@ -1,0 +1,822 @@
+{
+  "acceptance_rule": "Fresh cohort must have >=100 settled rows, >=20 advisory rows, >=8 hard-stop rows, negative severity Spearman for return and SPY replacement, high-urgency and hard-stop mean and median returns below no-advisory, >=3 dates with advisory worse than none, and max single adverse-PnL share <=50%. Positive remains observed-only.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.py",
+    "data/experiments/exp-20260715-006/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.json",
+    "experiments/cards/exp-20260715-006.md",
+    "experiments/manifests/exp-20260715-006.json",
+    "experiments/tickets/exp-20260715-006.json",
+    "experiments/logs/exp-20260715-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260715-006.md",
+  "causal_components": [
+    "new post-2026-06-30 settled production rows",
+    "unchanged advisory severity buckets",
+    "fixed next-open to five-session-close settlement",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "exit_lifecycle_post_20260630_new_settled_fixed_bucket_validation_v1",
+  "claimed_at": "2026-07-15T15:17:36+00:00",
+  "completed_at": "2026-07-15T16:03:06+00:00",
+  "created_at": "2026-07-15T15:16:45+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260715-006",
+  "experiment_uid": "expuid-3e187793d7524c28",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T15:16:45+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_post_20260630_fixed_bucket_validation"
+  },
+  "hypothesis": "Observed-only alpha: exit-lifecycle shadow rows newly settled after 2026-06-30 should preserve the unchanged high-urgency and hard-stop next-5d adverse-return separation versus no-advisory rows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "prior_cutoff_as_of=2026-06-30;hold_days=5;severity_buckets=unchanged;acceptance_thresholds=unchanged;no_strategy_or_order_change"
+  ],
+  "mechanism_family": "exit_lifecycle_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/filter.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260701-012",
+    "exp-20260623-011",
+    "exp-20260623-016",
+    "exp-20260630-020"
+  ],
+  "new_evidence_type": "materially_more_settled_forward_shadow_exit_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_forward_advisory_outcome_attribution",
+        "score": 0.5643,
+        "status": "frozen_rejected",
+        "trials": 3
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "exit_lifecycle",
+      "field_tags": [
+        "5d",
+        "adverse",
+        "advisory",
+        "after",
+        "alpha",
+        "attribution",
+        "bucket",
+        "exit",
+        "forward",
+        "hard",
+        "high",
+        "lifecycle",
+        "new",
+        "newly",
+        "no",
+        "observed",
+        "only",
+        "outcome",
+        "post",
+        "preserve",
+        "return",
+        "rows",
+        "separation",
+        "settled",
+        "shadow",
+        "should",
+        "stop",
+        "unchanged",
+        "urgency",
+        "validation",
+        "versus"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_forward_advisory_outcome_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows beyond this cohort, slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.5643,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_above_cost_forward_loss_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, explicit slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.5071,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_outcome_settlement",
+        "reopen_condition": "A future alpha iteration needs automatically accumulated settled forward rows, a distinct gate shape, or a new data source; this measurement repair alone is not alpha evidence.",
+        "score": 0.4957,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_llm_state_confluence_forward_attribution",
+        "reopen_condition": "More closed production rows where the LLM and exit-lifecycle surfaces disagree, or a distinct PIT feature that explains why dual pressure predicts avoidable future loss rather than merely duplicating the same current exit label.",
+        "score": 0.491,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_fingerprint_coverage",
+        "reopen_condition": "A future exit-lifecycle alpha needs settled forward rows under this repaired data_source, a distinct gate shape, or a new PIT field; fingerprint coverage alone is not signal.",
+        "score": 0.4729,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially more settled forward rows: exit_lifecycle h5 increased from 320 at exp-20260701-012 to 482 now (+162,+50.63%); the test uses only the fresh post-2026-06-30 cohort with identical buckets, horizon, and acceptance checks.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "exit_lifecycle",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Materially more settled forward rows: exit_lifecycle h5 increased from 320 at exp-20260701-012 to 482 now (+162,+50.63%); the test uses only the fresh post-2026-06-30 cohort with identical buckets, horizon, and acceptance checks.",
+        "categories": [
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially more settled forward rows: exit_lifecycle h5 increased from 320 at exp-20260701-012 to 482 now (+162,+50.63%); the test uses only the fresh post-2026-06-30 cohort with identical buckets, horizon, and acceptance checks.",
+      "categories": [
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "exit_lifecycle",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_monotonic_forward_separation",
+      "advisory_current_loss_label_only",
+      "concentration_failed"
+    ],
+    "confidence_reason": "The prior post-cutoff cohort rejected, but the settled denominator has now grown from 320 to 482 (+162,+50.63%), enough for one unchanged-policy forward revalidation without threshold mining.",
+    "recorded_at": "2026-07-15T15:16:01+00:00"
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_exit_lifecycle_new_settled_advisory_edge_not_persistent",
+    "artifact": "data/experiments/exp-20260715-006/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.json",
+    "log": "experiments/logs/exp-20260715-006.json",
+    "runner": "quant/experiments/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.py",
+    "gate4": {
+      "observed_only_lead": false,
+      "failed_reasons": [
+        "settled_sample_too_small",
+        "advisory_sample_too_small",
+        "hard_stop_sample_too_small",
+        "hard_stop_mean_not_worse_than_none",
+        "hard_stop_median_not_worse_than_none"
+      ],
+      "acceptance_checks": {
+        "min_settled_rows": 100,
+        "settled_rows": 67,
+        "advisory_rows": 10,
+        "hard_stop_rows": 5,
+        "severity_spearman_return": -0.229148,
+        "severity_spearman_spy_replacement": -0.179344,
+        "high_mean_return_below_none": true,
+        "high_median_return_below_none": true,
+        "hard_mean_return_below_none": false,
+        "hard_median_return_below_none": false,
+        "date_support": {
+          "comparable_dates": 6,
+          "advisory_worse_dates": 6,
+          "details": [
+            {
+              "as_of_date": "2026-07-01",
+              "none_rows": 11,
+              "advisory_rows": 1,
+              "none_mean_return": -0.0323,
+              "advisory_mean_return": -0.048808,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-07-02",
+              "none_rows": 9,
+              "advisory_rows": 2,
+              "none_mean_return": -0.041951,
+              "advisory_mean_return": -0.109839,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-07-03",
+              "none_rows": 9,
+              "advisory_rows": 2,
+              "none_mean_return": -0.041951,
+              "advisory_mean_return": -0.109839,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-07-04",
+              "none_rows": 9,
+              "advisory_rows": 2,
+              "none_mean_return": -0.041951,
+              "advisory_mean_return": -0.109839,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-07-05",
+              "none_rows": 9,
+              "advisory_rows": 2,
+              "none_mean_return": -0.041951,
+              "advisory_mean_return": -0.109839,
+              "advisory_worse": true
+            },
+            {
+              "as_of_date": "2026-07-06",
+              "none_rows": 10,
+              "advisory_rows": 1,
+              "none_mean_return": -0.004427,
+              "advisory_mean_return": -0.040678,
+              "advisory_worse": true
+            }
+          ]
+        },
+        "max_single_adverse_pnl_share": 0.234826
+      },
+      "decision": "rejected_exit_lifecycle_new_settled_advisory_edge_not_persistent",
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "max_drawdown_pct": 0.0
+      },
+      "lead_limitations": [
+        "Forward-only daily production rows, not canonical fixed-window PIT replay.",
+        "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+        "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+      ]
+    },
+    "calibration": {
+      "predicted_success_probability": 0.18,
+      "actual_success": false,
+      "brier_score": 0.0324,
+      "predicted_failure_modes": [
+        "no_monotonic_forward_separation",
+        "advisory_current_loss_label_only",
+        "concentration_failed"
+      ],
+      "failed_reasons": [
+        "settled_sample_too_small",
+        "advisory_sample_too_small",
+        "hard_stop_sample_too_small",
+        "hard_stop_mean_not_worse_than_none",
+        "hard_stop_median_not_worse_than_none"
+      ],
+      "predicted_failure_modes_hit": [
+        "advisory_current_loss_label_only"
+      ]
+    },
+    "summary": "The post-cutoff settled cohort did not preserve the fixed advisory severity loss separation strongly enough to promote an exit/risk policy. The prior lead should be treated as unconfirmed until materially more settled rows arrive or a shared default-off helper produces fresh evidence."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260715-006.json",
+  "single_causal_variable": "exit_lifecycle_post_20260630_new_settled_fixed_bucket_validation_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260715-006.json",
+  "trial_family": "exit_lifecycle_forward_advisory_outcome_attribution",
+  "trial_variant_id": "post_20260630_new_settled_rows_fixed_bucket_v1",
+  "implementation_mode": "observed_only_attribution_runner",
+  "new_evidence_axis": "Materially more settled forward rows: exit_lifecycle h5 increased from 320 at exp-20260701-012 to 482 (+162, +50.63%); this test uses only the fresh post-2026-06-30 cohort with identical buckets, horizon, and acceptance checks.",
+  "decision": "rejected_exit_lifecycle_new_settled_advisory_edge_not_persistent",
+  "artifact": "data/experiments/exp-20260715-006/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.json",
+  "log": "experiments/logs/exp-20260715-006.json",
+  "aggregate_expected_value_delta": 0.0,
+  "aggregate_strategy_total_pnl_delta": 0.0,
+  "gate1": {
+    "baseline_loaded": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.8232,
+      "max_drawdown_pct_worst": 0.1119,
+      "windows": [
+        {
+          "label": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+          "expected_value_score": 5.1628,
+          "sharpe_daily": 4.41,
+          "total_pnl": 117072.92,
+          "max_drawdown_pct": 0.0665,
+          "win_rate": 0.8333,
+          "trade_count": 18,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039
+        },
+        {
+          "label": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+          "expected_value_score": 2.1402,
+          "sharpe_daily": 2.74,
+          "total_pnl": 78110.11,
+          "max_drawdown_pct": 0.1119,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925
+        },
+        {
+          "label": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+          "expected_value_score": 0.5911,
+          "sharpe_daily": 1.49,
+          "total_pnl": 39667.96,
+          "max_drawdown_pct": 0.1001,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667
+        }
+      ]
+    },
+    "note": "Observed-only attribution; before and after policy are identical."
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "fields_checked": [
+      "as_of_date",
+      "ticker",
+      "entry_date",
+      "target_price",
+      "market_value_usd",
+      "advisory_events.event_type",
+      "has_advisory_event",
+      "forward_5d_return_pct",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present_count": 67,
+    "target_price_present_count": 154,
+    "target_price_relevance": "Checked for Gate 2. It is not consumed by this attribution and no target exit is scheduled.",
+    "source_audit": {
+      "files": [
+        "data/exit_lifecycle/exit_lifecycle_20260531.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260601.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260602.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260603.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260604.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260605.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260606.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260607.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260608.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260609.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260610.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260611.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260612.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260613.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260614.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260615.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260616.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260617.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260618.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260619.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260620.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260621.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260622.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260623.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260624.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260625.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260626.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260627.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260628.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260629.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260630.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260701.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260702.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260703.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260704.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260705.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260706.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260707.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260708.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260709.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260710.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260711.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260712.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260713.jsonl",
+        "data/exit_lifecycle/exit_lifecycle_20260714.jsonl"
+      ],
+      "file_count": 45,
+      "source_rows": 572,
+      "skipped_rows": [],
+      "dates": [
+        "2026-05-31",
+        "2026-06-01",
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-08",
+        "2026-06-09",
+        "2026-06-10",
+        "2026-06-11",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-15",
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22",
+        "2026-06-23",
+        "2026-06-24",
+        "2026-06-25",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28",
+        "2026-06-29",
+        "2026-06-30",
+        "2026-07-01",
+        "2026-07-02",
+        "2026-07-03",
+        "2026-07-04",
+        "2026-07-05",
+        "2026-07-06",
+        "2026-07-07",
+        "2026-07-08",
+        "2026-07-09",
+        "2026-07-10",
+        "2026-07-11",
+        "2026-07-12",
+        "2026-07-13",
+        "2026-07-14"
+      ],
+      "tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "CAT",
+        "COHR",
+        "CRDO",
+        "DDOG",
+        "GEV",
+        "GOOG",
+        "HOOD",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "TQQQ",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ]
+    },
+    "settlement_audit": {
+      "warehouse_path": "data/warehouse/warehouse_main.sqlite",
+      "loaded_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "CAT",
+        "COHR",
+        "CRDO",
+        "DDOG",
+        "GEV",
+        "GOOG",
+        "HOOD",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "RKLB",
+        "RKLZ",
+        "SNOW",
+        "SNXX",
+        "SPY",
+        "TQQQ",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "settled_rows": 483,
+      "skipped_reasons": {
+        "missing_next_session": 8,
+        "not_yet_5d_closed": 81
+      },
+      "settled_date_range": {
+        "as_of_start": "2026-05-31",
+        "as_of_end": "2026-07-06",
+        "entry_start": "2026-06-01",
+        "entry_end": "2026-07-07",
+        "exit_start": "2026-06-08",
+        "exit_end": "2026-07-14"
+      }
+    },
+    "cohort_audit": {
+      "new_source": {
+        "rows": 154,
+        "ticker_count": 17,
+        "as_of_start": "2026-07-01",
+        "as_of_end": "2026-07-14",
+        "entry_start": "2024-10-24",
+        "entry_end": "2026-07-10",
+        "exit_start": null,
+        "exit_end": null,
+        "advisory_rows": 21,
+        "hard_stop_rows": 14
+      },
+      "new_settled": {
+        "rows": 67,
+        "ticker_count": 13,
+        "as_of_start": "2026-07-01",
+        "as_of_end": "2026-07-06",
+        "entry_start": "2026-07-02",
+        "entry_end": "2026-07-07",
+        "exit_start": "2026-07-10",
+        "exit_end": "2026-07-14",
+        "advisory_rows": 10,
+        "hard_stop_rows": 5
+      },
+      "prior_source": {
+        "rows": 418,
+        "ticker_count": 22,
+        "as_of_start": "2026-05-31",
+        "as_of_end": "2026-06-30",
+        "entry_start": "2024-04-25",
+        "entry_end": "2026-06-25",
+        "exit_start": null,
+        "exit_end": null,
+        "advisory_rows": 102,
+        "hard_stop_rows": 47
+      },
+      "prior_settled": {
+        "rows": 416,
+        "ticker_count": 21,
+        "as_of_start": "2026-05-31",
+        "as_of_end": "2026-06-30",
+        "entry_start": "2026-06-01",
+        "entry_end": "2026-07-01",
+        "exit_start": "2026-06-08",
+        "exit_end": "2026-07-09",
+        "advisory_rows": 102,
+        "hard_stop_rows": 47
+      }
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "signals_generated": 154,
+    "signals_survived": 67,
+    "survival_rate": 0.4351,
+    "all_source_rows": 572,
+    "all_settled_rows": 483,
+    "baseline_survival_rate": 0.8232,
+    "note": "No executable filter was added; rows are attributed only."
+  },
+  "gate4": {
+    "observed_only_lead": false,
+    "failed_reasons": [
+      "settled_sample_too_small",
+      "advisory_sample_too_small",
+      "hard_stop_sample_too_small",
+      "hard_stop_mean_not_worse_than_none",
+      "hard_stop_median_not_worse_than_none"
+    ],
+    "acceptance_checks": {
+      "min_settled_rows": 100,
+      "settled_rows": 67,
+      "advisory_rows": 10,
+      "hard_stop_rows": 5,
+      "severity_spearman_return": -0.229148,
+      "severity_spearman_spy_replacement": -0.179344,
+      "high_mean_return_below_none": true,
+      "high_median_return_below_none": true,
+      "hard_mean_return_below_none": false,
+      "hard_median_return_below_none": false,
+      "date_support": {
+        "comparable_dates": 6,
+        "advisory_worse_dates": 6,
+        "details": [
+          {
+            "as_of_date": "2026-07-01",
+            "none_rows": 11,
+            "advisory_rows": 1,
+            "none_mean_return": -0.0323,
+            "advisory_mean_return": -0.048808,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-07-02",
+            "none_rows": 9,
+            "advisory_rows": 2,
+            "none_mean_return": -0.041951,
+            "advisory_mean_return": -0.109839,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-07-03",
+            "none_rows": 9,
+            "advisory_rows": 2,
+            "none_mean_return": -0.041951,
+            "advisory_mean_return": -0.109839,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-07-04",
+            "none_rows": 9,
+            "advisory_rows": 2,
+            "none_mean_return": -0.041951,
+            "advisory_mean_return": -0.109839,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-07-05",
+            "none_rows": 9,
+            "advisory_rows": 2,
+            "none_mean_return": -0.041951,
+            "advisory_mean_return": -0.109839,
+            "advisory_worse": true
+          },
+          {
+            "as_of_date": "2026-07-06",
+            "none_rows": 10,
+            "advisory_rows": 1,
+            "none_mean_return": -0.004427,
+            "advisory_mean_return": -0.040678,
+            "advisory_worse": true
+          }
+        ]
+      },
+      "max_single_adverse_pnl_share": 0.234826
+    },
+    "decision": "rejected_exit_lifecycle_new_settled_advisory_edge_not_persistent",
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "max_drawdown_pct": 0.0
+    },
+    "lead_limitations": [
+      "Forward-only daily production rows, not canonical fixed-window PIT replay.",
+      "No shared helper, adapter, daily execution rule, or exit policy was promoted.",
+      "Outcome is gross diagnostic next-open-to-5d-close path attribution."
+    ]
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "live_orders_changed": false,
+    "paper_orders_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "shared_helper_promoted": false,
+    "daily_snapshot_exposed": false,
+    "uses_exit_lifecycle_shadow_log": true,
+    "live_realistic_execution_envelope": "Not evaluated for live use; this is observed-only attribution and cannot become live-ready."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The post-cutoff settled cohort did not preserve the fixed advisory severity loss separation strongly enough to promote an exit/risk policy. The prior lead should be treated as unconfirmed until materially more settled rows arrive or a shared default-off helper produces fresh evidence.",
+    "realized_failure_mode": "settled_sample_too_small,advisory_sample_too_small,hard_stop_sample_too_small,hard_stop_mean_not_worse_than_none,hard_stop_median_not_worse_than_none",
+    "forbidden_near_neighbor_retry": "Do not re-slice this same post-2026-06-30 cohort by adjacent exit lifecycle labels, urgency wording, target, trailing-stop, time-stop, MFE/giveback, or response-function retunes. A valid retry needs a new data source, a genuinely new gate shape, or another material increase in settled forward rows beyond this cohort.",
+    "new_evidence_required": "A new data source or gate shape, or another material increase in closed production exit-lifecycle rows beyond this cohort, plus slot-reuse/winner-collateral accounting before policy promotion."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260715_006_exit_lifecycle_post_20260630_fixed_bucket_validation.py",
+    "data/exit_lifecycle",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "experiments/logs/exp-20260701-012.json",
+    "experiments/logs/exp-20260623-011.json",
+    "experiments/logs/exp-20260623-016.json",
+    "experiments/logs/exp-20260630-020.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "updated_at": "2026-07-15T16:03:06+00:00"
+}

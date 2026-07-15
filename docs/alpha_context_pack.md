@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1533`
-- Raw records loaded by meta report: `5097`
-- History fingerprint: `f24d3924427dad31`
+- Strategy records counted: `1535`
+- Raw records loaded by meta report: `5109`
+- History fingerprint: `1352e961d07f4fe2`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -39,10 +39,10 @@ facts before changing strategy behavior.
   Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `6`, accept `66.67%`, sum EV `+0.1608`, sum PnL `$2,787.28`.
   Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6303`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
+- `pilot_or_sleeve` priority `0.6305`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
   Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5647`: experiments `352`, accept `24.43%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
+- `slot_or_ranking` priority `0.5648`: experiments `352`, accept `24.43%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
   Reason: 20/352 records have sample >= 10; 336/352 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `24`, accept `33.33%`, sum EV `+0.0570`, sum PnL `$912.60`.
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260711-019` `rejected_sec13f_chronological_manager_skill_candidate_pool`: EV `+0.1786`, PnL `$5,132.60`, family `production_visible_free_sec_13f_candidate_pool`, trial `sec13f_manager_skill_candidate_pool`.
-  Lesson: Prior-quarter manager alpha did not persist strongly enough after the 13F disclosure delay and unchanged next-open execution rules. Do not retry 13F manager skill by changing training sample count, median cutoff, retu...
-- `exp-20260711-020` `rejected_dod_contract_award_candidate_pool`: EV `-0.0083`, PnL `$-714.16`, family `production_visible_dod_contract_award_candidate_pool`, trial `dod_daily_contract_award_candidate_pool`.
-  Lesson: The DoD daily contract-award source did not clear Gate 4 (failed: aggregate_ev_not_positive, aggregate_pnl_not_positive, window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_sample_t...
 - `exp-20260711-023` `rejected_dod_award_peer_substitution_candidate_pool`: EV `+0.0460`, PnL `$222.13`, family `production_visible_dod_contract_award_peer_substitution_candidate_pool`, trial `dod_contract_award_peer_substitution_candidate_pool`.
   Lesson: The fixed DoD award peer-substitution candidate pool failed Gate 4 (window_ev_regression, window_pnl_regression, fewer_than_two_ev_improved_windows, target_concentration_failed, accepted_peer_comparator_ev_not_beaten,...
 - `exp-20260712-008` `rejected_move_rate_volatility_allocator_source`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `accepted_default_off_helper_source_priority_allocation`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The preflight correctly stopped a tempting portfolio synthesis before performance was computed: the design tried to self-authorize a parked-lane reopen, used a historically selected 11-of-31 subset, and treated source...
 - `exp-20260714-009` `rejected`: EV `-0.2697`, PnL `$-1,066.78`, family `production_visible_fda_510k_clearance_candidate_pool`, trial `fda_510k_traditional_clearance_candidate_pool`.
   Lesson: Routine Traditional clearances produced 242 broadly distributed trades, but the two-week public-release envelope left aggregate PnL negative, all three window EVs lower, old_thin materially negative, and positive cont...
+- `exp-20260715-002` `rejected`: EV `-0.9493`, PnL `$-19,348.24`, family `portfolio_covariance_lane`, trial `portfolio_contribution_gate_complete_panel_v1`.
+  Lesson: Cash-relative sleeve value was common, but no candidate covered the opportunity cost of displacing 10 percent of the active core; the best formal EV and PnL deltas remained negative. Do not change weight, thresholds,...
+- `exp-20260715-005` `rejected`: EV `+0.0000`, PnL `$0.00`, family `low_deployment_dynamic_etf_overlay_allocation`, trial `cash_ledger_reopen`.
+  Lesson: The ETF remained positive in every window after core-priority forced exits, but the canonical core reached substantially negative reconstructed cash. TODO TODO
 
 ## Highest-Signal Historical Records
 

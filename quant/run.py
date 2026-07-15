@@ -25,6 +25,7 @@ import importlib.util
 import json
 import logging
 import os
+import time
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -53,13 +54,45 @@ from regime_exit import compute_regime_exit_profile
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
-# colorlog adds ANSI colours: DEBUG=cyan, INFO=green, WARNING=yellow,
-# ERROR=red, CRITICAL=bold red.  Falls back to plain logging if unavailable.
+# Three handlers:
+#   console — colorlog ANSI colours when available, plain otherwise;
+#   file    — plain UTF-8, data/logs/run_YYYYMMDD.log (append; scheduled runs
+#             previously left no trace unless stderr was manually redirected,
+#             and redirection wrote raw ANSI codes + mojibake on GBK consoles);
+#   recap   — collects WARNING+ records so the end-of-run summary can replay
+#             failures that scrolled past during a ~40-minute run.
+
+
+class _WarningRecapHandler(logging.Handler):
+    """Collect WARNING+ records for the end-of-run summary."""
+
+    def __init__(self, capacity=200):
+        super().__init__(level=logging.WARNING)
+        self.capacity = capacity
+        self.records = []
+        self.dropped = 0
+        self._frozen = False  # stop collecting while the summary replays them
+
+    def emit(self, record):
+        if self._frozen:
+            return
+        if len(self.records) < self.capacity:
+            self.records.append(
+                (record.levelname, record.name, record.getMessage())
+            )
+        else:
+            self.dropped += 1
+
+    def freeze(self):
+        self._frozen = True
+
+
+_PLAIN_LOG_FMT = "%(asctime)s  %(levelname)-7s  %(name)s: %(message)s"
 
 try:
     import colorlog
-    _handler = colorlog.StreamHandler()
-    _handler.setFormatter(colorlog.ColoredFormatter(
+    _console_handler = colorlog.StreamHandler()
+    _console_handler.setFormatter(colorlog.ColoredFormatter(
         fmt="%(asctime)s  %(log_color)s%(levelname)-7s%(reset)s  %(cyan)s%(name)s%(reset)s: %(message)s",
         datefmt="%H:%M:%S",
         log_colors={
@@ -70,14 +103,32 @@ try:
             "CRITICAL": "bold_red",
         },
     ))
-    logging.root.setLevel(logging.INFO)
-    logging.root.handlers = [_handler]
 except ImportError:
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s  %(levelname)-7s  %(name)s: %(message)s",
-        datefmt="%H:%M:%S",
-    )
+    _console_handler = logging.StreamHandler()
+    _console_handler.setFormatter(logging.Formatter(_PLAIN_LOG_FMT, datefmt="%H:%M:%S"))
+
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_LOG_DIR = os.path.join(_REPO_ROOT, "data", "logs")
+os.makedirs(_LOG_DIR, exist_ok=True)
+# delay=True: importing run.py as a module must not create an empty log file.
+_file_handler = logging.FileHandler(
+    os.path.join(_LOG_DIR, f"run_{datetime.now().strftime('%Y%m%d')}.log"),
+    mode="a", encoding="utf-8", delay=True,
+)
+_file_handler.setFormatter(
+    logging.Formatter(_PLAIN_LOG_FMT, datefmt="%Y-%m-%d %H:%M:%S")
+)
+
+_warning_recap = _WarningRecapHandler()
+
+logging.root.setLevel(logging.INFO)
+logging.root.handlers = [_console_handler, _file_handler, _warning_recap]
+
+# yfinance logs a red ERROR pair for every delisted/non-equity ticker
+# (e.g. "MUU: No earnings dates found" + the HTTP 404 body) on every run.
+# Failure counts are already aggregated by the earnings fetchers, so silence
+# the per-ticker noise.
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
 log = logging.getLogger(__name__)
 
@@ -223,11 +274,56 @@ def _core_slot_ticker_set(open_positions):
     }
 
 
+_STEP_TIMINGS = []       # [(title, seconds)] finalized as each section closes
+_STEP_CURRENT = None     # (title, perf_counter start) of the open section
+
+
+def _format_duration(seconds):
+    if seconds >= 60:
+        return f"{int(seconds // 60)}m{seconds % 60:04.1f}s"
+    return f"{seconds:.1f}s"
+
+
 def _print_section(title):
+    global _STEP_CURRENT
+    now = time.perf_counter()
+    if _STEP_CURRENT is not None:
+        _STEP_TIMINGS.append((_STEP_CURRENT[0], now - _STEP_CURRENT[1]))
+    _STEP_CURRENT = (title, now)
     log.info("")
     log.info("=" * 55)
     log.info(f"  {title}")
     log.info("=" * 55)
+
+
+def _log_step_timings():
+    """Per-step duration table for the end-of-run summary.
+
+    A full run takes ~40 minutes with the slow parts (broad earnings fetch,
+    data sidecars) otherwise invisible; this makes "why was today slow" a
+    lookup instead of log archaeology.
+    """
+    if not _STEP_TIMINGS:
+        return
+    total = sum(seconds for _, seconds in _STEP_TIMINGS)
+    log.info("  Step durations (total %s):", _format_duration(total))
+    for title, seconds in _STEP_TIMINGS:
+        share = (seconds / total * 100) if total else 0.0
+        log.info("    %-45s %9s  (%2.0f%%)", title, _format_duration(seconds), share)
+
+
+def _log_warning_recap():
+    """Replay WARNING+ events collected during the run in the summary."""
+    _warning_recap.freeze()
+    events = _warning_recap.records
+    if not events:
+        log.info("  Warnings/errors:    none")
+        return
+    log.warning("  Warnings/errors:    %d event(s) during this run:", len(events))
+    for levelname, name, message in events:
+        log.warning("    [%s] %s: %s", levelname, name, message)
+    if _warning_recap.dropped:
+        log.warning("    ... and %d more (recap capped)", _warning_recap.dropped)
 
 
 def _env_flag(name, default=False):
@@ -352,6 +448,11 @@ def _collect_trade_news(today, universe, pilot_universe):
                     "error": str(e),
                 })
 
+        _failed_sources = sum(1 for s in source_stats if s.get("error"))
+        log.info(
+            "RSS fetch complete: %d sources -> %d raw items (%d source failures)",
+            len(sources), len(all_items), _failed_sources,
+        )
         sorted_items = sort_items_by_date(deduplicate_items(all_items))
         hygiene_items = apply_hygiene_filters(sorted_items)["items"]
         trade_watchlist = sorted(set(universe) | set(pilot_universe))
@@ -1840,6 +1941,7 @@ def _step5_position_context(
     #   breakout_20d → breakout,  breakdown_20d → breakdown,
     #   high_20d     → 20d_high,  low_20d       → 20d_low
     trend_signals_signals = {}
+    position_context_urgency = {}  # ticker -> high_urgency, summarized after the loop
     for ticker, f in features_dict.items():
         if f is None:
             continue
@@ -1901,10 +2003,17 @@ def _step5_position_context(
         )
         if pos_ctx:
             sig["position"] = pos_ctx
-            log.info(f"{ticker}: position context added "
-                     f"(urgency={pos_ctx['exit_signals']['high_urgency']})")
+            position_context_urgency[ticker] = pos_ctx['exit_signals']['high_urgency']
 
         trend_signals_signals[ticker] = sig
+
+    if position_context_urgency:
+        _urgent = sorted(t for t, u in position_context_urgency.items() if u)
+        log.info(
+            "Position context added for %d held tickers (high urgency: %s)",
+            len(position_context_urgency),
+            ", ".join(_urgent) if _urgent else "none",
+        )
 
     trend_signals_dict = {
         "generated_at": datetime.now().isoformat(),
@@ -4808,6 +4917,10 @@ def main():
             )
     except Exception as exc:  # never let pilot tracking break the daily run
         log.warning("  Pilot tracker:      skipped (%s)", exc)
+
+    log.info("")
+    _log_step_timings()
+    _log_warning_recap()
 
 
 if __name__ == "__main__":

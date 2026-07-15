@@ -1,0 +1,157 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.3938,
+    "max_drawdown_pct": 0.0973,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 1.0,
+    "total_pnl": 239500.67,
+    "total_return_pct": 2.395,
+    "trade_count": 115,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.124,
+    "actual_pnl_delta": 1648.4,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.526,
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 12000.0,
+    "pnl_prediction_error": -10351.6,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "monthly_publication_lag_erases_drift",
+      "generic_product_additions_are_immaterial",
+      "event_date_parent_mapping_survivorship",
+      "release_basket_capital_concentration",
+      "accepted_candidate_comparator_not_beaten"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "release_basket_capital_concentration",
+    "surprise_level": "low",
+    "surprise_note": "The fixed basket added modest aggregate PnL and improved drawdown, but the gain was too concentrated and almost entirely mid-window; old-thin EV and late PnL did not hold."
+  },
+  "causal_components": [
+    "official historical monthly PDF and hash manifest",
+    "first-public Last-Modified UTC clock",
+    "addition plus NEWA only",
+    "approval freshness 0 to 45 calendar days",
+    "exact event-date issuer mapping",
+    "one issuer-release leg with distinct-application dedupe",
+    "equal-weight 16000 USD release budget",
+    "next-open entry",
+    "10-session close",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "forward lifecycle state",
+    "parity tests",
+    "execution envelope",
+    "Gate1-4 and DSR evidence"
+  ],
+  "change_summary": "Added a hash-bound shared FDA Orange Book NEWA replay helper, corrected event-date issuer mapping, froze 19 official PDFs, and evaluated the fixed all-issuer equal-weight release basket; Gate 4 rejected it and run.py daily wiring was removed.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
+  "component": "quant/orange_book_newa_release_basket_paper_sleeve.py, quant/test_orange_book_newa_release_basket_paper_sleeve.py, quant/experiments/exp_20260715_004_fda_orange_book_newa_release_basket.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/non_ohlcv/fda_orange_book_newa/, data/experiments/exp-20260715-004/, experiments/tickets/exp-20260715-004.json, experiments/cards/exp-20260715-004.md, experiments/manifests/exp-20260715-004.json, experiments/logs/exp-20260715-004.json, experiments/artifacts/exp-20260715-004_fda_orange_book_newa_release_basket.md, docs/production_backtest_parity_matrix.md, docs/alpha-optimization-playbook.md, docs/frozen_families.jsonl, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.124,
+    "max_drawdown_pct": -0.0002,
+    "survival_rate": 0.2115,
+    "total_pnl": 1648.4,
+    "total_return_pct": 0.0165,
+    "trade_count": 53
+  },
+  "experiment_id": "exp-20260715-004",
+  "hypothesis": "Shared-paper-first candidate_pool: when an official FDA Orange Book monthly Additions/Deletions PDF first publishes fresh NEWA product additions, an equal-weight basket of every exact-mapped listed issuer should capture underappreciated commercial product-expansion drift from the next open through the tenth session close.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_fda_orange_book_newa_release_basket",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260713-006",
+    "exp-20260714-009"
+  ],
+  "new_evidence_type": "official_historical_monthly_fda_orange_book_additions_deletions_pdf",
+  "next_retry_requires": [
+    "A genuinely independent drug-commercialization data source or gate shape, or at least 30 prospectively settled unchanged-policy release decisions across 10 tickers and 15 publication dates with complete cash/SPY/QQQ replacement value."
+  ],
+  "notes": "Corrected no-FMS density was 23/24/23 issuer-release legs across 11/14/11 tickers; 70/70 survived and 53 settled. Aggregate core+sleeve EV/PnL deltas were +0.1240/+1648.40, below +0.5286/+10432.91 comparator; old_thin EV was -0.0032 and top5 positive contribution 79.93% exceeded 60%. Gate2 hashes/entry_date/target_price and Gate3 passed; DSR was honestly not_computable. Reproduce with .\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260715_004_fda_orange_book_newa_release_basket.py. No live/default behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "addition plus NEWA only",
+      "approval freshness 0 to 45 calendar days",
+      "PDF first-public clock",
+      "exact issuer mapping",
+      "distinct application dedupe",
+      "every eligible issuer per release",
+      "equal-weight 16000 USD release budget",
+      "next-open entry",
+      "10-session close",
+      "35bps round-trip cost",
+      "no threshold subtype or top-N sweep"
+    ],
+    "single_causal_variable": "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep approval-age thresholds, NEWA subtypes, holder aliases, top-N, weights, notional, hold, costs, or entry timing on the same 19 PDFs.",
+    "new_evidence_required": "Use a genuinely independent drug-commercialization source/gate, or wait for at least 30 prospectively settled unchanged-policy release decisions across 10 tickers and 15 publication dates with complete cash/SPY/QQQ replacement value.",
+    "realized_failure_mode": "release_basket_capital_concentration",
+    "why_result_happened": "The fixed basket added modest aggregate PnL and improved drawdown, but the gain was too concentrated and almost entirely mid-window; old-thin EV and late PnL did not hold."
+  },
+  "prediction": {
+    "confidence_reason": "NEWA additions are economically more material than the rejected routine 510(k) clearance face, and the hash-bound monthly archive passes all three density and concentration windows (27/28/25 executable issuer releases across 12/15/12 tickers). The main risk is that FDA publication occurs after approval information is already priced and generic additions have little issuer-level materiality.",
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "monthly_publication_lag_erases_drift",
+      "generic_product_additions_are_immaterial",
+      "event_date_parent_mapping_survivorship",
+      "release_basket_capital_concentration",
+      "accepted_candidate_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-07-15T06:21:19+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "The modest positive aggregate result missed both accepted comparator thresholds, old_thin EV was negative, and top-five positive contribution exceeded the preregistered 60% cap.",
+  "related_files": [
+    "data/experiments/exp-20260715-004/before.json",
+    "data/experiments/exp-20260715-004/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T07:27:34+00:00",
+  "trial_family": "fda_orange_book_monthly_newa_candidate_pool",
+  "trial_variant_id": "fresh45d_equal_weight_release_basket_nextopen_10d_v1"
+}

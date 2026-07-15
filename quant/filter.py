@@ -298,7 +298,7 @@ def filter_by_watchlist(items, watchlist=None):
         else:
             dropped += 1
 
-    logger.info(f"Watchlist filter: Dropped {dropped} items not in watchlist {watchlist}")
+    logger.info(f"Watchlist filter: Dropped {dropped} items not in watchlist ({len(watchlist)} tickers)")
     return filtered, dropped
 
 
@@ -490,7 +490,7 @@ def apply_trade_filters(items, watchlist=None):
     logger.info("=" * 50)
     logger.info("Applying trade filters")
     logger.info(f"Starting with {len(items)} items")
-    logger.info(f"Watchlist: {watchlist}")
+    logger.info(f"Watchlist: {len(watchlist)} tickers")
     logger.info("=" * 50)
 
     stats = {

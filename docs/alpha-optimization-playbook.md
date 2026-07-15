@@ -2188,9 +2188,21 @@ production-visible field:
   single-ticker share <=40%, or a distinct new data source/gate shape;
 - CISA KEV entry-risk gates on the first mega-cap issuer map. `exp-20260705-014`
   found mixed post-addition event-study drift and zero KEV-flagged canonical
-  replay trades, so threshold/window/response retunes are frozen. Reopen only
-  with a broader predeclared issuer map producing materially nonzero flagged
-  baseline trades, or with a distinct cybersecurity incident source;
+  replay trades, so threshold/window/response retunes are frozen. A July 15
+  zero-ID preflight tested the genuinely different direct-short event-basket
+  shape against CISA's immutable `kev-data` blob
+  `f7fae55e6c8b25cdcaceee246f2c36c6456d59fe` (catalog `2026.07.14`). Exact
+  event-date public-company mapping produced 50/34/47 issuer-weeks across
+  16/15/17 tickers with top-1 shares 30.00%/23.53%/21.28%, but the old-thin
+  pass depended entirely on JNPR and SWI. Neither has old-thin bars in the
+  canonical broad OHLCV warehouse; after intersecting with settlement-ready
+  prices, old-thin falls to 48 issuer-weeks across 14 tickers and MSFT rises to
+  31.25%, failing the predeclared 30% concentration cap. Do not reserve a
+  short-basket ID by expanding aliases or dropping the price-coverage check.
+  Reopen with immutable old-thin bars for at least two independent mapped
+  issuer-weeks (plus an explicit short-borrow/execution envelope), materially
+  settled fixed-policy forward rows, or a distinct cybersecurity incident
+  source;
 - deep-drawdown rebound candidate pools or observers that sweep stabilization
   day, one-entry budget, 200d correction classifier, VIX panic, TLT rate-relief,
   volume/range capitulation, hold, cooldown, or notional on the 2000-2026 QQQ
@@ -2224,13 +2236,19 @@ production-visible field:
   cleanup regression or after materially more settled observer/provenance rows
   support an alpha read;
 - per-rejected-source portfolio overlay consumption from the
-  `exp-20260706-022` ranking list. The July 7 fixed 10% daily-equity overlays
-  were mostly positive in aggregate but rejected or parked because the lane
-  gate is too sensitive to noise-scale window regressions and does not yet
-  identify a deployable portfolio policy. Reopen only with a joint, predeclared
-  portfolio covariance model, materially more settled rows, or a different
-  execution envelope; do not keep consuming the same ranked list one name per
-  experiment;
+  `exp-20260706-022` ranking list. Owner-authorized `exp-20260715-002` replaced
+  the invalid additive/double-scaled overlays with one complete 31-family
+  Gate 4-P batch: fixed 90/10 capital, a real `$10k` no-leverage candidate cash
+  ledger, fixed non-overlapping calendars, boundary force-closes, and 10,000-draw
+  simultaneous max-T inference. All 31 failed the formal comparison against
+  100% core; the best sleeve had aggregate EV `-0.94934` and PnL `-$19,348.24`
+  even though it added EV `+0.64143` and PnL `+$11,059.52` versus leaving the
+  10% sleeve in cash. This distinguishes genuine sleeve contribution from the
+  larger opportunity cost of displacing the current core. Do not consume or
+  retune these 31 representatives again. Reopen only with a prospective ledger,
+  a complete pre-frozen selection panel, a genuinely new candidate family, or
+  a separately authorized risk-budget gate that explicitly permits return
+  sacrifice for tail-risk reduction;
 - SEC NT late-filing, Item 3.01 listing-compliance, Item 5.02 leadership-text,
   and Item 2.05/2.06 restructuring/impairment entry-risk gates that only retune
   item lists, primary-text regexes, price/ADV/liquidity gates, same-day return
@@ -2311,7 +2329,15 @@ production-visible field:
   same settled rows by urgency, action type, horizon, LLM wording, or confidence.
   July 10 wired fingerprinting and daily settlement; policy promotion still
   requires a shared pre-exit lifecycle rule or materially more severity-tagged
-  closed replacement-value rows;
+  closed replacement-value rows. `exp-20260715-006` used the valid growth from
+  320 to 482 total settled h5 rows to run one unchanged-policy validation on
+  the post-2026-06-30 cohort. It rejected promotion: only 67 rows were settled
+  in that fixed cohort (10 advisory, 5 hard-stop) versus preregistered minima
+  of 100/20/8, and hard-stop mean and median returns were not worse than the
+  no-advisory bucket. Park this exact surface; do not reserve another readiness
+  or label/threshold reslice. Reopen only with a new source/gate shape, or when
+  the same fixed post-cutoff cohort has at least 101 settled rows, 20 advisory
+  rows, and 8 hard-stop rows;
 - MOVE / credit / rate-relief macro-proxy retries that only change moving-average
   spans, relief thresholds, ETF proxy lists, duration/sector priority ranks,
   hold/cooldown/top-N/notional, or reentry kill-switch timing. July 11 accepted
@@ -2435,13 +2461,19 @@ production-visible field:
   after the source owner, permitted use, point-in-time semantics, and all three
   canonical-window coverage are recorded;
 - USPTO patent-grant observer reservation before an accessible official weekly
-  XML archive covers all three canonical windows. On July 14 the official bulk
-  host was unavailable from the research environment, the replacement data
-  portal required authentication, and the locally reachable PatentsView
-  surface ended before `late_strong`. A connectivity or row-count recheck does
-  not consume an experiment ID. Reopen only when a hashable grant XML source
-  covers every window and the fixed issuer-mapping preflight reaches at least
-  20 issuer-weeks, 10 tickers, and top-1 share <=30% in each window;
+  XML archive covers all three canonical windows. On July 15 the official ODP
+  catalog identified weekly `PTGRXML` coverage nominally through 2026-04-21,
+  but USPTO registration has been required since 2026-06-18, both the product
+  API and exact `ipg260421.zip` file API returned 401 without an API key, and
+  the human bulk-data URL returned only the SPA shell rather than ZIP bytes.
+  The legacy bulk host is retired/unresolvable, PatentsView still ends before
+  `late_strong`, and no `USPTO_API_KEY` is configured, so the expected 81-file
+  three-window manifest (plus the `ipg241001.zip` boundary sentinel) cannot be
+  listed, downloaded, or hashed. A connectivity or row-count recheck does not
+  consume an experiment ID. Reopen only with an explicitly authorized ODP
+  account/key, a gap-free file manifest with size/ZIP/SHA-256 verification, and
+  fixed issuer mapping reaching at least 20 issuer-weeks, 10 tickers, and
+  top-1 share <=30% in every window;
 - CMS NADAC brand-WAC price-increase candidate-pool reservation before an
   auditable issuer map and public-release clock pass the same three-window
   density gate. A July 15 zero-ID preflight joined the public NADAC Comparison
@@ -2520,6 +2552,20 @@ production-visible field:
   is already small. Reopen only with per-decision first-publication/version
   snapshots covering all windows, then require at least 20 listed-protester
   issuer-days, 10 tickers, and top-1 share <=30% in every window;
+- FDA Orange Book monthly `NEWA` release-basket retunes on the frozen 19-PDF
+  archive. `exp-20260715-004` corrected an invalid Fresenius Kabi-to-FMS
+  ownership assumption, then retained 23/24/23 eligible issuer-release legs
+  across 11/14/11 tickers. The fixed all-issuer, equal `$16k` release basket
+  produced core+sleeve aggregate EV `+0.1240` and PnL `+$1,648.40`, but missed
+  the accepted comparator (`+0.5286`, `+$10,432.91`), old-thin EV was
+  `-0.0032`, and the top-five positive-contribution share was `79.93%` versus
+  the preregistered 60% cap. Production daily wiring was therefore removed.
+  Do not sweep approval-age thresholds, NEWA subtypes, holder aliases, top-N,
+  weights, notional, hold, cost, or entry timing on these PDFs. Reopen only
+  with a genuinely independent drug-commercialization data source/gate or at
+  least 30 prospectively settled unchanged-policy release decisions across 10
+  tickers and 15 publication dates with complete cash/SPY/QQQ replacement
+  value;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline

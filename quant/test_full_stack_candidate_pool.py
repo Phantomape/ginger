@@ -29,6 +29,8 @@ if str(SCRIPTS) not in sys.path:
 import deflated_sharpe  # noqa: E402
 
 from quant.full_stack_candidate_pool import (
+    EVALUATION_MODE_CHAMPION_REPLACEMENT,
+    EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
     ExecutionEnvelope,
     evaluate_gate4,
     evaluate_live_readiness,
@@ -200,6 +202,7 @@ def test_gate4_passes_on_clean_metrics():
     g = evaluate_gate4(_pass_metrics())
     assert g["passed"] is True
     assert g["hard_failures"] == []
+    assert g["evaluation_mode"] == EVALUATION_MODE_CHAMPION_REPLACEMENT
 
 
 def test_gate4_fails_on_regressed_window():
@@ -220,6 +223,44 @@ def test_gate4_fails_on_immaterial_effect():
     )
     assert g["passed"] is False
     assert "immaterial_effect" in g["hard_failures"]
+
+
+def test_gate4_portfolio_mode_routes_to_portfolio_evaluator(monkeypatch):
+    expected = {
+        "passed": False,
+        "status": "watch",
+        "portfolio_verdict": "portfolio_forward_watch",
+        "hard_failures": [],
+        "evidence_blockers": ["selection_panel_incomplete"],
+    }
+    observed = {}
+
+    def fake_portfolio_gate(metrics, *, thresholds):
+        observed["metrics"] = metrics
+        observed["thresholds"] = thresholds
+        return expected
+
+    monkeypatch.setattr(
+        "quant.full_stack_candidate_pool.evaluate_portfolio_contribution_gate",
+        fake_portfolio_gate,
+    )
+    metrics = {"capital_neutral": True, "candidate_weight": 0.10}
+    g = evaluate_gate4(
+        metrics,
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+
+    assert observed["metrics"] is metrics
+    assert g["portfolio_verdict"] == "portfolio_forward_watch"
+    assert g["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert g["portfolio_contribution_gate"] == expected
+    assert g["promotion_gate"] is None
+    assert g["materiality"] is None
+
+
+def test_gate4_rejects_unknown_evaluation_mode():
+    with pytest.raises(ValueError, match="unsupported evaluation_mode"):
+        evaluate_gate4(_pass_metrics(), evaluation_mode="unknown")
 
 
 # --- gate 5 live readiness --------------------------------------------------
@@ -453,3 +494,110 @@ def test_missing_dsr_blocks_live_but_preserves_gate4_and_paper_acceptance():
     assert v["gate4_passed"] is True
     assert v["verdict"] == "accepted_paper_pending_forward"
     assert v["live_readiness"]["blockers"] == ["dsr_report_missing"]
+
+
+@pytest.mark.parametrize(
+    ("portfolio_verdict", "passed"),
+    [
+        ("portfolio_reject", False),
+        ("portfolio_forward_watch", False),
+        ("accepted_portfolio_paper", True),
+    ],
+)
+def test_portfolio_verdict_maps_directly_and_never_reaches_live(
+    portfolio_verdict,
+    passed,
+):
+    hard_failures = (
+        ["non_positive_aggregate_pnl"]
+        if portfolio_verdict == "portfolio_reject"
+        else []
+    )
+    evidence_blockers = (
+        ["selection_panel_incomplete"]
+        if portfolio_verdict == "portfolio_forward_watch"
+        else []
+    )
+    gate4 = {
+        "passed": passed,
+        "portfolio_verdict": portfolio_verdict,
+        "hard_failures": hard_failures,
+        "evidence_blockers": evidence_blockers,
+    }
+    # Deliberately claim live readiness to prove that portfolio mode ignores it.
+    live_readiness = {"ready": True, "blockers": []}
+    v = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        envelope=_full_envelope(),
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+
+    assert v["verdict"] == portfolio_verdict
+    assert v["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert v["live_ready"] is False
+    assert v["verdict"] != "live_eligible"
+
+
+def test_portfolio_verdict_fails_closed_without_explicit_portfolio_verdict():
+    v = full_stack_verdict(
+        gate4={"passed": True},
+        live_readiness={"ready": True, "blockers": []},
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+    assert v["verdict"] == "portfolio_reject"
+    assert v["live_ready"] is False
+
+
+def test_portfolio_gate_mode_is_inherited_and_never_reaches_live():
+    v = full_stack_verdict(
+        gate4={
+            "passed": True,
+            "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+            "portfolio_verdict": "accepted_portfolio_paper",
+        },
+        live_readiness={"ready": True, "blockers": []},
+    )
+
+    assert v["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert v["verdict"] == "accepted_portfolio_paper"
+    assert v["live_ready"] is False
+
+
+def test_full_stack_verdict_rejects_mode_mismatch():
+    with pytest.raises(ValueError, match="conflicts with gate4 evaluation_mode"):
+        full_stack_verdict(
+            gate4={
+                "passed": True,
+                "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+                "portfolio_verdict": "accepted_portfolio_paper",
+            },
+            live_readiness={"ready": True, "blockers": []},
+            evaluation_mode=EVALUATION_MODE_CHAMPION_REPLACEMENT,
+        )
+
+
+def test_contradictory_portfolio_acceptance_fails_closed():
+    v = full_stack_verdict(
+        gate4={
+            "passed": False,
+            "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+            "portfolio_verdict": "accepted_portfolio_paper",
+            "hard_failures": ["non_positive_aggregate_pnl"],
+            "evidence_blockers": [],
+        },
+        live_readiness={"ready": True, "blockers": []},
+    )
+
+    assert v["verdict"] == "portfolio_reject"
+    assert v["live_ready"] is False
+    assert v["gate_report_consistent"] is False
+
+
+def test_full_stack_verdict_rejects_unknown_evaluation_mode():
+    with pytest.raises(ValueError, match="unsupported evaluation_mode"):
+        full_stack_verdict(
+            gate4={"passed": True},
+            live_readiness={"ready": True},
+            evaluation_mode="unknown",
+        )

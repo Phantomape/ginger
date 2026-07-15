@@ -51,6 +51,22 @@ downloads the source and failures remain isolated from strategy execution.
 | --- | --- | --- | --- | --- |
 | Default-off CDER original NDA/BLA first-seen observer | `drugsfda_approval_observer.py`, `data/non_ohlcv/drugsfda_approval_observer/raw/drugsatfda_20260710.zip`, `run.py` | canonical backtests do not consume this surface; the current snapshot is not historical PIT evidence, older approval dates may not be backdated to strategy decisions, and no replay is allowed until separately frozen timestamped snapshots and a PIT issuer/ticker relation exist | when the fixed official ZIP exists, daily run idempotently persists first-seen approval observations with `trade_enabled=false`; a missing ZIP skips the call and parse/persistence errors fail soft | production may accumulate prospective first-seen rows while backtests have no eligible rows; no ticker mapping, candidate generation, live/default orders, ranking, sizing, exits, watchlists, or LLM/news policy may consume this observer without a separate shared policy and Gate 1-4 experiment |
 
+## Rejected FDA Orange Book Monthly NEWA Release Basket
+
+`exp-20260715-004` evaluated the official monthly Orange Book
+Additions/Deletions PDFs as a hash-bound historical PIT archive. The shared
+helper uses the PDF HTTP `Last-Modified` UTC value as availability, treats the
+approval date only as a 0-45-day freshness field, accepts only `>A>` rows with
+terminal `NEWA`, and divides a fixed `$16,000` release budget equally across
+all exact-mapped issuers for next-open through tenth-session-close replay.
+Fresenius Kabi was explicitly excluded after audit because FMS is not its
+economic parent. Gate 4 rejected the sleeve, so its temporary `run.py` wiring
+was removed.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Rejected Orange Book fresh-NEWA release basket | `orange_book_newa_release_basket_paper_sleeve.py`, `data/non_ohlcv/fda_orange_book_newa/` | the experiment runner may replay only the frozen 19-PDF manifest with exact SHA-256 verification, the official HTTP availability clock, event-date issuer mapping, one issuer leg per release, equal release budget, next-open entry, fixed 10-session close, and 35bps round-trip cost | no daily adapter is retained and `run.py` does not call the helper; the policy cannot alter candidates, orders, ranking, sizing, exits, watchlists, LLM, or news | the helper retains a default-off seed/forward lifecycle callable for reproducibility, but canonical production accumulates no Orange Book decisions; any future observer wiring or activation requires a separately authorized experiment and new evidence |
+
 ## Entity-Theme News Prospective First-Seen Observer
 
 `exp-20260713-003` adds a production-visible, default-off evidence observer for

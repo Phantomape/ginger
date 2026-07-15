@@ -312,6 +312,26 @@ def test_rejected_joint_preflight_stays_on_parked_portfolio_surface():
     assert fingerprint["gate_shape"] == "portfolio_daily_equity_overlay"
 
 
+def test_portfolio_contribution_gate_is_a_distinct_gate_shape():
+    fingerprint = fp.infer_fingerprint(
+        "owner-authorized capital-conserving portfolio-contribution Gate 4-P "
+        "for the portfolio covariance lane"
+    )
+
+    assert fingerprint["data_source"] == "portfolio_covariance_lane"
+    assert fingerprint["gate_shape"] == "portfolio_contribution"
+
+
+def test_portfolio_contribution_trial_family_does_not_fall_to_other_source():
+    fingerprint = fp.infer_fingerprint(
+        "portfolio_contribution_gate_complete_panel_v1 "
+        "owner_authorized_capital_conserving_complete31_v1"
+    )
+
+    assert fingerprint["data_source"] == "portfolio_covariance_lane"
+    assert fingerprint["gate_shape"] == "portfolio_contribution"
+
+
 def test_microstructure_viability_attribution_gate_shape():
     fingerprint = fp.infer_fingerprint(
         "tick_to_atr vol_normalized_tick microstructure viability attribution"
@@ -785,6 +805,30 @@ def test_fda_510k_clearance_uses_distinct_official_source():
         "open.fda.gov/apis/device/510k decision surface",
     ):
         assert fp.infer_fingerprint(text)["data_source"] == "fda_510k_clearance"
+
+
+def test_fda_orange_book_monthly_newa_uses_distinct_official_source():
+    for text in (
+        "official FDA Orange Book monthly Additions/Deletions PDF NEWA basket",
+        "orange_book_newa_release_basket next-open 10d",
+        "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
+    ):
+        result = fp.infer_fingerprint(text)
+        assert result["data_source"] == (
+            "fda_orange_book_monthly_additions_deletions"
+        )
+        assert result["gate_shape"] == "event_basket_10d"
+
+
+def test_fda_orange_book_precedes_companyfacts_release_substring():
+    result = fp.infer_fingerprint(
+        "FDA Orange Book NEWA product release basket candidate_pool"
+    )
+
+    assert result["data_source"] == (
+        "fda_orange_book_monthly_additions_deletions"
+    )
+    assert result["data_source"] != "companyfacts_ratio"
 
 
 def test_fda_510k_clearance_precedes_relation_without_adjacent_overmatch():

@@ -1,0 +1,148 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.4887,
+    "max_drawdown_pct": 0.097778,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8364,
+    "total_pnl": 242282.98,
+    "total_return_pct": null,
+    "trade_count": 81,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8364,
+    "total_pnl": 237852.27,
+    "total_return_pct": null,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.2189,
+    "actual_pnl_delta": 4430.71,
+    "actual_success": 0,
+    "brier_score": 0.3025,
+    "calibration_direction": "overconfident",
+    "ev_prediction_error": -0.2311,
+    "expected_ev_delta": 0.45,
+    "expected_pnl_delta": 4500.0,
+    "pnl_prediction_error": -69.29,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "10pct_cap_below_materiality",
+      "low_deployment_is_risk_off_cash_signal",
+      "window_regression",
+      "cash_accounting_or_mtm_parity_error",
+      "ETF_concentration"
+    ],
+    "predicted_success_probability": 0.55,
+    "realized_failure_mode": "cash_accounting_or_mtm_parity_error",
+    "surprise_level": "medium",
+    "surprise_note": "Direction was consistently positive across all three windows, but the 10% sleeve was too small for the ratchet bar and exposed that the current core replay cannot prove cash-only capital conservation."
+  },
+  "causal_components": [
+    "shared_helper",
+    "core_daily_deployment_context",
+    "cash_reservation",
+    "mark_to_market",
+    "next_open_10d_exit",
+    "costs",
+    "gate4"
+  ],
+  "change_summary": "Tested the unchanged accepted low-deployment ETF selector as a  cash-only integrated portfolio sleeve on the active post-MTM frozen windows.",
+  "change_type": "capital_allocation_full_stack",
+  "changed_variable": "low_deployment_etf_cash_only_integrated_portfolio_activation",
+  "component": "quant/backtester.py, quant/low_deployment_etf_overlay.py, quant/test_low_deployment_etf_overlay.py, quant/test_backtester.py, quant/experiments, data/experiments, experiments/cards, experiments/manifests, experiments/tickets, experiments/logs, docs/experiment_registry.json, docs/frozen_families.jsonl, docs/production_backtest_parity_matrix.md, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.2189,
+    "max_drawdown_pct": 0.000278,
+    "survival_rate": 0.0,
+    "total_pnl": 4430.71,
+    "trade_count": 19
+  },
+  "experiment_id": "exp-20260715-003",
+  "hypothesis": "Capital-allocation alpha: integrate the already accepted low-deployment ETF cash-substitute shared helper into the core post-MTM backtest as a cash-only 10%-of-initial-equity sleeve when active core positions are at most one; keep the frozen QQQ/SPY/IWM/GLD/SLV selector, SMA200, positive 20-session momentum, next-open entry, 10-session close exit, one overlay position, and costs unchanged, while forbidding leverage or displacement of core entries.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "low_deployment_dynamic_etf_overlay_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260605-035",
+    "exp-20260606-001",
+    "exp-20260614-003"
+  ],
+  "new_evidence_type": "new_gate_shape_cash_shared_integrated_portfolio",
+  "next_retry_requires": [
+    "An explicit shared backtester cash ledger that debits entry fills, reserves overlay capital, releases exit proceeds, and lets future core entries take priority without lookahead."
+  ],
+  "notes": "All three windows improved; aggregate EV +1.7841% and PnL +$4,430.71, but failed the predeclared >10% EV bar, drawdown drift was +0.5633pp, and explicit no-displacement could not be proven because the core backtester lacks a cash reservation ledger. No production behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "core_entry_exit_ranking_sizing",
+      "ETF_universe",
+      "SMA200",
+      "momentum20",
+      "max_active_core_positions_1",
+      "hold_10_sessions",
+      "next_open_entry",
+      "one_overlay_position",
+      "cost_model",
+      "initial_equity_cap_10pct",
+      "no_leverage",
+      "no_core_displacement"
+    ],
+    "single_causal_variable": "cash_only_low_deployment_etf_10pct_integrated_portfolio_sleeve_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep the 5%/7.5%/12.5%/15% cap, hold period, ETF list, momentum threshold, SMA length, drawdown allowance, or acceptance bar on the same frozen windows. The positive synthetic result does not authorize treating overlay notional as free leverage.",
+    "new_evidence_required": "Reopen only with a new gate shape implemented as an explicit shared cash debit/reservation ledger: ETF entry must consume recorded cash, later core entries must retain priority, overlay capital must shrink or exit by a predeclared policy without future knowledge, and daily MTM plus exit costs must reconcile exactly. Then rerun the unchanged selector on the active frozen windows and continue forward attribution of the operator SPY canary separately.",
+    "realized_failure_mode": "cash_accounting_or_mtm_parity_error",
+    "why_result_happened": "Direction was consistently positive across all three windows, but the 10% sleeve was too small for the ratchet bar and exposed that the current core replay cannot prove cash-only capital conservation."
+  },
+  "prediction": {
+    "confidence_reason": "The unchanged helper previously improved all three windows with aggregate EV +3.0292 and PnL +44.3k at larger sizing, but a cash-only 10% cap may dilute the gain below the current post-MTM >10% acceptance threshold.",
+    "expected_ev_delta": 0.45,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "10pct_cap_below_materiality",
+      "low_deployment_is_risk_off_cash_signal",
+      "window_regression",
+      "cash_accounting_or_mtm_parity_error",
+      "ETF_concentration"
+    ],
+    "recorded_at": "2026-07-15T06:01:06+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260715-003/before.json",
+    "data/experiments/exp-20260715-003/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T06:09:11+00:00",
+  "trial_family": "low_deployment_etf_cash_only_integrated_portfolio",
+  "trial_variant_id": "initial_equity_10pct_cash_only_v1"
+}

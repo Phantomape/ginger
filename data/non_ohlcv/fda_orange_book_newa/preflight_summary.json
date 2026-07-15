@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260715-004",
+  "source_manifest": "source_manifest.json",
+  "derived_from": {
+    "relative_path": "preflight_detail.json",
+    "sha256": "0064293001f876ca152bf5198400d9224442e52b83390a32cfba75d7730ded1c",
+    "generator_sha256": "1bf73a40f11d6ab35ca916c1678f6dc03238de2bfc9f14ba3dc379120f7741cb",
+    "correction_parser_relative_path": "quant/orange_book_newa_release_basket_paper_sleeve.py",
+    "correction_parser_sha256": "e337c84241b3fad01c8c952f07485f01c6aaecea08e899be4ac973f93f8fa558"
+  },
+  "evaluation_contract": {
+    "row_filter": ">A> and terminal change reason NEWA",
+    "freshness": "0 <= official Last-Modified date - row approval date <= 45 calendar days",
+    "mapping": "exact holder alias to contemporaneous US-listed economic parent; no fuzzy matching",
+    "dedupe": "one ticker x PDF-month decision",
+    "pit_clock": "official PDF HTTP Last-Modified UTC; trade clock would be next NYSE open",
+    "approval_date_role": "freshness metadata only, never the signal timestamp",
+    "density_gates": {
+      "minimum_issuer_release_count_per_window": 20,
+      "minimum_ticker_count_per_window": 10,
+      "maximum_top1_share_per_window": 0.3
+    }
+  },
+  "exact_holder_aliases": {
+    "ABBV": "\\bABBVIE\\b",
+    "AMGN": "\\bAMGEN(?: INC)?\\b",
+    "AZN": "\\bASTRAZENECA\\b",
+    "BAX": "\\bBAXTER HLTHCARE CORP\\b",
+    "BIIB": "\\bBIOGEN\\b",
+    "BMY": "\\bBRISTOL MYERS SQUIBB\\b",
+    "GILD": "\\bGILEAD SCIENCES INC\\b",
+    "GSK": "\\bGLAXOSMITHKLINE\\b",
+    "JNJ": "\\bJANSSEN (?:PRODS|BIOTECH)\\b",
+    "LLY": "\\bELI LILLY AND CO\\b",
+    "NVS": "\\bNOVARTIS\\b",
+    "PFE": "\\b(?:PFIZER|HOSPIRA)\\b",
+    "TEVA": "\\bTEVA PHARMS (?:USA INC|USA|INC)\\b",
+    "VTRS": "\\bMYLAN(?: LABS LTD)?\\b",
+    "VRTX": "\\bVERTEX PHARMS INC\\b",
+    "AMRX": "\\bAMNEAL\\b",
+    "CORT": "\\bCORCEPT THERAP\\b",
+    "ACAD": "\\bACADIA PHARMS INC\\b",
+    "RDY": "\\bDR REDDYS\\b",
+    "NBIX": "\\bNEUROCRINE\\b",
+    "IONS": "\\bIONIS PHARMS INC\\b"
+  },
+  "coverage": {
+    "official_documents_materialized": 19,
+    "official_documents_used_in_standard_windows": 18,
+    "excluded_from_standard_windows": [
+      {
+        "month": "2026-04",
+        "media_id": 192413,
+        "official_http_last_modified_utc": "2026-05-08T15:53:31Z",
+        "reason": "Publication date is after the late_strong window end of 2026-04-21."
+      }
+    ]
+  },
+  "windows": {
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "raw_direct_fresh_newa_rows": 39,
+      "issuer_release_count": 23,
+      "ticker_count": 11,
+      "top1_share": 0.217391,
+      "by_ticker": {
+        "ABBV": 2,
+        "AMRX": 5,
+        "BAX": 2,
+        "GSK": 1,
+        "IONS": 1,
+        "JNJ": 1,
+        "NBIX": 1,
+        "RDY": 4,
+        "TEVA": 1,
+        "VRTX": 2,
+        "VTRS": 3
+      },
+      "by_release": [
+        {
+          "month": "2024-10",
+          "media_id": 183457,
+          "official_http_last_modified_utc": "2024-11-08T17:53:32Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2024-11",
+          "media_id": 184469,
+          "official_http_last_modified_utc": "2024-12-13T16:36:47Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2024-12",
+          "media_id": 185028,
+          "official_http_last_modified_utc": "2025-01-10T18:24:18Z",
+          "issuer_release_count": 5
+        },
+        {
+          "month": "2025-01",
+          "media_id": 185455,
+          "official_http_last_modified_utc": "2025-02-14T18:08:47Z",
+          "issuer_release_count": 4
+        },
+        {
+          "month": "2025-02",
+          "media_id": 185818,
+          "official_http_last_modified_utc": "2025-03-14T18:38:10Z",
+          "issuer_release_count": 4
+        },
+        {
+          "month": "2025-03",
+          "media_id": 186101,
+          "official_http_last_modified_utc": "2025-04-14T15:44:16Z",
+          "issuer_release_count": 4
+        }
+      ],
+      "gates": {
+        "issuer_release_gte_20": true,
+        "ticker_gte_10": true,
+        "top1_lte_30pct": true,
+        "all_passed": true
+      }
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "raw_direct_fresh_newa_rows": 44,
+      "issuer_release_count": 24,
+      "ticker_count": 14,
+      "top1_share": 0.208333,
+      "by_ticker": {
+        "AMGN": 1,
+        "AMRX": 3,
+        "AZN": 1,
+        "BAX": 3,
+        "BMY": 1,
+        "GILD": 1,
+        "IONS": 1,
+        "JNJ": 1,
+        "LLY": 1,
+        "NVS": 2,
+        "PFE": 1,
+        "RDY": 5,
+        "TEVA": 1,
+        "VTRS": 2
+      },
+      "by_release": [
+        {
+          "month": "2025-04",
+          "media_id": 186374,
+          "official_http_last_modified_utc": "2025-05-09T17:12:35Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2025-05",
+          "media_id": 187096,
+          "official_http_last_modified_utc": "2025-06-16T16:23:46Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2025-06",
+          "media_id": 187544,
+          "official_http_last_modified_utc": "2025-07-11T15:33:47Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2025-07",
+          "media_id": 188165,
+          "official_http_last_modified_utc": "2025-08-08T17:54:02Z",
+          "issuer_release_count": 2
+        },
+        {
+          "month": "2025-08",
+          "media_id": 188675,
+          "official_http_last_modified_utc": "2025-09-12T16:57:31Z",
+          "issuer_release_count": 5
+        },
+        {
+          "month": "2025-09",
+          "media_id": 189213,
+          "official_http_last_modified_utc": "2025-10-10T16:12:03Z",
+          "issuer_release_count": 8
+        }
+      ],
+      "gates": {
+        "issuer_release_gte_20": true,
+        "ticker_gte_10": true,
+        "top1_lte_30pct": true,
+        "all_passed": true
+      }
+    },
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "raw_direct_fresh_newa_rows": 43,
+      "issuer_release_count": 23,
+      "ticker_count": 11,
+      "top1_share": 0.217391,
+      "by_ticker": {
+        "ABBV": 1,
+        "ACAD": 1,
+        "AMRX": 5,
+        "BAX": 2,
+        "CORT": 1,
+        "GSK": 1,
+        "JNJ": 2,
+        "LLY": 1,
+        "RDY": 4,
+        "TEVA": 2,
+        "VTRS": 3
+      },
+      "by_release": [
+        {
+          "month": "2025-10",
+          "media_id": 189624,
+          "official_http_last_modified_utc": "2025-11-14T16:42:46Z",
+          "issuer_release_count": 4
+        },
+        {
+          "month": "2025-11",
+          "media_id": 190148,
+          "official_http_last_modified_utc": "2025-12-12T18:28:18Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2025-12",
+          "media_id": 190527,
+          "official_http_last_modified_utc": "2026-01-09T19:04:03Z",
+          "issuer_release_count": 4
+        },
+        {
+          "month": "2026-01",
+          "media_id": 191126,
+          "official_http_last_modified_utc": "2026-02-13T16:54:53Z",
+          "issuer_release_count": 3
+        },
+        {
+          "month": "2026-02",
+          "media_id": 191553,
+          "official_http_last_modified_utc": "2026-03-13T16:09:32Z",
+          "issuer_release_count": 4
+        },
+        {
+          "month": "2026-03",
+          "media_id": 191931,
+          "official_http_last_modified_utc": "2026-04-10T17:15:16Z",
+          "issuer_release_count": 5
+        }
+      ],
+      "gates": {
+        "issuer_release_gte_20": true,
+        "ticker_gte_10": true,
+        "top1_lte_30pct": true,
+        "all_passed": true
+      }
+    }
+  },
+  "discrepancies": [],
+  "mapping_corrections": [
+    {
+      "applied_at_utc": "2026-07-15T07:15:00Z",
+      "reason": "Fresenius Kabi is owned by Fresenius SE, not Fresenius Medical Care; FMS is not its economic parent.",
+      "action": "Removed the FMS/FRESENIUS KABI USA alias and every affected issuer-release decision; raw FDA bytes and raw NEWA row counts are unchanged."
+    }
+  ]
+}

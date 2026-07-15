@@ -46,9 +46,20 @@ from typing import Any
 
 from quant.evaluator_gates import (
     DEFAULT_EXPERIMENT_GATE_THRESHOLDS,
+    DEFAULT_PORTFOLIO_CONTRIBUTION_GATE_THRESHOLDS,
     ExperimentGateThresholds,
+    PortfolioContributionGateThresholds,
     evaluate_experiment_promotion_gate,
+    evaluate_portfolio_contribution_gate,
 )
+
+
+EVALUATION_MODE_CHAMPION_REPLACEMENT = "champion_replacement"
+EVALUATION_MODE_PORTFOLIO_CONTRIBUTION = "portfolio_contribution"
+VALID_EVALUATION_MODES = {
+    EVALUATION_MODE_CHAMPION_REPLACEMENT,
+    EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+}
 
 # Scout materiality floor (AGENTS.md Gate 4): reject when BOTH the average
 # per-trade PnL improvement is < $500 AND the average return improvement is
@@ -187,13 +198,45 @@ def evaluate_materiality(metrics: dict[str, Any]) -> dict[str, Any]:
 def evaluate_gate4(
     window_metrics: dict[str, Any],
     *,
+    evaluation_mode: str = EVALUATION_MODE_CHAMPION_REPLACEMENT,
     thresholds: ExperimentGateThresholds = DEFAULT_EXPERIMENT_GATE_THRESHOLDS,
+    portfolio_thresholds: PortfolioContributionGateThresholds = (
+        DEFAULT_PORTFOLIO_CONTRIBUTION_GATE_THRESHOLDS
+    ),
     check_materiality: bool = True,
 ) -> dict[str, Any]:
-    """Canonical Gate 4 = ``evaluate_experiment_promotion_gate`` (EV/PnL,
-    window robustness, drawdown-worse guard, single-ticker/top-5/HHI
-    concentration) plus the scout materiality floor.
+    """Evaluate either champion replacement or portfolio contribution.
+
+    ``champion_replacement`` remains the default and preserves the historical
+    Gate-4 behavior: ``evaluate_experiment_promotion_gate`` (EV/PnL, window
+    robustness, drawdown-worse guard, single-ticker/top-5/HHI concentration)
+    plus the scout materiality floor.
+
+    ``portfolio_contribution`` is a separate, capital-neutral gate for a small
+    sleeve.  It deliberately skips the champion scout-materiality rule and
+    delegates to :func:`evaluate_portfolio_contribution_gate`, whose verdict
+    can be reject, forward-watch, or accepted default-off portfolio paper.
     """
+    if evaluation_mode not in VALID_EVALUATION_MODES:
+        raise ValueError(
+            f"unsupported evaluation_mode {evaluation_mode!r}; expected one of "
+            f"{sorted(VALID_EVALUATION_MODES)}"
+        )
+
+    if evaluation_mode == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION:
+        portfolio_gate = evaluate_portfolio_contribution_gate(
+            window_metrics,
+            thresholds=portfolio_thresholds,
+        )
+        return {
+            **portfolio_gate,
+            "evaluation_mode": evaluation_mode,
+            "portfolio_contribution_gate": portfolio_gate,
+            "promotion_gate": None,
+            "materiality": None,
+            "warnings": list(portfolio_gate.get("warnings", [])),
+        }
+
     promo = evaluate_experiment_promotion_gate(window_metrics, thresholds=thresholds)
     failures = list(promo.get("hard_failures", []))
     warnings = list(promo.get("warnings", []))
@@ -208,6 +251,7 @@ def evaluate_gate4(
     return {
         "passed": not failures,
         "status": "passed" if not failures else "blocked",
+        "evaluation_mode": evaluation_mode,
         "hard_failures": failures,
         "warnings": warnings,
         "promotion_gate": promo,
@@ -458,6 +502,26 @@ def evaluate_live_readiness(
 
 
 def _next_step(verdict: str, live_readiness: dict[str, Any]) -> str:
+    if verdict == "portfolio_reject":
+        return (
+            "Reject the portfolio sleeve under the capital-conserving "
+            "contribution gate. Do not route it to live or retune it on the "
+            "frozen panel."
+        )
+    if verdict == "portfolio_forward_watch":
+        return (
+            "Keep the sleeve default-off on the portfolio forward watchlist. "
+            "No hard economic or risk failure was established, but required "
+            "measurement or trial-adjusted evidence is incomplete; it is "
+            "neither accepted paper nor live-eligible."
+        )
+    if verdict == "accepted_portfolio_paper":
+        return (
+            "Accept only as a default-off portfolio paper sleeve. This "
+            "portfolio-contribution verdict never grants live eligibility; "
+            "live promotion requires a separate, explicitly authorized "
+            "forward activation contract."
+        )
     if verdict == "reject":
         return (
             "Roll back the sleeve change and log the failure. Gate 4 did not "
@@ -483,25 +547,96 @@ def full_stack_verdict(
     gate4: dict[str, Any],
     live_readiness: dict[str, Any],
     envelope: ExecutionEnvelope | None = None,
+    evaluation_mode: str | None = None,
 ) -> dict[str, Any]:
-    """Combine Gate 4 + Gate-5 live-readiness into the verdict ladder.
+    """Combine Gate 4 + Gate-5 live-readiness into the selected verdict ladder.
 
-    - Gate 4 fails               -> ``reject``
-    - Gate 4 passes, not live    -> ``accepted_paper_pending_forward``
-    - Gate 4 passes, live-ready  -> ``live_eligible``
+    Champion replacement (the default) preserves the existing ladder:
+    ``reject`` -> ``accepted_paper_pending_forward`` -> ``live_eligible``.
+
+    Portfolio contribution maps the delegated gate's fixed verdict directly:
+    ``portfolio_reject`` -> ``portfolio_forward_watch`` ->
+    ``accepted_portfolio_paper``.  It ignores Gate-5 live readiness and can
+    never return ``live_eligible``.  When the caller omits ``evaluation_mode``,
+    the mode is inherited from the gate report so a portfolio result cannot be
+    accidentally interpreted by the champion/live ladder.
     """
-    if not gate4.get("passed"):
-        verdict = "reject"
-    elif live_readiness.get("ready"):
-        verdict = "live_eligible"
+    gate_mode = gate4.get("evaluation_mode")
+    if gate_mode is not None and gate_mode not in VALID_EVALUATION_MODES:
+        raise ValueError(
+            f"unsupported gate4 evaluation_mode {gate_mode!r}; expected one of "
+            f"{sorted(VALID_EVALUATION_MODES)}"
+        )
+    if evaluation_mode is None:
+        evaluation_mode = gate_mode or EVALUATION_MODE_CHAMPION_REPLACEMENT
+    elif gate_mode is not None and gate_mode != evaluation_mode:
+        raise ValueError(
+            "evaluation_mode conflicts with gate4 evaluation_mode: "
+            f"{evaluation_mode!r} != {gate_mode!r}"
+        )
+    if evaluation_mode not in VALID_EVALUATION_MODES:
+        raise ValueError(
+            f"unsupported evaluation_mode {evaluation_mode!r}; expected one of "
+            f"{sorted(VALID_EVALUATION_MODES)}"
+        )
+
+    if evaluation_mode == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION:
+        reported_portfolio_verdict = gate4.get("portfolio_verdict")
+        hard_failures = list(gate4.get("hard_failures") or [])
+        evidence_blockers = list(gate4.get("evidence_blockers") or [])
+        report_consistent = (
+            (
+                reported_portfolio_verdict == "portfolio_reject"
+                and not gate4.get("passed")
+                and bool(hard_failures)
+            )
+            or (
+                reported_portfolio_verdict == "portfolio_forward_watch"
+                and not gate4.get("passed")
+                and not hard_failures
+                and bool(evidence_blockers)
+            )
+            or (
+                reported_portfolio_verdict == "accepted_portfolio_paper"
+                and gate4.get("passed") is True
+                and not hard_failures
+                and not evidence_blockers
+            )
+        )
+        if reported_portfolio_verdict not in {
+            "portfolio_reject",
+            "portfolio_forward_watch",
+            "accepted_portfolio_paper",
+        } or not report_consistent:
+            # Fail closed if a caller supplies a hand-built, stale, or
+            # internally contradictory portfolio report.  A string verdict
+            # alone must never unlock paper acceptance or the live ladder.
+            portfolio_verdict = "portfolio_reject"
+            report_consistent = False
+        else:
+            portfolio_verdict = reported_portfolio_verdict
+        verdict = portfolio_verdict
+        live_ready = False
     else:
-        verdict = "accepted_paper_pending_forward"
+        if not gate4.get("passed"):
+            verdict = "reject"
+        elif live_readiness.get("ready"):
+            verdict = "live_eligible"
+        else:
+            verdict = "accepted_paper_pending_forward"
+        live_ready = bool(live_readiness.get("ready"))
 
     return {
         "anti_js": "No JavaScript was used.",
         "verdict": verdict,
+        "evaluation_mode": evaluation_mode,
+        "gate_report_consistent": (
+            report_consistent
+            if evaluation_mode == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+            else True
+        ),
         "gate4_passed": bool(gate4.get("passed")),
-        "live_ready": bool(live_readiness.get("ready")),
+        "live_ready": live_ready,
         "next_step": _next_step(verdict, live_readiness),
         "gate4": gate4,
         "live_readiness": live_readiness,

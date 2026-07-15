@@ -179,29 +179,38 @@ def fetch_broad_universe_earnings(
     # Serial, batched, with a sleep between batches to stay under yfinance rate
     # limits. Per-ticker errors are caught inside _fetch_one_ticker (-> empty
     # data), so one bad ticker never aborts the run.
-    for batch_start in range(0, len(broad_tickers), batch_size):
+    # Progress logging at ~25% milestones (plus any batch with failures)
+    # instead of one line per batch: 1248 tickers / 40 per batch printed 32
+    # near-identical lines per daily run.
+    total = len(broad_tickers)
+    next_progress_mark = max(1, (total + 3) // 4)
+    for batch_start in range(0, total, batch_size):
         batch = broad_tickers[batch_start: batch_start + batch_size]
+        batch_failed = 0
         for ticker in batch:
             tk, earnings, status = _fetch_one_ticker(ticker, as_of)
             results[tk] = earnings
             if status == "failed":
                 failed.append(tk)
+                batch_failed += 1
             elif status == "skipped":
                 skipped_non_earnings.append(tk)
 
         # Rate-limit: sleep between batches (not after the last one)
-        if batch_start + batch_size < len(broad_tickers):
+        if batch_start + batch_size < total:
             time.sleep(batch_sleep_secs)
 
-        batch_end = min(batch_start + batch_size, len(broad_tickers))
-        logger.info(
-            "%s: Fetched batch %d-%d / %d (failed in batch: %d)",
-            EXPERIMENT_ID,
-            batch_start + 1,
-            batch_end,
-            len(broad_tickers),
-            sum(1 for t in batch if t in failed),
-        )
+        batch_end = min(batch_start + batch_size, total)
+        if batch_failed or batch_end >= next_progress_mark or batch_end == total:
+            logger.info(
+                "%s: Fetched %d / %d tickers (failed so far: %d)",
+                EXPERIMENT_ID,
+                batch_end,
+                total,
+                len(failed),
+            )
+            while next_progress_mark <= batch_end:
+                next_progress_mark += max(1, (total + 3) // 4)
 
     if skipped_non_earnings:
         logger.info(

@@ -1,0 +1,313 @@
+{
+  "acceptance_rule": "Archive and hash every official result XML used; validate PIT auction date, CUSIP, tenor and bid-to-cover; settle at least 30 non-overlapping trades and at least 10 per window. Accepted alpha requires all three window EV and PnL deltas nonnegative, aggregate EV delta >0.5286 and PnL delta >10432.91, worst drawdown no more than 0.5pp worse, positive mean cash and QQQ replacement value in every window, DSR probability >=0.95 using 7 effective attempts, top-tenor positive-PnL share <=35%, and top-five trade positive-PnL share <=60%. A merely positive result remains default-off observed-only.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/treasury_auction_weak_demand_tbt_paper_sleeve.py",
+    "quant/test_treasury_auction_weak_demand_tbt_paper_sleeve.py",
+    "quant/experiments/",
+    "data/non_ohlcv/treasury_auction_results/",
+    "data/experiments/",
+    "data/paper_sleeves/treasury_auction_weak_demand_tbt/",
+    "experiments/artifacts/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/logs/",
+    "experiments/tickets/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-007.md",
+  "causal_components": [
+    "official hash-bound Treasury result XML",
+    "trailing-12 same-original-tenor median",
+    "strict next-session TBT entry",
+    "five-session non-overlapping paper hold",
+    "core-plus-sleeve Gate 4"
+  ],
+  "change_type": "shared_paper_first_new_source",
+  "changed_variable": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1",
+  "claimed_at": "2026-07-15T16:19:48+00:00",
+  "completed_at": null,
+  "created_at": "2026-07-15T16:19:20+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260715-007",
+  "experiment_uid": "expuid-14e295cb38254b62",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T16:19:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1"
+  },
+  "hypothesis": "Official Treasury auction results where a nominal coupon auction bid-to-cover ratio is strictly below the median of the prior 12 auctions for the same original tenor should predict positive next-session-open to fifth-session-close TBT replacement value and improve the core-plus-sleeve aggregate.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source=official_static_result_xml;security=nominal_note_bond_non_tips_non_frn;tenor=original_security_term;lookback=12;threshold=strictly_below_prior_median;entry=strict_next_session_open;hold_sessions=5;notional_usd=16000;max_concurrent_positions=1;same_day_events=one_signal;round_trip_cost_pct=0.0035;ticker=TBT;trade_enabled=false"
+  ],
+  "mechanism_family": "treasury_auction_demand_microstructure",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/filter.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-016",
+    "exp-20260607-024",
+    "exp-20260605-030",
+    "exp-20260605-032",
+    "exp-20260711-004"
+  ],
+  "new_evidence_type": "new_official_data_source_and_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_prior_same_ticker_memory",
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "score": 0.6327,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "score": 0.632,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "score": 0.625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.1053,
+        "family_key": "external_event_satellite_overlay_allocation",
+        "score": 0.624,
+        "status": "has_accepted",
+        "trials": 19
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "5session",
+        "a",
+        "aggregate",
+        "auction",
+        "auctions",
+        "below",
+        "bid",
+        "btc",
+        "close",
+        "core",
+        "coupon",
+        "cover",
+        "demand",
+        "event",
+        "fifth",
+        "improve",
+        "is",
+        "median",
+        "microstructure",
+        "nominal",
+        "of",
+        "official",
+        "original",
+        "plus",
+        "positive",
+        "predict",
+        "prior",
+        "ratio",
+        "replacement",
+        "response",
+        "results",
+        "same",
+        "session",
+        "should",
+        "sleeve",
+        "strictly",
+        "tbt",
+        "tenor",
+        "to",
+        "trailing12",
+        "treasury",
+        "value",
+        "weak",
+        "where"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_prior_same_ticker_memory",
+        "reopen_condition": "Need materially more closed forward replacement rows with prior same-ticker history, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-ticker prior-positive coverage.",
+        "score": 0.634,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "event_overlay_replacement_value_core_overlap_context",
+        "reopen_condition": "Do not retry nearby core-overlap event scalars on the frozen sample without new closed forward rows or a shared production-visible overlap/displacement adapter.",
+        "score": 0.6327,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "reopen_condition": null,
+        "score": 0.632,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "market_state_sleeve_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.1053,
+        "data_source": "forward_replacement_value",
+        "family_key": "external_event_satellite_overlay_allocation",
+        "reopen_condition": null,
+        "score": 0.624,
+        "status": "has_accepted",
+        "trials": 19
+      }
+    ],
+    "new_evidence_axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The source and event gate are genuinely new and 37 non-overlapping trigger dates survive the fixed capital envelope, but next-open entry may absorb the auction shock and leveraged-ETF decay plus the champion comparator make acceptance unlikely.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1800.0,
+    "main_failure_modes": [
+      "next_open_absorbs_auction_signal",
+      "nonoverlap_sample_too_small",
+      "tbt_daily_reset_decay_and_cost",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "static_xml_contract_failure",
+      "positive_pnl_concentration"
+    ],
+    "recorded_at": "2026-07-15T16:18:32+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "result": null,
+  "revision_manifest_file": "experiments/manifests/exp-20260715-007.json",
+  "single_causal_variable": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1",
+  "status": "claimed",
+  "ticket_file": "experiments/tickets/exp-20260715-007.json",
+  "trial_family": "treasury_auction_bid_to_cover_tbt_event_response",
+  "trial_variant_id": "nominal_coupon_all_7_tenors_trailing12_median_tbt_h5_v1"
+}
