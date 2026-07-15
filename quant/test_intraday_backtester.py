@@ -320,3 +320,39 @@ def test_scorecard_normalizes_daily_pnl_by_original_position_value(tmp_path):
     assert curve["days"] == 1
     assert curve["curve"][0]["position_value_base_usd"] == 10_000.0
     assert curve["curve"][0]["daily_incremental_return_bps"] > 0
+
+
+def test_scorecard_keeps_latest_decision_for_shared_execution_cohort(tmp_path):
+    decision_dir = tmp_path / "daily" / "intraday" / "decisions"
+    _write_finalized(
+        decision_dir / "intraday_triage_20260711_100000ET.json",
+        "2026-07-11 10:00 ET",
+        action="ADD_SMALL",
+    )
+    _write_finalized(
+        decision_dir / "intraday_triage_20260712_100000ET.json",
+        "2026-07-12 10:00 ET",
+        action="WAIT",
+    )
+
+    result = run_intraday_backtest(
+        "2026-07-14",
+        data_dir=tmp_path,
+        bars_by_ticker=_all_bars(_bars()),
+    )
+
+    next_close = result["scorecard"]["horizons"]["next_close"]
+    readiness = result["scorecard"]["readiness"]
+    assert next_close["raw_rows"] == 2
+    assert next_close["rows"] == 1
+    assert next_close["raw_closed"] == 2
+    assert next_close["closed"] == 1
+    assert next_close["pending"] == 0
+    assert next_close["duplicate_economic_cohorts"] == 1
+    assert next_close["duplicate_rows_excluded"] == 1
+    assert next_close["action_counts"] == {"WAIT": 1}
+    assert next_close["incremental_pnl_vs_no_adjustment_usd"]["sum"] == 0.0
+    assert readiness["raw_settled_primary_next_close_decisions"] == 2
+    assert readiness["settled_primary_next_close_decisions"] == 1
+    assert readiness["duplicate_settled_economic_rows_excluded"] == 1
+    assert result["scorecard"]["daily_portfolio_curve_next_close"]["days"] == 1

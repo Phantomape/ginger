@@ -40,6 +40,7 @@ except ImportError:  # pragma: no cover - package-style imports
 SCHEMA_VERSION = 1
 OUTCOME_RULE_VERSION = "intraday_triage_counterfactual_outcome_v1"
 EXECUTION_RULE_VERSION = "intraday_triage_next_5m_execution_v1"
+AGGREGATION_RULE_VERSION = "intraday_triage_latest_pre_execution_cohort_v1"
 HORIZONS = ("h1", "rth_close", "next_close", "d3_close")
 NO_ADJUSTMENT_ACTIONS = frozenset({"NO_TRADE", "WAIT", "HOLD_ONLY"})
 LONG_ACTIONS = frozenset({"ADD_SMALL", "OPEN_SMALL"})
@@ -735,6 +736,63 @@ def _daily_curve(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+def select_effective_economic_outcomes(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[list[Mapping[str, Any]], dict[str, Any]]:
+    """Select one attributable decision for each executable economic cohort.
+
+    Finalized snapshots are immutable and remain in the raw outcome ledger.  If
+    multiple primary ticker-day decisions ultimately map to the same ticker,
+    execution timestamp, and horizon (for example, repeated weekend reviews
+    that can only execute on Monday), only the latest decision available before
+    that execution is an independent policy observation.  Rows without an
+    execution timestamp are kept separate because their eventual cohort is not
+    yet known.
+    """
+    buckets: dict[tuple[str, ...], list[tuple[int, Mapping[str, Any]]]] = defaultdict(list)
+    for index, row in enumerate(rows):
+        execution_time = str(row.get("execution_time") or "").strip()
+        horizon = str(row.get("horizon") or "").strip()
+        ticker = str(row.get("ticker") or "").upper().strip()
+        if execution_time and ticker:
+            key = ("execution", ticker, execution_time, horizon)
+        else:
+            observation_id = str(row.get("observation_id") or f"row-{index}")
+            key = ("observation", observation_id, horizon, str(index))
+        buckets[key].append((index, row))
+
+    selected: list[tuple[int, Mapping[str, Any]]] = []
+    duplicate_groups = 0
+    duplicate_rows_excluded = 0
+    for group in buckets.values():
+        if len(group) > 1:
+            duplicate_groups += 1
+            duplicate_rows_excluded += len(group) - 1
+        selected.append(max(
+            group,
+            key=lambda item: (
+                str(item[1].get("decision_timestamp") or ""),
+                str(item[1].get("observation_id") or ""),
+                item[0],
+            ),
+        ))
+    selected.sort(key=lambda item: (
+        str(item[1].get("decision_timestamp") or ""),
+        str(item[1].get("ticker") or ""),
+        HORIZONS.index(str(item[1].get("horizon")))
+        if item[1].get("horizon") in HORIZONS else 99,
+        item[0],
+    ))
+    effective = [row for _, row in selected]
+    return effective, {
+        "aggregation_rule_version": AGGREGATION_RULE_VERSION,
+        "raw_rows": len(rows),
+        "effective_rows": len(effective),
+        "duplicate_economic_cohorts": duplicate_groups,
+        "duplicate_rows_excluded": duplicate_rows_excluded,
+    }
+
+
 def build_scorecard(
     outcomes: Sequence[Mapping[str, Any]],
     *,
@@ -746,14 +804,30 @@ def build_scorecard(
 ) -> dict[str, Any]:
     primary = [row for row in outcomes if row.get("primary_ticker_day_decision")]
     horizon_summary: dict[str, Any] = {}
+    effective_by_horizon: dict[str, list[Mapping[str, Any]]] = {}
     for horizon in HORIZONS:
-        rows = [row for row in primary if row.get("horizon") == horizon]
+        raw_rows = [row for row in primary if row.get("horizon") == horizon]
+        rows, cohort_diagnostics = select_effective_economic_outcomes(raw_rows)
+        effective_by_horizon[horizon] = rows
+        raw_closed = [row for row in raw_rows if row.get("status") == "closed"]
         closed = [row for row in rows if row.get("status") == "closed"]
         horizon_summary[horizon] = {
             "rows": len(rows),
+            "raw_rows": len(raw_rows),
             "closed": len(closed),
+            "raw_closed": len(raw_closed),
             "pending": len(rows) - len(closed),
+            "duplicate_economic_cohorts": cohort_diagnostics[
+                "duplicate_economic_cohorts"
+            ],
+            "duplicate_rows_excluded": cohort_diagnostics[
+                "duplicate_rows_excluded"
+            ],
             "action_counts": dict(Counter(row.get("final_action") for row in closed)),
+            "semantic_action_override_count": sum(
+                row.get("final_action") != row.get("machine_default_action")
+                for row in closed
+            ),
             "incremental_pnl_vs_no_adjustment_usd": _summary_stats([
                 row.get("incremental_pnl_vs_no_adjustment_usd") for row in closed
             ]),
@@ -777,10 +851,14 @@ def build_scorecard(
             ]),
         }
     next_closed = [
+        row for row in effective_by_horizon["next_close"]
+        if row.get("status") == "closed"
+    ]
+    raw_next_closed = [
         row for row in primary
         if row.get("horizon") == "next_close" and row.get("status") == "closed"
     ]
-    settled_decisions = len({row.get("observation_id") for row in next_closed})
+    settled_decisions = len(next_closed)
     if settled_decisions < 20:
         evidence_stage = "case_review_only"
     elif settled_decisions < 50:
@@ -797,6 +875,7 @@ def build_scorecard(
         "scorecard_type": "intraday_triage_counterfactual_scorecard",
         "outcome_rule_version": OUTCOME_RULE_VERSION,
         "execution_rule_version": EXECUTION_RULE_VERSION,
+        "aggregation_rule_version": AGGREGATION_RULE_VERSION,
         "as_of_date": as_of_date,
         "status": status,
         "decision_rows": len(decisions),
@@ -810,6 +889,10 @@ def build_scorecard(
         "daily_portfolio_curve_next_close": _daily_curve(next_closed),
         "readiness": {
             "settled_primary_next_close_decisions": settled_decisions,
+            "raw_settled_primary_next_close_decisions": len(raw_next_closed),
+            "duplicate_settled_economic_rows_excluded": (
+                len(raw_next_closed) - settled_decisions
+            ),
             "evidence_stage": evidence_stage,
             "alpha_claim_allowed": False,
             "promotion_note": (
@@ -858,7 +941,10 @@ def render_scorecard(scorecard: Mapping[str, Any]) -> str:
         always = row.get("final_vs_always_add_usd") or {}
         return_bps = row.get("incremental_return_on_position_bps") or {}
         lines.append(
-            f"{horizon:<11} closed={row.get('closed', 0):<4} pending={row.get('pending', 0):<4} "
+            f"{horizon:<11} closed={row.get('closed', 0):<4} "
+            f"raw_closed={row.get('raw_closed', row.get('closed', 0)):<4} "
+            f"dup_excluded={row.get('duplicate_rows_excluded', 0):<4} "
+            f"pending={row.get('pending', 0):<4} "
             f"pnl_sum={pnl.get('sum', 0):>10.2f} "
             f"return_bps={return_bps.get('sum', 0):>9.2f} "
             f"semantic_lift={lift.get('sum', 0):>10.2f} "
