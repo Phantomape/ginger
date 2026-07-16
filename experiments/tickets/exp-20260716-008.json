@@ -1,0 +1,356 @@
+{
+  "acceptance_rule": "Against the active cash-feasible Gate-1 baseline: aggregate expected_value_score must exceed 6.8263 (>10%), aggregate PnL must exceed 130992.36, at least two windows improve both EV and PnL, no window EV may regress more than 5%, worst max drawdown may worsen by at most 1 percentage point, every window must retain >=10 trades and >=5% survival, baseline trade-key retention must be >=80%, cash must never be negative and conservation error must be <=1e-4, and the queue must produce >=20 delayed fills total with top-1 queued-fill ticker share <=50%.",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/cash_conflict_persistent_order_queue.py",
+    "quant/test_cash_conflict_persistent_order_queue.py",
+    "quant/test_backtester_cash_ledger.py",
+    "quant/experiments/exp_20260716_008_cash_conflict_persistent_order_queue.py",
+    "data/experiments/exp-20260716-008",
+    "experiments/artifacts/exp-20260716-008.json",
+    "experiments/cards/exp-20260716-008.md",
+    "experiments/logs/exp-20260716-008.json",
+    "experiments/manifests/exp-20260716-008.json",
+    "experiments/tickets/exp-20260716-008.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260716-008.md",
+  "causal_components": [
+    "cash-only conflict qualification",
+    "exact unfilled remainder",
+    "FIFO persistence",
+    "next-open fill after ordinary cash release",
+    "original stop-target invalidation",
+    "no leverage",
+    "no incumbent liquidation"
+  ],
+  "change_type": "capital_allocation",
+  "changed_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+  "claimed_at": "2026-07-16T16:06:06+00:00",
+  "completed_at": "2026-07-16T16:26:13+00:00",
+  "created_at": "2026-07-16T16:05:47+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260716-008",
+  "experiment_uid": "expuid-f5ad90e3b9014ace",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T16:05:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_conflict_persistent_order_queue"
+  },
+  "hypothesis": "When a fully qualified fresh core entry is partially or fully rejected only by settled-cash admission, persisting the exact unfilled shares in a FIFO order queue and filling them at a later open after ordinary exits release cash, while the original stop-target thesis remains unbreached, should recover missed alpha without leverage or incumbent liquidation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cash-feasible Gate-1 baseline",
+    "CASH_LEDGER_ENFORCED true",
+    "signal generation",
+    "ranking",
+    "requested sizing",
+    "ordinary exits",
+    "add-ons",
+    "sector and position caps",
+    "cost model",
+    "three frozen windows"
+  ],
+  "mechanism_family": "execution_cash_opportunity_cost_persistence",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/constants.py",
+    "live order defaults",
+    "normal signal generation",
+    "ordinary exits",
+    "ranking",
+    "sizing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260716-004",
+    "exp-20260715-008",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "intraday_advisory",
+      "field_tags": [
+        "a",
+        "admission",
+        "after",
+        "alpha",
+        "at",
+        "by",
+        "cash",
+        "conflict",
+        "core",
+        "cost",
+        "entry",
+        "exact",
+        "execution",
+        "exits",
+        "fifo",
+        "filling",
+        "fresh",
+        "fully",
+        "in",
+        "incumbent",
+        "invalid",
+        "is",
+        "later",
+        "leverage",
+        "liquidation",
+        "missed",
+        "only",
+        "opportunity",
+        "or",
+        "order",
+        "ordinary",
+        "original",
+        "partially",
+        "persistence",
+        "persistent",
+        "persisting",
+        "price",
+        "qualified",
+        "queue",
+        "recover",
+        "rejected",
+        "release",
+        "remains",
+        "settled",
+        "shares",
+        "should",
+        "stop",
+        "target",
+        "them",
+        "thesis",
+        "unbreached",
+        "unfilled",
+        "until",
+        "when",
+        "while",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.45,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_forward_outcome",
+        "reopen_condition": "Reopen only after current h1/h3 settled rows materially exceed 141/117 under the same fixed helper, or after true quote timestamps or broker bar IDs, materially larger native primary-action coverage, and slot-reuse/replacement-value accounting are available.",
+        "score": 0.45,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_state_forward_outcome_settlement",
+        "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+        "score": 0.45,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_native_advisory_shadow_action_contract",
+        "reopen_condition": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+        "score": 0.45,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_review_quote_capture_provenance",
+        "reopen_condition": "Future intraday alpha promotion needs newly generated snapshots with capture_time_et, real pending action or existing-rule trigger semantics, and closed forward outcomes/replacement value. This repair alone is not alpha evidence.",
+        "score": 0.45,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "intraday_advisory",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "intraday_advisory",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "stale_signal_decay",
+      "queue_starves_fresh_candidates",
+      "price_thesis_cancels_most_orders",
+      "queued_fill_concentration",
+      "partial_fill_accounting_drift"
+    ],
+    "confidence_reason": "The three frozen windows contain 17/23/16 cash conflicts and 10/18/7 full skips with later OHLCV, so the state machine has enough opportunities; however delayed entry can decay and stringent no-lookahead invalidation may cancel many orders.",
+    "recorded_at": "2026-07-16T16:05:25+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-008/before.json",
+    "after_result_file": "data/experiments/exp-20260716-008/after.json",
+    "artifact_file": "experiments/artifacts/exp-20260716-008.json",
+    "delta_metrics": {
+      "total_pnl": -7804.169999999998,
+      "expected_value_score": -0.5644,
+      "trade_count": 4.0,
+      "minimum_survival_rate": 0.0,
+      "max_drawdown_pct": -0.024900000000000005
+    },
+    "gates": {
+      "gate1_exact_cash_feasible_baseline": true,
+      "gate2_frozen_contract_and_entry_dates": true,
+      "gate3_survival": true,
+      "aggregate_ev_above_10pct_bar": false,
+      "aggregate_pnl_above_baseline": false,
+      "at_least_two_windows_improve_both_ev_and_pnl": false,
+      "no_window_ev_regresses_more_than_5pct": false,
+      "worst_drawdown_drift_within_one_percentage_point": true,
+      "trade_count_statistically_meaningful": true,
+      "baseline_trade_key_retention_gte_80pct": true,
+      "cash_conservation_all_variants": true,
+      "signal_generation_and_survival_unchanged": false,
+      "queue_inactive_in_explicit_false_baseline": true,
+      "queue_result_present_and_enabled_in_after": true,
+      "queue_invariants_reported": true,
+      "fifo_thesis_and_cash_invariants_clean": true,
+      "at_least_20_delayed_fills": false,
+      "delayed_fill_ticker_attribution_complete": true,
+      "delayed_fill_ticker_concentration_lte_50pct": true
+    },
+    "calibration": {
+      "actual_success": false,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "expected_ev_delta": 0.75,
+      "actual_ev_delta": -0.5644,
+      "ev_prediction_error": -1.3144,
+      "expected_pnl_delta": 12000.0,
+      "actual_pnl_delta": -7804.169999999998,
+      "pnl_prediction_error": -19804.17,
+      "predicted_failure_modes": [
+        "stale_signal_decay",
+        "queue_starves_fresh_candidates",
+        "price_thesis_cancels_most_orders",
+        "queued_fill_concentration",
+        "partial_fill_accounting_drift"
+      ],
+      "realized_failure_mode": "stale_signal_decay_and_insufficient_delayed_fills",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "FIFO invariants and cash conservation were clean, but only 12 delayed fills materialized versus the 20-fill floor and the delayed entries reduced aggregate EV/PnL."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260716-008.json",
+  "single_causal_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-008.json",
+  "trial_family": "cash_conflict_persistent_order_queue",
+  "trial_variant_id": "v1_fifo_original_price_thesis",
+  "updated_at": "2026-07-16T16:26:13+00:00"
+}

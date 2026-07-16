@@ -63,6 +63,20 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "fda orange book additions deletions",
         "official fda orange book",
     )),
+    # FDA FAERS quarterly adverse-event extracts are a post-market safety
+    # monitoring source, distinct from approval decisions, Orange Book product
+    # releases, and device-enforcement reports.  Keep only the official acronym
+    # and compound system names here; bare "FDA", "adverse", or "event" would
+    # over-match several adjacent regulatory surfaces.
+    ("faers", (
+        "faers_serious_outcome_share", "faers serious-outcome share",
+        "faers serious outcome share", "official fda faers",
+        "fda faers quarterly", "faers quarterly ascii",
+        "fda adverse-event reporting system",
+        "fda adverse event reporting system",
+        "fda adverse-event monitoring system",
+        "fda adverse event monitoring system",
+    )),
     # FDA 510(k) clearances are a releasable device-decision source, distinct
     # from weekly Device Enforcement Reports and generic device/news wording.
     # Keep compound source phrases ahead of enforcement and OHLCV relations;
@@ -155,6 +169,9 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "bid to cover microstructure", "auction demand microstructure",
         "treasury auction demand", "treasury auction microstructure",
         "bid_to_cover_ratio", "indirect_bidder_accepted",
+        "treasury_auction_demand_microstructure",
+        "treasury_auction_indirect_bidder_share",
+        "treasury auction indirect bidder share",
         "direct_bidder_accepted", "primary_dealer_accepted",
     )),
     # Chicago Fed NFCI is an official weekly composite of money, debt,
@@ -441,6 +458,16 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "tick size atr", "small_tick", "small tick", "spread_to_atr", "spread-to-atr",
         "impact_reinforcement", "impact reinforcement",
     )),
+    ("cash_feasible_core_book", (
+        "cash_conflict_oldest_incumbent", "cash conflict oldest incumbent",
+        "execution_cash_opportunity_cost_rotation",
+        "cash opportunity cost rotation", "settled-cash admission",
+        "settled cash admission", "cash_conflict_persistent_order_queue",
+        "cash conflict persistent order queue", "cash_conflict_deferred_queue",
+        "cash conflict deferred queue",
+        "cash_conflict_unfilled_entry_fifo_persistence",
+        "cash conflict unfilled entry fifo persistence",
+    )),
     ("core_entry_admission", (
         "core_entry_admission", "core entry admission", "entry_admission",
         "entry admission", "admission_gate", "admission gate", "no_entry",
@@ -467,6 +494,16 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("deep_drawdown", ("deep_drawdown", "deep-drawdown", "deep drawdown", "drawdown_capitulation", "drawdown_breadth", "capitulation_breadth")),
     ("finra_short_interest", ("finra", "short_interest", "shortinterest", "borrow", "days_to_cover", "dtc")),
     ("form4_insider", ("form4", "form_4", "insider")),
+    # Public Form N-PORT holdings are a registered-fund portfolio source,
+    # distinct from Form 13F institutional ownership. Keep the spellings
+    # narrow and ahead of 13F's broad ``holder`` keyword; bare "portfolio",
+    # "fund", "holdings", or "holder" would collide with adjacent surfaces.
+    ("sec_form_nport_public_holdings", (
+        "sec_form_nport_public_holdings", "sec form n-port public holdings",
+        "sec_nport", "sec n-port", "sec form n-port", "sec form nport",
+        "form_n_port", "form n-port", "form nport",
+        "nport public holdings", "n-port public holdings", "nport",
+    )),
     ("sec13f_ownership", ("13f", "sec13f", "sponsorship", "holder")),
     ("filing_timeliness", ("timeliness", "filing_lag", "early_disclosure", "filing_recency", "recency", "disclosure_timing")),
     ("sec_filer_status", (
@@ -525,6 +562,19 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "fdic_deposit_franchise", "fdic deposit franchise",
         "fdic quarterly banking profile",
         "bankfind call report",
+    )),
+    # PCAOB Form AP identifies the audit firm and engagement partner attached
+    # to an issuer audit.  This is regulatory personnel provenance, not an
+    # OHLCV peer relation merely because a downstream policy buys a peer.
+    # Keep compound source spellings narrow and ahead of the generic `peer`
+    # route so this surface gets its own saturation / observed-only budget.
+    ("pcaob_form_ap", (
+        "pcaob_form_ap", "pcaob form ap",
+        "official pcaob form ap", "pcaob firmfilings",
+        "pcaob firm filings", "pcaob engagement-partner",
+        "pcaob engagement partner", "form ap engagement-partner",
+        "form ap engagement partner", "firmfilings.zip",
+        "regulatory_audit_uncertainty_peer_substitution",
     )),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",
@@ -597,6 +647,32 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "fda orange book monthly additions/deletions pdf newa basket",
         "fda orange book monthly additions deletions pdf newa basket",
         "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
+    )),
+    # A FAERS release ranks improving issuers into one standalone quarterly
+    # basket.  Its explicit source/policy spellings must precede the generic
+    # allocator "rank" fallback and the generic top-1 candidate-pool bucket.
+    ("standalone_quarterly_candidate_pool", (
+        "faers_serious_outcome_share_improvement_quarterly_candidate_pool",
+        "faers serious-outcome share improvement quarterly candidate pool",
+        "faers serious outcome share improvement quarterly candidate pool",
+        "faers_serious_share_improvement_basket",
+        "faers serious-share improvement basket",
+        "faers serious-outcome share is a safety-quality signal",
+        "faers quarterly safety-quality candidate pool",
+        "fda adverse-event monitoring system quarterly candidate pool",
+    )),
+    # A Form-AP event selects one unaffected industry peer and holds it for
+    # twenty sessions.  Keep the explicit family/policy spellings ahead of the
+    # older generic peer-substitution top-1/10-day bucket.
+    ("peer_substitution_candidate_pool_top1_20d", (
+        "peer_substitution_candidate_pool_top1_20d",
+        "peer substitution candidate pool top1 20d",
+        "pcaob_form_ap_partner_change_peer_substitution",
+        "pcaob form ap partner change peer substitution",
+        "pcaob_partner_change_unaffected_industry_peer_candidate_source",
+        "pcaob partner change unaffected industry peer candidate source",
+        "original_issuer_primary_partner_change_same_industry_adv60_top1_h20",
+        "original issuer primary partner change same industry adv60 top1 h20",
     )),
     ("peer_propagation_top1_10d", (
         "peer_propagation_top1_10d", "peer propagation top1 10d",
@@ -695,6 +771,18 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "candidate_training_table", "candidate training table",
         "training_table_readiness", "training table readiness",
         "model_readiness", "model readiness",
+    )),
+    ("incumbent_rotation", (
+        "cash_conflict_oldest_incumbent", "cash conflict oldest incumbent",
+        "execution_cash_opportunity_cost_rotation",
+        "cash opportunity cost rotation", "oldest incumbent rotation",
+    )),
+    ("cash_conflict_deferred_queue", (
+        "cash_conflict_persistent_order_queue",
+        "cash conflict persistent order queue",
+        "cash_conflict_deferred_queue", "cash conflict deferred queue",
+        "cash_conflict_unfilled_entry_fifo_persistence",
+        "cash conflict unfilled entry fifo persistence",
     )),
     ("entry_admission", (
         "core_entry_admission", "core entry admission", "entry_admission",

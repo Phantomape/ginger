@@ -1,0 +1,159 @@
+{
+  "experiment_id": "exp-20260716-008",
+  "timestamp": "2026-07-16T16:25:58.736456+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "artifact_decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "trial_family": "cash_conflict_persistent_order_queue",
+  "trial_variant_id": "v1_fifo_original_price_thesis",
+  "mechanism_family": "execution_cash_opportunity_cost_persistence",
+  "single_causal_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+  "changed_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+  "hypothesis": "When a fully qualified fresh core entry is partially or fully rejected only by settled-cash admission, persisting the exact unfilled shares in a FIFO order queue and filling them at a later open after ordinary exits release cash, while the original stop-target thesis remains unbreached, should recover missed alpha without leverage or incumbent liquidation.",
+  "new_evidence_type": "new_gate_shape",
+  "fingerprint": {
+    "data_source": "cash_feasible_core_book",
+    "gate_shape": "cash_conflict_deferred_queue"
+  },
+  "nearby_prior_experiments": [
+    "exp-20260716-004",
+    "exp-20260715-008",
+    "exp-20260715-010"
+  ],
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "stale_signal_decay",
+      "queue_starves_fresh_candidates",
+      "price_thesis_cancels_most_orders",
+      "queued_fill_concentration",
+      "partial_fill_accounting_drift"
+    ],
+    "confidence_reason": "The three frozen windows contain 17/23/16 cash conflicts and 10/18/7 full skips with later OHLCV, so the state machine has enough opportunities; however delayed entry can decay and stringent no-lookahead invalidation may cancel many orders.",
+    "recorded_at": "2026-07-16T16:05:25+00:00"
+  },
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.22,
+    "brier_score": 0.0484,
+    "expected_ev_delta": 0.75,
+    "actual_ev_delta": -0.5644,
+    "ev_prediction_error": -1.3144,
+    "expected_pnl_delta": 12000.0,
+    "actual_pnl_delta": -7804.169999999998,
+    "pnl_prediction_error": -19804.17,
+    "predicted_failure_modes": [
+      "stale_signal_decay",
+      "queue_starves_fresh_candidates",
+      "price_thesis_cancels_most_orders",
+      "queued_fill_concentration",
+      "partial_fill_accounting_drift"
+    ],
+    "realized_failure_mode": "stale_signal_decay_and_insufficient_delayed_fills",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "FIFO invariants and cash conservation were clean, but only 12 delayed fills materialized versus the 20-fill floor and the delayed entries reduced aggregate EV/PnL."
+  },
+  "realized_failure_mode": "stale_signal_decay_and_insufficient_delayed_fills",
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "max_drawdown_pct": 0.0889,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116
+  },
+  "after_metrics": {
+    "expected_value_score": 5.6413,
+    "total_pnl": 123188.19,
+    "max_drawdown_pct": 0.064,
+    "trade_count": 53,
+    "minimum_survival_rate": 0.8116
+  },
+  "delta_metrics": {
+    "total_pnl": -7804.169999999998,
+    "expected_value_score": -0.5644,
+    "trade_count": 4.0,
+    "minimum_survival_rate": 0.0,
+    "max_drawdown_pct": -0.024900000000000005
+  },
+  "parameters": {
+    "config_key": "CASH_CONFLICT_PERSISTENT_ORDER_QUEUE_ENABLED",
+    "before": false,
+    "after": true,
+    "locked_variables": [
+      "cash-feasible Gate-1 baseline",
+      "CASH_LEDGER_ENFORCED true",
+      "signal generation",
+      "ranking",
+      "requested sizing",
+      "ordinary exits",
+      "add-ons",
+      "sector and position caps",
+      "cost model",
+      "three frozen windows"
+    ],
+    "pre_registered_gate4": {
+      "aggregate_expected_value_score_strictly_above": 6.8263,
+      "aggregate_total_pnl_strictly_above": 130992.36,
+      "minimum_windows_improving_both_ev_and_pnl": 2,
+      "maximum_single_window_ev_regression_fraction": 0.05,
+      "maximum_worst_drawdown_drift": 0.01,
+      "minimum_survival_rate_per_window": 0.05,
+      "minimum_trades_per_window": 10,
+      "minimum_baseline_trade_key_retention": 0.8,
+      "maximum_cash_conservation_error": 0.0001,
+      "minimum_delayed_fills": 20,
+      "maximum_delayed_fill_ticker_share": 0.5
+    }
+  },
+  "causal_components": [
+    "cash-only conflict qualification",
+    "exact unfilled remainder",
+    "FIFO persistence",
+    "next-open fill after ordinary cash release",
+    "original stop-target invalidation",
+    "no leverage",
+    "no incumbent liquidation"
+  ],
+  "change_summary": "Evaluated exact unfilled-share FIFO persistence after cash-only entry rejection, with later-open execution and original price-thesis invalidation; no leverage or incumbent liquidation was permitted.",
+  "notes": "Aggregate EV 6.2057 to 5.6413; aggregate PnL 130992.36 to 123188.19; delayed fills=12.",
+  "rejection_reason": "Pre-registered Gate-4 checks failed: aggregate_ev_above_10pct_bar, aggregate_pnl_above_baseline, at_least_two_windows_improve_both_ev_and_pnl, no_window_ev_regresses_more_than_5pct, signal_generation_and_survival_unchanged, at_least_20_delayed_fills",
+  "post_run_reflection": {
+    "why_result_happened": "The queue produced only twelve delayed fills. Old-thin improved, but late-strong and mid-weak both lost EV and PnL; aggregate EV fell 0.5644 and aggregate PnL fell 7804.17. All FIFO, thesis, cash-conservation, and concentration checks were clean, so the economic failure is stale-order displacement rather than a measurement or bookkeeping defect.",
+    "realized_failure_mode": "stale_signal_decay_and_insufficient_delayed_fills",
+    "forbidden_near_neighbor_retry": "Do not retune queue age, FIFO priority, cash-shortfall size, or price-thesis thresholds on these same outcomes.",
+    "new_evidence_required": "A new data source, genuinely different gate shape, or materially more settled forward cash-conflict decisions is required."
+  },
+  "production_impact": {
+    "explicit_after_flag_only": true,
+    "default_flag_changed": false,
+    "live_or_paper_orders_changed": false,
+    "signal_generation_or_ranking_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "rejected_strategy_integration_retained": false,
+    "runtime_integration_rolled_back_after_rejection": true
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -u -B quant\\experiments\\exp_20260716_008_cash_conflict_persistent_order_queue.py",
+  "reproduction_note": "The measured artifacts are retained, but the rejected backtester integration was rolled back after Gate 4. Exact rerun requires deliberately reconstructing that historical integration from the retained helper and artifacts; the runner alone fails safely.",
+  "related_files": [
+    "data/experiments/exp-20260716-008/before.json",
+    "data/experiments/exp-20260716-008/after.json",
+    "data/experiments/exp-20260716-008/exp_20260716_008_cash_conflict_persistent_order_queue.json",
+    "experiments/artifacts/exp-20260716-008.json",
+    "quant/backtester.py",
+    "quant/cash_conflict_persistent_order_queue.py",
+    "quant/test_cash_conflict_persistent_order_queue.py",
+    "quant/experiments/exp_20260716_008_cash_conflict_persistent_order_queue.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "component": "quant/experiments/exp_20260716_008_cash_conflict_persistent_order_queue.py",
+  "llm_metrics": {
+    "used_llm": false
+  }
+}

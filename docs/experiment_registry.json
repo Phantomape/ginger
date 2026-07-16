@@ -424312,15 +424312,637 @@
       "updated_at": "2026-07-15T16:03:06+00:00"
     },
     {
-      "experiment_id": "exp-20260715-007",
-      "status": "claimed",
-      "lane": "alpha_search",
-      "owner": "alpha-explore",
-      "hypothesis": "Official Treasury auction results where a nominal coupon auction bid-to-cover ratio is strictly below the median of the prior 12 auctions for the same original tenor should predict positive next-session-open to fifth-session-close TBT replacement value and improve the core-plus-sleeve aggregate.",
-      "ticket_file": "experiments/tickets/exp-20260715-007.json",
+      "acceptance_rule": "Archive and hash every official result XML used; validate PIT auction date, CUSIP, tenor and bid-to-cover; settle at least 30 non-overlapping trades and at least 10 per window. Accepted alpha requires all three window EV and PnL deltas nonnegative, aggregate EV delta >0.5286 and PnL delta >10432.91, worst drawdown no more than 0.5pp worse, positive mean cash and QQQ replacement value in every window, DSR probability >=0.95 using 7 effective attempts, top-tenor positive-PnL share <=35%, and top-five trade positive-PnL share <=60%. A merely positive result remains default-off observed-only.",
+      "allowed_write_scope": [
+        "scripts/experiment_fingerprint.py",
+        "quant/treasury_auction_weak_demand_tbt_paper_sleeve.py",
+        "quant/test_treasury_auction_weak_demand_tbt_paper_sleeve.py",
+        "quant/experiments/",
+        "data/non_ohlcv/treasury_auction_results/",
+        "data/experiments/",
+        "data/paper_sleeves/treasury_auction_weak_demand_tbt/",
+        "experiments/artifacts/",
+        "experiments/cards/",
+        "experiments/manifests/",
+        "experiments/logs/",
+        "experiments/tickets/",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "docs/frozen_families.jsonl",
+        "docs/alpha-optimization-playbook.md"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
       "card_file": "experiments/cards/exp-20260715-007.md",
+      "causal_components": [
+        "official hash-bound Treasury result XML",
+        "trailing-12 same-original-tenor median",
+        "strict next-session TBT entry",
+        "five-session non-overlapping paper hold",
+        "core-plus-sleeve Gate 4"
+      ],
+      "change_type": "shared_paper_first_new_source",
+      "changed_variable": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1",
+      "claimed_at": "2026-07-15T16:19:48+00:00",
+      "completed_at": "2026-07-15T17:10:36+00:00",
+      "created_at": "2026-07-15T16:19:20+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        }
+      ],
+      "experiment_id": "exp-20260715-007",
+      "experiment_uid": "expuid-14e295cb38254b62",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260715-007",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-15T16:19:20+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1"
+      },
+      "hypothesis": "Official Treasury auction results where a nominal coupon auction bid-to-cover ratio is strictly below the median of the prior 12 auctions for the same original tenor should predict positive next-session-open to fifth-session-close TBT replacement value and improve the core-plus-sleeve aggregate.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "source=official_static_result_xml;security=nominal_note_bond_non_tips_non_frn;tenor=original_security_term;lookback=12;threshold=strictly_below_prior_median;entry=strict_next_session_open;hold_sessions=5;notional_usd=16000;max_concurrent_positions=1;same_day_events=one_signal;same_day_tenor_pnl_attribution=equal_split;round_trip_cost_pct=0.0035;ticker=TBT;trade_enabled=false",
+        "source_fault_recovery=only_for_static_xml_endpoint_persistently_failing_after_5_attempts_and_browser_curl_confirmation;freeze_same_name_official_static_pdf;require_historical_http_last_modified_on_auction_date_and_before_16_00_ET;validate_auction_date_cusip_security_term_security_type_issue_maturity_and_bid_to_cover;never_drop_or_fill_from_api_only"
+      ],
+      "mechanism_family": "treasury_auction_demand_microstructure",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [
+        "quant/run.py",
+        "quant/backtester.py",
+        "quant/filter.py"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260711-016",
+        "exp-20260607-024",
+        "exp-20260605-030",
+        "exp-20260605-032",
+        "exp-20260711-004"
+      ],
+      "new_evidence_type": "new_official_data_source_and_gate_shape",
+      "novelty": {
+        "blocking_matches": [
+          {
+            "accept_rate": 0.0,
+            "family_key": "forward_replacement_prior_same_ticker_memory",
+            "score": 0.634,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "event_overlay_replacement_value_core_overlap_context",
+            "score": 0.6327,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+            "score": 0.632,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "family_key": "market_state_sleeve_replacement_value_attribution",
+            "score": 0.625,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.1053,
+            "family_key": "external_event_satellite_overlay_allocation",
+            "score": 0.624,
+            "status": "has_accepted",
+            "trials": 19
+          }
+        ],
+        "data_source_unclassified": false,
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "forward_replacement_value",
+          "field_tags": [
+            "5session",
+            "a",
+            "aggregate",
+            "auction",
+            "auctions",
+            "below",
+            "bid",
+            "btc",
+            "close",
+            "core",
+            "coupon",
+            "cover",
+            "demand",
+            "event",
+            "fifth",
+            "improve",
+            "is",
+            "median",
+            "microstructure",
+            "nominal",
+            "of",
+            "official",
+            "original",
+            "plus",
+            "positive",
+            "predict",
+            "prior",
+            "ratio",
+            "replacement",
+            "response",
+            "results",
+            "same",
+            "session",
+            "should",
+            "sleeve",
+            "strictly",
+            "tbt",
+            "tenor",
+            "to",
+            "trailing12",
+            "treasury",
+            "value",
+            "weak",
+            "where"
+          ],
+          "gate_shape": "forward_attribution"
+        },
+        "in_flight_duplicate_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matches": [],
+          "override_accepted": false,
+          "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+          "threshold": 0.65,
+          "window_days": 7
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "forward_replacement_value",
+            "family_key": "forward_replacement_prior_same_ticker_memory",
+            "reopen_condition": "Need materially more closed forward replacement rows with prior same-ticker history, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-ticker prior-positive coverage.",
+            "score": 0.634,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "forward_replacement_value",
+            "family_key": "event_overlay_replacement_value_core_overlap_context",
+            "reopen_condition": "Do not retry nearby core-overlap event scalars on the frozen sample without new closed forward rows or a shared production-visible overlap/displacement adapter.",
+            "score": 0.6327,
+            "status": "frozen_rejected",
+            "trials": 2
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "forward_replacement_value",
+            "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+            "reopen_condition": null,
+            "score": 0.632,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "forward_replacement_value",
+            "family_key": "market_state_sleeve_replacement_value_attribution",
+            "reopen_condition": null,
+            "score": 0.625,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.1053,
+            "data_source": "forward_replacement_value",
+            "family_key": "external_event_satellite_overlay_allocation",
+            "reopen_condition": null,
+            "score": 0.624,
+            "status": "has_accepted",
+            "trials": 19
+          }
+        ],
+        "new_evidence_axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+        "observed_only_streak_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_probes": 3,
+          "override_accepted": false,
+          "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+          "source": "forward_replacement_value",
+          "streak": 0,
+          "streak_experiments": []
+        },
+        "override": true,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [],
+          "new_evidence_axis": {
+            "axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+            "categories": [
+              "new_data_source"
+            ],
+            "invalid_same_source_field_only": false,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": true
+          },
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "routine_materialization_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_ids": 3,
+          "override_accepted": false,
+          "per_source_count": 0,
+          "recent_cross_surface_count": 0,
+          "recent_experiments": [],
+          "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+          "window_days": 7
+        },
+        "saturated_source_axis": {
+          "axis": "New data source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve; no prior experiment used auction demand or traded this response.",
+          "categories": [
+            "new_data_source"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "forward_attribution",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "forward_replacement_value",
+          "trials": 0
+        },
+        "warn": true,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.12,
+        "expected_ev_delta": 0.08,
+        "expected_pnl_delta": 1800.0,
+        "main_failure_modes": [
+          "next_open_absorbs_auction_signal",
+          "nonoverlap_sample_too_small",
+          "tbt_daily_reset_decay_and_cost",
+          "window_regression",
+          "accepted_comparator_not_beaten",
+          "static_xml_contract_failure",
+          "positive_pnl_concentration"
+        ],
+        "confidence_reason": "The source and event gate are genuinely new and 37 non-overlapping trigger dates survive the fixed capital envelope, but next-open entry may absorb the auction shock and leveraged-ETF decay plus the champion comparator make acceptance unlikely.",
+        "recorded_at": "2026-07-15T16:18:32+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "rejected_treasury_auction_tbt_edge_not_robust",
+        "artifact": "data/experiments/exp-20260715-007/exp_20260715_007_treasury_auction_weak_demand_tbt_full_stack.json",
+        "log": "experiments/logs/exp-20260715-007.json",
+        "runner": "quant/experiments/exp_20260715_007_treasury_auction_weak_demand_tbt_full_stack.py",
+        "gate4": {
+          "checks": {
+            "source_archive_complete": true,
+            "market_alignment_complete": true,
+            "gate2_dependencies_validated": true,
+            "fingerprint_source_repaired": true,
+            "fingerprint_gate_repaired": true,
+            "total_trade_count": 37,
+            "min_total_trades": 30,
+            "per_window_trade_count": {
+              "old_thin": 11,
+              "mid_weak": 13,
+              "late_strong": 13
+            },
+            "min_window_trades": 10,
+            "sample_passed": true,
+            "all_window_ev_nonnegative": false,
+            "all_window_pnl_nonnegative": false,
+            "all_window_cash_replacement_positive": false,
+            "all_window_qqq_replacement_positive": false,
+            "aggregate_ev_beats_accepted_comparator": false,
+            "aggregate_pnl_beats_accepted_comparator": false,
+            "drawdown_passed": false,
+            "dsr_probability": null,
+            "dsr_probability_min": 0.95,
+            "dsr_passed": false,
+            "top_tenor_positive_pnl_share": 0.382814,
+            "top_tenor_share_max": 0.35,
+            "top_tenor_concentration_passed": false,
+            "top5_trade_positive_pnl_share": 0.711557,
+            "top5_trade_share_max": 0.6,
+            "top5_trade_concentration_passed": false
+          },
+          "failed_reasons": [
+            "all_window_ev_nonnegative",
+            "all_window_pnl_nonnegative",
+            "all_window_cash_replacement_positive",
+            "all_window_qqq_replacement_positive",
+            "aggregate_ev_beats_accepted_comparator",
+            "aggregate_pnl_beats_accepted_comparator",
+            "drawdown_passed",
+            "dsr_passed",
+            "top_tenor_concentration_passed",
+            "top5_trade_concentration_passed"
+          ],
+          "accepted_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "expected_value_score_delta_sum": 0.5286,
+            "total_pnl_delta_sum": 10432.91
+          },
+          "aggregate": {
+            "before_expected_value_score_sum": 12.2698,
+            "after_expected_value_score_sum": 11.7828,
+            "expected_value_score_delta_sum": -0.487,
+            "before_total_pnl_sum": 237852.27,
+            "after_total_pnl_sum": 231448.81,
+            "total_pnl_delta_sum": -6403.46,
+            "windows_ev_improved": 1,
+            "windows_ev_regressed": 2,
+            "windows_pnl_improved": 1,
+            "windows_pnl_regressed": 2,
+            "max_drawdown_worse_max": 0.0072,
+            "worst_max_drawdown_delta": 0.0072,
+            "positive_pnl_windows": 1,
+            "positive_ev_windows": 1
+          },
+          "concentration": {
+            "attribution_rule": "equal_split_across_same_day_trigger_tenors",
+            "positive_pnl_total": 4342.32,
+            "top5_trade_positive_pnl_share": 0.711557,
+            "top_tenor": "3-Year",
+            "top_tenor_positive_pnl_share": 0.382814,
+            "positive_pnl_by_tenor": {
+              "10-Year": 294.96,
+              "2-Year": 294.9,
+              "20-Year": 716.95,
+              "3-Year": 1662.3,
+              "30-Year": 182.24,
+              "5-Year": 592.9,
+              "7-Year": 598.06
+            }
+          },
+          "decision": "rejected_treasury_auction_tbt_edge_not_robust"
+        },
+        "gate5": {
+          "status": "not_computable",
+          "selection_pool_complete": false,
+          "selection_scope_id": null,
+          "panel_hash": null,
+          "dsr_probability": null,
+          "reason_codes": [
+            "selection_pool_not_declared_complete",
+            "trial_panel_needs_at_least_two_trials",
+            "trial_panel_attempt_count_mismatch",
+            "trial_0_return_series_hash_mismatch"
+          ]
+        },
+        "calibration": {
+          "predicted_success_probability": 0.12,
+          "actual_success": false,
+          "brier_score": 0.0144,
+          "predicted_failure_modes": [
+            "next_open_absorbs_auction_signal",
+            "nonoverlap_sample_too_small",
+            "tbt_daily_reset_decay_and_cost",
+            "window_regression",
+            "accepted_comparator_not_beaten",
+            "static_xml_contract_failure",
+            "positive_pnl_concentration"
+          ],
+          "failed_reasons": [
+            "all_window_ev_nonnegative",
+            "all_window_pnl_nonnegative",
+            "all_window_cash_replacement_positive",
+            "all_window_qqq_replacement_positive",
+            "aggregate_ev_beats_accepted_comparator",
+            "aggregate_pnl_beats_accepted_comparator",
+            "drawdown_passed",
+            "dsr_passed",
+            "top_tenor_concentration_passed",
+            "top5_trade_concentration_passed"
+          ],
+          "predicted_failure_modes_hit": [
+            "next_open_absorbs_auction_signal",
+            "tbt_daily_reset_decay_and_cost",
+            "window_regression",
+            "accepted_comparator_not_beaten",
+            "positive_pnl_concentration"
+          ]
+        },
+        "summary": "The fixed weak-auction TBT response did not provide robust incremental value after next-open execution, non-overlap, costs, and cross-window checks."
+      },
       "revision_manifest_file": "experiments/manifests/exp-20260715-007.json",
-      "updated_at": "2026-07-15T16:19:48+00:00"
+      "single_causal_variable": "treasury_nominal_auction_btc_trailing12_weak_tbt_5session_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260715-007.json",
+      "trial_family": "treasury_auction_bid_to_cover_tbt_event_response",
+      "trial_variant_id": "nominal_coupon_all_7_tenors_trailing12_median_tbt_h5_v1",
+      "implementation_mode": "shared_paper_first_historical_and_daily",
+      "new_evidence_axis": "New source and gate shape: hash-bound official Treasury auction result XML supplies publication-dated bid-to-cover microstructure, evaluated as a strict next-session five-session non-overlapping TBT event sleeve.",
+      "decision": "rejected_treasury_auction_tbt_edge_not_robust",
+      "artifact": "data/experiments/exp-20260715-007/exp_20260715_007_treasury_auction_weak_demand_tbt_full_stack.json",
+      "log": "experiments/logs/exp-20260715-007.json",
+      "aggregate_expected_value_delta": -0.487,
+      "aggregate_strategy_total_pnl_delta": -6403.46,
+      "gate1": {
+        "baseline_loaded": true,
+        "baseline_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+        "baseline_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+        "baseline_aggregate": {
+          "expected_value_score_sum": 12.2698,
+          "total_pnl_sum": 237852.27,
+          "trade_count_sum": 62,
+          "positive_ev_windows": 3,
+          "minimum_survival_rate": 0.7885,
+          "worst_max_drawdown_pct": 0.0975
+        }
+      },
+      "gate2": {
+        "dependencies_validated": true,
+        "fields_checked": [
+          "auction_date",
+          "first_public_result_date",
+          "result_filename",
+          "result_sha256",
+          "cusip",
+          "security_type",
+          "original_security_term",
+          "bid_to_cover_ratio",
+          "entry_date",
+          "target_price",
+          "exit_date"
+        ],
+        "entry_date_present_count": 37,
+        "target_price_present_count": 37,
+        "target_price_relevance": "A 3.5x-ATR sentinel is emitted for the signal contract; this fixed-horizon paper policy exits on session five and does not promote a target exit.",
+        "actual_tbt_not_synthetic": true
+      },
+      "gate3": {
+        "filter_added_to_core": false,
+        "signals_generated": 68,
+        "signals_survived": 37,
+        "survival_rate": 0.5441,
+        "note": "Non-overlap is the fixed $16k capital envelope, not a tuned alpha filter.",
+        "window_boundary_rule": "One continuous single-slot replay spans all standard windows; trades are assigned by entry date, and a trade crossing a boundary retains slot occupancy but is censored from both windows' outcome metrics."
+      },
+      "gate4": {
+        "checks": {
+          "source_archive_complete": true,
+          "market_alignment_complete": true,
+          "gate2_dependencies_validated": true,
+          "fingerprint_source_repaired": true,
+          "fingerprint_gate_repaired": true,
+          "total_trade_count": 37,
+          "min_total_trades": 30,
+          "per_window_trade_count": {
+            "old_thin": 11,
+            "mid_weak": 13,
+            "late_strong": 13
+          },
+          "min_window_trades": 10,
+          "sample_passed": true,
+          "all_window_ev_nonnegative": false,
+          "all_window_pnl_nonnegative": false,
+          "all_window_cash_replacement_positive": false,
+          "all_window_qqq_replacement_positive": false,
+          "aggregate_ev_beats_accepted_comparator": false,
+          "aggregate_pnl_beats_accepted_comparator": false,
+          "drawdown_passed": false,
+          "dsr_probability": null,
+          "dsr_probability_min": 0.95,
+          "dsr_passed": false,
+          "top_tenor_positive_pnl_share": 0.382814,
+          "top_tenor_share_max": 0.35,
+          "top_tenor_concentration_passed": false,
+          "top5_trade_positive_pnl_share": 0.711557,
+          "top5_trade_share_max": 0.6,
+          "top5_trade_concentration_passed": false
+        },
+        "failed_reasons": [
+          "all_window_ev_nonnegative",
+          "all_window_pnl_nonnegative",
+          "all_window_cash_replacement_positive",
+          "all_window_qqq_replacement_positive",
+          "aggregate_ev_beats_accepted_comparator",
+          "aggregate_pnl_beats_accepted_comparator",
+          "drawdown_passed",
+          "dsr_passed",
+          "top_tenor_concentration_passed",
+          "top5_trade_concentration_passed"
+        ],
+        "accepted_comparator": {
+          "experiment_id": "exp-20260611-007",
+          "expected_value_score_delta_sum": 0.5286,
+          "total_pnl_delta_sum": 10432.91
+        },
+        "aggregate": {
+          "before_expected_value_score_sum": 12.2698,
+          "after_expected_value_score_sum": 11.7828,
+          "expected_value_score_delta_sum": -0.487,
+          "before_total_pnl_sum": 237852.27,
+          "after_total_pnl_sum": 231448.81,
+          "total_pnl_delta_sum": -6403.46,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_improved": 1,
+          "windows_pnl_regressed": 2,
+          "max_drawdown_worse_max": 0.0072,
+          "worst_max_drawdown_delta": 0.0072,
+          "positive_pnl_windows": 1,
+          "positive_ev_windows": 1
+        },
+        "concentration": {
+          "attribution_rule": "equal_split_across_same_day_trigger_tenors",
+          "positive_pnl_total": 4342.32,
+          "top5_trade_positive_pnl_share": 0.711557,
+          "top_tenor": "3-Year",
+          "top_tenor_positive_pnl_share": 0.382814,
+          "positive_pnl_by_tenor": {
+            "10-Year": 294.96,
+            "2-Year": 294.9,
+            "20-Year": 716.95,
+            "3-Year": 1662.3,
+            "30-Year": 182.24,
+            "5-Year": 592.9,
+            "7-Year": 598.06
+          }
+        },
+        "decision": "rejected_treasury_auction_tbt_edge_not_robust"
+      },
+      "gate5": {
+        "status": "not_computable",
+        "selection_pool_complete": false,
+        "selection_scope_id": null,
+        "panel_hash": null,
+        "dsr_probability": null,
+        "reason_codes": [
+          "selection_pool_not_declared_complete",
+          "trial_panel_needs_at_least_two_trials",
+          "trial_panel_attempt_count_mismatch",
+          "trial_0_return_series_hash_mismatch"
+        ]
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false,
+        "run_py_changed": false,
+        "live_realistic_execution_envelope": {
+          "instrument": "TBT (actual daily-reset -2x Treasury ETF)",
+          "max_notional_usd": 16000.0,
+          "max_concurrent_positions": 1,
+          "entry": "strict next market-session open after official auction result",
+          "exit": "fifth market-session close",
+          "cost_pct": 0.0035,
+          "kill_switch": "source/XML/hash/price dependency failure emits no candidate",
+          "order_semantics": "default-off snapshot only; no order submitted"
+        }
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The fixed weak-auction TBT response did not provide robust incremental value after next-open execution, non-overlap, costs, and cross-window checks.",
+        "realized_failure_mode": "all_window_ev_nonnegative,all_window_pnl_nonnegative,all_window_cash_replacement_positive,all_window_qqq_replacement_positive,aggregate_ev_beats_accepted_comparator,aggregate_pnl_beats_accepted_comparator,drawdown_passed,dsr_passed,top_tenor_concentration_passed,top5_trade_concentration_passed",
+        "forbidden_near_neighbor_retry": "Do not retune the bid-to-cover threshold, lookback, tenor subset, same-day attribution, TBT/short-TLT proxy, entry timing, hold, cost, overlap, or notional on these frozen auction rows.",
+        "new_evidence_required": "A genuinely new auction microstructure source/gate, or at least 30 prospectively closed unchanged-policy forward decisions plus a complete aligned selection panel before promotion."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260715_007_treasury_auction_weak_demand_tbt_full_stack.py",
+        "quant/treasury_auction_weak_demand_tbt_paper_sleeve.py",
+        "data/non_ohlcv/treasury_auction_results/source_manifest.json",
+        "data/experiments/exp-20260715-007/price_panel.json",
+        "data/paper_sleeves/treasury_auction_weak_demand_tbt/latest_snapshot.json",
+        "scripts/experiment_fingerprint.py"
+      ],
+      "updated_at": "2026-07-15T17:10:36+00:00"
     },
     {
       "experiment_id": "exp-20260715-008",
@@ -424332,8 +424954,1081 @@
       "card_file": "experiments/cards/exp-20260715-008.md",
       "revision_manifest_file": "experiments/manifests/exp-20260715-008.json",
       "updated_at": "2026-07-15T16:43:59+00:00"
+    },
+    {
+      "experiment_id": "exp-20260715-009",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-explore",
+      "hypothesis": "Risk-allocation alpha from the new SEC Form N-PORT public as-filed registered-fund holdings source: for an executed core company position with at least 20 continuously reporting fund series, split-adjusted aggregate shares increasing quarter over quarter should merit a fixed 1.10 opening-notional scalar, decreasing shares a 0.90 scalar, and missing coverage 1.00, improving expected-value score and PnL while all non-sizing behavior and live orders stay unchanged.",
+      "ticket_file": "experiments/tickets/exp-20260715-009.json",
+      "card_file": "experiments/cards/exp-20260715-009.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260715-009.json",
+      "updated_at": "2026-07-15T21:47:49+00:00"
+    },
+    {
+      "experiment_id": "exp-20260715-010",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "codex-alpha-explore",
+      "hypothesis": "The active Gate-1 anchor still treats the leverage-inflated CASH_LEDGER_ENFORCED=False replay as the champion even though exp-20260715-008 accepted the execution-date cash ledger and explicitly required a default flip; promoting the unchanged accepted cash-admission policy to the backtester default and publishing a double-replayed frozen-input cash-feasible three-window anchor removes the measurement blocker for future capital-allocation alpha.",
+      "ticket_file": "experiments/tickets/exp-20260715-010.json",
+      "card_file": "experiments/cards/exp-20260715-010.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260715-010.json",
+      "updated_at": "2026-07-15T22:28:18+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-001",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-explore",
+      "hypothesis": "Risk-allocation alpha: after candidate selection and before executable-capital admission, scale only a new position's initial risk by the positive marginal covariance it adds to the actual active book; diversifying covariance remains unpenalized, so scarce capital should retain idiosyncratic winners while reducing synchronized loss tails.",
+      "ticket_file": "experiments/tickets/exp-20260716-001.json",
+      "card_file": "experiments/cards/exp-20260716-001.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-001.json",
+      "updated_at": "2026-07-16T00:40:06+00:00"
+    },
+    {
+      "acceptance_rule": "Gate 2 must validate accepted-at/result timing, indirect_bidder_accepted, total_accepted, entry_date and target_price. Require at least 30 non-overlapping settled paper trades and at least 10 per window. The standalone fully funded 100000 USD paper account must have nonnegative EV and PnL in every window, positive mean cash and QQQ replacement value in every window, aggregate EV above 0.5286 and PnL above 10432.91, max drawdown no more than 0.5 percentage point worse than cash, DSR probability at least 0.95 from a complete aligned two-member auction selection panel containing bid-to-cover and indirect-share rules, top-tenor positive contribution at most 35 percent, and top-five trade positive contribution at most 60 percent. Core cash-feasible results must remain byte-unchanged; positive but sub-threshold results are observed-only.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.py",
+        "quant/treasury_auction_indirect_bidder_tbt_paper_sleeve.py",
+        "quant/test_treasury_auction_indirect_bidder_tbt_paper_sleeve.py",
+        "quant/test_experiment_fingerprint.py",
+        "scripts/experiment_fingerprint.py",
+        "data/experiments/exp-20260716-002/",
+        "data/paper_sleeves/treasury_auction_indirect_bidder_tbt/",
+        "experiments/artifacts/exp-20260716-002_treasury_auction_indirect_bidder_share_tbt.md",
+        "experiments/cards/exp-20260716-002.md",
+        "experiments/logs/exp-20260716-002.json",
+        "experiments/manifests/exp-20260716-002.json",
+        "experiments/tickets/exp-20260716-002.json",
+        "docs/alpha-optimization-playbook.md",
+        "docs/experiment_registry.json",
+        "docs/frozen_families.jsonl"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+      "card_file": "experiments/cards/exp-20260716-002.md",
+      "causal_components": [
+        "official_result_participant_composition",
+        "PIT_next_open",
+        "5session_hold",
+        "one_slot_nonoverlap",
+        "standalone_cash_funded_paper_account"
+      ],
+      "change_type": "candidate_pool_full_stack",
+      "changed_variable": "treasury_auction_indirect_bidder_share_below_trailing12_median_tbt_5d_v1",
+      "claimed_at": "2026-07-16T04:06:47+00:00",
+      "completed_at": "2026-07-16T04:26:03+00:00",
+      "created_at": "2026-07-16T04:05:38+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        }
+      ],
+      "experiment_id": "exp-20260716-002",
+      "experiment_uid": "expuid-bfd91cb1fbc1403d",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260716-002",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-16T04:05:38+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "treasury_auction_indirect_bidder_share_below_trailing12_median_tbt_5d_v1"
+      },
+      "hypothesis": "When a nominal Treasury auction's indirect-bidder accepted share is strictly below the median of the preceding 12 same-original-tenor auctions, weak real-money demand should raise term premium; buy TBT at the next session open and close at the fifth-session close in one default-off paper slot.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "source archive and hashes",
+        "allowed original tenors",
+        "prior-12 same-tenor lookback",
+        "strict below-median trigger",
+        "TBT",
+        "next-open entry",
+        "fifth-session close exit",
+        "one-slot non-overlap",
+        "16000 USD notional",
+        "35 bps round-trip cost",
+        "core strategy and cash-feasible baseline"
+      ],
+      "mechanism_family": "treasury_auction_demand_microstructure",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [
+        "quant/run.py",
+        "quant/backtester.py",
+        "quant/constants.py",
+        "data/open_positions.json",
+        "operator_inputs/open_positions.json",
+        "live_orders",
+        "core_ranking",
+        "core_sizing",
+        "core_exits"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260715-007"
+      ],
+      "new_evidence_type": "no_precedent_official_auction_participant_composition_field",
+      "novelty": {
+        "blocking_matches": [],
+        "data_source_unclassified": true,
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "other",
+          "field_tags": [
+            "5d",
+            "a",
+            "accepted",
+            "alpha",
+            "at",
+            "auction",
+            "auctions",
+            "below",
+            "bidder",
+            "close",
+            "demand",
+            "enter",
+            "event",
+            "exit",
+            "fifth",
+            "first",
+            "indirect",
+            "is",
+            "median",
+            "microstructure",
+            "money",
+            "nominal",
+            "non",
+            "of",
+            "one",
+            "original",
+            "overlapping",
+            "premium",
+            "prior",
+            "raise",
+            "real",
+            "regular",
+            "response",
+            "same",
+            "session",
+            "share",
+            "should",
+            "slot",
+            "strictly",
+            "tbt",
+            "tenor",
+            "term",
+            "trailing12",
+            "treasury",
+            "under",
+            "weakening",
+            "when"
+          ],
+          "gate_shape": "event_driven_inverse_treasury_etf_5d"
+        },
+        "in_flight_duplicate_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matches": [],
+          "override_accepted": false,
+          "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+          "threshold": 0.65,
+          "window_days": 7
+        },
+        "nearest": [
+          {
+            "accept_rate": 0.0,
+            "data_source": "treasury_auction_results",
+            "family_key": "treasury_auction_bid_to_cover_tbt_event_response",
+            "reopen_condition": "A genuinely new auction microstructure source/gate, or at least 30 prospectively closed unchanged-policy forward decisions plus a complete aligned selection panel before promotion.",
+            "score": 0.2061,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "form4_insider",
+            "family_key": "non_ohlcv_cross_source_attention_confluence_candidate_pool",
+            "reopen_condition": "A valid retry needs a materially new evidence axis such as parsed filing surprise semantics, named customer/supplier entities, borrow/options structure joined to the same events, or closed forward replacement rows from a shared default-off helper.",
+            "score": 0.0222,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "sec13d_ownership",
+            "family_key": "parsed_13ga_exit_overhang_allocator_overlap",
+            "reopen_condition": "A valid retry needs closed forward accepted-allocator replacement rows tagged with parsed ownership exits, richer holder/activist outcome provenance, or repaired structured-XML coverage that materially changes overlap.",
+            "score": 0.0207,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "ohlcv_relation",
+            "family_key": "event_graph_peer_information_transfer",
+            "reopen_condition": null,
+            "score": 0.0203,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "allocator",
+            "family_key": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+            "reopen_condition": "Collect forward paper rows with replacement value versus cash and same-day core candidates; do not enable live/default orders or retune source-overlap parameters until forward evidence passes a separate activation gate.",
+            "score": 0.0167,
+            "status": "has_accepted",
+            "trials": 3
+          }
+        ],
+        "new_evidence_axis": "The Treasury auction source is unsaturated with one prior trial. This experiment uses a no-precedent official participant-composition field, indirect_bidder_accepted divided by total_accepted, rather than retuning bid-to-cover, lookback, tenor, hold, notional, cost, or response. AGENTS.md section 2.4 permits an unprecedented field as a novelty axis on an unsaturated source; the aligned two-rule panel also closes the prior incomplete-selection-panel blocker.",
+        "observed_only_streak_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_probes": 3,
+          "override_accepted": false,
+          "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+          "source": "other",
+          "streak": 0,
+          "streak_experiments": []
+        },
+        "override": true,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [],
+          "new_evidence_axis": {
+            "axis": "The Treasury auction source is unsaturated with one prior trial. This experiment uses a no-precedent official participant-composition field, indirect_bidder_accepted divided by total_accepted, rather than retuning bid-to-cover, lookback, tenor, hold, notional, cost, or response. AGENTS.md section 2.4 permits an unprecedented field as a novelty axis on an unsaturated source; the aligned two-rule panel also closes the prior incomplete-selection-panel blocker.",
+            "categories": [],
+            "invalid_same_source_field_only": true,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": false
+          },
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "routine_materialization_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_ids": 3,
+          "override_accepted": false,
+          "per_source_count": 0,
+          "recent_cross_surface_count": 0,
+          "recent_experiments": [],
+          "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+          "window_days": 7
+        },
+        "saturated_source_axis": {
+          "axis": "The Treasury auction source is unsaturated with one prior trial. This experiment uses a no-precedent official participant-composition field, indirect_bidder_accepted divided by total_accepted, rather than retuning bid-to-cover, lookback, tenor, hold, notional, cost, or response. AGENTS.md section 2.4 permits an unprecedented field as a novelty axis on an unsaturated source; the aligned two-rule panel also closes the prior incomplete-selection-panel blocker.",
+          "categories": [],
+          "invalid_same_source_field_only": true,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": false
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "event_driven_inverse_treasury_etf_5d",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "other",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "alpha-explore",
+      "prediction": {
+        "success_probability": 0.18,
+        "expected_ev_delta": 0.15,
+        "expected_pnl_delta": 3500.0,
+        "main_failure_modes": [
+          "next_open_absorbs_participant_mix",
+          "foreign_demand_share_not_directional",
+          "TBT_decay_and_cost",
+          "window_regression",
+          "accepted_comparator_not_beaten",
+          "positive_pnl_concentration",
+          "dsr_two_trial_failure"
+        ],
+        "confidence_reason": "Indirect bidder share is a direct participant-composition measure and 14/13/13 non-overlapping events clear sample bars, but next-open absorption, TBT decay, and only one neighboring attempted auction field make robust acceptance uncertain.",
+        "recorded_at": "2026-07-16T04:05:15+00:00"
+      },
+      "prior_trial_count": 1,
+      "result": {
+        "accepted": false,
+        "accepted_alpha": false,
+        "observed_only_lead": false,
+        "decision": "rejected_indirect_bidder_tbt_edge_not_robust",
+        "artifact": "data/experiments/exp-20260716-002/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.json",
+        "log": "experiments/logs/exp-20260716-002.json",
+        "runner": "quant/experiments/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.py",
+        "gate4": {
+          "checks": {
+            "gate1_cash_feasible_baseline_identity": true,
+            "source_archive_complete": true,
+            "participant_fields_complete": true,
+            "gate2_dependencies_validated": true,
+            "market_alignment_complete": true,
+            "standalone_fully_funded_account": true,
+            "core_baseline_sha256_before": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+            "core_baseline_sha256_after": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+            "core_cash_feasible_results_byte_unchanged": true,
+            "total_trade_count": 40,
+            "min_total_trades": 30,
+            "per_window_trade_count": {
+              "old_thin": 14,
+              "mid_weak": 13,
+              "late_strong": 13
+            },
+            "min_window_trades": 10,
+            "sample_passed": true,
+            "all_window_ev_nonnegative": true,
+            "all_window_pnl_nonnegative": false,
+            "all_window_cash_replacement_positive": false,
+            "all_window_qqq_replacement_positive": false,
+            "aggregate_ev_beats_accepted_comparator": false,
+            "aggregate_pnl_beats_accepted_comparator": false,
+            "drawdown_passed": false,
+            "dsr_panel_complete": true,
+            "dsr_probability": 0.021314996240211936,
+            "dsr_probability_min": 0.95,
+            "dsr_passed": false,
+            "top_tenor_positive_pnl_share": 0.38157,
+            "top_tenor_concentration_passed": false,
+            "top5_trade_positive_pnl_share": 0.580293,
+            "top5_trade_concentration_passed": true
+          },
+          "failed_reasons": [
+            "all_window_pnl_nonnegative",
+            "all_window_cash_replacement_positive",
+            "all_window_qqq_replacement_positive",
+            "aggregate_ev_beats_accepted_comparator",
+            "aggregate_pnl_beats_accepted_comparator",
+            "drawdown_passed",
+            "dsr_passed",
+            "top_tenor_concentration_passed"
+          ],
+          "accepted_comparator": {
+            "experiment_id": "exp-20260611-007",
+            "expected_value_score": 0.5286,
+            "total_pnl": 10432.91
+          },
+          "aggregate": {
+            "before_expected_value_score_sum": 0.0,
+            "after_expected_value_score_sum": 0.1674,
+            "expected_value_score_delta_sum": 0.1674,
+            "before_total_pnl_sum": 0.0,
+            "after_total_pnl_sum": -6534.63,
+            "total_pnl_delta_sum": -6534.63,
+            "trade_count_sum": 40,
+            "positive_ev_windows": 3,
+            "positive_pnl_windows": 1,
+            "worst_max_drawdown_pct": 0.0502
+          },
+          "concentration": {
+            "attribution_rule": "equal_split_across_same_day_trigger_tenors",
+            "positive_pnl_total": 4611.22,
+            "top5_trade_positive_pnl_share": 0.580293,
+            "top_tenor": "3-Year",
+            "top_tenor_positive_pnl_share": 0.38157,
+            "positive_pnl_by_tenor": {
+              "10-Year": 221.12,
+              "20-Year": 1328.37,
+              "3-Year": 1759.51,
+              "5-Year": 298.0,
+              "7-Year": 1004.22
+            }
+          },
+          "decision": "rejected_indirect_bidder_tbt_edge_not_robust"
+        },
+        "gate5": {
+          "status": "computed",
+          "selection_pool_complete": true,
+          "selection_scope_id": "treasury_auction_result_field_tbt_event_response_two_rule_panel_v1",
+          "panel_hash": "2e585e97e9bd5a0f56b6c61a150165497baba79ad52b46570864a1447bdeb2c8",
+          "dsr_probability": 0.021314996240211936,
+          "threshold": 0.95,
+          "passes_live_threshold": false
+        },
+        "calibration": {
+          "predicted_success_probability": 0.18,
+          "actual_success": false,
+          "brier_score": 0.0324,
+          "predicted_failure_modes": [
+            "next_open_absorbs_participant_mix",
+            "foreign_demand_share_not_directional",
+            "TBT_decay_and_cost",
+            "window_regression",
+            "accepted_comparator_not_beaten",
+            "positive_pnl_concentration",
+            "dsr_two_trial_failure"
+          ],
+          "predicted_failure_modes_hit": [
+            "next_open_absorbs_participant_mix",
+            "foreign_demand_share_not_directional",
+            "TBT_decay_and_cost",
+            "window_regression",
+            "accepted_comparator_not_beaten",
+            "positive_pnl_concentration",
+            "dsr_two_trial_failure"
+          ],
+          "failed_reasons": [
+            "all_window_pnl_nonnegative",
+            "all_window_cash_replacement_positive",
+            "all_window_qqq_replacement_positive",
+            "aggregate_ev_beats_accepted_comparator",
+            "aggregate_pnl_beats_accepted_comparator",
+            "drawdown_passed",
+            "dsr_passed",
+            "top_tenor_concentration_passed"
+          ]
+        },
+        "summary": "The fixed participant-composition signal lost money in old_thin and mid_weak and had negative QQQ replacement value in all three windows. Its positive aggregate EV number is only the sign artifact of multiplying a negative return by a negative Sharpe in losing windows; the independent PnL and replacement-value gates correctly prevent promotion."
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260716-002.json",
+      "single_causal_variable": "treasury_auction_indirect_bidder_share_below_trailing12_median_tbt_5d_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260716-002.json",
+      "trial_family": "treasury_auction_indirect_bidder_share_tbt_event_response",
+      "trial_variant_id": "indirect_bidder_share_below_trailing12_median",
+      "implementation_mode": "shared_paper_first_historical_and_daily",
+      "new_evidence_axis": "The unsaturated official Treasury source gains a no-precedent participant-composition field: indirect_bidder_accepted / total_accepted.  Lookback, tenors, entry, hold, notional, costs and non-overlap remain fixed, and the experiment supplies a complete aligned bid-to-cover versus indirect-share panel.",
+      "decision": "rejected_indirect_bidder_tbt_edge_not_robust",
+      "artifact": "data/experiments/exp-20260716-002/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.json",
+      "log": "experiments/logs/exp-20260716-002.json",
+      "aggregate_expected_value_delta": 0.1674,
+      "aggregate_strategy_total_pnl_delta": -6534.63,
+      "gate1": {
+        "cash_feasible_baseline_identity_validated": true,
+        "core_context_only": true,
+        "core_baseline_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+        "core_baseline_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+        "core_baseline_aggregate": {
+          "expected_value_score_sum": 6.2057,
+          "total_pnl_sum": 130992.36,
+          "trade_count_sum": 49,
+          "positive_ev_windows": 3,
+          "minimum_survival_rate": 0.8116,
+          "worst_max_drawdown_pct": 0.0889
+        },
+        "standalone_before": "100000_usd_cash",
+        "additive_leverage_to_core": false
+      },
+      "gate2": {
+        "dependencies_validated": true,
+        "fields_checked": [
+          "auction_date",
+          "result_publication_date",
+          "result_release_time_et",
+          "result_filename",
+          "result_sha256",
+          "indirect_bidder_accepted",
+          "total_accepted",
+          "entry_date",
+          "target_price",
+          "exit_date"
+        ],
+        "source_audit": {
+          "canonical_row_count": 297,
+          "api_row_count": 297,
+          "enriched_row_count": 297,
+          "field_complete_count": 297,
+          "xml_value_crosscheck_count": 293,
+          "pdf_identity_fallback_count": 4,
+          "canonical_api_identity_exact": true,
+          "official_api_archive_sha256": "43f6606f8f48a9a3c5b1608452141bb04f1eb5da407a8da90aeda447b8393e8d",
+          "canonical_sha256": "f954ec19fa59f4d31022eb43696d2f6d3f886b891a1c4c83fbb8556cae25b53b",
+          "xml_zip_sha256": "8c56f49c649f8afbd280a5793b7ba91f19dff7374da19c1a3a2ab37da0642091",
+          "pdf_zip_sha256": "0eab5b6955a476cc5a9038c76b998e32034afaef9ab6cf3228989268893b5abc",
+          "availability_contract_validated_by": "exp-20260715-007 parse_frozen_source"
+        },
+        "trigger_source_row_count": 121,
+        "trigger_source_rows_with_participant_fields_and_pit_clock": 121,
+        "entry_date_present_count": 40,
+        "target_price_present_count": 40
+      },
+      "gate3": {
+        "filter_added_to_core": false,
+        "signals_generated": 81,
+        "signals_survived": 40,
+        "survival_rate": 0.493827,
+        "note": "Non-overlap is the fixed one-slot capital envelope, not a tuned filter."
+      },
+      "gate4": {
+        "checks": {
+          "gate1_cash_feasible_baseline_identity": true,
+          "source_archive_complete": true,
+          "participant_fields_complete": true,
+          "gate2_dependencies_validated": true,
+          "market_alignment_complete": true,
+          "standalone_fully_funded_account": true,
+          "core_baseline_sha256_before": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+          "core_baseline_sha256_after": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+          "core_cash_feasible_results_byte_unchanged": true,
+          "total_trade_count": 40,
+          "min_total_trades": 30,
+          "per_window_trade_count": {
+            "old_thin": 14,
+            "mid_weak": 13,
+            "late_strong": 13
+          },
+          "min_window_trades": 10,
+          "sample_passed": true,
+          "all_window_ev_nonnegative": true,
+          "all_window_pnl_nonnegative": false,
+          "all_window_cash_replacement_positive": false,
+          "all_window_qqq_replacement_positive": false,
+          "aggregate_ev_beats_accepted_comparator": false,
+          "aggregate_pnl_beats_accepted_comparator": false,
+          "drawdown_passed": false,
+          "dsr_panel_complete": true,
+          "dsr_probability": 0.021314996240211936,
+          "dsr_probability_min": 0.95,
+          "dsr_passed": false,
+          "top_tenor_positive_pnl_share": 0.38157,
+          "top_tenor_concentration_passed": false,
+          "top5_trade_positive_pnl_share": 0.580293,
+          "top5_trade_concentration_passed": true
+        },
+        "failed_reasons": [
+          "all_window_pnl_nonnegative",
+          "all_window_cash_replacement_positive",
+          "all_window_qqq_replacement_positive",
+          "aggregate_ev_beats_accepted_comparator",
+          "aggregate_pnl_beats_accepted_comparator",
+          "drawdown_passed",
+          "dsr_passed",
+          "top_tenor_concentration_passed"
+        ],
+        "accepted_comparator": {
+          "experiment_id": "exp-20260611-007",
+          "expected_value_score": 0.5286,
+          "total_pnl": 10432.91
+        },
+        "aggregate": {
+          "before_expected_value_score_sum": 0.0,
+          "after_expected_value_score_sum": 0.1674,
+          "expected_value_score_delta_sum": 0.1674,
+          "before_total_pnl_sum": 0.0,
+          "after_total_pnl_sum": -6534.63,
+          "total_pnl_delta_sum": -6534.63,
+          "trade_count_sum": 40,
+          "positive_ev_windows": 3,
+          "positive_pnl_windows": 1,
+          "worst_max_drawdown_pct": 0.0502
+        },
+        "concentration": {
+          "attribution_rule": "equal_split_across_same_day_trigger_tenors",
+          "positive_pnl_total": 4611.22,
+          "top5_trade_positive_pnl_share": 0.580293,
+          "top_tenor": "3-Year",
+          "top_tenor_positive_pnl_share": 0.38157,
+          "positive_pnl_by_tenor": {
+            "10-Year": 221.12,
+            "20-Year": 1328.37,
+            "3-Year": 1759.51,
+            "5-Year": 298.0,
+            "7-Year": 1004.22
+          }
+        },
+        "decision": "rejected_indirect_bidder_tbt_edge_not_robust"
+      },
+      "gate5": {
+        "status": "computed",
+        "selection_pool_complete": true,
+        "selection_scope_id": "treasury_auction_result_field_tbt_event_response_two_rule_panel_v1",
+        "panel_hash": "2e585e97e9bd5a0f56b6c61a150165497baba79ad52b46570864a1447bdeb2c8",
+        "dsr_probability": 0.021314996240211936,
+        "threshold": 0.95,
+        "passes_live_threshold": false
+      },
+      "production_impact": {
+        "trade_enabled": false,
+        "live_orders_changed": false,
+        "paper_orders_changed": false,
+        "core_backtest_changed": false,
+        "run_py_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exits_changed": false,
+        "accounting": "standalone_fully_funded_100000_usd_paper_account",
+        "execution_envelope": {
+          "instrument": "TBT",
+          "max_notional_usd": 16000.0,
+          "max_concurrent_positions": 1,
+          "cost_pct": 0.0035,
+          "entry": "strict next market-session open",
+          "exit": "fifth market-session close",
+          "kill_switch": "missing source/hash/timing/participant/adjusted-price field emits no candidate",
+          "orders": "default-off snapshot only"
+        }
+      },
+      "post_run_reflection": {
+        "why_result_happened": "The fixed participant-composition signal lost money in old_thin and mid_weak and had negative QQQ replacement value in all three windows. Its positive aggregate EV number is only the sign artifact of multiplying a negative return by a negative Sharpe in losing windows; the independent PnL and replacement-value gates correctly prevent promotion.",
+        "realized_failure_mode": "all_window_pnl_nonnegative,all_window_cash_replacement_positive,all_window_qqq_replacement_positive,aggregate_ev_beats_accepted_comparator,aggregate_pnl_beats_accepted_comparator,drawdown_passed,dsr_passed,top_tenor_concentration_passed",
+        "forbidden_near_neighbor_retry": "Do not retune indirect-share threshold, lookback, tenor subset, entry, hold, TBT proxy, cost, overlap, response shape or notional on these frozen auction rows.",
+        "new_evidence_required": "A genuinely new auction microstructure source/gate or materially more prospectively closed unchanged-policy forward decisions."
+      },
+      "related_files": [
+        "quant/experiments/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.py",
+        "quant/treasury_auction_indirect_bidder_tbt_paper_sleeve.py",
+        "quant/test_treasury_auction_indirect_bidder_tbt_paper_sleeve.py",
+        "scripts/experiment_fingerprint.py",
+        "quant/test_experiment_fingerprint.py",
+        "docs/alpha-optimization-playbook.md",
+        "data/experiments/exp-20260716-002/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.json",
+        "data/experiments/exp-20260716-002/deflated_sharpe_panel.json",
+        "data/paper_sleeves/treasury_auction_indirect_bidder_tbt/latest_snapshot.json"
+      ],
+      "updated_at": "2026-07-16T04:26:03+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-003",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "alpha-explore",
+      "hypothesis": "Measurement repair: expected_value_score must preserve the sign of strategy_total_return_pct so a negative-return strategy with negative Sharpe cannot receive a positive north-star score; use strategy_total_return_pct * abs(sharpe_daily), while leaving every positive-return baseline score unchanged.",
+      "ticket_file": "experiments/tickets/exp-20260716-003.json",
+      "card_file": "experiments/cards/exp-20260716-003.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-003.json",
+      "updated_at": "2026-07-16T06:16:33+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-004",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex",
+      "hypothesis": "When a fully qualified fresh core entry would be scaled or skipped by settled-cash admission, exiting the oldest active core position at the same next open and using the released cash for the fresh entry should improve capital freshness and cash-feasible expected value without changing signal generation or ordinary exits.",
+      "ticket_file": "experiments/tickets/exp-20260716-004.json",
+      "card_file": "experiments/cards/exp-20260716-004.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-004.json",
+      "updated_at": "2026-07-16T08:33:02+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-005",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-explore",
+      "hypothesis": "Shared-paper-first candidate-pool alpha: when an official PCAOB Form AP first reports an engagement-partner change versus the prior distinct 250-500 day fiscal period, audit uncertainty should shift demand toward an unaffected same-industry liquid peer; buy at the next open the unchanged peer with the highest trailing 60-session dollar volume, keep one top-ranked row per day, and exit after 20 sessions.",
+      "ticket_file": "experiments/tickets/exp-20260716-005.json",
+      "card_file": "experiments/cards/exp-20260716-005.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-005.json",
+      "updated_at": "2026-07-16T09:45:09+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-006",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-explore",
+      "hypothesis": "Shared-paper-first candidate-pool alpha: among strictly mapped liquid Healthcare issuers, a quarter-over-quarter decline in official FDA FAERS serious-outcome share is a safety-quality signal; rank only improving issuers, cap the ten largest improvements per quarterly release, allocate one equal-weight 10000 USD event basket at the first PIT session open, and close at the twentieth-session close with 35 bps round-trip cost.",
+      "ticket_file": "experiments/tickets/exp-20260716-006.json",
+      "card_file": "experiments/cards/exp-20260716-006.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-006.json",
+      "updated_at": "2026-07-16T11:43:38+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-007",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-explore",
+      "hypothesis": "Forward-only soft short-flow notional-scalar alpha: on materially expanded settled forward rows, entry-time short-volume toxic Q5 should identify lower-quality demand; scale only Q5 decisions to 0.75 notional and hold freed capital as cash, leaving all other decisions unchanged.",
+      "ticket_file": "experiments/tickets/exp-20260716-007.json",
+      "card_file": "experiments/cards/exp-20260716-007.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-007.json",
+      "updated_at": "2026-07-16T14:12:00+00:00"
+    },
+    {
+      "acceptance_rule": "Against the active cash-feasible Gate-1 baseline: aggregate expected_value_score must exceed 6.8263 (>10%), aggregate PnL must exceed 130992.36, at least two windows improve both EV and PnL, no window EV may regress more than 5%, worst max drawdown may worsen by at most 1 percentage point, every window must retain >=10 trades and >=5% survival, baseline trade-key retention must be >=80%, cash must never be negative and conservation error must be <=1e-4, and the queue must produce >=20 delayed fills total with top-1 queued-fill ticker share <=50%.",
+      "allowed_write_scope": [
+        "quant/backtester.py",
+        "quant/cash_conflict_persistent_order_queue.py",
+        "quant/test_cash_conflict_persistent_order_queue.py",
+        "quant/test_backtester_cash_ledger.py",
+        "quant/experiments/exp_20260716_008_cash_conflict_persistent_order_queue.py",
+        "data/experiments/exp-20260716-008",
+        "experiments/artifacts/exp-20260716-008.json",
+        "experiments/cards/exp-20260716-008.md",
+        "experiments/logs/exp-20260716-008.json",
+        "experiments/manifests/exp-20260716-008.json",
+        "experiments/tickets/exp-20260716-008.json",
+        "docs/experiment_registry.json",
+        "docs/experiment_log.jsonl",
+        "docs/frozen_families.jsonl",
+        "scripts/experiment_fingerprint.py",
+        "quant/test_experiment_fingerprint.py"
+      ],
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+      "card_file": "experiments/cards/exp-20260716-008.md",
+      "causal_components": [
+        "cash-only conflict qualification",
+        "exact unfilled remainder",
+        "FIFO persistence",
+        "next-open fill after ordinary cash release",
+        "original stop-target invalidation",
+        "no leverage",
+        "no incumbent liquidation"
+      ],
+      "change_type": "capital_allocation",
+      "changed_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+      "claimed_at": "2026-07-16T16:06:06+00:00",
+      "completed_at": "2026-07-16T16:26:13+00:00",
+      "created_at": "2026-07-16T16:05:47+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        }
+      ],
+      "experiment_id": "exp-20260716-008",
+      "experiment_uid": "expuid-f5ad90e3b9014ace",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260716-008",
+        "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+        "reserved_at": "2026-07-16T16:05:47+00:00",
+        "scheme": "hf_hub_local_v1",
+        "slug": "cash_conflict_persistent_order_queue"
+      },
+      "hypothesis": "When a fully qualified fresh core entry is partially or fully rejected only by settled-cash admission, persisting the exact unfilled shares in a FIFO order queue and filling them at a later open after ordinary exits release cash, while the original stop-target thesis remains unbreached, should recover missed alpha without leverage or incumbent liquidation.",
+      "lane": "alpha_search",
+      "locked_variables": [
+        "cash-feasible Gate-1 baseline",
+        "CASH_LEDGER_ENFORCED true",
+        "signal generation",
+        "ranking",
+        "requested sizing",
+        "ordinary exits",
+        "add-ons",
+        "sector and position caps",
+        "cost model",
+        "three frozen windows"
+      ],
+      "mechanism_family": "execution_cash_opportunity_cost_persistence",
+      "multiple_testing_risk_bucket": "low",
+      "must_not_touch": [
+        "quant/run.py",
+        "quant/constants.py",
+        "live order defaults",
+        "normal signal generation",
+        "ordinary exits",
+        "ranking",
+        "sizing"
+      ],
+      "nearby_prior_experiments": [
+        "exp-20260716-004",
+        "exp-20260715-008",
+        "exp-20260715-010"
+      ],
+      "new_evidence_type": "new_gate_shape",
+      "novelty": {
+        "blocking_matches": [],
+        "data_source_unclassified": false,
+        "enforced": true,
+        "fingerprint": {
+          "data_source": "intraday_advisory",
+          "field_tags": [
+            "a",
+            "admission",
+            "after",
+            "alpha",
+            "at",
+            "by",
+            "cash",
+            "conflict",
+            "core",
+            "cost",
+            "entry",
+            "exact",
+            "execution",
+            "exits",
+            "fifo",
+            "filling",
+            "fresh",
+            "fully",
+            "in",
+            "incumbent",
+            "invalid",
+            "is",
+            "later",
+            "leverage",
+            "liquidation",
+            "missed",
+            "only",
+            "opportunity",
+            "or",
+            "order",
+            "ordinary",
+            "original",
+            "partially",
+            "persistence",
+            "persistent",
+            "persisting",
+            "price",
+            "qualified",
+            "queue",
+            "recover",
+            "rejected",
+            "release",
+            "remains",
+            "settled",
+            "shares",
+            "should",
+            "stop",
+            "target",
+            "them",
+            "thesis",
+            "unbreached",
+            "unfilled",
+            "until",
+            "when",
+            "while",
+            "without"
+          ],
+          "gate_shape": "other"
+        },
+        "in_flight_duplicate_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matches": [],
+          "override_accepted": false,
+          "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+          "threshold": 0.65,
+          "window_days": 7
+        },
+        "nearest": [
+          {
+            "accept_rate": 1.0,
+            "data_source": "intraday_advisory",
+            "family_key": "intraday_advisory_shadow_action_contract",
+            "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+            "score": 0.45,
+            "status": "has_accepted",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "intraday_advisory",
+            "family_key": "intraday_advisory_shadow_action_forward_outcome",
+            "reopen_condition": "Reopen only after current h1/h3 settled rows materially exceed 141/117 under the same fixed helper, or after true quote timestamps or broker bar IDs, materially larger native primary-action coverage, and slot-reuse/replacement-value accounting are available.",
+            "score": 0.45,
+            "status": "frozen_rejected",
+            "trials": 3
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "intraday_advisory",
+            "family_key": "intraday_advisory_state_forward_outcome_settlement",
+            "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+            "score": 0.45,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 0.0,
+            "data_source": "intraday_advisory",
+            "family_key": "intraday_native_advisory_shadow_action_contract",
+            "reopen_condition": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+            "score": 0.45,
+            "status": "single_attempt",
+            "trials": 1
+          },
+          {
+            "accept_rate": 1.0,
+            "data_source": "intraday_advisory",
+            "family_key": "intraday_review_quote_capture_provenance",
+            "reopen_condition": "Future intraday alpha promotion needs newly generated snapshots with capture_time_et, real pending action or existing-rule trigger semantics, and closed forward outcomes/replacement value. This repair alone is not alpha evidence.",
+            "score": 0.45,
+            "status": "has_accepted",
+            "trials": 1
+          }
+        ],
+        "new_evidence_axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+        "observed_only_streak_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_probes": 3,
+          "override_accepted": false,
+          "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+          "source": "intraday_advisory",
+          "streak": 0,
+          "streak_experiments": []
+        },
+        "override": false,
+        "reopen_condition_guard": {
+          "applicable": true,
+          "blocked": false,
+          "matched_conditions": [],
+          "new_evidence_axis": {
+            "axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+            "categories": [
+              "new_gate_shape"
+            ],
+            "invalid_same_source_field_only": false,
+            "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+            "valid": true
+          },
+          "override_accepted": false,
+          "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+        },
+        "routine_materialization_guard": {
+          "applicable": false,
+          "blocked": false,
+          "max_ids": 3,
+          "override_accepted": false,
+          "per_source_count": 0,
+          "recent_cross_surface_count": 0,
+          "recent_experiments": [],
+          "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+          "window_days": 7
+        },
+        "saturated_source_axis": {
+          "axis": "A genuinely new gate shape on the existing cash-feasible core-book surface: persistent FIFO order state carried across dates with next-open deferred fills and original price-thesis invalidation, distinct from incumbent eviction, scalar retuning, entry exclusion, or same-day cash scaling.",
+          "categories": [
+            "new_gate_shape"
+          ],
+          "invalid_same_source_field_only": false,
+          "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+          "valid": true
+        },
+        "saturated_source_override": false,
+        "source_saturation": {
+          "accept_rate": 0.0,
+          "accepts": 0,
+          "applicable": false,
+          "gate_shape": "other",
+          "max_accept_rate": 0.05,
+          "min_trials": 12,
+          "saturated": false,
+          "source": "intraday_advisory",
+          "trials": 0
+        },
+        "warn": false,
+        "warn_threshold": 0.55
+      },
+      "owner": "codex-alpha-explore",
+      "prediction": {
+        "success_probability": 0.22,
+        "expected_ev_delta": 0.75,
+        "expected_pnl_delta": 12000.0,
+        "main_failure_modes": [
+          "stale_signal_decay",
+          "queue_starves_fresh_candidates",
+          "price_thesis_cancels_most_orders",
+          "queued_fill_concentration",
+          "partial_fill_accounting_drift"
+        ],
+        "confidence_reason": "The three frozen windows contain 17/23/16 cash conflicts and 10/18/7 full skips with later OHLCV, so the state machine has enough opportunities; however delayed entry can decay and stringent no-lookahead invalidation may cancel many orders.",
+        "recorded_at": "2026-07-16T16:05:25+00:00"
+      },
+      "prior_trial_count": 0,
+      "result": {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_result_file": "data/experiments/exp-20260716-008/before.json",
+        "after_result_file": "data/experiments/exp-20260716-008/after.json",
+        "artifact_file": "experiments/artifacts/exp-20260716-008.json",
+        "delta_metrics": {
+          "total_pnl": -7804.169999999998,
+          "expected_value_score": -0.5644,
+          "trade_count": 4.0,
+          "minimum_survival_rate": 0.0,
+          "max_drawdown_pct": -0.024900000000000005
+        },
+        "gates": {
+          "gate1_exact_cash_feasible_baseline": true,
+          "gate2_frozen_contract_and_entry_dates": true,
+          "gate3_survival": true,
+          "aggregate_ev_above_10pct_bar": false,
+          "aggregate_pnl_above_baseline": false,
+          "at_least_two_windows_improve_both_ev_and_pnl": false,
+          "no_window_ev_regresses_more_than_5pct": false,
+          "worst_drawdown_drift_within_one_percentage_point": true,
+          "trade_count_statistically_meaningful": true,
+          "baseline_trade_key_retention_gte_80pct": true,
+          "cash_conservation_all_variants": true,
+          "signal_generation_and_survival_unchanged": false,
+          "queue_inactive_in_explicit_false_baseline": true,
+          "queue_result_present_and_enabled_in_after": true,
+          "queue_invariants_reported": true,
+          "fifo_thesis_and_cash_invariants_clean": true,
+          "at_least_20_delayed_fills": false,
+          "delayed_fill_ticker_attribution_complete": true,
+          "delayed_fill_ticker_concentration_lte_50pct": true
+        },
+        "calibration": {
+          "actual_success": false,
+          "predicted_success_probability": 0.22,
+          "brier_score": 0.0484,
+          "expected_ev_delta": 0.75,
+          "actual_ev_delta": -0.5644,
+          "ev_prediction_error": -1.3144,
+          "expected_pnl_delta": 12000.0,
+          "actual_pnl_delta": -7804.169999999998,
+          "pnl_prediction_error": -19804.17,
+          "predicted_failure_modes": [
+            "stale_signal_decay",
+            "queue_starves_fresh_candidates",
+            "price_thesis_cancels_most_orders",
+            "queued_fill_concentration",
+            "partial_fill_accounting_drift"
+          ],
+          "realized_failure_mode": "stale_signal_decay_and_insufficient_delayed_fills",
+          "predicted_failure_mode_hit": true,
+          "surprise_note": "FIFO invariants and cash conservation were clean, but only 12 delayed fills materialized versus the 20-fill floor and the delayed entries reduced aggregate EV/PnL."
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260716-008.json",
+      "single_causal_variable": "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260716-008.json",
+      "trial_family": "cash_conflict_persistent_order_queue",
+      "trial_variant_id": "v1_fifo_original_price_thesis",
+      "updated_at": "2026-07-16T16:26:13+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-009",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "claude-alpha",
+      "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010, aggregate EV 6.2057), replaying the unchanged accepted low-deployment ETF cash-substitute sleeve (exp-20260715-003 selector, 10000 USD cap, one open overlay position, next-open entry, 10-trading-day close, shared costs, core-cash-priority forced exit) on genuinely remaining settled cash should add aggregate expected value, because exp-20260715-005's only structural failure mode - core notional exhausting reconstructed cash - is eliminated by the accepted deterministic scale-or-skip cash admission gate.",
+      "ticket_file": "experiments/tickets/exp-20260716-009.json",
+      "card_file": "experiments/cards/exp-20260716-009.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-009.json",
+      "updated_at": "2026-07-16T16:25:40+00:00"
+    },
+    {
+      "experiment_id": "exp-20260716-010",
+      "status": "claimed",
+      "lane": "alpha_search",
+      "owner": "claude-ablation",
+      "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010), part of the accepted default-on sizing/cap/add-on policy stack validated in the unenforced leverage regime may no longer pay its way; a single-batch leave-one-policy-family-out ablation across the three canonical windows measures each family's marginal contribution and nominates removal only for a family whose ablation improves aggregate EV by more than 10 percent with no drawdown, survival, or trade-count deterioration.",
+      "ticket_file": "experiments/tickets/exp-20260716-010.json",
+      "card_file": "experiments/cards/exp-20260716-010.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260716-010.json",
+      "updated_at": "2026-07-16T16:36:09+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-07-15T16:43:59+00:00"
+  "updated_at": "2026-07-16T16:36:09+00:00"
 }

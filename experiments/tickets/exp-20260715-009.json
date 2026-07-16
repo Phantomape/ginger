@@ -1,0 +1,343 @@
+{
+  "acceptance_rule": "Require aggregate expected_value_score > 13.4968 (>10% above 12.2698), aggregate PnL above 237852.27, no canonical-window EV or PnL regression, max-drawdown drift <=1 percentage point, unchanged trade/survival counts except deterministic cash clipping, positive and negative N-PORT buckets in every window, and shared default-off daily/replay parity with zero live-order impact.",
+  "allowed_write_scope": [
+    "quant/sec_nport_share_accumulation.py",
+    "quant/experiments/exp_20260715_009_sec_nport_entry_notional_scalar.py",
+    "quant/test_sec_nport_share_accumulation.py",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260715-009",
+    "experiments/tickets/exp-20260715-009.json",
+    "experiments/logs/exp-20260715-009.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-009.md",
+  "causal_components": [
+    "official quarterly N-PORT extraction",
+    "filing-date PIT clock",
+    "continuous-series 70-110d matching",
+    "integer split correction",
+    "minimum 20-series coverage",
+    "fixed symmetric notional scalar",
+    "shared default-off daily snapshot",
+    "three-window replay"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "sec_nport_split_adjusted_matched_fund_qoq_share_accumulation_core_entry_notional_scalar_v1",
+  "claimed_at": "2026-07-15T21:09:46+00:00",
+  "completed_at": "2026-07-15T21:47:49+00:00",
+  "created_at": "2026-07-15T21:09:35+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260715-009",
+  "experiment_uid": "expuid-8d73d03ef2df4934",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T21:09:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_n_port_split_adjusted_continuous_fund_qoq_aggregate_share_sign_controls_a_fi"
+  },
+  "hypothesis": "Risk-allocation alpha from the new SEC Form N-PORT public as-filed registered-fund holdings source: for an executed core company position with at least 20 continuously reporting fund series, split-adjusted aggregate shares increasing quarter over quarter should merit a fixed 1.10 opening-notional scalar, decreasing shares a 0.90 scalar, and missing coverage 1.00, improving expected-value score and PnL while all non-sizing behavior and live orders stay unchanged.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "positive scalar=1.10",
+    "negative scalar=0.90",
+    "missing scalar=1.00",
+    "matched series minimum=20",
+    "report gap=70-110 days",
+    "filing date strictly before entry date",
+    "UNIT=NS",
+    "ASSET_CAT=EC",
+    "PAYOFF_PROFILE=Long",
+    "company tickers only",
+    "integer split factor tolerance=5%",
+    "all entry/exit/ranking/add-on/cost policies"
+  ],
+  "mechanism_family": "registered_fund_share_accumulation_demand_confirmation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default order list",
+    "entry admission",
+    "entry ranking",
+    "exit rules",
+    "add-on rules",
+    "core universe",
+    "production trade_enabled defaults"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260625-010",
+    "exp-20260625-012"
+  ],
+  "new_evidence_type": "new_official_pit_data_source_and_notional_scalar_gate",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accumulation",
+        "adjusted",
+        "aggregate",
+        "all",
+        "allocation",
+        "alpha",
+        "an",
+        "as",
+        "at",
+        "behavior",
+        "company",
+        "confirmation",
+        "continuous",
+        "continuously",
+        "controls",
+        "core",
+        "coverage",
+        "decreasing",
+        "demand",
+        "entry",
+        "executed",
+        "expected",
+        "filed",
+        "form",
+        "from",
+        "fund",
+        "holdings",
+        "improving",
+        "increasing",
+        "least",
+        "live",
+        "merit",
+        "missing",
+        "n",
+        "negative",
+        "new",
+        "non",
+        "notional",
+        "nport",
+        "opening",
+        "orders",
+        "over",
+        "pnl",
+        "port",
+        "position",
+        "positive",
+        "public",
+        "qoq",
+        "quarter",
+        "registered",
+        "reporting",
+        "risk",
+        "scalar",
+        "score",
+        "series",
+        "share",
+        "shares",
+        "should",
+        "sign",
+        "sizing",
+        "split",
+        "stay",
+        "unchanged",
+        "value",
+        "while"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_coverage_status_allocation",
+        "reopen_condition": "Do not use SEC text archive missingness as an allocation signal. If this edge is revisited, replace it with a stable production-visible field such as form type, accession-matched text_event_type, or an explicit disclosure-quality bucket and rerun Gate 1-4.",
+        "score": 0.179,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_entry_catalyst_core_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.1782,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "event_source_quality_allocation",
+        "reopen_condition": null,
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.1729,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New official PIT data source: SEC Form N-PORT public as-filed holdings cover a distinct registered-fund filer universe and schema not previously evaluated. The filing-date clock, continuous-series match, split correction, 20-series minimum, and symmetric 1.10/0.90 notional response were fixed before any PnL read.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New official PIT data source: SEC Form N-PORT public as-filed holdings cover a distinct registered-fund filer universe and schema not previously evaluated. The filing-date clock, continuous-series match, split correction, 20-series minimum, and symmetric 1.10/0.90 notional response were fixed before any PnL read.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New official PIT data source: SEC Form N-PORT public as-filed holdings cover a distinct registered-fund filer universe and schema not previously evaluated. The filing-date clock, continuous-series match, split correction, 20-series minimum, and symmetric 1.10/0.90 notional response were fixed before any PnL read.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "Coverage is broad (50/62 positions; minimum 219 matched series) but similar institutional-ownership mechanisms have often failed and late/mid positive buckets are sparse.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "slow_institutional_flow_is_momentum_proxy",
+      "old_thin_late_strong_sign_instability",
+      "split_or_identifier_bias",
+      "capital_constraint_clips_scalars"
+    ],
+    "recorded_at": "2026-07-15T21:08:52+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260715-009/before.json",
+    "after_result_file": "data/experiments/exp-20260715-009/after.json",
+    "delta_metrics": {
+      "expected_value_score": -0.4631,
+      "max_drawdown_pct": -0.0064,
+      "survival_rate": 0.0,
+      "total_pnl": -10346.15
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": -0.4631,
+      "ev_prediction_error": -0.7131,
+      "expected_pnl_delta": 3500.0,
+      "actual_pnl_delta": -10346.15,
+      "pnl_prediction_error": -13846.15,
+      "predicted_failure_modes": [
+        "slow_institutional_flow_is_momentum_proxy",
+        "old_thin_late_strong_sign_instability",
+        "split_or_identifier_bias",
+        "capital_constraint_clips_scalars"
+      ],
+      "realized_failure_mode": "slow_institutional_flow_is_momentum_proxy_and_negative_bucket_haircuts_winners",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "All three windows regressed; negative-flow haircuts cut winners and the positive branch was cap-limited."
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The 0.90 negative bucket cut many of the strategy's largest winners, removing 9443.76 dollars in aggregate, while existing position caps muted the positive branch: only 7 material increases occurred versus 28 material negative haircuts.",
+    "realized_failure_mode": "slow_institutional_flow_is_momentum_proxy_and_negative_bucket_haircuts_winners",
+    "forbidden_near_neighbor_retry": "Do not retry the same N-PORT aggregate-share sign with different scalars, one-sided use, sample minimum, report-gap/recency, split tolerance, fund/ticker subset, or position cap on the canonical windows.",
+    "new_evidence_required": "A genuinely different N-PORT signal with a predeclared mechanism plus an unseen out-of-sample window or materially new settled forward rows; otherwise switch data sources."
+  },
+  "production_impact": "None. quant/run.py and all live/default sizing paths remain unchanged; only a pure default-off helper and reproducibility artifacts were retained.",
+  "revision_manifest_file": "experiments/manifests/exp-20260715-009.json",
+  "single_causal_variable": "SEC N-PORT split-adjusted continuous-fund QoQ aggregate-share sign controls a fixed positive=1.10 negative=0.90 missing=1.00 opening-notional scalar.",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260715-009.json",
+  "trial_family": "sec_nport_continuous_fund_share_accumulation_entry_notional_scalar",
+  "trial_variant_id": "v1_fixed_sign_110_090"
+}

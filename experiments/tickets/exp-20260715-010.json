@@ -1,0 +1,323 @@
+{
+  "acceptance_rule": "Accept only if DEFAULT_CONFIG CASH_LEDGER_ENFORCED is True; the exact exp-20260712-015 frozen behavior hash and three warehouse snapshot rowsets are reused; two full replays match exactly per window; every published result has zero negative-cash events and passes cash conservation; headline metrics match exp-20260715-008 enforced results; source/input identities stay stable; and focused tests pass. No EV-improvement requirement because this publishes the executable measurement baseline.",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/experiments/exp_20260715_010_cash_feasible_gate1_rebaseline.py",
+    "quant/test_backtester_cash_ledger.py",
+    "data/experiments/exp-20260715-010",
+    "data/backtests/cash_feasible_20260715",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "docs/backtesting.md",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "docs/alpha-optimization-playbook.md",
+    "experiments/cards/exp-20260715-010.md",
+    "experiments/manifests/exp-20260715-010.json",
+    "experiments/tickets/exp-20260715-010.json",
+    "experiments/logs/exp-20260715-010.json",
+    "experiments/artifacts/exp-20260715-010_cash_feasible_gate1_rebaseline.md",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-010.md",
+  "causal_components": [
+    "default config flip",
+    "frozen-input double replay",
+    "cash-feasible baseline manifests",
+    "active Gate-1 documentation pointer"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "CASH_LEDGER_ENFORCED_default_and_active_gate1_anchor",
+  "claimed_at": "2026-07-15T22:18:37+00:00",
+  "completed_at": "2026-07-15T22:28:18+00:00",
+  "created_at": "2026-07-15T22:18:21+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260715-010",
+  "experiment_uid": "expuid-f844257aae844b7c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T22:18:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_feasible_gate1_rebaseline"
+  },
+  "hypothesis": "The active Gate-1 anchor still treats the leverage-inflated CASH_LEDGER_ENFORCED=False replay as the champion even though exp-20260715-008 accepted the execution-date cash ledger and explicitly required a default flip; promoting the unchanged accepted cash-admission policy to the backtester default and publishing a double-replayed frozen-input cash-feasible three-window anchor removes the measurement blocker for future capital-allocation alpha.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "exp-20260715-008 scale-or-skip algorithm",
+    "initial capital",
+    "all entry/exit/ranking/sizing rules",
+    "three canonical windows",
+    "exp-20260712-015 frozen behavior inputs",
+    "cost model"
+  ],
+  "mechanism_family": "cash_feasible_gate1_rebaseline",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "NPORT/Treasury/intraday files; cash scale-vs-skip semantics; cash buffers; per-order caps; live/default order routing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-008",
+    "exp-20260712-015"
+  ],
+  "new_evidence_type": "canonical_gate1_rebaseline_after_accepted_cash_ledger_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accepted",
+        "active",
+        "admission",
+        "allocation",
+        "alpha",
+        "anchor",
+        "as",
+        "backtester",
+        "blocker",
+        "canonical",
+        "capital",
+        "cash",
+        "champion",
+        "date",
+        "double",
+        "enforced",
+        "even",
+        "execution",
+        "exp",
+        "explicitly",
+        "false",
+        "feasible",
+        "flip",
+        "from",
+        "frozen",
+        "future",
+        "gate",
+        "gate1",
+        "identity",
+        "inflated",
+        "input",
+        "itself",
+        "ledger",
+        "leverage",
+        "measurement",
+        "or",
+        "plus",
+        "policy",
+        "promoting",
+        "publication",
+        "publishing",
+        "rebaseline",
+        "remains",
+        "removes",
+        "repair",
+        "replayed",
+        "required",
+        "still",
+        "though",
+        "three",
+        "to",
+        "treats",
+        "true",
+        "unchanged",
+        "window"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.8276,
+        "data_source": "other",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "Follow-up ticket for the canonical decision: flip CASH_LEDGER_ENFORCED to True by default, republish a frozen-input post-cash-ledger Gate-1 anchor (exp-20260712-015 pattern), and re-open the parked capital-allocation lanes (low_deployment ETF overlay, portfolio covariance) whose displacement math was biased by the unenforced champion. Any live claim additionally needs the production runner's actua",
+        "score": 0.061,
+        "status": "has_accepted",
+        "trials": 29
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_scalar_direction_gate",
+        "reopen_condition": null,
+        "score": 0.0389,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "production_parity_repair",
+        "reopen_condition": "Only revisit trailing with a genuinely different mechanism: e.g. regime-conditional trailing (trail only in chop/old_thin where giveback bites, static in trends), a percent-of-MFE giveback stop rather than ATR-offset, or forward live giveback data. A flat ATR trail is closed.",
+        "score": 0.0304,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_paper_ledger_repair",
+        "reopen_condition": "Closed alpha_score_market_regime paper outcomes with replacement value versus cash/SPY/QQQ or a materially different production-visible PIT source.",
+        "score": 0.0303,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_execution_history",
+        "family_key": "broker_execution_measurement",
+        "reopen_condition": "A separate consumer experiment may evaluate exit-side live drift on the 87 trusted closed lifecycles. A ledger/lifecycle revision requires verified broker timezone or push-event semantics, corporate-action/transfer records, a demonstrated cross-zero allocation contract, per-collection commit/visibility proof, or cursor-based cash-flow backfill evidence.",
+        "score": 0.0271,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "confidence_reason": "exp-20260715-008 already produced exact frozen-input enforced metrics with zero negative cash and explicit closeout instructions for this default flip; this ticket changes no cash admission policy.",
+    "expected_ev_delta": -6.0641,
+    "expected_pnl_delta": -106859.91,
+    "main_failure_modes": [
+      "dirty-source instability",
+      "default flag not reaching engine",
+      "baseline mismatch versus exp008 enforced replay",
+      "unrelated worktree overlap"
+    ],
+    "recorded_at": "2026-07-15T22:17:36+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "accepted_measurement_repair_cash_feasible_gate1_rebaseline",
+    "acceptance_reasons": [
+      "DEFAULT_CONFIG CASH_LEDGER_ENFORCED is True and the runtime fallback matches",
+      "explicit-True and default double replays are exactly identical in all three windows, including cash-ledger hashes",
+      "default results exactly match exp-20260715-008 enforced metrics",
+      "every window has zero negative-cash events, nonnegative minimum cash, and exact cash conservation",
+      "explicit False exactly reproduces the exp-20260712-015 historical anchor"
+    ],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {
+      "expected_value_score": -6.0641,
+      "max_drawdown_pct": -0.0086,
+      "survival_rate": 0.0231,
+      "total_pnl": -106859.91,
+      "trade_count": -13
+    },
+    "calibration": {
+      "actual_decision": "accepted_measurement_repair_cash_feasible_gate1_rebaseline",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": -6.0641,
+      "actual_ev_delta": -6.0641,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": -106859.91,
+      "actual_pnl_delta": -106859.91,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "dirty-source instability",
+        "default flag not reaching engine",
+        "baseline mismatch versus exp008 enforced replay",
+        "unrelated worktree overlap"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "No metric drift occurred: default True exactly matched exp-20260715-008 enforced results, and explicit False exactly reproduced the prior unenforced anchor; the smallest remaining cash balance was only 0.44 USD in mid_weak, confirming the admission gate binds tightly."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260715-010.json",
+  "single_causal_variable": "CASH_LEDGER_ENFORCED default False to True plus canonical frozen-input Gate-1 anchor publication; cash admission policy itself remains unchanged from exp-20260715-008",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260715-010.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "cash_ledger_default_flip_v1"
+}

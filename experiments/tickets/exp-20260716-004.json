@@ -1,0 +1,311 @@
+{
+  "acceptance_rule": "Against exp-20260715-010 cash-feasible Gate 1: aggregate expected_value_score must exceed 6.8263 (>10%), aggregate PnL must exceed 130992.36, at least two windows improve EV, no window EV regresses more than 5%, worst max drawdown may worsen by at most 1 percentage point, trade count and survival remain statistically meaningful, cash conservation passes, and eviction ticker concentration stays <=50%.",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/cash_conflict_oldest_rotation.py",
+    "quant/test_cash_conflict_oldest_rotation.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/artifacts",
+    "experiments/cards",
+    "experiments/logs",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260716-004.md",
+  "causal_components": [
+    "cash-shortfall trigger",
+    "oldest-core selection",
+    "same-open full exit",
+    "unchanged fresh-entry sizing"
+  ],
+  "change_type": "capital_allocation",
+  "changed_variable": "cash_conflict_oldest_incumbent_full_rotation_v1",
+  "claimed_at": "2026-07-16T08:12:59+00:00",
+  "completed_at": "2026-07-16T08:33:02+00:00",
+  "created_at": "2026-07-16T08:11:42+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260716-004",
+  "experiment_uid": "expuid-28dad2ea183e4d8d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T08:11:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_conflict_oldest_rotation"
+  },
+  "hypothesis": "When a fully qualified fresh core entry would be scaled or skipped by settled-cash admission, exiting the oldest active core position at the same next open and using the released cash for the fresh entry should improve capital freshness and cash-feasible expected value without changing signal generation or ordinary exits.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "all signals and ranking",
+    "requested fresh-entry sizing",
+    "normal stop and target rules",
+    "add-ons",
+    "sector and position caps",
+    "cost model",
+    "three frozen windows"
+  ],
+  "mechanism_family": "execution_cash_opportunity_cost_rotation",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/run.py",
+    "live order defaults",
+    "normal signal generation",
+    "ordinary stop/target/add-on policies"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260630-020",
+    "exp-20260715-002",
+    "exp-20260716-001"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "a",
+        "active",
+        "admission",
+        "at",
+        "be",
+        "by",
+        "capital",
+        "cash",
+        "changing",
+        "conflict",
+        "core",
+        "cost",
+        "entry",
+        "execution",
+        "exiting",
+        "exits",
+        "expected",
+        "feasible",
+        "fresh",
+        "freshness",
+        "full",
+        "fully",
+        "funds",
+        "generation",
+        "improve",
+        "incumbent",
+        "oldest",
+        "opportunity",
+        "or",
+        "ordinary",
+        "position",
+        "qualified",
+        "released",
+        "rotation",
+        "same",
+        "scaled",
+        "settled",
+        "should",
+        "signal",
+        "skipped",
+        "using",
+        "value",
+        "when",
+        "without",
+        "would"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "joint_active_book_marginal_variance_budget",
+        "reopen_condition": "Reopen only with an unseen out-of-sample window and an independently predeclared gate, at least +50% and +10 materially new settled forward active-book decisions, or a genuinely new non-price dependence source; otherwise switch evidence surfaces.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4663,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "cash_conversion_quality_low_deployment_candidate_pool",
+        "reopen_condition": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality.",
+        "score": 0.4654,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4583,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "quarterly_cash_conversion_improvement_candidate_pool",
+        "reopen_condition": "Need true PIT TTM same-period accruals or closed forward replacement-value rows before revisiting quarterly cash-flow quality.",
+        "score": 0.4583,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New incumbent-replacement capital-allocation gate on the cash-feasible admission surface: a cash-conflicted fresh qualified core entry conditionally evicts the oldest active core position; this is neither candidate ranking/scaling nor an unconditional early-weakness exit.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "companyfacts_ratio",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New incumbent-replacement capital-allocation gate on the cash-feasible admission surface: a cash-conflicted fresh qualified core entry conditionally evicts the oldest active core position; this is neither candidate ranking/scaling nor an unconditional early-weakness exit.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New incumbent-replacement capital-allocation gate on the cash-feasible admission surface: a cash-conflicted fresh qualified core entry conditionally evicts the oldest active core position; this is neither candidate ranking/scaling nor an unconditional early-weakness exit.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "companyfacts_ratio",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "The new cash-feasible anchor exposes 11/21/14 eligible conflict dates, but prior active-core displacement and early exits usually lost value; the zero-parameter freshness mechanism is plausible yet deliberately low-probability.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "premature_winner_eviction",
+      "rotation_cost_churn",
+      "mid_old_eviction_concentration",
+      "too_few_effective_cash_conflicts"
+    ],
+    "recorded_at": "2026-07-16T08:10:54+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-004/before.json",
+    "after_result_file": "data/experiments/exp-20260716-004/after.json",
+    "delta_metrics": {
+      "expected_value_score": -3.1764,
+      "max_drawdown_pct": -0.0003,
+      "total_pnl": -62574.09
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.12,
+      "brier_score": 0.0144,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": -3.1764,
+      "ev_prediction_error": -3.3264,
+      "expected_pnl_delta": 2500.0,
+      "actual_pnl_delta": -62574.09,
+      "pnl_prediction_error": -65074.09,
+      "predicted_failure_modes": [
+        "premature_winner_eviction",
+        "rotation_cost_churn",
+        "mid_old_eviction_concentration",
+        "too_few_effective_cash_conflicts"
+      ],
+      "realized_failure_mode": "premature_winner_eviction",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Trade count rose by 24 and drawdown was flat, but replacement churn destroyed 62574.09 of aggregate PnL across all three windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260716-004.json",
+  "single_causal_variable": "cash_conflict_oldest_incumbent_full_rotation_funds_fresh_core_entry_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-004.json",
+  "trial_family": "cash_conflict_oldest_incumbent_rotation",
+  "trial_variant_id": "v1_oldest_full_exit_fresh_core"
+}

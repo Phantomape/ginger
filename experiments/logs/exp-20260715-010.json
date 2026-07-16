@@ -1,0 +1,171 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": null,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_cash_feasible_gate1_rebaseline",
+    "actual_ev_delta": -6.0641,
+    "actual_pnl_delta": -106859.91,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": -6.0641,
+    "expected_pnl_delta": -106859.91,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "dirty-source instability",
+      "default flag not reaching engine",
+      "baseline mismatch versus exp008 enforced replay",
+      "unrelated worktree overlap"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "No metric drift occurred: default True exactly matched exp-20260715-008 enforced results, and explicit False exactly reproduced the prior unenforced anchor; the smallest remaining cash balance was only 0.44 USD in mid_weak, confirming the admission gate binds tightly."
+  },
+  "causal_components": [
+    "default config flip",
+    "frozen-input double replay",
+    "cash-feasible baseline manifests",
+    "active Gate-1 documentation pointer"
+  ],
+  "change_summary": "Promoted the accepted exp-20260715-008 execution-date cash ledger to the canonical backtester default without changing its scale/skip/release semantics; published a source-bundled, frozen-input, cash-feasible three-window Gate-1 anchor after explicit-True/default double-replay identity and explicit-False legacy compatibility checks.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "CASH_LEDGER_ENFORCED_default_and_active_gate1_anchor",
+  "component": "quant/backtester.py, quant/experiments/exp_20260715_010_cash_feasible_gate1_rebaseline.py, quant/test_backtester_cash_ledger.py, data/experiments/exp-20260715-010, data/backtests/cash_feasible_20260715, data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json, docs/backtesting.md, docs/alpha_context_pack.md, docs/current_state_snapshot.md, docs/alpha-optimization-playbook.md, experiments/cards/exp-20260715-010.md, experiments/manifests/exp-20260715-010.json, experiments/tickets/exp-20260715-010.json, experiments/logs/exp-20260715-010.json, experiments/artifacts/exp-20260715-010_cash_feasible_gate1_rebaseline.md, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted_measurement_repair_cash_feasible_gate1_rebaseline",
+  "delta_metrics": {
+    "expected_value_score": -6.0641,
+    "max_drawdown_pct": -0.0086,
+    "survival_rate": 0.0231,
+    "total_pnl": -106859.91,
+    "trade_count": -13
+  },
+  "experiment_id": "exp-20260715-010",
+  "hypothesis": "The active Gate-1 anchor still treats the leverage-inflated CASH_LEDGER_ENFORCED=False replay as the champion even though exp-20260715-008 accepted the execution-date cash ledger and explicitly required a default flip; promoting the unchanged accepted cash-admission policy to the backtester default and publishing a double-replayed frozen-input cash-feasible three-window anchor removes the measurement blocker for future capital-allocation alpha.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "cash_feasible_gate1_rebaseline",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-008",
+    "exp-20260712-015"
+  ],
+  "new_evidence_type": "canonical_gate1_rebaseline_after_accepted_cash_ledger_repair",
+  "next_retry_requires": [
+    "a genuinely new capital-allocation or covariance gate shape evaluated against the cash-feasible anchor",
+    "shared run.py and broker settled-cash reservation/admission parity before any live-ready claim"
+  ],
+  "notes": "Accepted measurement repair, not alpha. Active anchor: aggregate EV 6.2057, PnL 130992.36, 49 trades; late/mid/old EV 4.1067/1.9908/0.1082; zero negative-cash events and exact cash conservation in every window. The -6.0641 EV and -106859.91 PnL delta remove unfinanceable fills and are expected, not a strategy regression. Fingerprint caveat: classifier labels this source/gate as other, but it is a canonical measurement identity repair, not a candidate-source scan. Locked: no cash-policy retune. live_ready=false pending shared production cash-reservation parity.",
+  "parameters": {
+    "locked_variables": [
+      "exp-20260715-008 scale-or-skip algorithm",
+      "initial capital",
+      "all entry/exit/ranking/sizing rules",
+      "three canonical windows",
+      "exp-20260712-015 frozen behavior inputs",
+      "cost model"
+    ],
+    "single_causal_variable": "CASH_LEDGER_ENFORCED default False to True plus canonical frozen-input Gate-1 anchor publication; cash admission policy itself remains unchanged from exp-20260715-008"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune scale-versus-skip behavior, cash buffers, per-order caps, or execution ordering; do not use the unenforced 12.2698 EV anchor for Gate 4; and do not mechanically rerun rejected allocation policies just because the executable hurdle is lower.",
+    "new_evidence_required": "A future alpha ticket must predeclare a genuinely new allocator/covariance mechanism and compare both sides on the 6.2057 cash-feasible anchor. A live-ready ticket additionally needs a shared settled-cash/buying-power reservation contract across backtester, run.py, and broker adapters.",
+    "realized_failure_mode": null,
+    "why_result_happened": "No metric drift occurred: default True exactly matched exp-20260715-008 enforced results, and explicit False exactly reproduced the prior unenforced anchor; the smallest remaining cash balance was only 0.44 USD in mid_weak, confirming the admission gate binds tightly."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260715-008 already produced exact frozen-input enforced metrics with zero negative cash and explicit closeout instructions for this default flip; this ticket changes no cash admission policy.",
+    "expected_ev_delta": -6.0641,
+    "expected_pnl_delta": -106859.91,
+    "main_failure_modes": [
+      "dirty-source instability",
+      "default flag not reaching engine",
+      "baseline mismatch versus exp008 enforced replay",
+      "unrelated worktree overlap"
+    ],
+    "recorded_at": "2026-07-15T22:17:36+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/cash_feasible_20260715/",
+    "data/experiments/exp-20260715-010/",
+    "quant/backtester.py",
+    "quant/test_backtester_cash_ledger.py",
+    "quant/experiments/exp_20260715_010_cash_feasible_gate1_rebaseline.py",
+    "docs/backtesting.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": true,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "live_ready": false,
+    "parity_note": "The canonical backtester now rejects or scales unaffordable core orders by default. Live/default production orders are unchanged and still need shared settled-cash reservation parity before a live-ready claim.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "verification": {
+    "active_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "aggregate_expected_value_score": 6.2057,
+    "aggregate_total_pnl": 130992.36,
+    "aggregate_trade_count": 49,
+    "default_true_matches_exp008_enforced": true,
+    "double_replay_exact_all_windows": true,
+    "explicit_false_reproduces_prior_anchor": true,
+    "frozen_behavior_sha256": "ff0f232a2c075a7f330b28ddff8661d25108e45eeb9f4322c3f99574e338ffa6",
+    "negative_cash_events_all_windows": 0,
+    "cash_conservation_all_windows": true,
+    "focused_pytest": "5 passed"
+  },
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-15T22:28:19+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "cash_ledger_default_flip_v1"
+}

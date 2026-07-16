@@ -101,6 +101,29 @@ def test_existing_source_mappings_still_resolve(text, expected):
     assert fp.infer_fingerprint(text)["data_source"] == expected
 
 
+def test_sec_form_nport_public_holdings_precedes_sec13f_holder_language():
+    result = fp.infer_fingerprint(
+        "Risk-allocation alpha from SEC Form N-PORT public as-filed registered-"
+        "fund holdings: split-adjusted aggregate holder shares control a fixed "
+        "opening-notional scalar"
+    )
+
+    assert result["data_source"] == "sec_form_nport_public_holdings"
+    assert result["gate_shape"] == "notional_scalar"
+    assert fp.infer_fingerprint(
+        "sec_nport continuous-fund QoQ aggregate-share sign"
+    )["data_source"] == "sec_form_nport_public_holdings"
+
+
+def test_sec_form_nport_keywords_do_not_capture_sec13f_or_cftc_sources():
+    assert fp.infer_fingerprint(
+        "SEC 13F institutional sponsorship holder signal"
+    )["data_source"] == "sec13f_ownership"
+    assert fp.infer_fingerprint(
+        "CFTC TFF Traders in Financial Futures institutional positioning"
+    )["data_source"] == "cftc_tff_positioning"
+
+
 def test_cftc_tff_positioning_precedes_generic_ranking_and_ohlcv_sources():
     fingerprint = fp.infer_fingerprint(
         "CFTC TFF Traders in Financial Futures institutional positioning "
@@ -341,6 +364,34 @@ def test_microstructure_viability_attribution_gate_shape():
     assert fingerprint["gate_shape"] == "microstructure_attribution"
 
 
+def test_cash_conflict_oldest_incumbent_has_dedicated_surface_and_gate_shape():
+    fingerprint = fp.infer_fingerprint(
+        "cash_conflict_oldest_incumbent_full_rotation funds a fresh core entry "
+        "through execution_cash_opportunity_cost_rotation after settled-cash "
+        "admission"
+    )
+
+    assert fingerprint["data_source"] == "cash_feasible_core_book"
+    assert fingerprint["gate_shape"] == "incumbent_rotation"
+
+
+def test_cash_conflict_persistent_queue_has_distinct_surface_and_gate_shape():
+    fingerprint = fp.infer_fingerprint(
+        "cash_conflict_persistent_order_queue keeps the unfilled entry remainder "
+        "in a cash_conflict_deferred_queue until the original band is invalid"
+    )
+
+    assert fingerprint["data_source"] == "cash_feasible_core_book"
+    assert fingerprint["gate_shape"] == "cash_conflict_deferred_queue"
+    assert fingerprint["gate_shape"] != "incumbent_rotation"
+
+    changed_variable = fp.infer_fingerprint(
+        "cash_conflict_unfilled_entry_fifo_persistence_until_price_thesis_invalid_v1"
+    )
+    assert changed_variable["data_source"] == "cash_feasible_core_book"
+    assert changed_variable["gate_shape"] == "cash_conflict_deferred_queue"
+
+
 def test_core_entry_admission_gate_shape_and_source():
     fingerprint = fp.infer_fingerprint(
         "core_entry_admission_gate saved-trade counterfactual severe haircut "
@@ -574,6 +625,16 @@ def test_candidate_meta_label_readiness_gate_shape():
     assert fingerprint["gate_shape"] == "model_readiness"
 
 
+def test_treasury_indirect_bidder_share_routes_to_auction_results_surface():
+    fingerprint = fp.infer_fingerprint(
+        "treasury_auction_indirect_bidder_share_tbt_event_response "
+        "treasury_auction_demand_microstructure"
+    )
+
+    assert fingerprint["data_source"] == "treasury_auction_results"
+    assert fingerprint["gate_shape"] == "event_driven_inverse_treasury_etf_5d"
+
+
 def test_sec_filer_status_precedes_generic_sec_text_event():
     fingerprint = fp.infer_fingerprint(
         "sec_cover_page_filer_status_upgrade_candidate_pool "
@@ -661,6 +722,17 @@ def test_dod_contract_award_peer_substitution_has_distinct_gate_shape():
     assert result["gate_shape"] == "peer_propagation_top1_10d"
 
 
+def test_pcaob_form_ap_peer_substitution_has_own_source_and_20d_gate_shape():
+    result = fp.infer_fingerprint(
+        "pcaob_form_ap_partner_change_peer_substitution shared-paper-first: "
+        "official PCAOB Form AP engagement-partner change selects an "
+        "unaffected same-industry ADV60 peer for top1 20d"
+    )
+
+    assert result["data_source"] == "pcaob_form_ap"
+    assert result["gate_shape"] == "peer_substitution_candidate_pool_top1_20d"
+
+
 def test_dod_new_contract_revenue_materiality_stays_on_award_surface():
     result = fp.infer_fingerprint(
         "dod_new_contract_revenue_materiality_candidate_pool ranks new awards "
@@ -712,6 +784,38 @@ def test_generic_fda_approval_news_does_not_claim_drugsfda_source():
     )
 
     assert result["data_source"] == "other"
+
+
+def test_faers_quarterly_safety_basket_has_own_source_and_gate_shape():
+    result = fp.infer_fingerprint(
+        "Shared-paper-first candidate-pool alpha: among strictly mapped liquid "
+        "Healthcare issuers, a quarter-over-quarter decline in official FDA "
+        "FAERS serious-outcome share is a safety-quality signal; rank only "
+        "improving issuers, cap the ten largest improvements per quarterly "
+        "release, allocate one equal-weight 10000 USD event basket at the first "
+        "PIT session open, and close at the twentieth-session close with 35 bps "
+        "round-trip cost."
+    )
+
+    assert result["data_source"] == "faers"
+    assert result["gate_shape"] == "standalone_quarterly_candidate_pool"
+    assert result["data_source"] != "companyfacts_ratio"
+    assert result["gate_shape"] != "allocator_source"
+
+
+def test_faers_keywords_do_not_capture_adjacent_fda_sources():
+    assert fp.infer_fingerprint(
+        "FDA adverse-event monitoring system quarterly candidate pool"
+    )["data_source"] == "faers"
+    assert fp.infer_fingerprint(
+        "Drugs@FDA original NDA/BLA approval candidate pool"
+    )["data_source"] == "drugsfda_approval"
+    assert fp.infer_fingerprint(
+        "official FDA Orange Book monthly Additions/Deletions PDF NEWA basket"
+    )["data_source"] == "fda_orange_book_monthly_additions_deletions"
+    assert fp.infer_fingerprint(
+        "FDA approval news sentiment around a biotech catalyst candidate pool"
+    )["data_source"] == "other"
 
 
 def test_clinicaltrials_results_use_distinct_versioned_source():

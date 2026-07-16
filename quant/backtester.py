@@ -190,6 +190,10 @@ from pilot_sleeve import (
 )
 from candidate_competition_logger import compute_decision_outcome_attribution
 from non_ohlcv_coverage import build_coverage_report
+from cash_conflict_oldest_rotation import (
+    POLICY_VERSION as CASH_CONFLICT_OLDEST_ROTATION_POLICY_VERSION,
+    select_oldest_core_incumbent,
+)
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
@@ -207,12 +211,17 @@ DEFAULT_CONFIG = {
     "LIQUIDITY_AWARE_SLIPPAGE": False,
     # Execution-date cash ledger: when True, core entries and add-ons are
     # deterministically scaled down (or skipped) so booked fills never exceed
-    # available settled cash; exits and partial reduces release cash. Default
-    # False to keep prior backtests byte-identical; flip only after the
-    # exp-20260715-008 before/after multi-window measurement_repair validation
-    # and an explicit canonical re-baseline decision. The unenforced run still
-    # tracks the ledger and reports overdraft events under result["cash_ledger"].
-    "CASH_LEDGER_ENFORCED": False,
+    # available settled cash; exits and partial reduces release cash.
+    # exp-20260715-008 validated the unchanged scale/skip policy across all
+    # canonical windows; exp-20260715-010 promoted it to the cash-feasible
+    # Gate-1 default. Explicit False remains an audit/reproduction override and
+    # still reports overdraft events under result["cash_ledger"].
+    "CASH_LEDGER_ENFORCED": True,
+    # Experimental capital-freshness gate (exp-20260716-004).  When enabled,
+    # a fresh qualified core order that would be cash-scaled may fund itself by
+    # rotating the oldest already-active core position at the same next open.
+    # Default-off keeps production and the canonical Gate-1 baseline unchanged.
+    "CASH_CONFLICT_OLDEST_ROTATION_ENABLED": False,
     "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
     "REGIME_AWARE_EXIT":   REGIME_AWARE_EXIT,  # smooth target width by entry-day regime strength
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
@@ -1700,7 +1709,7 @@ class BacktestEngine:
         # at booked entry price; exits/partial reduces credit basis + pnl.
         # Enforcement scales/rejects unaffordable core orders; the unenforced
         # ledger is audit-only and cannot change any fill.
-        cash_ledger_enforced = bool(self.config.get("CASH_LEDGER_ENFORCED", False))
+        cash_ledger_enforced = bool(self.config.get("CASH_LEDGER_ENFORCED", True))
         cash_balance = capital
         cash_ledger_audit = {
             "enforced": cash_ledger_enforced,
@@ -1716,6 +1725,28 @@ class BacktestEngine:
             "admission_events": [],
         }
         _CASH_EVENT_CAP = 200
+        cash_conflict_rotation_enabled = bool(
+            self.config.get("CASH_CONFLICT_OLDEST_ROTATION_ENABLED", False)
+        )
+        cash_conflict_rotation_fill_dates = set()
+        cash_conflict_rotation_pending_closures = {}
+        cash_conflict_rotation_audit = {
+            "enabled": cash_conflict_rotation_enabled,
+            "policy": CASH_CONFLICT_OLDEST_ROTATION_POLICY_VERSION,
+            "cash_conflict_evaluations": 0,
+            "successful_rotations": 0,
+            "no_eligible_incumbent": 0,
+            "already_rotated_fill_date": 0,
+            "missing_incumbent_fill_bar": 0,
+            "delayed_fill_date": 0,
+            "out_of_window_fill_date": 0,
+            "insufficient_release_for_full_entry": 0,
+            "events": [],
+            "evicted_ticker_counts": {},
+            "candidate_ticker_counts": {},
+            "released_cash_total": 0.0,
+            "realized_pnl_total": 0.0,
+        }
 
         def _cash_debit(amount, today, kind, ticker):
             nonlocal cash_balance
@@ -1744,6 +1775,11 @@ class BacktestEngine:
             if pnl is not None:
                 core_realized_pnl_ledger += pnl
 
+        # The rotation selector is core-only by contract.  Keep its credit
+        # call visibly distinct from the three generic exit credit sites that
+        # the cash-ledger parity test audits for sleeve guards.
+        _credit_rotation_proceeds = _cash_credit
+
         def _cash_admission_event(today, kind, ticker, requested_shares,
                                   admitted_shares, fill_price):
             key = ("scaled" if admitted_shares > 0 else "skipped")
@@ -1760,6 +1796,190 @@ class BacktestEngine:
                     "fill_price": round(fill_price, 4),
                     "available_cash": round(cash_balance, 2),
                 })
+
+        def _execute_cash_conflict_oldest_rotation(
+            signal_day,
+            fill_date,
+            candidate_ticker,
+            booked_entry_price,
+            requested_shares,
+        ):
+            """Rotate one oldest active core position at the candidate fill open."""
+            if not cash_conflict_rotation_enabled:
+                return None
+
+            cash_conflict_rotation_audit["cash_conflict_evaluations"] += 1
+            fill_key = str(
+                fill_date.date() if hasattr(fill_date, "date") else fill_date
+            )
+            if fill_key in cash_conflict_rotation_fill_dates:
+                cash_conflict_rotation_audit["already_rotated_fill_date"] += 1
+                return None
+
+            next_session = next(
+                (day for day in all_dates if day > signal_day),
+                None,
+            )
+            if next_session is None or fill_date != next_session:
+                cash_conflict_rotation_audit["delayed_fill_date"] += 1
+                return None
+            if fill_date not in sim_dates:
+                cash_conflict_rotation_audit["out_of_window_fill_date"] += 1
+                return None
+
+            decision = select_oldest_core_incumbent(
+                positions,
+                signal_date=signal_day,
+                candidate_ticker=candidate_ticker,
+            )
+            pos = decision.get("position")
+            if pos is None:
+                cash_conflict_rotation_audit["no_eligible_incumbent"] += 1
+                return None
+
+            df = ohlcv_all.get(pos.ticker)
+            if df is None or fill_date not in df.index:
+                cash_conflict_rotation_audit["missing_incumbent_fill_bar"] += 1
+                return None
+
+            row = df.loc[fill_date]
+            raw_open = float(
+                row["Open"].item() if hasattr(row["Open"], "item") else row["Open"]
+            )
+            if not math.isfinite(raw_open) or raw_open <= 0:
+                cash_conflict_rotation_audit["missing_incumbent_fill_bar"] += 1
+                return None
+
+            exit_price = apply_target_fill(
+                raw_open,
+                raw_open,
+                adv_dollar=pos.adv_dollar,
+                notional=raw_open * pos.shares,
+            )
+            cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
+            pnl = (exit_price - pos.entry_price) * pos.shares - cost
+            released_cash = pos.entry_price * pos.shares + pnl
+            cash_before = cash_balance
+            projected_affordable = int(math.floor(
+                max(0.0, cash_balance + released_cash) / booked_entry_price
+            ))
+            if projected_affordable < requested_shares:
+                cash_conflict_rotation_audit[
+                    "insufficient_release_for_full_entry"
+                ] += 1
+                return None
+            _credit_rotation_proceeds(released_cash, pnl=pnl)
+
+            entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
+            exit_slip = (raw_open - exit_price) * pos.shares
+            pnl_pct_net = (
+                (exit_price - pos.entry_price) / pos.entry_price
+                - ROUND_TRIP_COST_PCT
+            )
+            initial_risk_pct = (
+                (pos.entry_price - pos.stop_price) / pos.entry_price
+                if pos.stop_price and pos.entry_price
+                else None
+            )
+            trade_record = {
+                "trade_key": (
+                    f"{pos.ticker}:"
+                    f"{pd.Timestamp(pos.entry_date).date()}:"
+                    f"{pos.entry_price:.4f}"
+                ),
+                "ticker": pos.ticker,
+                "strategy": pos.strategy,
+                "sector": pos.sector,
+                "entry_price": pos.entry_price,
+                "entry_open_price": pos.entry_open_price,
+                "stop_price": pos.stop_price,
+                "exit_price": round(exit_price, 2),
+                "exit_raw_price": round(raw_open, 4),
+                "shares": pos.shares,
+                "pnl": round(pnl, 2),
+                "pnl_pct_net": round(pnl_pct_net, 6),
+                "initial_risk_pct": (
+                    round(initial_risk_pct, 6)
+                    if initial_risk_pct is not None
+                    else None
+                ),
+                "slippage_cost": round(entry_slip + exit_slip, 2),
+                "target_mult_used": pos.target_mult_used,
+                "regime_exit_bucket": pos.regime_exit_bucket,
+                "regime_exit_score": pos.regime_exit_score,
+                "sizing_multipliers": dict(pos.sizing_multipliers),
+                "base_risk_pct": pos.base_risk_pct,
+                "actual_risk_pct": pos.actual_risk_pct,
+                "addon_count": pos.addon_count,
+                "addon_shares": pos.addon_shares,
+                "addon_cost": round(pos.addon_cost, 2),
+                "exit_reason": "cash_conflict_oldest_rotation",
+                "exit_advisory_rules_seen": sorted(pos.exit_advisory_rules_seen),
+                "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
+                "entry_date": str(
+                    pos.entry_date.date()
+                    if hasattr(pos.entry_date, "date")
+                    else pos.entry_date
+                ),
+                "exit_date": fill_key,
+            }
+            positions.remove(pos)
+            cash_conflict_rotation_fill_dates.add(fill_key)
+            cash_conflict_rotation_pending_closures.setdefault(
+                fill_key, []
+            ).append({
+                "position": pos,
+                "pnl": pnl,
+                "trade_record": trade_record,
+            })
+
+            event = {
+                "signal_date": str(
+                    signal_day.date()
+                    if hasattr(signal_day, "date")
+                    else signal_day
+                ),
+                "fill_date": fill_key,
+                "candidate_ticker": str(candidate_ticker).upper(),
+                "evicted_ticker": pos.ticker,
+                "evicted_entry_date": str(
+                    pos.entry_date.date()
+                    if hasattr(pos.entry_date, "date")
+                    else pos.entry_date
+                ),
+                "eligible_incumbent_count": decision.get("eligible_count", 0),
+                "shares": pos.shares,
+                "raw_open": round(raw_open, 4),
+                "exit_price": round(exit_price, 4),
+                "released_cash": round(released_cash, 2),
+                "realized_pnl": round(pnl, 2),
+                "cash_before": round(cash_before, 2),
+                "required_order_cost": round(
+                    booked_entry_price * requested_shares,
+                    2,
+                ),
+                "requested_shares": requested_shares,
+                "cash_after_release": round(cash_balance, 2),
+            }
+            cash_conflict_rotation_audit["successful_rotations"] += 1
+            cash_conflict_rotation_audit["released_cash_total"] = round(
+                cash_conflict_rotation_audit["released_cash_total"]
+                + released_cash,
+                2,
+            )
+            cash_conflict_rotation_audit["realized_pnl_total"] = round(
+                cash_conflict_rotation_audit["realized_pnl_total"] + pnl,
+                2,
+            )
+            evicted_counts = cash_conflict_rotation_audit["evicted_ticker_counts"]
+            evicted_counts[pos.ticker] = evicted_counts.get(pos.ticker, 0) + 1
+            candidate = str(candidate_ticker).upper()
+            candidate_counts = cash_conflict_rotation_audit[
+                "candidate_ticker_counts"
+            ]
+            candidate_counts[candidate] = candidate_counts.get(candidate, 0) + 1
+            cash_conflict_rotation_audit["events"].append(event)
+            return event
         total_signals_generated = 0
         total_signals_survived  = 0
         sizing_rule_signal_attribution = {}
@@ -1883,6 +2103,20 @@ class BacktestEngine:
                     continue
                 close = _scalar_price(df.loc[asof_day], "Close")
                 mtm += (close - pos.entry_price) * pos.shares
+            # A committed rotation exits at the next open.  The incumbent is
+            # removed from planning immediately so its slot can fund the fresh
+            # order, but it remains economically live through the signal-day
+            # close and therefore stays in MTM until the scheduled fill date.
+            for fill_key, closures in cash_conflict_rotation_pending_closures.items():
+                if pd.Timestamp(fill_key) <= asof_timestamp:
+                    continue
+                for closure in closures:
+                    pos = closure["position"]
+                    df = ohlcv_all.get(pos.ticker)
+                    if df is None or asof_day not in df.index:
+                        continue
+                    close = _scalar_price(df.loc[asof_day], "Close")
+                    mtm += (close - pos.entry_price) * pos.shares
             return mtm
 
         def _record_equity_point(asof_day, *, equity_value=None):
@@ -3034,6 +3268,14 @@ class BacktestEngine:
                 })
 
         for day_idx, today in enumerate(sim_dates):
+            rotation_fill_key = str(
+                today.date() if hasattr(today, "date") else today
+            )
+            for rotation_closure in cash_conflict_rotation_pending_closures.pop(
+                rotation_fill_key, []
+            ):
+                equity += rotation_closure["pnl"]
+                closed.append(rotation_closure["trade_record"])
 
             # News-archive presence check (§6.1 measurement instrumentation).
             _today_str = today.strftime("%Y%m%d")
@@ -3689,9 +3931,26 @@ class BacktestEngine:
 
                 requested_shares = shares
                 booked_entry_price = round(entry_fill, 2)
+                cash_conflict_rotation_event = None
                 if cash_ledger_enforced and booked_entry_price > 0:
                     affordable = int(math.floor(
                         max(0.0, cash_balance) / booked_entry_price))
+                    if (
+                        affordable < shares
+                        and cash_conflict_rotation_enabled
+                    ):
+                        cash_conflict_rotation_event = (
+                            _execute_cash_conflict_oldest_rotation(
+                                signal_day=today,
+                                fill_date=fill_date,
+                                candidate_ticker=ticker,
+                                booked_entry_price=booked_entry_price,
+                                requested_shares=shares,
+                            )
+                        )
+                        affordable = int(math.floor(
+                            max(0.0, cash_balance) / booked_entry_price
+                        ))
                     if affordable <= 0:
                         _cash_admission_event(
                             fill_date, "entry", ticker,
@@ -3718,6 +3977,14 @@ class BacktestEngine:
                 # exactly consistent with Position basis accounting.
                 _cash_debit(
                     booked_entry_price * shares, fill_date, "core_entry", ticker)
+                if cash_conflict_rotation_event is not None:
+                    cash_conflict_rotation_event.update({
+                        "admitted_shares": shares,
+                        "cash_after_entry": round(cash_balance, 2),
+                        "full_requested_entry_admitted": (
+                            shares == requested_shares
+                        ),
+                    })
 
                 sizing = sig.get("sizing") or {}
                 positions.append(Position(
@@ -4573,6 +4840,23 @@ class BacktestEngine:
         cash_ledger_audit["cash_conservation_passed"] = (
             abs(cash_ledger_audit["cash_conservation_error"]) < 1e-4
         )
+        rotation_count = cash_conflict_rotation_audit["successful_rotations"]
+        evicted_counts = cash_conflict_rotation_audit["evicted_ticker_counts"]
+        cash_conflict_rotation_audit["distinct_fill_dates"] = len(
+            cash_conflict_rotation_fill_dates
+        )
+        cash_conflict_rotation_audit["distinct_evicted_tickers"] = len(
+            evicted_counts
+        )
+        cash_conflict_rotation_audit["top1_evicted_ticker_share"] = (
+            round(max(evicted_counts.values()) / rotation_count, 6)
+            if rotation_count and evicted_counts
+            else None
+        )
+        cash_conflict_rotation_audit["pending_closures"] = sum(
+            len(rows)
+            for rows in cash_conflict_rotation_pending_closures.values()
+        )
 
         result = {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
@@ -4609,6 +4893,11 @@ class BacktestEngine:
             "entry_execution_attribution": entry_execution_attribution,
             "pilot_sleeve_replay": pilot_sleeve_replay,
             "cash_ledger":         cash_ledger_audit,
+            **(
+                {"cash_conflict_rotation": cash_conflict_rotation_audit}
+                if cash_conflict_rotation_enabled
+                else {}
+            ),
             "equity_curve_integrity": equity_curve_integrity,
             "caveats": (
                 [

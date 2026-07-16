@@ -1,0 +1,147 @@
+{
+  "after_metrics": {
+    "expected_value_score": 11.8067,
+    "max_drawdown_pct": 0.0911,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8363636364,
+    "total_pnl": 227506.12,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8363636364,
+    "total_pnl": 237852.27,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.4631,
+    "actual_pnl_delta": -10346.15,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.7131,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "pnl_prediction_error": -13846.15,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "slow_institutional_flow_is_momentum_proxy",
+      "old_thin_late_strong_sign_instability",
+      "split_or_identifier_bias",
+      "capital_constraint_clips_scalars"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "slow_institutional_flow_is_momentum_proxy_and_negative_bucket_haircuts_winners",
+    "surprise_level": "very_low",
+    "surprise_note": "Coverage was broad and drawdown improved in all windows, but the sign signal was directionally harmful in all three: negative-flow labels frequently covered the strategy's largest winners, while position caps muted most positive 1.10x increases."
+  },
+  "causal_components": [
+    "official quarterly N-PORT extraction",
+    "filing-date PIT clock",
+    "continuous-series 70-110d matching",
+    "integer split correction",
+    "minimum 20-series coverage",
+    "fixed symmetric notional scalar",
+    "shared default-off daily snapshot",
+    "three-window replay"
+  ],
+  "change_summary": "Evaluated a new official SEC Form N-PORT PIT registered-fund holdings source as a fixed split-adjusted 1.10/0.90/1.00 opening-notional scalar over the active frozen three-window baseline; all three windows regressed, so no production or run.py sizing wiring was retained.",
+  "change_type": "risk_allocation",
+  "changed_variable": "sec_nport_split_adjusted_matched_fund_qoq_share_accumulation_core_entry_notional_scalar_v1",
+  "component": "quant/sec_nport_share_accumulation.py, quant/experiments/exp_20260715_009_sec_nport_entry_notional_scalar.py, quant/test_sec_nport_share_accumulation.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/experiments/exp-20260715-009, experiments/cards/exp-20260715-009.md, experiments/tickets/exp-20260715-009.json, experiments/logs/exp-20260715-009.json, experiments/manifests/exp-20260715-009.json, docs/experiment_registry.json, docs/frozen_families.jsonl, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.4631,
+    "max_drawdown_pct": -0.0064,
+    "survival_rate": 0.0,
+    "total_pnl": -10346.15
+  },
+  "experiment_id": "exp-20260715-009",
+  "hypothesis": "Risk-allocation alpha from the new SEC Form N-PORT public as-filed registered-fund holdings source: for an executed core company position with at least 20 continuously reporting fund series, split-adjusted aggregate shares increasing quarter over quarter should merit a fixed 1.10 opening-notional scalar, decreasing shares a 0.90 scalar, and missing coverage 1.00, improving expected-value score and PnL while all non-sizing behavior and live orders stay unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "registered_fund_share_accumulation_demand_confirmation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260625-010",
+    "exp-20260625-012"
+  ],
+  "new_evidence_type": "new_official_pit_data_source_and_notional_scalar_gate",
+  "next_retry_requires": [
+    "A genuinely different N-PORT signal rather than a scalar, threshold, report-recency, sample-minimum, split-tolerance, fund-subset, positive-only, or negative-only retune.",
+    "An unseen out-of-sample window or materially new settled forward evidence; the same three frozen windows cannot justify another N-PORT allocation response.",
+    "A predeclared mechanism explaining why fund-flow-normalized breadth or another distinct field should separate winners from the negative bucket that failed here."
+  ],
+  "notes": "Rejected by the predeclared Gate 4: aggregate EV 12.2698->11.8067 and PnL 237852.27->227506.12; late/mid/old EV and PnL all fell while trade, signal, and survival counts stayed unchanged and drawdown improved. Positive and negative buckets both materially changed executed shares in every window; frozen split-price coverage was policy-valid. The negative bucket haircut removed 9443.76 dollars of PnL in aggregate from many winning positions, while the positive branch was mostly capped (7 material increases versus 28 material decreases). Keep only reproducibility data, pure default-off helper, classifier coverage, and experiment runner; do not wire live/default sizing. No scalar/threshold/recency retune on these windows.",
+  "parameters": {
+    "locked_variables": [
+      "positive scalar=1.10",
+      "negative scalar=0.90",
+      "missing scalar=1.00",
+      "matched series minimum=20",
+      "report gap=70-110 days",
+      "filing date strictly before entry date",
+      "UNIT=NS",
+      "ASSET_CAT=EC",
+      "PAYOFF_PROFILE=Long",
+      "company tickers only",
+      "integer split factor tolerance=5%",
+      "all entry/exit/ranking/add-on/cost policies"
+    ],
+    "single_causal_variable": "SEC N-PORT split-adjusted continuous-fund QoQ aggregate-share sign controls a fixed positive=1.10 negative=0.90 missing=1.00 opening-notional scalar."
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry N-PORT QoQ aggregate-share sign by changing 1.10/0.90 scalars, using only one sign, changing the 20-series minimum, report-gap/recency window, split tolerance, fund subset, ticker subset, or position cap on the same canonical windows.",
+    "new_evidence_required": "Reopen only for a genuinely different N-PORT signal with an explicit economic mechanism (for example, fund-flow-normalized ownership breadth rather than aggregate share sign) evaluated on an unseen out-of-sample window or materially new settled forward rows; otherwise switch to a new data source.",
+    "realized_failure_mode": "slow_institutional_flow_is_momentum_proxy_and_negative_bucket_haircuts_winners",
+    "why_result_happened": "Coverage was broad and drawdown improved in all windows, but the sign signal was directionally harmful in all three: negative-flow labels frequently covered the strategy's largest winners, while position caps muted most positive 1.10x increases."
+  },
+  "prediction": {
+    "confidence_reason": "Coverage is broad (50/62 positions; minimum 219 matched series) but similar institutional-ownership mechanisms have often failed and late/mid positive buckets are sparse.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 3500.0,
+    "main_failure_modes": [
+      "slow_institutional_flow_is_momentum_proxy",
+      "old_thin_late_strong_sign_instability",
+      "split_or_identifier_bias",
+      "capital_constraint_clips_scalars"
+    ],
+    "recorded_at": "2026-07-15T21:08:52+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260715-009/before.json",
+    "data/experiments/exp-20260715-009/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T21:43:52+00:00",
+  "trial_family": "sec_nport_continuous_fund_share_accumulation_entry_notional_scalar",
+  "trial_variant_id": "v1_fixed_sign_110_090"
+}

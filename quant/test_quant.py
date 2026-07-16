@@ -6758,6 +6758,22 @@ def test_compute_expected_value_score_basic():
     assert score == 0.5, score
 
 
+def test_compute_expected_value_score_preserves_total_return_sign():
+    from convergence import compute_expected_value_score
+
+    res = _passing_result()
+    for strategy_return, sharpe_daily, expected in (
+        (0.2, 2.5, 0.5),
+        (0.2, -2.5, 0.5),
+        (-0.2, 2.5, -0.5),
+        (-0.2, -2.5, -0.5),
+        (0.0, -2.5, 0.0),
+    ):
+        res["benchmarks"]["strategy_total_return_pct"] = strategy_return
+        res["sharpe_daily"] = sharpe_daily
+        assert compute_expected_value_score(res) == expected
+
+
 def test_compute_expected_value_score_none_when_inputs_missing():
     from convergence import compute_expected_value_score
     res = _passing_result()
@@ -6909,7 +6925,9 @@ def test_backtester_emits_sharpe_daily_alongside_legacy(monkeypatch):
     assert result.get("sharpe_method") == "per_trade_sqrt30_legacy"
     if result["sharpe_daily"] is not None:
         expected = round(
-            result["benchmarks"]["strategy_total_return_pct"] * result["sharpe_daily"], 4
+            result["benchmarks"]["strategy_total_return_pct"]
+            * abs(result["sharpe_daily"]),
+            4,
         )
         assert result["expected_value_score"] == expected
     # Shadow verdict exists and is observational only.

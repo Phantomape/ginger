@@ -1,0 +1,351 @@
+{
+  "acceptance_rule": "Gate 1-4 on the cash-feasible anchor; aggregate expected_value_score improves >10%, aggregate PnL delta is nonnegative, no window expected_value_score regresses, no survival falls below 5%, no window max drawdown worsens >0.5pp, trade count remains statistically meaningful, and no live/default behavior changes.",
+  "allowed_write_scope": [
+    "quant/active_book_marginal_variance.py",
+    "quant/test_active_book_marginal_variance.py",
+    "quant/experiments/exp_20260716_001_active_book_marginal_variance.py",
+    "data/experiments/exp-20260716-001",
+    "experiments/artifacts/exp-20260716-001_active_book_marginal_variance.md",
+    "experiments/logs/exp-20260716-001.json",
+    "experiments/cards/exp-20260716-001.md",
+    "experiments/manifests/exp-20260716-001.json",
+    "experiments/tickets/exp-20260716-001.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260716-001.md",
+  "causal_components": [
+    "60_return_covariance",
+    "active_book_market_value_weights",
+    "positive_cross_covariance_only",
+    "closed_form_variance_neutral_scalar"
+  ],
+  "change_type": "risk_allocation",
+  "changed_variable": "initial_position_risk_scalar_after_selection_before_capital_admission",
+  "claimed_at": "2026-07-16T00:07:46+00:00",
+  "completed_at": "2026-07-16T00:40:05+00:00",
+  "created_at": "2026-07-16T00:07:06+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260716-001",
+  "experiment_uid": "expuid-af769430017c42b4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T00:07:06+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "active_book_marginal_variance"
+  },
+  "hypothesis": "Risk-allocation alpha: after candidate selection and before executable-capital admission, scale only a new position's initial risk by the positive marginal covariance it adds to the actual active book; diversifying covariance remains unpenalized, so scarce capital should retain idiosyncratic winners while reducing synchronized loss tails.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "candidate set",
+    "ranking",
+    "entry timing",
+    "exit policy",
+    "capital admission",
+    "60-session covariance lookback",
+    "positive-cross-only closed-form scalar"
+  ],
+  "mechanism_family": "active_book_marginal_variance_budget",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "live/default orders",
+    "candidate ranking",
+    "capital scale-or-skip",
+    "existing positions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260524-023",
+    "exp-20260613-033",
+    "exp-20260623-026",
+    "exp-20260714-006"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "correlation_breakdown_idiosyncratic_leader_candidate_pool",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "available_proxy_residual_idiosyncratic_leadership_candidate_pool",
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_earnings_yield_rs_candidate_pool",
+        "score": 0.6087,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_fcf_yield_rs_candidate_pool",
+        "score": 0.6087,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "a",
+        "active",
+        "actual",
+        "adds",
+        "admission",
+        "after",
+        "allocation",
+        "alpha",
+        "book",
+        "budget",
+        "by",
+        "capital",
+        "covariance",
+        "diversifying",
+        "executable",
+        "idiosyncratic",
+        "initial",
+        "it",
+        "joint",
+        "loss",
+        "marginal",
+        "new",
+        "only",
+        "position",
+        "positive",
+        "reducing",
+        "remains",
+        "retain",
+        "risk",
+        "s",
+        "scale",
+        "scarce",
+        "should",
+        "so",
+        "synchronized",
+        "tails",
+        "to",
+        "unpenalized",
+        "variance",
+        "while",
+        "winners"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "correlation_breakdown_idiosyncratic_leader_candidate_pool",
+        "reopen_condition": "A valid retry needs a materially richer PIT relation or flow field, such as options/borrow/ownership confirmation, timestamped event relation provenance, or closed forward replacement rows from a shared daily helper.",
+        "score": 0.6091,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "available_proxy_residual_idiosyncratic_leadership_candidate_pool",
+        "reopen_condition": "Need PIT flow, ownership, borrow/options, event-quality, or closed forward replacement-value evidence before revisiting broad proxy-residual leadership.",
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6089,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_earnings_yield_rs_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6087,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_fcf_yield_rs_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6087,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: joint active-book marginal variance risk budget using current position weights and a closed-form positive cross-covariance neutralizer; no pairwise threshold, candidate replacement, ranking, monthly rebalance, or volatility target.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "companyfacts_ratio",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: joint active-book marginal variance risk budget using current position weights and a closed-form positive cross-covariance neutralizer; no pairwise threshold, candidate replacement, ranking, monthly rebalance, or volatility target.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: joint active-book marginal variance risk budget using current position weights and a closed-form positive cross-covariance neutralizer; no pairwise threshold, candidate replacement, ranking, monthly rebalance, or volatility target.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "companyfacts_ratio",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "38 of 49 cash-feasible entries overlap an active book with complete 60-return covariance history, but covariance sizing has mixed historical priors and the >10% EV hurdle is strict.",
+    "expected_ev_delta": 0.7,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "positive covariance also clips winners",
+      "thin old window",
+      "capital released cannot be reused under fixed ordering",
+      "drawdown improves without enough EV"
+    ],
+    "recorded_at": "2026-07-16T00:06:23+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-001/before.json",
+    "after_result_file": "data/experiments/exp-20260716-001/after.json",
+    "delta_metrics": {
+      "expected_value_score": -0.2644,
+      "max_drawdown_pct": -0.0084,
+      "survival_rate": -0.0056,
+      "total_pnl": -5736.67
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.22,
+      "brier_score": 0.0484,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.7,
+      "actual_ev_delta": -0.2644,
+      "ev_prediction_error": -0.9644,
+      "expected_pnl_delta": 8000.0,
+      "actual_pnl_delta": -5736.67,
+      "pnl_prediction_error": -13736.67,
+      "predicted_failure_modes": [
+        "positive covariance also clips winners",
+        "thin old window",
+        "capital released cannot be reused under fixed ordering",
+        "drawdown improves without enough EV"
+      ],
+      "realized_failure_mode": "positive covariance also clips winners",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The drawdown thesis worked in every window, but the same shrinkage clipped enough winners that EV and PnL regressed in all three despite eight additional trades."
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The raw covariance cross term reduced overlapping book risk as designed, so maximum drawdown improved in all three windows, but it treated profitable common exposure as harmful too. The gate changed final executed shares on 38 entries, with median material scalars of about 0.763 late, 0.619 mid, and 0.598 old; released cash added 8 trades, yet clipped winner contribution exceeded avoided losses and those added trades, leaving every window lower on both EV and PnL.",
+    "realized_failure_mode": "positive covariance also clips winners",
+    "forbidden_near_neighbor_retry": "Do not retry this same active-book raw-covariance marginal-variance gate on the canonical outcomes by sweeping lookback length, covariance floors, positive-cross thresholds, scalar caps or floors, active-position subsets, market-residual covariance, or requested-versus-cash-scaled notional variants.",
+    "new_evidence_required": "Reopen only with an unseen out-of-sample window and an independently predeclared gate, at least +50% and +10 materially new settled forward active-book decisions, or a genuinely new non-price dependence source; otherwise switch evidence surfaces."
+  },
+  "production_impact": "None. The helper and experiment runner remain default-off research artifacts; quant/run.py, live/default ranking, sizing, orders, and exits were not changed.",
+  "revision_manifest_file": "experiments/manifests/exp-20260716-001.json",
+  "single_causal_variable": "joint_active_book_marginal_variance_budget_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-001.json",
+  "trial_family": "joint_active_book_marginal_variance_budget",
+  "trial_variant_id": "closed_form_positive_cross_term_v1"
+}

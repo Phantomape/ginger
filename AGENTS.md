@@ -13,8 +13,11 @@
 默认北极星指标：
 
 ```text
-expected_value_score = strategy_total_return_pct * sharpe_daily
+expected_value_score = strategy_total_return_pct * abs(sharpe_daily)
 ```
+
+`strategy_total_return_pct` 决定分数方向；`abs(sharpe_daily)` 只提供风险调整后的
+幅度。这样总收益和 Sharpe 同为负时不会负负得正，把稳定亏损误标成正 EV。
 
 辅助约束：
 
@@ -179,6 +182,12 @@ data/backtests/backtest_results_*.json
 0-accept——这与市场是否还有残余 edge 无关。仅因 `*_not_beaten` 比较器或单窗口
 噪声被拒、聚合非负的信号，"打不过冠军"不等于"组合无价值"；此类信号的组合级
 评估口径见 `docs/portfolio_covariance_lane.md`（勿在单实验里自创组合验收标准）。
+
+**反向棘轮警告**：measurement repair 导致 Gate-1 锚点**下调**（案例：2026-07-15 现金
+账本重基线，aggregate EV 12.27→6.21）不重置 frozen families——历史被拒假设不因
+门槛降低自动获得重试资格，"现在能打过更弱的冠军"不是 §2.4 证据轴。仅当某假设当初
+的 park / 拒绝原因**正是本次修复的测量缺陷**（修复票 follow-up 里点名）时，才显式
+重开对应 lane，且重跑双边都必须落在新锚点上；其余近邻重试照常需要新证据轴。
 
 `state_surface_sleeve` 同类阈值、profile、notional scalar 或 capital allocation 调参必须满足 `docs/backtesting.md` 标准多窗口 aggregate EV 提升 > 10%，除非是明确的 measurement repair。
 

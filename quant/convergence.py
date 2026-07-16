@@ -29,7 +29,12 @@ def compute_expected_value_score(result):
     """Single-source north-star metric for strategy iteration.
 
     Definition:
-        expected_value_score = strategy_total_return_pct * sharpe_daily
+        expected_value_score = strategy_total_return_pct * abs(sharpe_daily)
+
+    The absolute Sharpe magnitude is intentional.  Total return owns the score
+    direction, so a losing strategy cannot become a positive-EV strategy merely
+    because both total return and Sharpe are negative.  Positive-return,
+    positive-Sharpe scores remain identical to the legacy formula.
 
     Returns None when either input is unavailable. The score is rounded to
     4 decimals so saved JSON and CLI output remain stable across runs.
@@ -39,7 +44,7 @@ def compute_expected_value_score(result):
     sharpe_daily = result.get("sharpe_daily")
     if strat_return is None or sharpe_daily is None:
         return None
-    return round(strat_return * sharpe_daily, 4)
+    return round(strat_return * abs(sharpe_daily), 4)
 
 
 def compute_convergence(result, phantom_rules_clean=True):

@@ -1,8 +1,8 @@
-"""Guards for the exp-20260715-008 execution-date cash ledger.
+"""Guards for the execution-date cash ledger.
 
 The full behavioral validation is the three-window frozen-input before/after
-replay in quant/experiments/exp_20260715_008_cash_constrained_core_admission.py;
-these tests protect the invariants that replay relies on.
+replay in exp-20260715-008 and the canonical default re-baseline in
+exp-20260715-010; these tests protect the invariants those replays rely on.
 """
 
 import inspect
@@ -14,10 +14,20 @@ sys.path.insert(0, os.path.dirname(__file__))
 from backtester import DEFAULT_CONFIG, BacktestEngine, Position  # noqa: E402
 
 
-def test_cash_ledger_default_off():
-    # Canonical baselines must stay byte-identical until an explicit
-    # re-baseline decision flips the default (see exp-20260715-008).
-    assert DEFAULT_CONFIG["CASH_LEDGER_ENFORCED"] is False
+def test_cash_ledger_default_on():
+    # exp-20260715-010 made the accepted exp-20260715-008 cash-admission
+    # policy canonical. Callers can still pass False for legacy reproduction.
+    assert DEFAULT_CONFIG["CASH_LEDGER_ENFORCED"] is True
+
+
+def test_cash_ledger_explicit_false_override_remains_available():
+    engine = BacktestEngine(
+        ["SPY"],
+        start="2026-01-02",
+        end="2026-01-05",
+        config={"CASH_LEDGER_ENFORCED": False},
+    )
+    assert engine.config["CASH_LEDGER_ENFORCED"] is False
 
 
 def test_position_default_sleeve_is_core():
