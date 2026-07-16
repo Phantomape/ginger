@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-15.
+Last refreshed: 2026-07-16.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -2601,6 +2601,40 @@ Controls:
 
 Source: <https://arxiv.org/abs/2604.22625>
 
+### Anticipatory Optimization Needs A Control-Gap Ledger
+
+Anticipatory portfolio optimization formalizes a trap Ginger has already seen:
+an optimizer can act on a richer model than the estimator used to justify it,
+through extra information, multi-horizon forecasts, or impact-aware deployment.
+Correct anticipation can add value, but misspecified anticipation is harmful
+when estimated structure is optimized as truth. The local control is to log the
+gap between the restricted price-taking baseline and the enriched controller
+before treating an allocation overlay as alpha.
+
+Implementable fields:
+
+- `anticipatory_controller_version`
+- `restricted_estimator_version`
+- `control_gap_protocol_id`
+- `information_enrichment_hash`
+- `forecast_stack_horizon_set`
+- `impact_anticipation_model_version`
+- `anticipation_misspecification_penalty`
+- `restricted_vs_enriched_replacement_value`
+
+Controls:
+
+- compare enriched allocations against the restricted cash-feasible allocator on
+  the same frozen rows and costs;
+- separate information, forecast-horizon, and impact-deployment enrichment in
+  the artifact rather than bundling them into one optimizer score;
+- fail closed when the enriched model uses data unavailable at decision time or
+  when the control gap is not reproducible;
+- use the control-gap ledger as activation-envelope evidence unless the
+  enriched controller is itself the predeclared single decision hypothesis.
+
+Source: <https://arxiv.org/abs/2606.04258>
+
 ### LLM-Guided State And Reward Interfaces
 
 GIFT uses an LLM to design state-enhancement and reward-shaping interfaces for
@@ -3099,6 +3133,40 @@ Controls:
   material.
 
 Source: <https://arxiv.org/abs/2512.19484>
+
+### Grounded 8-K Taxonomies Beat Item-Code Enumeration
+
+A July 2026 grounded 8-K extraction paper is directly relevant to Ginger's
+repeated SEC item-code failures. The useful result is not "use an LLM label";
+it is the data contract: constrain labels to a fine taxonomy, anchor each label
+to a source quote, validate the quote against the filing text, then score the
+tag in a second pass. The paper reports that quality scores separate reliable
+from unsupported tags and that a fine taxonomy separates economically different
+events hidden under the same coarse 8-K item code. Ginger should treat this as
+a replacement for item-code loops, not another SEC text threshold.
+
+Implementable fields:
+
+- `sec8k_event_taxonomy_version`
+- `sec8k_event_tier1`
+- `sec8k_event_tier2`
+- `sec8k_event_tier3`
+- `sec8k_evidence_quote_hash`
+- `sec8k_quote_fuzzy_match_score`
+- `sec8k_second_pass_quality_score`
+- `sec8k_unsupported_tag_flag`
+- `sec8k_unsigned_abnormal_return_bucket`
+
+Controls:
+
+- require accession, accepted timestamp, item code, source span, and quote hash
+  before scoring outcomes;
+- fail closed when the quoted evidence cannot be found in the archived filing;
+- evaluate taxonomy buckets against accepted SEC/event comparators after costs;
+- batch fine-grained event families instead of reserving one ID per 8-K item or
+  event subtype.
+
+Source: <https://arxiv.org/abs/2607.08346>
 
 ### SEC And Earnings-Call Target Stance Needs Metric-Level Labels
 

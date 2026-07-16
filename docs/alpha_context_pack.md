@@ -8,8 +8,8 @@ facts before changing strategy behavior.
 ## Source Snapshot
 
 - Strategy records counted: `1535`
-- Raw records loaded by meta report: `5113`
-- History fingerprint: `09c92cd2147e8cc4`
+- Raw records loaded by meta report: `2559`
+- History fingerprint: `e1f9aa5d90bae934`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -28,26 +28,26 @@ facts before changing strategy behavior.
 
 ## Current Research Priorities
 
-- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `4`, accept `100.00%`, sum EV `+2.5712`, sum PnL `$50,320.58`.
-  Reason: 4/4 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_adapter` priority `0.7972`: experiments `14`, accept `85.71%`, sum EV `+9.6062`, sum PnL `$163,913.86`.
-  Reason: 14/14 records show multi-window evidence; 2/14 records have sample >= 10; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positi...
-  Guardrail: heavily explored family; diminishing-return risk
-- `default_off_shared_paper_adapter` priority `0.7726`: experiments `4`, accept `100.00%`, sum EV `+0.3626`, sum PnL `$6,125.56`.
-  Reason: 4/4 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `default_off_paper_shared_adapter` priority `0.7477`: experiments `6`, accept `100.00%`, sum EV `+1.4290`, sum PnL `$27,491.32`.
-  Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
-- `paper_notional_support_scout` priority `0.7009`: experiments `6`, accept `66.67%`, sum EV `+0.1608`, sum PnL `$2,787.28`.
-  Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6305`: experiments `342`, accept `25.73%`, sum EV `+132.4642`, sum PnL `$2,298,112.16`.
-  Reason: 2/342 records have sample >= 10; 340/342 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
+- `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `2`, accept `100.00%`, sum EV `+1.2856`, sum PnL `$25,160.29`.
+  Reason: 2/2 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `default_off_paper_adapter` priority `0.8172`: experiments `7`, accept `85.71%`, sum EV `+4.8031`, sum PnL `$81,956.93`.
+  Reason: 1/7 records have sample >= 10; 7/7 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive...
+- `default_off_paper_shared_adapter` priority `0.7477`: experiments `3`, accept `100.00%`, sum EV `+0.7145`, sum PnL `$13,745.66`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
+- `paper_notional_support_scout` priority `0.7009`: experiments `3`, accept `66.67%`, sum EV `+0.0804`, sum PnL `$1,393.64`.
+  Reason: 3/3 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
+- `pilot_or_sleeve` priority `0.6305`: experiments `171`, accept `25.73%`, sum EV `+66.2321`, sum PnL `$1,149,056.08`.
+  Reason: 1/171 records have sample >= 10; 170/171 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5648`: experiments `352`, accept `24.43%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
-  Reason: 20/352 records have sample >= 10; 336/352 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+- `slot_or_ranking` priority `0.5648`: experiments `176`, accept `24.43%`, sum EV `+41.3211`, sum PnL `$741,589.21`.
+  Reason: 10/176 records have sample >= 10; 168/176 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
   Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
-- `default_off_paper_allocation` priority `0.5641`: experiments `24`, accept `33.33%`, sum EV `+0.0570`, sum PnL `$912.60`.
-  Reason: 24/24 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
+- `default_off_paper_allocation` priority `0.5641`: experiments `12`, accept `33.33%`, sum EV `+0.0285`, sum PnL `$456.30`.
+  Reason: 12/12 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
+- `fundamental_growth_rs_default_off_candidate_pool` priority `0.5441`: experiments `1`, accept `0.00%`, sum EV `+5.2015`, sum PnL `$92,488.83`.
+  Reason: 1/1 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 

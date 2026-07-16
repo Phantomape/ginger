@@ -1,0 +1,117 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-15 13:02 ET (10:02 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 751.96 vs 200MA 692.03 (+8.7%)  [fast_info]
+  QQQ 713.50 vs 200MA 637.84 (+11.9%)  [fast_info]
+
+PORTFOLIO HEAT (intraday prices): 2.9% / cap 8%   (quote coverage 9/9 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+38.0% add-review-eligible=none
+  CRDO   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  DDOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  HOOD   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  MCD    RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  NVDA   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  SPY    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_stop,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  TQQQ   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete,underlying_above_rth_vwap_not_confirmed
+  UNH    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_stop,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  META   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  CRDO   $222.93 (-5.6% today, fast_info)
+    HARD_STOP CRITICAL: Price 222.93 <= hard stop 230.56
+    ATR_STOP HIGH: Price 222.93 <= ATR stop 223.51
+    hard stop 230.56 (-3.4% away) [stop_source=default]
+    ATR stop 223.51 (-0.3% away)
+    trailing 283.98 (-27.4% away)
+    target 314.40 (+41.0% to go)
+  MCD    $267.30 (-0.6% today, fast_info)
+    ATR_STOP HIGH: Price 267.30 <= ATR stop 269.92
+    hard stop 245.30 (+8.2% away) [stop_source=default]
+    ATR stop 269.92 (-1.0% away)
+    trailing 259.09 (+3.1% away)
+    target 334.50 (+25.1% to go)
+  NVDA   $207.55 (-2.0% today, fast_info)
+    SIGNAL_TARGET HIGH: daily_high 213.81 >= signal target 212.69 (+20.0%) - full-position target exit
+    hard stop 155.97 (+24.9% away) [stop_source=default]
+    ATR stop 166.21 (+19.9% away)
+    trailing 217.36 (-4.7% away)
+    target 212.69 (+2.5% to go)
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  SPY    $751.96 (+0.0% today, fast_info)
+    hard stop 663.29 (+11.8% away) [stop_source=default]
+    ATR stop 740.56 (+1.5% away)
+    trailing 695.13 (+7.6% away)
+    target 904.49 (+20.3% to go)
+    flags: NEAR_ATR_STOP
+  UNH    $420.68 (-1.1% today, fast_info)
+    hard stop 376.06 (+10.6% away) [stop_source=default]
+    ATR stop 412.55 (+1.9% away)
+    trailing 399.56 (+5.0% away)
+    target 512.81 (+21.9% to go)
+    flags: NEAR_ATR_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  DDOG   $262.71    day -3.0%   stop +13.7%  target +17.7%  [fast_info]
+  HOOD   $115.18    day +1.5%   stop +19.6%  target +9.6%   [fast_info]
+  META   $675.66    day +2.2%   stop +13.1%  target +18.5%  [fast_info]
+  TQQQ   $73.09     day -2.6%   stop +8.7%   target +24.5%  [fast_info]
+
+------------------------------------------------------------
+ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)
+------------------------------------------------------------
+  CRDO   EXIT HARD_STOP CRITICAL shares=15
+  CRDO   EXIT ATR_STOP HIGH shares=15
+  MCD    EXIT ATR_STOP HIGH shares=15
+  NVDA   EXIT SIGNAL_TARGET HIGH shares=31
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-15 13:02 ET): 12 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] META: Meta Faces Employee Lawsuit Alleging Discriminatory AI Use During Recent Layoffs - TIKR.co
+  [T3] MCD: McDonald's Corp (NYSE:MCD): A High-Quality Dividend Stock for Reliable Income - ChartMill
+  [T3] NVDA: Ariose Capital Management Ltd Lowers Stock Position in NVIDIA Corporation $NVDA - MarketBe
+  [T1] TSLA: TSLA Q2 Earnings Beat Likely: Why the Stock Still Isn't a Buy - TradingView
+  [T3] NFLX: Netflix Stock Under Pressure Into Earnings: What To Expect From NFLX - thebull.com.au
+  [T3] AMD: AMD Stock Price Forecast: AMD Holds Above Support as AI Deals Fuel Growth Outlook - FXLead
+  [T3] QQQ: Advisors Preferred LLC Cuts Position in Invesco QQQ $QQQ - MarketBeat
+  [T3] MU: Micron to pay dividends next week; Here’s how much 100 MU shares will earn - Finbold
+  [T3] COIN: Coinbase (COIN) Stock Looks Cheap After A 60% Fall But Expensive On Earnings - simplywall.
+  [T3] IAU: IAU ETF Profile: Dividends, Returns (AMEX:IAU) - TradingView
+  [T3] GOOG: Alphabet (GOOG) Upgraded to Strong Buy: Here's What You Should Know - Yahoo Finance
+  [T3] APP: Wells Fargo Raises PT on AppLovin (APP) Stock - Yahoo Finance
+
+------------------------------------------------------------
+DATA QUALITY: quotes fast_info=9
+  moomoo OpenD status=unavailable available=0/15
+  [!] moomoo OpenD errors=1; see JSON snapshot for details
+  news sources ok=17 failed=0
+  news text sanitation items=12 flagged=12 changed=12 flags=html_entity_unescaped=12
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================
