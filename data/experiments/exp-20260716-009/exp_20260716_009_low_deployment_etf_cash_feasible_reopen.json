@@ -1,0 +1,717 @@
+{
+  "aggregate": {
+    "after_ev": 5.9638,
+    "before_ev": 6.2057,
+    "ev_delta": -0.2419,
+    "ev_delta_pct": -0.03898,
+    "ev_improved_windows": 1,
+    "overlay_trade_count": 25,
+    "pnl_delta": 12.53,
+    "pnl_improved_windows": 1,
+    "worst_drawdown_drift": 0.00063
+  },
+  "concentration": {
+    "hhi": 0.329109,
+    "max_single_ticker_share": 0.435434,
+    "positive_pnl_by_ticker": {
+      "GLD": 1991.53,
+      "IWM": 1099.32,
+      "QQQ": 146.91,
+      "SLV": 2670.34,
+      "SPY": 224.5
+    }
+  },
+  "decision": "rejected_cash_feasible_low_deployment_etf",
+  "experiment_id": "exp-20260716-009",
+  "gate1": {
+    "baseline": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "passed": true
+  },
+  "gate2": {
+    "cash_contract": "execution-date core events; core priority; residual cash only",
+    "entry_date": "present",
+    "passed": false,
+    "target_price": "core baseline present"
+  },
+  "gate3": {
+    "passed": true
+  },
+  "gate4": {
+    "acceptance_rule": "Against the cash-feasible Gate-1 anchor (aggregate EV 6.2057, PnL 130992.36): aggregate expected_value_score delta must exceed +10% (>0.62057), aggregate PnL delta positive, at least two windows improve both EV and PnL, no window EV or PnL regression, zero negative-cash events, zero core displacement (core-cash-priority forced overlay exits allowed per frozen contract), NAV reconciliation error count zero, worst drawdown drift <=0.005, every window survival >=5%, positive-PnL single-ticker share <=50% and HHI <=0.35, Gate-1 identity (trade_rows_sha256) must match the anchor in all windows.",
+    "failed_reasons": [
+      "aggregate_ev_improvement_not_above_10pct",
+      "fewer_than_two_windows_improved",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "negative_cash_events"
+    ],
+    "passed": false
+  },
+  "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010, aggregate EV 6.2057), replaying the unchanged accepted low-deployment ETF cash-substitute sleeve (exp-20260715-003 selector, 10000 USD cap, one open overlay position, next-open entry, 10-trading-day close, shared costs, core-cash-priority forced exit) on genuinely remaining settled cash should add aggregate expected value, because exp-20260715-005's only structural failure mode - core notional exhausting reconstructed cash - is eliminated by the accepted deterministic scale-or-skip cash admission gate.",
+  "parameters": {
+    "initial_cash_usd": 100000.0,
+    "overlay_cap_usd": 10000.0
+  },
+  "production_impact": "experiment-only; no backtester, live orders, run.py, selector, core policy, or paper ledger changed",
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_low_deployment_etf_cash_feasible_reopen.py",
+  "status": "rejected",
+  "windows": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 3.843,
+        "max_drawdown_pct": 0.038915,
+        "sharpe_daily": 5.58,
+        "signals_generated": 54,
+        "signals_survived": 48,
+        "strategy_total_return_pct": 0.688503,
+        "survival_rate": 0.8889,
+        "total_pnl": 68850.28,
+        "trade_count": 24
+      },
+      "before": {
+        "expected_value_score": 4.1067,
+        "max_drawdown_pct": 0.0394,
+        "sharpe_daily": 5.86,
+        "signals_generated": 54,
+        "signals_survived": 48,
+        "strategy_total_return_pct": 0.7008,
+        "survival_rate": 0.8889,
+        "total_pnl": 70075.18,
+        "trade_count": 13
+      },
+      "cash_audit": {
+        "baseline_ending_cash": 170075.17,
+        "cash_conservation_error": 1.71e-08,
+        "cash_conservation_passed": true,
+        "core_cash_reconstruction_matches": true,
+        "core_displacement_count": 0,
+        "core_only_reconstructed_ending_cash": 170075.18,
+        "ending_cash": 168850.28496888,
+        "event_count": 49,
+        "forced_core_priority_exits": 4,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "negative_cash_event_count": 4,
+        "negative_cash_events": [
+          {
+            "amount": -49787.36,
+            "cash_after": -311.5381164,
+            "cash_before": 49475.8218836,
+            "date": "2025-11-04",
+            "event_id": "LLY:2025-11-04:889.0600:lot-0:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 56.0,
+              "ticker": "LLY"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -56306.78,
+            "cash_after": -185.42381353,
+            "cash_before": 56121.35618647,
+            "date": "2026-01-30",
+            "event_id": "CAT:2026-01-30:654.7300:lot-8:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 86.0,
+              "ticker": "CAT"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -86373.72,
+            "cash_after": -227.50381353,
+            "cash_before": 86146.21618647,
+            "date": "2026-02-04",
+            "event_id": "XOM:2026-02-04:143.2400:lot-9:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 603.0,
+              "ticker": "XOM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -70847.28,
+            "cash_after": -1123.20503112,
+            "cash_before": 69724.07496888,
+            "date": "2026-04-17",
+            "event_id": "AMD:2026-04-17:281.1400:lot-12:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 252.0,
+              "ticker": "AMD"
+            },
+            "priority": 20
+          }
+        ],
+        "skipped_overlay_entries_for_cash": []
+      },
+      "delta": {
+        "expected_value_score": -0.2637,
+        "max_drawdown_pct": -0.000485,
+        "sharpe_daily": -0.28,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.012297,
+        "survival_rate": 0.0,
+        "total_pnl": -1224.9,
+        "trade_count": 11
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-10-23:GLD",
+          "entry_date": "2025-10-24",
+          "entry_price": 378.6993,
+          "exit_date": "2025-11-04",
+          "exit_price": 363.2983,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-11-06",
+          "planned_exit_price": 365.887,
+          "pnl": -440.26,
+          "shares": 26.4061750312187,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-13:SPY",
+          "entry_date": "2025-11-14",
+          "entry_price": 661.9436,
+          "exit_date": "2025-11-28",
+          "exit_price": 679.1811,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-11-28",
+          "planned_exit_price": 679.1811,
+          "pnl": 224.5,
+          "shares": 15.107027245221497,
+          "ticker": "SPY"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-28:SLV",
+          "entry_date": "2025-12-01",
+          "entry_price": 52.016,
+          "exit_date": "2025-12-12",
+          "exit_price": 56.0719,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-12-12",
+          "planned_exit_price": 56.0719,
+          "pnl": 742.01,
+          "shares": 192.24853891110428,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-12-12:SLV",
+          "entry_date": "2025-12-15",
+          "entry_price": 57.8689,
+          "exit_date": "2025-12-29",
+          "exit_price": 65.977,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 538.2095959001745,
+          "planned_exit_date": "2025-12-29",
+          "planned_exit_price": 65.977,
+          "pnl": 73.26,
+          "shares": 9.300498124211355,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-12-29:SLV",
+          "entry_date": "2025-12-30",
+          "entry_price": 69.1446,
+          "exit_date": "2026-01-13",
+          "exit_price": 78.5607,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-01-13",
+          "planned_exit_price": 78.5607,
+          "pnl": 1322.03,
+          "shares": 144.62445368112623,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-01-13:SLV",
+          "entry_date": "2026-01-14",
+          "entry_price": 83.3817,
+          "exit_date": "2026-01-15",
+          "exit_price": 80.6996,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-01-28",
+          "planned_exit_price": 105.5472,
+          "pnl": -355.54,
+          "shares": 119.9303924002509,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-01-28:SLV",
+          "entry_date": "2026-01-29",
+          "entry_price": 109.5848,
+          "exit_date": "2026-01-30",
+          "exit_price": 89.2853,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-02-11",
+          "planned_exit_price": 76.5217,
+          "pnl": -1880.92,
+          "shares": 91.25353151166951,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-02-11:GLD",
+          "entry_date": "2026-02-12",
+          "entry_price": 465.1324,
+          "exit_date": "2026-02-26",
+          "exit_price": 477.2413,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-02-26",
+          "planned_exit_price": 477.2413,
+          "pnl": 224.42,
+          "shares": 21.49925483582739,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-02-26:IWM",
+          "entry_date": "2026-02-27",
+          "entry_price": 261.7654,
+          "exit_date": "2026-03-12",
+          "exit_price": 246.8472,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-03-12",
+          "planned_exit_price": 246.8472,
+          "pnl": -602.91,
+          "shares": 38.202145890938986,
+          "ticker": "IWM"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-13:SLV",
+          "entry_date": "2026-03-16",
+          "entry_price": 73.2966,
+          "exit_date": "2026-03-27",
+          "exit_price": 63.4083,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-03-27",
+          "planned_exit_price": 63.4083,
+          "pnl": -1379.36,
+          "shares": 136.43197638089626,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-04-06:IWM",
+          "entry_date": "2026-04-07",
+          "entry_price": 251.3356,
+          "exit_date": "2026-04-17",
+          "exit_price": 273.6031,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-04-20",
+          "planned_exit_price": 277.2113,
+          "pnl": 847.87,
+          "shares": 39.787439582773,
+          "ticker": "IWM"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 85,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 11,
+        "skipped": {
+          "core_above_low_deployment_threshold": 38,
+          "no_etf_passing_signal_close_state": 6,
+          "overlay_position_cap_full": 68
+        }
+      }
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 1.9811,
+        "max_drawdown_pct": 0.06673,
+        "sharpe_daily": 3.82,
+        "signals_generated": 69,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.519026,
+        "survival_rate": 0.8116,
+        "total_pnl": 51865.25,
+        "trade_count": 21
+      },
+      "before": {
+        "expected_value_score": 1.9908,
+        "max_drawdown_pct": 0.0661,
+        "sharpe_daily": 3.83,
+        "signals_generated": 69,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.5198,
+        "survival_rate": 0.8116,
+        "total_pnl": 51976.41,
+        "trade_count": 13
+      },
+      "cash_audit": {
+        "baseline_ending_cash": 151976.42,
+        "cash_conservation_error": 1.14e-08,
+        "cash_conservation_passed": true,
+        "core_cash_reconstruction_matches": true,
+        "core_displacement_count": 0,
+        "core_only_reconstructed_ending_cash": 151976.4,
+        "ending_cash": 167108.49925649,
+        "event_count": 43,
+        "forced_core_priority_exits": 4,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "negative_cash_event_count": 0,
+        "negative_cash_events": [],
+        "skipped_overlay_entries_for_cash": []
+      },
+      "delta": {
+        "expected_value_score": -0.0097,
+        "max_drawdown_pct": 0.00063,
+        "sharpe_daily": -0.01,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": -0.000774,
+        "survival_rate": 0.0,
+        "total_pnl": -111.16,
+        "trade_count": 8
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-23:GLD",
+          "entry_date": "2025-04-24",
+          "entry_price": 307.1335,
+          "exit_date": "2025-05-07",
+          "exit_price": 310.5946,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-05-07",
+          "planned_exit_price": 310.5946,
+          "pnl": 77.3,
+          "shares": 32.559131452609364,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-07:GLD",
+          "entry_date": "2025-05-08",
+          "entry_price": 309.9149,
+          "exit_date": "2025-05-21",
+          "exit_price": 305.6671,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-05-21",
+          "planned_exit_price": 305.6671,
+          "pnl": -171.58,
+          "shares": 32.26692230673646,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-21:QQQ",
+          "entry_date": "2025-05-22",
+          "entry_price": 511.4412,
+          "exit_date": "2025-06-03",
+          "exit_price": 520.7774,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-06-05",
+          "planned_exit_price": 522.0009,
+          "pnl": 146.91,
+          "shares": 19.55258981873185,
+          "ticker": "QQQ"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-06-25:SLV",
+          "entry_date": "2025-06-26",
+          "entry_price": 33.1466,
+          "exit_date": "2025-06-30",
+          "exit_price": 32.7036,
+          "exit_reason": "core_cash_priority",
+          "notional": 3726.9970578294524,
+          "planned_exit_date": "2025-07-10",
+          "planned_exit_price": 33.7331,
+          "pnl": -62.68,
+          "shares": 112.43979949163571,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-07-24:SLV",
+          "entry_date": "2025-07-25",
+          "entry_price": 35.2976,
+          "exit_date": "2025-08-07",
+          "exit_price": 34.7426,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-08-07",
+          "planned_exit_price": 34.7426,
+          "pnl": -191.68,
+          "shares": 283.3053805357871,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-08-21:IWM",
+          "entry_date": "2025-08-22",
+          "entry_price": 225.6807,
+          "exit_date": "2025-08-25",
+          "exit_price": 232.1681,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-09-05",
+          "planned_exit_price": 235.7675,
+          "pnl": 251.45,
+          "shares": 44.31039074231868,
+          "ticker": "IWM"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-09-23:SLV",
+          "entry_date": "2025-09-24",
+          "entry_price": 40.1501,
+          "exit_date": "2025-09-29",
+          "exit_price": 42.4388,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-10-07",
+          "planned_exit_price": 43.3683,
+          "pnl": 533.04,
+          "shares": 249.0653821534691,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-10-10:SLV",
+          "entry_date": "2025-10-13",
+          "entry_price": 46.9635,
+          "exit_date": "2025-10-22",
+          "exit_price": 43.8581,
+          "exit_reason": "window_end",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-10-24",
+          "planned_exit_price": 43.968,
+          "pnl": -693.92,
+          "shares": 212.93131900305556,
+          "ticker": "SLV"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 50,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 8,
+        "skipped": {
+          "core_above_low_deployment_threshold": 77,
+          "overlay_position_cap_full": 42
+        }
+      }
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 0.1397,
+        "max_drawdown_pct": 0.087837,
+        "sharpe_daily": 1.36,
+        "signals_generated": 65,
+        "signals_survived": 60,
+        "strategy_total_return_pct": 0.102893,
+        "survival_rate": 0.9231,
+        "total_pnl": 10289.36,
+        "trade_count": 29
+      },
+      "before": {
+        "expected_value_score": 0.1082,
+        "max_drawdown_pct": 0.0889,
+        "sharpe_daily": 1.21,
+        "signals_generated": 65,
+        "signals_survived": 60,
+        "strategy_total_return_pct": 0.0894,
+        "survival_rate": 0.9231,
+        "total_pnl": 8940.77,
+        "trade_count": 23
+      },
+      "cash_audit": {
+        "baseline_ending_cash": 108940.76,
+        "cash_conservation_error": 3e-10,
+        "cash_conservation_passed": true,
+        "core_cash_reconstruction_matches": true,
+        "core_displacement_count": 0,
+        "core_only_reconstructed_ending_cash": 108940.77,
+        "ending_cash": 110289.34290766,
+        "event_count": 59,
+        "forced_core_priority_exits": 2,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "negative_cash_event_count": 4,
+        "negative_cash_events": [
+          {
+            "amount": -36083.31,
+            "cash_after": -108.17938713,
+            "cash_before": 35975.13061287,
+            "date": "2024-10-21",
+            "event_id": "NFLX:2024-10-21:76.6100:lot-5:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 471.0,
+              "ticker": "NFLX"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -52770.75,
+            "cash_after": -146.86768738,
+            "cash_before": 52623.88231262,
+            "date": "2025-01-16",
+            "event_id": "JPM:2025-01-16:247.7500:lot-15:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 213.0,
+              "ticker": "JPM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -95.83,
+            "cash_after": -242.69768738,
+            "cash_before": -146.86768738,
+            "date": "2025-01-23",
+            "event_id": "NFLX:2025-01-23:95.8300:lot-20:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 1.0,
+              "ticker": "NFLX"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -14045.48,
+            "cash_after": -75.62768738,
+            "cash_before": 13969.85231262,
+            "date": "2025-02-11",
+            "event_id": "MCD:2025-02-11:298.8400:lot-17:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 47.0,
+              "ticker": "MCD"
+            },
+            "priority": 20
+          }
+        ],
+        "skipped_overlay_entries_for_cash": [
+          {
+            "available_cash": 0.0,
+            "date": "2025-01-16",
+            "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-01-15:GLD"
+          }
+        ]
+      },
+      "delta": {
+        "expected_value_score": 0.0315,
+        "max_drawdown_pct": -0.001063,
+        "sharpe_daily": 0.15,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.013493,
+        "survival_rate": 0.0,
+        "total_pnl": 1348.59,
+        "trade_count": 6
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-02:SLV",
+          "entry_date": "2024-10-03",
+          "entry_price": 28.9245,
+          "exit_date": "2024-10-14",
+          "exit_price": 28.4558,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2024-10-16",
+          "planned_exit_price": 28.8955,
+          "pnl": -196.48,
+          "shares": 345.7276703140936,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-17:GLD",
+          "entry_date": "2024-10-18",
+          "entry_price": 250.125,
+          "exit_date": "2024-10-21",
+          "exit_price": 252.6136,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2024-10-31",
+          "planned_exit_price": 253.3832,
+          "pnl": 64.15,
+          "shares": 39.9800099950025,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-12-20:QQQ",
+          "entry_date": "2024-12-23",
+          "entry_price": 516.5355,
+          "exit_date": "2025-01-07",
+          "exit_price": 511.6789,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-01-07",
+          "planned_exit_price": 511.6789,
+          "pnl": -128.69,
+          "shares": 19.35975358905632,
+          "ticker": "QQQ"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-07:GLD",
+          "entry_date": "2025-03-10",
+          "entry_price": 267.7538,
+          "exit_date": "2025-03-21",
+          "exit_price": 278.3507,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-03-21",
+          "planned_exit_price": 278.3507,
+          "pnl": 359.39,
+          "shares": 37.34774259039461,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-21:GLD",
+          "entry_date": "2025-03-24",
+          "entry_price": 279.0495,
+          "exit_date": "2025-04-04",
+          "exit_price": 279.5801,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-04-04",
+          "planned_exit_price": 279.5801,
+          "pnl": -16.05,
+          "shares": 35.83593591817939,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-04:GLD",
+          "entry_date": "2025-04-07",
+          "entry_price": 278.9994,
+          "exit_date": "2025-04-21",
+          "exit_price": 315.4322,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-04-21",
+          "planned_exit_price": 315.4322,
+          "pnl": 1266.27,
+          "shares": 35.84237098717775,
+          "ticker": "GLD"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 55,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 9,
+        "skipped": {
+          "core_above_low_deployment_threshold": 83,
+          "missing_entry_or_exit_price": 2,
+          "no_etf_passing_signal_close_state": 3,
+          "overlay_position_cap_full": 43
+        }
+      }
+    }
+  }
+}

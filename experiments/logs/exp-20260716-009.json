@@ -1,0 +1,151 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.9638,
+    "max_drawdown_pct": 0.00063,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 131004.89,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.2419,
+    "actual_pnl_delta": 12.53,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.8919,
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 6000.0,
+    "pnl_prediction_error": -5987.47,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "overlay_ev_below_10pct_bar",
+      "residual_cash_windows_too_short_for_10d_hold",
+      "forced_core_priority_exit_churn",
+      "etf_momentum_flat_in_frozen_windows",
+      "single_etf_concentration"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "forced_core_priority_exit_churn",
+    "surprise_level": "very_low",
+    "surprise_note": "The lower cash-feasible anchor did not make the sleeve easier to accept: executable funding erased the old additive edge and exposed that selling a losing ETF cannot always restore enough cash for the unchanged later core order."
+  },
+  "causal_components": [
+    "unchanged ETF selector",
+    "10k overlay cap",
+    "one open overlay position",
+    "next-open entry",
+    "10-day close",
+    "core-cash-priority forced exit",
+    "residual settled cash only",
+    "no leverage",
+    "no core displacement"
+  ],
+  "change_summary": "Replayed the unchanged low-deployment ETF sleeve against the accepted cash-feasible Gate-1 anchor with dated core priority and residual settled cash only.",
+  "change_type": "capital_allocation",
+  "changed_variable": "cash_feasible_residual_cash_etf_overlay_replay_v1",
+  "component": "quant/experiments/exp_20260716_low_deployment_etf_cash_feasible_reopen.py, data/experiments/exp-20260716-009, experiments/artifacts/exp-20260716-009_low_deployment_etf_cash_feasible_reopen.md, experiments/cards/exp-20260716-009.md, experiments/logs/exp-20260716-009.json, experiments/manifests/exp-20260716-009.json, experiments/tickets/exp-20260716-009.json, docs/experiment_registry.json, docs/experiment_log.jsonl",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.2419,
+    "expected_value_score_pct": -0.03898,
+    "max_drawdown_pct_worst_window": 0.00063,
+    "negative_cash_event_count": 8,
+    "overlay_trade_count": 25,
+    "total_pnl": 12.53
+  },
+  "experiment_id": "exp-20260716-009",
+  "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010, aggregate EV 6.2057), replaying the unchanged accepted low-deployment ETF cash-substitute sleeve (exp-20260715-003 selector, 10000 USD cap, one open overlay position, next-open entry, 10-trading-day close, shared costs, core-cash-priority forced exit) on genuinely remaining settled cash should add aggregate expected value, because exp-20260715-005's only structural failure mode - core notional exhausting reconstructed cash - is eliminated by the accepted deterministic scale-or-skip cash admission gate.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "low_deployment_dynamic_etf_overlay_allocation",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-003",
+    "exp-20260715-008",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "Materially more settled forward replacement-value rows under the unchanged shared paper sleeve",
+    "Or an independent capital-allocation gate with a predeclared funding source that never relies on future core cash demand"
+  ],
+  "notes": "Rejected. Aggregate EV fell from 6.2057 to 5.9638 (-3.898%), aggregate PnL delta was +12.53, only old_thin improved, and late_strong plus mid_weak regressed. Ten forced ETF exits protected later core priority, but ETF losses left eight small negative-cash events when preserving original core shares, so the sleeve was not pure residual cash. No production behavior changed. Concurrency record: the ticket was reserved+claimed by claude-alpha, which ran its own runner first (005-parity cost semantics, no explicit ROUND_TRIP_COST_PCT on overlay legs: agg EV delta -0.1757 / -2.83%, PnL +848.98, 6 overlay-introduced negative-cash events, same rejected verdict). codex-root independently implemented and closed the ticket with explicit round-trip costs (canonical numbers above), which is more faithful to the shared helper pnl_pct_net contract; the duplicate claude runner file was deleted after reconciliation via agent mailbox (coordination-20260715 seq 3-4). Rejection is robust to the overlay cost treatment. Reserve-time fingerprint caveat: novelty-gate matches (core_high_vol_high_beta_admission_overlay etc.) were keyword collisions on admission; the true surface is low_deployment_dynamic_etf_overlay_allocation, whose predeclared exp-20260715-005 reopen condition (deterministic execution-date cash reservations) was legitimately met by exp-20260715-008/010.",
+  "parameters": {
+    "locked_variables": [
+      "cash-feasible Gate-1 anchor",
+      "CASH_LEDGER_ENFORCED default True",
+      "ETF selector",
+      "overlay cap 10000",
+      "hold rule",
+      "cost model",
+      "three frozen windows",
+      ">10% aggregate EV acceptance hurdle"
+    ],
+    "single_causal_variable": "cash_feasible_residual_cash_etf_overlay_replay_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not change ETF notional, cash buffer, hold period, SMA or momentum thresholds, universe, forced-exit rule, or the greater-than-10-percent hurdle and rerun these frozen windows.",
+    "new_evidence_required": "Require materially more settled forward replacement-value rows under the unchanged shared paper sleeve, or an independent capital-allocation gate with a predeclared funding source that never relies on future core cash demand. A lower baseline alone is not new evidence.",
+    "realized_failure_mode": "forced_core_priority_exit_churn",
+    "why_result_happened": "The lower cash-feasible anchor did not make the sleeve easier to accept: executable funding erased the old additive edge and exposed that selling a losing ETF cannot always restore enough cash for the unchanged later core order."
+  },
+  "prediction": {
+    "confidence_reason": "Residual settled cash is real and sizable under the enforced ledger (median 26k-65k), and the sleeve was positive in all three windows in exp-20260715-005 (+0.172 EV, +2828 PnL) even on fictional cash; but the fixed 10k cap and the 10% EV hurdle on the new 6.2057 anchor demand roughly 3.6x the previously observed delta, so rejection remains the likely outcome.",
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "overlay_ev_below_10pct_bar",
+      "residual_cash_windows_too_short_for_10d_hold",
+      "forced_core_priority_exit_churn",
+      "etf_momentum_flat_in_frozen_windows",
+      "single_etf_concentration"
+    ],
+    "recorded_at": "2026-07-16T16:17:19+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260716-009/after.json",
+    "data/experiments/exp-20260716-009/before.json",
+    "data/experiments/exp-20260716-009/exp_20260716_009_low_deployment_etf_cash_feasible_reopen.json",
+    "quant/experiments/exp_20260716_low_deployment_etf_cash_feasible_reopen.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-16T16:25:41+00:00",
+  "trial_family": "low_deployment_etf_cash_substitute",
+  "trial_variant_id": "v3_cash_feasible_anchor_reopen"
+}
