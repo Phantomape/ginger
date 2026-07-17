@@ -167,7 +167,7 @@ def _json_surface_date(path: Path) -> str | None:
         return None
     if not isinstance(row, dict):
         return None
-    for key in ("asof_date", "as_of", "last_run_as_of", "date", "updated_at", "generated_at"):
+    for key in ("asof_date", "as_of_date", "as_of", "last_run_as_of", "date", "updated_at", "generated_at"):
         value = str(row.get(key) or "")[:10]
         if value:
             return value
@@ -191,6 +191,10 @@ def _latest_summary_surface(sleeve_dir: Path) -> tuple[str | None, str | None]:
     latest_date: str | None = None
     latest_name: str | None = None
     candidates = list(sleeve_dir.glob("*summary.json"))
+    # exp-20260717-002: newer default-off surfaces persist a single overwritten
+    # latest_snapshot.json (with an as_of date) instead of appending to
+    # snapshots.jsonl; without this glob an alive sleeve reads as never_persisted.
+    candidates.extend(sleeve_dir.glob("*snapshot.json"))
     state_path = sleeve_dir / "state.json"
     if state_path.exists() and _is_heartbeat_state(state_path):
         candidates.append(state_path)
@@ -337,8 +341,23 @@ def build_sleeve_health_report(
 
     disk_status: dict[str, dict[str, Any]] = {}
     stalled: list[str] = []
+    # exp-20260717-002: a retired/disabled sleeve legitimately stops persisting;
+    # counting it stalled forever makes the daily warning a standing false
+    # positive. Map payload keys back to directory names by stripping the
+    # sleeve-like suffix.
+    retired_dirs = set()
+    for key, status in build_status.items():
+        if status in NON_FAILING_BUILD_STATUSES:
+            name = str(key)
+            for suffix in sorted(PAYLOAD_KEY_SUFFIXES, key=len, reverse=True):
+                if name.endswith(suffix):
+                    name = name[: -len(suffix)]
+                    break
+            retired_dirs.add(name)
+            retired_dirs.add(str(key))
     if root.is_dir():
         for sleeve_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+            retired = sleeve_dir.name in retired_dirs
             last_date = _last_snapshot_date(sleeve_dir / "snapshots.jsonl")
             summary_date, summary_name = _latest_summary_surface(sleeve_dir)
             if summary_date is not None and (last_date is None or summary_date > last_date):
@@ -350,11 +369,12 @@ def build_sleeve_health_report(
                     "summary_file": summary_name,
                     "staleness_sessions": staleness,
                 }
-                if entry["status"] == "stale_summary":
+                if entry["status"] == "stale_summary" and not retired:
                     stalled.append(sleeve_dir.name)
             elif last_date is None:
                 entry = {"status": "never_persisted", "last_snapshot": None}
-                stalled.append(sleeve_dir.name)
+                if not retired:
+                    stalled.append(sleeve_dir.name)
             else:
                 staleness = sessions_between(last_date, as_of_date)
                 entry = {
@@ -362,8 +382,10 @@ def build_sleeve_health_report(
                     "last_snapshot": last_date,
                     "staleness_sessions": staleness,
                 }
-                if entry["status"] == "stale":
+                if entry["status"] == "stale" and not retired:
                     stalled.append(sleeve_dir.name)
+            if retired:
+                entry["retired"] = True
             disk_status[sleeve_dir.name] = entry
 
     failing_builds = sorted(

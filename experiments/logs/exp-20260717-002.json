@@ -1,0 +1,67 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "sleeve_health disk-freshness reader now recognizes *snapshot.json surfaces (incl. the as_of_date key) and excludes retired-build-status sleeves from stalled classification. Rebuilt on real disk state: stalled 9 -> 5; treasury_auction x2 and fdic_call_report reclassified fresh_summary, finra_iwm (retired) excluded; the remaining 5 now carry real last-advance dates (eia_wpsr/usda_fas stuck at 2026-04-21, faers/pcaob at 2026-06-12, candidate_decision_training_ledger dateless) making them actionable instead of noise. 14 sleeve-health tests pass (3 new).",
+  "change_type": "measurement_repair",
+  "changed_variable": "sleeve_health disk-freshness reader coverage: recognize latest_snapshot.json surfaces and exclude retired build-status sleeves from stalled classification",
+  "component": "quant/sleeve_health.py, quant/test_sleeve_health.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260717-002",
+  "hypothesis": "The daily sleeve-health report's disk-freshness reader only recognizes snapshots.jsonl, *summary.json, and heartbeat-contract state.json, but seven newer default-off surfaces persist via latest_snapshot.json (treasury_auction_weak_demand_tbt fresh as of 2026-07-15 with 112 candidates, pcaob_form_ap fresh 2026-07-16) and one via a dateless state.json, so alive sleeves are reported as never_persisted stalls; additionally a retired sleeve (finra_iwm, build_status retired_default_off_paper_disabled) is still counted stalled. This makes the daily stalled_sleeves warning a standing false-positive list that trains operators to ignore real stalls. Teaching the reader to (a) include *snapshot.json date surfaces and (b) exclude retired-status sleeves from stalled restores the report's signal.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "fault_recovery_health_reader_coverage_gap",
+  "next_retry_requires": [],
+  "notes": "Fault-recovery measurement repair: newer default-off surfaces adopted latest_snapshot.json persistence that the v4 health reader predates, so the daily stalled_sleeves warning carried 4+ standing false positives. Files: quant/sleeve_health.py, quant/test_sleeve_health.py. Follow-ups surfaced (not taken here): eia_wpsr and usda_fas ingestion stuck at 2026-04-21 despite daily rewrites; faers/pcaob stuck at 2026-06-12; candidate_decision_training_ledger persists no date and no heartbeat contract.",
+  "parameters": {
+    "locked_variables": [
+      "sleeve_health disk-freshness reader coverage: recognize latest_snapshot.json surfaces and exclude retired build-status sleeves from stalled classification"
+    ],
+    "single_causal_variable": "sleeve_health disk-freshness reader coverage: recognize latest_snapshot.json surfaces and exclude retired build-status sleeves from stalled classification"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open per-sleeve tickets to 'fix' the 5 surviving stalls by adding more file-name globs or date keys -- they are now correctly classified. eia_wpsr/usda_fas/faers/pcaob staleness is a data-advance question for those sources, and candidate_decision_training_ledger needs its own persistence-contract decision by its owner.",
+    "new_evidence_required": "Next daily run's Sleeve health warning should list exactly the 5 real stalls (or fewer). Reopen the reader only if a NEW persistence shape appears (a sleeve alive on disk but reported never_persisted again).",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The repair upgraded the report rather than just silencing it: 4 of the 5 surviving stalls turned out to be real data-advance stalls (eia/usda 3 months behind) that were previously indistinguishable from the never_persisted noise."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260717-002/before.json",
+    "data/experiments/exp-20260717-002/after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-17T05:24:10+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260717-002"
+}
