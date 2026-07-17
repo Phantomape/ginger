@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-16.
+Last refreshed: 2026-07-17.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,106 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### Learned Forecasts Need Base-Rate-Honest Benchmarks
+
+A July 2026 TimesFM/LoRA equity-forecasting benchmark is directly useful as a
+negative-control pattern. Raw directional accuracy can mostly measure the
+market's unconditional up-rate; the paper's useful contribution is a frozen
+walk-forward protocol with always-up, random-walk, persistence, AR(1), and
+zero-shot model baselines plus paired significance tests and FDR control. For
+Ginger, any learned ranking, LLM forecast, or foundation time-series model must
+report incremental replacement value after this base-rate audit, not standalone
+hit rate.
+
+Implementable fields:
+
+- `base_rate_benchmark_protocol_id`
+- `always_up_accuracy_baseline`
+- `excess_directional_accuracy_vs_base_rate`
+- `walk_forward_fold_hash`
+- `held_out_ticker_split_hash`
+- `paired_significance_test_family`
+- `forecast_fdr_adjusted_pvalue`
+- `base_rate_honest_replacement_value`
+
+Controls:
+
+- compare every learned directional model against always-up, random-walk,
+  persistence, AR(1), zero-shot model, cash, SPY/QQQ, and accepted-helper
+  baselines on the same rows;
+- report excess accuracy and after-cost replacement value, not raw directional
+  accuracy;
+- keep sector-specialized adapters out of production unless they beat the
+  pooled adapter and the base-rate benchmark on held-out tickers;
+- fail closed when the split, fold seed, or baseline panel is not reproducible.
+
+Source: <https://arxiv.org/abs/2607.12248>
+
+### Cost-Aware RL Allocation Belongs In Activation Envelopes
+
+A July 2026 SciPhyRL portfolio paper shows the right infrastructure boundary:
+the learned policy optimizes over an extended state that explicitly includes
+cumulative costs, uses a discrete target-holding control for short horizons,
+and evaluates against a microstructure-grounded quadratic impact model. The
+local lesson is not to import RL as alpha. It is to require any learned
+allocator or notional router to expose the same cost, turnover, volatility,
+and target-holding state before it can challenge the accepted source allocator.
+
+Implementable fields:
+
+- `rl_allocator_protocol_id`
+- `target_holding_control_bucket`
+- `cumulative_cost_state_hash`
+- `quadratic_impact_parameter_hash`
+- `turnover_control_passed`
+- `volatility_control_passed`
+- `offline_signal_quality_source`
+- `rl_allocator_vs_myopic_delta`
+
+Controls:
+
+- use RL only after the signal panel is frozen and leakage-checked;
+- compare against static, myopic, equal-weight, cash, and current accepted
+  source-priority allocation under identical impact assumptions;
+- reject policies whose improvement comes from unmodeled leverage, turnover,
+  or missing impact state;
+- keep the learned allocator default-off until Gate 1-4 and Gate 5 evidence
+  exists on a complete selection panel.
+
+Source: <https://arxiv.org/abs/2607.15195>
+
+### Filing Text Aggregation Level Is A Decision Variable
+
+A July 2026 10-K sentiment paper finds that full filings work better at sector
+or portfolio aggregation, while Item 1A risk factors work better at the
+individual-firm level. The practical Ginger rule is to log the aggregation
+level as part of the decision variable. A filing-text retry is not "new" merely
+because it changes a sentiment model; it needs a predeclared entity level,
+section scope, target label, evidence spans, and comparator.
+
+Implementable fields:
+
+- `filing_text_aggregation_level`
+- `filing_section_scope`
+- `filing_sentiment_target_label`
+- `section_vs_full_text_delta`
+- `filing_text_training_signal_count`
+- `dictionary_baseline_correlation`
+- `filing_text_replacement_value_delta`
+
+Controls:
+
+- predeclare whether the text field is issuer-level, portfolio-level, or
+  sector-level before scoring outcomes;
+- compare full-filing, Item 1A, and Loughran-McDonald-style baselines on the
+  same accession/date panel;
+- require accession timestamps, parser version, source spans, and deterministic
+  numeric checks;
+- do not retune SEC text classifiers on frozen windows without a new taxonomy,
+  source, or settled forward evidence.
+
+Source: <https://arxiv.org/abs/2607.14174>
 
 ### One-Switch Leakage Tests Before Learned Alpha
 

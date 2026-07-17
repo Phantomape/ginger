@@ -1,0 +1,137 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.1512,
+    "max_drawdown_pct": 0.0552,
+    "sharpe": null,
+    "sharpe_daily": 2.23,
+    "survival_rate": 0.9091,
+    "total_pnl": 6776.87,
+    "total_return_pct": null,
+    "trade_count": 10,
+    "win_rate": 0.3
+  },
+  "before_metrics": {
+    "expected_value_score": 0.1634,
+    "max_drawdown_pct": 0.061,
+    "sharpe": null,
+    "sharpe_daily": 2.22,
+    "survival_rate": 0.9091,
+    "total_pnl": 7362.64,
+    "total_return_pct": null,
+    "trade_count": 10,
+    "win_rate": 0.3
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.0122,
+    "actual_pnl_delta": -585.77,
+    "actual_success": 0,
+    "brier_score": 0.3025,
+    "calibration_direction": "overconfident",
+    "ev_prediction_error": -0.0502,
+    "expected_ev_delta": 0.038,
+    "expected_pnl_delta": 400.0,
+    "pnl_prediction_error": -985.77,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "holdout_window_regression",
+      "family_binds_in_recent_sessions",
+      "holdout_small_sample_noise",
+      "warehouse_extraction_gap"
+    ],
+    "predicted_success_probability": 0.55,
+    "realized_failure_mode": "family_binds_in_recent_sessions",
+    "surprise_level": "medium",
+    "surprise_note": "The exp-20260716-010 near-zero label did not transfer out-of-sample: on the unseen 2026-04-22..2026-07-16 window the family changed sizing on the SAME 10 selected trades (22 generated / 20 survived identical both sides) and its raised caps added +$585.77 (+8.0 percent window PnL) and +0.0122 EV (+7.5 percent); removal breached both predeclared -2 percent floors. Min-cash difference (16.6k vs 23.7k) shows the caps deploy real extra capital productively in current conditions."
+  },
+  "causal_components": [
+    "CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER to 1.0",
+    "CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT to base 0.40",
+    "CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT to base 0.40",
+    "CLEAN_SPY_CAP_ONLY_RS20_LEADER_MAX_POSITION_PCT to base 0.40"
+  ],
+  "change_summary": "Predeclared follow-up confirmation of the exp-20260716-010 clean_spy_leader simplification bundle: canonical 3-window Gate-1 anchor identity reproduced exactly, the ablation arm reproduced exactly (aggregate EV delta +0.0378, +0.61 percent), but the newly frozen unseen holdout window 2026-04-22..2026-07-16 (hash-bound 47-ticker extract 8e4f10f5aaefad7a..., 15931 rows) rejected the removal: EV -0.0122 (-7.5 percent) and PnL -$585.77 (-8.0 percent) versus the -2 percent floors, with identical selection and survival. No production change; the clean_spy_leader family stays in the default-on stack.",
+  "change_type": "capital_allocation",
+  "changed_variable": "removal of the clean_spy_leader sizing/cap policy family as one fixed predeclared bundle under CASH_LEDGER_ENFORCED",
+  "component": "quant/experiments, quant/portfolio_engine.py, quant/test_quant.py, data/experiments, experiments, docs/alpha-optimization-playbook.md, docs/backtesting.md, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.0122,
+    "max_drawdown_pct": -0.0058,
+    "sharpe_daily": 0.01,
+    "survival_rate": 0.0,
+    "total_pnl": -585.77,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260717-006",
+  "hypothesis": "Under the enforced execution-date cash ledger (cash-feasible Gate-1 anchor exp-20260715-010), the accepted clean_spy_leader sizing family (signal-day 1.10x risk multiplier plus 0.525/0.60/0.70 position-cap raises, exp-20260513-036 lineage) no longer changes outcomes materially because cash admission scales fills before the raised caps bind; removing the whole family as one fixed bundle is a complexity reduction whose EV, PnL, drawdown, survival, and trade count stay inside a predeclared noise band on the three canonical windows AND on a newly frozen unseen holdout window 2026-04-22..2026-07-16. This is the single follow-up confirmation ticket predeclared by exp-20260716-010 new_evidence_required; commodities/gold cap removal stays frozen (single-window noise) and is NOT part of the bundle.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "cash_feasible_policy_stack_simplification",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260716-010",
+    "exp-20260715-010",
+    "exp-20260513-036",
+    "exp-20260428-025"
+  ],
+  "new_evidence_type": "unseen_holdout_window_confirmation",
+  "next_retry_requires": [],
+  "notes": "Gate 1: baseline reproduced the cash-feasible anchor identity (trade-row + daily-return hashes, EV/PnL/trade counts) in all three canonical windows. Gate 2: entry_date/stop_price/target_mult_used present on all trades in all 8 runs. Gate 3: no filters changed; holdout survival identical both sides (22/20/90.91 percent). Gate 4: predeclared holdout floors breached (ev_ok=false, pnl_ok=false) so the bundle is rejected under the ticket acceptance rule; DD improved (5.52 vs 6.10 percent) but does not rescue the floors. Fingerprint caveat: the reservation fingerprint routed to sec_text_event via free-text keyword over-match; the true evidence face is the core default-on sizing/cap policy stack (capital allocation) on the cash-feasible anchor plus the frozen holdout OHLCV extract. Repro: .venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_006_clean_spy_leader_family_removal_holdout_confirmation.py",
+  "parameters": {
+    "locked_variables": [
+      "removal of the clean_spy_leader sizing/cap policy family as one fixed predeclared bundle under CASH_LEDGER_ENFORCED"
+    ],
+    "single_causal_variable": "removal of the clean_spy_leader sizing/cap policy family as one fixed predeclared bundle under CASH_LEDGER_ENFORCED"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run clean_spy_leader family removal (whole or partial: multiplier-only, single-cap, or re-grouped bundles) on the canonical windows or on this 2026-04-22..2026-07-16 holdout; do not sweep cap levels between 0.40 and 0.525/0.60/0.70; do not promote the commodities/gold cap removal, which stays frozen as single-window noise; do not treat the improved holdout drawdown (5.52 vs 6.10 pct) as a separate risk-reduction hypothesis on the same rows. The exp-20260716-010 simplification-candidate list is now empty of free removals: clean_spy_leader is falsified out-of-sample, addon_stack was already flagged not-free (-7.2k PnL), signal_day_green and quality_slot_topups lose EV when removed.",
+    "new_evidence_required": "Any future stack-simplification claim needs a genuinely new out-of-sample window that post-dates 2026-07-16 (the holdout here is now consumed/seen), or materially new settled forward rows under the unchanged stack; the frozen holdout extract (data/experiments/exp-20260717-006/holdout_warehouse.sqlite, sha256 8e4f10f5aaefad7a...) is reusable as a frozen fourth-window harness for OTHER predeclared confirmations but is no longer unseen. The cash-feasible policy stack is confirmed locally optimal on all measured windows; next capital-allocation work needs a genuinely new allocator/covariance mechanism, not removals.",
+    "realized_failure_mode": "family_binds_in_recent_sessions",
+    "why_result_happened": "The exp-20260716-010 near-zero label did not transfer out-of-sample: on the unseen 2026-04-22..2026-07-16 window the family changed sizing on the SAME 10 selected trades (22 generated / 20 survived identical both sides) and its raised caps added +$585.77 (+8.0 percent window PnL) and +0.0122 EV (+7.5 percent); removal breached both predeclared -2 percent floors. Min-cash difference (16.6k vs 23.7k) shows the caps deploy real extra capital productively in current conditions."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260716-010 measured the family as a near-zero simplification candidate (+0.61 percent EV when removed, caps above 0.40 rarely bind under cash admission); main uncertainty is whether the family binds in the unseen 2026-04..07 sessions.",
+    "expected_ev_delta": 0.038,
+    "expected_pnl_delta": 400.0,
+    "main_failure_modes": [
+      "holdout_window_regression",
+      "family_binds_in_recent_sessions",
+      "holdout_small_sample_noise",
+      "warehouse_extraction_gap"
+    ],
+    "recorded_at": "2026-07-17T16:19:13+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260717-006/holdout_before_metrics.json",
+    "data/experiments/exp-20260717-006/holdout_after_metrics.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2026-07-16",
+      "start": "2026-04-22"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-17T16:27:09+00:00",
+  "trial_family": "capital_allocation_simplification_confirmation",
+  "trial_variant_id": "exp-20260717-006"
+}

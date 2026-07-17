@@ -1,6 +1,6 @@
 ﻿# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-16.
+Last refreshed: 2026-07-17.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -86,6 +86,36 @@ default-off wiring that reproduces the lead.
 Meta-research continues to rank production-visible default-off paper adapters
 above raw filters, ticker exceptions, and cap releases. The research report is
 queue guidance only; it is not a trading signal.
+
+July 16-17 compressed mechanism readout:
+
+- Measurement repairs remain valuable only when they change the trust boundary.
+  The historical-current reassessment froze 480 recoverable long surfaces under
+  the cash-feasible Gate 4-P panel and found six forward-watch leads, but none
+  survived simultaneous inference. The universe-membership repair added an
+  immutable lower-bound core entry resolver and a broad forward membership
+  ledger while preserving the active Gate-1 metrics exactly. Neither result is
+  alpha; both say that future promotion needs prospective, pre-frozen rows or a
+  genuinely new PIT membership/source surface.
+- Cash-feasible core is now hard to beat for capital-allocation overlays. Raw
+  covariance risk reduction clipped winners, and the H.8 bank-size KRE/KBE
+  relative-value pair had essentially no gross edge after costs. Do not reopen
+  covariance, bank ETF pair, or historical surface-combination lanes by
+  changing scalar, lag, threshold, peer ETF, or bootstrap settings. Reopen only
+  with a new gate shape, unseen/prospective rows, or an owner-approved complete
+  portfolio panel.
+- Official-source preflights are mostly failing on PIT identity, not on
+  economics. TSA checkpoint throughput, BTS airline quality, EIA-930 load,
+  DOL 5500, NRC events, Nasdaq halts, USPTO patents, FEMA disasters, Rule 605,
+  and similar sources often look plausible until publication clock, mutable
+  archive, access, issuer mapping, or density checks are enforced. The default
+  next action is a hash-bound first-seen observer or identity-map repair, not a
+  shared-paper-first price replay.
+- External learned-model research reinforces existing gates: base-rate-honest
+  directional benchmarks, explicit impact/cost state, and text aggregation
+  level are required fields before learned rankings, RL allocators, or filing
+  text sentiment can become alpha candidates. Treat model accuracy as a
+  diagnostic until after-cost replacement value beats the accepted comparator.
 
 The June 6-8 readout tightens the rule: relation-aware free-data candidate
 sources can work, but only when the relation itself is the edge. Accepted
@@ -3036,6 +3066,27 @@ production-visible field:
   these outcomes. Reopen only with an independently predeclared new covariance
   gate shape plus an unseen window, or materially new forward decisions under
   a fixed shared helper;
+- default-on sizing/cap stack simplification removals on the cash-feasible
+  anchor. `exp-20260716-010`'s 11-arm ablation nominated clean_spy_leader
+  family caps as the only real near-zero candidate, and the predeclared
+  follow-up `exp-20260717-006` ran the bundle with a fresh Gate 4 on the three
+  canonical windows plus a newly frozen unseen holdout window
+  2026-04-22..2026-07-16 (hash-bound 47-ticker extract). Canonical identity
+  and the ablation arm reproduced exactly (+0.61% aggregate EV), but the
+  holdout REJECTED the removal: identical 10-trade selection and survival on
+  both sides, yet the family's raised caps added +$585.77 (+8.0% window PnL)
+  and +0.0122 EV (+7.5%), breaching the predeclared -2% floors. The
+  simplification-candidate list from the ablation is now empty of free
+  removals (addon_stack was already not-free, signal_day_green and
+  quality_slot_topups lose EV, commodities/gold caps stay frozen single-window
+  noise). Do not re-run whole/partial/regrouped removals or cap sweeps on
+  these windows; the 2026-04..07 holdout is now consumed. Any future
+  simplification claim needs a window post-dating 2026-07-16 or materially new
+  settled forward rows; next capital-allocation work needs a genuinely new
+  allocator/covariance mechanism, not removals. The committed holdout manifest
+  and before/after metrics are reusable as a fourth-window confirmation surface
+  for other predeclared tickets; the local SQLite extract is generated and
+  intentionally ignored;
 - Federal Register / USITC Section 337 institution-notice respondent admission
   before strict listed-issuer density clears all three canonical windows. A
   July 15 zero-ID preflight fetched 271 official `337-TA` documents, parsed all
@@ -3066,7 +3117,13 @@ production-visible field:
   response shape, or the overlap bar on this baseline. Reopen only after
   materially new settled core entries raise auditable NYSE-group overlap to at
   least 10 in every window, or with a consolidated all-venue PIT threshold
-  source and an independently preregistered gate;
+  source and an independently preregistered gate. A July 16 distinct
+  candidate-pool preflight for removal after at least five consecutive active
+  sessions also proved the daily endpoint unsuitable for historical bulk use:
+  only 56 of 1,188 NYSE/NYSE American/NYSE Arca requests succeeded and 1,132
+  returned HTTP 429, so no density result was claimed. Do not retry the daily
+  crawl; that gate may reopen only with an official or explicitly authorized
+  hash-auditable bulk cache;
 - NasdaqTrader historical trading-halt entry policy before a compliant bulk
   archive and effective-dated security master exist. A July 15 zero-ID sample
   showed that the official single-day RSS can return dated symbol, reason,
@@ -3080,6 +3137,26 @@ production-visible field:
   Reopen only with an official or explicitly authorized date-partitioned bulk
   cache plus an effective-dated common-stock master, then require at least 20
   issuer-weeks, 10 tickers, and top-1 share <=30% in every window;
+- SEC Rule 605 monthly execution-quality improvement as a candidate pool on
+  the legacy 26-field NYSE-group reports. A July 16 zero-ID, outcome-blind
+  preflight hash-bound all 63 official NYSE/NYSE American/NYSE Arca ZIPs from
+  2024-07 through 2026-03 (bundle manifest SHA-256
+  `a2b37ab4d8e9ad777dbac56a6c3f6da635d1dd8e1bf2a6ed72a35a98d8af2364`),
+  used the latest venue `Last-Modified` plus the next SPY session as the PIT
+  clock, and matched 350,959 market/marketable-limit report rows to a
+  conservative 1,390-name all-window liquid common-stock proxy. The frozen
+  signal required at least 100,000 executed shares in both adjacent months,
+  effective spread no more than 90% of the prior month, 0--9-second fill share
+  improvement of at least one percentage point, and top five per report month
+  by `(1-spread_ratio)+2*fast-fill-delta`. It produced only 23 candidates in
+  total and 8/6/6 issuer-months across 8/6/6 tickers inside old/mid/late; top-1
+  shares were acceptable at 12.5%/16.7%/16.7%, but every window missed the
+  fixed >=20 issuer-month and >=10 ticker bars. No price, return, or PnL was
+  read. Do not reserve an ID or retune volume, spread, speed, top-N, market,
+  title hygiene, availability, entry, or hold thresholds on these legacy
+  files. Reopen only for the materially new post-compliance 55-field Rule 605
+  schema with an unseen settled window and a preregistered new measurement
+  mechanism, or an independent execution-quality source/gate;
 - OpenFEMA `DisasterDeclarationsSummaries` reconstruction-basket event alpha on
   the current mutable archive. A July 16 zero-ID, outcome-blind preflight froze
   `DR` declarations for Hurricane/Severe Storm/Tornado/Flood/Fire, collapsed
@@ -3100,6 +3177,164 @@ production-visible field:
   30 prospectively settled, append-only first-seen DR waves under one frozen
   policy with a PIT-stable 100%-covered basket, an official versioned initial-
   publication archive, or a genuinely new reconstruction-demand source/gate;
+- EIA-930 balancing-authority load-acceleration utility candidate-pool
+  reservation on the current mutable historical API. A July 17 zero-ID,
+  outcome-blind preflight established a genuinely new source axis: the official
+  daily-demand route spans 2019 onward, exposes 66 balancing authorities, and a
+  19-authority nine-day sample returned all 171 expected rows. After dropping
+  the ambiguous PNM/TXNM symbol transition, 18 authority codes have a
+  conservative current-parent mapping to 13 listed tickers; all 13 have exact
+  138/127/123 OHLCV-session coverage in old/mid/late. The raw supply is
+  therefore plausible, but historical PIT is not: API rows expose only period,
+  authority, metric, timezone, and value, while EIA explicitly permits
+  historical corrections and provides no row-level first-publication or
+  version identifier on this route. The free `DEMO_KEY` also reached HTTP 429
+  before a complete three-window issuer-week count, so no density pass is
+  claimed and no return was read. Do not reserve an ID, treat the current
+  corrected history as as-published, retry the demo-key crawl, or tune demand
+  acceleration/embargo/hold thresholds. Reopen only with a non-demo authorized
+  pull or official bulk cache, a hash-bound as-published/version archive plus
+  effective-dated authority-to-listed-parent mapping, and at least 20 decision
+  weeks, 10 tickers, and top-1 <=30% in every canonical window. Without such a
+  historical archive, use a frozen append-only first-seen observer and wait for
+  at least 30 settled weekly decisions across 10 tickers and 20 decision dates;
+- Nasdaq Trader issuer-information/regulatory trade-halt resumption candidate-
+  pool reservation on the current liquid-common-stock identity proxy. A July
+  17 zero-ID, outcome-blind preflight used the official public JSON-RPC range
+  search, de-duplicated repeated halt/resumption rows by
+  `(halt_date, halt_time, symbol, reason)`, and froze only issuer-information or
+  regulatory codes `T1/T2/T12/H4/H9/H10/H11`; LUDP/LUDS volatility pauses,
+  IPO, operational, corporate-action, and market-wide codes were excluded.
+  The old/mid/late response SHA-256 values were
+  `79d19a9e1a9d480142b668741646e5952d4c4256d92e4da3f61dd3695b5518ea`,
+  `a20d3f20a953f28f5fdff69b8eda4b7e783d0e3273b5b87272d9e2ce50100bdc`,
+  and `d7acd976694c176b0f341165899efd51f2a2c6e3146b3dc94740b90c126c526a`.
+  Exact-symbol matching against the 1,251-name liquid proxy produced
+  63/17/30 issuer-weeks across 55/14/28 tickers, with top-1 shares of
+  4.76%/17.65%/6.67%. Mid-weak therefore missed the fixed >=20 issuer-week
+  bar even though ticker breadth and concentration passed; no price, return,
+  or PnL was read. The proxy is also current rather than an effective-dated
+  historical security master, so it is not a PIT acceptance identity. Do not
+  reserve an ID to add LUDP/IPO/operational codes, count T1-to-T2 state changes
+  as independent shocks, relax security hygiene, or tune direction, entry,
+  hold, cooldown, or costs on these rows. Reopen only with a hash-bound
+  effective-dated common-stock master that outcome-blind adds at least three
+  unique mid-weak issuer-weeks under the unchanged codes while preserving
+  >=10 tickers and top-1 <=30% in every window, at least 30 prospectively
+  settled first-seen unchanged-policy decisions across 10 tickers and 20
+  dates, or a genuinely different official halt relation/gate;
+- NRC Power Reactor Event Notification core-long entry exclusion before a
+  hash-auditable initial-vintage archive and effective-dated listed-operator
+  map exist. A July 17 zero-ID, outcome-blind preflight enumerated 373 official
+  daily report URLs from the 2024--2026 year indexes for 2024-10-02 through
+  2026-04-21, read only the initial `Event Number`, `Power Reactor`, `Facility`,
+  and `Notification Date-Time` headers, and de-duplicated 259 event numbers.
+  It froze a fail-closed mapping for unambiguous listed plant operators and a
+  T+1-through-T+10 core-long entry-exclusion hypothesis; later revision,
+  retraction, and narrative text were excluded from the proposed decision.
+  Ticker-by-ISO-week de-duplication produced 58/49/43 issuer-weeks across
+  11/13/11 tickers in old/mid/late, with top-1 shares of
+  17.24%/20.41%/23.26%, so all three windows cleared the fixed >=20
+  issuer-week, >=10 ticker, and top-1 <=30% density bars without reading price,
+  return, or PnL. The canonical-URL manifest and parsed-header rowset hashes
+  were `17f15e06754b33bc7a977794002346d3838cdecd27766c5a418c456ef708654b`
+  and `69e77abf98dd568987e8a8e996406365153cd5092b976e861910a8983cd84dc5`,
+  but they came from rendered web extraction rather than frozen raw responses
+  and are discovery lineage, not acceptable source artifacts. Repo-runtime
+  requests to the NRC archive were blocked by an Akamai HTTP 403 challenge,
+  while the current historical pages can append revisions and retractions, so
+  no observer ID may be reserved from this preflight. Reopen only when the repo
+  runtime can HTTP-200 and hash-bind all 373 raw pages or an official bulk
+  export with retrieved-at and event-to-URL provenance, an effective-dated NRC
+  operator-to-SEC-listed-parent map can fail closed, and the unchanged policy
+  still clears all three density bars. If initial historical vintages cannot be
+  obtained, use a prospective first-seen observer and wait for at least 30
+  settled unchanged-policy decisions across 10 tickers and 20 first-seen
+  dates with top-1 <=30%;
+- DOL Form 5500 active-participant-growth candidate-pool reservation on the
+  current `All` filing archives. A July 17 zero-ID, outcome-blind preflight
+  hash-bound the official 2022--2025 ZIPs (789,718 rows; ordered SHA-256 values
+  `9662ed6e955a6118fbe24fb588776232897cb2789ad911c649b279dfbd671463`,
+  `91b411c88c0a9ec46ba7d29597d29b9a4918a03d019cae14524cb9362cf71e63`,
+  `2a2363fca450241baba42b74bf3b3ae9860cea57a6e1ca0537b5cc3539e70f06`,
+  and `40976fe00be1f27e373fb65dd7dbc03d66f5762700ea107f905a948f9fdc7958`).
+  The fixed money hypothesis kept the earliest successful non-amended,
+  non-final, full-year filing per EIN/plan/period, required BOY active
+  participants >=100, growth >=50 and >=10%, selected the largest BOY-active
+  plan per sponsor/period before applying the growth gate, used the first
+  strictly later SPY session, and de-duplicated ticker/ISO week. Exact
+  normalized SEC legal-title mapping among 1,235 all-window evaluable tickers
+  produced 336/138/3 issuer-weeks across 304/131/3 tickers in old/mid/late,
+  with top-1 shares 0.89%/1.45%/33.33%. A separate diagnostic exact-EIN join
+  against current SEC submissions metadata yielded 268/100/4 issuer-weeks
+  across 245/99/4 tickers, with top-1 shares 1.12%/2.00%/25.00%; it is not an
+  effective-dated PIT identity and was not used as acceptance evidence. Thus
+  late independently fails both >=20 issuer-weeks and >=10 tickers under both
+  identity routes, immediately after the concentrated October filing season;
+  no price, return, or PnL was read. The archives also lack a retained monthly
+  first-seen/version ledger and the repository lacks a historical sponsor-EIN
+  -> CIK -> common-stock security relation, so do not reserve an ID or tune
+  growth, size, freshness, plan, filing, de-duplication, entry, or hold rules.
+  Reopen only with a hash-bound historical-vintage archive plus an auditable
+  effective-dated sponsor/security map that outcome-blind adds at least 17
+  late issuer-weeks and 7 late tickers while preserving top-1 <=30%, a
+  genuinely different data source/gate, or at least 30 prospectively settled
+  first-seen unchanged-policy decisions across 10 tickers and 20 dates;
+- USPTO weekly patent-grant XML reservation before authorized ODP access. The
+  official product remains a free weekly Tuesday source and the current grant
+  XML schema is documented, but a July 17 zero-ID access preflight found that
+  ODP has required a valid USPTO.gov sign-in/API key since June 18, 2026. The
+  official `PTBLXML` product-manifest request returned HTTP 401 without a key,
+  the environment and in-app browser exposed neither a key nor an authenticated
+  session, and the retired `bulkdata.uspto.gov` host did not resolve. No weekly
+  file, patent row, price, return, or PnL was read. Do not reserve an observer
+  ID, infer density from search-index snippets, use an unofficial mirror, or
+  retry unauthenticated endpoints. Reopen only with an explicitly authorized
+  `USPTO_API_KEY`/signed-in session or a hash-auditable official weekly XML
+  cache covering all three windows; then run the unchanged outcome-blind gate
+  of >=20 issuer-weeks, >=10 mapped common-stock tickers, and top-1 <=30% in
+  every window before any shared-paper-first reservation;
+- BTS Form 234 monthly airline-service-quality improvement candidate-pool
+  reservation before a hash-auditable as-published release archive is
+  available to the repository runtime. A July 17 zero-ID, outcome-blind
+  preflight proposed a monthly equal-risk basket of listed airline parents
+  whose cancellation rate declines month over month while on-time arrival
+  rate improves, entered only at the next open after the official release and
+  held for 20 sessions. Advisory novelty found no blocking neighbor; this is a
+  new carrier operating-quality source, not the rejected USO oil-cost-relief
+  travel-leadership response. The official monthly product page exposes dated
+  release attachments (for example October 2024 `REL01.09DEC2024`), but the
+  attachment host returned Akamai HTTP 403 to the repo runtime even with a
+  browser user-agent. The accessible official TranStats PREZIP mirror returned
+  HTTP 200, but its October 2024 file was last modified on 2025-01-16, after
+  the dated 2024-12-09 release, and TranStats explicitly reports updates to
+  prior periods; that mutable current file cannot stand in for the historical
+  release vintage. No ZIP body, carrier row, price, return, or PnL was read,
+  and no density pass is claimed. Do not reserve an ID, use current PREZIP
+  rows with a guessed embargo, or retry the blocked attachment one file at a
+  time. Reopen only with a gap-free official/hash-auditable monthly release
+  cache covering the prior-month warm-up plus all three canonical windows, an
+  exact publication/retrieval clock and effective-dated carrier-to-listed-
+  parent map, and an unchanged outcome-blind preflight yielding at least six
+  independent release dates, 20 eligible issuer-months, 10 common-stock
+  tickers, and top-1 <=30% in every window;
+- TSA weekly checkpoint-throughput travel-demand alpha on the current FOIA
+  reading-room artifacts. `exp-20260717-005` rejected the fixed positive-YoY
+  plus positive-acceleration 14-name travel basket before any price, return,
+  or PnL read. A hash-bound 2025-10-19--25 weekly PDF totaled 17,351,496
+  passengers, while the current official annual table totaled 17,884,180 for
+  the same dates (difference 532,684 / 3.070%). The PDF cover date was
+  2025-10-27, but its metadata modification date and HTTP Last-Modified were
+  2025-11-17. The current index also yielded only 25/24/22 reports and
+  19/22/12 current+prior-week+exact-364-day-ready structures in old/mid/late,
+  rather than the preregistered 26/24/26 supply premise. Do not infer initial
+  historical values from the mutable annual table, treat post-modified PDFs
+  as release vintages, guess the known-at clock, repeat the index count, alter
+  the response, or read prices from these rows. Reopen only with an authorized
+  immutable/versioned weekly archive containing original bytes and exact
+  publication timestamps, with enough reports to yield at least 10 locked
+  signal events in every canonical window before any shared-paper-first
+  performance run;
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
