@@ -22,6 +22,57 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("duplicate_reservation_accounting", (
         "duplicate_reservation_accounting", "duplicate reservation accounting",
     )),
+    # Effective-dated core membership is a measurement ledger, not a generic
+    # universe expansion or entry-admission rule.  Keep only compound policy,
+    # module, and ticket spellings here so ordinary entry/universe experiments
+    # continue to route to their existing populations.
+    ("core_universe_membership_ledger", (
+        "core_universe_membership_ledger", "core universe membership ledger",
+        "entry_universe_ledger", "entry universe ledger",
+        "legacy_core_pit_universe_measurement_repair",
+        "core_universe_membership_identity",
+        "git-proven effective-dated core entry eligibility",
+        "git proven effective dated core entry eligibility",
+        "backtest core entry eligibility source",
+        "core entry-eligibility identity", "core entry eligibility identity",
+        "git_effective_lower_bound_and_forward_membership_ledger",
+    )),
+    # Federal Reserve H.8 dated releases are a weekly, as-published bank-size
+    # balance-sheet source. Keep the official source and policy spellings
+    # coupled: bare bank, deposit, loan, KRE, or KBE fragments would capture
+    # Companyfacts ratios and unrelated bank-ETF experiments.
+    ("fed_h8_weekly_release_vintages", (
+        "fed_h8_weekly_release_vintages",
+        "fed h8 weekly release vintages",
+        "federal reserve h.8 dated release",
+        "federal reserve h8 dated release",
+        "federal reserve h.8 weekly release",
+        "federal reserve h8 weekly release",
+        "h.8 bank-size release vintage",
+        "h8 bank-size release vintage",
+        "h8 bank size release vintage",
+        "fed_h8_weekly_release_bank_size_pair",
+        "fed h8 weekly release bank size pair",
+        "fed_h8_small_large_bank",
+        "fed h8 small large bank",
+        "fed_h8_weekly_kre_kbe",
+        "fed h8 weekly kre kbe",
+    )),
+    # TSA checkpoint-throughput reports are an official passenger-volume
+    # source, distinct from generic airport, travel, staffing, or distributed-
+    # system throughput wording. Keep the agency and checkpoint/throughput
+    # terms coupled so broad fragments cannot consume unrelated source budgets.
+    ("tsa_checkpoint_throughput", (
+        "tsa_checkpoint_throughput",
+        "tsa checkpoint-throughput",
+        "tsa checkpoint throughput",
+        "tsa_weekly_checkpoint_throughput",
+        "tsa weekly checkpoint-throughput",
+        "tsa weekly checkpoint throughput",
+        "official tsa foia weekly checkpoint-throughput",
+        "official tsa foia weekly checkpoint throughput",
+        "transportation security administration checkpoint throughput",
+    )),
     # NHTSA defect-investigation openings and CPSC recall publications are one
     # federal product-safety event surface. Keep agency names coupled to their
     # official event/field spellings: bare words such as "recall", "defect",
@@ -599,6 +650,37 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 ]
 
 _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    # One weekly H.8 release chooses the direction of an equal-gross KRE/KBE
+    # pair until the next release. Require a compound policy/family spelling
+    # so generic pair spreads and issuer-ranking allocators keep their routes.
+    ("weekly_relative_value_allocator", (
+        "weekly_relative_value_allocator",
+        "weekly relative-value allocator",
+        "weekly relative value allocator",
+        "fed_h8_small_large_bank_deposit_c_and_i_lag4_weekly_kre_kbe_pair_v1",
+        "fed_h8_weekly_kre_kbe_pair_direction",
+        "fed_h8_weekly_release_bank_size_pair",
+        "next week kre versus kbe relative return",
+        "weekly market-neutral kre/kbe relative-value allocator",
+        "weekly market neutral kre kbe relative value allocator",
+    )),
+    # Replaying membership eligibility as of each decision date is a distinct
+    # measurement shape from either static candidate-pool expansion or an
+    # alpha entry-admission filter.  Exact compound spellings avoid capturing
+    # generic uses of "entry", "eligibility", or "universe".
+    ("point_in_time_entry_eligibility", (
+        "point_in_time_entry_eligibility", "point in time entry eligibility",
+        "point-in-time entry eligibility",
+        "entry_universe_ledger", "entry universe ledger",
+        "legacy_core_pit_universe_measurement_repair",
+        "git-proven effective-dated core entry eligibility",
+        "git proven effective dated core entry eligibility",
+        "backtest core entry eligibility source",
+        "core entry-eligibility identity", "core entry eligibility identity",
+        "immutable daily entry-eligibility replay",
+        "immutable daily entry eligibility replay",
+        "git_effective_lower_bound_and_forward_membership_ledger",
+    )),
     ("trial_adjusted_significance", (
         "trial_adjusted_significance", "trial adjusted significance",
         "deflated sharpe", "deflated_sharpe", "dsr probability",

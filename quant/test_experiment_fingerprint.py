@@ -12,6 +12,159 @@ if str(SCRIPTS) not in sys.path:
 import experiment_fingerprint as fp  # noqa: E402
 
 
+TICKET_20260717_004_HYPOTHESIS = (
+    "Shared-paper-first weekly relative-value alpha: the sum of "
+    "small-minus-large-bank four-week log-growth spreads in Other deposits "
+    "and Commercial and industrial loans from each official Federal Reserve "
+    "H.8 dated release predicts the next week KRE versus KBE relative return; "
+    "hash-bind as-released Table 6/8 vintages, enter one equal-gross 4000 "
+    "USD-per-leg default-off pair at the first session open after publication, "
+    "and rebalance only after the next release."
+)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        TICKET_20260717_004_HYPOTHESIS,
+        "fed_h8_weekly_release_bank_size_pair",
+        "fed_h8_small_large_bank_deposit_c_and_i_lag4_weekly_kre_kbe_pair_v1",
+        "81 Federal Reserve H.8 dated release vintages parsed as a weekly "
+        "market-neutral KRE/KBE relative-value allocator",
+    ],
+)
+def test_fed_h8_weekly_allocator_has_dedicated_fingerprint(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "fed_h8_weekly_release_vintages"
+    assert result["gate_shape"] == "weekly_relative_value_allocator"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "SEC Companyfacts commercial and industrial loans, other deposits, "
+        "and lease growth ratio",
+        "SEC Companyfacts bank-size deposit and loan ratio weekly allocator",
+        "generic KRE/KBE relative-value bank ETF pair",
+    ],
+)
+def test_fed_h8_keywords_do_not_capture_nearby_non_h8_text(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] != "fed_h8_weekly_release_vintages"
+
+
+TICKET_20260717_005_HYPOTHESIS = (
+    "Shared-paper-first candidate-pool alpha: when an official TSA FOIA "
+    "weekly checkpoint-throughput report shows national passenger volume "
+    "remains above the same weekdays 52 weeks earlier and that year-over-year "
+    "growth accelerates versus the preceding week, a fixed all-window-liquid "
+    "air-travel revenue basket should continue from the first strictly later "
+    "regular-session open through the fifth-session close."
+)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        TICKET_20260717_005_HYPOTHESIS,
+        "tsa_checkpoint_throughput_paper_sleeve",
+        "tsa_weekly_checkpoint_throughput_travel_demand_basket",
+        "Transportation Security Administration checkpoint throughput report",
+    ],
+)
+def test_tsa_checkpoint_throughput_has_dedicated_fingerprint(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "tsa_checkpoint_throughput"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "generic airport checkpoint passenger-volume report",
+        "distributed transaction throughput acceleration candidate pool",
+        "TSA PreCheck enrollment growth candidate pool",
+    ],
+)
+def test_tsa_checkpoint_keywords_do_not_capture_generic_text(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] != "tsa_checkpoint_throughput"
+
+
+def test_nearby_companyfacts_text_keeps_companyfacts_source():
+    result = fp.infer_fingerprint(
+        "SEC Companyfacts commercial and industrial loans, other deposits, "
+        "and lease growth ratio for a weekly bank allocator"
+    )
+
+    assert result["data_source"] == "companyfacts_ratio"
+
+
+TICKET_20260717_003_HYPOTHESIS = (
+    "The active cash-feasible Gate-1 carries today's legacy-core and "
+    "current-position membership backward; replaying only Git-proven "
+    "effective-dated core entry eligibility on the identical frozen behavior, "
+    "cash, and OHLCV context will establish an auditable lower-bound "
+    "measurement surface."
+)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        TICKET_20260717_003_HYPOTHESIS,
+        "legacy_core_pit_universe_measurement_repair",
+        "backtest core entry eligibility source",
+        "core entry-eligibility identity: current static watchlist versus "
+        "immutable effective-dated manifest",
+        "entry_universe_ledger Git effective lower bound",
+    ],
+)
+def test_core_universe_membership_ticket_has_dedicated_fingerprint(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "core_universe_membership_ledger"
+    assert result["gate_shape"] == "point_in_time_entry_eligibility"
+
+
+def test_core_universe_membership_frozen_family_inputs_stay_classified():
+    result = fp.infer_fingerprint(
+        "legacy_core_pit_universe_measurement_repair",
+        "backtest core entry eligibility source",
+        "v1_git_effective_lower_bound_and_forward_membership_ledger",
+    )
+
+    assert result["data_source"] == "core_universe_membership_ledger"
+    assert result["gate_shape"] == "point_in_time_entry_eligibility"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "generic broad universe entry ranking candidate pool",
+        "pilot universe eligible tickers as of date",
+        "entry eligibility for a generic candidate source",
+    ],
+)
+def test_core_universe_membership_keywords_do_not_capture_generic_text(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] != "core_universe_membership_ledger"
+    assert result["gate_shape"] != "point_in_time_entry_eligibility"
+
+
+def test_core_entry_admission_keeps_existing_fingerprint():
+    result = fp.infer_fingerprint(
+        "core entry admission gate for the current trading universe"
+    )
+
+    assert result["data_source"] == "core_entry_admission"
+    assert result["gate_shape"] == "entry_admission"
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
