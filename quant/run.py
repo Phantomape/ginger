@@ -124,11 +124,11 @@ _warning_recap = _WarningRecapHandler()
 logging.root.setLevel(logging.INFO)
 logging.root.handlers = [_console_handler, _file_handler, _warning_recap]
 
-# yfinance logs a red ERROR pair for every delisted/non-equity ticker
-# (e.g. "MUU: No earnings dates found" + the HTTP 404 body) on every run.
-# Failure counts are already aggregated by the earnings fetchers, so silence
-# the per-ticker noise.
-logging.getLogger("yfinance").setLevel(logging.CRITICAL)
+# Do NOT raise the yfinance logger level here: the negative caches
+# (yf_negative_cache / yf_no_price_cache) attach recording filters to that
+# logger and need its ERROR records as input -- install_yf_log_filter()
+# forces the level back to ERROR anyway. Delisted-ticker noise dies via the
+# caches instead: once recorded, the symbol is skipped and the line stops.
 
 log = logging.getLogger(__name__)
 
