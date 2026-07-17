@@ -223,9 +223,28 @@ def load_broad_market_candidate_universe(
         payload = json.load(handle)
     records: dict[str, dict[str, Any]] = {}
     tickers: list[str] = []
+    attribution: dict[str, Any] = {}
     if isinstance(payload, list):
         tickers = [str(value).upper() for value in payload if value]
     elif isinstance(payload, dict):
+        attribution = {
+            key: payload.get(key)
+            for key in (
+                "as_of",
+                "rule_version",
+                "excluded_count",
+                "membership_hash",
+                "membership_as_of",
+                "membership_snapshot_hash",
+                "membership_ledger_hash",
+                "membership_ledger_status",
+                "clean_cutoff",
+                "forward_generation",
+            )
+            if key in payload
+        }
+        if isinstance(payload.get("membership"), dict):
+            attribution["membership"] = deepcopy(payload["membership"])
         if isinstance(payload.get("tickers"), list):
             tickers.extend(str(value).upper() for value in payload["tickers"] if value)
         raw_records = payload.get("records")
@@ -248,6 +267,7 @@ def load_broad_market_candidate_universe(
         "path": str(universe_path),
         "tickers": tickers,
         "records": records,
+        **attribution,
     }
 
 
@@ -1104,6 +1124,17 @@ def _snapshot_payload(
             "rule_version": data_source.get("rule_version"),
             "ticker_count": len(data_source.get("tickers") or []),
             "excluded_count": data_source.get("excluded_count"),
+            "membership_hash": data_source.get("membership_hash"),
+            "membership_as_of": data_source.get("membership_as_of"),
+            "membership_snapshot_hash": data_source.get(
+                "membership_snapshot_hash"
+            ),
+            "membership_ledger_hash": data_source.get("membership_ledger_hash"),
+            "membership_ledger_status": data_source.get(
+                "membership_ledger_status"
+            ),
+            "clean_cutoff": data_source.get("clean_cutoff"),
+            "forward_generation": data_source.get("forward_generation"),
         },
         "candidates": deepcopy(candidates),
         "new_pending_entries": deepcopy(new_pending),
@@ -1278,6 +1309,17 @@ def _normalise_candidate_universe(value: dict[str, Any] | list[str] | None) -> d
             "path": value.get("path"),
             "rule_version": value.get("rule_version"),
             "excluded_count": value.get("excluded_count"),
+            "as_of": value.get("as_of"),
+            "membership": deepcopy(value.get("membership"))
+            if isinstance(value.get("membership"), dict)
+            else None,
+            "membership_hash": value.get("membership_hash"),
+            "membership_as_of": value.get("membership_as_of"),
+            "membership_snapshot_hash": value.get("membership_snapshot_hash"),
+            "membership_ledger_hash": value.get("membership_ledger_hash"),
+            "membership_ledger_status": value.get("membership_ledger_status"),
+            "clean_cutoff": value.get("clean_cutoff"),
+            "forward_generation": value.get("forward_generation"),
             "tickers": sorted(tickers),
             "records": {
                 str(key).upper(): dict(row or {})
@@ -1589,6 +1631,10 @@ def prep_and_build_broad_market_paper_sleeve_snapshot(
     pilot_universe: list[str] | set[str] | None = None,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
+    state: dict[str, Any] | None = None,
+    persist: bool = True,
+    state_path: Path | str = DEFAULT_STATE_PATH,
+    snapshot_log_path: Path | str = DEFAULT_SNAPSHOT_LOG_PATH,
     logger: Any = None,
     refresh_disabled: bool = False,
     feed_disabled: bool = False,
@@ -1602,6 +1648,10 @@ def prep_and_build_broad_market_paper_sleeve_snapshot(
     import logging
 
     log = logger or logging.getLogger(__name__)
+    working_state = deepcopy(
+        state if state is not None else load_broad_market_paper_state(state_path)
+    )
+    _normalise_state(working_state)
 
     if not refresh_disabled:
         try:
@@ -1655,9 +1705,19 @@ def prep_and_build_broad_market_paper_sleeve_snapshot(
         )
 
     ohlcv: dict[str, Any] = {}
-    tickers = set(candidate_universe.get("tickers") or [])
-    if tickers:
-        wanted = sorted(tickers | {"SPY"})
+    tickers = {
+        str(ticker).upper()
+        for ticker in (candidate_universe.get("tickers") or [])
+        if ticker
+    }
+    tracked_tickers = {
+        str(row.get("ticker") or "").upper()
+        for bucket in ("pending_entries", "open_positions")
+        for row in (working_state.get(bucket) or [])
+        if isinstance(row, dict) and row.get("ticker")
+    }
+    wanted = sorted(tickers | tracked_tickers | {"SPY"})
+    if wanted:
         for ticker in wanted:
             if ticker in ohlcv_dict:
                 ohlcv[ticker] = ohlcv_dict[ticker]
@@ -1713,6 +1773,29 @@ def prep_and_build_broad_market_paper_sleeve_snapshot(
                 len(missing),
             )
 
+        # Warehouse rows may exist but stop before ``as_of`` (for example when
+        # a held name leaves today's candidate feed).  Refresh those tracked
+        # names so pending fills, mark-to-market, ageing, and exits continue.
+        stale_tracked = [
+            ticker
+            for ticker in sorted(tracked_tickers)
+            if _index_on_date(
+                _normalise_ohlcv_rows(ohlcv.get(ticker)),
+                _date10(as_of),
+            )
+            is None
+        ]
+        if stale_tracked and cached_ohlcv_fn:
+            for ticker in stale_tracked:
+                try:
+                    ohlcv[ticker] = cached_ohlcv_fn(ticker)
+                except Exception as exc:
+                    log.warning(
+                        "Broad-market tracked OHLCV refresh unavailable for %s: %s",
+                        ticker,
+                        exc,
+                    )
+
     tradeable_universe = (
         set(core_universe or [])
         | set(pilot_universe or [])
@@ -1729,6 +1812,10 @@ def prep_and_build_broad_market_paper_sleeve_snapshot(
         candidate_universe=candidate_universe,
         open_prices=open_prices,
         current_prices=current_prices,
+        state=working_state,
+        persist=persist,
+        state_path=state_path,
+        snapshot_log_path=snapshot_log_path,
     )
     return snapshot, candidate_universe, ohlcv
 

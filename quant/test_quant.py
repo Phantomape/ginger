@@ -5831,7 +5831,14 @@ def test_fill_model_helpers_consistent_with_raw_apply_slippage():
 # the class of bug where helpers are correct but the pipeline either skips them
 # or drops their output before it reaches a closed trade record.
 
-def _backtest_harness(monkeypatch, test_df, spy_df):
+def _backtest_harness(
+    monkeypatch,
+    test_df,
+    spy_df,
+    *,
+    entry_universe_resolver=None,
+    universe_mode=None,
+):
     """Stub the whole pipeline so BacktestEngine.run() executes deterministically.
 
     Returns a configured BacktestEngine where the only real logic is the
@@ -5870,6 +5877,8 @@ def _backtest_harness(monkeypatch, test_df, spy_df):
     engine = BacktestEngine(
         universe=["TEST"],
         config={"INITIAL_CAPITAL": 100_000, "MAX_POSITIONS": 5},
+        entry_universe_resolver=entry_universe_resolver,
+        universe_mode=universe_mode,
     )
     engine.start = test_df.index[0]
     engine.end   = test_df.index[-1]
@@ -5885,6 +5894,404 @@ def _flat_then_trigger_df(idx, trigger_open, trigger_high, trigger_low):
         "Low":   [100.0] * (n - 1) + [trigger_low],
         "Close": [100.0] * (n - 1) + [trigger_open],
     }, index=idx)
+
+
+class _DatedEntryUniverseResolver:
+    """Tiny deterministic resolver used by the backtester contract tests."""
+
+    def __init__(self, rows):
+        self.rows = sorted(rows, key=lambda row: row["snapshot_as_of"])
+
+    def resolve(self, as_of):
+        eligible = [
+            row for row in self.rows
+            if row["snapshot_as_of"] <= str(pd.Timestamp(as_of).date())
+        ]
+        if not eligible:
+            return {
+                "status": "before_first_snapshot",
+                "tickers": [],
+                "reason": "no immutable entry-membership snapshot yet",
+            }
+        return dict(eligible[-1])
+
+
+def _entry_universe_row(as_of, tickers, suffix):
+    from entry_universe_ledger import build_membership_snapshot
+
+    snapshot = build_membership_snapshot(
+        effective_as_of=as_of,
+        tickers=tickers,
+        source="unit_test_immutable_membership",
+        source_hash=f"source-{suffix}",
+        clean_cutoff=as_of,
+        provenance={
+            "source_commit": f"commit-{suffix}",
+            "rule_version": "unit_test_v1",
+        },
+        generated_at="2025-01-01T00:00:00Z",
+    )
+    return {
+        "status": "resolved",
+        "snapshot_as_of": snapshot["effective_as_of"],
+        "snapshot_sha256": snapshot["snapshot_hash"],
+        "membership_hash": snapshot["membership_hash"],
+        "record_hash": snapshot["record_hash"],
+        "source": snapshot["source"],
+        "source_hash": snapshot["source_hash"],
+        "clean_cutoff": snapshot["clean_cutoff"],
+        "provenance": snapshot["provenance"],
+        "tickers": snapshot["tickers"],
+    }
+
+
+def test_backtester_point_in_time_entry_universe_blocks_pre_snapshot_signals(
+    monkeypatch,
+):
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    flat = _flat_then_trigger_df(
+        idx, trigger_open=100.0, trigger_high=100.0, trigger_low=100.0
+    )
+    spy = flat.copy()
+    first_snapshot = idx[25]
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row(first_snapshot, ["TEST"], "first")
+    ])
+
+    engine = _backtest_harness(
+        monkeypatch,
+        flat,
+        spy,
+        entry_universe_resolver=resolver,
+        universe_mode="pit_walk_forward",
+    )
+    result = engine.run()
+
+    membership = result["universe_membership"]
+    assert membership["first_identifiable_date"] == str(first_snapshot.date())
+    assert membership["unidentifiable_days"] > 0
+    assert result["signals_generated"] == len(membership["generated_signals"])
+    assert result["signals_survived"] == len(membership["survived_signals"])
+    assert all(
+        row["snapshot_sha256"] == resolver.rows[0]["snapshot_sha256"]
+        for row in membership["generated_signals"]
+    )
+    assert all(
+        row["target_price"] == 110.0
+        for row in membership["survived_signals"]
+    )
+    assert result["trades"][0]["entry_date"] > str(first_snapshot.date())
+    assert membership["entered_trades"][0]["entry_date"] == (
+        result["trades"][0]["entry_date"]
+    )
+
+
+def test_backtester_universe_demotion_blocks_reentry_but_preserves_exit(
+    monkeypatch,
+):
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    test_df = _flat_then_trigger_df(
+        idx, trigger_open=112.0, trigger_high=113.0, trigger_low=112.0
+    )
+    spy = _flat_then_trigger_df(
+        idx, trigger_open=100.0, trigger_high=100.0, trigger_low=100.0
+    )
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row(idx[0], ["TEST"], "admitted"),
+        _entry_universe_row(idx[21], [], "demoted"),
+    ])
+
+    engine = _backtest_harness(
+        monkeypatch,
+        test_df,
+        spy,
+        entry_universe_resolver=resolver,
+        universe_mode="pit_walk_forward",
+    )
+    result = engine.run()
+
+    assert result["total_trades"] == 1
+    trade = result["trades"][0]
+    assert trade["entry_date"] == str(idx[21].date())
+    assert trade["exit_date"] == str(idx[-1].date())
+    assert trade["exit_reason"] == "target"
+    membership = result["universe_membership"]
+    assert membership["entered_trades"][0]["snapshot_sha256"] == (
+        resolver.rows[0]["snapshot_sha256"]
+    )
+    demoted_days = [
+        row for row in membership["daily"]
+        if row.get("snapshot_sha256") == resolver.rows[1]["snapshot_sha256"]
+    ]
+    assert demoted_days and all(row["eligible_count"] == 0 for row in demoted_days)
+
+
+def test_backtester_universe_demotion_keeps_position_features_for_risk(
+    monkeypatch,
+):
+    import feature_layer
+    import portfolio_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    test_df = _flat_then_trigger_df(
+        idx, trigger_open=112.0, trigger_high=113.0, trigger_low=112.0
+    )
+    spy = _flat_then_trigger_df(
+        idx, trigger_open=100.0, trigger_high=100.0, trigger_low=100.0
+    )
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row(idx[0], ["TEST"], "risk-admitted"),
+        _entry_universe_row(idx[22], [], "risk-demoted"),
+    ])
+    observed_position_heat_inputs = []
+
+    engine = _backtest_harness(
+        monkeypatch,
+        test_df,
+        spy,
+        entry_universe_resolver=resolver,
+        universe_mode="pit_walk_forward",
+    )
+    monkeypatch.setattr(
+        feature_layer,
+        "compute_features",
+        lambda ticker, frame, earnings: {
+            "ticker": ticker,
+            "close": float(frame["Close"].iloc[-1]),
+            "atr": 1.0,
+        },
+    )
+
+    def capture_heat(open_positions, current_prices, portfolio_value, features_dict=None):
+        if (open_positions or {}).get("positions"):
+            observed_position_heat_inputs.append({
+                "current_prices": dict(current_prices),
+                "features": dict(features_dict or {}),
+            })
+        return None
+
+    monkeypatch.setattr(portfolio_engine, "compute_portfolio_heat", capture_heat)
+    engine.config["ADDON_ENABLED"] = False
+    result = engine.run()
+
+    assert result["total_trades"] == 1
+    assert observed_position_heat_inputs
+    assert all(
+        "TEST" in call["current_prices"] and "TEST" in call["features"]
+        for call in observed_position_heat_inputs
+    )
+
+
+def test_backtester_point_in_time_universe_rejects_unknown_data_ticker():
+    from backtester import BacktestEngine
+
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row("2025-10-01", ["UNKNOWN"], "bad")
+    ])
+    engine = BacktestEngine(
+        universe=["TEST"],
+        entry_universe_resolver=resolver,
+    )
+
+    with pytest.raises(ValueError, match="outside the data universe"):
+        engine._core_entry_universe_as_of("2025-10-01")
+
+
+def test_backtester_point_in_time_universe_requires_resolver_and_mode_pairing():
+    from backtester import BacktestEngine
+
+    with pytest.raises(ValueError, match="requires entry_universe_resolver"):
+        BacktestEngine(
+            universe=["TEST"],
+            universe_mode="pit_walk_forward",
+        )
+
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row("2025-10-01", ["TEST"], "paired")
+    ])
+    with pytest.raises(ValueError, match="requires universe_mode"):
+        BacktestEngine(
+            universe=["TEST"],
+            entry_universe_resolver=resolver,
+            universe_mode="static_pool_hypothesis",
+        )
+
+
+def test_backtester_run_revalidates_mutated_universe_contract():
+    from backtester import BacktestEngine
+
+    engine = BacktestEngine(universe=["TEST"])
+    engine.universe_mode = "pit_walk_forward"
+    with pytest.raises(ValueError, match="requires entry_universe_resolver"):
+        engine.run()
+
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row("2025-10-01", ["TEST"], "mutated")
+    ])
+    engine = BacktestEngine(
+        universe=["TEST"],
+        entry_universe_resolver=resolver,
+    )
+    engine.universe_mode = "static_pool_hypothesis"
+    with pytest.raises(ValueError, match="requires universe_mode"):
+        engine.run()
+
+    engine = BacktestEngine(universe=["TEST"])
+    engine.universe_mode = "pit_walk_forward"
+    engine.entry_universe_resolver = resolver
+    with pytest.raises(ValueError, match="must not change after construction"):
+        engine.run()
+
+
+def test_backtester_point_in_time_universe_rejects_collection_only_resolver():
+    from backtester import BacktestEngine
+
+    engine = BacktestEngine(
+        universe=["TEST"],
+        entry_universe_resolver=lambda as_of: {"TEST"},
+    )
+
+    with pytest.raises(ValueError, match="collection-only resolvers"):
+        engine._core_entry_universe_as_of("2025-10-01")
+
+
+def test_backtester_point_in_time_universe_rejects_unresolved_tickers():
+    from backtester import BacktestEngine
+
+    class _UnresolvedTickerResolver:
+        def resolve(self, as_of):
+            return {
+                "status": "unknown_before_first_snapshot",
+                "tickers": ["TEST"],
+            }
+
+    engine = BacktestEngine(
+        universe=["TEST"],
+        entry_universe_resolver=_UnresolvedTickerResolver(),
+    )
+
+    with pytest.raises(ValueError, match="must not carry tickers"):
+        engine._core_entry_universe_as_of("2025-10-01")
+
+
+def test_backtester_point_in_time_universe_requires_complete_provenance():
+    from backtester import BacktestEngine
+
+    class _IncompleteResolver:
+        def resolve(self, as_of):
+            row = _entry_universe_row(as_of, ["TEST"], "incomplete")
+            row.pop("record_hash")
+            return row
+
+    engine = BacktestEngine(
+        universe=["TEST"],
+        entry_universe_resolver=_IncompleteResolver(),
+    )
+
+    with pytest.raises(ValueError, match="required provenance"):
+        engine._core_entry_universe_as_of("2025-10-01")
+
+
+def _addon_followthrough_df(idx):
+    frame = _flat_then_trigger_df(
+        idx, trigger_open=112.0, trigger_high=113.0, trigger_low=112.0
+    )
+    checkpoint = idx[23]
+    frame.loc[checkpoint, ["Open", "High", "Low", "Close"]] = [
+        103.0,
+        104.0,
+        102.0,
+        103.0,
+    ]
+    fill_day = idx[24]
+    frame.loc[fill_day, ["Open", "High", "Low", "Close"]] = [
+        103.0,
+        104.0,
+        102.0,
+        103.0,
+    ]
+    return frame
+
+
+def test_backtester_universe_demotion_blocks_addon_checkpoint_but_not_exit(
+    monkeypatch,
+):
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    test_df = _addon_followthrough_df(idx)
+    spy = _flat_then_trigger_df(
+        idx, trigger_open=100.0, trigger_high=100.0, trigger_low=100.0
+    )
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row(idx[0], ["TEST"], "addon-admitted"),
+        _entry_universe_row(idx[23], [], "addon-checkpoint-demoted"),
+    ])
+
+    engine = _backtest_harness(
+        monkeypatch,
+        test_df,
+        spy,
+        entry_universe_resolver=resolver,
+        universe_mode="pit_walk_forward",
+    )
+    result = engine.run()
+
+    assert result["total_trades"] == 1
+    assert result["trades"][0]["exit_reason"] == "target"
+    assert result["trades"][0]["exit_date"] == str(idx[-1].date())
+    attribution = result["addon_attribution"]
+    assert attribution["scheduled"] == 0
+    assert attribution["executed"] == 0
+    assert attribution["checkpoint_rejected"] >= 1
+    skipped = [
+        event for event in attribution["events"]
+        if event["status"] == "skipped_entry_universe_ineligible"
+    ]
+    assert skipped
+    assert skipped[0]["entry_universe_provenance"]["snapshot_sha256"] == (
+        resolver.rows[1]["snapshot_sha256"]
+    )
+
+
+def test_backtester_universe_demotion_blocks_queued_addon_fill_but_not_exit(
+    monkeypatch,
+):
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    test_df = _addon_followthrough_df(idx)
+    spy = _flat_then_trigger_df(
+        idx, trigger_open=100.0, trigger_high=100.0, trigger_low=100.0
+    )
+    resolver = _DatedEntryUniverseResolver([
+        _entry_universe_row(idx[0], ["TEST"], "queued-admitted"),
+        _entry_universe_row(idx[24], [], "queued-fill-demoted"),
+    ])
+
+    engine = _backtest_harness(
+        monkeypatch,
+        test_df,
+        spy,
+        entry_universe_resolver=resolver,
+        universe_mode="pit_walk_forward",
+    )
+    result = engine.run()
+
+    assert result["total_trades"] == 1
+    assert result["trades"][0]["exit_reason"] == "target"
+    assert result["trades"][0]["exit_date"] == str(idx[-1].date())
+    attribution = result["addon_attribution"]
+    assert attribution["scheduled"] == 1
+    assert attribution["executed"] == 0
+    assert attribution["skipped"] == 1
+    skipped = [
+        event for event in attribution["events"]
+        if event["status"] == "skipped_entry_universe_ineligible"
+    ]
+    assert len(skipped) == 1
+    assert skipped[0][
+        "checkpoint_entry_universe_provenance"
+    ]["snapshot_sha256"] == resolver.rows[0]["snapshot_sha256"]
+    assert skipped[0]["entry_universe_provenance"]["snapshot_sha256"] == (
+        resolver.rows[1]["snapshot_sha256"]
+    )
 
 
 def test_backtester_run_gap_up_target_uses_fill_model(monkeypatch):

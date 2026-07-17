@@ -41,6 +41,11 @@ import yfinance.cache as yf_cache
 
 logger = logging.getLogger(__name__)
 
+try:
+    from entry_universe_ledger import membership_hash as _entry_membership_hash
+except ImportError:  # pragma: no cover - package-style import fallback.
+    from quant.entry_universe_ledger import membership_hash as _entry_membership_hash
+
 
 PROXY_ENV_VARS = (
     "HTTP_PROXY",
@@ -1127,8 +1132,33 @@ class BacktestEngine:
                  save_entry_candidate_events_path=None,
                  include_entry_candidate_events=False,
                  include_oracle_diagnostics=True,
-                 oracle_candidate_horizon_days=20):
-        self.universe    = universe
+                 oracle_candidate_horizon_days=20,
+                 entry_universe_resolver=None,
+                 universe_mode=None,
+                 universe_metadata=None):
+        # ``universe`` is the data-visible set.  By default it also remains the
+        # static entry set for full backwards compatibility.  A caller can
+        # supply an explicit resolver to make new-entry eligibility vary by
+        # decision date without removing price history needed to manage exits.
+        self.universe    = sorted({str(t).upper() for t in universe if t})
+        self.entry_universe_resolver = entry_universe_resolver
+        self.universe_mode = universe_mode or (
+            "pit_walk_forward"
+            if entry_universe_resolver is not None
+            else "static_pool_hypothesis"
+        )
+        resolver_metadata = self._validate_entry_universe_contract()
+        self.universe_metadata = dict(resolver_metadata or {})
+        for key, value in dict(universe_metadata or {}).items():
+            if key in self.universe_metadata and self.universe_metadata[key] != value:
+                raise ValueError(
+                    "universe_metadata conflicts with resolver metadata for "
+                    f"{key!r}"
+                )
+            self.universe_metadata[key] = value
+        self._configured_entry_universe_mode = self.universe_mode
+        self._configured_entry_universe_resolver = self.entry_universe_resolver
+        self._current_entry_universe_context = None
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
         self.end         = pd.Timestamp(end)   if end   else None
@@ -1157,6 +1187,51 @@ class BacktestEngine:
         # can supplement eps_estimate / avg_historical_surprise_pct for C strategy.
         self._earnings_snapshots = self._load_earnings_snapshots()
 
+    def _validate_entry_universe_contract(self):
+        """Fail closed if entry-membership mode and resolver disagree.
+
+        Research callers sometimes mutate an engine between setup and
+        execution, so ``run`` repeats this constructor check.  Mutation must
+        not silently turn a declared PIT replay into a static/current-pool run
+        (or the reverse).
+        """
+        if self.universe_mode not in {
+            "static_pool_hypothesis",
+            "pit_walk_forward",
+        }:
+            raise ValueError(f"Unsupported universe_mode: {self.universe_mode!r}")
+        if (
+            self.universe_mode == "pit_walk_forward"
+            and self.entry_universe_resolver is None
+        ):
+            raise ValueError("pit_walk_forward requires entry_universe_resolver")
+        if (
+            self.universe_mode != "pit_walk_forward"
+            and self.entry_universe_resolver is not None
+        ):
+            raise ValueError(
+                "entry_universe_resolver requires universe_mode='pit_walk_forward'"
+            )
+        resolver_metadata = (
+            getattr(self.entry_universe_resolver, "metadata", None)
+            if self.entry_universe_resolver is not None
+            else None
+        )
+        if resolver_metadata is not None and not isinstance(
+            resolver_metadata,
+            dict,
+        ):
+            raise ValueError("entry_universe_resolver.metadata must be a mapping")
+        if hasattr(self, "_configured_entry_universe_mode") and (
+            self.universe_mode != self._configured_entry_universe_mode
+            or self.entry_universe_resolver
+            is not self._configured_entry_universe_resolver
+        ):
+            raise ValueError(
+                "entry-universe mode/resolver must not change after construction"
+            )
+        return resolver_metadata
+
     def _pilot_lookup_as_of(self, as_of):
         if not self.include_pilot_sleeve:
             return {}
@@ -1174,6 +1249,168 @@ class BacktestEngine:
 
     def _backtest_data_universe(self):
         return sorted(set(self.universe) | set(self._pilot_tickers_for_download()))
+
+    def _core_entry_universe_as_of(self, as_of):
+        """Return (eligible tickers, provenance) for one decision date.
+
+        Data visibility and entry permission are intentionally separate.  The
+        resolver may return a collection of tickers or a mapping containing a
+        ``tickers`` collection plus immutable snapshot metadata.  Any ticker
+        not present in the declared data universe fails closed instead of being
+        silently downloaded or admitted.
+        """
+        day = str(pd.Timestamp(as_of).date())
+        if self.entry_universe_resolver is None:
+            tickers = set(self.universe)
+            return tickers, {
+                "as_of": day,
+                "status": "static_current_membership",
+                "mode": "static_pool_hypothesis",
+                "eligible_count": len(tickers),
+                "snapshot_as_of": None,
+                "snapshot_sha256": None,
+            }
+
+        resolver = self.entry_universe_resolver
+        if not hasattr(resolver, "resolve"):
+            raise ValueError(
+                "pit_walk_forward requires a resolver.resolve(as_of) mapping; "
+                "collection-only resolvers are not auditable"
+            )
+        raw = resolver.resolve(day)
+        if not isinstance(raw, dict):
+            raise ValueError(
+                "entry_universe_resolver.resolve(as_of) must return a mapping"
+            )
+
+        raw_tickers = raw.get("tickers")
+        if raw_tickers is None:
+            raw_tickers = []
+        if isinstance(raw_tickers, (str, bytes, dict)):
+            raise ValueError("resolved entry-universe tickers must be a collection")
+        try:
+            tickers = {str(t).upper() for t in raw_tickers if t}
+        except TypeError as exc:
+            raise ValueError(
+                "resolved entry-universe tickers must be an iterable collection"
+            ) from exc
+
+        status = str(raw.get("status") or "unidentifiable")
+        provenance = raw.get("provenance")
+        if status != "resolved":
+            if tickers:
+                raise ValueError(
+                    "non-resolved entry-universe membership must not carry "
+                    f"tickers on {day}: status={status!r}"
+                )
+            context = {
+                "status": status,
+                "reason": raw.get("reason"),
+                "as_of": day,
+                "mode": "pit_walk_forward",
+                "eligible_count": 0,
+            }
+            return set(), {
+                key: value for key, value in context.items()
+                if value is not None
+            }
+
+        if not isinstance(provenance, dict):
+            raise ValueError(
+                f"resolved entry-universe membership lacks provenance on {day}"
+            )
+        context = {
+            "status": status,
+            "snapshot_as_of": (
+                raw.get("snapshot_as_of") or raw.get("effective_as_of")
+            ),
+            "snapshot_sha256": (
+                raw.get("snapshot_sha256") or raw.get("snapshot_hash")
+            ),
+            "membership_hash": raw.get("membership_hash"),
+            "record_hash": raw.get("record_hash"),
+            "source": raw.get("source"),
+            "source_hash": raw.get("source_hash"),
+            "source_commit": (
+                raw.get("source_commit")
+                or provenance.get("source_commit")
+                or provenance.get("git_commit")
+            ),
+            "rule_version": (
+                raw.get("rule_version") or provenance.get("rule_version")
+            ),
+            "clean_cutoff": raw.get("clean_cutoff"),
+            "reason": raw.get("reason"),
+            "provenance": dict(provenance),
+        }
+        required_provenance = (
+            "snapshot_as_of",
+            "snapshot_sha256",
+            "membership_hash",
+            "record_hash",
+            "source",
+        )
+        missing_provenance = [
+            key for key in required_provenance if not context.get(key)
+        ]
+        if missing_provenance:
+            raise ValueError(
+                "resolved entry-universe membership lacks required provenance "
+                f"on {day}: {missing_provenance}"
+            )
+        try:
+            snapshot_day = pd.Timestamp(context["snapshot_as_of"]).date()
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"invalid entry-universe snapshot date on {day}: "
+                f"{context['snapshot_as_of']!r}"
+            ) from exc
+        if snapshot_day > pd.Timestamp(day).date():
+            raise ValueError(
+                "entry-universe resolver returned a future snapshot on "
+                f"{day}: {context['snapshot_as_of']}"
+            )
+        expected_membership_hash = _entry_membership_hash(tickers)
+        if context["membership_hash"] != expected_membership_hash:
+            raise ValueError(
+                "entry-universe membership hash does not match resolved "
+                f"tickers on {day}"
+            )
+        unknown = sorted(tickers - set(self.universe))
+        if unknown:
+            raise ValueError(
+                "Entry universe resolver returned ticker(s) outside the data "
+                f"universe on {day}: {unknown}"
+            )
+        context.update({
+            "as_of": day,
+            "mode": "pit_walk_forward",
+            "eligible_count": len(tickers),
+        })
+        return tickers, {
+            key: value for key, value in context.items()
+            if value is not None
+        }
+
+    @staticmethod
+    def _entry_universe_provenance(context):
+        return {
+            key: context.get(key)
+            for key in (
+                "status",
+                "snapshot_as_of",
+                "snapshot_sha256",
+                "membership_hash",
+                "record_hash",
+                "source",
+                "source_hash",
+                "source_commit",
+                "rule_version",
+                "clean_cutoff",
+                "provenance",
+            )
+            if context.get(key) is not None
+        }
 
     def _sanitize_proxy_env(self):
         """Backward-compatible wrapper around the shared yfinance bootstrap."""
@@ -1648,6 +1885,8 @@ class BacktestEngine:
                    max_drawdown_pct, equity_curve, trades, signals_generated,
                    signals_survived, survival_rate}
         """
+        self._validate_entry_universe_contract()
+
         from feature_layer    import compute_features
         from signal_engine    import generate_signals, rank_signals_for_allocation
         from risk_engine      import enrich_signals
@@ -1982,6 +2221,10 @@ class BacktestEngine:
             return event
         total_signals_generated = 0
         total_signals_survived  = 0
+        universe_membership_daily = []
+        universe_membership_generated_signal_events = []
+        universe_membership_survived_signal_events = []
+        universe_membership_entry_events = []
         sizing_rule_signal_attribution = {}
         entry_decision_events = []
         pilot_replay_state = {
@@ -2260,6 +2503,38 @@ class BacktestEngine:
                 "available_slots_at_entry_loop": slots,
                 "details": details,
             }
+            entry_universe_provenance = sig.get("entry_universe_provenance")
+            if entry_universe_provenance:
+                event["entry_universe_provenance"] = dict(
+                    entry_universe_provenance
+                )
+                if decision == "entered":
+                    universe_membership_entry_events.append({
+                        "signal_date": event["date"],
+                        "entry_date": details.get("fill_date"),
+                        "ticker": event["ticker"],
+                        "strategy": event["strategy"],
+                        "snapshot_as_of": entry_universe_provenance.get(
+                            "snapshot_as_of"
+                        ),
+                        "snapshot_sha256": entry_universe_provenance.get(
+                            "snapshot_sha256"
+                        ),
+                        "source_commit": entry_universe_provenance.get(
+                            "source_commit"
+                        ),
+                        "membership_hash": entry_universe_provenance.get(
+                            "membership_hash"
+                        ),
+                        "record_hash": entry_universe_provenance.get(
+                            "record_hash"
+                        ),
+                        "source": entry_universe_provenance.get("source"),
+                        "status": entry_universe_provenance.get("status"),
+                        "entry_universe_provenance": dict(
+                            entry_universe_provenance
+                        ),
+                    })
             if self.save_entry_candidate_events_path or self.include_entry_candidate_events:
                 event["signal_snapshot"] = _entry_candidate_signal_snapshot(sig)
             entry_decision_events.append(event)
@@ -2580,7 +2855,11 @@ class BacktestEngine:
                     prices[p.ticker] = _scalar_price(df.loc[today], column)
             return prices
 
-        def _execute_pending_addons(today):
+        def _execute_pending_addons(
+            today,
+            core_entry_tickers_today,
+            entry_universe_context,
+        ):
             nonlocal addon_executed_count, addon_skipped_count
             date_key = str(today.date())
             todays_addons = pending_addons.pop(date_key, [])
@@ -2594,6 +2873,20 @@ class BacktestEngine:
                 if pos is None:
                     addon_skipped_count += 1
                     addon_events.append({**addon, "status": "skipped_position_closed"})
+                    continue
+
+                pos_is_core = getattr(pos, "sleeve", "core") == "core"
+                if pos_is_core and pos.ticker not in core_entry_tickers_today:
+                    addon_skipped_count += 1
+                    addon_events.append({
+                        **addon,
+                        "status": "skipped_entry_universe_ineligible",
+                        "entry_universe_provenance": (
+                            self._entry_universe_provenance(
+                                entry_universe_context
+                            )
+                        ),
+                    })
                     continue
 
                 df = ohlcv_all.get(pos.ticker)
@@ -2631,7 +2924,6 @@ class BacktestEngine:
                     continue
 
                 entry_fill = apply_entry_fill(raw_open)
-                pos_is_core = getattr(pos, "sleeve", "core") == "core"
                 if pos_is_core and cash_ledger_enforced and entry_fill > 0:
                     affordable = int(math.floor(
                         max(0.0, cash_balance) / entry_fill))
@@ -2700,6 +2992,17 @@ class BacktestEngine:
                     "new_total_shares": new_shares,
                     "new_avg_entry": pos.entry_price,
                     "cap_detail": cap_detail,
+                    **(
+                        {
+                            "entry_universe_provenance": (
+                                self._entry_universe_provenance(
+                                    entry_universe_context
+                                )
+                            )
+                        }
+                        if self.universe_mode == "pit_walk_forward"
+                        else {}
+                    ),
                 })
 
         def _record_partial_reduce_trade(pos, shares_to_sell, raw_open, today, action):
@@ -3086,7 +3389,11 @@ class BacktestEngine:
                     "high_since_entry": round(high_since_entry, 4),
                 })
 
-        def _schedule_followthrough_addons(today):
+        def _schedule_followthrough_addons(
+            today,
+            core_entry_tickers_today,
+            entry_universe_context,
+        ):
             nonlocal addon_scheduled_count, addon_checkpoint_rejected_count
             if not addon_enabled:
                 return
@@ -3168,6 +3475,25 @@ class BacktestEngine:
                 if today_idx - entry_idx != active_checkpoint_days:
                     continue
 
+                if pos.ticker not in core_entry_tickers_today:
+                    addon_checkpoint_rejected_count += 1
+                    addon_events.append({
+                        "ticker": pos.ticker,
+                        "strategy": pos.strategy,
+                        "sector": pos.sector,
+                        "checkpoint_date": str(today.date()),
+                        "checkpoint_days": active_checkpoint_days,
+                        "addon_number": addon_number,
+                        "original_shares": pos.original_shares,
+                        "status": "skipped_entry_universe_ineligible",
+                        "entry_universe_provenance": (
+                            self._entry_universe_provenance(
+                                entry_universe_context
+                            )
+                        ),
+                    })
+                    continue
+
                 close = _scalar_price(df.loc[today], "Close")
                 entry_close = _scalar_price(df.iloc[entry_idx], "Close")
                 spy_close = _scalar_price(spy_df.iloc[spy_today_idx], "Close")
@@ -3233,6 +3559,12 @@ class BacktestEngine:
                     "spy_relative_leader_addon_cap": spy_relative_leader_addon_cap,
                     **followthrough_state,
                 }
+                if self.universe_mode == "pit_walk_forward":
+                    checkpoint_candidate[
+                        "checkpoint_entry_universe_provenance"
+                    ] = self._entry_universe_provenance(
+                        entry_universe_context
+                    )
                 if require_checkpoint_cap_room:
                     checkpoint_prices = _current_prices_for_positions(today, "Close")
                     checkpoint_shares, skip_reason, cap_detail = _cap_addon_shares(
@@ -3268,6 +3600,35 @@ class BacktestEngine:
                 })
 
         for day_idx, today in enumerate(sim_dates):
+            # Resolve entry eligibility before *any* action that can add risk.
+            # Demotion therefore blocks both a checkpoint scheduled today and
+            # an add-on already queued for today's open, while exits and risk
+            # reductions continue to operate over the broader data universe.
+            core_entry_tickers_today, entry_universe_context = (
+                self._core_entry_universe_as_of(today)
+            )
+            self._current_entry_universe_context = entry_universe_context
+            universe_membership_daily.append({
+                key: entry_universe_context.get(key)
+                for key in (
+                    "as_of",
+                    "status",
+                    "mode",
+                    "eligible_count",
+                    "snapshot_as_of",
+                    "snapshot_sha256",
+                    "membership_hash",
+                    "record_hash",
+                    "source",
+                    "source_hash",
+                    "source_commit",
+                    "rule_version",
+                    "clean_cutoff",
+                    "reason",
+                    "provenance",
+                )
+                if entry_universe_context.get(key) is not None
+            })
             rotation_fill_key = str(
                 today.date() if hasattr(today, "date") else today
             )
@@ -3289,7 +3650,11 @@ class BacktestEngine:
                 news_archive_dates_missing.append(_today_str)
 
             # ── 1. Check exits on today's prices ────────────────────────────
-            _execute_pending_addons(today)
+            _execute_pending_addons(
+                today,
+                core_entry_tickers_today,
+                entry_universe_context,
+            )
             _execute_pending_partial_reduces(today)
             positions = [p for p in positions if p.shares > 0]
 
@@ -3443,7 +3808,11 @@ class BacktestEngine:
             _schedule_partial_reduces(today)
             _schedule_post_addon_weakness_reduces(today)
             _schedule_early_relative_weakness_exits(today)
-            _schedule_followthrough_addons(today)
+            _schedule_followthrough_addons(
+                today,
+                core_entry_tickers_today,
+                entry_universe_context,
+            )
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────
             # Core slots are counted separately from pilot sleeve positions.
@@ -3457,8 +3826,11 @@ class BacktestEngine:
                 _record_equity_point(today)
                 continue
 
-            # Compute features for each ticker using data up to today
-            features_dict = {}
+            # Keep the data/management universe broader than the entry set.
+            # A demoted open position still needs current price/ATR features
+            # for portfolio heat and risk management; only signal generation
+            # is restricted to point-in-time eligible tickers.
+            data_features_dict = {}
             for ticker in self.universe:
                 df = ohlcv_all.get(ticker)
                 if df is None:
@@ -3469,7 +3841,16 @@ class BacktestEngine:
                     continue
                 earn = self._earnings_dict_for(
                     today, earnings_calendar.get(ticker, []), ticker=ticker)
-                features_dict[ticker] = compute_features(ticker, data_slice, earn)
+                data_features_dict[ticker] = compute_features(
+                    ticker,
+                    data_slice,
+                    earn,
+                )
+            features_dict = {
+                ticker: data_features_dict[ticker]
+                for ticker in sorted(core_entry_tickers_today)
+                if ticker in data_features_dict
+            }
             pilot_features_dict = {}
             if self.include_pilot_sleeve:
                 if pilot_records_today:
@@ -3482,8 +3863,8 @@ class BacktestEngine:
                             set(),
                         ).add(ticker)
                 for ticker in sorted(pilot_records_today):
-                    if ticker in features_dict:
-                        pilot_features_dict[ticker] = features_dict[ticker]
+                    if ticker in data_features_dict:
+                        pilot_features_dict[ticker] = data_features_dict[ticker]
                         continue
                     df = ohlcv_all.get(ticker)
                     if df is None:
@@ -3501,7 +3882,7 @@ class BacktestEngine:
                         data_slice,
                         earn,
                     )
-            all_features_dict = {**features_dict, **pilot_features_dict}
+            all_features_dict = {**data_features_dict, **pilot_features_dict}
 
             market_context = _market_context_for_day(today)
             regime_str = market_context.get("market_regime", "UNKNOWN")
@@ -3530,8 +3911,43 @@ class BacktestEngine:
                         self.config.get("BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH")
                     ),
                 )
+            if self.entry_universe_resolver is not None:
+                provenance = self._entry_universe_provenance(
+                    entry_universe_context
+                )
+                for signal in signals:
+                    signal["entry_universe_provenance"] = dict(provenance)
             if self.config.get("BREAKOUT_RANK_BY_52W_HIGH"):
                 signals = rank_signals_for_allocation(signals)
+            if self.entry_universe_resolver is not None:
+                signal_day = str(today.date())
+                for signal in signals:
+                    signal_provenance = signal.get(
+                        "entry_universe_provenance"
+                    ) or {}
+                    universe_membership_generated_signal_events.append({
+                        "signal_date": signal_day,
+                        "ticker": (signal.get("ticker") or "").upper(),
+                        "strategy": signal.get("strategy", "unknown"),
+                        "snapshot_as_of": signal_provenance.get(
+                            "snapshot_as_of"
+                        ),
+                        "snapshot_sha256": signal_provenance.get(
+                            "snapshot_sha256"
+                        ),
+                        "source_commit": signal_provenance.get(
+                            "source_commit"
+                        ),
+                        "membership_hash": signal_provenance.get(
+                            "membership_hash"
+                        ),
+                        "record_hash": signal_provenance.get("record_hash"),
+                        "source": signal_provenance.get("source"),
+                        "status": signal_provenance.get("status"),
+                        "entry_universe_provenance": dict(
+                            signal_provenance
+                        ),
+                    })
             total_signals_generated += len(signals)
 
             # Enrich with risk parameters
@@ -3584,6 +4000,39 @@ class BacktestEngine:
                 sizing_rule_signal_attribution,
                 signals,
             )
+            if self.entry_universe_resolver is not None:
+                signal_day = str(today.date())
+                for signal in signals:
+                    signal_provenance = signal.get(
+                        "entry_universe_provenance"
+                    ) or {}
+                    universe_membership_survived_signal_events.append({
+                        "signal_date": signal_day,
+                        "ticker": (signal.get("ticker") or "").upper(),
+                        "strategy": signal.get("strategy", "unknown"),
+                        "entry_date": signal.get("entry_date"),
+                        "target_price": _safe_candidate_scalar(
+                            signal.get("target_price")
+                        ),
+                        "snapshot_as_of": signal_provenance.get(
+                            "snapshot_as_of"
+                        ),
+                        "snapshot_sha256": signal_provenance.get(
+                            "snapshot_sha256"
+                        ),
+                        "source_commit": signal_provenance.get(
+                            "source_commit"
+                        ),
+                        "membership_hash": signal_provenance.get(
+                            "membership_hash"
+                        ),
+                        "record_hash": signal_provenance.get("record_hash"),
+                        "source": signal_provenance.get("source"),
+                        "status": signal_provenance.get("status"),
+                        "entry_universe_provenance": dict(
+                            signal_provenance
+                        ),
+                    })
             total_signals_survived += len(signals)
 
             # ── 2b. LLM gate replay (optional; off by default). ─────────────
@@ -4395,6 +4844,68 @@ class BacktestEngine:
             if news_candidate_signals_total else 0.0
         )
         pilot_sleeve_replay = _finalize_pilot_replay_state()
+        identifiable_statuses = {
+            "resolved",
+            "static_current_membership",
+        }
+        identifiable_membership_days = [
+            row
+            for row in universe_membership_daily
+            if row.get("status") in identifiable_statuses
+        ]
+        unidentifiable_membership_days = [
+            row
+            for row in universe_membership_daily
+            if row.get("status") not in identifiable_statuses
+        ]
+        eligible_counts = [
+            int(row.get("eligible_count") or 0)
+            for row in identifiable_membership_days
+        ]
+        universe_membership_audit = {
+            "mode": self.universe_mode,
+            "entry_eligibility_point_in_time": (
+                self.universe_mode == "pit_walk_forward"
+            ),
+            "data_universe_count": len(self.universe),
+            "data_universe": list(self.universe),
+            "metadata": dict(self.universe_metadata),
+            "trading_days": len(universe_membership_daily),
+            "identifiable_days": len(identifiable_membership_days),
+            "unidentifiable_days": len(unidentifiable_membership_days),
+            "first_identifiable_date": (
+                identifiable_membership_days[0].get("as_of")
+                if identifiable_membership_days
+                else None
+            ),
+            "min_eligible_count": min(eligible_counts) if eligible_counts else None,
+            "max_eligible_count": max(eligible_counts) if eligible_counts else None,
+            "snapshot_hashes": sorted({
+                row.get("snapshot_sha256")
+                for row in identifiable_membership_days
+                if row.get("snapshot_sha256")
+            }),
+            "daily": universe_membership_daily,
+            "generated_signals": universe_membership_generated_signal_events,
+            "survived_signals": universe_membership_survived_signal_events,
+            "entered_trades": universe_membership_entry_events,
+            "gate3": {
+                "signals_generated": total_signals_generated,
+                "signals_survived": total_signals_survived,
+                "survival_rate": (
+                    survival_rate if identifiable_membership_days else None
+                ),
+                "status": (
+                    "measured_on_identifiable_days"
+                    if identifiable_membership_days
+                    else "not_applicable_no_identifiable_entry_days"
+                ),
+            },
+            "limitations": [
+                "Point-in-time entry membership does not repair a current-roster security master or missing delisted securities.",
+                "Dates before the first immutable membership snapshot are unidentifiable, not evidence of zero strategy return.",
+            ],
+        }
 
         known_biases = {
             "ohlcv_source": {
@@ -4468,6 +4979,14 @@ class BacktestEngine:
                 ),
             },
             "survivorship_bias_universe":  True,
+            "entry_eligibility_point_in_time": (
+                self.universe_mode == "pit_walk_forward"
+            ),
+            "universe_mode": self.universe_mode,
+            "security_master_survivorship_status": self.universe_metadata.get(
+                "security_master_survivorship_status",
+                "current_roster_or_unspecified",
+            ),
             # Legacy placeholder overwritten below by live snapshot coverage.
             # Earnings strategy data quality: only days_to_earnings is historically
             # reconstructable from yfinance calendar. eps_estimate and
@@ -4489,7 +5008,13 @@ class BacktestEngine:
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
                 "Exit policy: production target_price uses TARGET_EXIT full-position parity; profit-ladder/time-stop actions remain disclosed under exit_policy_unreplayed",
                 "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
-                "data_layer.get_universe() reads current watchlist, not point-in-time",
+                (
+                    "Core entry eligibility is replayed from an explicit "
+                    "point-in-time resolver; security-master survivorship "
+                    "remains separately disclosed"
+                    if self.universe_mode == "pit_walk_forward"
+                    else "data_layer.get_universe() reads current watchlist, not point-in-time"
+                ),
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
                 "OHLCV is live-downloaded unless --ohlcv-snapshot or --ohlcv-warehouse is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
             ],
@@ -4891,6 +5416,7 @@ class BacktestEngine:
             "exit_advisory_shadow_attribution": exit_advisory_shadow_attribution,
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
+            "universe_membership": universe_membership_audit,
             "pilot_sleeve_replay": pilot_sleeve_replay,
             "cash_ledger":         cash_ledger_audit,
             **(
@@ -4990,11 +5516,24 @@ class BacktestEngine:
                 replay_news=self.replay_news,
                 data_dir=self.data_dir,
                 ohlcv_snapshot_path=self.ohlcv_snapshot_path,
+                ohlcv_warehouse_path=self.ohlcv_warehouse_path,
+                ohlcv_warehouse_snapshot_source=(
+                    self.ohlcv_warehouse_snapshot_source
+                ),
                 save_ohlcv_snapshot_path=self.save_ohlcv_snapshot_path,
                 include_pilot_sleeve=self.include_pilot_sleeve,
                 require_non_ohlcv=self.require_non_ohlcv,
+                save_entry_candidate_events_path=(
+                    self.save_entry_candidate_events_path
+                ),
+                include_entry_candidate_events=(
+                    self.include_entry_candidate_events
+                ),
                 include_oracle_diagnostics=self.include_oracle_diagnostics,
                 oracle_candidate_horizon_days=self.oracle_candidate_horizon_days,
+                entry_universe_resolver=self.entry_universe_resolver,
+                universe_mode=self.universe_mode,
+                universe_metadata=self.universe_metadata,
             )
             result = engine.run()
             result["param_name"]  = param_name

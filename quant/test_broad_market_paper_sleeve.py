@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+import quant.broad_market_paper_sleeve as broad_market_sleeve
 from quant.broad_market_paper_sleeve import (
     HIGH_VOLATILITY_RULE_VERSION,
     LOW_EXTENSION_RULE_VERSION,
@@ -20,6 +21,7 @@ from quant.broad_market_paper_sleeve import (
     build_broad_market_feature,
     candidate_passes_profile,
     empty_broad_market_paper_state,
+    prep_and_build_broad_market_paper_sleeve_snapshot,
 )
 
 
@@ -255,6 +257,88 @@ def test_snapshot_does_not_use_stale_prices_when_asof_ohlcv_is_missing():
     assert snapshot["pending_count"] == 1
     assert snapshot["open_position_count"] == 1
     assert snapshot["open_positions"][0]["observed_trading_days"] == 19
+
+
+def test_prep_keeps_retired_pending_and_open_tickers_marked_to_asof(monkeypatch):
+    spy_rows = _rows(100.0, 0.02)
+    held_rows = _rows(50.0, 0.20)
+    pending_rows = _rows(45.0, 0.18)
+    as_of = spy_rows[61]["date"]
+    previous = spy_rows[60]["date"]
+    state = empty_broad_market_paper_state()
+    state["open_positions"] = [
+        {
+            "decision_id": "open-held",
+            "ticker": "HELD",
+            "entry_date": previous,
+            "entry_price": 50.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 18,
+            "last_seen_date": previous,
+        }
+    ]
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-retired",
+            "ticker": "PEND",
+            "created_asof": previous,
+            "status": "pending_next_session_open",
+            "intended_notional": 10_000.0,
+        }
+    ]
+    feed = {
+        "status": "loaded",
+        "path": "test-universe.json",
+        "rule_version": "test-feed-v1",
+        "tickers": [],
+        "records": {},
+        "membership_hash": "membership-123",
+        "membership_as_of": as_of,
+        "membership_snapshot_hash": "snapshot-123",
+        "membership_ledger_hash": "ledger-123",
+        "membership_ledger_status": "appended",
+        "clean_cutoff": as_of,
+        "forward_generation": "broad_market_clean_forward_v1",
+    }
+    monkeypatch.setattr(
+        broad_market_sleeve,
+        "load_broad_market_candidate_universe",
+        lambda: feed,
+    )
+    full_rows = {"HELD": held_rows, "PEND": pending_rows}
+    cache_calls: list[str] = []
+
+    def cached(ticker: str):
+        cache_calls.append(ticker)
+        return full_rows[ticker]
+
+    snapshot, loaded, ohlcv = prep_and_build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_dict={
+            "SPY": spy_rows,
+            "HELD": _drop_date(held_rows, as_of),
+            "PEND": _drop_date(pending_rows, as_of),
+        },
+        cached_ohlcv_fn=cached,
+        state=state,
+        persist=False,
+        refresh_disabled=True,
+        feed_disabled=True,
+    )
+
+    assert loaded["tickers"] == []
+    assert set(ohlcv) == {"SPY", "HELD", "PEND"}
+    assert set(cache_calls) == {"HELD", "PEND"}
+    assert snapshot["closed_count_today"] == 1
+    assert snapshot["closed_positions_today"][0]["ticker"] == "HELD"
+    assert snapshot["filled_count"] == 1
+    assert snapshot["open_positions"][0]["ticker"] == "PEND"
+    assert snapshot["data_source"]["membership_hash"] == "membership-123"
+    assert snapshot["data_source"]["membership_as_of"] == as_of
+    assert (
+        snapshot["data_source"]["forward_generation"]
+        == "broad_market_clean_forward_v1"
+    )
 
 
 def test_universe_state_feed_uses_observation_records_without_tradeable_names():

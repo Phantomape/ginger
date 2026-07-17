@@ -25,6 +25,19 @@ def _check(value, predicate):
     return {"value": value, "pass": bool(predicate(value))}
 
 
+def expected_value_score_raw(strategy_total_return_pct, sharpe_daily):
+    """Return the full-precision sign-preserving EV score.
+
+    This is the scalar source of truth for inference and audit code that must
+    not round intermediate values.  ``compute_expected_value_score`` remains
+    the stable backtester-facing wrapper that extracts fields and rounds saved
+    output to four decimals.
+    """
+    if strategy_total_return_pct is None or sharpe_daily is None:
+        return None
+    return float(strategy_total_return_pct) * abs(float(sharpe_daily))
+
+
 def compute_expected_value_score(result):
     """Single-source north-star metric for strategy iteration.
 
@@ -42,9 +55,10 @@ def compute_expected_value_score(result):
     benchmarks = result.get("benchmarks") or {}
     strat_return = benchmarks.get("strategy_total_return_pct")
     sharpe_daily = result.get("sharpe_daily")
-    if strat_return is None or sharpe_daily is None:
+    score = expected_value_score_raw(strat_return, sharpe_daily)
+    if score is None:
         return None
-    return round(strat_return * abs(sharpe_daily), 4)
+    return round(score, 4)
 
 
 def compute_convergence(result, phantom_rules_clean=True):

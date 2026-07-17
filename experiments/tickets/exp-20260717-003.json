@@ -1,0 +1,356 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if the default static replay remains bit-exact to EV 6.2057, PnL 130992.36 and 49 trades; the effective-dated arm is double-run deterministic, cash-conserving, fail-closed before the first auditable membership date, and attributes every generated signal/trade to an eligibility snapshot; the broad forward feed writes an idempotent full-membership snapshot with a declared clean cutoff and continues marking pre-cutoff pending/open tickers even when they leave the current candidate feed. Do not replace Gate-1, claim alpha, or mark survivorship bias repaired.",
+  "allowed_write_scope": [
+    "quant/entry_universe_ledger.py",
+    "quant/backtester.py",
+    "quant/broad_market_universe_feed.py",
+    "quant/broad_market_paper_sleeve.py",
+    "quant/test_entry_universe_ledger.py",
+    "quant/test_broad_market_universe_feed.py",
+    "quant/test_broad_market_paper_sleeve.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/test_quant.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/artifacts",
+    "experiments/cards",
+    "experiments/logs",
+    "experiments/manifests",
+    "experiments/tickets",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "data/state/broad_market_paper/universe_membership.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260717-003.md",
+  "causal_components": [
+    "Git-proven membership manifest",
+    "daily eligibility replay",
+    "monitor-vs-entry separation",
+    "append-only broad forward membership",
+    "held-ticker forward mark continuity",
+    "double replay",
+    "trade eligibility attribution"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "backtest core entry eligibility source",
+  "claimed_at": "2026-07-17T05:32:52+00:00",
+  "completed_at": "2026-07-17T06:38:23+00:00",
+  "created_at": "2026-07-17T05:31:51+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260717-003",
+  "experiment_uid": "expuid-f0e8c2792d364a9a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260717-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-17T05:31:51+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "legacy_core_pit_universe_truth_audit"
+  },
+  "hypothesis": "The active cash-feasible Gate-1 carries today's legacy-core and current-position membership backward; replaying only Git-proven effective-dated core entry eligibility on the identical frozen behavior, cash, and OHLCV context, while freezing full broad-feed membership from a declared forward cutoff, will quantify the material universe look-ahead and establish an auditable lower-bound measurement surface without claiming alpha or changing live/default orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "active cash-feasible Gate-1 behavior inputs",
+    "signal rules",
+    "ranking",
+    "sizing",
+    "exits",
+    "cost model",
+    "cash ledger",
+    "three canonical windows",
+    "live/default production behavior"
+  ],
+  "mechanism_family": "core_universe_membership_identity",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260627-017",
+    "exp-20260627-019",
+    "exp-20260628-005",
+    "exp-20260712-015",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "effective_dated_legacy_core_git_manifest_and_daily_entry_eligibility_replay",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "active",
+        "ahead",
+        "alpha",
+        "an",
+        "audit",
+        "auditable",
+        "backward",
+        "behavior",
+        "bound",
+        "carries",
+        "cash",
+        "changing",
+        "claiming",
+        "context",
+        "core",
+        "current",
+        "cutoff",
+        "dated",
+        "declared",
+        "effective",
+        "eligibility",
+        "entry",
+        "establish",
+        "feasible",
+        "feed",
+        "forward",
+        "freezing",
+        "from",
+        "frozen",
+        "full",
+        "gate",
+        "git",
+        "identical",
+        "identity",
+        "immutable",
+        "legacy",
+        "live",
+        "look",
+        "lower",
+        "manifest",
+        "material",
+        "measurement",
+        "membership",
+        "on",
+        "only",
+        "or",
+        "orders",
+        "pit",
+        "position",
+        "proven",
+        "quantify",
+        "repair",
+        "replaying",
+        "s",
+        "static",
+        "surface",
+        "today",
+        "truth",
+        "versus",
+        "watchlist",
+        "while",
+        "will",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.035,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.8333,
+        "data_source": "other",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "A future alpha ticket must predeclare a genuinely new allocator/covariance mechanism and compare both sides on the 6.2057 cash-feasible anchor. A live-ready ticket additionally needs a shared settled-cash/buying-power reservation contract across backtester, run.py, and broker adapters.",
+        "score": 0.0348,
+        "status": "has_accepted",
+        "trials": 30
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "candidate_pool_data_surface_readiness_gate",
+        "reopen_condition": "A valid next alpha needs a materially new PIT field with three-window coverage and a shared helper path, or enough closed forward replacement rows from a default-off daily observer.",
+        "score": 0.0286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_scalar_direction_gate",
+        "reopen_condition": null,
+        "score": 0.0244,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "cash_ledger_reopen",
+        "reopen_condition": "Implement a shared core allocator with actual execution-date cash reservations, dated add-ons and partial reductions, and deterministic scaling or rejection of unaffordable core orders; only then rerun the unchanged ETF sleeve on genuinely remaining cash.",
+        "score": 0.0235,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: immutable daily entry-eligibility replay plus append-only full-universe forward membership, distinct from prior bare static pool expansion.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: immutable daily entry-eligibility replay plus append-only full-universe forward membership, distinct from prior bare static pool expansion.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The backtester already accepts an explicit data universe and the broad feed already materializes a daily current universe; the new contract is default-off and measurable, while the main unavoidable blocker is missing pre-repo and delisted-security history.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "pre_repo_history_unidentifiable",
+      "dynamic_universe_engine_gap",
+      "open_position_entry_contamination",
+      "source_hash_drift",
+      "current_security_master_survivorship",
+      "pre_clean_broad_stale_positions"
+    ],
+    "recorded_at": "2026-07-17T05:30:59+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 5,
+  "result": {
+    "decision": "accepted",
+    "artifact_decision": "accepted_measurement_repair",
+    "accepted_alpha": false,
+    "live_ready": false,
+    "acceptance_reasons": [
+      "The default static Gate-1 remained bit-exact at aggregate EV 6.2057, PnL 130992.36, and 49 trades across all three standard windows.",
+      "PIT replays were double-run deterministic, cash-conserving, provenance-complete, fail-closed for unresolved membership, and did not aggregate unidentifiable pre-snapshot windows.",
+      "A 1232-ticker append-only broad membership snapshot was frozen from 2026-07-17 while live/default orders, ranking, sizing, and exits remained unchanged."
+    ],
+    "before_result_file": "data/experiments/exp-20260717-003/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260717-003/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "delta_scope": "default static Gate-1 regression anchor before versus after; this zero delta is not the PIT or watchlist-proxy comparison",
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "pre_repo_history_unidentifiable",
+        "dynamic_universe_engine_gap",
+        "open_position_entry_contamination",
+        "source_hash_drift",
+        "current_security_master_survivorship",
+        "pre_clean_broad_stale_positions"
+      ],
+      "realized_failure_mode": "current_security_master_survivorship",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The strict quant-pipeline era showed zero membership delta in two trades; the pre-pipeline proxy showed 12835.39 USD sensitivity without proving leakage, and PIT demotion now blocks all new risk including addons."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260717-003.json",
+  "single_causal_variable": "core entry-eligibility identity: current static watchlist versus immutable effective-dated manifest",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260717-003.json",
+  "trial_family": "legacy_core_pit_universe_measurement_repair",
+  "trial_variant_id": "v1_git_effective_lower_bound_and_forward_membership_ledger"
+}
