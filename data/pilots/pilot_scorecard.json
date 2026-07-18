@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-07-17T03:35:55+00:00",
+  "as_of": "2026-07-18T04:41:00+00:00",
   "per_position_notional_usd": 10000.0,
   "graduate_rule": {
     "min_closed": 20,
@@ -11,8 +11,8 @@
     "scorecard_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
     "paper_verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
     "broker_snapshot_status": "available",
-    "broker_snapshot_observed_at_utc": "2026-07-17T03:01:38.465224Z",
-    "broker_current_position_count": 7,
+    "broker_snapshot_observed_at_utc": "2026-07-18T03:59:11.917621Z",
+    "broker_current_position_count": 8,
     "paper_actionable_ticker_count": 3,
     "broker_current_ticker_overlap_count": 1,
     "broker_current_ticker_overlap": [
@@ -22,10 +22,72 @@
     "live_promotion_eligible": false,
     "note": "Paper sleeve outcomes remain valid shadow evidence and retain their precommitted stop rule. Current-ticker overlap is not lot or strategy attribution, so no scorecard verdict is broker-confirmed live evidence."
   },
-  "cross_pilot_overlap": [],
+  "cross_pilot_overlap": [
+    {
+      "ticker": "DDOG",
+      "pilots": [
+        "Source-priority allocator (TOP-1 only)",
+        "Fundamental growth + RS"
+      ],
+      "participant_context": [
+        {
+          "pilot": "Source-priority allocator (TOP-1 only)",
+          "pilot_key": "allocator_top1",
+          "label": "Source-priority allocator (TOP-1 only)",
+          "sleeve": "accepted_helper_source_priority_allocator",
+          "pilot_verdict": "KILL",
+          "pilot_verdict_note": "book drawdown 61.2% breaches 15% ceiling -> stop pilot",
+          "new_entries_blocked": true,
+          "status": "HOLD",
+          "actionable_status": "HOLD",
+          "stop_status": "OK",
+          "entry_date": "2026-07-08",
+          "days_held": 8,
+          "days_remaining": 2,
+          "unrealized_pct": 0.024,
+          "pilot_notional_usd": 10000.0
+        },
+        {
+          "pilot": "Fundamental growth + RS",
+          "pilot_key": "fundamental_growth_rs",
+          "label": "Fundamental growth + RS",
+          "sleeve": "fundamental_growth_rs",
+          "pilot_verdict": "KILL",
+          "pilot_verdict_note": "book drawdown 40.1% breaches 15% ceiling -> stop pilot",
+          "new_entries_blocked": true,
+          "status": "HOLD",
+          "actionable_status": "HOLD",
+          "stop_status": "OK",
+          "entry_date": "2026-07-17",
+          "days_held": 1,
+          "days_remaining": 9,
+          "unrealized_pct": 0.0089,
+          "pilot_notional_usd": 10000.0
+        }
+      ],
+      "pilot_verdicts": {
+        "allocator_top1": "KILL",
+        "fundamental_growth_rs": "KILL"
+      },
+      "pilot_statuses": {
+        "allocator_top1": [
+          "HOLD"
+        ],
+        "fundamental_growth_rs": [
+          "HOLD"
+        ]
+      },
+      "new_entries_blocked_by_pilot": {
+        "allocator_top1": true,
+        "fundamental_growth_rs": true
+      },
+      "positions": 2,
+      "total_exposure_usd": 20000.0
+    }
+  ],
   "cross_pilot_concentration": {
-    "total_actionable_exposure_usd": 30000.0,
-    "position_count": 3,
+    "total_actionable_exposure_usd": 40000.0,
+    "position_count": 4,
     "alert_rule": {
       "min_positions": 3,
       "min_positions_for_exposure_share": 2,
@@ -36,7 +98,7 @@
     "by_sector": [
       {
         "sector": "Technology",
-        "positions": 3,
+        "positions": 4,
         "tickers": [
           "AMD",
           "DDOG",
@@ -46,13 +108,27 @@
           "allocator_top1",
           "fundamental_growth_rs"
         ],
-        "exposure_usd": 30000.0,
+        "exposure_usd": 40000.0,
         "exposure_share": 1.0,
         "alert": true
       }
     ],
     "by_industry": [
       {
+        "industry": "Software - Application",
+        "positions": 2,
+        "tickers": [
+          "DDOG"
+        ],
+        "pilots": [
+          "allocator_top1",
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 20000.0,
+        "exposure_share": 0.5,
+        "alert": true
+      },
+      {
         "industry": "Semiconductors",
         "positions": 2,
         "tickers": [
@@ -63,27 +139,14 @@
           "fundamental_growth_rs"
         ],
         "exposure_usd": 20000.0,
-        "exposure_share": 0.6667,
+        "exposure_share": 0.5,
         "alert": true
-      },
-      {
-        "industry": "Software - Application",
-        "positions": 1,
-        "tickers": [
-          "DDOG"
-        ],
-        "pilots": [
-          "allocator_top1"
-        ],
-        "exposure_usd": 10000.0,
-        "exposure_share": 0.3333,
-        "alert": false
       }
     ],
     "alerts": [
       {
         "sector": "Technology",
-        "positions": 3,
+        "positions": 4,
         "tickers": [
           "AMD",
           "DDOG",
@@ -93,8 +156,22 @@
           "allocator_top1",
           "fundamental_growth_rs"
         ],
-        "exposure_usd": 30000.0,
+        "exposure_usd": 40000.0,
         "exposure_share": 1.0,
+        "alert": true
+      },
+      {
+        "industry": "Software - Application",
+        "positions": 2,
+        "tickers": [
+          "DDOG"
+        ],
+        "pilots": [
+          "allocator_top1",
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 20000.0,
+        "exposure_share": 0.5,
         "alert": true
       },
       {
@@ -108,7 +185,7 @@
           "fundamental_growth_rs"
         ],
         "exposure_usd": 20000.0,
-        "exposure_share": 0.6667,
+        "exposure_share": 0.5,
         "alert": true
       }
     ]
@@ -119,7 +196,7 @@
       "pilot": "allocator_top1",
       "label": "Source-priority allocator (TOP-1 only)",
       "sleeve": "accepted_helper_source_priority_allocator",
-      "as_of": "2026-07-17T03:35:55+00:00",
+      "as_of": "2026-07-18T04:41:00+00:00",
       "closed_trades": 9,
       "open_positions": 8,
       "pending_entries": 0,
@@ -143,7 +220,7 @@
       "pilot": "distribution_absorption",
       "label": "Distribution-day absorption leadership",
       "sleeve": "distribution_day_absorption_leadership",
-      "as_of": "2026-07-17T03:31:07+00:00",
+      "as_of": "2026-07-18T04:37:25+00:00",
       "closed_trades": 4,
       "open_positions": 0,
       "pending_entries": 0,
@@ -167,10 +244,10 @@
       "pilot": "fundamental_growth_rs",
       "label": "Fundamental growth + RS",
       "sleeve": "fundamental_growth_rs",
-      "as_of": "2026-07-17T03:25:37+00:00",
+      "as_of": "2026-07-18T04:33:15+00:00",
       "closed_trades": 14,
-      "open_positions": 2,
-      "pending_entries": 1,
+      "open_positions": 3,
+      "pending_entries": 0,
       "hit_rate": 0.429,
       "realized_pilot_pnl_usd": -3240.53,
       "replacement_value_rows": 14,

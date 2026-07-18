@@ -1,0 +1,94 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-17 13:12 ET (10:12 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 746.75 vs 200MA 693.01 (+7.8%)  [moomoo_opend_rth]
+  QQQ 701.68 vs 200MA 639.03 (+9.8%)  [moomoo_opend_rth]
+
+PORTFOLIO HEAT (intraday prices): 2.2% / cap 8%   (quote coverage 7/7 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+54.7% add-review-eligible=META
+  DDOG   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=261.66 invalid=257.33
+         blocks: near_existing_stop,below_ema8
+  DINO   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=87.40 invalid=87.40
+         blocks: below_rth_vwap,weak_rth_range_location
+  HOOD   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=110.88 invalid=100.64
+         blocks: below_ema8,below_sma20,sector_proxy_above_rth_vwap_not_confirmed
+  SPY    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=750.52 invalid=744.89
+         blocks: near_existing_stop,below_ema8
+  TQQQ   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=75.67 invalid=67.21
+         blocks: near_existing_stop,below_ema8,below_sma20
+  UNH    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=430.52 invalid=430.52
+         blocks: near_existing_stop,sector_proxy_above_rth_vwap_not_confirmed
+  META   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=648.36 invalid=639.81
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  none
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  DDOG   $259.53 (-1.1% today, moomoo_opend_rth 2026-07-17 13:12:58)
+    hard stop 226.69 (+12.7% away) [stop_source=default]
+    ATR stop 237.28 (+8.6% away)
+    trailing 254.56 (+1.9% away)
+    target 309.12 (+19.1% to go)
+    flags: NEAR_TRAILING_STOP
+  SPY    $746.75 (-0.5% today, moomoo_opend_rth 2026-07-17 13:12:58)
+    hard stop 663.29 (+11.2% away) [stop_source=default]
+    ATR stop 741.10 (+0.8% away)
+    trailing 695.13 (+6.9% away)
+    target 904.49 (+21.1% to go)
+    flags: NEAR_ATR_STOP
+  TQQQ   $69.39 (-1.9% today, moomoo_opend_rth 2026-07-17 13:12:58)
+    hard stop 66.72 (+3.8% away) [stop_source=default]
+    ATR stop 68.73 (+0.9% away)
+    trailing 75.02 (-8.1% away)
+    target 90.98 (+31.1% to go)
+    flags: NEAR_ATR_STOP
+  UNH    $432.89 (+2.2% today, moomoo_opend_rth 2026-07-17 13:12:58)
+    hard stop 376.06 (+13.1% away) [stop_source=default]
+    ATR stop 408.89 (+5.5% away)
+    trailing 424.69 (+1.9% away)
+    target 512.81 (+18.5% to go)
+    flags: NEAR_TRAILING_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  DINO   $87.33     day +0.6%   stop +12.4%  target +19.5%  [moomoo_opend_rth]
+  HOOD   $104.00    day -1.9%   stop +11.0%  target +21.4%  [moomoo_opend_rth]
+  META   $650.00    day -2.2%   stop +9.6%   target +23.2%  [moomoo_opend_rth]
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-17 13:12 ET): 10 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] META: META Stock Rises Premarket As Meta Reportedly Plans 10% Job Cuts This Week - Stocktwits
+  [T3] NFLX: Netflix (NFLX) Faces Stock Decline Amid Q3 Guidance Concerns - GuruFocus
+  [T3] NVDA: Netflix shares fall after weaker-than-expected third-quarter guidance disappoints investor
+  [T3] TSLA: Three Seasons Wealth LLC Cuts Stock Holdings in Tesla, Inc. $TSLA - MarketBeat
+  [T3] AAPL: AAPL Stock Lands HSBC Upgrade – iPhone-Maker Reportedly Escalates Trade Secret War With Op
+  [T3] APP: AppLovin (APP) Is Down 13.3% After AI Pivot Meets Geopolitics-Driven Pullback Ahead Q2 Ear
+  [T1] CRDO: CRDO Stock Soars Post-Market On DustPhotonics Acquisition: Retail Eyes Surge To Over $200 
+  [T3] MCD: McDonald's Corp (NYSE:MCD): A High-Quality Dividend Stock for Reliable Income - ChartMill
+  [T3] AMD: Advanced Micro Devices, Inc. (AMD) Stock Surges as Goldman Sees Big Earnings Coming - Yaho
+  [T3] MU: Micron to pay dividends next week; Here’s how much 100 MU shares will earn - Finbold
+
+------------------------------------------------------------
+DATA QUALITY: quotes moomoo_opend_rth=7
+  moomoo OpenD status=ok available=11/11
+  news sources ok=17 failed=0
+  news text sanitation items=10 flagged=10 changed=10 flags=html_entity_unescaped=10
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================

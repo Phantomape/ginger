@@ -1,4 +1,4 @@
-# Pilot shadow tracker - as of 2026-07-17T03:35:55+00:00
+# Pilot shadow tracker - as of 2026-07-18T04:41:00+00:00
 
 Per-position shadow notional: $10,000. Read-only; no orders.
 Measurement basis: paper-sleeve outcomes scaled to the fixed pilot notional; not broker-confirmed fills.
@@ -7,10 +7,17 @@ Broker current-ticker overlap: 1/3; ticker presence is not lot or strategy attri
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
 Paper stop overlay: flag a shadow row at -15%; verify broker execution before acting.
 
+## [!] Cross-pilot overlap (stacked exposure on one name)
+
+- **DDOG**: shadow-held by 2 pilots (Source-priority allocator (TOP-1 only), Fundamental growth + RS) -> $20,000 modeled exposure
+  - Source-priority allocator (TOP-1 only): HOLD, verdict KILL, new entries blocked
+  - Fundamental growth + RS: HOLD, verdict KILL, new entries blocked
+
 ## [!] Cross-pilot shadow concentration (one theme, stacked models)
 
-- **Technology** (sector): 3 positions across 2 pilot(s) (AMD, DDOG, MU) -> $30,000 (100% of actionable exposure)
-- **Semiconductors** (industry): 2 positions across 1 pilot(s) (AMD, MU) -> $20,000 (67% of actionable exposure)
+- **Technology** (sector): 4 positions across 2 pilot(s) (AMD, DDOG, MU) -> $40,000 (100% of actionable exposure)
+- **Software - Application** (industry): 2 positions across 2 pilot(s) (DDOG) -> $20,000 (50% of actionable exposure)
+- **Semiconductors** (industry): 2 positions across 1 pilot(s) (AMD, MU) -> $20,000 (50% of actionable exposure)
 
 ## Paper-shadow scorecard
 
@@ -24,7 +31,7 @@ Paper stop overlay: flag a shadow row at -15%; verify broker execution before ac
 
 ### Source-priority allocator (TOP-1 only)  (`accepted_helper_source_priority_allocator`, max_concurrent=1)
 - _new entries blocked: KILL verdict_
-- shadow hold DDOG: day 7/10 (3 left); entry 252.63, last 262.32 (+3.8%)
+- shadow hold DDOG: day 8/10 (2 left); entry 252.63, last 258.69 (+2.4%)
 - _skip_ AFRM (SKIP_concurrency_cap)
 - _skip_ CRS (SKIP_concurrency_cap)
 - _skip_ RPRX (SKIP_concurrency_cap)
@@ -39,7 +46,7 @@ Paper stop overlay: flag a shadow row at -15%; verify broker execution before ac
 
 ### Fundamental growth + RS  (`fundamental_growth_rs`, max_concurrent=None)
 - _new entries blocked: KILL verdict_
-- shadow hold AMD: day 6/10 (4 left); entry 544.28, last 500.94 (-8.0%)
-- shadow hold MU: day 6/10 (4 left); entry 965.56, last 853.20 (-11.6%)
-- _skip_ DDOG (SKIP_pilot_kill_verdict)
+- shadow hold AMD: day 8/10 (2 left); entry 544.28, last 495.76 (-8.9%)
+- shadow hold MU: day 8/10 (2 left); entry 965.56, last 848.95 (-12.1%)
+- shadow hold DDOG: day 1/10 (9 left); entry 256.40, last 258.69 (+0.9%)
 
