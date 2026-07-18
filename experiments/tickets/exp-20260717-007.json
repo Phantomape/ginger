@@ -1,0 +1,320 @@
+{
+  "acceptance_rule": "Canonical Gate 1-4 with aggregate expected_value_score improvement greater than 10 percent versus exp-20260715-010, no unacceptable window or drawdown regression, survival at least 5 percent, sufficient trades, and complete shared-paper-first parity; otherwise reject and remove strategy behavior.",
+  "allowed_write_scope": [
+    "quant/nvd_cve_entry_gate.py",
+    "quant/experiments",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/test_nvd_cve_entry_gate.py",
+    "data/non_ohlcv/nvd_cve_entry_gate",
+    "data/backtests",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260717-007.md",
+  "causal_components": [
+    "official change-history PIT archive",
+    "fail-closed effective-dated issuer map",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity test",
+    "fingerprint coverage",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "nvd_initial_analysis_cluster_entry_gate",
+  "claimed_at": "2026-07-17T19:07:38+00:00",
+  "completed_at": "2026-07-17T20:28:09+00:00",
+  "created_at": "2026-07-17T19:06:09+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260717-007",
+  "experiment_uid": "expuid-f9ae33236af44119",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260717-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-17T19:06:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "nvd_cve_cluster_entry_gate"
+  },
+  "hypothesis": "A point-in-time cluster of at least three distinct CVEs first mapped to a listed issuer during NVD Initial Analysis predicts near-term remediation and reputation drag, so excluding that issuer from new long entries for the next five trading sessions should improve cash-feasible strategy expected value.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cluster threshold=3 distinct CVEs",
+    "signal event=Initial Analysis only",
+    "CPE detail action=Added",
+    "activation=next trading session",
+    "exclusion length=5 trading sessions",
+    "trade_enabled=false",
+    "fixed issuer map",
+    "canonical windows",
+    "cash-feasible baseline",
+    "costs"
+  ],
+  "mechanism_family": "security_vulnerability_remediation_shock",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live order eligibility",
+    "live ranking",
+    "live sizing",
+    "live exits",
+    "existing accepted Gate-1 artifact"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260705-014",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_data_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "activates",
+        "analysis",
+        "at",
+        "cash",
+        "cluster",
+        "cve",
+        "cves",
+        "distinct",
+        "drag",
+        "during",
+        "entries",
+        "entry",
+        "excluding",
+        "exclusion",
+        "expected",
+        "feasible",
+        "first",
+        "five",
+        "from",
+        "gate",
+        "improve",
+        "in",
+        "initial",
+        "issuer",
+        "least",
+        "listed",
+        "long",
+        "mapped",
+        "near",
+        "new",
+        "nvd",
+        "of",
+        "point",
+        "predicts",
+        "remediation",
+        "reputation",
+        "security",
+        "session",
+        "sessions",
+        "shock",
+        "should",
+        "so",
+        "strategy",
+        "term",
+        "that",
+        "three",
+        "time",
+        "to",
+        "trading",
+        "value",
+        "vulnerability",
+        "week"
+      ],
+      "gate_shape": "entry_admission"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "cboe_volatility_term_structure",
+        "family_key": "cboe_vix9d_vix_backwardation_core_entry_gate",
+        "reopen_condition": "If positive, the only next step is a shared-paper-first Cboe term-structure helper with daily default-off snapshot, parity, and the same fixed rule. If rejected, revisit only with materially settled forward rows from such a helper or a genuinely different volatility-risk-transfer source.",
+        "score": 0.1703,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "ohlcv_lottery_max_residual_entry_exclusion",
+        "reopen_condition": "After rejection, move to a genuinely different source or gate shape. After a positive lead, the only next step is a shared production/backtest helper with daily default-off snapshot and the same full Gate 1-4 replay.",
+        "score": 0.1697,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+        "score": 0.1633,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.1604,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+        "score": 0.1569,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Official NVD CVE Change History Initial Analysis events with PIT created timestamps and Added CPE Configuration details; this is distinct from the prior CISA KEV exploited subset and passes all three outcome-blind density windows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Official NVD CVE Change History Initial Analysis events with PIT created timestamps and Added CPE Configuration details; this is distinct from the prior CISA KEV exploited subset and passes all three outcome-blind density windows.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Official NVD CVE Change History Initial Analysis events with PIT created timestamps and Added CPE Configuration details; this is distinct from the prior CISA KEV exploited subset and passes all three outcome-blind density windows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "entry_admission",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "All three outcome-blind windows have more than 200 cluster issuer-weeks across 24 to 29 tickers with top-one share below 14 percent, and remediation plus disclosure burden supplies a plausible negative mechanism. Confidence remains low because dense vulnerability publication may already be priced and the accepted core may rarely enter affected issuers.",
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "no_core_entry_overlap",
+      "no_incremental_expected_value",
+      "window_regression_or_trade_concentration",
+      "PIT_identity_or_mapping_instability"
+    ],
+    "recorded_at": "2026-07-17T19:05:20+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260717-007/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260717-007/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": -0.2929,
+      "max_drawdown_pct": -0.0001,
+      "trade_count": -3,
+      "survival_rate": 0.0245,
+      "total_pnl": -7709.43
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.15,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.75,
+      "actual_ev_delta": -0.2929,
+      "ev_prediction_error": -1.0429,
+      "expected_pnl_delta": 4000.0,
+      "actual_pnl_delta": -7709.43,
+      "pnl_prediction_error": -11709.43,
+      "predicted_failure_modes": [
+        "no_core_entry_overlap",
+        "no_incremental_expected_value",
+        "window_regression_or_trade_concentration",
+        "PIT_identity_or_mapping_instability"
+      ],
+      "realized_failure_mode": "no_incremental_expected_value",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Dense issuer coverage still removed profitable entries while mid and old windows independently regressed."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260717-007.json",
+  "single_causal_variable": "NVD Initial Analysis issuer-week cluster >=3 activates a next-session five-trading-session long-entry exclusion for that issuer",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260717-007.json",
+  "trial_family": "nvd_initial_analysis_cve_cluster_entry_exclusion",
+  "trial_variant_id": "cluster3_next_session_5d_v1"
+}

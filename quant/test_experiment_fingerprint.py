@@ -12,6 +12,34 @@ if str(SCRIPTS) not in sys.path:
 import experiment_fingerprint as fp  # noqa: E402
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "nvd_cve_change_history Initial Analysis entry exclusion",
+        "Official NVD CVE change history Initial Analysis Added CPE Configuration",
+        "National Vulnerability Database change history cluster3 next-session gate",
+        "cvehistory/2.0 eventName=Initial Analysis",
+    ],
+)
+def test_nvd_cve_change_history_has_dedicated_fingerprint(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "nvd_cve_change_history"
+    assert result["data_source"] != "other"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "CISA KEV entry risk gate",
+        "NVDA OHLCV momentum candidate pool",
+        "generic CVE security news sentiment",
+    ],
+)
+def test_nvd_keywords_do_not_capture_adjacent_security_or_nvda_sources(text):
+    assert fp.infer_fingerprint(text)["data_source"] != "nvd_cve_change_history"
+
+
 TICKET_20260717_004_HYPOTHESIS = (
     "Shared-paper-first weekly relative-value alpha: the sum of "
     "small-minus-large-bank four-week log-growth spreads in Other deposits "

@@ -1,0 +1,197 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.9128,
+    "max_drawdown_pct": 0.0888,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8361,
+    "total_pnl": 123282.93,
+    "total_return_pct": null,
+    "trade_count": 46,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.2929,
+    "actual_pnl_delta": -7709.43,
+    "actual_success": 0,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -1.0429,
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 4000.0,
+    "pnl_prediction_error": -11709.43,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "no_core_entry_overlap",
+      "no_incremental_expected_value",
+      "window_regression_or_trade_concentration",
+      "PIT_identity_or_mapping_instability"
+    ],
+    "predicted_success_probability": 0.15,
+    "realized_failure_mode": "no_incremental_expected_value",
+    "surprise_level": "very_low",
+    "surprise_note": "Dense issuer coverage still removed profitable entries while mid and old windows independently regressed."
+  },
+  "causal_components": [
+    "official change-history PIT archive",
+    "fixed static fail-closed issuer map (effective-dated requirement unmet)",
+    "shared helper",
+    "historical replay",
+    "attempted daily default-off snapshot removed after rejection",
+    "parity audit",
+    "fingerprint coverage",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_summary": "Tested a hash-bound NVD Initial Analysis cluster3 five-session long-entry exclusion on all canonical cash-feasible windows; removed rejected daily wiring and retained only replay evidence plus source classification.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "nvd_initial_analysis_cluster_entry_gate",
+  "component": "quant/nvd_cve_entry_gate.py, quant/experiments, quant/run.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, quant/test_nvd_cve_entry_gate.py, data/non_ohlcv/nvd_cve_entry_gate, data/backtests, docs/production_backtest_parity_matrix.md, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "accepted_alpha": false,
+  "alpha_ready": false,
+  "implementation_mode": "shared_paper_first_rejected_replay_only",
+  "live_ready": false,
+  "delta_metrics": {
+    "expected_value_score": -0.2929,
+    "max_drawdown_pct": -0.0001,
+    "survival_rate": 0.0245,
+    "total_pnl": -7709.43,
+    "trade_count": -3
+  },
+  "experiment_id": "exp-20260717-007",
+  "hypothesis": "A point-in-time cluster of at least three distinct CVEs first mapped to a listed issuer during NVD Initial Analysis predicts near-term remediation and reputation drag, so excluding that issuer from new long entries for the next five trading sessions should improve cash-feasible strategy expected value.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "security_vulnerability_remediation_shock",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260705-014",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_data_source",
+  "next_retry_requires": [
+    "a genuinely different vulnerability-risk source or signal tied to exploitability or issuer financial materiality",
+    "or at least 30 PIT-correct settled forward issuer events across at least 10 tickers with replacement values",
+    "daily snapshot parity repair alone does not reopen this rejected alpha family"
+  ],
+  "notes": "Broad static vendor-map density passed the source-level bars in old/mid/late at 207/221/212 issuer-weeks, 24/28/29 tickers, and top1 13.53/10.86/12.26 percent. The decision-relevant intersection with the frozen 47-name Gate-4 base was only 82/86/85 issuer-weeks, 5/7/7 tickers, and top1 34.15/27.91/30.59 percent, so every window failed the >=10-ticker bar and old/late also failed top1<=30%. Aggregate EV fell 6.2057 to 5.9128 and PnL fell 7709.43. Mid and old clean windows both regressed; late also changed one AMZN add-on. Date-only daily snapshot parity is incomplete for 37 pre-open same-day activations. The vendor map is static rather than effective-dated and produced three post-acquisition JNPR clusters outside the evaluation base. Strict measurement validity, production parity, and live readiness are not claimed; rejected daily wiring was removed.",
+  "measurement_caveats": {
+    "broad_mapped_density_old_mid_late": {
+      "issuer_weeks": [207, 221, 212],
+      "tickers": [24, 28, 29],
+      "top1_pct": [13.53, 10.86, 12.26]
+    },
+    "evaluation_universe_density_old_mid_late": {
+      "issuer_weeks": [82, 86, 85],
+      "tickers": [5, 7, 7],
+      "top1_pct": [34.15, 27.91, 30.59]
+    },
+    "effective_dated_mapping_complete": false,
+    "known_post_acquisition_clusters_outside_evaluation_base": {
+      "JNPR_after_2025_07_02": 3,
+      "CYBR_after_2026_02_11": 0
+    },
+    "strict_daily_parity_complete": false,
+    "pre_open_same_session_parity_gaps": 37
+  },
+  "parameters": {
+    "locked_variables": [
+      "cluster threshold=3 distinct CVEs",
+      "signal event=Initial Analysis only",
+      "CPE detail action=Added",
+      "activation=next trading session",
+      "exclusion length=5 trading sessions",
+      "trade_enabled=false",
+      "fixed issuer map",
+      "canonical windows",
+      "cash-feasible baseline",
+      "costs"
+    ],
+    "single_causal_variable": "NVD Initial Analysis issuer-week cluster >=3 activates a next-session five-trading-session long-entry exclusion for that issuer"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the same NVD Initial Analysis cluster threshold, five-session exclusion length, issuer subset, response function, or admission cutoff. Dense publication clusters already removed profitable entries in two clean windows, and repairing the date-only daily parity gap alone is measurement work rather than new alpha evidence.",
+    "new_evidence_required": "Reopen only for a genuinely different vulnerability-risk source or signal tied to exploitability or issuer financial materiality, or after at least 30 PIT-correct settled forward issuer events across at least 10 tickers have replacement values. A new threshold, weighting, or exclusion horizon is insufficient.",
+    "realized_failure_mode": "no_incremental_expected_value",
+    "why_result_happened": "Dense issuer coverage still removed profitable entries while mid and old windows independently regressed."
+  },
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "live_or_default_orders_changed": false,
+    "daily_snapshot_exposed": false,
+    "rejected_daily_wiring_removed": true,
+    "shared_replay_helper_retained": true,
+    "trade_enabled": false,
+    "production_parity_complete": false,
+    "parity_note": "Date-only daily snapshots cannot reproduce 37 pre-open same-session historical activations."
+  },
+  "prediction": {
+    "confidence_reason": "All three outcome-blind windows have more than 200 cluster issuer-weeks across 24 to 29 tickers with top-one share below 14 percent, and remediation plus disclosure burden supplies a plausible negative mechanism. Confidence remains low because dense vulnerability publication may already be priced and the accepted core may rarely enter affected issuers.",
+    "expected_ev_delta": 0.75,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "no_core_entry_overlap",
+      "no_incremental_expected_value",
+      "window_regression_or_trade_concentration",
+      "PIT_identity_or_mapping_instability"
+    ],
+    "recorded_at": "2026-07-17T19:05:20+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Aggregate expected_value_score and PnL regressed, all three window EV scores failed the non-degradation check, late changed one AMZN add-on checkpoint, and date-only daily parity was not strict for pre-open triggers.",
+  "related_files": [
+    "data/experiments/exp-20260717-007/before_measurement.json",
+    "data/experiments/exp-20260717-007/after_measurement.json",
+    "data/experiments/exp-20260717-007/exp_20260717_007_nvd_cve_cluster_entry_gate.json",
+    "data/non_ohlcv/nvd_cve_entry_gate/exp-20260717-007/manifest.json",
+    "quant/nvd_cve_entry_gate.py",
+    "quant/experiments/exp_20260717_007_nvd_cve_cluster_entry_gate.py",
+    "quant/test_nvd_cve_entry_gate.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "verification": {
+    "offline_replay_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_007_nvd_cve_cluster_entry_gate.py --source-archive data\\non_ohlcv\\nvd_cve_entry_gate\\exp-20260717-007\\manifest.json",
+    "offline_replay_result": "rejected; aggregate EV 6.2057->5.9128; PnL delta -7709.43; trades 49->46",
+    "pytest_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_nvd_cve_entry_gate.py quant\\test_experiment_fingerprint.py quant\\test_run_daily_wiring.py",
+    "pytest_result": "253 passed",
+    "lean_audit_command": ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+    "lean_audit_result": "lean_quality_passed=true; lean_strict_would_block=false; self_registration passed",
+    "git_diff_check": "passed (line-ending warnings only)",
+    "production_wiring_search": "0 NVD matches in quant/run.py, quant/test_run_daily_wiring.py, or docs/production_backtest_parity_matrix.md"
+  },
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-17T20:28:10+00:00",
+  "trial_family": "nvd_initial_analysis_cve_cluster_entry_exclusion",
+  "trial_variant_id": "cluster3_next_session_5d_v1"
+}

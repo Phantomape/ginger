@@ -22,6 +22,18 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("duplicate_reservation_accounting", (
         "duplicate_reservation_accounting", "duplicate reservation accounting",
     )),
+    # NVD CVE Change History is a point-in-time vulnerability-analysis source,
+    # distinct from CISA's already-exploited KEV subset and generic security
+    # news. Keep compound phrases here: bare "nvd" would also match NVDA.
+    ("nvd_cve_change_history", (
+        "nvd_cve_change_history", "nvd cve change history",
+        "official nvd cve", "nvd initial analysis",
+        "national vulnerability database change history",
+        "cvehistory/2.0", "cvehistory 2.0", "cvehistory",
+        "cve change history initial analysis",
+        "initial analysis added cpe configuration",
+        "nvd_initial_analysis", "nvd initial-analysis",
+    )),
     # Effective-dated core membership is a measurement ledger, not a generic
     # universe expansion or entry-admission rule.  Keep only compound policy,
     # module, and ticket spellings here so ordinary entry/universe experiments
