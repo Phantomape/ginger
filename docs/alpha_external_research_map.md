@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-17.
+Last refreshed: 2026-07-18.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,161 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### Trading-Code LLMs Need Semantic Backtest Diffing
+
+QuantCode-Bench is a direct warning for agent-generated trading code. The
+benchmark checks whether generated Backtrader strategies compile, run, place
+trades, and semantically match the requested rule; its main failure mode is not
+syntax, but wrong operationalization of trading logic, API use, and task
+semantics. Ginger should treat any LLM-authored runner or helper as untrusted
+until its observable trade rows match a frozen behavioral spec.
+
+Implementable fields:
+
+- `strategy_spec_hash`
+- `llm_generated_code_flag`
+- `semantic_alignment_test_id`
+- `expected_trade_row_fixture_hash`
+- `actual_trade_row_fixture_hash`
+- `entry_exit_event_diff_count`
+- `api_semantics_mismatch_bucket`
+- `llm_code_operationalization_passed`
+
+Controls:
+
+- require a tiny deterministic fixture proving crosses, lookbacks, entry
+  timing, exits, sizing, and cooldowns match the written spec before any
+  backtest metric is read;
+- compare event rows, not only final PnL or test pass/fail;
+- fail closed when the code compiles but changes the decision clock,
+  repeated-entry semantics, or fill assumptions;
+- keep LLM-generated research scripts out of `accepted` evidence until the
+  same spec-diff harness passes.
+
+Source: <https://arxiv.org/abs/2604.15151>
+
+### Intraday Risk Shape Is A Screening Input, Not A Price Signal
+
+Metric Dependence Screening preserves intraday risk curves instead of reducing
+high-frequency information to scalar daily returns. The useful translation for
+Ginger is not another intraday momentum rule; it is a candidate-pool and
+activation-screening contract that records the shape of intraday risk before
+allocation. This is especially relevant to daily/intraday sidecars and any
+future capacity screen for default-off helpers.
+
+Implementable fields:
+
+- `intraday_risk_curve_hash`
+- `intraday_curve_sampling_interval`
+- `point_curve_metric_version`
+- `frechet_dependence_score`
+- `risk_adjusted_target_slice_hash`
+- `intraday_shape_screen_rank`
+- `scalar_return_screen_delta`
+- `intraday_shape_replacement_value`
+
+Controls:
+
+- freeze the intraday sampling grid and risk target before selection;
+- compare curve-aware screening against return-only, volatility-only, and
+  current accepted-helper rankings on identical dates;
+- record whether the field changes candidate selection, not just risk reports;
+- require out-of-time replacement value before using intraday shape for entry,
+  sizing, or capacity.
+
+Source: <https://arxiv.org/abs/2605.02326>
+
+### Market-Simulation Agents Need Variance Budgets
+
+Persona-Trained Monte Carlo theory is useful as a governance pattern for
+LLM/agent market simulations: simulated market outcomes need variance
+decomposition, stability bounds, and an identifiability test before they can
+inform policy. The local rule is that synthetic news-reaction or limit-order-
+book simulations are stress tools unless they expose persona-draw variance,
+within-run variance, and a fixed response family.
+
+Implementable fields:
+
+- `persona_distribution_hash`
+- `persona_draw_variance`
+- `within_run_variance`
+- `variance_optimal_replication_plan`
+- `policy_error_stability_bound`
+- `response_family_fixed_flag`
+- `heterogeneous_news_reaction_test`
+- `simulation_identifiability_passed`
+
+Controls:
+
+- separate simulation stress evidence from historical/forward alpha evidence;
+- predeclare the response nonlinearity before estimating heterogeneous
+  reaction;
+- require multiple persona draws and inner replications with stored seeds;
+- do not use simulated PnL to override Gate 1-4 or forward replacement-value
+  requirements.
+
+Source: <https://arxiv.org/abs/2607.04627>
+
+### LLM Verifiers Need Risk-Calibrated Alarms
+
+Online LLM monitoring work supports a simple operational boundary: turn a
+verifier score into an alarm using a threshold calibrated by risk control.
+For Ginger, this belongs around LLM evidence construction, not direct trading
+authority. A verifier can block stale, unsupported, or numerically inconsistent
+LLM labels before they enter an observer or default-off helper.
+
+Implementable fields:
+
+- `llm_verifier_model_version`
+- `verifier_score`
+- `risk_calibrated_alarm_threshold`
+- `llm_evidence_alarm_flag`
+- `monitor_calibration_panel_hash`
+- `false_alarm_budget`
+- `miss_risk_budget`
+- `llm_monitor_action`
+
+Controls:
+
+- calibrate thresholds on a frozen panel before using them in production;
+- log both blocked and passed LLM rows with the same source evidence;
+- treat monitor alarms as fail-closed data-quality gates, not alpha signals;
+- retune thresholds only with a new calibration panel, not after observing
+  trading outcomes.
+
+Source: <https://arxiv.org/abs/2607.02510>
+
+### Order-Book Reconstruction Is Measurement Infrastructure
+
+MeatPy is a recent open-source, peer-reviewed framework for reconstructing and
+analyzing market-by-order limit-order-book data. The Ginger takeaway is
+infrastructure: if future intraday/microstructure work moves beyond OHLCV,
+the first artifact should be a deterministic order-book reconstruction and
+quality ledger, not a direct LOB alpha rule.
+
+Implementable fields:
+
+- `lob_reconstruction_tool_version`
+- `mbo_source_schema_hash`
+- `order_book_replay_quality_flag`
+- `top_of_book_reconstruction_error`
+- `message_sequence_gap_count`
+- `quote_trade_alignment_hash`
+- `lob_feature_publication_lag`
+- `lob_measurement_ready_flag`
+
+Controls:
+
+- prove deterministic reconstruction on a small message fixture before
+  computing features;
+- store sequence gaps, quote/trade alignment, and top-of-book errors;
+- keep LOB features read-only until latency, costs, and publication rights are
+  explicit;
+- benchmark any LOB-derived field against simpler spread/volume/volatility
+  proxies before adding strategy logic.
+
+Source: <https://joss.theoj.org/papers/10.21105/joss.10480>
 
 ### Learned Forecasts Need Base-Rate-Honest Benchmarks
 
