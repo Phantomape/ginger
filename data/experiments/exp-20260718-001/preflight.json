@@ -1,0 +1,90 @@
+{
+  "schema": "cash_conflict_remaining_rr_preflight_v1",
+  "experiment_id": "exp-20260718-001",
+  "generated_at": "2026-07-18T03:23:02.3790838-07:00",
+  "hypothesis": "When settled-cash admission alone would scale or skip a qualified fresh core entry, replacing a weak incumbent only when its remaining reward-to-risk is at most 2.0 and the candidate's reward-to-risk is at least 1.5 times higher may improve cash-feasible capital allocation.",
+  "assessment_scope": "zero-new-outcome preflight; no strategy code or Gate-4 replay was run",
+  "source": {
+    "experiment_id": "exp-20260716-004",
+    "policy": "cash_conflict_oldest_incumbent_full_rotation_v1",
+    "windows": {
+      "old_thin": {
+        "path": "data/experiments/exp-20260716-004/after_old_thin.json",
+        "sha256": "713ec493e37414d2827ab1f91fddea790086b2614c1fc9327a64e614f0ecf707"
+      },
+      "mid_weak": {
+        "path": "data/experiments/exp-20260716-004/after_mid_weak.json",
+        "sha256": "aa85545ce51ff12318eb7d4156b3ee6779a35aeff66952e2200bfb8d20e904a1"
+      },
+      "late_strong": {
+        "path": "data/experiments/exp-20260716-004/after_late_strong.json",
+        "sha256": "c868dbbac322c169a643e9608b182ad148ad49e6f5aa3c5df3bdfcae5bb111d0"
+      }
+    }
+  },
+  "locked_preflight_rule": {
+    "incumbent_remaining_reward_risk_max": 2.0,
+    "candidate_to_incumbent_reward_risk_min": 1.5,
+    "candidate_action": "full incumbent exit funding full fresh entry",
+    "timing_as_reserved": "same next open"
+  },
+  "density_bars": {
+    "minimum_analyzable_conflicts_per_window": 10,
+    "minimum_candidate_tickers_per_window": 6,
+    "maximum_top1_candidate_share": 0.3,
+    "minimum_action_share": 0.2,
+    "maximum_action_share": 0.8
+  },
+  "window_counts": {
+    "old_thin": {
+      "analyzable_conflicts": 8,
+      "qualifying_actions": 3,
+      "action_share": 0.375,
+      "minimum_conflicts_passed": false
+    },
+    "mid_weak": {
+      "analyzable_conflicts": 7,
+      "qualifying_actions": 3,
+      "action_share": 0.428571,
+      "minimum_conflicts_passed": false
+    },
+    "late_strong": {
+      "analyzable_conflicts": 5,
+      "qualifying_actions": 4,
+      "action_share": 0.8,
+      "minimum_conflicts_passed": false
+    }
+  },
+  "short_circuit": {
+    "applied": true,
+    "reason": "All three windows failed the preregistered minimum of 10 analyzable conflicts, so ticker concentration and outcome evaluation were not used to continue the experiment.",
+    "aggregate_qualifying_actions": 10
+  },
+  "novelty_review": {
+    "honest_data_source": "cash_feasible_core_book",
+    "honest_gate_shape": "incumbent_rotation",
+    "nearest_experiment_id": "exp-20260716-004",
+    "nearest_score": 0.6737,
+    "blocking_threshold": 0.55,
+    "ticket_classifier_caveat": "The reservation-time classifier mislabeled the gate as candidate_pool_top1_10d and reported 0.4953; manual fingerprinting restores the incumbent_rotation near-neighbor.",
+    "new_gate_shape_supported": false
+  },
+  "execution_clock_review": {
+    "passed": false,
+    "problem": "Using official next-open prices to decide remaining reward-to-risk while also filling both legs at that same open is same-bar look-ahead and is not production executable.",
+    "legal_contracts": [
+      "decide from signal-close or another pre-open observable input before submitting MOO orders",
+      "or decide after the open and measure actual post-open exit/entry sequencing, fills, costs, and slippage"
+    ]
+  },
+  "decision": "rejected_preflight",
+  "rejection_reasons": [
+    "honest novelty fingerprint is a blocking near-neighbor rather than a new gate shape",
+    "analyzable conflict density is below 10 in every standard window",
+    "the reserved same-open decision and fill clock is not executable without look-ahead"
+  ],
+  "strategy_changes_applied": false,
+  "gate4_run": false,
+  "production_impact": "none",
+  "next_retry_requires": "Park this cash-conflict face until a genuinely new source or gate shape exists, or at least 30 additional settled cash-conflict decisions cover at least 10 tickers and 20 dates; freeze an executable decision clock before any replay."
+}

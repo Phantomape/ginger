@@ -1,0 +1,67 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Fault-recovery measurement repair: Polymarket Gamma /events silently ignores its search parameter, so since 2026-07-03 all six prediction-market observer queries received one identical generic event page (identical candidate counts 1205->1239 across queries) and relevance rejected nearly everything, starving the surface to a constant 2 items/day and freezing the parked lane's quantitative reopen counters (entry-date span stuck at 3, top-query share 0.798, zero nonzero probability changes across 501 markets in 16 days). Switched collection to the verified /public-search?q= endpoint (events_status=active, limit_per_type=100); per-query pages now differ and 2026-07-18 collected 33 relevant unique items (vs 2), flowing into the rebuilt outcome ledger (631 source items, 3819 candidate rows). Observer-only: no signal, ranking, sizing, exit, or order path touched; 61 tests pass.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "prediction_market_event_observer collection endpoint identity: /events?search= (ignored upstream) vs /public-search?q= (verified filtering), observer-only, no strategy behavior change",
+  "component": "quant/experiments/exp_20260718_002_prediction_market_fetch_starvation_repair.py, data/experiments/exp-20260718-002/exp_20260718_002_prediction_market_fetch_starvation_repair.json, experiments/cards/exp-20260718-002.md, experiments/manifests/exp-20260718-002.json, experiments/tickets/exp-20260718-002.json, experiments/logs/exp-20260718-002.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260718-002",
+  "hypothesis": "The prediction-market event observer's Polymarket Gamma /events 'search' parameter is silently ignored upstream, so since 2026-07-03 all six queries receive one identical generic event page, relevance rejects nearly everything, and the parked prediction-market lane's quantitative reopen counters (unique settled candidates across dates/query groups, nonzero probability changes, 5pp moves) are structurally unable to advance; switching collection to the working /public-search endpoint restores relevant first-seen accumulation and re-observation probability deltas without changing any trading behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Do not read the pre-repair settled sample as alpha evidence: 3361 unique settled decisions are dominated by the 2026-07-02 day-1 generic seed page (top query share 79.8%) and span only 3 entry dates. The reopen audit must restart from post-repair first-seen rows. Zero-ID side audits recorded in the artifact: exit_lifecycle settled h5 482->517 (+7.3%) stays below the axis-(c) >=+50% bar; do not reserve an exit-lifecycle probe yet.",
+  "parameters": {
+    "locked_variables": [
+      "prediction_market_event_observer collection endpoint identity: /events?search= (ignored upstream) vs /public-search?q= (verified filtering), observer-only, no strategy behavior change"
+    ],
+    "single_causal_variable": "prediction_market_event_observer collection endpoint identity: /events?search= (ignored upstream) vs /public-search?q= (verified filtering), observer-only, no strategy behavior change"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The upstream Gamma /events endpoint ignores its search parameter (probe: with/without search returned byte-identical pages), so all six queries consumed one generic stale-ordered page; the day-1 (2026-07-02) build had looser relevance and seeded 560 mostly generic items, then the 07-03 relevance tightening correctly rejected the generic page, exposing the fetch starvation as a constant 2 items/day. Switching to /public-search?q= (verified to filter and return same-day-updated relevant events) restored per-query collection: 33 relevant unique items on 2026-07-18.",
+    "realized_failure_mode": "upstream_api_parameter_silently_ignored_fetch_starvation",
+    "forbidden_near_neighbor_retry": "Do not reserve IDs to re-audit this surface daily, to re-slice the pre-repair settled ledger (dominated by the day-1 generic seed page), or to tune relevance groups/query wording/limit params as if they were alpha evidence. The parked prediction-market alpha lane stays parked under its existing quantitative reopen condition.",
+    "new_evidence_required": "Post-repair first-seen accumulation only: >=60 unique settled candidates spanning >=10 entry dates and >=3 query groups, top ticker <=15%, top query <=50%, >=20 nonzero probability changes and >=10 moves >=5pp under the frozen exposure map, all counted from rows first seen after 2026-07-18."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260718-002/exp_20260718_002_prediction_market_fetch_starvation_repair.json",
+    "data/experiments/exp-20260718-002/exp_20260718_002_prediction_market_fetch_starvation_repair.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-18T16:20:28+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260718-002"
+}

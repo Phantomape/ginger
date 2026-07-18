@@ -1,0 +1,148 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.8,
+    "expected_ev_delta": 0.8,
+    "expected_pnl_delta": 8000.0,
+    "pnl_prediction_error": -8000.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "quality_gate_too_sparse",
+      "target_headroom_clips_winners",
+      "candidate_rr_static_or_uninformative",
+      "window_regression",
+      "insufficient_release_or_cash_interaction"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "quality_gate_too_sparse",
+    "surprise_level": "very_low",
+    "surprise_note": "Manual fingerprint and execution-clock review invalidated the claimed new gate before any replay."
+  },
+  "causal_components": [
+    "shared pairwise quality policy",
+    "backtester adapter",
+    "frozen three-window replay",
+    "focused parity test",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_summary": "Preflight-only rejection; no strategy code or Gate-4 replay. Stored immutable density, novelty, and execution-clock evidence.",
+  "change_type": "capital_allocation_pairwise_quality_gate",
+  "changed_variable": "cash_conflict_pairwise_remaining_reward_risk_rotation_v1",
+  "component": "quant\\backtester.py, quant\\cash_conflict_remaining_rr_rotation.py, quant\\test_cash_conflict_remaining_rr_rotation.py, quant\\experiments, data\\experiments, experiments\\artifacts, experiments\\logs, experiments\\cards, experiments\\tickets, experiments\\manifests, docs\\alpha-optimization-playbook.md, docs\\production_backtest_parity_matrix.md",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260718-001",
+  "hypothesis": "Capital-allocation alpha: when a fully qualified fresh core entry would be scaled or skipped only by settled-cash admission, compare production-visible remaining target headroom to stop distance at the same next open; rotate the weakest active core incumbent only when its remaining reward-to-risk is at most 2.0 and the fresh candidate reward-to-risk is at least 1.5 times higher, otherwise retain the incumbent.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "cash_feasible_pairwise_opportunity_cost",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260716-001",
+    "exp-20260716-004",
+    "exp-20260716-008"
+  ],
+  "new_evidence_type": "preflight_rejection_no_valid_new_evidence_axis",
+  "next_retry_requires": [
+    "a genuinely new data source or gate shape",
+    "or at least 30 additional settled cash-conflict decisions spanning at least 10 tickers and 20 dates",
+    "an executable signal-close/pre-open or post-open decision and fill clock"
+  ],
+  "notes": "The identical before/after file is an explicit no-strategy-change accounting anchor, not an evaluated after result. data/experiments/exp-20260718-001/preflight.json is authoritative: per-window analyzable conflicts were 8/7/5 versus 10 required; honest cash_feasible_core_book/incumbent_rotation novelty was 0.6737 to exp-20260716-004; same-open decision and execution would be look-ahead. Production impact none.",
+  "parameters": {
+    "locked_variables": [
+      "exp-20260712-015 frozen behavior inputs",
+      "exp-20260715-010 cash-feasible baseline",
+      "signal generation",
+      "ordinary exits",
+      "ranking",
+      "requested sizing",
+      "cost model",
+      "three canonical windows",
+      "incumbent RR ceiling 2.0",
+      "candidate/incumbent RR ratio 1.5",
+      "same-next-open full rotation",
+      "max one rotation per fill date"
+    ],
+    "single_causal_variable": "cash_conflict_pairwise_remaining_reward_risk_rotation_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune incumbent/candidate reward-to-risk thresholds, reuse official-open prices for a same-open decision, or describe another weakest-incumbent cash rotation as a new gate shape.",
+    "new_evidence_required": "A genuinely new source or gate shape, or at least 30 additional settled cash-conflict decisions spanning at least 10 tickers and 20 dates, plus a frozen executable decision clock.",
+    "realized_failure_mode": "quality_gate_too_sparse",
+    "why_result_happened": "Manual fingerprint and execution-clock review invalidated the claimed new gate before any replay."
+  },
+  "prediction": {
+    "confidence_reason": "The cash-feasible playbook explicitly says opportunity cost needs an ex-ante incumbent-versus-candidate quality signal; target headroom and stop distance are shared production-visible lifecycle fields, and an outcome-blind preflight yielded 3/3/4 actions across the windows. Confidence remains low because only ten actions are expected, target geometry may be mostly static at entry, and prior unconditional rotation/covariance/queue policies clipped winners.",
+    "expected_ev_delta": 0.8,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "quality_gate_too_sparse",
+      "target_headroom_clips_winners",
+      "candidate_rr_static_or_uninformative",
+      "window_regression",
+      "insufficient_release_or_cash_interaction"
+    ],
+    "recorded_at": "2026-07-18T10:15:10+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Preflight rejected before Gate 4: all windows had fewer than 10 analyzable conflicts (8/7/5), honest novelty was a blocking 0.6737 near-neighbor to exp-20260716-004, and the reserved same-open decision used an unavailable official-open price.",
+  "related_files": [
+    "data/experiments/exp-20260716-004/before.json",
+    "data/experiments/exp-20260716-004/before.json",
+    "data/experiments/exp-20260718-001/preflight.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-18T10:24:55+00:00",
+  "trial_family": "cash_conflict_remaining_reward_risk_rotation",
+  "trial_variant_id": "rr2_candidate_1p5x_same_open_v1"
+}

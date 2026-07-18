@@ -1,0 +1,457 @@
+{
+  "experiment_id": "exp-20260718-002",
+  "kind": "measurement_repair_before_after",
+  "root_cause": {
+    "endpoint": "https://gamma-api.polymarket.com/events",
+    "defect": "search parameter silently ignored upstream: probe with and without search=SpaceX%20IPO returned byte-identical first results; default ordering returns stale events (e.g. Kraken IPO by 2025 while as-of is 2026-07)",
+    "consequence": "since 2026-07-03 all six query sources received one identical generic event page per day (identical entry_count=100 and market_candidate_count 1205->1239 across all queries); per-query relevance then rejected ~everything, leaving a constant 2 parsed items/day (2 stablecoin markets)",
+    "probe_evidence": "curl /events?limit=3&search=... == /events?limit=3 (identical); /public-search?q=SpaceX returned live relevant SpaceX events updated same day"
+  },
+  "before": {
+    "daily_items_by_date": {
+      "20260702": 560,
+      "20260703_to_20260717": "2/day constant, same 2 markets"
+    },
+    "source_stats_samples": {
+      "20260702": [
+        {
+          "query_id": "spacex_ipo_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 447,
+          "params": {
+            "search": "SpaceX IPO public stock listing Starlink",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "frontier_ai_private_capex_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 17,
+          "params": {
+            "search": "OpenAI Anthropic data center AI chips investment",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "ai_export_controls_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 11,
+          "params": {
+            "search": "AI chips export controls China Nvidia AMD",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "hyperscaler_power_shortage_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 9,
+          "params": {
+            "search": "AI data center power grid hyperscaler electricity shortage",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "crypto_market_structure_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 76,
+          "params": {
+            "search": "stablecoin crypto market structure bill SEC CFTC",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "glp1_market_access_probability",
+          "entry_count": 100,
+          "market_candidate_count": null,
+          "relevance_rejected_count": null,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "GLP-1 obesity drug Medicare FDA shortage compounding",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        }
+      ],
+      "20260703": [
+        {
+          "query_id": "spacex_ipo_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1205,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "SpaceX IPO public stock listing Starlink",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "frontier_ai_private_capex_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1202,
+          "parsed_item_count": 3,
+          "params": {
+            "search": "OpenAI Anthropic data center AI chips investment",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "ai_export_controls_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1205,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "AI chips export controls China Nvidia AMD",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "hyperscaler_power_shortage_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1200,
+          "parsed_item_count": 5,
+          "params": {
+            "search": "AI data center power grid hyperscaler electricity shortage",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "crypto_market_structure_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1203,
+          "parsed_item_count": 2,
+          "params": {
+            "search": "stablecoin crypto market structure bill SEC CFTC",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "glp1_market_access_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1205,
+          "relevance_rejected_count": 1205,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "GLP-1 obesity drug Medicare FDA shortage compounding",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        }
+      ],
+      "20260710": [
+        {
+          "query_id": "spacex_ipo_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1233,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "SpaceX IPO public stock listing Starlink",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "frontier_ai_private_capex_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1233,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "OpenAI Anthropic data center AI chips investment",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "ai_export_controls_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1233,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "AI chips export controls China Nvidia AMD",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "hyperscaler_power_shortage_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1233,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "AI data center power grid hyperscaler electricity shortage",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "crypto_market_structure_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1231,
+          "parsed_item_count": 2,
+          "params": {
+            "search": "stablecoin crypto market structure bill SEC CFTC",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "glp1_market_access_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1233,
+          "relevance_rejected_count": 1233,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "GLP-1 obesity drug Medicare FDA shortage compounding",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        }
+      ],
+      "20260717": [
+        {
+          "query_id": "spacex_ipo_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1239,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "SpaceX IPO public stock listing Starlink",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "frontier_ai_private_capex_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1239,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "OpenAI Anthropic data center AI chips investment",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "ai_export_controls_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1239,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "AI chips export controls China Nvidia AMD",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "hyperscaler_power_shortage_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1239,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "AI data center power grid hyperscaler electricity shortage",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "crypto_market_structure_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1237,
+          "parsed_item_count": 2,
+          "params": {
+            "search": "stablecoin crypto market structure bill SEC CFTC",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        },
+        {
+          "query_id": "glp1_market_access_probability",
+          "entry_count": 100,
+          "market_candidate_count": 1239,
+          "relevance_rejected_count": 1239,
+          "parsed_item_count": 0,
+          "params": {
+            "search": "GLP-1 obesity drug Medicare FDA shortage compounding",
+            "active": "true",
+            "closed": "false",
+            "limit": 100
+          }
+        }
+      ]
+    },
+    "reopen_counters_at_audit": {
+      "unique_settled_decisions": 3361,
+      "entry_dates": 3,
+      "required_entry_dates": 10,
+      "query_groups": 5,
+      "top_query_share": 0.798,
+      "required_top_query_share_max": 0.5,
+      "markets_with_multi_date_observations": 7,
+      "markets_with_any_probability_change": 0,
+      "required_nonzero_probability_changes": 20,
+      "required_5pp_moves": 10,
+      "verdict": "structurally_unreachable_under_starved_fetch"
+    }
+  },
+  "after": {
+    "endpoint": "https://gamma-api.polymarket.com/public-search",
+    "params_shape": {
+      "q": "<query>",
+      "events_status": "active",
+      "limit_per_type": 100
+    },
+    "source_stats_20260718": [
+      {
+        "query_id": "spacex_ipo_probability",
+        "entry_count": 10,
+        "market_candidate_count": 174,
+        "relevance_rejected_count": 143,
+        "parsed_item_count": 31,
+        "params": {
+          "q": "SpaceX IPO public stock listing Starlink",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      },
+      {
+        "query_id": "frontier_ai_private_capex_probability",
+        "entry_count": 30,
+        "market_candidate_count": 655,
+        "relevance_rejected_count": 655,
+        "parsed_item_count": 0,
+        "params": {
+          "q": "OpenAI Anthropic data center AI chips investment",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      },
+      {
+        "query_id": "ai_export_controls_probability",
+        "entry_count": 1,
+        "market_candidate_count": 14,
+        "relevance_rejected_count": 14,
+        "parsed_item_count": 0,
+        "params": {
+          "q": "AI chips export controls China Nvidia AMD",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      },
+      {
+        "query_id": "hyperscaler_power_shortage_probability",
+        "entry_count": 5,
+        "market_candidate_count": 42,
+        "relevance_rejected_count": 41,
+        "parsed_item_count": 1,
+        "params": {
+          "q": "AI data center power grid hyperscaler electricity shortage",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      },
+      {
+        "query_id": "crypto_market_structure_probability",
+        "entry_count": 4,
+        "market_candidate_count": 4,
+        "relevance_rejected_count": 4,
+        "parsed_item_count": 0,
+        "params": {
+          "q": "stablecoin crypto market structure bill SEC CFTC",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      },
+      {
+        "query_id": "glp1_market_access_probability",
+        "entry_count": 1,
+        "market_candidate_count": 1,
+        "relevance_rejected_count": 0,
+        "parsed_item_count": 1,
+        "params": {
+          "q": "GLP-1 obesity drug Medicare FDA shortage compounding",
+          "events_status": "active",
+          "limit_per_type": 100
+        }
+      }
+    ],
+    "raw_item_count": 33,
+    "unique_item_count": 33,
+    "per_query_entry_counts_now_differ": true,
+    "outcome_ledger": {
+      "source_item_count": 631,
+      "candidate_outcome_row_count": 3819,
+      "settled_count": 3386,
+      "unsettled_count": 433
+    }
+  },
+  "production_impact": {
+    "observer_only": true,
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "scope": "prediction_market_event_observer collection endpoint identity only"
+  },
+  "tests": "quant/test_prediction_market_event_observer.py + quant/test_run_daily_wiring.py: 61 passed",
+  "side_audits_zero_id": {
+    "exit_lifecycle": "settled h5 482 (exp-20260715-006) -> 517 now, +7.3%; below the >=+50% and >=+10-per-probe axis-(c) bar for a new probe; do not reserve",
+    "prediction_market_reopen": "even with 3361 unique settled decisions, entry_dates=3 (<10), top_query_share=0.798 (>0.5), probability changes 0 (<20); day-1 generic seed rows dominate the settled sample and should not be used as alpha evidence"
+  }
+}
