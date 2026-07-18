@@ -1,6 +1,6 @@
-﻿# Alpha Optimization Playbook
+# Alpha Optimization Playbook
 
-Last refreshed: 2026-07-17.
+Last refreshed: 2026-07-18.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log. Detailed trial records belong in `docs/experiment_log.jsonl`,
@@ -116,6 +116,30 @@ July 16-17 compressed mechanism readout:
   level are required fields before learned rankings, RL allocators, or filing
   text sentiment can become alpha candidates. Treat model accuracy as a
   diagnostic until after-cost replacement value beats the accepted comparator.
+
+July 18 compressed mechanism readout:
+
+- The day mostly rejected source readiness, not economic hypotheses. Public or
+  official datasets with plausible narratives still failed on mutable archives,
+  missing publication clocks, weak effective-dated issuer maps, source terms,
+  density, or concentration before outcome access. Treat DailyMed, npm, Tranco,
+  MediaWiki, OCC, NHTSA, NLRB, MAUDE, and ClinicalTrials as identity/observer
+  build candidates until unchanged PIT bars clear.
+- `exp-20260717-007` tested the first NVD CVE Initial Analysis cluster gate and
+  rejected it under cash-feasible Gate 1-4: aggregate EV/PnL fell, clean windows
+  regressed, and daily parity could not reproduce pre-open activations. Retain
+  only the dedicated `nvd_cve_change_history` fingerprint coverage and replay
+  evidence; do not retune cluster threshold or exclusion horizon.
+- Cash-conflict allocation remains parked. Network-periphery and reward-to-risk
+  incumbent-rotation probes lacked stable/analyzable conflict coverage, and the
+  reward-to-risk version exposed an unexecutable same-open decision/fill clock.
+  Reopen only with a new gate/source or materially more settled cash-conflict
+  rows plus a realistic decision clock.
+- Recent research additions reinforce process controls: LLM-authored strategy
+  code needs semantic trade-row diffing, learned/intraday screens need frozen
+  replacement-value panels, LLM monitors should be risk-calibrated fail-closed
+  gates, and order-book reconstruction is measurement infrastructure before it
+  is alpha.
 
 The June 6-8 readout tightens the rule: relation-aware free-data candidate
 sources can work, but only when the relation itself is the edge. Accepted
@@ -676,7 +700,7 @@ already usable: 37/40 current closed rows carry a real percentile across all
 five quintiles (toxic Q5 n=7 ≈ 19%, matching the exp-018 selection overlap), and
 a read-only forward diagnostic is directionally consistent with the
 informed-flow sign (clean Q1-Q2 mean replacement-value-vs-cash +$225 n=21 vs
-toxic Q5 −$204 n=7). Per-quintile N is single digits and NOT significance-tested:
+toxic Q5 ?$204 n=7). Per-quintile N is single digits and NOT significance-tested:
 this is the validation SURFACE, not an alpha verdict. Do not read the tag as
 permission to re-run any frozen-window short-volume gate; the only sanctioned
 next step is a SOFT short-flow tilt validated once materially more closed
@@ -1299,13 +1323,13 @@ parsed rows: 13D init+amend + 13G init across the three windows), joined to the
 broad ~8,500-name warehouse for next-open-after-filing-date forward returns. A
 read-only forward-10d SPY-excess diagnostic shows the parsed *holder identity*
 field is the decisive axis that metadata-only exp-015/016 could not see: Big-3
-(Vanguard/BlackRock/State Street) 13G crossings drift NEGATIVE (mean −2.41%, win
+(Vanguard/BlackRock/State Street) 13G crossings drift NEGATIVE (mean ?2.41%, win
 31%, n=671) while non-Big3 13G initial crossings are modestly POSITIVE (mean
 +0.52%, median +0.18%, win 52.3%, n=1,682), strongest in the 7.5–10% new-stake
 bucket (mean +1.36%, median +0.51%, win 56.5%, n=313). So exp-016's rejection of
 13G was index-fund noise, not absence of signal. BUT this is a LEAD, not a
 Gate-4 alpha: the edge is small (~0.5–1.3% median), `fresh_concentrated_13g`
-mean is right-tail-negative in `old_thin` (−0.45%) and `old_thin` structured-XML
+mean is right-tail-negative in `old_thin` (?0.45%) and `old_thin` structured-XML
 coverage is only 51% (pre-2025 mandate gap), and outside-activist 13D on the
 broad large-cap universe shows negative medians (often priced by next-open or
 issuer-control insiders). Decision: `observed_only`; the durable product is the
@@ -1371,8 +1395,8 @@ diagnostic surface for this queue: a mechanical PIT regime classifier
 conventional non-optimized constants) and read-only conditional attribution of
 accepted-sleeve replay trades by entry-day regime. Finding: both the accepted
 Fundamental-Growth-RS sleeve and the rejected deferred-revenue scout lose
-specifically in `choppy_range` (FGRS −$197.56/trade, 27% win; deferred
-−$179.36/trade, 17% win) while staying clearly positive in BOTH `risk_on_trend`
+specifically in `choppy_range` (FGRS ?$197.56/trade, 27% win; deferred
+?$179.36/trade, 17% win) while staying clearly positive in BOTH `risk_on_trend`
 and `risk_off_stress`. So the loss axis is directionless chop, NOT stress:
 Spearman(`risk_off_score`, PnL) ≈ 0, meaning a naive monotonic "cut in risk-off"
 tilt would not help — the useful construct is a chop indicator (low `bull_score`
@@ -1390,7 +1414,7 @@ a shared daily regime artifact + parity test before any execution role.
 swapping the exp-019 trend-state regime for Kaufman Efficiency Ratio (ER) of SPY
 plus a continuous exposure scalar did NOT reproduce the separation and arguably
 inverted it (FGRS ER terciles non-monotonic, Spearman +0.105; deferred low-ER
-chop was the BEST bucket, Spearman −0.114). The ER day distribution shows why:
+chop was the BEST bucket, Spearman ?0.114). The ER day distribution shows why:
 `late_strong`, the strongest window, had the LOWEST mean ER (0.157), because a
 steady grind-up has low index path-efficiency. So ER conflates "low net move
 with wiggles" with the structurally-below-trend market that actually hurt these
@@ -1406,13 +1430,13 @@ regime probabilities + `bull_score` + `risk_off_score` + a continuous
 `exposure_scalar` that softly down-tilts ONLY the choppy regime (floor 0.5,
 never a hard gate). Re-validated through the shared module on the canonical
 windows it reproduced the lead MORE cleanly than the raw label: continuous
-`Spearman(p_choppy, PnL)` = −0.324 (FGRS) / −0.241 (deferred), with mean
+`Spearman(p_choppy, PnL)` = ?0.324 (FGRS) / ?0.241 (deferred), with mean
 `exposure_scalar` lowest in chop (~0.776) vs risk_on/off (~0.89). The module is
 wired as an additive read-only `regime_chop` field on
 `build_market_state_snapshot` (schema_version 2; the snapshot is already
 diagnostic_only, so zero order effect). IMPORTANT fidelity caveat: the daily
 market-context path supplies only the THIN subset (trend + 20d momentum + VIX,
-no breadth/drawdown), which is materially weaker (THIN replay Spearman −0.17
+no breadth/drawdown), which is materially weaker (THIN replay Spearman ?0.17
 FGRS / +0.04 deferred) — breadth/stress are load-bearing. Full-fidelity
 `regime_chop` can be recomputed from SPY+universe bars for any date via the
 shared module. Next steps (NOT done): (1) plumb breadth + SPY drawdown/vol into
@@ -1425,9 +1449,9 @@ or the exposure floor on these windows.
 now emits `spy_drawdown_from_high` + `spy_vol_ratio` (the stress axis) from the
 SPY frame the daily path already supplies, so the production `regime_chop` field
 moves from thin to stress_only with NO run.py change, and the adapter reports a
-fidelity tier. Verified upgrade in Spearman(p_choppy, PnL): FGRS thin −0.173 →
-stress_only −0.219 → full −0.324; deferred thin +0.045 (no signal) → stress_only
-−0.171 → full −0.241. Breadth (the last increment to full fidelity) needs the
+fidelity tier. Verified upgrade in Spearman(p_choppy, PnL): FGRS thin ?0.173 →
+stress_only ?0.219 → full ?0.324; deferred thin +0.045 (no signal) → stress_only
+?0.171 → full ?0.241. Breadth (the last increment to full fidelity) needs the
 run.py call site to pass universe frames and is DEFERRED behind exp-20260607-003's
 active run.py claim — `build_readonly_market_state_context` already accepts an
 optional `universe_ohlcv_by_ticker` param, so the remaining wiring is one kwarg
@@ -2508,833 +2532,65 @@ production-visible field:
   closed forward replacement-value rows, or a batch of at least 3 newly
   audit-ready official sources each covering all windows and contributing at
   least 20 expected settled trades;
-- FDIC Call Report deposit-franchise candidate-pool retries that change
-  DEPDOM/DEPUNINS fields, bank-size gates, dominant-bank share, merger filters,
-  top-N, rank, hold, cost, mapping, or windows on the current-vintage sample.
-  July 14 failed Gate 3 at 28/654 survived rows and also failed PIT validity.
-  Reopen only with first-release/as-of FDIC vintages plus historical
-  CERT/RSSDHCR/security mapping and exact-top5 sensitivity, or with materially
-  sufficient prospectively first-seen settled QBP quarters;
-- EIA WPSR and USDA FAS official physical-flow retries that only change series
-  subsets, seasonal baselines, percentiles, baskets, weights, response shape,
-  hold, cooldown, notional, or costs. July 14 EIA was positive but too thin and
-  lost USO; USDA export sales lost cash/SPY/QQQ/DBA and direct corn-soy
-  benchmarks. Reopen EIA after at least 30 prospectively closed unchanged-policy
-  decisions with positive matched replacement value, and USDA only after at
-  least 10 additional prospectively settled unchanged-policy releases or a
-  genuinely independent PIT physical-supply/demand data source;
-- joint covariance / portfolio-overlay synthesis retries that self-authorize a
-  parked-lane reopen, select a subset from known winners, cross calendar
-  boundaries, mix pre/post-MTM protocols, omit the complete family scope, or
-  claim an incomplete DSR selection panel. July 14 stopped this before
-  performance was computed. Reopen only with an independently authorized owner
-  contract, complete required family scope on one active real-calendar
-  protocol, leakage-free state transfer, and a declared complete DSR panel;
-- historical borrow-fee / availability evaluation of the fixed
-  `exp-20260712-013` old-thin admission policy before an explicitly licensed,
-  redistributable PIT source covers `old_thin`. The local panel available on
-  July 15 has grown to 265,290 rows across 1,034 tickers, but still begins only
-  on 2025-07-14: `old_thin` remains exactly 0 rows / 0 tickers, and none of the
-  1,035 local panel/state files records source-owner or permitted-use metadata.
-  Moomoo remains a 45-row current snapshot with 0% populated borrow fields and
-  ORTEX remains an AAPL-only 2026 sidecar. These additions do not repair the
-  missing 2024-10-02 to 2025-04-22 evidence. Reopen only after the source owner,
-  permitted use, point-in-time semantics, and all three canonical-window
-  coverage are recorded;
-- USPTO patent-grant observer reservation before an accessible official weekly
-  XML archive covers all three canonical windows. On July 15 the official ODP
-  catalog identified weekly coverage nominally through 2026-04-21; use the
-  smaller bibliographic `PTBLXML` product with front-page assignee data for
-  preflight rather than downloading the much larger `PTGRXML` full text. USPTO
-  registration has been required since 2026-06-18, the product and file APIs
-  returned 401/403 without an API key, and the human bulk-data URL returned
-  only the SPA shell rather than ZIP bytes. The legacy bulk host is retired/
-  unresolvable, PatentsView still ends before `late_strong`, and no
-  `USPTO_API_KEY` is configured, so the expected 81-file three-window manifest
-  plus one boundary sentinel cannot be listed, downloaded, or hashed. A
-  connectivity or row-count recheck does not consume an experiment ID. Reopen
-  only with an explicitly authorized ODP account/key, a gap-free file manifest
-  with size/ZIP/SHA-256 verification, and fixed issuer mapping reaching at
-  least 20 issuer-weeks, 10 tickers, and top-1 share <=30% in every window.
-  The separately fixed 26-week issuer-burst replay would require additional
-  pre-window files (about 107 weekly files in total), but those should not be
-  fetched before the cheaper 82-file density-manifest and sentinel-schema
-  checks pass;
-- PCAOB Form AP engagement-partner-change exclusion on the current cash-
-  feasible core book. A July 16 zero-ID preflight used the official whole-
-  dataset ZIP (`FirmFilings.zip`, 13,109,236 bytes, SHA-256
-  `0f51a6b213da6dff8087d41a251545a5280143429492233d0ee798f00e4d1396`),
-  its Form AP filing date plus one daily-update cycle as the PIT clock, exact
-  issuer CIK mapping to one deterministic all-window-liquid ticker, original
-  issuer filings only, and the primary plus other engagement-partner IDs known
-  on that filing. A change relative to the prior distinct fiscal period
-  250--500 days earlier easily cleared source density: old/mid/late produced
-  321/55/289 issuer-weeks across 321/55/289 tickers, with top-1 shares
-  0.31%/1.82%/0.35%. But the predeclared 20-session long-entry exclusion
-  overlapped only 1/0/0 of the 23/13/13 executed trades in the active
-  `exp-20260715-010` baseline (SLV was the sole overlap), before any return or
-  replacement-value outcome was read. Therefore the source is genuinely new
-  and broad, but this core gate is not evaluable and gets no experiment ID.
-  A second July 16 zero-ID, outcome-blind field preflight asked a distinct
-  accounting-complexity question on the same entry-admission surface: current
-  audit-report lag minus the prior 250--500-day fiscal-period lag at least 14
-  calendar days, followed by a 63-calendar-day same-issuer core-entry
-  exclusion. The fixed parser retained 75,276 original issuer-periods and
-  identified 6,143 lag-deterioration events, but only AMD among the 25 unique
-  baseline tickers ever carried such an event and the three-window entry
-  overlap was exactly 0/0/0. The preflight referenced only each baseline
-  trade's ticker and entry date; it did not access price, return, PnL, exit,
-  or benchmark keys, and no experiment ID was reserved. Together these two probes park
-  `pcaob_form_ap x core_entry_admission`: do not sweep partner definitions,
-  audit-lag thresholds, partner-workload fields, prior-period gaps, exclusion
-  length, or issuer subsets on the same core book. Reopen this gate only after
-  unchanged-policy
-  overlap reaches at least 10 settled core entries in every window, or with an
-  independently predeclared standalone candidate-pool mechanism whose
-  execution envelope does not require unavailable historical borrow. That
-  standalone reopen was tested once as `exp-20260716-005` with a new
-  shared-paper-first peer-substitution gate: unchanged same-industry ADV60
-  peer, top1/day, strict next open, 20 sessions, $4k, and 35bps. Density passed
-  in all windows (44/27/44 settled decisions; 31/23/28 peers; all target/peer
-  top-one shares below 30%), but the alpha was rejected. Aggregate EV improved
-  only `+0.0689` and PnL `+$4,839.43`, versus required `>+0.5286` and
-  `>+$10,432.91`; only one EV window improved, old-window PnL was
-  `-$2,228.48` with drawdown `+5.15pp`, mid-window QQQ replacement was
-  `-$21.60`, top-five positive-PnL share was `65.73%`, and two selected peers
-  used non-PIT multi-share-class resolution. Park
-  `pcaob_form_ap x peer_substitution_candidate_pool_top1_20d`: do not retune
-  filing scope, fiscal gap, share mapping, industry taxonomy, peer pool, ADV
-  rank, top1, entry, hold, notional, costs, or subsets on these frozen rows.
-  Reopen only with a genuinely new source/gate shape, or at least 30
-  prospectively settled unchanged-policy rows with positive replacement value
-  and PIT industry/share-class mapping;
-- SEC civil litigation-release listed-issuer entry-admission reservation on
-  the current official release archive. A July 16 zero-ID preflight fetched
-  665 unique 2024--2026 release rows (385 inside the canonical windows), used
-  the SEC page publication date with next-session availability, required an
-  exact normalized respondent-to-SEC legal-title match among 7,161 tickers
-  with at least 80 OHLCV sessions in every window, and read no returns. The
-  strict result was only 0/1/1 issuer-weeks and 0/1/1 tickers in old/mid/late
-  (`MFIN` and `VIRT` were the sole matches), with 100% top-1 shares where any
-  row existed. The archive also mixes complaints, judgments, and dismissals,
-  so restricting to first complaints can only reduce density. Do not reserve
-  an ID to broaden defendant aliases, infer officer/employer or affiliate
-  relations, mix administrative proceedings, or treat a later judgment as a
-  fresh issuer shock. Reopen only with an auditable effective-dated named-
-  defendant-to-listed-parent relation that independently clears at least 20
-  first-complaint issuer-weeks, 10 tickers, and top-1 <=30% in every window;
-- FERC eLibrary Electric Delegated-Order issuer observer reservation before an
-  effective-dated operating-subsidiary-to-listed-parent map clears the fixed
-  density gate. A July 16 zero-ID preflight used the official eLibrary public
-  API and its `Posted Date`/time as the decision clock, fetched 1,694/1,593/
-  1,705 old/mid/late documents, read no returns, and mapped `RECIPIENT` names
-  only by unique normalized exact SEC legal title. The resulting 64/101/68
-  recipient legs collapsed to 39/55/40 `(ticker, Posted ISO week)` rows but
-  only 7/9/8 tickers; top-1 shares were 48.72%/29.09%/40.00%. All windows fail
-  the >=10-ticker requirement and old/late also fail <=30% concentration.
-  Several exact tickers were utility preferred shares or notes (`GPJA` was the
-  dominant name) rather than a clean common-stock parent surface, while many
-  real orders name ISO/RTOs, cooperatives, private LLCs, or operating utility
-  subsidiaries. Do not reserve an ID to add fuzzy aliases, hand-map current
-  subsidiaries, include non-recipient parties, or mix order classes. Reopen
-  only with an auditable effective-dated subsidiary-parent and security map
-  that independently yields at least 20 issuer-weeks, 10 common-stock tickers,
-  and top-1 <=30% in every window;
-- EEOC employment-discrimination lawsuit/settlement issuer exclusions on the
-  current official Newsroom archive. A July 16 zero-ID preflight consumed all
-  21 archive pages and retained 268 releases whose title/lead explicitly
-  described a suit, lawsuit, litigation, or consent decree; even low-value
-  settlements were retained to give the surface its maximum possible density.
-  Unique normalized whole-token SEC legal-title matches, with no employer or
-  subsidiary aliases, produced only 3/5/1 issuer-weeks across 3/4/1 common-
-  stock tickers in old/mid/late. Top-1 shares were 33.33%/40.00%/100%, so every
-  window fails both breadth and concentration. Do not reserve an ID to lower a
-  settlement threshold, mix educational releases, or hand-map employers.
-  Reopen only with an auditable effective-dated employer-subsidiary-to-listed-
-  parent crosswalk that independently clears 20 issuer-weeks, 10 tickers, and
-  top-1 <=30% in every window;
-- OSHA Severe Injury Report core-entry exclusions on the current official
-  historical ZIP. A July 16 zero-ID preflight hash-bound the 16,111,097-byte
-  `January2015toOctober2025.zip` (SHA-256
-  `9ef5d5226f1c39f469abb9c8425643e835f44f2d32d168a37f46b1fba8aee87f`),
-  parsed 105,318 injury rows, and used exact employer-to-SEC legal-title plus
-  common-stock hygiene without parent, brand, or subsidiary inference. Old
-  and mid cleared the fixed density gate at 48/55 issuer-weeks across 38/44
-  tickers with 8.33%/7.27% top-1 shares; late had only 5 issuer-weeks across 5
-  tickers because the file ends on 2025-10-31. The current vintage also exposes
-  only `EventDate`, not report-received or immutable first-publication time,
-  and was last modified on 2026-06-18. Do not reserve historical Gate 4 from
-  this revised snapshot or infer PIT from accident date. Reopen only with
-  official coverage through at least 2026-04-21 plus an immutable report/
-  publication clock and effective-dated issuer map, while late independently
-  advances to at least 20 issuer-weeks and 10 tickers with top-1 <=30%;
-- NLRB union-certification tally entry exclusions on the current official
-  Recent Election Results archive. A July 16 zero-ID preflight parsed the
-  date-filtered HTML archive rather than the site's malformed asynchronous CSV
-  export: 2,766 reported rows became 2,756 unique tally records over the three
-  standard windows. The fixed money event kept initial RC/RD/RM tallies with a
-  non-empty `Union to Certify` field, then required a unique exact SEC legal-
-  title match among 1,372 all-window liquid common-stock issuers; no parent,
-  location, or brand aliases were used and no returns were read. Although 219
-  signal rows mapped, weekly de-duplication yielded only 31/25/23 issuer-weeks
-  across 7/5/7 tickers, with Starbucks alone contributing 67.74%/80.00%/
-  69.57%. Do not rescue this surface by excluding Starbucks, switching tally
-  types, counting store elections as independent issuer shocks, or changing
-  de-duplication cadence. Reopen only with a defensible new labor-relations
-  source or effective-dated employer-parent map that independently clears 20
-  issuer-weeks, 10 tickers, and top-1 <=30% in every window;
-- FTC adverse enforcement/competition/privacy press-release issuer exclusions
-  on the current official archive. A July 16 zero-ID preflight kept new suits,
-  orders, penalties, and settlements while excluding refunds, workshops,
-  reports, rulemaking/comment notices, dismissals, and petition amendments.
-  The archive supplied 160/117/103 old/mid/late release rows, but strict unique
-  SEC legal-title/CIK matching to a then-traded common-stock security produced
-  only 10/9/8 issuer-weeks across 7/7/8 tickers; top-1 shares were 30.00%/
-  22.22%/12.50%. A 2025 `STUB` row was correctly failed closed because the
-  current title did not yet have a traded security. Do not reserve an ID to
-  include non-shock releases, relax whole-title identity, or infer current
-  parents. Reopen only with official respondent identity/CIK or an auditable
-  effective-dated subsidiary-to-listed-parent relation that adds at least
-  10/11/12 issuer-weeks and 3/3/2 tickers in old/mid/late while preserving
-  top-1 <=30%;
-- DOJ corporate-enforcement news issuer exclusions before a gap-free official
-  archive is accessible. A July 16 zero-ID access preflight found that Akamai
-  rejects every pagination and date-filter query; the only auditable RSS block
-  contains 25 releases from 2026-07-10 through 2026-07-15, entirely outside the
-  canonical windows. Eleven were enforcement-like and none strictly matched a
-  listed common-stock SEC legal title, but this recent block cannot be used to
-  impute three-window density. Do not reserve an ID, treat blocked pages as
-  zero events, or reconstruct a selective archive from search-engine results.
-  Reopen only when DOJ exposes an official pageable/downloadable history, an
-  RSS history cursor, or another gap-free canonical-window URL manifest; then
-  rerun the fixed 20 issuer-week / 10 ticker / 30% concentration preflight;
-- EPA enforcement-news issuer exclusions before the common-stock identity
-  layer is independently repaired. A July 16 zero-ID preflight enumerated 437
-  enforcement/pollution candidate URLs from all 38 official sitemap pages and
-  fetched and parsed the official `<time datetime>` field on all 437 without a
-  request or page-parse failure. The strict SEC legal-title-to-unique-CIK-to-
-  eligible-common-stock join nevertheless formed a zero-name universe, so the
-  resulting zero issuer counts are an identity-pipeline failure, not evidence
-  that EPA has no listed-issuer events. Do not refetch the same pages, report
-  those zeros as density evidence, or relax to fuzzy names. Reopen only after
-  an independent control-set audit proves the effective-dated SEC/common-stock
-  identity map produces a non-zero strict universe; then rerun the unchanged
-  20 issuer-week / 10 ticker / 30% concentration contract once;
-- SEC 10-K Exhibit 21 subsidiary identity as a shared PIT mapping repair before
-  a hash-bound historical exhibit corpus exists. A July 16 zero-ID preflight
-  found 3,223 local SEC submissions caches with 10-K accession, filing date,
-  `acceptanceDateTime`, and primary-document metadata, but no filing index,
-  EX-21 document, or subsidiary name. FTC alone has 70/67/45 unmatched adverse
-  releases spanning at most 26/23/17 ISO weeks, so an effective-dated map has a
-  real numerical chance to close its +10/+11/+12 issuer-week and +3/+3/+2
-  ticker gaps. It cannot be validated by querying from an unknown subsidiary
-  back to a parent: a complete fail-closed build would require up to 9,669
-  historical filing-index requests plus thousands of exhibit requests. Do not
-  reserve an identity-plumbing ID or perform a current-title backfill from this
-  upper bound. Reopen only with a hash-bound official/bulk or local 3,223-CIK
-  filing-index+EX-21 corpus; apply each relation only after accepted time, use
-  the nearest prior filing on the event date, and fail closed on no-prior,
-  multi-parent, generic-short-name, or not-yet-listed common-stock cases;
-- free federal enforcement/news text archives under the repeated exact-title
-  `20 issuer-week / 10 ticker / 30% top-1` recipe are now a parked enumeration
-  lane. SEC civil litigation, EEOC, FTC, DOJ, EPA, and the related NLRB/FERC
-  surfaces have each failed on issuer breadth/concentration, archive access,
-  or the same missing effective-dated operating-entity relation; OSHA clears
-  old/mid breadth but lacks late coverage and a publication clock. Do not spend
-  another zero-ID round fetching a new agency press-release archive with the
-  same identity contract. A valid next source must expose stable official CIK/
-  LEI/ticker identity and a historical publication clock, or first provide the
-  hash-bound effective-dated Exhibit 21 relation above;
-- FDA FAERS quarterly serious-outcome-share core-entry exclusions on the
-  current cash-feasible baseline. A July 15 zero-ID preflight hash-bound seven
-  official ASCII extracts (`2024Q2` through `2025Q4`; 478,444,033 bytes; ordered
-  `name:bytes:file_sha256\\n` bundle SHA-256
-  `f8f71889b10833179084b5b473e71aa56d54da3cd128186c2a2c4d6269db1901`)
-  and used the files' HTTP `Last-Modified` timestamps only from the next
-  session. The predeclared risk field kept initial cases, any reported serious
-  outcome, at least 100 cases in both adjacent quarters, a 0.5x--2.0x case-
-  volume continuity guard, unique normalized SEC-title matches, and current
-  Healthcare warehouse names before selecting the worst deterioration
-  quintile. Source density cleared the broad preflight: old/mid/late had
-  38/33/33 issuer-releases across 20/18/17 tickers, with top-1 shares
-  5.26%/6.06%/6.06%. The proposed entry-admission gate was nevertheless
-  structurally immaterial: it touched 0/0/1 of the active cash-feasible
-  old/mid/late core trades (the sole hit was `LLY` on 2025-11-04), so no return
-  or PnL was inspected and no experiment ID was reserved. Do not rescue this
-  exact gate by relaxing issuer mappings, dropping the volume guard, changing
-  quintiles, or extending stale risk labels. Reopen only with a genuinely
-  different FAERS gate shape that independently predeclares at least 10
-  touched settled rows in every standard window, or with materially new
-  forward rows from a hash-bound first-seen observer; manufacturer short-name
-  collisions such as `VERTEX` must remain fail-closed without an auditable
-  effective-dated sponsor relation. July 16 then exercised that one legal new
-  gate shape in `exp-20260716-006`: a standalone quarterly basket admitted only
-  issuers whose serious-outcome share improved quarter over quarter, ranked the
-  ten largest improvements, shared one fixed `$10k` event notional, entered at
-  the first PIT session open, exited at the twentieth-session close, and paid
-  35 bps. The outcome-blind density preflight passed at 12/14/15 issuer legs,
-  11/12/14 tickers, and 16.67%/14.29%/13.33% top-1 share. Hash-bound replay was
-  still rejected: the additive external-capital diagnostic was only
-  `+0.1033` aggregate EV / `+$1,140.27` PnL with one EV-regressing window;
-  `old_thin` lost `-$608.52` and lost cash/SPY/QQQ, while `mid_weak` made
-  `+$635.38` but still lost SPY/QQQ replacement value. The 41 issuer legs were
-  only six independent quarterly release decisions (two per window), positive
-  PnL top-5 concentration was 76.11%, and the `$10k` overlay did not identify a
-  cash-conserving funding source. The raw-concatenation bundle hash
-  `03125b3a3e9fac22f9e4313dee6b95a02509c9a9e1532595db65b5efdf729cdb`
-  differs from the earlier manifest-line hash above by construction; all seven
-  individual file hashes are identical. Park this FAERS response family: do
-  not retune improvement thresholds, rank/top-N, issuer identity, case guards,
-  entry/hold, notional, costs, or reinterpret issuer legs as independent
-  trials. Reopen only with at least 30 independent prospectively settled
-  unchanged-policy quarterly release decisions (at least 10 per standard
-  window) plus an explicit cash-
-  conserving funding contract and effective-dated sponsor/exposure relation,
-  or with a genuinely independent PIT safety/exposure data source;
-- Cboe free Historical Options Data as a production-visible issuer observer
-  before permitted use and the publication clock are explicit. A July 15
-  zero-ID preflight found an unauthenticated official all-symbol monthly CSV
-  and ample mapped density in representative old/mid/late months: 1,040 /
-  1,144 / 1,102 issuer-days across 52 / 52 / 56 warehouse tickers, with top-1
-  shares near 1.9%. The free fields are only trade date, options class,
-  underlying, product type, exchange, and total volume--there is no call/put
-  split. More importantly, the website terms only expressly permit a personal
-  non-commercial copy and reserve electronic storage, derivative, publication,
-  and other uses absent prior written consent; the download UI establishes at
-  most D+1 availability, not an immutable first-publication timestamp. Do not
-  reserve a put/call or total-volume alpha from this endpoint. Reopen only with
-  written permission for automated internal research/production storage plus
-  an auditable release-time contract (or a properly licensed DataShop product);
-  any later free-data test must remain the distinct total-volume-attention
-  hypothesis rather than claiming unavailable call/put sentiment;
-- CFPB Consumer Complaint Database issuer-response or complaint-intensity
-  admission rules on the current historical snapshot. A July 15 zero-ID
-  preflight found ample raw volume but only five strict warehouse mappings
-  (`JPM`, `GS`, `COIN`, `TSLA`, `META`; a sixth `GOOG` relation still needs
-  parent proof), below the 10-ticker floor in every window. The complete source
-  was itself concentrated: the largest company held 28.63% / 32.01% / 31.08%
-  of complaint rows, so mid/late failed the 30% ceiling. More importantly,
-  `Timely response?` and response text have no response timestamp or version
-  ledger; even `date_sent_to_company + 61d` is hindsight in the current view,
-  so strict historical response-feature coverage is zero. Do not reserve a
-  response, complaint-type, company-alias, lag, or threshold variant. Reopen
-  only with at least 10 strictly mapped tickers and an append-only prospective
-  first-seen ledger; that ledger may use count-only fields after first-seen but
-  must never backfill response semantics into the historical policy clock;
-- SEC MIDAS Metrics by Individual Security cancel-to-trade admission on the
-  current quarterly ZIP versions. A July 15 zero-ID preflight bound the
-  official URLs and HTTP `Last-Modified` clocks, used each file only after the
-  next session, separated Stock from ETF, and computed the official quarterly
-  ratio as `sum(Cancels) / sum(LitTrades)`. Coverage was broad (34-37 core
-  stocks per window), but the fixed worst-quintile entry exclusion touched only
-  3 / 4 / 8 settled baseline trades, whose realized PnL was positive in every
-  window: `+$3,403.15` / `+$8,664.34` / `+$40,951.31` (`+$53,018.80` total).
-  This is a disqualifying direction check, not Gate-4 replacement accounting;
-  do not sweep quintiles, ratios, lags, or invert the rule after seeing these
-  outcomes. The files are also revision-prone--2025 Q1-Q4 currently carry 2026
-  modification clocks--so CSV dates are never valid availability dates.
-  Reopen only with a prospective immutable version ledger plus genuinely new
-  settled rows or a separately predeclared gate shape supported before outcome
-  inspection;
-- SEC Form D direct-listed-issuer dilution admission on the current quarterly
-  flattened archives. A July 15 zero-ID preflight required the Form D primary
-  issuer CIK to equal the SEC reference CIK for one of 47 mapped core names.
-  Across 2024 Q3-Q4 and 2025 Q1-Q4 the strict match counts were
-  `0/0/1/0/1/0` (only `INTC` and `NOW`), so this is structurally too sparse.
-  Do not rescue it with subsidiary/name aliases or offering-type/amount
-  thresholds. Reopen only with an auditable effective-dated parent relation
-  that independently reaches at least 20 issuer-periods and 10 tickers per
-  standard window;
-- CMS NADAC brand-WAC price-increase candidate-pool reservation before an
-  auditable issuer map and public-release clock pass the same three-window
-  density gate. A July 15 zero-ID preflight joined the public NADAC Comparison
-  dataset to the FDA NDC package/product directory by exact full NDC11; join
-  coverage was 86.51%/92.41%/89.34%. After positive-change filtering and a
-  fail-closed exact labeler-to-SEC-title map, old/mid/late contained only
-  25/5/23 issuer-weeks across 24/4/22 tickers, with top-1 shares
-  8.0%/40.0%/8.7%. `mid_weak` therefore fails both the >=20 issuer-week and
-  >=10-ticker bars and exceeds the <=30% concentration bar. Do not reserve an
-  ID for alias expansion or row recounting. Reopen only with a hash-bound
-  weekly first-public/version archive plus an effective-dated, evidenced
-  NDC-labeler-to-economic-parent/ticker map that independently clears all three
-  bars in every window; a current NDC/SEC snapshot and the consolidated
-  comparison `end_date` are not historical PIT proof, and a labeler may be a
-  repackager, relabeler, or private-label distributor rather than the economic
-  manufacturer;
-- FAA Airworthiness Directive fleet-constraint or peer-substitution observer
-  reservation on the current Federal Register surface. A July 15 zero-ID
-  preflight used the official `publication_date` clock and de-duplicated Rule
-  plus Proposed Rule documents to issuer-day. Raw mapped density was 57/52/57
-  events across the three windows, but only 6/6/6 listed tickers had warehouse
-  prices and BA alone represented 64.91%/51.92%/56.14%; Rule-only remained
-  32/24/26 events across 5/4/5 tickers with 68.75%/50%/50% BA shares. This is a
-  structural Boeing concentration failure, not a threshold problem. Do not
-  reserve an ID to exclude BA, broaden aliases, switch Rule/Proposed mixtures,
-  or retune the response. Reopen only with a materially different official
-  aviation-economic source that independently clears at least 20 events, 10
-  tickers, and top-1 <=30% in every window;
-- SEC Form N-MFP issuer-funding-withdrawal reservation on the current monthly
-  as-filed archives. A July 15 zero-ID preflight hash-bound 19 official monthly
-  ZIPs from September 2024 through March 2026 (196,245,478 bytes; ordered
-  `name:bytes:file_sha256\\n` bundle SHA-256
-  `1857c1187284e2a695ad078fb08007f48cc07f41bc81f80f78cfb1784ee33684`).
-  It kept original N-MFP/N-MFP3 submissions, CP/CD/time-deposit/ABCP/other
-  short-funding categories, direct issuer CIK plus normalized SEC-title
-  agreement, and all-window liquid warehouse tickers. Requiring at least three
-  fund filings and $50m per issuer-month produced 38/31/33 rows but only 8/7/7
-  tickers; the largest issuer held 54.25%/48.33%/55.29% of mapped value. The
-  fixed money hypothesis--current value <=50% of prior still-outstanding value,
-  with the same three-fund/$50m floor--produced only 5/5/6 events across 5/3/3
-  tickers, and top-1 event shares of 20%/40%/50%. One apparent ticker was a
-  Barclays ETN rather than the debt issuer's common equity, so a stricter
-  economic-parent map can only reduce breadth. Do not reserve an ID for CIK/name
-  alias expansion, category broadening, value/fund/retention threshold sweeps,
-  or report-month timing. Reopen only with an independently evidenced
-  effective-dated debt-issuer-to-listed-parent map or second PIT funding source
-  that clears at least 20 signal events, 10 tickers, and top-1 <=30% in every
-  window using exact EDGAR accepted timestamps;
-- MSHA immediately-reportable accident peer-substitution observers that infer
-  supply loss from `IMMED_NOTIFY_CD` alone or use the current full-replacement
-  accident/mine files as historical PIT snapshots. The July 14 zero-ID
-  preflight found adequate raw density (74/97/58 mapped issuer-weeks); a strict
-  coal peer pool produced 323/291/221 candidate legs but only 9 peer tickers in
-  every window, while the broader 776/752/594-leg pool mixed economically
-  different commodities. Immediate-reporting status does not establish an
-  operating interruption, and `DOCUMENT_NO` assignment dates do not establish
-  first-publication dates. Reopen only with a hash-bound effective-dated
-  controller-to-ticker and commodity/region peer graph, at least two ex-ante
-  substitutes per event, and independent interruption materiality such as a
-  matched 107(a) withdrawal/termination or at least 5% of issuer commodity
-  capacity affected. Historical evaluation must then clear, in every window,
-  20 settled event-peer trades, 8 target tickers, 3 commodity buckets, top-1
-  ticker <=25%, and top-1 bucket <=40%; without historical weekly vintages,
-  evaluate only after a prospective first-seen ledger reaches 30 closed rows
-  across 10 peer tickers;
-- Federal Register Commerce AD/CVD final-determination or order event retries,
-  and the corresponding USITC final-injury petitioner-beneficiary observer,
-  before both the economic decision clock and cross-window issuer density are
-  valid. A July 14 zero-ID preflight reduced 1,548 Commerce documents to
-  20/26/30 independent product-days, but only 12/9/6 mapped issuer-event legs
-  across 8/8/6 tickers; top-product shares were 33%/50%/100%. Commerce final
-  determinations are not the common economic clock: preliminary affirmative
-  findings can start cash deposits, final determinations still await the ITC,
-  and the later order is administrative. Moving to the USITC final vote did
-  not rescue the surface: mapped legs were 23/63/2 across 3/11/1 tickers, with
-  top-ticker shares 78.26%/22.22%/100% and top-product shares
-  78.26%/44.44%/100%. USITC news pages also expose only a date and can be
-  overwritten by a later revote. Reopen only with immutable official
-  `published_at` plus version history and, in every window, at least 20 mapped
-  legs, 10 effective listed tickers, 3 products, top-ticker share <=30%, and
-  top-product share <=40%; otherwise wait for at least 30 settled prospective
-  first-seen rows under one frozen policy;
-- USPTO patent-assignment recordation as a historical corporate-technology-
-  acquisition source before public visibility and ownership relations are
-  auditable. An 18-issuer July 14 sample superficially produced 226/162/108
-  issuer-weeks across 18/18/15 tickers, but the public endpoint truncated or
-  unsorted large aliases and ordinary inventor-to-employer assignments made up
-  the apparent density; zero rows were verified as gate-ready external
-  corporate-assignor acquisitions. More importantly, `recordationDate` is not
-  first-publication time, and documents involving unpublished applications can
-  appear later while retaining an older recordation date. The official
-  research dataset ends in 2023 and the current export service is scheduled to
-  migrate on July 24, 2026. Reopen only after the replacement API has stable,
-  complete pagination and an immutable first-publication/version contract,
-  effective-dated assignor/assignee parent mapping, and each window has at
-  least 20 verified external corporate-assignor issuer-weeks, 10 tickers, and
-  top-1 share <=30%. Without historical snapshots, seed the then-current set
-  and evaluate only after at least 30 settled forward first-seen events across
-  10 tickers and 15 decision dates;
-- GAO bid-protest decision-date replays before a historical public-release
-  clock exists. GAO says an unprotected decision is normally released one or
-  two days after the parties are notified, while a redacted decision may lag
-  two or three weeks and occasionally months; the current product page and PDF
-  do not expose a historical `first_public_at` or version ledger. Using the
-  decision date for next-open execution would therefore be forward-looking.
-  FY2025 had only 53 sustains across public and private protesters, so mapping
-  cannot repair the missing clock and the listed-company per-window upper bound
-  is already small. Reopen only with per-decision first-publication/version
-  snapshots covering all windows, then require at least 20 listed-protester
-  issuer-days, 10 tickers, and top-1 share <=30% in every window;
-- FDA Orange Book monthly `NEWA` release-basket retunes on the frozen 19-PDF
-  archive. `exp-20260715-004` corrected an invalid Fresenius Kabi-to-FMS
-  ownership assumption, then retained 23/24/23 eligible issuer-release legs
-  across 11/14/11 tickers. The fixed all-issuer, equal `$16k` release basket
-  produced core+sleeve aggregate EV `+0.1240` and PnL `+$1,648.40`, but missed
-  the accepted comparator (`+0.5286`, `+$10,432.91`), old-thin EV was
-  `-0.0032`, and the top-five positive-contribution share was `79.93%` versus
-  the preregistered 60% cap. Production daily wiring was therefore removed.
-  Do not sweep approval-age thresholds, NEWA subtypes, holder aliases, top-N,
-  weights, notional, hold, cost, or entry timing on these PDFs. Reopen only
-  with a genuinely independent drug-commercialization data source/gate or at
-  least 30 prospectively settled unchanged-policy release decisions across 10
-  tickers and 15 publication dates with complete cash/SPY/QQQ replacement
-  value;
-- Treasury auction bid-to-cover/TBT response retunes on the frozen official
-  result surface. `exp-20260715-007` hash-bound 297 nominal Note/Bond results
-  (293 static XML plus four identity-matched official PDF fault recoveries for
-  persistently-503 XML endpoints), validated release times of 11:31-13:17 ET,
-  and settled 37 continuous-single-slot trades across the standard windows
-  (11/13/13). Weak demand defined as bid-to-cover strictly below the prior-12
-  same-original-tenor median lost `-$3,221.57` in old-thin and `-$3,221.35` in
-  mid-weak; late-strong added only `+$39.46`. Aggregate core+sleeve EV changed
-  `-0.4870`, PnL `-$6,403.46`, and worst max drawdown worsened `0.72pp`.
-  Old/mid cash and QQQ replacement were negative, the top-tenor positive-PnL
-  share was `38.28%`, top-five trade share `71.16%`, and the seven-attempt DSR
-  panel correctly failed closed because the aligned selection family was
-  incomplete. Keep the shared observer default-off and do not retune the BTC
-  threshold, lookback, tenor subset, same-day attribution, TBT/short-TLT proxy,
-  entry clock, hold, cost, overlap, or notional on these rows. Reopen only with
-  a genuinely new auction-microstructure source/gate, or at least 30
-  prospectively closed unchanged-policy decisions plus a complete aligned
-  selection panel;
-- Treasury auction indirect-bidder-share/TBT response retunes on the same
-  frozen official-result surface. `exp-20260716-002` repaired the evaluation
-  envelope to a standalone, fully funded `$100,000` paper account and
-  cross-checked `indirect_bidder_accepted / total_accepted` for all 297 rows
-  against 293 archived XML results plus four PDF fault recoveries. The fixed
-  below-prior-12 same-tenor-median rule settled 40 continuous-single-slot
-  trades (`14/13/13`) but lost `-$4,406.32/-$2,526.56/+$398.25`, or
-  `-$6,534.63` aggregate; mean QQQ replacement value was negative in every
-  window and worst drawdown was `5.02%` against the `0.50%` cap. The complete,
-  aligned two-field bid-to-cover/indirect-share DSR was only `0.021315`, and
-  3-Year auctions supplied `38.16%` of positive PnL versus the 35% cap. The
-  printed aggregate EV of `+0.1674` is not positive evidence: old/mid returns
-  and Sharpes were both negative, so the repository's return-times-Sharpe
-  formula produced a negative-times-negative sign pathology while dollars and
-  replacement value lost. `exp-20260716-003` repaired the canonical metric to
-  `strategy_total_return_pct * abs(sharpe_daily)`: this fixture now scores
-  `-0.1640`, while the positive-return cash-feasible baseline remains exactly
-  `6.2057`. Closed historical artifacts keep their stored legacy arithmetic;
-  new Gate evidence must use the sign-preserving helper. Core cash-feasible
-  results remained byte-identical.
-  Do not retune the share denominator, threshold, lookback, tenor subset,
-  entry, hold, proxy, cost, overlap, or notional. Do not consume the remaining
-  direct/primary-dealer fields one ID at a time under the same response; any
-  revisit must batch a predeclared complete participant-composition panel,
-  introduce a genuinely different gate/source, or add materially settled
-  forward decisions;
-- SEC Form N-PORT aggregate-share-sign allocation retunes on the frozen
-  registered-fund holdings surface. `exp-20260715-009` added a distinct
-  official PIT source covering nine quarterly public packages (2024Q2 through
-  2026Q2), latest-as-of amendment handling, sold-to-zero detection, 70--110
-  day continuous-series pairing, and split correction against a conflict-
-  checked union of the three canonical frozen OHLCV snapshots. Coverage was
-  broad: 50/62 baseline company trades had at least 20 matched series, and
-  positive and negative branches both materially changed opening shares in
-  every window. The fixed positive=1.10 / negative=0.90 / missing=1.00 scalar
-  nevertheless reduced every window: EV deltas were `-0.3215/-0.1313/-0.0103`
-  and PnL deltas `-$5,219.58/-$4,103.53/-$1,023.04`, for aggregate EV
-  `12.2698 -> 11.8067` and PnL `-$10,346.15`. Drawdown improved, but the
-  negative bucket cut many large winners (`-$9,443.76` aggregate contribution)
-  while existing caps allowed only 7 material positive increases versus 28
-  negative haircuts. A same-round zero-ID scarce-slot ordering preflight also
-  found only 2/1/4 collision days and could not change mid-window admission.
-  No `run.py` or live/default sizing wiring was retained. Do not retry by
-  changing scalars, using one sign, or retuning series minimum, report
-  gap/recency, split tolerance, fund/ticker subset, or position cap on these
-  windows. Reopen only for a genuinely different N-PORT signal with a
-  predeclared mechanism plus an unseen out-of-sample window or materially new
-  settled rows; otherwise switch data sources;
-- cash-ledger enforcement retunes and continued use of the unenforced
-  `exp-20260712-015` champion as Gate 1. `exp-20260715-010` completed the exact
-  follow-up required by `exp-20260715-008`: `CASH_LEDGER_ENFORCED=True` is now
-  the backtester default, the same frozen inputs were replayed under explicit
-  True and the default with exact metrics/trades/dated-return/cash-ledger
-  identity, and explicit False still reproduces the historical anchor.
-  The active executable-capital baseline is aggregate EV `6.2057`, PnL
-  `$130,992.36`, and 49 trades; all windows have zero negative-cash events,
-  exact cash conservation, and minimum cash of `$11.95/$0.44/$5.12`.
-  The prior `12.2698` EV / `$237,852.27` PnL is a leverage-inflated historical
-  upper bound, not a comparator. Do not retune scale-versus-skip behavior,
-  buffers, per-order caps, or execution ordering, and do not mechanically
-  rerun rejected allocation policies merely because the hurdle fell. A valid
-  next capital-allocation experiment must state a genuinely new allocator or
-  covariance hypothesis and compare both sides against the cash-feasible
-  anchor. This repair is not live-ready until `run.py` and broker cash/buying-
-  power semantics share an auditable reservation/admission contract;
-- raw active-book marginal-covariance requested-risk retunes on the frozen
-  cash-feasible anchor. `exp-20260716-001` used the actual post-exit runtime
-  book, 60 consecutive signal-date close returns, current market-value
-  notionals, and the parameter-free positive root that keeps standalone
-  candidate variance while neutralizing only a positive net cross term. The
-  mechanism changed final executed shares on 38 entries and reduced maximum
-  drawdown in every window, but it clipped winners and recycled cash into
-  lower-value later admissions: aggregate EV fell `6.2057 -> 5.9413`, PnL fell
-  `-$5,736.67`, and EV/PnL regressed in all three windows while trades rose
-  `49 -> 57`. Do not sweep raw/residual covariance, lookback, shrinkage,
-  scalar floors, cross-term thresholds, caps, or same-day book semantics on
-  these outcomes. Reopen only with an independently predeclared new covariance
-  gate shape plus an unseen window, or materially new forward decisions under
-  a fixed shared helper;
-- default-on sizing/cap stack simplification removals on the cash-feasible
-  anchor. `exp-20260716-010`'s 11-arm ablation nominated clean_spy_leader
-  family caps as the only real near-zero candidate, and the predeclared
-  follow-up `exp-20260717-006` ran the bundle with a fresh Gate 4 on the three
-  canonical windows plus a newly frozen unseen holdout window
-  2026-04-22..2026-07-16 (hash-bound 47-ticker extract). Canonical identity
-  and the ablation arm reproduced exactly (+0.61% aggregate EV), but the
-  holdout REJECTED the removal: identical 10-trade selection and survival on
-  both sides, yet the family's raised caps added +$585.77 (+8.0% window PnL)
-  and +0.0122 EV (+7.5%), breaching the predeclared -2% floors. The
-  simplification-candidate list from the ablation is now empty of free
-  removals (addon_stack was already not-free, signal_day_green and
-  quality_slot_topups lose EV, commodities/gold caps stay frozen single-window
-  noise). Do not re-run whole/partial/regrouped removals or cap sweeps on
-  these windows; the 2026-04..07 holdout is now consumed. Any future
-  simplification claim needs a window post-dating 2026-07-16 or materially new
-  settled forward rows; next capital-allocation work needs a genuinely new
-  allocator/covariance mechanism, not removals. The committed holdout manifest
-  and before/after metrics are reusable as a fourth-window confirmation surface
-  for other predeclared tickets; the local SQLite extract is generated and
-  intentionally ignored;
-- Federal Register / USITC Section 337 institution-notice respondent admission
-  before strict listed-issuer density clears all three canonical windows. A
-  July 15 zero-ID preflight fetched 271 official `337-TA` documents, parsed all
-  77 institution notices into 76 unique investigations, used Federal Register
-  `publication_date` with next-session availability, and mapped respondents
-  only by normalized exact SEC legal title across 7,161 OHLCV-eligible SEC
-  tickers. Old/mid/late produced just 9/4/18 issuer-events across 9/4/18
-  tickers, with top-1 shares 11.1%/25.0%/5.56%; every window failed the fixed
-  >=20-event and >=10-ticker bars. Do not reserve an ID to add fuzzy aliases,
-  infer private subsidiaries, switch to complainants, mix later investigation
-  stages, or lower density thresholds. Reopen only with an auditable
-  effective-dated respondent-to-listed-parent relation that independently
-  clears >=20 issuer-events, >=10 tickers, and top-1 <=30% in every window, or
-  after at least 30 prospectively settled first-seen listed-respondent events
-  under one frozen policy;
-- NYSE-group Reg SHO active-membership long-entry exclusion on the current
-  cash-feasible core book. A July 15 zero-ID preflight found a genuinely new
-  official source axis relative to the prior Nasdaq-only candidate-pool test:
-  the NYSE download endpoint exposes dated threshold files for NYSE, NYSE
-  American, and NYSE Arca with after-close creation timestamps. The fixed PIT
-  policy was to block only the next-session open while the ticker was present
-  on the immediately preceding daily file, with no persistence after the first
-  absent file. The gate is nevertheless structurally too thin: `mid_weak` has
-  only 13 cash-feasible core entries, nine are Nasdaq-listed equities, and the
-  NYSE-group source can touch at most the four SLV/IWM ETF entries, below the
-  preregistered 10-overlap minimum before any return is read. Do not finish a
-  three-window download, reserve an ID, or retune membership persistence,
-  response shape, or the overlap bar on this baseline. Reopen only after
-  materially new settled core entries raise auditable NYSE-group overlap to at
-  least 10 in every window, or with a consolidated all-venue PIT threshold
-  source and an independently preregistered gate. A July 16 distinct
-  candidate-pool preflight for removal after at least five consecutive active
-  sessions also proved the daily endpoint unsuitable for historical bulk use:
-  only 56 of 1,188 NYSE/NYSE American/NYSE Arca requests succeeded and 1,132
-  returned HTTP 429, so no density result was claimed. Do not retry the daily
-  crawl; that gate may reopen only with an official or explicitly authorized
-  hash-auditable bulk cache;
-- NasdaqTrader historical trading-halt entry policy before a compliant bulk
-  archive and effective-dated security master exist. A July 15 zero-ID sample
-  showed that the official single-day RSS can return dated symbol, reason,
-  halt, and resumption fields (21 rows on 2024-10-02), so a legal clock could
-  decide only after the resumption-day close and enter at the next open. The
-  official range UI exposes only the recent year, however, while historical
-  RSS accepts one date per request under a no-faster-than-one-minute cadence;
-  the three canonical windows would require about 567 requests. The feed also
-  lacks a PIT security-type field, so a current symbol directory would add
-  survivorship bias. Do not reserve an ID or crawl the dates individually.
-  Reopen only with an official or explicitly authorized date-partitioned bulk
-  cache plus an effective-dated common-stock master, then require at least 20
-  issuer-weeks, 10 tickers, and top-1 share <=30% in every window;
-- SEC Rule 605 monthly execution-quality improvement as a candidate pool on
-  the legacy 26-field NYSE-group reports. A July 16 zero-ID, outcome-blind
-  preflight hash-bound all 63 official NYSE/NYSE American/NYSE Arca ZIPs from
-  2024-07 through 2026-03 (bundle manifest SHA-256
-  `a2b37ab4d8e9ad777dbac56a6c3f6da635d1dd8e1bf2a6ed72a35a98d8af2364`),
-  used the latest venue `Last-Modified` plus the next SPY session as the PIT
-  clock, and matched 350,959 market/marketable-limit report rows to a
-  conservative 1,390-name all-window liquid common-stock proxy. The frozen
-  signal required at least 100,000 executed shares in both adjacent months,
-  effective spread no more than 90% of the prior month, 0--9-second fill share
-  improvement of at least one percentage point, and top five per report month
-  by `(1-spread_ratio)+2*fast-fill-delta`. It produced only 23 candidates in
-  total and 8/6/6 issuer-months across 8/6/6 tickers inside old/mid/late; top-1
-  shares were acceptable at 12.5%/16.7%/16.7%, but every window missed the
-  fixed >=20 issuer-month and >=10 ticker bars. No price, return, or PnL was
-  read. Do not reserve an ID or retune volume, spread, speed, top-N, market,
-  title hygiene, availability, entry, or hold thresholds on these legacy
-  files. Reopen only for the materially new post-compliance 55-field Rule 605
-  schema with an unseen settled window and a preregistered new measurement
-  mechanism, or an independent execution-quality source/gate;
-- OpenFEMA `DisasterDeclarationsSummaries` reconstruction-basket event alpha on
-  the current mutable archive. A July 16 zero-ID, outcome-blind preflight froze
-  `DR` declarations for Hurricane/Severe Storm/Tornado/Flood/Fire, collapsed
-  declarations into non-transitive five-calendar-day waves, imposed a one-day
-  availability embargo plus the first strictly later SPY session, and fixed a
-  ten-session equal-weight reconstruction basket before inspecting source
-  rows. The hash-bound official pull contained 1,534 designated-area rows, 92
-  unique disasters, 66 eligible disasters and 26 waves; only 15/8/2 waves
-  (`25` total) could fully settle inside old/mid/late, failing the fixed
-  >=10-per-window and >=30-total bars. The frozen basket also failed 100%
-  warehouse coverage because BECN had zero rows in all three windows. More
-  importantly, the current OpenFEMA archive is not a versioned as-published
-  feed: `declarationDate` is the declaration date, while county/program rows
-  and `lastRefresh` may reflect later amendments, so historical first-seen PIT
-  cannot be proven. No return or replacement value was read. Do not reserve an
-  ID to swap BECN, add EM/FM, lower density, alter wave/lag/hold rules, or treat
-  county/ticker legs as independent observations. Reopen only after at least
-  30 prospectively settled, append-only first-seen DR waves under one frozen
-  policy with a PIT-stable 100%-covered basket, an official versioned initial-
-  publication archive, or a genuinely new reconstruction-demand source/gate;
-- EIA-930 balancing-authority load-acceleration utility candidate-pool
-  reservation on the current mutable historical API. A July 17 zero-ID,
-  outcome-blind preflight established a genuinely new source axis: the official
-  daily-demand route spans 2019 onward, exposes 66 balancing authorities, and a
-  19-authority nine-day sample returned all 171 expected rows. After dropping
-  the ambiguous PNM/TXNM symbol transition, 18 authority codes have a
-  conservative current-parent mapping to 13 listed tickers; all 13 have exact
-  138/127/123 OHLCV-session coverage in old/mid/late. The raw supply is
-  therefore plausible, but historical PIT is not: API rows expose only period,
-  authority, metric, timezone, and value, while EIA explicitly permits
-  historical corrections and provides no row-level first-publication or
-  version identifier on this route. The free `DEMO_KEY` also reached HTTP 429
-  before a complete three-window issuer-week count, so no density pass is
-  claimed and no return was read. Do not reserve an ID, treat the current
-  corrected history as as-published, retry the demo-key crawl, or tune demand
-  acceleration/embargo/hold thresholds. Reopen only with a non-demo authorized
-  pull or official bulk cache, a hash-bound as-published/version archive plus
-  effective-dated authority-to-listed-parent mapping, and at least 20 decision
-  weeks, 10 tickers, and top-1 <=30% in every canonical window. Without such a
-  historical archive, use a frozen append-only first-seen observer and wait for
-  at least 30 settled weekly decisions across 10 tickers and 20 decision dates;
-- Nasdaq Trader issuer-information/regulatory trade-halt resumption candidate-
-  pool reservation on the current liquid-common-stock identity proxy. A July
-  17 zero-ID, outcome-blind preflight used the official public JSON-RPC range
-  search, de-duplicated repeated halt/resumption rows by
-  `(halt_date, halt_time, symbol, reason)`, and froze only issuer-information or
-  regulatory codes `T1/T2/T12/H4/H9/H10/H11`; LUDP/LUDS volatility pauses,
-  IPO, operational, corporate-action, and market-wide codes were excluded.
-  The old/mid/late response SHA-256 values were
-  `79d19a9e1a9d480142b668741646e5952d4c4256d92e4da3f61dd3695b5518ea`,
-  `a20d3f20a953f28f5fdff69b8eda4b7e783d0e3273b5b87272d9e2ce50100bdc`,
-  and `d7acd976694c176b0f341165899efd51f2a2c6e3146b3dc94740b90c126c526a`.
-  Exact-symbol matching against the 1,251-name liquid proxy produced
-  63/17/30 issuer-weeks across 55/14/28 tickers, with top-1 shares of
-  4.76%/17.65%/6.67%. Mid-weak therefore missed the fixed >=20 issuer-week
-  bar even though ticker breadth and concentration passed; no price, return,
-  or PnL was read. The proxy is also current rather than an effective-dated
-  historical security master, so it is not a PIT acceptance identity. Do not
-  reserve an ID to add LUDP/IPO/operational codes, count T1-to-T2 state changes
-  as independent shocks, relax security hygiene, or tune direction, entry,
-  hold, cooldown, or costs on these rows. Reopen only with a hash-bound
-  effective-dated common-stock master that outcome-blind adds at least three
-  unique mid-weak issuer-weeks under the unchanged codes while preserving
-  >=10 tickers and top-1 <=30% in every window, at least 30 prospectively
-  settled first-seen unchanged-policy decisions across 10 tickers and 20
-  dates, or a genuinely different official halt relation/gate;
-- NRC Power Reactor Event Notification core-long entry exclusion before a
-  hash-auditable initial-vintage archive and effective-dated listed-operator
-  map exist. A July 17 zero-ID, outcome-blind preflight enumerated 373 official
-  daily report URLs from the 2024--2026 year indexes for 2024-10-02 through
-  2026-04-21, read only the initial `Event Number`, `Power Reactor`, `Facility`,
-  and `Notification Date-Time` headers, and de-duplicated 259 event numbers.
-  It froze a fail-closed mapping for unambiguous listed plant operators and a
-  T+1-through-T+10 core-long entry-exclusion hypothesis; later revision,
-  retraction, and narrative text were excluded from the proposed decision.
-  Ticker-by-ISO-week de-duplication produced 58/49/43 issuer-weeks across
-  11/13/11 tickers in old/mid/late, with top-1 shares of
-  17.24%/20.41%/23.26%, so all three windows cleared the fixed >=20
-  issuer-week, >=10 ticker, and top-1 <=30% density bars without reading price,
-  return, or PnL. The canonical-URL manifest and parsed-header rowset hashes
-  were `17f15e06754b33bc7a977794002346d3838cdecd27766c5a418c456ef708654b`
-  and `69e77abf98dd568987e8a8e996406365153cd5092b976e861910a8983cd84dc5`,
-  but they came from rendered web extraction rather than frozen raw responses
-  and are discovery lineage, not acceptable source artifacts. Repo-runtime
-  requests to the NRC archive were blocked by an Akamai HTTP 403 challenge,
-  while the current historical pages can append revisions and retractions, so
-  no observer ID may be reserved from this preflight. Reopen only when the repo
-  runtime can HTTP-200 and hash-bind all 373 raw pages or an official bulk
-  export with retrieved-at and event-to-URL provenance, an effective-dated NRC
-  operator-to-SEC-listed-parent map can fail closed, and the unchanged policy
-  still clears all three density bars. If initial historical vintages cannot be
-  obtained, use a prospective first-seen observer and wait for at least 30
-  settled unchanged-policy decisions across 10 tickers and 20 first-seen
-  dates with top-1 <=30%;
-- DOL Form 5500 active-participant-growth candidate-pool reservation on the
-  current `All` filing archives. A July 17 zero-ID, outcome-blind preflight
-  hash-bound the official 2022--2025 ZIPs (789,718 rows; ordered SHA-256 values
-  `9662ed6e955a6118fbe24fb588776232897cb2789ad911c649b279dfbd671463`,
-  `91b411c88c0a9ec46ba7d29597d29b9a4918a03d019cae14524cb9362cf71e63`,
-  `2a2363fca450241baba42b74bf3b3ae9860cea57a6e1ca0537b5cc3539e70f06`,
-  and `40976fe00be1f27e373fb65dd7dbc03d66f5762700ea107f905a948f9fdc7958`).
-  The fixed money hypothesis kept the earliest successful non-amended,
-  non-final, full-year filing per EIN/plan/period, required BOY active
-  participants >=100, growth >=50 and >=10%, selected the largest BOY-active
-  plan per sponsor/period before applying the growth gate, used the first
-  strictly later SPY session, and de-duplicated ticker/ISO week. Exact
-  normalized SEC legal-title mapping among 1,235 all-window evaluable tickers
-  produced 336/138/3 issuer-weeks across 304/131/3 tickers in old/mid/late,
-  with top-1 shares 0.89%/1.45%/33.33%. A separate diagnostic exact-EIN join
-  against current SEC submissions metadata yielded 268/100/4 issuer-weeks
-  across 245/99/4 tickers, with top-1 shares 1.12%/2.00%/25.00%; it is not an
-  effective-dated PIT identity and was not used as acceptance evidence. Thus
-  late independently fails both >=20 issuer-weeks and >=10 tickers under both
-  identity routes, immediately after the concentrated October filing season;
-  no price, return, or PnL was read. The archives also lack a retained monthly
-  first-seen/version ledger and the repository lacks a historical sponsor-EIN
-  -> CIK -> common-stock security relation, so do not reserve an ID or tune
-  growth, size, freshness, plan, filing, de-duplication, entry, or hold rules.
-  Reopen only with a hash-bound historical-vintage archive plus an auditable
-  effective-dated sponsor/security map that outcome-blind adds at least 17
-  late issuer-weeks and 7 late tickers while preserving top-1 <=30%, a
-  genuinely different data source/gate, or at least 30 prospectively settled
-  first-seen unchanged-policy decisions across 10 tickers and 20 dates;
-- USPTO weekly patent-grant XML reservation before authorized ODP access. The
-  official product remains a free weekly Tuesday source and the current grant
-  XML schema is documented, but a July 17 zero-ID access preflight found that
-  ODP has required a valid USPTO.gov sign-in/API key since June 18, 2026. The
-  official `PTBLXML` product-manifest request returned HTTP 401 without a key,
-  the environment and in-app browser exposed neither a key nor an authenticated
-  session, and the retired `bulkdata.uspto.gov` host did not resolve. No weekly
-  file, patent row, price, return, or PnL was read. Do not reserve an observer
-  ID, infer density from search-index snippets, use an unofficial mirror, or
-  retry unauthenticated endpoints. Reopen only with an explicitly authorized
-  `USPTO_API_KEY`/signed-in session or a hash-auditable official weekly XML
-  cache covering all three windows; then run the unchanged outcome-blind gate
-  of >=20 issuer-weeks, >=10 mapped common-stock tickers, and top-1 <=30% in
-  every window before any shared-paper-first reservation;
-- BTS Form 234 monthly airline-service-quality improvement candidate-pool
-  reservation before a hash-auditable as-published release archive is
-  available to the repository runtime. A July 17 zero-ID, outcome-blind
-  preflight proposed a monthly equal-risk basket of listed airline parents
-  whose cancellation rate declines month over month while on-time arrival
-  rate improves, entered only at the next open after the official release and
-  held for 20 sessions. Advisory novelty found no blocking neighbor; this is a
-  new carrier operating-quality source, not the rejected USO oil-cost-relief
-  travel-leadership response. The official monthly product page exposes dated
-  release attachments (for example October 2024 `REL01.09DEC2024`), but the
-  attachment host returned Akamai HTTP 403 to the repo runtime even with a
-  browser user-agent. The accessible official TranStats PREZIP mirror returned
-  HTTP 200, but its October 2024 file was last modified on 2025-01-16, after
-  the dated 2024-12-09 release, and TranStats explicitly reports updates to
-  prior periods; that mutable current file cannot stand in for the historical
-  release vintage. No ZIP body, carrier row, price, return, or PnL was read,
-  and no density pass is claimed. Do not reserve an ID, use current PREZIP
-  rows with a guessed embargo, or retry the blocked attachment one file at a
-  time. Reopen only with a gap-free official/hash-auditable monthly release
-  cache covering the prior-month warm-up plus all three canonical windows, an
-  exact publication/retrieval clock and effective-dated carrier-to-listed-
-  parent map, and an unchanged outcome-blind preflight yielding at least six
-  independent release dates, 20 eligible issuer-months, 10 common-stock
-  tickers, and top-1 <=30% in every window;
-- TSA weekly checkpoint-throughput travel-demand alpha on the current FOIA
-  reading-room artifacts. `exp-20260717-005` rejected the fixed positive-YoY
-  plus positive-acceleration 14-name travel basket before any price, return,
-  or PnL read. A hash-bound 2025-10-19--25 weekly PDF totaled 17,351,496
-  passengers, while the current official annual table totaled 17,884,180 for
-  the same dates (difference 532,684 / 3.070%). The PDF cover date was
-  2025-10-27, but its metadata modification date and HTTP Last-Modified were
-  2025-11-17. The current index also yielded only 25/24/22 reports and
-  19/22/12 current+prior-week+exact-364-day-ready structures in old/mid/late,
-  rather than the preregistered 26/24/26 supply premise. Do not infer initial
-  historical values from the mutable annual table, treat post-modified PDFs
-  as release vintages, guess the known-at clock, repeat the index count, alter
-  the response, or read prices from these rows. Reopen only with an authorized
-  immutable/versioned weekly archive containing original bytes and exact
-  publication timestamps, with enough reports to yield at least 10 locked
-  signal events in every canonical window before any shared-paper-first
-  performance run;
+- July 18 official-source and public-web preflights are compressed here because
+  the exact row counts, hashes, and source notes belong in tickets, logs, and
+  artifacts. The mechanism-level rule is unchanged: fixed-response official
+  releases are not reserve-worthy until PIT publication identity, effective-
+  dated issuer mapping, density, concentration, and source-use contracts pass
+  before any price or outcome access. NHTSA Part 573, FDA MAUDE, NLRB elections,
+  OCC Corporate Applications, DailyMed SPL safety sections, ClinicalTrials
+  safety imbalance, MediaWiki revision bursts, npm downloads, and Tranco domain
+  ranks all failed at least one of those pre-outcome bars or need a broader
+  effective-dated map. Do not reopen by loosening aliases, changing lag/top-N/
+  hold/thresholds, or treating current mutable archives as historical vintages.
+  Reopen only with hash-bound first-seen/vintage data plus unchanged density
+  bars, or with sufficiently settled prospective replacement-value rows.
+- The July 18 NVD Initial Analysis CVE-cluster gate is the only fully reserved
+  alpha in this batch. It was rejected after Gate 1-4: aggregate EV and PnL
+  regressed, clean windows lost value, and daily parity could not reproduce
+  pre-open same-session activations. The retained asset is fingerprint coverage
+  for `nvd_cve_change_history` plus replay artifacts; do not retune CVE cluster
+  size, exclusion length, issuer subset, admission cutoff, or response function
+  without a materially different vulnerability-risk source or at least 30 PIT-
+  correct settled issuer events across 10 tickers with replacement values.
+- Settled-cash conflict rotation remains parked. Both common-mode-denoised
+  return-network periphery and remaining reward-to-risk incumbent eviction
+  failed preflight density/stability; the reward-to-risk probe also exposed an
+  unexecutable same-open decision/fill clock. Future work needs either a truly
+  different gate/source or at least 30 additional settled cash-conflict decisions
+  across 10 tickers and 20 dates, with the decision clock frozen at signal close,
+  pre-open, or a realistic post-open time before any outcome read.
+- Prediction-market probability acceleration remains observer-only despite many
+  ledger rows. Deduplicate horizon/comparator rows into unique economic
+  decisions before claiming sample size. Reopen only after at least 60 unique
+  settled candidates span 10 entry dates and 3 query groups, with top ticker
+  <=15%, top query <=50%, at least 20 nonzero probability changes, and at least
+  10 absolute moves of 5 percentage points under a frozen exposure map.
+  Count these only from rows first seen after 2026-07-18: exp-20260718-002
+  found the Gamma /events `search` param silently ignored upstream, so all
+  pre-repair rows come from one generic page (day-1 seed dominates settled
+  sample, top query share 79.8%, zero probability changes in 16 days) and are
+  not valid reopen evidence. Collection now uses /public-search?q=.
+- DailyMed, npm, Tranco, MediaWiki, and similar web/public-data sources may still
+  become useful infrastructure, but the next valid action is an identity-map,
+  terms/attribution, archive, or fingerprint repair. Do not spend one alpha ID
+  per source when the same fixed-entry response lane is already parked.
+- GH Archive merged-PR/contributor acceleration as a conditional cash-conflict
+  ranking field is parked before density or outcome access. The source is
+  genuinely new and advisory novelty is clean, but the only audit-grade raw
+  route over the three canonical windows spans 13,608 hourly archives; the
+  current environment has no GitHub or BigQuery authorization, and the public
+  ClickHouse service may not be queried by automation without prior consent.
+  Current GitHub search results are not an as-published historical archive, and
+  no effective-dated repository/organization-to-listed-parent map exists. Do
+  not reserve, scrape the public playground, use current search as PIT history,
+  or hand-pick repositories by current popularity. Reopen only with authorized
+  BigQuery/GH Archive access plus a hash-bound gap-free query manifest and an
+  effective-dated ownership map; before price access require every canonical
+  window to clear at least 20 issuer-weeks, 10 tickers, and top-1 <=30%, plus at
+  least 10 actual cash-conflict comparisons under the unchanged ranking rule.
+  Any eventual ticket must add a dedicated GH Archive fingerprint key instead
+  of accepting the current `other / allocator_source` routing.
 - missing archive/text availability as an alpha field.
 
 ## Update Discipline
