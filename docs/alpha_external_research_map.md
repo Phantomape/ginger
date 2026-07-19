@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-18.
+Last refreshed: 2026-07-19.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,200 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### LLM Portfolio Agents Need Process Diagnostics, Not Return Leaderboards
+
+CLQT is useful because it treats closed-loop LLM portfolio management as a
+diagnostic system rather than a return leaderboard. The benchmark emphasizes a
+time-gated gather/synthesize/allocate/execute/reflect loop, complete
+decision-round audit trails, hash-chain recomputability, explicit costs, and
+strategy-consistency scoring. Ginger should apply the same boundary to any LLM
+trading assistant: the retained artifact is a process-quality and replay
+ledger, not an autonomous trading policy.
+
+Implementable fields:
+
+- `llm_decision_round_hash`
+- `llm_timegate_protocol_id`
+- `llm_strategy_consistency_score`
+- `llm_memory_tier_version`
+- `llm_mandate_compliance_bucket`
+- `llm_process_ablation_id`
+- `llm_capability_scorecard_hash`
+- `llm_broker_track_separation_flag`
+
+Controls:
+
+- score LLM agents on auditability, chronology, mandate compliance, and
+  cost-aware execution before reading return metrics;
+- separate process diagnostics from alpha evidence and from live order
+  authority;
+- require recomputable per-round inputs, outputs, costs, and reflections;
+- compare single-agent and committee scaffolds only as experimental process
+  variables, not as silent strategy changes.
+
+Source: <https://arxiv.org/abs/2606.29771>
+
+### Learned Cross-Sectional Factors Need Discrete-Code Stability
+
+PRISM-VQ combines prior financial factors with vector-quantized latent factors
+and a structure-conditioned mixture-of-experts for cross-sectional ranking.
+The useful Ginger translation is not to import a stock picker; it is to require
+latent factor models to expose stable discrete codes, prior-factor links,
+routing state, and out-of-time replacement value. A learned ranking surface is
+not new evidence if it only hides another size, momentum, or sector proxy.
+
+Implementable fields:
+
+- `vq_factor_code`
+- `vq_codebook_version`
+- `prior_factor_input_hash`
+- `structure_conditioned_expert_id`
+- `latent_factor_turnover_rate`
+- `code_stability_by_window`
+- `factor_proxy_overlap_bucket`
+- `cross_sectional_rank_replacement_value`
+
+Controls:
+
+- freeze codebooks, prior-factor definitions, train windows, and ticker splits
+  before fixed-window scoring;
+- report whether discrete codes are stable across windows and not dominated by
+  cap, sector, or accepted-helper membership;
+- benchmark learned rankings against current source-priority, equal weight,
+  cash, SPY/QQQ, and simple factor baselines on identical candidate rows;
+- fail closed when model routing changes without a recorded codebook version or
+  train-panel hash.
+
+Source: <https://arxiv.org/abs/2605.13407>
+
+### Hierarchical Spreads Need Explicit Relation Graphs
+
+Recent calendar-spread research models commodities as a hierarchy of
+underlyings and dated contracts, then learns maturity-dependent relations before
+forming spread positions. Ginger's equity analogue is narrow: relation alpha
+needs a graph whose edges are decision-time economic relations, not a generic
+peer list. Spread, pair, and relation helpers should expose the hierarchy,
+edge source, maturity or event clock, hedge construction, and cash/costed
+replacement value.
+
+Implementable fields:
+
+- `relation_graph_version`
+- `hierarchy_level`
+- `cross_level_edge_source`
+- `maturity_or_event_clock_bucket`
+- `spread_position_construction_id`
+- `hedge_ratio_protocol_hash`
+- `relation_graph_train_window_hash`
+- `hierarchical_spread_replacement_value`
+
+Controls:
+
+- predeclare the graph, edge provenance, and conversion from predictions into
+  positions before outcome access;
+- compare against simpler same-sector, same-theme, and current accepted
+  relation baselines;
+- require costs, borrow/short feasibility where relevant, and cash displacement
+  accounting;
+- reject static relation labels unless the time-varying relation itself changes
+  the selected candidate or spread economics.
+
+Source: <https://arxiv.org/abs/2606.25811>
+
+### Large Trades Need Liquidity-Tail State Before Interpretation
+
+New market-microstructure theory distinguishes informed large trades from rare
+liquidity shocks through the tail behavior of uninformed order flow. Heavy
+liquidity tails can make large imbalances less informative, alter impact shape,
+and slow price discovery. For Ginger this is a warning against raw flow or
+short-volume thresholds: large-flow rows need a tail-state and impact-resilience
+context before they can affect ranking, sizing, or admission.
+
+Implementable fields:
+
+- `liquidity_tail_index_bucket`
+- `large_order_imbalance_bucket`
+- `informed_vs_liquidity_flow_posterior`
+- `impact_concavity_bucket`
+- `adverse_selection_premium_decay_bucket`
+- `large_trade_price_discovery_lag`
+- `flow_tail_state_source_hash`
+- `tail_adjusted_flow_replacement_value`
+
+Controls:
+
+- estimate tail state only from data available before the decision date;
+- separate directional flow from liquidity-tail ambiguity and impact capacity;
+- benchmark raw flow thresholds against tail-adjusted flow on identical rows;
+- treat large imbalances as risk/execution context until after-cost replacement
+  value clears accepted comparators.
+
+Source: <https://arxiv.org/abs/2607.01198>
+
+### LOB Stress Detectors Are Kill-Switch Inputs First
+
+Latent microstructure-regime work models a stable-to-build-up-to-stress path
+and uses trigger aggregation, rising-edge checks, and adaptive thresholds to
+detect deterioration before visible stress. Ginger should use this pattern as
+execution-envelope and kill-switch infrastructure. It is not a reason to add
+intraday alpha until the order-book source, latency, fill semantics, and
+costed replacement panel are complete.
+
+Implementable fields:
+
+- `lob_latent_stress_protocol_id`
+- `lob_build_up_regime_score`
+- `lob_trigger_channel_set_hash`
+- `lob_rising_edge_flag`
+- `lob_adaptive_threshold_version`
+- `lob_expected_lead_time_bucket`
+- `lob_stress_detector_precision_panel`
+- `lob_kill_switch_action`
+
+Controls:
+
+- freeze signal channels, aggregation, and thresholds before production use;
+- log missed, early, and triggered stress states with sequence-quality fields;
+- wire first as a fail-closed liquidity or notional kill switch;
+- require a complete LOB reconstruction and cost panel before using the state
+  for entry or ranking.
+
+Source: <https://arxiv.org/abs/2604.20949>
+
+### Daily Liquidity Proxies Need Target-Specific Validation
+
+Recent Journal of Financial Markets work shows that machine-learning liquidity
+estimators built from daily OHLCV, market cap, volatility, and classical
+microstructure proxies can improve some liquidity targets, but the classical
+proxies vary sharply by target and can fail outside spread-like measures.
+Ginger should use daily liquidity estimation as an execution and capacity
+surface only after target-specific validation against a high-frequency truth
+panel or a frozen proxy-quality panel.
+
+Implementable fields:
+
+- `daily_liquidity_target_name`
+- `liquidity_proxy_model_version`
+- `microstructure_proxy_feature_hash`
+- `raw_ohlcv_liquidity_feature_hash`
+- `liquidity_proxy_validation_panel_hash`
+- `target_specific_proxy_error`
+- `liquidity_capacity_bucket`
+- `liquidity_adjusted_replacement_value`
+
+Controls:
+
+- validate each target separately: spread, effective spread, realized spread,
+  price impact, and Kyle-style lambda are not interchangeable;
+- compare classical proxies, raw-feature models, and combined models on the
+  same frozen panel;
+- use interpretability diagnostics to catch nonlinear regions where a proxy is
+  unsafe;
+- fail closed for sizing or activation when target-specific error is missing or
+  stale.
+
+Source: <https://www.sciencedirect.com/science/article/pii/S138641812500059X>
 
 ### Trading-Code LLMs Need Semantic Backtest Diffing
 
