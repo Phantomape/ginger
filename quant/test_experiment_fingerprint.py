@@ -769,6 +769,67 @@ def test_pair_spread_surface_precedes_generic_chop_and_notional():
     assert fingerprint["gate_shape"] == "pair_spread"
 
 
+def test_sec_same_cik_dual_class_spread_has_dedicated_source_and_pair_shape():
+    fingerprint = fp.infer_fingerprint(
+        "Shared-paper-first market-neutral alpha: for a frozen official-SEC "
+        "same-CIK whitelist of liquid dual-class common equities with "
+        "substantially shared economics but different voting rights, a class "
+        "premium at least 1.0 percent away from its strictly-prior 120-session "
+        "robust median and robust MAD z-score at least 2.5 should converge; "
+        "buy the cheap class and short the rich class at the next open with "
+        "equal cash-collateralized whole-share notionals, then exit on premium "
+        "convergence, a 3 percent adverse-spread stop, or ten-session timeout.",
+        "sec_same_issuer_dual_class_spread_convergence",
+        "sec_same_cik_dual_class_robust_premium_spread_v1",
+        "robust120_z250_abs100bp_nextopen_converge25bp_stop300bp_timeout10_v1",
+    )
+
+    assert fingerprint["data_source"] == "sec_same_cik_share_class_identity"
+    assert fingerprint["gate_shape"] == "pair_spread"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "sec_same_cik frozen common-share pair whitelist",
+        "official same-CIK dual-class issuer identity",
+        "same issuer dual class rights whitelist",
+        "official share-class identity linkage",
+    ],
+)
+def test_sec_same_cik_share_class_identity_compound_spellings(text):
+    assert fp.infer_fingerprint(text)["data_source"] == (
+        "sec_same_cik_share_class_identity"
+    )
+
+
+def test_sec_same_cik_identity_without_spread_is_not_pair_spread():
+    fingerprint = fp.infer_fingerprint(
+        "official SEC same-CIK share-class identity materialization audit"
+    )
+
+    assert fingerprint["data_source"] == "sec_same_cik_share_class_identity"
+    assert fingerprint["gate_shape"] != "pair_spread"
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_source"),
+    [
+        ("CIK-linked customer-supplier graph for Item 1.01 rows", "sec_contract_relation"),
+        ("SEC cover-page filer-status issuer class identity", "sec_filer_status"),
+        ("SEC 8-K issuer class identity item 3.01", "sec_text_event"),
+        ("SEC Companyfacts issuer share count", "companyfacts_ratio"),
+    ],
+)
+def test_sec_same_cik_keywords_do_not_capture_adjacent_sec_sources(
+    text, expected_source
+):
+    fingerprint = fp.infer_fingerprint(text)
+
+    assert fingerprint["data_source"] == expected_source
+    assert fingerprint["data_source"] != "sec_same_cik_share_class_identity"
+
+
 def test_microstructure_spread_to_atr_is_not_pair_spread():
     fingerprint = fp.infer_fingerprint(
         "microstructure spread_to_atr tick_to_atr viability attribution"
@@ -1388,3 +1449,101 @@ def test_event_basket_10d_keywords_do_not_capture_adjacent_gate_shapes():
     assert fp.infer_fingerprint(
         "fixed equal-notional energy basket held for ten sessions"
     )["gate_shape"] == "notional_scalar"
+
+
+def test_hacker_news_owned_domain_attention_has_dedicated_source_and_top3_gate():
+    result = fp.infer_fingerprint(
+        "A completed UTC week's Hacker News owned-domain attention acceleration "
+        "ranks the top three liquid issuers by weekly count for a next-open "
+        "ten-session candidate pool.",
+        "hacker_news_owned_domain_attention_acceleration",
+        "hn_owned_domain_weekly_attention_top3_candidate_pool_v1",
+        "exact_host_current_ge2_above_prior4w_top3_next_open_h10_v1",
+    )
+
+    assert result["data_source"] == "hacker_news_owned_domain_attention"
+    assert result["gate_shape"] == "candidate_pool_top3_10d"
+
+
+def test_hacker_news_keywords_do_not_capture_adjacent_news_or_pageview_sources():
+    assert fp.infer_fingerprint(
+        "entity_theme_news exact URL forward replacement observer"
+    )["data_source"] == "entity_theme_news"
+    assert fp.infer_fingerprint(
+        "Wikimedia pageviews issuer attention candidate pool"
+    )["data_source"] == "wikimedia_pageviews"
+
+
+def test_deps_dev_maven_releases_have_dedicated_source_and_top3_gate():
+    result = fp.infer_fingerprint(
+        "A completed Monday-Sunday week of deps.dev Maven package releases "
+        "strictly above the issuer prior-eight-week median ranks the top three "
+        "at next open for a ten-session candidate pool.",
+        "deps_dev_maven_release_acceleration_top3_10d",
+        "deps_dev_maven_release_acceleration_top3_nextopen_h10_shared_v1",
+        "complete_week_current_ge2_above_prior8median_top3_next_open_h10_v1",
+    )
+
+    assert result["data_source"] == "deps_dev_maven_package_releases"
+    assert result["gate_shape"] == "candidate_pool_top3_10d"
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_source"),
+    [
+        ("SEC Companyfacts operating lease accounting", "companyfacts_ratio"),
+        (
+            "FDA Orange Book NEWA product release basket candidate_pool",
+            "fda_orange_book_monthly_additions_deletions",
+        ),
+        ("entity_theme_news software release event", "entity_theme_news"),
+    ],
+)
+def test_deps_dev_maven_release_keywords_do_not_capture_adjacent_sources(
+    text, expected_source
+):
+    assert fp.infer_fingerprint(text)["data_source"] == expected_source
+
+
+def test_linux_mainline_signed_rc_hypothesis_has_dedicated_source_and_top3_20d_gate():
+    hypothesis = (
+        "Signed Linux mainline RC tags whose exact corporate-domain non-merge "
+        "contribution count is at least 3 and strictly above the issuer's "
+        "prior-eight-RC median identify accelerating platform engineering "
+        "before the market fully prices product delivery and infrastructure "
+        "adoption; select the top 3 positive count-minus-median issuers at the "
+        "first strictly later regular-session open and hold 20 sessions as a "
+        "shared default-off candidate pool."
+    )
+
+    result = fp.infer_fingerprint(hypothesis)
+
+    assert result["data_source"] == "linux_mainline_signed_rc_contributions"
+    assert result["gate_shape"] == "candidate_pool_top3_20d"
+
+
+def test_linux_mainline_signed_rc_frozen_family_builder_inputs_keep_fingerprint():
+    result = fp.infer_fingerprint(
+        "linux_mainline_signed_rc_candidate_pool",
+        "admit standalone candidates from signed Linux mainline RC "
+        "contribution acceleration",
+        "top3_h20_prior8_median_v1",
+    )
+
+    assert result["data_source"] == "linux_mainline_signed_rc_contributions"
+    assert result["gate_shape"] == "candidate_pool_top3_20d"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "generic Linux kernel CVE security news sentiment candidate pool",
+        "entity_theme_news Linux kernel CVE disclosure forward observer",
+        "NVD CVE change history for a Linux kernel vulnerability",
+        "Linux mainline release news and vulnerability coverage",
+    ],
+)
+def test_linux_cve_and_news_text_does_not_match_signed_rc_contribution_source(text):
+    assert fp.infer_fingerprint(text)["data_source"] != (
+        "linux_mainline_signed_rc_contributions"
+    )

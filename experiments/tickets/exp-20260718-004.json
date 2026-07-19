@@ -1,0 +1,653 @@
+{
+  "acceptance_rule": "Gate 1-4 capital-allocation test on identical frozen windows: 90% active cash-feasible core plus 10% candidate must improve aggregate expected_value_score by more than 10% over 6.2057, improve aggregate PnL over USD 130,992.36, have no more than one material window regression, worsen max drawdown by no more than 0.5 percentage points, fund at least 20 pairs across at least two windows with survival at least 5%, preserve nonnegative cash and gross exposure no greater than candidate NAV. Passing is accepted default-off paper only because broker locate/availability is unpopulated; failure rolls back run.py pair wiring.",
+  "allowed_write_scope": [
+    "quant/ortex_moomoo_borrow_pair_paper_sleeve.py",
+    "quant/test_ortex_moomoo_borrow_pair_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260718_004_ortex_moomoo_borrow_pair.py",
+    "data/experiments/exp-20260718-004/",
+    "data/paper_sleeves/ortex_moomoo_borrow_pair/",
+    "experiments/cards/exp-20260718-004.md",
+    "experiments/logs/exp-20260718-004.json",
+    "experiments/manifests/exp-20260718-004.json",
+    "experiments/tickets/exp-20260718-004.json",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260718-004.md",
+  "causal_components": [
+    "ORTEX CTB-new top-quintile rank",
+    "Moomoo short-volume top-quintile rank",
+    "fixed peer clusters",
+    "strictly-prior 20-session correlation gate",
+    "5-session pair hold",
+    "10-session short cooldown",
+    "10-percent constant-mix allocation",
+    "explicit trade and borrow costs",
+    "shared default-off paper adapter"
+  ],
+  "change_type": "risk_allocation_new_pair_spread_alpha",
+  "changed_variable": "ortex_moomoo_market_neutral_pair_spread_v1",
+  "claimed_at": "2026-07-18T18:06:44+00:00",
+  "completed_at": "2026-07-18T18:40:29+00:00",
+  "created_at": "2026-07-18T18:05:54+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260718-004",
+  "experiment_uid": "expuid-0b7ecc785a664cb2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260718-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-18T18:05:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "ortex_moomoo_borrow_pair"
+  },
+  "hypothesis": "Risk-allocation pair-spread alpha: on the fixed 120 source dates, a stock simultaneously in the top four of the 20-name ORTEX costToBorrowNew cross-section and top four of the same-date Moomoo short-volume-ratio cross-section represents borrow-supported sell pressure; short the highest equal-weight rank-sum name and buy the lowest-stress same-cluster peer with strictly-prior 20-session return correlation at least 0.20, enter at the shared next-session open, exit five sessions later, and allocate exactly 10% from core to the cash-collateralized market-neutral sleeve. Fixed one new pair/day, maximum five concurrent pairs, USD 1,000 per leg, 10-session short-name cooldown, no short-proceeds reuse, 45bp round-trip cost per leg plus observed CTB accrual; default-off only.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "fixed 20-name universe and clusters",
+    "three central 40-session source blocks",
+    "top-4-by-source intersection",
+    "strict next-session clock",
+    "20-session strictly-prior correlation floor 0.20",
+    "one pair per day",
+    "max five concurrent",
+    "USD 1000 per leg",
+    "10-session cooldown",
+    "5-session exit",
+    "45bp round trip per leg",
+    "calendar-day CTB accrual",
+    "10-percent constant-mix weight",
+    "no leverage",
+    "no short-proceeds reuse",
+    "trade_enabled false",
+    "no live locate claim"
+  ],
+  "mechanism_family": "ortex_moomoo_borrow_pressure_market_neutral_pair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "data/open_positions.json",
+    "data/daily/orders/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260718-003",
+    "exp-20260712-013",
+    "exp-20260625-019",
+    "exp-20260716-007",
+    "exp-20260708-025"
+  ],
+  "new_evidence_type": "new_gate_shape_market_neutral_pair_spread_on_settled_ortex_rows",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ortex_borrow",
+      "field_tags": [
+        "45bp",
+        "a",
+        "accrual",
+        "allocate",
+        "allocation",
+        "alpha",
+        "at",
+        "borrow",
+        "buy",
+        "cash",
+        "cluster",
+        "collateralized",
+        "concurrent",
+        "cooldown",
+        "core",
+        "correlation",
+        "cost",
+        "costtoborrownew",
+        "cross",
+        "ctb",
+        "date",
+        "dates",
+        "enter",
+        "equal",
+        "exactly",
+        "exit",
+        "five",
+        "four",
+        "from",
+        "highest",
+        "in",
+        "later",
+        "least",
+        "leg",
+        "lowest",
+        "market",
+        "maximum",
+        "moomoo",
+        "name",
+        "neutral",
+        "new",
+        "no",
+        "observed",
+        "of",
+        "on",
+        "one",
+        "only",
+        "ortex",
+        "pair",
+        "pairs",
+        "peer",
+        "per",
+        "plus",
+        "pressure",
+        "prior",
+        "proceeds",
+        "rank",
+        "ratio",
+        "represents",
+        "return",
+        "reuse",
+        "risk",
+        "round",
+        "same",
+        "section",
+        "sell",
+        "session",
+        "sessions",
+        "short",
+        "simultaneously",
+        "sleeve",
+        "spread",
+        "stock",
+        "stress",
+        "strictly",
+        "sum",
+        "supported",
+        "to",
+        "top",
+        "trip",
+        "usd",
+        "volume",
+        "weight"
+      ],
+      "gate_shape": "pair_spread"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ortex_borrow",
+        "family_key": "borrow_availability_ortex_fingerprint_coverage",
+        "reopen_condition": "Borrow/ORTEX alpha remains parked until populated PIT borrow-fee, utilization, loan-availability, or short-availability rows meet the prior forward-date floors and have closed cash/SPY/QQQ replacement-value attribution.",
+        "score": 0.4593,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "iborrowdesk_borrow_fee_availability_avoidance_context",
+        "reopen_condition": ">=60 new archived sessions or >=20 additional stressed-transition events, or a historical borrow source covering old_thin.",
+        "score": 0.459,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 borrow-fee tickers over 20 decision dates, then closed forward replacement-value rows versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4589,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_short_interest_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+        "score": 0.4588,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "relative_value_spread",
+        "family_key": "chop_pairs_spread_candidate_pool",
+        "reopen_condition": "Forward chop-labeled spread rows from daily wiring, or a new non-price pair-linkage source.",
+        "score": 0.1641,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: a cash-collateralized dollar-neutral long-peer/short-stress pair spread using 2,580 newly materialized ORTEX CTB-new rows and an independent 2,400-row Moomoo short-activity intersection; not a raw-flow filter, not a borrow threshold retune, and not another consensus source count.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ortex_borrow",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: a cash-collateralized dollar-neutral long-peer/short-stress pair spread using 2,580 newly materialized ORTEX CTB-new rows and an independent 2,400-row Moomoo short-activity intersection; not a raw-flow filter, not a borrow threshold retune, and not another consensus source count.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: a cash-collateralized dollar-neutral long-peer/short-stress pair spread using 2,580 newly materialized ORTEX CTB-new rows and an independent 2,400-row Moomoo short-activity intersection; not a raw-flow filter, not a borrow threshold retune, and not another consensus source count.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "pair_spread",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ortex_borrow",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": -0.7,
+    "expected_pnl_delta": -12000.0,
+    "main_failure_modes": [
+      "economically tiny CTB dispersion",
+      "energy-pair concentration",
+      "round-trip and borrow costs dominate",
+      "displacing strong core lowers portfolio PnL",
+      "broker locate availability unpopulated",
+      "too few feasible peer pairs"
+    ],
+    "confidence_reason": "The new source and pair-spread gate are genuinely independent and iBorrowDesk previously showed stressed names underperformed, but CTB-new is tightly clustered around 0.38%, the raw intersections concentrate in energy, and a 10% sleeve must displace an unusually strong cash-feasible core.",
+    "recorded_at": "2026-07-18T18:05:29+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_ortex_moomoo_borrow_pair_economics",
+    "artifact": "data/experiments/exp-20260718-004/exp_20260718_004_ortex_moomoo_borrow_pair.json",
+    "log": "experiments/logs/exp-20260718-004.json",
+    "summary": "After EV 5.4239 missed the strict 6.82627 threshold, after PnL 114688.52 fell below 130992.36, and all three canonical windows materially regressed.",
+    "before_metrics": {
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36,
+      "worst_max_drawdown_pct": 0.0889,
+      "trade_count": 49,
+      "minimum_survival_rate": 0.8116
+    },
+    "after_metrics": {
+      "expected_value_score": 5.4239,
+      "total_pnl": 114688.52,
+      "worst_max_drawdown_pct": 0.0803,
+      "core_trade_count": 49,
+      "candidate_funded_pair_count": 38,
+      "candidate_survival_rate": 0.2389937106918239
+    },
+    "delta_metrics": {
+      "expected_value_score": -0.7818,
+      "total_pnl": -16303.84,
+      "worst_max_drawdown_pct": -0.0086,
+      "material_regressed_window_count": 3
+    },
+    "candidate_metrics": {
+      "expected_value_score": -0.0909,
+      "total_pnl": -584.28,
+      "gross_pnl": -237.63312829,
+      "trade_cost": 342.0,
+      "borrow_cost": 4.63972221,
+      "signals_generated": 159,
+      "signals_survived": 38,
+      "survival_rate": 0.2389937106918239,
+      "funded_pair_count": 38,
+      "funded_window_count": 3,
+      "minimum_cash_usd": 3759.26256494,
+      "maximum_marked_gross_exposure_usd": 6286.49976588,
+      "spy_beta": 0.003656125689109537,
+      "spy_correlation": 0.01746011063498353,
+      "window_pnl": {
+        "old_thin": -396.85,
+        "mid_weak": -125.15,
+        "late_strong": -62.28
+      }
+    },
+    "gate1": {
+      "passed": true,
+      "active_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36
+    },
+    "gate2": {
+      "passed": true,
+      "exact_join_dates": 120,
+      "exact_join_rows": 2400,
+      "entry_date_and_fixed_exit_target_sentinel_checked": true,
+      "daily_curve_trade_identity_passed": true,
+      "source_hashes_matched": true
+    },
+    "gate3": {
+      "passed": true,
+      "signals_generated": 159,
+      "signals_survived": 38,
+      "survival_rate": 0.2389937106918239,
+      "minimum_survival_rate": 0.05
+    },
+    "gate4": {
+      "passed": false,
+      "hard_failures": [
+        "aggregate_ev_gt_110pct_baseline",
+        "aggregate_pnl_gt_baseline",
+        "material_window_regressions_lte_one"
+      ],
+      "passed_checks": [
+        "drawdown_worse_lte_0_5pp",
+        "funded_pairs_gte_20",
+        "funded_windows_gte_2",
+        "survival_gte_5pct",
+        "gate2_signal_contract",
+        "cash_nonnegative_all_windows",
+        "gross_lte_candidate_nav_all_days",
+        "max_five_concurrent_pairs",
+        "helper_default_off"
+      ],
+      "thresholds": {
+        "aggregate_ev_strictly_greater_than": 6.82627,
+        "aggregate_pnl_strictly_greater_than": 130992.36,
+        "max_material_regressed_windows": 1,
+        "max_drawdown_worse": 0.005,
+        "min_funded_pairs": 20,
+        "min_funded_windows": 2,
+        "min_survival_rate": 0.05
+      },
+      "material_regressed_windows": [
+        "old_thin",
+        "mid_weak",
+        "late_strong"
+      ]
+    },
+    "production_impact": {
+      "shared_helper_retained_for_reproducibility": true,
+      "run_py_pair_wiring_retained": false,
+      "run_py_pair_wiring_rolled_back_after_gate4": true,
+      "exp003_ortex_observer_retained": true,
+      "trade_enabled": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "live_ready": false,
+      "forward_operational": false,
+      "broker_locate_populated": false,
+      "bulk_preflight": {
+        "endpoint_permission_succeeded": true,
+        "provider_date": "2026-07-16",
+        "returned_rows": 497,
+        "fixed_universe_covered": 17,
+        "fixed_universe_missing": [
+          "CRDO",
+          "GOOG",
+          "SNOW"
+        ],
+        "credits_used": 75.55,
+        "credits_left": 334.25,
+        "raw_payload_persisted": false,
+        "api_key_persisted": false,
+        "sustainable_daily_at_current_budget": false
+      }
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The standalone spread lost money in every window before it was asked to replace core capital. Trade costs were meaningful but borrow cost was negligible, so the failure is the pressure-to-relative-return mapping, not a fee-model artifact.",
+      "alpha_interpretation": "Dollar neutrality delivered near-zero SPY beta and improved drawdown, but diversification without positive standalone expectancy destroyed EV and PnL when funded from the strong core.",
+      "forbidden_near_neighbor_retry": "Do not sweep top-N, correlation floor/lookback, cluster membership, hold, cooldown, notional, cost, borrow accrual, direction, or 10% weight on the same ORTEX/Moomoo row surface; do not relabel it as a squeeze-long or another consensus filter.",
+      "new_evidence_required": "A genuinely new gate shape or signal family, a sustainable same-day cross-sectional feed with materially more prospectively settled rows, or new PIT borrow/availability/utilization plus broker locate evidence. Threshold or response retuning alone is not valid."
+    },
+    "calibration": {
+      "actual_success": 0,
+      "predicted_success_probability": 0.12,
+      "brier_score": 0.0144,
+      "expected_ev_delta": -0.7,
+      "actual_ev_delta": -0.7818,
+      "ev_prediction_error": -0.0818,
+      "expected_pnl_delta": -12000.0,
+      "actual_pnl_delta": -16303.84,
+      "pnl_prediction_error": -4303.84,
+      "realized_failure_mode": "weak_pair_spread_economics_and_core_displacement",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Borrow cost was negligible; the raw long-short spread lost money in all three windows and core displacement dominated the portfolio loss."
+    },
+    "changed_files": [
+      "quant/ortex_moomoo_borrow_pair_paper_sleeve.py",
+      "quant/test_ortex_moomoo_borrow_pair_paper_sleeve.py",
+      "quant/experiments/exp_20260718_004_ortex_moomoo_borrow_pair.py",
+      "data/experiments/exp-20260718-004/exp_20260718_004_ortex_moomoo_borrow_pair.json",
+      "experiments/cards/exp-20260718-004.md",
+      "experiments/logs/exp-20260718-004.json",
+      "experiments/manifests/exp-20260718-004.json",
+      "experiments/tickets/exp-20260718-004.json",
+      "docs/production_backtest_parity_matrix.md",
+      "docs/experiment_registry.json",
+      "docs/frozen_families.jsonl"
+    ],
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_004_ortex_moomoo_borrow_pair.py evaluate",
+      ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ortex_moomoo_borrow_pair_paper_sleeve.py quant\\test_run_daily_wiring.py -q",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ]
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260718-004.json",
+  "single_causal_variable": "ortex_moomoo_market_neutral_pair_spread_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260718-004.json",
+  "trial_family": "ortex_moomoo_borrow_pressure_pair_spread",
+  "trial_variant_id": "fixed_top4_intersection_peer_corr20_hold5_costed_v1",
+  "implementation_mode": "shared_helper_historical_replay_and_daily_default_off_snapshot_then_rejected_wiring_rollback",
+  "acceptance": {
+    "aggregate_ev_gt_110pct_baseline": false,
+    "aggregate_pnl_gt_baseline": false,
+    "material_window_regressions_lte_one": false,
+    "drawdown_worse_lte_0_5pp": true,
+    "funded_pairs_gte_20": true,
+    "funded_windows_gte_2": true,
+    "survival_gte_5pct": true,
+    "gate2_signal_contract": true,
+    "cash_nonnegative_all_windows": true,
+    "gross_lte_candidate_nav_all_days": true,
+    "max_five_concurrent_pairs": true,
+    "helper_default_off": true
+  },
+  "gate1": {
+    "passed": true,
+    "active_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36
+  },
+  "gate2": {
+    "passed": true,
+    "exact_join_dates": 120,
+    "exact_join_rows": 2400,
+    "entry_date_and_fixed_exit_target_sentinel_checked": true,
+    "daily_curve_trade_identity_passed": true,
+    "source_hashes_matched": true
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 159,
+    "signals_survived": 38,
+    "survival_rate": 0.2389937106918239,
+    "minimum_survival_rate": 0.05
+  },
+  "gate4": {
+    "passed": false,
+    "hard_failures": [
+      "aggregate_ev_gt_110pct_baseline",
+      "aggregate_pnl_gt_baseline",
+      "material_window_regressions_lte_one"
+    ],
+    "passed_checks": [
+      "drawdown_worse_lte_0_5pp",
+      "funded_pairs_gte_20",
+      "funded_windows_gte_2",
+      "survival_gte_5pct",
+      "gate2_signal_contract",
+      "cash_nonnegative_all_windows",
+      "gross_lte_candidate_nav_all_days",
+      "max_five_concurrent_pairs",
+      "helper_default_off"
+    ],
+    "thresholds": {
+      "aggregate_ev_strictly_greater_than": 6.82627,
+      "aggregate_pnl_strictly_greater_than": 130992.36,
+      "max_material_regressed_windows": 1,
+      "max_drawdown_worse": 0.005,
+      "min_funded_pairs": 20,
+      "min_funded_windows": 2,
+      "min_survival_rate": 0.05
+    },
+    "material_regressed_windows": [
+      "old_thin",
+      "mid_weak",
+      "late_strong"
+    ]
+  },
+  "production_impact": {
+    "shared_helper_retained_for_reproducibility": true,
+    "run_py_pair_wiring_retained": false,
+    "run_py_pair_wiring_rolled_back_after_gate4": true,
+    "exp003_ortex_observer_retained": true,
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "live_ready": false,
+    "forward_operational": false,
+    "broker_locate_populated": false,
+    "bulk_preflight": {
+      "endpoint_permission_succeeded": true,
+      "provider_date": "2026-07-16",
+      "returned_rows": 497,
+      "fixed_universe_covered": 17,
+      "fixed_universe_missing": [
+        "CRDO",
+        "GOOG",
+        "SNOW"
+      ],
+      "credits_used": 75.55,
+      "credits_left": 334.25,
+      "raw_payload_persisted": false,
+      "api_key_persisted": false,
+      "sustainable_daily_at_current_budget": false
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The standalone spread lost money in every window before it was asked to replace core capital. Trade costs were meaningful but borrow cost was negligible, so the failure is the pressure-to-relative-return mapping, not a fee-model artifact.",
+    "alpha_interpretation": "Dollar neutrality delivered near-zero SPY beta and improved drawdown, but diversification without positive standalone expectancy destroyed EV and PnL when funded from the strong core.",
+    "forbidden_near_neighbor_retry": "Do not sweep top-N, correlation floor/lookback, cluster membership, hold, cooldown, notional, cost, borrow accrual, direction, or 10% weight on the same ORTEX/Moomoo row surface; do not relabel it as a squeeze-long or another consensus filter.",
+    "new_evidence_required": "A genuinely new gate shape or signal family, a sustainable same-day cross-sectional feed with materially more prospectively settled rows, or new PIT borrow/availability/utilization plus broker locate evidence. Threshold or response retuning alone is not valid."
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.12,
+    "brier_score": 0.0144,
+    "expected_ev_delta": -0.7,
+    "actual_ev_delta": -0.7818,
+    "ev_prediction_error": -0.0818,
+    "expected_pnl_delta": -12000.0,
+    "actual_pnl_delta": -16303.84,
+    "pnl_prediction_error": -4303.84,
+    "realized_failure_mode": "weak_pair_spread_economics_and_core_displacement",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "Borrow cost was negligible; the raw long-short spread lost money in all three windows and core displacement dominated the portfolio loss."
+  },
+  "changed_files": [
+    "quant/ortex_moomoo_borrow_pair_paper_sleeve.py",
+    "quant/test_ortex_moomoo_borrow_pair_paper_sleeve.py",
+    "quant/experiments/exp_20260718_004_ortex_moomoo_borrow_pair.py",
+    "data/experiments/exp-20260718-004/exp_20260718_004_ortex_moomoo_borrow_pair.json",
+    "experiments/cards/exp-20260718-004.md",
+    "experiments/logs/exp-20260718-004.json",
+    "experiments/manifests/exp-20260718-004.json",
+    "experiments/tickets/exp-20260718-004.json",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "artifact": "data/experiments/exp-20260718-004/exp_20260718_004_ortex_moomoo_borrow_pair.json",
+  "log": "experiments/logs/exp-20260718-004.json",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_004_ortex_moomoo_borrow_pair.py evaluate",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ortex_moomoo_borrow_pair_paper_sleeve.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "next_retry_requires": [
+    "A new gate shape or signal family rather than a parameter retune.",
+    "A sustainable same-day bulk cross-section and materially more prospectively settled rows.",
+    "Populated broker locate, availability, fee, and size evidence before any live claim."
+  ],
+  "updated_at": "2026-07-18T18:40:29+00:00"
+}

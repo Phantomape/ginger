@@ -1,0 +1,462 @@
+{
+  "asof_date": "2026-07-18",
+  "borrow_availability": {
+    "manifest_path": "D:/Github/ginger/data/non_ohlcv/borrow_availability/manifest.json",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "borrow_availability_data_collection_skipped",
+      "shared_policy_changed": false
+    },
+    "reason": "refresh_borrow_availability_false",
+    "rows_path": "D:/Github/ginger/data/non_ohlcv/borrow_availability/rows.jsonl",
+    "status": "skipped"
+  },
+  "date_range": {
+    "end": "2026-07-18",
+    "start": "2026-07-08"
+  },
+  "date_tag": "20260718",
+  "form144_planned_sale_context": {
+    "daily_snapshot_wired": true,
+    "output_path": "data/non_ohlcv/form144_planned_sale_context_20260718.jsonl",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "form144_planned_sale_context_collection_skipped",
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "reason": "refresh_form144_context_false",
+    "status": "skipped",
+    "summary_output": "data/non_ohlcv/form144_planned_sale_context_summary_20260718.json",
+    "trade_enabled": false
+  },
+  "form4_sale_overhang_context": {
+    "asof_date": "2026-07-18",
+    "daily_snapshot_wired": true,
+    "entry_context_schema": {
+      "context_fields": [
+        "form4_context_rows",
+        "form4_sale_overhang_bucket",
+        "form4_high_sale_overhang",
+        "form4_sale_rows",
+        "form4_ten_b5_sale_rows",
+        "form4_officer_sale_rows",
+        "form4_sale_value_usd",
+        "form4_latest_usable_trade_date",
+        "form4_context_as_of"
+      ],
+      "keys": [
+        "ticker",
+        "entry_date"
+      ],
+      "pit_filter": "context_as_of <= entry_date and underlying Form4 usable_trade_date <= context_as_of"
+    },
+    "form4_sale_overhang_bucket_counts": {
+      "high_sale_overhang": 13,
+      "moderate_or_routine_disposal": 6
+    },
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_sale_overhang_forward_rows_min": 8,
+      "park_after_materialization_runs_without_new_closable_rows": 3,
+      "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_share_max": 0.4
+    },
+    "forward_reopen_progress": {
+      "closed_forward_rows_current": 0,
+      "closed_forward_rows_without_required_replacement_values": 0,
+      "context_rows_current": 19,
+      "gate": {
+        "closed_forward_rows_min": 25,
+        "high_sale_overhang_forward_rows_min": 8,
+        "park_after_materialization_runs_without_new_closable_rows": 3,
+        "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+        "required_replacement_values": [
+          "cash",
+          "SPY",
+          "QQQ"
+        ],
+        "single_ticker_share_max": 0.4
+      },
+      "gate_ready": false,
+      "high_sale_overhang_closed_forward_rows_current": 0,
+      "high_sale_overhang_context_rows_current": 13,
+      "max_single_ticker_closed_forward_row_share": null,
+      "not_ready_reasons": [
+        "closed_forward_rows_below_min",
+        "high_sale_overhang_forward_rows_below_min"
+      ],
+      "replacement_value_complete_closed_rows_current": 0,
+      "unique_tickers_closed_forward_rows": 0
+    },
+    "generated_at": "2026-07-19T03:06:37+00:00",
+    "lookback_days": 10,
+    "max_latest_usable_trade_date": "2026-07-17",
+    "min_latest_usable_trade_date": "2026-07-08",
+    "outcome_join_schema": {
+      "forward_outcome_fields": [
+        "cash_replacement_value_10d",
+        "cash_replacement_value_20d",
+        "spy_replacement_value_10d",
+        "spy_replacement_value_20d",
+        "qqq_replacement_value_10d",
+        "qqq_replacement_value_20d",
+        "closed_forward_row"
+      ],
+      "join_keys": [
+        "ticker",
+        "entry_date",
+        "context_as_of_lte_entry_date",
+        "form4_latest_usable_trade_date_lte_context_as_of"
+      ],
+      "pit_guard": "Only context rows with context_as_of <= entry_date and underlying Form 4 usable_trade_date <= context_as_of are eligible for an entry join."
+    },
+    "output_path": "data/non_ohlcv/form4_sale_overhang_context_20260718.jsonl",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "scope": "form4_sale_overhang_context_collection",
+      "shared_policy_changed": false,
+      "trade_enabled": false
+    },
+    "rows_with_form4_sale_rows": 14,
+    "rows_with_high_sale_overhang": 13,
+    "rows_with_officer_sale": 13,
+    "rows_with_ten_b5_sale": 12,
+    "rows_written": 19,
+    "rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+    "schema_version": 1,
+    "source_audit": {
+      "asof_date": "2026-07-18",
+      "bad_json_rows": 0,
+      "deduped_rows_loaded": 31966,
+      "form4_dir": "data/non_ohlcv",
+      "max_usable_trade_date": "2026-07-17",
+      "min_usable_trade_date": "2024-09-24",
+      "raw_jsonl_rows": 298138,
+      "sample_source_files_used": [
+        "data/non_ohlcv/form4_transactions_20260711.jsonl",
+        "data/non_ohlcv/form4_transactions_20260712.jsonl",
+        "data/non_ohlcv/form4_transactions_20260713.jsonl",
+        "data/non_ohlcv/form4_transactions_20260714.jsonl",
+        "data/non_ohlcv/form4_transactions_20260715.jsonl",
+        "data/non_ohlcv/form4_transactions_20260716.jsonl",
+        "data/non_ohlcv/form4_transactions_20260717.jsonl",
+        "data/non_ohlcv/form4_transactions_20260718.jsonl"
+      ],
+      "source_file_count": 490,
+      "source_files_skipped_future": 0,
+      "source_files_used": 490,
+      "ticker_count": 49,
+      "transaction_code_counts": {
+        "A": 2965,
+        "C": 1409,
+        "D": 83,
+        "E": 172,
+        "F": 2341,
+        "G": 452,
+        "H": 1,
+        "I": 25,
+        "J": 250,
+        "M": 5950,
+        "P": 329,
+        "S": 17973,
+        "X": 16
+      }
+    },
+    "status": "ok",
+    "summary_output": "data/non_ohlcv/form4_sale_overhang_context_summary_20260718.json",
+    "ticker_count": 19,
+    "trade_enabled": false
+  },
+  "form4_transactions": {
+    "date_range": {
+      "end": "2026-07-18",
+      "start": "2026-07-08"
+    },
+    "documents_fetched_or_read": 96,
+    "error_count": 0,
+    "errors": [],
+    "excluded_external_issuer_rows": 5,
+    "external_issuer_examples": [
+      {
+        "accession_number": "0001168404-26-000029",
+        "issuer_name": "Ethos Technologies Inc.",
+        "issuer_ticker": "LIFE",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001168404-26-000029",
+        "issuer_name": "Ethos Technologies Inc.",
+        "issuer_ticker": "LIFE",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001168404-26-000029",
+        "issuer_name": "Ethos Technologies Inc.",
+        "issuer_ticker": "LIFE",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001168404-26-000029",
+        "issuer_name": "Ethos Technologies Inc.",
+        "issuer_ticker": "LIFE",
+        "submission_ticker": "GOOG"
+      },
+      {
+        "accession_number": "0001168404-26-000029",
+        "issuer_name": "Ethos Technologies Inc.",
+        "issuer_ticker": "LIFE",
+        "submission_ticker": "GOOG"
+      }
+    ],
+    "filings_seen": 96,
+    "generated_at": "2026-07-19T03:06:28+00:00",
+    "missing_cik_tickers": [
+      "SNXX"
+    ],
+    "open_market_purchase_count": 33,
+    "option_exercise_count": 34,
+    "output_path": "data/non_ohlcv/form4_transactions_20260718.jsonl",
+    "pit_safe_count": 508,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "production_impact": "data_backfill_only",
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "row_counts_by_ticker": {
+      "AMD": 3,
+      "APP": 11,
+      "AVGO": 4,
+      "CIFR": 2,
+      "CORZ": 3,
+      "CRDO": 82,
+      "CRWV": 153,
+      "DDOG": 50,
+      "DIS": 12,
+      "GS": 7,
+      "ISRG": 3,
+      "LITE": 6,
+      "MA": 14,
+      "META": 15,
+      "MSFT": 1,
+      "MU": 2,
+      "PLTR": 4,
+      "RIOT": 2,
+      "SNOW": 74,
+      "SPOT": 26,
+      "TSM": 34
+    },
+    "rows_written": 508,
+    "segments": [
+      "core",
+      "pilot",
+      "observation"
+    ],
+    "source": "SEC EDGAR company submissions + Form 4 primary documents",
+    "status": "ok",
+    "ten_b5_1_count": 387,
+    "tickers_mapped": 51,
+    "tickers_requested": 52,
+    "transaction_code_counts": {
+      "A": 13,
+      "C": 35,
+      "F": 8,
+      "G": 7,
+      "M": 26,
+      "P": 33,
+      "S": 386
+    },
+    "xml_cache_dir": "data/cache/sec/form4_xml"
+  },
+  "generated_at": "2026-07-19T03:06:26+00:00",
+  "lookback_days": 10,
+  "options_onclickmedia": {
+    "output_path": "data/non_ohlcv/options_onclickmedia_chain_20260718.jsonl",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "scope": "options_data_collection_skipped"
+    },
+    "reason": "refresh_options_false_or_no_tickers",
+    "status": "skipped",
+    "summary_output": "data/non_ohlcv/options_onclickmedia_summary_20260718.json"
+  },
+  "paths": {
+    "borrow_availability_manifest": "D:/Github/ginger/data/non_ohlcv/borrow_availability/manifest.json",
+    "borrow_availability_rows": "D:/Github/ginger/data/non_ohlcv/borrow_availability/rows.jsonl",
+    "form144_planned_sale_context": "data/non_ohlcv/form144_planned_sale_context_20260718.jsonl",
+    "form144_planned_sale_context_summary": "data/non_ohlcv/form144_planned_sale_context_summary_20260718.json",
+    "form4_sale_overhang_context": "data/non_ohlcv/form4_sale_overhang_context_20260718.jsonl",
+    "form4_sale_overhang_context_summary": "data/non_ohlcv/form4_sale_overhang_context_summary_20260718.json",
+    "form4_summary": "data/non_ohlcv/form4_backfill_summary_20260718.json",
+    "form4_transactions": "data/non_ohlcv/form4_transactions_20260718.jsonl",
+    "options_onclickmedia_chain": "data/non_ohlcv/options_onclickmedia_chain_20260718.jsonl",
+    "options_onclickmedia_summary": "data/non_ohlcv/options_onclickmedia_summary_20260718.json",
+    "sec_filing_events": "data/non_ohlcv/sec_filing_events_20260718.jsonl",
+    "sec_filing_summary": "data/non_ohlcv/sec_filing_backfill_summary_20260718.json",
+    "sec_filing_text": "data/non_ohlcv/sec_filing_text_20260718.jsonl",
+    "sec_filing_text_summary": "data/non_ohlcv/sec_filing_text_backfill_summary_20260718.json",
+    "summary": "data/non_ohlcv/daily_non_ohlcv_snapshot_20260718.json"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "daily_non_ohlcv_data_refresh_only",
+    "shared_policy_changed": false
+  },
+  "schema_version": 1,
+  "sec_filing_events": {
+    "cache_dir": "data/cache/sec/submissions",
+    "date_range": {
+      "end": "2026-07-18",
+      "start": "2026-07-08"
+    },
+    "error_count": 0,
+    "errors": [],
+    "experiment_id": "exp-20260503-050",
+    "forms": [
+      "10-K",
+      "10-K/A",
+      "10-Q",
+      "10-Q/A",
+      "6-K",
+      "6-K/A",
+      "8-K",
+      "8-K/A"
+    ],
+    "generated_at": "2026-07-19T03:06:27+00:00",
+    "missing_cik_tickers": [
+      "SNXX"
+    ],
+    "output_path": "data/non_ohlcv/sec_filing_events_20260718.jsonl",
+    "pit_caveat": "This backfills SEC public availability by accepted_at/accession metadata. It is not a replay of what the local news pipeline or LLM actually observed.",
+    "pit_safe_rows": 19,
+    "production_impact": {
+      "backtester_adapter_changed": false,
+      "production_impact": "sec_public_pit_backfill_only",
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "row_counts_by_form": {
+      "10-Q": 2,
+      "6-K": 3,
+      "8-K": 14
+    },
+    "row_counts_by_source": {
+      "sec_submissions_recent": 19
+    },
+    "row_counts_by_ticker": {
+      "AMZN": 1,
+      "BE": 1,
+      "COIN": 1,
+      "DE": 1,
+      "GE": 2,
+      "GS": 1,
+      "ISRG": 1,
+      "JPM": 2,
+      "MARA": 1,
+      "NFLX": 2,
+      "NVO": 1,
+      "SNOW": 1,
+      "TSM": 2,
+      "UNH": 1,
+      "V": 1
+    },
+    "rows_written": 19,
+    "segments": [
+      "core",
+      "pilot",
+      "observation"
+    ],
+    "source": "SEC EDGAR submissions API",
+    "status": "ok",
+    "submission_chunks_listed": 155,
+    "submission_chunks_overlap_window": 0,
+    "submission_chunks_read": 0,
+    "submission_chunks_skipped_recent_covers_window": 0,
+    "tickers_mapped": 51,
+    "tickers_requested": 52
+  },
+  "sec_filing_text": {
+    "accessions": 19,
+    "cache_dir": "D:\\Github\\ginger\\data\\cache\\sec\\filing_text",
+    "dei_cover_status_parse_counts": {
+      "blocked_cover_terms_without_parseable_status": 2,
+      "blocked_no_cover_page_status_terms": 3,
+      "parsed_machine_readable_dei_fact": 14
+    },
+    "documents_fetched": 74,
+    "events_input": 19,
+    "forms": [
+      "10-K",
+      "10-Q",
+      "6-K",
+      "8-K"
+    ],
+    "item_codes": [
+      "all"
+    ],
+    "limit": null,
+    "matched_events_input": 19,
+    "matched_form_counts": {
+      "10-Q": 2,
+      "6-K": 3,
+      "8-K": 14
+    },
+    "rows_with_dei_cover_status": 14,
+    "rows_written": 19,
+    "selected_form_counts": {
+      "10-Q": 2,
+      "6-K": 3,
+      "8-K": 14
+    },
+    "selected_periodic_rows": 2,
+    "source_events": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260718.jsonl",
+    "source_events_input": 19,
+    "source_form_counts": {
+      "10-Q": 2,
+      "6-K": 3,
+      "8-K": 14
+    },
+    "status": "ok",
+    "status_counts": {
+      "ok": 19
+    },
+    "text_char_count": 652567,
+    "tickers": 15
+  },
+  "status": "ok"
+}

@@ -5,6 +5,35 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## ORTEX Cost-to-Borrow-New Observer
+
+`exp-20260718-003` adds a shared, default-off ORTEX borrow-economics
+observer. Historical source dates are conservatively mapped to the strictly
+next caller-supplied NYSE session; same-day use is forbidden. The fixed
+research surface contains 20 Moomoo-covered stocks across three predeclared
+40-session blocks. Daily collection rotates through at most four names that
+are at least five calendar days stale, stops before a 250-credit reserve, and
+can be disabled with `ORTEX_BORROW_REFRESH_DISABLED=1`. Every snapshot and
+outcome remains `trade_enabled=false`.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off ORTEX CTB-new observer and generic H5/H10 outcomes | `ortex_data_sidecar.py`, `ortex_borrow_observer.py`, `data/non_ohlcv/ortex/`, `run.py` | canonical core backtests do not consume the observer; research replays may use only the append-only normalized rows, the fixed 20-name/three-block universe, strict next-session usable clock, usable-session open entry, and fifth/tenth later-session close outcomes versus cash/SPY/QQQ | daily run performs bounded stale-name refresh only once per US equity session, always settles locally available rows, and mounts the result under `non_ohlcv_snapshot["ortex_borrow_observer"]`; failures are isolated in a default-off stub | historical rows use the conservative inferred next-session clock while prospective rows also retain local collection time; neither path may change candidates, orders, ranking, sizing, exits, or claim short executability without a separate shared alpha policy, broker locate/availability evidence, and Gate 1-4 experiment |
+| Rejected ORTEX CTB-new × Moomoo short-volume pair spread (`exp-20260718-004`) | `ortex_moomoo_borrow_pair_paper_sleeve.py`, `experiments/exp_20260718_004_ortex_moomoo_borrow_pair.py` | frozen replay uses the exact 20-name same-date cross-section, top-4 intersection, highest rank-sum short without fallback, lowest-stress correlated cluster peer, next-open entry, fifth-session close, cash collateral, marked-gross guard, 45bp per leg, and observed CTB accrual | shared daily builder was implemented and tested before Gate 4, then all pair-specific `run.py` mounts were removed after rejection; the helper remains only for reproducibility and emits no executable orders | Gate 2/3 passed but 38 pairs lost `$584.28`; 90/10 EV fell `6.2057 -> 5.4239`, PnL fell `$130,992.36 -> $114,688.52`, and 3/3 windows materially regressed. Do not wire or retune this family on the same rows. Bulk coverage was 17/20 at 75.55 credits/request and Moomoo locate fields were empty, so it was also not forward-operational or live-ready. |
+
+## SEC Same-Issuer Dual-Class Spread
+
+`exp-20260718-007` tests a new non-price pair-linkage source: the official SEC
+same-CIK identity of dual-class common shares. Six identities are audited, but
+GOOG/GOOGL is outcome-blind excluded because its historical legs do not share
+one provider/adjustment vintage; the five-pair economic whitelist is frozen in
+the shared helper. Candidate prices come only from the saved, hash-bound cold
+panel; hot warehouse overlays are forbidden.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Rejected same-CIK dual-class robust premium spread (`exp-20260718-007`) | `sec_same_issuer_dual_class_spread_paper_sleeve.py`, `experiments/exp_20260718_007_sec_same_issuer_dual_class_spread.py`, `data/reference/sec_company_tickers.json` | shared replay uses exactly 120 strictly prior common sessions, robust median/MAD, `|z| >= 2.5`, at least 1% anchor deviation, next-common-session whole-share long-cheap/short-rich entry, one open-or-pending pair, ten-session same-pair cooldown, convergence/3% adverse/ten-session exits, cash collateral, 45bp round trip per leg, 5% annualized short carry, and measurement-only final-window settlement | the same helper exposes an exact-date, fail-closed default-off daily snapshot and append-only lifecycle API, but it is not mounted in `run.py` after economic rejection and never emits orders; current SEC identity is not effective-dated and broker locate/size is absent | Gate 2/3 passed, but 23 funded pairs lost `$1,454.49` after costs, standalone EV was `-0.4463`, and 0/3 windows were nonnegative on both EV/PnL. SPY beta was only `0.0105`, yet 90/10 EV fell `6.2057 -> 5.3236`, PnL fell `$130,992.36 -> $113,458.64`, and all three windows materially regressed. Do not wire or retune this frozen policy; GOOG/GOOGL requires a same-batch two-leg refreeze before any separate revisit. |
+
 ## Shared Paper-Sleeve Execution-Sizing Boundary
 
 `exp-20260712-018` adds one repository-wide, fail-closed sizing audit in

@@ -22,6 +22,51 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("duplicate_reservation_accounting", (
         "duplicate_reservation_accounting", "duplicate reservation accounting",
     )),
+    # Signed Linux mainline RC tags and their non-merge commit authorship are
+    # a Git contribution source, distinct from Linux CVE/security news and
+    # generic SEC text. Keep only compound source/policy spellings here: bare
+    # Linux, kernel, RC, tag, commit, or contribution would over-match those
+    # adjacent surfaces.
+    ("linux_mainline_signed_rc_contributions", (
+        "linux_mainline_signed_rc_contributions",
+        "linux mainline signed rc contributions",
+        "linux_mainline_rc_contribution_acceleration",
+        "linux mainline rc contribution acceleration",
+        "signed linux mainline rc tags",
+        "signed_linux_mainline_rc_tags",
+        "linux mainline non-merge contribution count",
+    )),
+    # deps.dev Maven package publication timestamps are a package-registry
+    # source, distinct from Companyfacts and generic product/news releases.
+    # Keep only compound API/policy spellings: bare "release" would collide
+    # with Orange Book and bare "lease" is a Companyfacts accounting field.
+    ("deps_dev_maven_package_releases", (
+        "deps_dev_maven_package_releases",
+        "deps dev maven package releases",
+        "deps.dev maven package releases",
+        "deps_dev_maven_release_acceleration",
+        "deps dev maven release acceleration",
+        "deps.dev maven release acceleration",
+        "deps.dev v3 package history",
+        "deps dev v3 package history",
+        "maven central publishedat",
+        "maven package publishedat",
+        "maven coordinate release acceleration",
+    )),
+    # Hacker News owned-domain attention is a timestamped developer-attention
+    # source, distinct from generic entity/theme news and from issuer pageview
+    # traffic.  Keep the source/API spellings ahead of those broader families.
+    ("hacker_news_owned_domain_attention", (
+        "hacker_news_owned_domain_attention",
+        "hacker news owned-domain attention",
+        "hacker news owned domain attention",
+        "hacker_news_algolia_story_archive",
+        "hacker news algolia story archive",
+        "hn_owned_domain_weekly_attention",
+        "hn owned-domain weekly attention",
+        "hn_algolia", "hn algolia", "hn.algolia.com",
+        "hacker-news.firebaseio", "hacker news api",
+    )),
     # NVD CVE Change History is a point-in-time vulnerability-analysis source,
     # distinct from CISA's already-exploited KEV subset and generic security
     # news. Keep compound phrases here: bare "nvd" would also match NVDA.
@@ -425,6 +470,18 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "chop-day forward", "chop day forward",
         "chop_row", "chop row", "chop rows",
     )),
+    # Official same-CIK share-class identity is a non-price issuer-linkage
+    # source, distinct from both generic SEC filing fields and price-derived
+    # relative-value pairs. Keep only compound identity spellings here: bare
+    # CIK, issuer, class, share, or SEC would capture adjacent SEC surfaces.
+    ("sec_same_cik_share_class_identity", (
+        "sec_same_cik", "sec same-cik", "sec same cik",
+        "same-cik dual-class", "same-cik dual class",
+        "same cik dual-class", "same cik dual class",
+        "same-issuer dual-class", "same-issuer dual class",
+        "same issuer dual-class", "same issuer dual class",
+        "share-class identity", "share class identity",
+    )),
     ("sec13d_ownership", (
         "sec13d", "sec_13d", "sec 13d", "schedule 13d", "sc 13d",
         "13d13g", "13d/13g", "13d 13g", "sec_13d13g", "sec 13d13g",
@@ -791,6 +848,31 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "fdic_call_report_deposit_quality_candidate_pool",
         "fdic call report deposit quality candidate pool",
     )),
+    # The signed Linux mainline RC policy ranks exactly three issuers and
+    # holds twenty sessions. Keep its compound policy spellings ahead of the
+    # generic Top1/H10 candidate-pool rules.
+    ("candidate_pool_top3_20d", (
+        "candidate_pool_top3_20d", "candidate pool top3 20d",
+        "top3_h20", "top3 h20",
+        "linux_mainline_rc_contribution_acceleration_top3_20d",
+        "signed_linux_mainline_rc_top3_20d",
+        "top 3 positive count-minus-median issuers",
+    )),
+    # The HN attention policy ranks exactly three issuers and holds ten
+    # sessions.  Keep its compound policy spellings before the generic top-1
+    # bucket so saturation accounting follows the actual response shape.
+    ("candidate_pool_top3_10d", (
+        "candidate_pool_top3_10d", "candidate pool top3 10d",
+        "hacker_news_owned_domain_attention_acceleration",
+        "hn_owned_domain_weekly_attention_top3_candidate_pool",
+        "exact_host_current_ge2_above_prior4w_top3_next_open_h10_v1",
+        "deps_dev_maven_release_acceleration_top3_10d",
+        "deps_dev_maven_release_acceleration_top3_nextopen_h10_shared_v1",
+        "complete_week_current_ge2_above_prior8median_top3_next_open_h10_v1",
+        "maven release acceleration top three",
+        "top three liquid issuers by weekly count",
+        "top-3 next-open ten-session candidate pool",
+    )),
     # This source is first introduced as a fixed top-2 candidate pool. Keep
     # its explicit family key above generic "replacement value" wording so
     # saturation accounting follows the tested response shape.
@@ -894,6 +976,8 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "chop_pairs_spread", "chop pairs spread",
         "pair_spread", "pair-spread", "pair spread",
         "pairs_spread", "pairs-spread", "pairs spread",
+        "dual_class_spread", "dual-class spread", "dual class spread",
+        "share_class_spread", "share-class spread", "share class spread",
         "pair_zscore", "pair zscore", "pair z-score",
         "spread_zscore", "spread zscore", "spread z-score",
         "long_short_spread", "long-short spread", "long short spread",

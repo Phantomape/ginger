@@ -1,0 +1,186 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.7,
+    "expected_ev_delta": 0.7,
+    "expected_pnl_delta": 5000.0,
+    "pnl_prediction_error": -5000.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "no_core_entry_overlap",
+      "fee_only_threshold_too_rare",
+      "partial_central_block_coverage",
+      "exclusion_removes_winners",
+      "resolver_changes_addons"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "no_core_entry_overlap",
+    "surprise_level": "very_low",
+    "surprise_note": "The fixed rule produced two exclusions in every canonical window, but none intersected any generated fresh-core candidate."
+  },
+  "causal_components": [
+    "authenticated ORTEX PIT history",
+    "unchanged exp-20260712-013 thresholds and transition cooldown",
+    "shared helper",
+    "historical Gate 1-4 replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_summary": "Evaluated the unchanged exp-20260712-013 ORTEX borrow-stress policy as a shared default-off next-open fresh-core entry-admission exclusion across all three canonical windows.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "ortex_exp20260712_013_fixed_borrow_stress_fresh_core_entry_admission_v1",
+  "component": "quant/ortex_borrow_entry_gate.py, quant/ortex_borrow_observer.py, quant/test_ortex_borrow_entry_gate.py, quant/test_ortex_borrow_observer.py, quant/experiments/exp_20260718_005_ortex_borrow_stress_entry_admission.py, data/experiments/exp-20260718-005/, experiments/cards/exp-20260718-005.md, experiments/manifests/exp-20260718-005.json, experiments/tickets/exp-20260718-005.json, experiments/logs/exp-20260718-005.json, docs/experiment_registry.json, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "survival_rate": 0.0,
+    "max_drawdown_pct": 0.0
+  },
+  "experiment_id": "exp-20260718-005",
+  "hypothesis": "Authenticated PIT ORTEX cost-to-borrow history now covers old_thin. Applying the unchanged exp-20260712-013 borrow-stress transition policy as a next-open fresh-core entry-admission exclusion should avoid crowded-short and lending-stress underperformance and improve the cash-feasible strategy across all three canonical windows.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "ortex_borrow_stress_entry_admission",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260712-013",
+    "exp-20260718-003",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "historical_ortex_old_thin_plus_entry_admission_gate_shape",
+  "next_retry_requires": [
+    "populated PIT availability or utilization that can activate the frozen compound branch",
+    "or materially more PIT rows satisfying the repository growth rule and at least five actual fresh-core candidate touches per canonical window (15 aggregate)"
+  ],
+  "notes": "Rejected: 6 valid PIT stress transitions (2/window) touched zero generated fresh-entry candidates, so aggregate EV stayed 6.2057, PnL stayed 130992.36, trades stayed 49, and Gate 4 failed. Shared helper and daily trade_enabled=false observer remain measurement-only; no strategy/order behavior is enabled. Forbid threshold, cooldown, horizon, issuer-subset, or fee-only response retunes on this same surface. Reopen only with populated PIT availability/utilization that activates the frozen compound branch, or materially more PIT rows meeting repository growth rules and at least 5 actual core fresh-entry touches per window (15 aggregate).",
+  "parameters": {
+    "locked_variables": [
+      "exp-20260712-013 policy thresholds",
+      "entry admission semantics",
+      "ORTEX borrow stress gate"
+    ],
+    "single_causal_variable": "ortex_exp20260712_013_fixed_borrow_stress_fresh_core_entry_admission_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 1.0% fee level, 0.25pp delta, 0.70 availability ratio, ten-session cooldown, one-session exclusion response, issuer subset, or use fee delta without historical availability on this same ORTEX entry-admission surface.",
+    "new_evidence_required": "Reopen only with populated PIT availability/utilization that activates the frozen compound branch, or materially more PIT rows satisfying the repository growth rule and at least five actual fresh-core candidate touches in every canonical window (15 aggregate) before price access.",
+    "realized_failure_mode": "no_core_entry_overlap",
+    "why_result_happened": "The fixed rule produced two exclusions in every canonical window, but all six missed every generated fresh-core candidate, leaving the measured strategy completely unchanged."
+  },
+  "prediction": {
+    "confidence_reason": "The predecessor observed 194 stressed transitions with mean -91.88bp versus its same-date universe and the authenticated replacement source now covers old_thin across 20 liquid names. Confidence remains low because ORTEX has fee but no availability field, only central historical blocks, and the active cash-feasible core may rarely attempt those issuers while stressed.",
+    "expected_ev_delta": 0.7,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "no_core_entry_overlap",
+      "fee_only_threshold_too_rare",
+      "partial_central_block_coverage",
+      "exclusion_removes_winners",
+      "resolver_changes_addons"
+    ],
+    "recorded_at": "2026-07-18T18:06:09+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": "Six valid PIT stress transitions (two per canonical window) touched zero generated fresh-core candidates. Before and after were identical, so the preregistered candidate-touch floor and strict aggregate EV hurdle above 6.82627 both failed.",
+  "related_files": [
+    "data/experiments/exp-20260718-005/before_measurement.json",
+    "data/experiments/exp-20260718-005/after_measurement.json",
+    "data/experiments/exp-20260718-005/exp_20260718_005_ortex_borrow_stress_entry_admission.json",
+    "quant/ortex_borrow_entry_gate.py",
+    "quant/ortex_borrow_observer.py",
+    "quant/experiments/exp_20260718_005_ortex_borrow_stress_entry_admission.py",
+    "quant/test_ortex_borrow_entry_gate.py",
+    "quant/test_ortex_borrow_observer.py"
+  ],
+  "evidence_summary": {
+    "source_rows": 2580,
+    "source_file_sha256": "142c7c3f9608d0b14297f35bf27793405bbc17bd1853d15537d1e6029448efb8",
+    "source_canonical_rows_sha256": "d3c49fca0d7c6fdbf0d1b83033d285d406bfc0e150ad924aab36ca0fb3295b2a",
+    "canonical_row_hash_verified": true,
+    "eligible_transitions": 6,
+    "transitions_per_window": 2,
+    "generated_fresh_candidate_exclusions": 0,
+    "historical_daily_parity_checks": 6,
+    "historical_daily_parity_complete": true,
+    "historical_daily_parity_identity_fields": [
+      "excluded_tickers",
+      "source_hash",
+      "index_hash",
+      "resolver_snapshot_hash",
+      "resolver_record_hash",
+      "membership_hash",
+      "entry_session",
+      "trade_enabled_false"
+    ],
+    "addon_contamination_count": 0,
+    "gate2_all_windows_passed": true,
+    "gate3_minimum_survival_rate": 0.8116,
+    "gate4_passed": false
+  },
+  "production_impact": {
+    "strategy_behavior_changed": false,
+    "live_or_default_orders_changed": false,
+    "shared_default_off_helper_retained": true,
+    "daily_observer_schema_extended": true,
+    "trade_enabled": false,
+    "license_boundary": "Private provider account authorization is evidenced, but no repository-auditable license or redistribution manifest exists; retain for local default-off research only."
+  },
+  "verification": {
+    "replay_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_005_ortex_borrow_stress_entry_admission.py",
+    "replay_result": "rejected_insufficient_fresh_entry_overlap; EV 6.2057->6.2057; PnL 130992.36->130992.36; trades 49->49",
+    "pytest_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ortex_borrow_entry_gate.py quant\\test_ortex_borrow_observer.py quant\\test_ortex_data_sidecar.py quant\\test_run_daily_wiring.py -q",
+    "pytest_result": "79 passed; includes mismatched caller SHA rejection and full historical/daily identity parity"
+  },
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-18T18:36:30+00:00",
+  "trial_family": "ortex_fixed_borrow_stress_core_entry_admission",
+  "trial_variant_id": "fee1_or_delta025_avail070_transition10_next_open_v1"
+}

@@ -1,7 +1,8 @@
 """Generate docs/frozen_families.jsonl from experiment logs (source of truth).
 
-Turns the prose anti-repeat wall in docs/alpha-optimization-playbook.md into a
-machine-readable registry the reservation-time novelty check can query. Pure
+Builds the reservation-time novelty registry directly from experiment logs and
+the meta-research freeze list. The human alpha playbook is not an input and may
+link to this artifact without duplicating per-trial anti-repeat prose. Pure
 read-only over experiments/logs/*.json plus the meta-research freeze list;
 writes one JSONL row per trial-family. Advisory artifact; changes no strategy
 behavior.

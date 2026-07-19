@@ -24,6 +24,7 @@ from run import (  # noqa: E402
     _persist_entity_theme_news_observer,
     _persist_entity_theme_news_outcomes,
     _persist_estimate_revision_outcomes_after_quant_signals,
+    _persist_ortex_borrow_observer,
     _persist_prediction_market_event_observer,
     _persist_prediction_market_event_outcomes,
     _persist_sec_contract_relation_provenance,
@@ -630,6 +631,178 @@ def test_daily_non_ohlcv_wires_form4_context_into_run_path(monkeypatch):
     assert impact["alters_candidate_ranking"] is False
     assert impact["alters_sizing"] is False
     assert impact["alters_orders"] is False
+
+
+def _install_fake_ortex_wiring_modules(monkeypatch, observer):
+    def fake_is_us_equity_session(value):
+        return date.fromisoformat(str(value)[:10]).weekday() < 5
+
+    monkeypatch.setitem(sys.modules, "ortex_borrow_observer", observer)
+    monkeypatch.setitem(
+        sys.modules,
+        "us_market_calendar",
+        types.SimpleNamespace(is_us_equity_session=fake_is_us_equity_session),
+    )
+
+
+def test_ortex_borrow_observer_daily_wiring_refreshes_once_with_bounded_contract(
+    monkeypatch, tmp_path
+):
+    calls = []
+
+    def fake_cycle(**kwargs):
+        calls.append(kwargs)
+        return {
+            "observer_name": "ortex_cost_to_borrow_new_observer",
+            "as_of": kwargs["as_of"],
+            "source_row_count": 20,
+            "snapshot": {"as_of": kwargs["as_of"], "coverage_count": 20},
+            "outcome_summary": {"settled_count": 40},
+            "network_refresh": {"status": "ok", "requests_made": 4},
+            "trade_enabled": False,
+        }
+
+    observer = types.SimpleNamespace(
+        run_ortex_borrow_observer_cycle=fake_cycle,
+        LATEST_SNAPSHOT_PATH=tmp_path / "latest.json",
+        SNAPSHOT_LEDGER_PATH=tmp_path / "snapshots.jsonl",
+    )
+    _install_fake_ortex_wiring_modules(monkeypatch, observer)
+    monkeypatch.delenv("ORTEX_BORROW_REFRESH_DISABLED", raising=False)
+    snapshot = {}
+    spy_rows = [
+        {"Date": "2026-07-02", "Open": 100.0, "Close": 101.0},
+        {"Date": "2026-07-06", "Open": 101.0, "Close": 102.0},
+    ]
+    qqq_rows = [{"Date": "2026-07-06", "Open": 200.0, "Close": 201.0}]
+
+    result = _persist_ortex_borrow_observer(
+        today_iso="2026-07-06",
+        non_ohlcv_snapshot=snapshot,
+        ohlcv_dict={"AAPL": spy_rows},
+        spy_ohlcv=spy_rows,
+        qqq_ohlcv=qqq_rows,
+    )
+
+    assert len(calls) == 1
+    kwargs = calls[0]
+    assert kwargs["refresh_network"] is True
+    assert kwargs["max_refresh_tickers"] == 4
+    assert kwargs["min_refresh_age_days"] == 5
+    assert kwargs["credit_budget"] == 50
+    assert kwargs["min_credits_left"] == 250
+    assert kwargs["price_history_by_ticker"]["SPY"] is spy_rows
+    assert kwargs["price_history_by_ticker"]["QQQ"] is qqq_rows
+    assert "2026-07-02" in kwargs["trading_dates"]
+    assert "2026-07-20" in kwargs["trading_dates"]
+    assert snapshot["ortex_borrow_observer"] is result
+    assert result["trade_enabled"] is False
+    assert result["production_impact"]["alters_signal_generation"] is False
+    assert result["production_impact"]["alters_candidate_ranking"] is False
+    assert result["production_impact"]["alters_sizing"] is False
+    assert result["production_impact"]["alters_orders"] is False
+
+
+def test_ortex_borrow_observer_daily_wiring_honors_network_opt_out(
+    monkeypatch, tmp_path
+):
+    calls = []
+
+    def fake_cycle(**kwargs):
+        calls.append(kwargs)
+        return {"as_of": kwargs["as_of"], "network_refresh": {"status": "disabled"}}
+
+    observer = types.SimpleNamespace(
+        run_ortex_borrow_observer_cycle=fake_cycle,
+        LATEST_SNAPSHOT_PATH=tmp_path / "latest.json",
+        SNAPSHOT_LEDGER_PATH=tmp_path / "snapshots.jsonl",
+    )
+    _install_fake_ortex_wiring_modules(monkeypatch, observer)
+    monkeypatch.setenv("ORTEX_BORROW_REFRESH_DISABLED", "true")
+
+    _persist_ortex_borrow_observer(
+        today_iso="2026-07-06",
+        non_ohlcv_snapshot={},
+        ohlcv_dict={"SPY": [{"Date": "2026-07-06"}]},
+    )
+
+    assert len(calls) == 1
+    assert calls[0]["refresh_network"] is False
+
+
+def test_ortex_borrow_observer_daily_wiring_does_not_refetch_existing_snapshot(
+    monkeypatch, tmp_path
+):
+    calls = []
+
+    def fake_cycle(**kwargs):
+        calls.append(kwargs)
+        return {"as_of": kwargs["as_of"], "network_refresh": {"status": "disabled"}}
+
+    latest_path = tmp_path / "latest.json"
+    latest_path.write_text('{"as_of":"2026-07-06"}', encoding="utf-8")
+    observer = types.SimpleNamespace(
+        run_ortex_borrow_observer_cycle=fake_cycle,
+        LATEST_SNAPSHOT_PATH=latest_path,
+        SNAPSHOT_LEDGER_PATH=tmp_path / "snapshots.jsonl",
+    )
+    _install_fake_ortex_wiring_modules(monkeypatch, observer)
+    monkeypatch.delenv("ORTEX_BORROW_REFRESH_DISABLED", raising=False)
+
+    _persist_ortex_borrow_observer(
+        today_iso="2026-07-06",
+        non_ohlcv_snapshot={},
+        ohlcv_dict={"SPY": [{"Date": "2026-07-06"}]},
+    )
+
+    assert len(calls) == 1
+    assert calls[0]["refresh_network"] is False
+
+
+def test_ortex_borrow_observer_daily_wiring_is_fail_open_and_order_inert(monkeypatch):
+    def failing_cycle(**kwargs):
+        raise RuntimeError("synthetic ORTEX outage")
+
+    _install_fake_ortex_wiring_modules(
+        monkeypatch,
+        types.SimpleNamespace(run_ortex_borrow_observer_cycle=failing_cycle),
+    )
+    snapshot = {"existing": "preserved"}
+
+    result = _persist_ortex_borrow_observer(
+        today_iso="2026-07-06",
+        non_ohlcv_snapshot=snapshot,
+        ohlcv_dict={"SPY": [{"Date": "2026-07-06"}]},
+    )
+
+    assert snapshot["existing"] == "preserved"
+    assert snapshot["ortex_borrow_observer"] is result
+    assert result["status"] == "failed_ortex_borrow_observer"
+    assert "synthetic ORTEX outage" in result["error"]
+    assert result["trade_enabled"] is False
+    assert result["strategy_behavior_changed"] is False
+    assert result["alters_orders"] is False
+    assert result["production_impact"]["alters_orders"] is False
+
+
+def test_main_mounts_ortex_observer_after_non_ohlcv_snapshot_build():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    calls = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "id", None) == "_persist_ortex_borrow_observer"
+    ]
+
+    assert len(calls) == 1
+    keyword_names = {keyword.arg for keyword in calls[0].keywords}
+    assert keyword_names == {
+        "today_iso",
+        "non_ohlcv_snapshot",
+        "ohlcv_dict",
+        "spy_ohlcv",
+        "qqq_ohlcv",
+    }
 
 
 def test_structured_news_observation_runs_second_order_exposure_observer(monkeypatch):
@@ -1483,7 +1656,6 @@ def test_moomoo_capital_flow_paper_sleeve_not_added_to_prompt_trend_signals():
                 prompt_facing_assignments.append(node)
 
     assert prompt_facing_assignments == []
-
 
 def test_finra_ats_share_paper_sleeve_daily_wiring_uses_shared_helper():
     tree = ast.parse(textwrap.dedent(inspect.getsource(main)))

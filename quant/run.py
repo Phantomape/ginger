@@ -1675,6 +1675,176 @@ def _build_daily_non_ohlcv_snapshot(
         }
 
 
+def _persist_ortex_borrow_observer(
+    *,
+    today_iso,
+    non_ohlcv_snapshot,
+    ohlcv_dict,
+    spy_ohlcv=None,
+    qqq_ohlcv=None,
+):
+    """Refresh and settle the default-off ORTEX borrow observer.
+
+    The provider refresh is deliberately credit-bounded and only runs once per
+    US equity session. Local snapshot/outcome settlement still runs when the
+    network leg is disabled, on a non-session day, or after today's snapshot
+    already exists. This helper can only annotate ``non_ohlcv_snapshot``; it
+    has no signal, ranking, sizing, exit, or order input/output.
+    """
+    behavior_contract = {
+        "observer_only": True,
+        "strategy_behavior_changed": False,
+        "trade_enabled": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_ranking": False,
+        "alters_sizing": False,
+        "alters_exits": False,
+        "alters_orders": False,
+        "production_impact": {
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_exits": False,
+            "alters_orders": False,
+            "scope": "default_off_ortex_borrow_observer",
+        },
+    }
+
+    def _date_text(value):
+        raw = str(value or "").strip()[:10]
+        try:
+            return datetime.strptime(raw, "%Y-%m-%d").date().isoformat()
+        except ValueError:
+            return None
+
+    def _history_dates(payload):
+        dates = set()
+        if payload is None:
+            return dates
+        if hasattr(payload, "iterrows") and hasattr(payload, "index"):
+            candidates = list(payload.index)
+        elif isinstance(payload, dict):
+            embedded = payload.get("rows")
+            candidates = embedded if isinstance(embedded, list) else list(payload)
+        elif isinstance(payload, (list, tuple)):
+            candidates = payload
+        else:
+            candidates = []
+        for candidate in candidates:
+            if isinstance(candidate, dict):
+                candidate = next(
+                    (
+                        candidate.get(key)
+                        for key in (
+                            "date",
+                            "Date",
+                            "datetime",
+                            "Datetime",
+                            "timestamp",
+                            "Timestamp",
+                        )
+                        if candidate.get(key) is not None
+                    ),
+                    None,
+                )
+            day = _date_text(candidate)
+            if day:
+                dates.add(day)
+        return dates
+
+    def _snapshot_exists(observer_module, as_of):
+        mounted = non_ohlcv_snapshot.get("ortex_borrow_observer")
+        if isinstance(mounted, dict) and (
+            mounted.get("as_of") == as_of
+            or (mounted.get("snapshot") or {}).get("as_of") == as_of
+        ):
+            return True
+        latest_path = getattr(observer_module, "LATEST_SNAPSHOT_PATH", None)
+        if latest_path:
+            try:
+                payload = json.loads(Path(latest_path).read_text(encoding="utf-8-sig"))
+                if isinstance(payload, dict) and payload.get("as_of") == as_of:
+                    return True
+            except (OSError, ValueError, TypeError):
+                pass
+        ledger_path = getattr(observer_module, "SNAPSHOT_LEDGER_PATH", None)
+        if ledger_path:
+            try:
+                for raw in Path(ledger_path).read_text(encoding="utf-8-sig").splitlines():
+                    if not raw.strip():
+                        continue
+                    payload = json.loads(raw)
+                    if isinstance(payload, dict) and payload.get("as_of") == as_of:
+                        return True
+            except (OSError, ValueError, TypeError):
+                pass
+        return False
+
+    try:
+        from datetime import timedelta as _timedelta
+        import ortex_borrow_observer
+        from us_market_calendar import is_us_equity_session
+
+        as_of_date = datetime.strptime(today_iso, "%Y-%m-%d").date()
+        price_history = dict(ohlcv_dict or {})
+        if spy_ohlcv is not None:
+            price_history["SPY"] = spy_ohlcv
+        if qqq_ohlcv is not None:
+            price_history["QQQ"] = qqq_ohlcv
+
+        # Provider dates are end-of-session observations. The sidecar assigns
+        # the strictly next session as usable_trade_date, so the caller supplies
+        # the historical SPY spine plus at least 14 calendar days of rule-based
+        # future NYSE sessions (including year/holiday boundaries).
+        trading_dates = _history_dates(price_history.get("SPY"))
+        for offset in range(0, 15):
+            candidate = as_of_date + _timedelta(days=offset)
+            if is_us_equity_session(candidate):
+                trading_dates.add(candidate.isoformat())
+
+        refresh_network = (
+            is_us_equity_session(as_of_date)
+            and not _env_flag("ORTEX_BORROW_REFRESH_DISABLED", False)
+            and not _snapshot_exists(ortex_borrow_observer, today_iso)
+        )
+        summary = dict(
+            ortex_borrow_observer.run_ortex_borrow_observer_cycle(
+                as_of=today_iso,
+                price_history_by_ticker=price_history,
+                refresh_network=refresh_network,
+                trading_dates=sorted(trading_dates),
+                max_refresh_tickers=4,
+                min_refresh_age_days=5,
+                credit_budget=50,
+                min_credits_left=250,
+            )
+            or {}
+        )
+        summary.update(behavior_contract)
+        non_ohlcv_snapshot["ortex_borrow_observer"] = summary
+        log.info(
+            "ORTEX borrow observer: source_rows=%s coverage=%s settled=%s "
+            "network_status=%s requests=%s",
+            summary.get("source_row_count"),
+            (summary.get("snapshot") or {}).get("coverage_count"),
+            (summary.get("outcome_summary") or {}).get("settled_count"),
+            (summary.get("network_refresh") or {}).get("status"),
+            (summary.get("network_refresh") or {}).get("requests_made"),
+        )
+        return summary
+    except Exception as e:
+        log.warning("ORTEX borrow observer unavailable: %s", e)
+        summary = {
+            "status": "failed_ortex_borrow_observer",
+            "as_of": today_iso,
+            "error": str(e),
+            **behavior_contract,
+        }
+        non_ohlcv_snapshot["ortex_borrow_observer"] = summary
+        return summary
+
+
 def _build_space_catalyst_observation_step(
     *,
     today_iso,
@@ -2866,6 +3036,13 @@ def main():
         options_ingest_tickers=options_ingest_tickers,
         option_underlying_prices=option_underlying_prices,
         non_ohlcv_catchup_summary=non_ohlcv_catchup_summary,
+    )
+    _persist_ortex_borrow_observer(
+        today_iso=today_iso,
+        non_ohlcv_snapshot=non_ohlcv_snapshot,
+        ohlcv_dict=ohlcv_dict,
+        spy_ohlcv=spy_ohlcv,
+        qqq_ohlcv=ohlcv_dict.get("QQQ"),
     )
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────

@@ -1,0 +1,281 @@
+{
+  "acceptance": {
+    "append_idempotent": true,
+    "central_ohlcv_replay_complete": true,
+    "daily_snapshot_all_20_default_off": true,
+    "each_ticker_at_least_20_rows": true,
+    "each_ticker_each_block_at_least_20_rows": true,
+    "fixed_universe_exact_20": true,
+    "h5_h10_outcomes_settled": true,
+    "moomoo_intersection_full": true,
+    "no_duplicate_source_keys": true,
+    "run_py_daily_wiring_present": true,
+    "source_schema_key_free": true,
+    "strategy_and_orders_unchanged": true,
+    "strict_next_session_clock": true
+  },
+  "after_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "alpha_hypothesis": "A later standalone market-neutral gate will test whether ORTEX borrow stress joined to Moomoo short activity predicts underperformance versus a low-stress peer.",
+  "artifact": "data/experiments/exp-20260718-003/exp_20260718_003_ortex_borrow_observer_breadth.json",
+  "before_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "calibration": {
+    "actual_success": 1,
+    "predicted_success_probability": 0.78,
+    "realized_failure_mode": null
+  },
+  "causal_components": [
+    "credit-budgeted ORTEX range fetch",
+    "20-name fixed universe",
+    "three central 40-session blocks",
+    "next-session usable clock",
+    "append-only dedupe",
+    "run.py daily default-off snapshot",
+    "automatic generic outcome settlement"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/ortex_data_sidecar.py",
+    "quant/ortex_borrow_observer.py",
+    "quant/test_ortex_data_sidecar.py",
+    "quant/test_ortex_borrow_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260718_003_ortex_borrow_observer_breadth.py",
+    "data/non_ohlcv/ortex/",
+    "data/experiments/exp-20260718-003/",
+    "experiments/cards/exp-20260718-003.md",
+    "experiments/manifests/exp-20260718-003.json",
+    "experiments/tickets/exp-20260718-003.json",
+    "experiments/logs/exp-20260718-003.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "changed_variable": "ortex_borrow_pit_breadth_usable_clock_observer_v2",
+  "decision": "accepted_measurement_repair_ortex_borrow_observer_ready",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260718-003",
+  "gate1": {
+    "anchor_unchanged": true,
+    "applicable": true,
+    "expected_value_score": 6.2057
+  },
+  "gate2": {
+    "applicable": true,
+    "entry_date_and_target_price_paths_unchanged": true,
+    "note": "observer rows are descriptive/default-off; no signal contract changed",
+    "provider_date_and_usable_trade_date_present": true
+  },
+  "gate3": {
+    "applicable": false,
+    "note": "no production or backtest filter was added"
+  },
+  "gate4": {
+    "applicable": false,
+    "failed_reasons": [],
+    "note": "measurement repair leaves the active strategy bit-exact; alpha is a later ticket"
+  },
+  "hypothesis": "Alpha-enabling ORTEX repair: materialize costToBorrowNew for a fixed 20-name liquid Moomoo-covered universe across three predeclared central 40-session canonical blocks, map every provider date to the next tradable usable date, and wire the append-only cache, daily default-off snapshot, and generic cash/SPY/QQQ outcome settlement into quant/run.py so future rows land automatically without further experiment IDs; no trade decision changes.",
+  "implementation_mode": "shared_observer_first_build_and_daily_wiring",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_ortex_borrow_observer",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260627-023",
+    "exp-20260628-004",
+    "exp-20260708-001",
+    "exp-20260712-013"
+  ],
+  "new_evidence_axis": "Materially broader ORTEX costToBorrowNew coverage from one prior AAPL sample to a fixed 20-ticker three-block surface, with next-session clock and one-time daily wiring.",
+  "new_evidence_type": "materially_broader_ortex_cost_to_borrow_new_rows_and_usable_clock",
+  "next_retry_requires": [
+    "A predeclared new gate shape joining the now-settled ORTEX surface to an independent Moomoo feature, or materially more forward received-at rows."
+  ],
+  "outcome_audit": {
+    "ledger": "data/non_ohlcv/ortex/borrow_observer/generic_outcomes.jsonl",
+    "missing_replacement_values": 0,
+    "settled_by_horizon": {
+      "10": 2580,
+      "5": 2580
+    },
+    "settled_rows": 5160,
+    "ticker_count": 20
+  },
+  "owner": "codex-root",
+  "post_run_reflection": {
+    "alpha_interpretation": "This clears the parked data-readiness condition only.  It does not show that high or low borrow cost earns money.",
+    "forbidden_near_neighbor_retry": "Do not spend further experiment IDs rematerializing the same blocks, retuning borrow thresholds, or treating ORTEX as another generic consensus source.  Future routine rows use the wired daily observer.",
+    "new_evidence_required": "A predeclared new gate shape joining the now-settled ORTEX surface to an independent Moomoo feature, or materially more forward received-at rows.",
+    "why_result_happened": "The bounded ORTEX fetch produced 2580 immutable CTB-new rows across 20 tickers; generic settlement produced 5160 H5/H10 rows without touching trading behavior."
+  },
+  "prediction": {
+    "confidence_reason": "Authenticated preflight returned historical CTB-new rows.  The bounded 60-request plan should fit below 200 credits, while a 250-credit reserve and strict next-session clock fail closed on the main operational risks.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "ORTEX credit budget exhausted",
+      "provider rate limiting",
+      "selected ticker coverage gaps",
+      "provider date semantics insufficient",
+      "run wiring mutates trading behavior"
+    ],
+    "recorded_at": "2026-07-18T17:36:55+00:00",
+    "success_probability": 0.78
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "default_off_ortex_borrow_observer_and_generic_outcome_settlement",
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/ortex/cost_to_borrow_new_rows.jsonl",
+    "data/non_ohlcv/ortex/borrow_observer/daily_snapshots.jsonl",
+    "data/non_ohlcv/ortex/borrow_observer/generic_outcomes.jsonl",
+    "data/experiments/exp-20260718-003/exp_20260718_003_ortex_borrow_observer_breadth.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_003_ortex_borrow_observer_breadth.py materialize",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_003_ortex_borrow_observer_breadth.py evaluate",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_ortex_data_sidecar.py quant\\test_ortex_borrow_observer.py quant\\test_run_daily_wiring.py -q"
+  ],
+  "single_causal_variable": "ortex_borrow_pit_breadth_usable_clock_observer_v2",
+  "source_audit": {
+    "api_key_persisted": false,
+    "bad_clock_row_count": 0,
+    "duplicate_keys": 0,
+    "idempotency_replay": {
+      "appended": 0,
+      "conflicts": 0,
+      "duplicates": 2580,
+      "incoming": 2580,
+      "total": 2580
+    },
+    "row_count": 2580,
+    "rows_by_block_and_ticker": {
+      "late_strong": {
+        "AAPL": 44,
+        "AMD": 44,
+        "AMZN": 44,
+        "APP": 44,
+        "AVGO": 44,
+        "COIN": 44,
+        "CRDO": 44,
+        "CVX": 44,
+        "DDOG": 44,
+        "GOOG": 44,
+        "GS": 44,
+        "JPM": 44,
+        "META": 44,
+        "MSFT": 44,
+        "MU": 44,
+        "NVDA": 44,
+        "PLTR": 44,
+        "SNOW": 44,
+        "TSLA": 44,
+        "XOM": 44
+      },
+      "mid_weak": {
+        "AAPL": 41,
+        "AMD": 41,
+        "AMZN": 41,
+        "APP": 41,
+        "AVGO": 41,
+        "COIN": 41,
+        "CRDO": 41,
+        "CVX": 41,
+        "DDOG": 41,
+        "GOOG": 41,
+        "GS": 41,
+        "JPM": 41,
+        "META": 41,
+        "MSFT": 41,
+        "MU": 41,
+        "NVDA": 41,
+        "PLTR": 41,
+        "SNOW": 41,
+        "TSLA": 41,
+        "XOM": 41
+      },
+      "old_thin": {
+        "AAPL": 44,
+        "AMD": 44,
+        "AMZN": 44,
+        "APP": 44,
+        "AVGO": 44,
+        "COIN": 44,
+        "CRDO": 44,
+        "CVX": 44,
+        "DDOG": 44,
+        "GOOG": 44,
+        "GS": 44,
+        "JPM": 44,
+        "META": 44,
+        "MSFT": 44,
+        "MU": 44,
+        "NVDA": 44,
+        "PLTR": 44,
+        "SNOW": 44,
+        "TSLA": 44,
+        "XOM": 44
+      }
+    },
+    "rows_by_ticker": {
+      "AAPL": 129,
+      "AMD": 129,
+      "AMZN": 129,
+      "APP": 129,
+      "AVGO": 129,
+      "COIN": 129,
+      "CRDO": 129,
+      "CVX": 129,
+      "DDOG": 129,
+      "GOOG": 129,
+      "GS": 129,
+      "JPM": 129,
+      "META": 129,
+      "MSFT": 129,
+      "MU": 129,
+      "NVDA": 129,
+      "PLTR": 129,
+      "SNOW": 129,
+      "TSLA": 129,
+      "XOM": 129
+    },
+    "rows_path": "data/non_ohlcv/ortex/cost_to_borrow_new_rows.jsonl",
+    "schema_violation_count": 0,
+    "ticker_count": 20
+  },
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-18T18:00:42+00:00",
+  "trial_family": "ortex_borrow_sidecar_breadth_and_usable_clock",
+  "trial_variant_id": "fixed20_three_central40_blocks_daily_append_v2"
+}

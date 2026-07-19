@@ -1,4 +1,4 @@
-# Pilot shadow tracker - as of 2026-07-18T04:41:00+00:00
+# Pilot shadow tracker - as of 2026-07-19T03:36:55+00:00
 
 Per-position shadow notional: $10,000. Read-only; no orders.
 Measurement basis: paper-sleeve outcomes scaled to the fixed pilot notional; not broker-confirmed fills.
