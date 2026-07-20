@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-19.
+Last refreshed: 2026-07-20.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,138 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### LLM Technical Analysis Needs Task-Level Ground Truth
+
+A July 2026 LLM technical-analysis benchmark evaluates candlestick recognition,
+BUY/SELL/HOLD generation, simulated backtesting, and financial-report
+comprehension across general and finance-tuned models. The Ginger translation
+is narrower than "let the model trade": each LLM task needs its own ground
+truth, numeric-consistency checks, sideways-regime diagnostics, and trade-row
+diffs before any label can become a deterministic helper input.
+
+Implementable fields:
+
+- `llm_ta_task_family`
+- `candlestick_pattern_label`
+- `candlestick_pattern_ground_truth_hash`
+- `llm_signal_numeric_consistency_flag`
+- `llm_sideways_regime_failure_bucket`
+- `llm_report_comprehension_score`
+- `llm_signal_trade_row_diff_count`
+- `llm_ta_costed_replacement_value`
+
+Controls:
+
+- evaluate pattern recognition, directional view, and report comprehension as
+  separate artifacts;
+- require tool-verified OHLCV arithmetic and deterministic trade-row diffs
+  before reading simulated PnL;
+- benchmark against simple rule, HOLD/cash, SPY/QQQ, and accepted-helper
+  comparators on identical rows;
+- treat model-to-model rankings as process diagnostics until Gate 1-4 evidence
+  exists under the shared policy.
+
+Source: <https://arxiv.org/abs/2607.15414>
+
+### News Sentiment Needs Human-Calibrated Aggregation
+
+A July 2026 transformer news-sentiment paper uses sentence-level FinBERT
+labels, article/daily aggregation schemes, and an incentivized human annotation
+panel. The local rule is that news sentiment is not ready because a transformer
+score exists. It needs evidence-span preservation, aggregation-level choice,
+human or frozen validation targets, source coverage, and a comparator against
+dictionary and accepted event fields.
+
+Implementable fields:
+
+- `news_sentiment_model_version`
+- `news_sentence_label_hash`
+- `news_article_aggregation_protocol_id`
+- `news_daily_mood_index_version`
+- `human_validation_panel_hash`
+- `sentiment_dictionary_baseline_delta`
+- `news_source_coverage_fraction`
+- `news_sentiment_replacement_value`
+
+Controls:
+
+- store sentence spans and article IDs before aggregation;
+- predeclare whether the signal is sentence, article, ticker-day, or market-day
+  before scoring outcomes;
+- calibrate against a frozen human or benchmark panel before production use;
+- compare transformer sentiment to dictionary, raw event tuple, and accepted
+  news/event comparators after costs.
+
+Source: <https://arxiv.org/abs/2607.13968>
+
+### Continuous-Input Sequence Models Need Likelihood Panels
+
+VAIOM is useful because it separates continuous financial-event inputs from a
+discrete ordinal-return likelihood and evaluates out of time against a
+LightGBM baseline on fixed train/validation/test periods. Ginger should borrow
+the validation contract, not the FX model: learned sequence features must
+preserve numeric inputs, report likelihood and calibration before PnL, and
+prove that auxiliary objectives or market-state heads add incremental value.
+
+Implementable fields:
+
+- `continuous_input_panel_hash`
+- `ordinal_return_bucket_schema`
+- `sequence_model_train_window_hash`
+- `validation_checkpoint_id`
+- `test_period_likelihood_delta`
+- `market_state_head_version`
+- `auxiliary_objective_set_hash`
+- `sequence_model_replacement_value`
+
+Controls:
+
+- freeze train, validation, test, bucket schema, and feature transforms before
+  model selection;
+- compare likelihood and calibration against LightGBM, persistence, base-rate,
+  cash, SPY/QQQ, and accepted-helper baselines;
+- report whether continuous inputs beat tokenized or bucket-only inputs on the
+  same panel;
+- keep sequence outputs default-off until replacement value survives costs and
+  candidate displacement.
+
+Source: <https://arxiv.org/abs/2607.13929>
+
+### Model Monitoring Needs Power And Tail Geometry
+
+Two July 2026 risk-monitoring papers point to a common production rule.
+Divergence measures such as Jensen-Shannon and KL need explicit false-alarm
+and power budgets, while anchored geodesic analysis of extremes exposes
+benchmark-relative tail directions rather than scalar drawdown alone. Ginger
+should use this for drift, helper activation, and kill-switch monitoring before
+letting a model or paper sleeve scale.
+
+Implementable fields:
+
+- `monitor_distribution_reference_hash`
+- `monitor_divergence_measure`
+- `monitor_false_alarm_budget`
+- `monitor_power_estimate`
+- `tail_geometry_protocol_id`
+- `benchmark_relative_tail_component`
+- `tail_component_explained_variation`
+- `monitor_kill_switch_action`
+
+Controls:
+
+- select PSI, Jensen-Shannon, KL, or tail-geometry diagnostics before seeing
+  current-window performance;
+- record sample size, expected false-alarm rate, and power trade-off next to
+  each alarm;
+- decompose tail losses relative to cash, SPY/QQQ, and accepted-helper
+  benchmark directions;
+- use alarms first as fail-closed monitoring or notional caps, not entry alpha.
+
+Sources:
+
+- <https://arxiv.org/abs/2607.12407>
+- <https://arxiv.org/abs/2607.13112>
 
 ### LLM Portfolio Agents Need Process Diagnostics, Not Return Leaderboards
 
