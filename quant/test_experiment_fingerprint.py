@@ -15,6 +15,30 @@ import experiment_fingerprint as fp  # noqa: E402
 @pytest.mark.parametrize(
     "text",
     [
+        "sec_sc_to_t_target_cash_settlement_spread with ORTEX delisted OHLCV",
+        "SC TO-T target cash conversion with Moomoo execution feasibility",
+        "third-party cash tender lifecycle: actual completion higher-bid "
+        "termination cash settlement and window-end mark-to-market",
+    ],
+)
+def test_cash_tender_contract_keeps_sec_source_and_cash_conversion_shape(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "sec_text_event"
+    assert result["gate_shape"] == "corporate_action_cash_conversion"
+
+
+def test_generic_ortex_borrow_still_keeps_borrow_source():
+    result = fp.infer_fingerprint(
+        "ORTEX cost-to-borrow utilization and loan availability observer"
+    )
+
+    assert result["data_source"] == "ortex_borrow"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "nvd_cve_change_history Initial Analysis entry exclusion",
         "Official NVD CVE change history Initial Analysis Added CPE Configuration",
         "National Vulnerability Database change history cluster3 next-session gate",
@@ -348,6 +372,24 @@ def test_wikimedia_keywords_do_not_capture_other_attention_surfaces():
     assert fp.infer_fingerprint(
         "entity-theme news relation observer"
     )["data_source"] == "entity_theme_news"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "production_visible_finra_venue_short_crowding_core_entry_admission",
+        "finra_venue_short_crowding_core_entry_exclusion",
+        "finra_ats_otc_x_short_interest_crowding_core_entry_exclusion_v1",
+        "Entry-admission alpha using ATS plus OTC volume and the latest "
+        "strictly prior-day global FINRA short-interest release as a core "
+        "entry exclusion",
+    ],
+)
+def test_finra_venue_short_interest_join_precedes_component_sources(text):
+    fingerprint = fp.infer_fingerprint(text)
+
+    assert fingerprint["data_source"] == "finra_venue_short_interest"
+    assert fingerprint["gate_shape"] == "entry_admission"
 
 
 def test_specific_finra_surfaces_precede_generic_short_interest():

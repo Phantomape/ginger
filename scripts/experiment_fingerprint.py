@@ -414,6 +414,22 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     )),
     # Keep newer source-specific surfaces above their generic parents so the
     # saturation guards count the actual population under test.
+    # The joined FINRA venue/short-interest surface combines weekly ATS and
+    # OTC cross-sections with already-published FINRA short-interest rows.
+    # Keep only compound family/policy spellings here, ahead of each component
+    # source, so standalone ATS, OTC, and short-interest work stays separate.
+    ("finra_venue_short_interest", (
+        "finra_venue_short_interest", "finra venue short interest",
+        "finra_venue_short_crowding", "finra venue short crowding",
+        "finra_ats_otc_x_short_interest", "finra ats otc x short interest",
+        "finra_ats_otc_venue_share_x_finra_declining_short_interest",
+        "finra ats/otc + finra short-interest",
+        "finra ats/otc + finra short interest",
+        "finra ats/otc joined with finra short-interest",
+        "finra ats/otc joined with finra short interest",
+        "ats plus otc volume and the latest strictly prior-day global finra short-interest",
+        "ats plus otc volume joined point-in-time to the latest already-published finra biweekly short-interest",
+    )),
     ("finra_otc_internalization", (
         "finra_otc", "finra otc", "otc_internalization", "non_ats", "non-ats", "internalization",
     )),
@@ -446,6 +462,22 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("crypto_sleeve", (
         "crypto_sleeve", "crypto sleeve", "btc_spot", "btc spot", "btc/usd", "btc-usd", "btc usd",
         "bitcoin spot", "crypto_positions", "daily_ema20_ema100_spot_trend",
+    )),
+    # Third-party Schedule TO cash tenders remain an SEC filing-text source
+    # even when ORTEX supplies delisted price history or Moomoo supplies the
+    # current execution check.  Keep these compound spellings ahead of the
+    # broad ORTEX key so the auxiliary price vendor cannot relabel the alpha
+    # evidence as borrow data.
+    ("sec_text_event", (
+        "sec_sc_to_t_target_cash_settlement_spread",
+        "sec sc to-t target cash settlement spread",
+        "sc_to_t_target_cash_conversion",
+        "sc to-t target cash conversion",
+        "schedule to target cash conversion",
+        "schedule to cash tender lifecycle",
+        "sec cash tender lifecycle",
+        "third-party cash tender lifecycle",
+        "contractual corporate action cash conversion",
     )),
     ("ortex_borrow", (
         "ortex", "borrow_fee", "borrow fee", "loan_fee", "loan fee", "utilization",
@@ -719,6 +751,24 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 ]
 
 _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    # A target share is converted into the filed cash consideration through a
+    # real tender lifecycle.  This is neither a fixed-horizon SEC candidate
+    # response nor a generic daily-equity overlay: completion, higher-bid,
+    # termination and cash-payout branches define the payoff itself.
+    ("corporate_action_cash_conversion", (
+        "corporate_action_cash_conversion",
+        "corporate action cash conversion",
+        "contractual_corporate_action_cash_conversion",
+        "contractual corporate action cash conversion",
+        "sec_sc_to_t_target_cash_settlement_spread",
+        "sec sc to-t target cash settlement spread",
+        "sc_to_t_target_cash_conversion",
+        "sc to-t target cash conversion",
+        "target cash settlement lifecycle",
+        "tender acceptance cash payout",
+        "cash tender lifecycle",
+        "actual completion higher-bid termination cash settlement",
+    )),
     # One weekly H.8 release chooses the direction of an equal-gross KRE/KBE
     # pair until the next release. Require a compound policy/family spelling
     # so generic pair spreads and issuer-ranking allocators keep their routes.

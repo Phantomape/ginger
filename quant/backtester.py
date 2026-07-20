@@ -33,6 +33,7 @@ import os
 import sys
 import tempfile
 import time
+from collections.abc import Mapping
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -1134,6 +1135,7 @@ class BacktestEngine:
                  include_oracle_diagnostics=True,
                  oracle_candidate_horizon_days=20,
                  entry_universe_resolver=None,
+                 entry_admission_policy=None,
                  universe_mode=None,
                  universe_metadata=None):
         # ``universe`` is the data-visible set.  By default it also remains the
@@ -1159,6 +1161,13 @@ class BacktestEngine:
         self._configured_entry_universe_mode = self.universe_mode
         self._configured_entry_universe_resolver = self.entry_universe_resolver
         self._current_entry_universe_context = None
+        # Optional, default-off policy for admitting a qualified fresh core
+        # candidate at its actual fill date.  This is deliberately separate
+        # from entry-universe membership: it must not alter signal generation,
+        # ranking, existing positions, or follow-through add-ons.
+        self.entry_admission_policy = entry_admission_policy
+        self.entry_admission_metadata = self._validate_entry_admission_contract()
+        self._configured_entry_admission_policy = self.entry_admission_policy
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
         self.end         = pd.Timestamp(end)   if end   else None
@@ -1231,6 +1240,95 @@ class BacktestEngine:
                 "entry-universe mode/resolver must not change after construction"
             )
         return resolver_metadata
+
+    def _validate_entry_admission_contract(self):
+        """Validate the optional post-qualification fresh-entry policy.
+
+        The policy is intentionally object-based and auditable.  Its
+        ``evaluate`` method is called only after an actual fill date has been
+        found for a qualified core candidate.  Invalid policy wiring raises
+        instead of silently admitting an order.
+        """
+        policy = self.entry_admission_policy
+        if policy is None:
+            return {}
+        if not callable(getattr(policy, "evaluate", None)):
+            raise ValueError(
+                "entry_admission_policy must expose callable "
+                "evaluate(signal_date=..., ticker=..., fill_date=...)"
+            )
+        metadata = getattr(policy, "metadata", None)
+        if metadata is not None and not isinstance(metadata, Mapping):
+            raise ValueError("entry_admission_policy.metadata must be a mapping")
+        if hasattr(self, "_configured_entry_admission_policy") and (
+            policy is not self._configured_entry_admission_policy
+        ):
+            raise ValueError(
+                "entry_admission_policy must not change after construction"
+            )
+        return dict(metadata or {})
+
+    def _evaluate_entry_admission(self, signal_date, ticker, fill_date):
+        """Return one normalized, auditable fresh-core admission decision.
+
+        ``None`` means the default policy is disabled.  A configured policy
+        must return a mapping with ``admit`` (bool), non-empty ``status`` and
+        ``reason`` strings, and a ``provenance`` mapping.  Evaluation errors
+        and malformed results fail closed by raising before any fill booking.
+        """
+        policy = self.entry_admission_policy
+        if policy is None:
+            return None
+
+        signal_day = str(pd.Timestamp(signal_date).date())
+        actual_fill_day = str(pd.Timestamp(fill_date).date())
+        normalized_ticker = str(ticker or "").strip().upper()
+        try:
+            raw = policy.evaluate(
+                signal_date=signal_day,
+                ticker=normalized_ticker,
+                fill_date=actual_fill_day,
+            )
+        except Exception as exc:
+            raise ValueError(
+                "entry_admission_policy evaluation failed closed for "
+                f"{normalized_ticker} signal_date={signal_day} "
+                f"fill_date={actual_fill_day}"
+            ) from exc
+
+        if not isinstance(raw, Mapping):
+            raise ValueError(
+                "entry_admission_policy.evaluate(...) must return a mapping"
+            )
+        missing = [
+            key for key in ("admit", "status", "reason", "provenance")
+            if key not in raw
+        ]
+        if missing:
+            raise ValueError(
+                "entry_admission_policy result lacks required fields: "
+                f"{missing}"
+            )
+        if not isinstance(raw["admit"], bool):
+            raise ValueError("entry_admission_policy result admit must be bool")
+        for key in ("status", "reason"):
+            if not isinstance(raw[key], str) or not raw[key].strip():
+                raise ValueError(
+                    f"entry_admission_policy result {key} must be a non-empty string"
+                )
+        if not isinstance(raw["provenance"], Mapping):
+            raise ValueError(
+                "entry_admission_policy result provenance must be a mapping"
+            )
+
+        decision = dict(raw)
+        decision.update({
+            "admit": raw["admit"],
+            "status": raw["status"].strip(),
+            "reason": raw["reason"].strip(),
+            "provenance": dict(raw["provenance"]),
+        })
+        return decision
 
     def _pilot_lookup_as_of(self, as_of):
         if not self.include_pilot_sleeve:
@@ -1886,6 +1984,7 @@ class BacktestEngine:
                    signals_survived, survival_rate}
         """
         self._validate_entry_universe_contract()
+        self._validate_entry_admission_contract()
 
         from feature_layer    import compute_features
         from signal_engine    import generate_signals, rank_signals_for_allocation
@@ -2227,6 +2326,26 @@ class BacktestEngine:
         universe_membership_entry_events = []
         sizing_rule_signal_attribution = {}
         entry_decision_events = []
+        entry_admission_audit = None
+        if self.entry_admission_policy is not None:
+            entry_admission_audit = {
+                "enabled": True,
+                "policy_metadata": dict(self.entry_admission_metadata),
+                "evaluated_count": 0,
+                "admitted_count": 0,
+                "denied_count": 0,
+                "status_counts": {},
+                "reason_counts": {},
+                "events": [],
+                "events_truncated": 0,
+                "event_cap": 200,
+                "notes": [
+                    "Evaluated only for qualified fresh core candidates after "
+                    "actual fill-date discovery and execution cancels.",
+                    "This policy does not run for existing positions, pilot "
+                    "entries, checkpoint add-ons, or pending add-on fills.",
+                ],
+            }
         pilot_replay_state = {
             "enabled": self.include_pilot_sleeve,
             "sleeve": "multi_pilot_sleeve",
@@ -2538,6 +2657,32 @@ class BacktestEngine:
             if self.save_entry_candidate_events_path or self.include_entry_candidate_events:
                 event["signal_snapshot"] = _entry_candidate_signal_snapshot(sig)
             entry_decision_events.append(event)
+
+        def _record_entry_admission(signal_date, ticker, fill_date, decision):
+            """Accumulate exact policy counts while bounding result payload size."""
+            if entry_admission_audit is None:
+                return None
+            event = {
+                **dict(decision),
+                "signal_date": str(pd.Timestamp(signal_date).date()),
+                "ticker": str(ticker or "").strip().upper(),
+                "fill_date": str(pd.Timestamp(fill_date).date()),
+            }
+            entry_admission_audit["evaluated_count"] += 1
+            count_key = "admitted_count" if event["admit"] else "denied_count"
+            entry_admission_audit[count_key] += 1
+            for field, counts_key in (
+                ("status", "status_counts"),
+                ("reason", "reason_counts"),
+            ):
+                value = event[field]
+                counts = entry_admission_audit[counts_key]
+                counts[value] = counts.get(value, 0) + 1
+            if len(entry_admission_audit["events"]) < entry_admission_audit["event_cap"]:
+                entry_admission_audit["events"].append(event)
+            else:
+                entry_admission_audit["events_truncated"] += 1
+            return event
 
         def _core_position_count():
             return sum(1 for p in positions if getattr(p, "sleeve", "core") == "core")
@@ -4370,6 +4515,38 @@ class BacktestEngine:
                     )
                     continue
 
+                # Optional post-qualification fresh-core admission.  The
+                # actual fill date is known at this point, while no cash,
+                # incumbent position, or fill bookkeeping has been mutated.
+                # Add-ons and pilot entries intentionally bypass this hook.
+                admission = self._evaluate_entry_admission(
+                    signal_date=today,
+                    ticker=ticker,
+                    fill_date=fill_date,
+                )
+                if admission is not None:
+                    admission_event = _record_entry_admission(
+                        today,
+                        ticker,
+                        fill_date,
+                        admission,
+                    )
+                    if not admission["admit"]:
+                        _record_entry_decision(
+                            today,
+                            sig,
+                            "entry_admission_denied",
+                            slots,
+                            rank,
+                            {
+                                "fill_date": str(fill_date.date())
+                                if hasattr(fill_date, "date")
+                                else str(fill_date),
+                                "entry_admission": admission_event,
+                            },
+                        )
+                        continue
+
                 adv_dollar = (
                     _adv20_dollar(ohlcv_all.get(ticker), fill_date)
                     if self.config.get("LIQUIDITY_AWARE_SLIPPAGE") else None
@@ -5416,6 +5593,11 @@ class BacktestEngine:
             "exit_advisory_shadow_attribution": exit_advisory_shadow_attribution,
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
+            **(
+                {"entry_admission": entry_admission_audit}
+                if entry_admission_audit is not None
+                else {}
+            ),
             "universe_membership": universe_membership_audit,
             "pilot_sleeve_replay": pilot_sleeve_replay,
             "cash_ledger":         cash_ledger_audit,
@@ -5532,6 +5714,7 @@ class BacktestEngine:
                 include_oracle_diagnostics=self.include_oracle_diagnostics,
                 oracle_candidate_horizon_days=self.oracle_candidate_horizon_days,
                 entry_universe_resolver=self.entry_universe_resolver,
+                entry_admission_policy=self.entry_admission_policy,
                 universe_mode=self.universe_mode,
                 universe_metadata=self.universe_metadata,
             )

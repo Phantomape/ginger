@@ -1,0 +1,158 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.4577,
+    "max_drawdown_pct": 0.0804,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.058823529411764705,
+    "total_pnl": 115517.89,
+    "total_return_pct": 1.1552,
+    "trade_count": 50,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 1.3099,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.748,
+    "actual_pnl_delta": -15474.47,
+    "actual_success": 0,
+    "brier_score": 0.1024,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.898,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2000.0,
+    "pnl_prediction_error": -17474.47,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "contract_parser_coverage_below_gate",
+      "too_few_fully_financed_board_recommended_deals",
+      "spread_consumed_by_carry_fee_and_slippage",
+      "eligible_sample_has_no_breaks_or_is_biotech_concentrated",
+      "ORTEX_credit_or_delisted_price_coverage_insufficient",
+      "cash_occupancy_displaces_core"
+    ],
+    "predicted_success_probability": 0.32,
+    "realized_failure_mode": "spread_consumed_by_carry_fee_and_slippage",
+    "surprise_level": "low",
+    "surprise_note": "Only one of 17 contracts cleared carry, 35 bp cost and the corporate-action fee; HEES was profitable, but total concentration and the opportunity cost of replacing a strong core allocation caused portfolio rejection."
+  },
+  "causal_components": [
+    "shared SEC tender lifecycle helper",
+    "immutable source URLs hashes and evidence spans",
+    "ORTEX ticker-as-of delisted OHLCV",
+    "Moomoo current execution feasibility",
+    "historical three-window lifecycle replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "loss-budget sizing and execution envelope",
+    "standalone and cash-constrained blend Gate 4"
+  ],
+  "change_summary": "Implemented a shared default-off SEC cash-tender lifecycle, immutable ORTEX historical-price replay, and fully funded spread-over-carry sleeve.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fully_financed_board_recommended_cash_tender_spread_over_carry_policy_v1",
+  "component": "quant/sec_cash_tender_lifecycle.py, quant/test_sec_cash_tender_lifecycle.py, quant/sec_cash_tender_spread_paper_sleeve.py, quant/test_sec_cash_tender_spread_paper_sleeve.py, quant/sec_tender_price_history.py, quant/test_sec_tender_price_history.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, quant/experiments/exp_20260719_003_sec_cash_tender_spread.py, quant/test_exp_20260719_003_sec_cash_tender_spread.py, data/experiments/exp-20260719-003/exp_20260719_003_sec_cash_tender_spread.json, data/experiments/exp-20260719-003/sec_cash_tender_contracts.json, data/experiments/exp-20260719-003/ortex_price_cache.json, data/experiments/exp-20260719-003/ortex_price_cache_no_data_supplement.json, data/experiments/exp-20260719-003/before_measurement.json, data/experiments/exp-20260719-003/after_measurement.json, data/experiments/exp-20260719-003/daily_default_off_snapshot.json, experiments/cards/exp-20260719-003.md, experiments/manifests/exp-20260719-003.json, experiments/tickets/exp-20260719-003.json, experiments/logs/exp-20260719-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.748,
+    "max_drawdown_pct": -0.0085,
+    "survival_rate": -0.752776,
+    "total_pnl": -15474.47,
+    "total_return_pct": -0.1547,
+    "trade_count": 1
+  },
+  "experiment_id": "exp-20260719-003",
+  "hypothesis": "Shared-paper-first target-side merger-arbitrage alpha: SEC submissions and immutable SC TO-T primary filing text identify board-recommended, fully financed, all-cash offers for all listed common shares; buying only when contract cash value exceeds ORTEX/Moomoo executable target price, fixed carry and costs, then following the actual completion, higher-bid, termination or window-end mark-to-market lifecycle earns positive after-cost standalone and cash-constrained portfolio PnL independent of trend/big-winner continuation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "contractual_corporate_action_cash_conversion",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260618-002",
+    "exp-20260618-015",
+    "exp-20260702-018",
+    "exp-20260710-011",
+    "exp-20260718-007"
+  ],
+  "new_evidence_type": "new_gate_shape_contractual_target_cash_settlement_lifecycle",
+  "next_retry_requires": [
+    "a new contractual corporate-action family rather than threshold retuning on this SC TO-T surface",
+    "verified Moomoo tender cutoff, company-action fee, and whole-share execution evidence",
+    "materially more settled forward cash-tender rows under the unchanged policy"
+  ],
+  "notes": "Gate 2 and Gate 3 passed on 17 policy-eligible contracts, but only HEES entered and earned 113.99 USD. The 15-trade, four-per-window, two-positive-window, concentration, and portfolio-improvement requirements all failed; the 90/10 blend reduced PnL by 15474.46 USD and EV by 0.7480. Do not retune probability, carry, fee, lookback, sizing, ADV, loss-budget, or window thresholds on this frozen surface. Reopen only for a new contractual corporate-action family, verified broker fee/cutoff evidence, or materially more settled forward cash-tender rows.",
+  "parameters": {
+    "locked_variables": [
+      "Initial SC TO-T only; target listed common shares; all outstanding fixed cash offer above 1 USD; definitive agreement; target board recommendation; no financing condition and binding committed funds; exclude CVR stock exchange partial mini-tender OTC bankrupt and hostile offers; enter first regular-session open strictly after SEC filing date; 20-session preannouncement break value; 5pct annual carry; implied completion probability >=70pct; net spread after 35bp round-trip cost and 20 USD event fee >0; report 0/20/40 USD fee sensitivity; max 5pct NAV per deal 50bp NAV predicted-break loss 1pct ADV and 20pct sleeve; actual cash acceptance payout",
+      "public higher-bid or termination next-open exit",
+      "amendment recheck",
+      "one-year timeout and window-end MTM; timestamped SEC/ORTEX inputs only; LLM has extraction-only no trade authority"
+    ],
+    "single_causal_variable": "fully_financed_board_recommended_sc_to_t_target_cash_conversion_spread_over_carry_policy_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep completion probability, carry, event fee, lookback, notional, ADV, break-loss budget, or window thresholds on the same 81-offer frozen source surface.",
+    "new_evidence_required": "Reopen only with a different contractual corporate-action family, verified broker execution and fee evidence, or materially more settled forward cash-tender rows under the unchanged policy.",
+    "realized_failure_mode": "spread_consumed_by_carry_fee_and_slippage",
+    "why_result_happened": "Only one of 17 contracts cleared carry, 35 bp cost and the corporate-action fee; HEES was profitable, but total concentration and the opportunity cost of replacing a strong core allocation caused portfolio rejection."
+  },
+  "prediction": {
+    "confidence_reason": "The mechanism is a contractual cash anchor rather than the rejected fixed-horizon SEC momentum response: 81 initial SC TO-T offers span the three windows 30/28/23, sampled initial/final filings expose cash price plus completion and termination, and ORTEX successfully returned delisted LBPH OHLCV at 0.35 credits. Academic evidence finds small positive cost-sensitive merger-arb premia, while crowding, fees, rare crash-like deal breaks, and parser/outcome survivorship make a full Gate-4 pass uncertain.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "contract_parser_coverage_below_gate",
+      "too_few_fully_financed_board_recommended_deals",
+      "spread_consumed_by_carry_fee_and_slippage",
+      "eligible_sample_has_no_breaks_or_is_biotech_concentrated",
+      "ORTEX_credit_or_delisted_price_coverage_insufficient",
+      "cash_occupancy_displaces_core"
+    ],
+    "recorded_at": "2026-07-19T17:54:12+00:00",
+    "success_probability": 0.32
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Only 1 of 17 contracts entered; minimum trade/window breadth, two-positive-window, 25% concentration, and 90/10 portfolio-improvement gates failed despite positive standalone HEES PnL.",
+  "related_files": [
+    "quant/experiments/exp_20260719_003_sec_cash_tender_spread.py",
+    "quant/sec_cash_tender_lifecycle.py",
+    "quant/sec_cash_tender_spread_paper_sleeve.py",
+    "quant/sec_tender_price_history.py",
+    "data/experiments/exp-20260719-003/before_measurement.json",
+    "data/experiments/exp-20260719-003/after_measurement.json",
+    "data/experiments/exp-20260719-003/exp_20260719_003_sec_cash_tender_spread.json",
+    "data/experiments/exp-20260719-003/sec_cash_tender_contracts.json",
+    "data/experiments/exp-20260719-003/ortex_price_cache.json",
+    "data/experiments/exp-20260719-003/ortex_price_cache_no_data_supplement.json",
+    "data/experiments/exp-20260719-003/daily_default_off_snapshot.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-19T19:29:20+00:00",
+  "trial_family": "sec_sc_to_t_target_cash_settlement_spread",
+  "trial_variant_id": "fully_financed_cash_tender_spread_over_carry_v1"
+}

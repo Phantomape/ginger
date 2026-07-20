@@ -1,0 +1,148 @@
+{
+  "schema": "exp_20260719_003_sec_cash_tender_spread_v1",
+  "experiment_id": "exp-20260719-003",
+  "expected_value_score": 5.4577,
+  "total_pnl": 115517.89,
+  "max_drawdown_pct": 0.0804,
+  "total_trades": 50,
+  "survival_rate": 0.058823529411764705,
+  "sharpe_daily": null,
+  "benchmarks": {
+    "strategy_total_return_pct": 1.1552
+  },
+  "expected_value_score_formula": "per-window sum of total_return_fraction * abs(sharpe_daily)",
+  "decision": "rejected_cash_tender_spread_policy",
+  "accepted_alpha": false,
+  "aggregate": {
+    "before": {
+      "expected_value_score_sum": 6.2057,
+      "total_pnl_sum": 130992.35,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "candidate": {
+      "expected_value_score_sum": 0.0111,
+      "total_pnl_sum": 113.99,
+      "worst_max_drawdown_pct": 0.0044,
+      "funded_trade_count": 1,
+      "entered_trade_count": 1,
+      "actual_closed_trade_count": 1,
+      "right_censored_position_count": 0,
+      "positive_windows": [
+        "old_thin"
+      ],
+      "signals_generated": 17,
+      "signals_survived": 1,
+      "survival_rate": 0.058823529411764705,
+      "realized_concentration": {
+        "population": "actual_closed_realized_rows",
+        "row_count": 1,
+        "ticker_trade_counts": {
+          "HEES": 1
+        },
+        "ticker_count": 1,
+        "absolute_pnl_total_usd": 113.99495520547934,
+        "maximum_single_deal_absolute_pnl_share": 1.0
+      },
+      "mtm_inclusive_concentration": {
+        "population": "entered_rows_including_right_censored_window_end_mtm",
+        "row_count": 1,
+        "ticker_trade_counts": {
+          "HEES": 1
+        },
+        "ticker_count": 1,
+        "absolute_pnl_total_usd": 113.99495520547934,
+        "maximum_single_deal_absolute_pnl_share": 1.0
+      }
+    },
+    "after": {
+      "expected_value_score_sum": 5.4577,
+      "total_pnl_sum": 115517.89,
+      "worst_max_drawdown_pct": 0.0804
+    },
+    "delta": {
+      "expected_value_score": -0.748,
+      "total_pnl": -15474.46,
+      "worst_max_drawdown_drift": -0.008500000000000008
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "failures": [],
+    "master_index_coverage_complete": true,
+    "initial_episode_count": 81,
+    "parse_error_count": 0,
+    "policy_eligible_episode_count": 17,
+    "price_success_episode_count": 17,
+    "missing_price_accessions": [],
+    "ignored_price_accessions_from_pre_repair_population": [
+      "0001193125-25-310708"
+    ],
+    "price_contract_rowset_sha256_match": false,
+    "price_request_contract": {
+      "passed": true,
+      "failures": [],
+      "identity_fields": [
+        "accession_number",
+        "ticker",
+        "ticker_as_of_date",
+        "start_date_covers_required_lookback",
+        "end_date_covers_required_sessions",
+        "status"
+      ],
+      "rowset_mismatch_policy": "allowed only when identity fields match and the immutable range covers every required trading session; full SEC rowset may change after a semantics-only parser repair"
+    },
+    "every_policy_eligible_episode_evaluated": true,
+    "trade_contract": {
+      "passed": true,
+      "required_fields": [
+        "accession_number",
+        "ticker",
+        "entry_date",
+        "entry_price",
+        "target_price",
+        "target_price_role",
+        "net_pnl_usd",
+        "valuation_date",
+        "actual_close",
+        "right_censored"
+      ],
+      "trade_count": 1,
+      "failures": []
+    },
+    "right_censored_trade_count": 0,
+    "entered_trade_count": 1,
+    "actual_closed_trade_count": 1,
+    "entry_date_and_target_price_checked": true
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 17,
+    "signals_survived": 1,
+    "survival_rate": 0.058823529411764705,
+    "minimum_survival_rate": 0.05
+  },
+  "standalone_acceptance": {
+    "passed": false,
+    "checks": {
+      "gate2_passed": true,
+      "gate3_passed": true,
+      "minimum_15_funded_trades": false,
+      "minimum_4_funded_trades_each_window": false,
+      "aggregate_ev_positive": true,
+      "aggregate_pnl_positive": true,
+      "at_least_two_positive_windows": false,
+      "standalone_drawdown_lte_8pct": true,
+      "single_deal_absolute_pnl_share_lte_25pct": false,
+      "all_policy_eligible_failures_and_right_censors_included": true
+    }
+  },
+  "portfolio_promotion": {
+    "passed": false,
+    "checks": {
+      "standalone_passed": false,
+      "aggregate_ev_improved": false,
+      "aggregate_pnl_improved": false,
+      "drawdown_drift_lte_0_5pp": true
+    }
+  }
+}

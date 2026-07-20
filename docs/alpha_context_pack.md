@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1549`
-- Raw records loaded by meta report: `5170`
-- History fingerprint: `697ec689face7f2d`
+- Strategy records counted: `1551`
+- Raw records loaded by meta report: `5186`
+- History fingerprint: `8d424095d3c67c56`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -30,7 +30,7 @@ facts before changing strategy behavior.
 
 - `production_visible_default_off_paper_adapter_for_candidate_pool_alpha` priority `0.8479`: experiments `4`, accept `100.00%`, sum EV `+2.5712`, sum PnL `$50,320.58`.
   Reason: 4/4 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `default_off_paper_adapter` priority `0.7972`: experiments `14`, accept `85.71%`, sum EV `+9.6062`, sum PnL `$163,913.86`.
+- `default_off_paper_adapter` priority `0.7973`: experiments `14`, accept `85.71%`, sum EV `+9.6062`, sum PnL `$163,913.86`.
   Reason: 14/14 records show multi-window evidence; 2/14 records have sample >= 10; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positi...
   Guardrail: heavily explored family; diminishing-return risk
 - `default_off_shared_paper_adapter` priority `0.7726`: experiments `4`, accept `100.00%`, sum EV `+0.3626`, sum PnL `$6,125.56`.
@@ -39,15 +39,15 @@ facts before changing strategy behavior.
   Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; still has ro...
 - `paper_notional_support_scout` priority `0.7009`: experiments `6`, accept `66.67%`, sum EV `+0.1608`, sum PnL `$2,787.28`.
   Reason: 6/6 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs; st...
-- `pilot_or_sleeve` priority `0.6312`: experiments `346`, accept `25.43%`, sum EV `+130.9006`, sum PnL `$2,265,504.48`.
+- `pilot_or_sleeve` priority `0.6315`: experiments `346`, accept `25.43%`, sum EV `+130.9006`, sum PnL `$2,265,504.48`.
   Reason: 344/346 records show multi-window evidence; 6/346 records have sample >= 10; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs; usually chang...
   Guardrail: heavily explored family; diminishing-return risk; many prior rejections in this family
-- `slot_or_ranking` priority `0.5646`: experiments `354`, accept `24.29%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
-  Reason: 20/354 records have sample >= 10; 338/354 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
-  Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 - `default_off_paper_allocation` priority `0.5641`: experiments `24`, accept `33.33%`, sum EV `+0.0570`, sum PnL `$912.60`.
   Reason: 24/24 records show multi-window evidence; average drawdown delta is non-worsening; historically non-trivial accept rate; historically production-visible or parity-aware; positive average meta score; positive cumulative EV delta in logs
   Guardrail: heavily explored family; diminishing-return risk
+- `slot_or_ranking` priority `0.5640`: experiments `356`, accept `24.16%`, sum EV `+82.6422`, sum PnL `$1,483,178.42`.
+  Reason: 20/356 records have sample >= 10; 340/356 records show multi-window evidence; average drawdown delta is non-worsening; mixed production feasibility evidence; positive average meta score; positive cumulative EV delta in logs
+  Guardrail: can change survival, trade count, or exit distribution broadly; heavily explored family; diminishing-return risk; many prior rejections in this family
 
 ## Frozen Or High-Risk Near Neighbors
 
@@ -64,10 +64,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260716-002` `rejected_indirect_bidder_tbt_edge_not_robust`: EV `+0.0000`, PnL `$0.00`, family `treasury_auction_demand_microstructure`, trial `treasury_auction_indirect_bidder_share_tbt_event_response`.
-  Lesson: The fixed participant-composition signal lost money in old_thin and mid_weak and had negative QQQ replacement value in all three windows. Its positive aggregate EV number is only the sign artifact of multiplying a neg...
-- `exp-20260716-004` `rejected`: EV `-3.1764`, PnL `$-62,574.09`, family `execution_cash_opportunity_cost_rotation`, trial `cash_conflict_oldest_incumbent_rotation`.
-  Lesson: Position age was a poor opportunity-cost proxy: twenty rotations crystallized still-productive incumbents and added turnover, so twenty-four extra closed trades coincided with lower EV in every window despite nearly f...
 - `exp-20260716-005` `rejected_pcaob_partner_change_peer_substitution`: EV `+0.0000`, PnL `$0.00`, family `regulatory_audit_uncertainty_peer_substitution`, trial `pcaob_form_ap_partner_change_peer_substitution`.
   Lesson: The positive aggregate PnL was not robust alpha: old_thin lost money and suffered a 5.15 percentage-point drawdown increase, mid_weak missed QQQ replacement by $21.60, two of three windows lost EV, positive PnL was co...
 - `exp-20260716-007` `rejected`: EV `+0.0000`, PnL `$0.00`, family `forward_short_volume_soft_tilt`, trial `forward_short_volume_soft_tilt`.
@@ -88,6 +84,10 @@ facts before changing strategy behavior.
   Lesson: The source and mapping cleared the outcome-blind density contract, but weekly owned-domain attention did not identify issuers whose ten-session returns paid for capital displacement. Only mid_weak produced positive st...
 - `exp-20260718-007` `rejected_same_issuer_dual_class_spread_economics`: EV `-0.8821`, PnL `$-17,533.72`, family `same_issuer_dual_class_relative_value`, trial `sec_same_issuer_dual_class_spread_convergence`.
   Lesson: The structural issuer link was real, but voting-class premia did not mean-revert on the frozen ten-session horizon: 20 of 23 trades timed out, two stopped, one was boundary-settled, and zero reached the convergence ba...
+- `exp-20260720-001` `rejected`: EV `+0.1724`, PnL `$2,053.51`, family `production_visible_clinicaltrials_phase3_primary_endpoint_semantic_entry_admission`, trial `clinicaltrials_phase3_endpoint_semantic_entry_admission`.
+  Lesson: Strict fail-closed grading reduced the preflight from 32 to 26 positives across six issuers; aggregate PnL stayed positive but the fixed population could not satisfy the 60% top-five concentration cap. Do not retune t...
+- `exp-20260720-002` `rejected`: EV `+0.0000`, PnL `$0.00`, family `production_visible_finra_venue_short_interest_quiet_absorption_candidate_pool`, trial `finra_venue_short_interest_quiet_absorption_candidate_pool`.
+  Lesson: Machine novelty accepted an explicit override because the inferred source was the unsaturated ATS face, but the manual three-source audit showed the asserted cross-source join is not a valid section 2.4 evidence axis....
 
 ## Highest-Signal Historical Records
 

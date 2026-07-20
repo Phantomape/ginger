@@ -70,9 +70,10 @@ closeout record.
    evidence: `exp-20260715-010`.
 
 5. **Risk reduction is not automatically value creation.** Covariance filters,
-   quarantine, rotation, and notional cuts may suppress winners. Judge them on
-   EV, PnL, opportunity cost, and tail behavior together. Representative
-   evidence: `exp-20260716-001`.
+   quarantine, delayed ownership/venue/short-interest exclusions, rotation, and
+   notional cuts may suppress winners. Judge them on EV, PnL, opportunity cost,
+   executable touch count, and tail behavior together. Representative evidence:
+   `exp-20260720-003`.
 
 6. **Market state is sleeve-specific.** A state feature may explain one
    candidate family while damaging another; portfolio-wide chop or regime
@@ -87,8 +88,9 @@ closeout record.
 8. **A new source must pass a source contract before price evaluation.** Require
    an immutable vintage or archive, publication clock, point-in-time issuer
    mapping, legal/attribution provenance, and outcome-blind density and
-   concentration checks. Otherwise the right result is an observer or identity
-   repair, not alpha. Representative evidence: `exp-20260717-005`.
+   concentration checks. A derived join of already-used sources is not itself a
+   new data source. Otherwise the right result is an observer or identity
+   repair, not alpha. Representative evidence: `exp-20260720-002`.
 
 9. **Prove gross economic mapping before building elaborate plumbing.** If a
    simple, causal response has no gross edge or no candidate intersection,
@@ -123,7 +125,11 @@ closeout record.
   execution envelopes, and parity before considering activation.
 - New official or public sources start with source-contract and density
   preflight. Do not spend an experiment ID merely to discover that the archive,
-  issuer map, permission, or candidate overlap is absent.
+  issuer map, permission, candidate overlap, or legal new-evidence axis is
+  absent.
+- Stale or low-touch risk surfaces should begin as context, attribution, or a
+  default-off admission audit; hard exclusions need enough executable touches
+  and replacement value to prove they are not deleting scarce winners.
 - Global regime overlays, generic cash rotation, and threshold retuning on
   rejected surfaces remain parked. State and relation work must be specific to
   a sleeve and must explain a causal change in replacement value.
@@ -271,6 +277,10 @@ Edits use replacement semantics. The key is the prior number, queue lane,
 frozen-family name, or quantitative-exception surface. Replace the keyed
 statement and delete superseded wording; never append a dated readout or status
 chronicle. Experiment runners and closeout scripts must not write this file.
+`scripts/alpha_playbook_guard.py` is the single machine validator used by
+pytest, `experiment.py audit --lean-strict`, pre-commit, and the repository
+workflow. The commit guard validates Git-index blobs and fails closed, so
+partial staging cannot hide or invent a violation.
 
 Hard content budget:
 

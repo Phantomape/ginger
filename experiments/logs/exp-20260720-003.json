@@ -1,0 +1,178 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.8485,
+    "max_drawdown_pct": 0.0895,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 124989.95,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.3572,
+    "actual_pnl_delta": -6002.41,
+    "actual_success": 0,
+    "brier_score": 0.0064,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.4072,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 500.0,
+    "pnl_prediction_error": -6502.41,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "only_five_entered_trade_touches",
+      "mid_window_zero_entered_overlap",
+      "publication_lag_kills_edge",
+      "window_regression",
+      "crowding_state_not_incremental"
+    ],
+    "predicted_success_probability": 0.08,
+    "realized_failure_mode": "window_regression",
+    "surprise_level": "very_low",
+    "surprise_note": "The five baseline executable exclusions reduced aggregate PnL by 6002.41; revision-safe PIT and admission parity passed, so the negative replacement value is attributable rather than a measurement artifact."
+  },
+  "causal_components": [
+    "PIT ATS weekly archive",
+    "PIT OTC weekly archive",
+    "global latest-release FINRA short interest as-of join",
+    "strictly prior-day source availability",
+    "max 14-day venue age",
+    "max 21-day short-interest age",
+    "common-stock-only exact join",
+    "above-median ATS combined-venue share",
+    "positive short-interest change",
+    "at-or-above-median days-to-cover",
+    "fresh-core next-session entry exclusion",
+    "shared entry-admission policy",
+    "default-off post-qualification backtester hook",
+    "daily default-off snapshot",
+    "three-window historical replay",
+    "parity tests",
+    "execution envelope",
+    "full-stack verdict",
+    "joint-surface fingerprint coverage"
+  ],
+  "change_summary": "Add a default-off post-qualification fresh-core entry-admission hook and evaluate the fixed FINRA ATS/OTC plus revision-safe short-interest crowding exclusion across all three canonical cash-feasible windows.",
+  "change_type": "entry_admission_full_stack",
+  "changed_variable": "finra_ats_otc_x_short_interest_crowding_core_entry_exclusion_v1",
+  "component": "quant/finra_venue_short_crowding_entry_gate.py, quant/test_finra_venue_short_crowding_entry_gate.py, quant/backtester.py, quant/test_backtester_entry_admission.py, quant/experiments/exp_20260720_003_finra_venue_short_crowding_entry_exclusion.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/experiments/exp-20260720-003/, data/paper_sleeves/finra_venue_short_crowding_entry_gate.json, experiments/artifacts/exp-20260720-003_finra_venue_short_crowding_entry_exclusion.md, experiments/cards/exp-20260720-003.md, experiments/manifests/exp-20260720-003.json, experiments/tickets/exp-20260720-003.json, experiments/logs/exp-20260720-003.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.3572,
+    "max_drawdown_pct": 0.0006,
+    "survival_rate": 0.0,
+    "total_pnl": -6002.41,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260720-003",
+  "hypothesis": "Entry-admission alpha: exclude a fresh core trend/breakout entry on its next-session execution date when the latest strictly prior-day FINRA ATS/OTC exact-week cross-section shows above-median ATS share of combined ATS plus OTC volume and the latest strictly prior-day global FINRA short-interest release shows the ticker's short interest rising with days-to-cover at or above the contemporaneous joined-universe median; this joint crowding state should remove fragile dark-volume demand while preserving uncrowded accumulation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_finra_venue_short_crowding_core_entry_admission",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260516-035",
+    "exp-20260703-016",
+    "exp-20260706-018",
+    "exp-20260718-005",
+    "exp-20260720-002",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_gate_shape_core_entry_admission",
+  "next_retry_requires": [
+    "a genuinely new data source independent of the rejected FINRA venue-plus-short-interest signal",
+    "or materially sufficient newly settled forward rows under a fixed predeclared formula",
+    "no threshold, median, age, direction, staleness, top-N, cooldown, or hard-exclusion-to-weighting retune on these same FINRA rows"
+  ],
+  "notes": "Gate 1 exact; Gate 2 source/PIT/revision/daily/admission parity passed with 46 raw CSV hashes, 46511 raw-matched normalized rows, and 152 revised rows failed closed; Gate 3 passed; touches generated/survived/baseline-entered were 30/26/5. Gate 4 rejected: aggregate EV 6.2057 to 5.8485 and PnL 130992.36 to 124989.95; late and old regressed, mid was unchanged. Default-off only; no live/default orders, run.py, ranking, sizing, exits, or add-ons were directly changed. Do not retune FINRA thresholds, medians, ages, direction, or response on this signal.",
+  "parameters": {
+    "locked_variables": [
+      "three canonical windows",
+      "source archives and hashes",
+      "strict prior-day source cutoffs",
+      "global latest-release join",
+      "max 14-day venue age",
+      "max 21-day short-interest age",
+      "common-stock exclusions",
+      "exact ATS OTC keys",
+      "cross-sectional medians",
+      "positive short-interest change",
+      "hard fresh-core entry exclusion",
+      "no cooldown or persistence retune",
+      "no threshold sweep"
+    ],
+    "single_causal_variable": "finra_ats_otc_x_short_interest_crowding_core_entry_exclusion_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry ATS-share or days-to-cover medians, short-interest direction, source-age limits, ticker slices, top-N, cooldowns, or a hard-exclusion-to-weighting/notional response on the same FINRA rows. Gate 4 rejected the signal, so response retuning is not a legal new evidence axis.",
+    "new_evidence_required": "Reopen only with a genuinely independent source such as authorized historical borrow availability/utilization, or materially sufficient newly settled forward rows under an unchanged predeclared formula; same-source field or threshold changes do not qualify.",
+    "realized_failure_mode": "window_regression",
+    "why_result_happened": "The five baseline executable exclusions reduced aggregate PnL by 6002.41; revision-safe PIT and admission parity passed, so the negative replacement value is attributable rather than a measurement artifact."
+  },
+  "prediction": {
+    "confidence_reason": "Outcome-blind historical touch preflight on the existing cash-feasible signal rows found 17/8/6 generated and 17/5/5 survived core-entry overlaps in old/mid/late, safely above the per-window touch floor and Gate-3 floor, but only 4/0/1 previously entered trades overlap, so measurable replacement value is unlikely.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "only_five_entered_trade_touches",
+      "mid_window_zero_entered_overlap",
+      "publication_lag_kills_edge",
+      "window_regression",
+      "crowding_state_not_incremental"
+    ],
+    "recorded_at": "2026-07-20T10:45:26+00:00",
+    "success_probability": 0.08
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_default_off_hook_added": true,
+    "helper_and_daily_snapshot_default_off": true,
+    "live_or_default_orders_changed": false,
+    "quant_run_changed": false,
+    "ranking_sizing_exits_or_addons_changed": false,
+    "rejected_policy_enabled": false
+  },
+  "rejection_reason": "Gate 1, revision-safe Gate 2, Gate 3, admission parity, and the five-executable-touch floor passed, but Gate 4 failed: aggregate EV fell 0.3572 and PnL fell $6,002.41, with late_strong and old_thin regressions.",
+  "related_files": [
+    "data/experiments/exp-20260720-003/before_measurement.json",
+    "data/experiments/exp-20260720-003/after_measurement.json",
+    "data/experiments/exp-20260720-003/exp_20260720_003_finra_venue_short_crowding_entry_exclusion.json",
+    "experiments/artifacts/exp-20260720-003_finra_venue_short_crowding_entry_exclusion.md",
+    "quant/finra_venue_short_crowding_entry_gate.py",
+    "quant/backtester.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-20T12:15:46+00:00",
+  "trial_family": "finra_venue_short_crowding_core_entry_exclusion",
+  "trial_variant_id": "finra_venue_short_crowding_entry_exclusion_v1"
+}

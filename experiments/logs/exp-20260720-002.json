@@ -1,0 +1,166 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0144,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "publication_lag_kills_edge",
+      "FINRA_short_interest_family_not_incremental",
+      "COHR_concentration",
+      "window_regression",
+      "insufficient_core_replacement_value"
+    ],
+    "predicted_success_probability": 0.12,
+    "realized_failure_mode": "FINRA_short_interest_family_not_incremental",
+    "surprise_level": "very_low",
+    "surprise_note": "Machine novelty accepted an explicit override because the inferred source was the unsaturated ATS face, but the manual three-source audit showed the asserted cross-source join is not a valid section 2.4 evidence axis."
+  },
+  "causal_components": [
+    "PIT ATS weekly archive",
+    "PIT OTC weekly archive",
+    "latest-publication short-interest as-of join",
+    "max 21-calendar-day short-interest staleness",
+    "above-median ATS combined-venue share",
+    "negative short-interest change",
+    "below-median days-to-cover",
+    "top-two per publication date",
+    "ten-session same-ticker cooldown",
+    "next-open entry",
+    "tenth-session close",
+    "4000 USD paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "execution envelope",
+    "full-stack verdict",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Preflight-only closeout: no strategy, helper, order, ranking, sizing, exit, or data-source file was changed. The outcome-blind FINRA ATS/OTC plus FINRA short-interest join passed density but failed the manual AGENTS.md section 2.4 evidence-axis audit.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "finra_ats_otc_venue_share_x_finra_declining_short_interest_top2_candidate_source_v1",
+  "component": "quant/finra_venue_short_interest_paper_sleeve.py, quant/test_finra_venue_short_interest_paper_sleeve.py, quant/experiments/exp_20260720_002_finra_venue_short_interest_quiet_absorption.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/experiments/exp-20260720-002/, data/paper_sleeves/finra_venue_short_interest.json, experiments/artifacts/exp-20260720-002_finra_venue_short_interest_quiet_absorption.md, experiments/cards/exp-20260720-002.md, experiments/manifests/exp-20260720-002.json, experiments/tickets/exp-20260720-002.json, experiments/logs/exp-20260720-002.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260720-002",
+  "hypothesis": "Shared-paper-first candidate-pool top2_10d alpha: on the first tradable session after each FINRA weekly ATS/OTC publication, above-cross-section-median ATS share of combined ATS plus OTC volume joined point-in-time to the latest already-published FINRA biweekly short-interest row with negative short-interest change and below-cross-section-median days-to-cover identifies quiet institutional absorption without crowded-short risk; admit the fixed top two by ATS venue share, use a ten-session same-ticker cooldown, next-open entry and tenth-session close.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_finra_venue_short_interest_quiet_absorption_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260703-016",
+    "exp-20260706-018",
+    "exp-20260616-024",
+    "exp-20260616-026",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_cross_source_pit_join_surface",
+  "next_retry_requires": [
+    "a genuinely new short-side data source",
+    "a genuinely different response structure with sufficient historical same-day core touches",
+    "or materially sufficient settled forward rows"
+  ],
+  "notes": "Post-run reflection: reservation stopped before implementation. Although the rejected FINRA ATS and OTC families explicitly mentioned a PIT short-side join, all three inputs were already-used sources; a derived join is not itself a whitelisted new data source, and top1-to-top2 plus median threshold choices are not a new gate shape. The novelty override therefore overreached. Fixed common-stock, global-release-as-of preflight counts were old_thin 54 rows/15 tickers/top1 18.52%, mid 49/16/18.37%, late 51/11/29.41%; density is usable but not a legal experiment axis. Same-day source timestamps also require next-session-only execution. Park this joint FINRA surface; do not retry thresholds, top-N, or ranking. Reopen only with a genuinely new short-side data source, a genuinely different response structure such as a predeclared entry-admission gate with sufficient historical same-day core touches, or materially sufficient settled forward rows. exp-20260530-010 ticket/registry versus log status drift should be reconciled by its original owner, not under this alpha ticket.",
+  "parameters": {
+    "locked_variables": [
+      "three canonical windows",
+      "source archives and PIT publication dates",
+      "latest-publication as-of join",
+      "max 21-day staleness",
+      "median gates",
+      "top-two rank",
+      "ten-session cooldown",
+      "next-open entry",
+      "tenth-session close",
+      "4000 USD notional",
+      "35bps costs",
+      "no threshold sweep"
+    ],
+    "single_causal_variable": "finra_ats_otc_venue_share_x_finra_declining_short_interest_top2_candidate_source_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this FINRA ATS/OTC plus FINRA short-interest surface by changing top-N, medians, rank weights, staleness, cooldown, or hold length.",
+    "new_evidence_required": "A genuinely new short-side source, a genuinely different response structure with sufficient historical same-day core touches, or materially sufficient settled forward rows.",
+    "realized_failure_mode": "FINRA_short_interest_family_not_incremental",
+    "why_result_happened": "Machine novelty accepted an explicit override because the inferred source was the unsaturated ATS face, but the manual three-source audit showed the asserted cross-source join is not a valid section 2.4 evidence axis."
+  },
+  "prediction": {
+    "confidence_reason": "Outcome-blind preflight passed all three windows with fixed top-two counts 51/51/56, 14/16/18 distinct tickers, and top-one concentration 23.5/13.7/17.9 percent; the rejected venue-only families explicitly name a PIT short-side economics join as their reopen axis, but FINRA publication lag and weak standalone short-interest validation keep prior success low.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "publication_lag_kills_edge",
+      "FINRA_short_interest_family_not_incremental",
+      "COHR_concentration",
+      "window_regression",
+      "insufficient_core_replacement_value"
+    ],
+    "recorded_at": "2026-07-20T10:34:07+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Manual AGENTS.md section 2.4 audit found no legal new evidence axis; Gate 1-4 was intentionally not started and no strategy behavior changed.",
+  "reopen_condition": "Reopen only with a genuinely new short-side data source, a genuinely different response structure with sufficient historical same-day core touches, or materially sufficient settled forward rows; threshold, top-N, ranking, staleness, cooldown, and hold changes do not qualify.",
+  "production_impact": {
+    "retained_shared_policy_change": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "summary": "Preflight-only closeout; no helper, daily wiring, live/default order, ranking, sizing, exit, or risk-budget behavior changed."
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-20T10:36:26+00:00",
+  "trial_family": "finra_venue_short_interest_quiet_absorption_candidate_pool",
+  "trial_variant_id": "finra_venue_short_interest_top2_h10_v1"
+}
