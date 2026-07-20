@@ -66,8 +66,11 @@ closeout record.
 4. **Cash feasibility is part of alpha, not a reporting adjustment.** Candidate
    conflicts, incumbent displacement, buying-power scarcity, and order timing
    can reverse an apparently attractive signal. The cash-feasible anchor in
-   `docs/backtesting.md` is the only valid Gate-1 comparator. Representative
-   evidence: `exp-20260715-010`.
+   `docs/backtesting.md` is the only valid Gate-1 comparator. A sleeve that
+   beats SPY still may not justify displacing the same-day core entry; allocator
+   work needs actual conflict replacement value or a funding source that does
+   not depend on future core cash. Representative evidence:
+   `exp-20260720-004`.
 
 5. **Risk reduction is not automatically value creation.** Covariance filters,
    quarantine, delayed ownership/venue/short-interest exclusions, rotation, and
@@ -130,9 +133,10 @@ closeout record.
 - Stale or low-touch risk surfaces should begin as context, attribution, or a
   default-off admission audit; hard exclusions need enough executable touches
   and replacement value to prove they are not deleting scarce winners.
-- Global regime overlays, generic cash rotation, and threshold retuning on
-  rejected surfaces remain parked. State and relation work must be specific to
-  a sleeve and must explain a causal change in replacement value.
+- Global regime overlays, generic cash rotation, core-entry displacement, and
+  threshold retuning on rejected surfaces remain parked. State and relation work
+  must be specific to a sleeve and must explain a causal change in replacement
+  value.
 
 This section is replaced when priorities change; dated status paragraphs are
 never appended to it. The generated context pack is the current accepted-helper
@@ -229,7 +233,7 @@ trial:
 |---|---|---|
 | OHLCV pattern relabeling | Repeated breakout, chop, drawdown, recovery, volatility, or chart-shape thresholds on the same bars | A new state source, a different decision surface, or materially new settled forward decisions |
 | Universe and ranking | Sector/bucket/top-k reshuffles, static quality scores, and issuer exclusions that do not create information | A candidate-generating source or real replacement comparisons under a causal ranking field |
-| Allocator and cash arbitration | Scalar/cap sweeps, generic incumbent eviction, cash rotation, and conflict ranking on the same candidates | A new allocator mechanism or enough new actual cash-conflict decisions |
+| Allocator and cash arbitration | Scalar/cap sweeps, generic incumbent eviction, core-entry displacement, cash rotation, and conflict ranking on the same candidates | A non-displacing allocator mechanism or enough new actual cash-conflict decisions |
 | Exit, lifecycle, and risk | Stop/target/trailing/hold retunes and broad risk overlays on the same cohort | The exact lifecycle cohort condition below, or a new causal exit state |
 | Companyfacts and XBRL | Raw ratio, tag, item, filing-quarter, and field enumeration | New point-in-time economic content, not another derivation from the same facts |
 | SEC form, item, and text | Form/item/event subtype loops and fixed text-response templates | A new semantic source or gate plus independent settled decisions |
