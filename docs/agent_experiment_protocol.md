@@ -396,7 +396,9 @@ Active alpha automation should run:
 .\.venv\Scripts\python.exe -B scripts\experiment.py audit --lean-strict
 ```
 
-`lean_quality_passed` is the actionable verdict. Historical debt is visibility
+`lean_quality_passed` remains the prediction/reflection quality sub-verdict.
+`lean_strict_passed` is the actionable end-of-turn verdict: it also requires
+the machine-enforced alpha playbook contract. Historical debt is visibility
 only unless the audit says it blocks current post-enforcement work.
 
 Self-registration guard:

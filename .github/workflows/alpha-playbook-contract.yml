@@ -1,0 +1,25 @@
+name: Alpha playbook contract
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: alpha-playbook-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Validate durable alpha playbook
+        run: python3 -B scripts/alpha_playbook_guard.py --json

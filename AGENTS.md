@@ -66,7 +66,7 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    | parked 面重开 | `reopen_condition` 计数未相对 park 时推进 | reserve ID 做 "readiness audit" | 启动前一行核对计数（不占 ID）；计数推进后重开 | ✅ |
    | 例行 delta 物化 | 已接受 observer / default-off sleeve forward ledger 的例行 delta 物化（当日行 append、outcome refresh、结算行 replacement/context enrichment）同面 ≥3 个 ID，或近 7 天跨面同形 ≥3 个 ID | 继续为日更 / 每批新结算行 reserve ID 手工物化 | 一次性接入 run.py / 结算管道（票据写明 wiring 即放行），此后例行物化不占 ID、不记 log；故障恢复豁免 | ✅ |
    | 观察者首建 | 新 observer 首建拆分超预算且首批已结算行未出现 | 把采集面 / daily wiring / 结算 ledger / 结算 wiring 拆成 >2 个 ID | 打包 ≤2 个 ID（采集面+日更一个；结算合同+结算日更一个），与 §2.5 shared-paper-first 同精神 | ⚠️ |
-   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型、宏观指标家族×固定 relief 配方等；清单项本身构成轴 (a) 新数据源、能逐项通过 novelty gate 时**同样适用**——过 gate 不豁免本通道），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒；再见 2026-07-11→12 宏观 relief "指标首破 20 日均线×板块 leadership" 配方 6 连拒——VVIX/SKEW/HY-OAS/MORTGAGE30US/NFCI/OVX，其中后 2 票是本通道点名"宏观指标家族"**之后**仍被逐项烧掉的：该车道已触发，剩余 relief 指标只能批量或 park；三见 2026-07-14→17 "官方发布×固定应答（篮子/peer/pair）"车道：合法批量出口已用过（exp-20260714-002）且 07-15 反思点名 park 后，仍被逐源一 ID 续烧——PCAOB Form AP exp-20260716-005、Fed H.8 exp-20260717-004 均拒，累计 8+ 连拒；本案例写入本文件**当天**又烧 TSA 周客流 exp-20260717-005（累计 9+），且该票在源合同 preflight 即拒——**在 Gate 2-4 之前因 PIT/源合同失败收尾同样计入车道连拒**，"还没读价格"不豁免；"新联邦数据源 + 微调应答形状"不重置本车道，批量出口每车道只能用一次） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
+   | 排名/枚举清单消费 | 用同一固定评估配方逐项消费同一 ranked 候选清单**或同一有限枚举 taxonomy**（SEC 8-K item code / form type / 事件子类型、宏观指标家族×固定 relief 配方等；清单项本身构成轴 (a) 新数据源、能逐项通过 novelty gate 时**同样适用**——过 gate 不豁免本通道），车道内连续 ≥5 个 ID 全部 rejected / observed_only_rejected | 继续一项一 ID 烧完剩余清单（每项"源不同/事件不同"不构成新证据轴：配方固定时，变的只是输入行，等价于循环体展开；上一 ID reflection 点名的同源 text/字段续作仍属本车道，见 2026-07-07/08 SEC item 车道 5 连拒；再见 2026-07-11→12 宏观 relief "指标首破 20 日均线×板块 leadership" 配方 6 连拒——VVIX/SKEW/HY-OAS/MORTGAGE30US/NFCI/OVX，其中后 2 票是本通道点名"宏观指标家族"**之后**仍被逐项烧掉的：该车道已触发，剩余 relief 指标只能批量或 park；三见 2026-07-14→17 "官方发布×固定应答（篮子/peer/pair）"车道：合法批量出口已用过（exp-20260714-002）且 07-15 反思点名 park 后，仍被逐源一 ID 续烧——PCAOB Form AP exp-20260716-005、Fed H.8 exp-20260717-004 均拒，累计 8+ 连拒；本案例写入本文件**当天**又烧 TSA 周客流 exp-20260717-005（累计 9+），且该票在源合同 preflight 即拒——**在 Gate 2-4 之前因 PIT/源合同失败收尾同样计入车道连拒**，"还没读价格"不豁免；"新联邦数据源 + 微调应答形状"不重置本车道，批量出口每车道只能用一次；四见 2026-07-18→19 开发者生态计数源 3 连拒——HN owned-domain attention exp-20260718-006、deps.dev Maven releases exp-20260719-001、Linux mainline signed RC contributions exp-20260719-002，配方同为"公开周期计数×加速超前窗中位数×top-N 篮子×固定 hold"，与官方发布车道同形：**换成非官方/开发者数据源不重置本车道**，第 4 票起只能批量或 park） | 把剩余代表打包成**单个批量实验**一次跑完（配方固定即可循环），或 park 该车道 + 定量 `reopen_condition`（新候选家族 / 相关性结构变化 / 已结算 forward 行） | ⚠️ |
 
    强制列：✅ = `experiment.py new` 会自动阻断（novelty / saturation / reopen /
    observed-only streak / routine-materialization guard）；⚠️ = 仅文字规则，代理必须自查；
@@ -93,6 +93,44 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查
    `docs/frozen_families.jsonl`，不在本文件内联维护快照数字。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
+
+### Alpha Synthesis Pass（不占实验 ID）
+
+`AGENTS.md` 的 novelty / saturation / Gate 规则负责**裁决假设**，不得反过来压制**生成假设**。
+当任务是全持仓评估、股票池扫描、买卖/抄底选择或 alpha 搜索时，reserve 前必须先执行一次
+不占实验 ID、不得改变策略或订单的 synthesis pass：
+
+1. **横截面机会成本**：不得只分析用户点名 ticker；须在同一时点、同一可交易股票池中比较，
+   回答是否存在风险收益更好的候选。单票后续追问可沿用最近一次未过期横截面；数据已跨 session、
+   候选池或 regime 已变时必须刷新。
+2. **证据面盘点**：至少检查当前可用的 price、flow、derivatives、event、positioning、portfolio
+   exposure 面；读取现有 manifest / ledger / 当前状态，明确已用、缺失、PIT 边界、settled count
+   和尚未 join 的面。没有机器目录时做一行临时盘点，不得为盘点本身 reserve ID。
+3. **机制优先的跨面合成**：生成 `1-3` 个候选假设，至少一个连接此前孤立但经济机制可解释的面；
+   然后只选一个进入验证。全排列 join、多个阈值机械拼接、事后挑 winner 不算新机制。
+4. **先写反证**：每个 lead 同时写 baseline、treatment、预期 horizon、主要 replacement-value
+   对照和会推翻它的结果；禁止只写支持理由。
+5. **证据分级**：`snapshot_only -> lead`；`PIT_forward_unsettled -> observer`；
+   `settled_forward_sufficient -> observed_only attribution`；只有 canonical PIT 覆盖才是
+   `Gate 1-4 candidate`。数据不成熟不得让 lead 消失，但只能固定公式、ledger schema 和定量
+   reopen count，不能提前创建实验 ID、改变生产决策或声称 accepted alpha。
+6. **信号与执行分离**：正股/底层 alpha 不得自动映射成杠杆 ETF、期权或加仓建议；instrument
+   mapping、复利损耗、重叠暴露和 notional cap 属于独立 risk/capital-allocation 假设。
+
+synthesis pass 至少留下以下结构化字段，供下一位代理继续而不是重新猜测：
+
+```yaml
+baseline_universe: []
+opportunity_cost_winner: null
+evidence_surfaces_used: []
+evidence_surfaces_missing: []
+hypothesis_candidates: []
+selected_hypothesis: null
+economic_mechanism: null
+falsifier: null
+evidence_grade: lead|observer|observed_only|gate_candidate
+next_machine_action: null
+```
 
 ---
 
@@ -155,8 +193,10 @@ data/backtests/backtest_results_*.json
 3. 本次只检验哪一个可归因决策假设 / policy bundle？哪些只是为评估它所需的实现、parity、daily snapshot、ledger、live-realistic execution envelope 或测试？
 4. 成功 / 失败验收标准是什么？是否符合 `docs/backtesting.md`？
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
+6. 与用户当前关注标的相比，同一时点股票池里是否存在更好的风险收益候选？若只测试单票，最近一次横截面比较为什么仍有效？
+7. 本假设连接了哪些此前孤立的数据面，经济机制是什么？哪些面缺失或未达到 PIT / settled readiness，是否因此只能保留为 lead / observer？
 
-若无法回答第 2-5 点，禁止开始策略逻辑改动。
+若无法回答第 2-7 点，禁止开始策略逻辑改动。
 
 `single_causal_variable` / `changed_variable` 是历史字段名，真实含义是**单一可归因决策假设**，不是只能改一个参数或一个文件。一个 accepted alpha 实验可以包含评估同一假设所需的共享 helper、historical replay、daily default-off snapshot、report/ledger wiring、parity 测试、execution envelope 和 artifact/log 更新。
 

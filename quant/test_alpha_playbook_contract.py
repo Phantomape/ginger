@@ -1,109 +1,163 @@
 from __future__ import annotations
 
-import re
+import subprocess
+import sys
 from pathlib import Path
+
+import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PLAYBOOK_PATH = REPO_ROOT / "docs" / "alpha-optimization-playbook.md"
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
-MAX_LINES = 450
-MAX_EXPERIMENT_REFS = 24
-MAX_DURABLE_PRIORS = 12
-MAX_ACTIVE_LANES = 3
-MAX_FROZEN_FAMILIES = 13
-MAX_QUANTITATIVE_EXCEPTIONS = 5
-RUNNER_CONTRACT_CUTOFF = "20260718"
-
-REQUIRED_HEADINGS = (
-    "## Document Contract",
-    "## Durable Alpha Priors",
-    "## Current Direction",
-    "## Active Research Queue",
-    "## Frozen Zones",
-    "## Update Discipline",
-    "## Why the Old Version Became a Chronicle",
+from alpha_playbook_guard import (  # noqa: E402
+    PLAYBOOK_REL,
+    audit_playbook_text,
+    audit_repository_contract,
+    audit_staged_contract,
 )
-
-DATED_STATUS_HEADING = re.compile(
-    r"(?im)^#{2,4}\s+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|"
-    r"may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
-    r"nov(?:ember)?|dec(?:ember)?)\s+\d{1,2}(?:-\d{1,2})?.*"
-    r"\b(?:readout|status|update)\b"
-)
+import experiment as experiment_cli  # noqa: E402
 
 
-def _markdown_table_data_rows(section: str) -> list[str]:
-    return [
-        line
-        for line in section.splitlines()
-        if line.startswith("| ")
-        and not line.startswith("|---")
-        and not line.startswith("| Family ")
-        and not line.startswith("| Surface ")
+PLAYBOOK_PATH = REPO_ROOT / PLAYBOOK_REL
+
+
+def _codes(report: dict) -> set[str]:
+    return {row["code"] for row in report["violations"]}
+
+
+def _git(repo: Path, *args: str) -> None:
+    subprocess.run(
+        ["git", *args],
+        cwd=str(repo),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+
+def _init_contract_repo(tmp_path: Path) -> tuple[Path, Path, str]:
+    repo = tmp_path / "repo"
+    playbook = repo / PLAYBOOK_REL
+    playbook.parent.mkdir(parents=True)
+    valid_text = PLAYBOOK_PATH.read_text(encoding="utf-8")
+    playbook.write_text(valid_text, encoding="utf-8")
+    _git(repo, "init", "-q")
+    _git(repo, "add", PLAYBOOK_REL)
+    _git(
+        repo,
+        "-c",
+        "user.name=Playbook Guard Test",
+        "-c",
+        "user.email=playbook-guard@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-qm",
+        "seed valid playbook",
+    )
+    return repo, playbook, valid_text
+
+
+def test_alpha_playbook_repository_contract_passes() -> None:
+    report = audit_repository_contract(REPO_ROOT)
+    assert report["passed"], report["violations"]
+
+
+def test_validator_returns_stable_codes_for_malformed_structure() -> None:
+    valid = PLAYBOOK_PATH.read_text(encoding="utf-8")
+    malformed = valid.replace("## Frozen Zones", "## Trial Chronicle", 1)
+    report = audit_playbook_text(malformed)
+    assert report["passed"] is False
+    assert "h2_sequence_changed" in _codes(report)
+
+
+def test_experiment_ids_are_restricted_to_durable_priors() -> None:
+    valid = PLAYBOOK_PATH.read_text(encoding="utf-8")
+    malformed = valid.replace(
+        "<!-- PLAYBOOK_END -->",
+        "A recent result was `exp-20260719-999`.\n\n<!-- PLAYBOOK_END -->",
+    )
+    report = audit_playbook_text(malformed)
+    assert "experiment_reference_outside_priors" in _codes(report)
+
+
+def test_staged_guard_reads_invalid_index_not_fixed_worktree(tmp_path: Path) -> None:
+    repo, playbook, valid = _init_contract_repo(tmp_path)
+    playbook.write_text(valid + "\nappended trial result\n", encoding="utf-8")
+    _git(repo, "add", PLAYBOOK_REL)
+    playbook.write_text(valid, encoding="utf-8")
+
+    report = audit_staged_contract(repo)
+    assert report["passed"] is False
+    assert "end_sentinel_failed" in _codes(report)
+
+
+def test_staged_guard_ignores_invalid_unstaged_worktree(tmp_path: Path) -> None:
+    repo, playbook, valid = _init_contract_repo(tmp_path)
+    valid_index = valid.replace(
+        "This document is a durable decision map",
+        "This document remains a durable decision map",
+        1,
+    )
+    playbook.write_text(valid_index, encoding="utf-8")
+    _git(repo, "add", PLAYBOOK_REL)
+    playbook.write_text(valid_index + "\nunstaged trial result\n", encoding="utf-8")
+
+    report = audit_staged_contract(repo)
+    assert report["passed"] is True, report["violations"]
+
+
+def test_staged_runner_may_not_depend_on_playbook(tmp_path: Path) -> None:
+    repo, _, _ = _init_contract_repo(tmp_path)
+    runner_rel = "quant/experiments/exp_20260719_999_bad.py"
+    runner = repo / runner_rel
+    runner.parent.mkdir(parents=True)
+    runner.write_text(
+        'PLAYBOOK = "docs/alpha-optimization-playbook.md"\n', encoding="utf-8"
+    )
+    _git(repo, "add", runner_rel)
+
+    report = audit_staged_contract(repo)
+    assert report["passed"] is False
+    assert "staged_runner_depends_on_playbook" in _codes(report)
+
+
+def test_lean_strict_blocks_playbook_failure_without_relabeling_quality(
+    monkeypatch,
+) -> None:
+    emitted: list[dict] = []
+    monkeypatch.setattr(experiment_cli, "load_registry", lambda _path: {})
+    monkeypatch.setattr(
+        experiment_cli,
+        "audit_experiment_process",
+        lambda *_args, **_kwargs: {
+            "passed": True,
+            "lean_quality_passed": True,
+            "post_enforcement_alpha_ticket_count": 1,
+            "legacy_pre_enforcement_alpha_ticket_count": 0,
+        },
+    )
+    monkeypatch.setattr(experiment_cli, "_self_register_new_offenders", lambda: [])
+    monkeypatch.setattr(
+        experiment_cli,
+        "_audit_alpha_playbook",
+        lambda: {
+            "passed": False,
+            "violations": [{"code": "line_budget_exceeded"}],
+        },
+    )
+    monkeypatch.setattr(experiment_cli, "print_json", emitted.append)
+
+    with pytest.raises(SystemExit) as exc_info:
+        experiment_cli._audit(["--lean-strict"])
+
+    assert exc_info.value.code == 2
+    assert emitted[0]["lean_quality_passed"] is True
+    assert emitted[0]["lean_strict_passed"] is False
+    assert emitted[0]["lean_strict_would_block"] is True
+    assert emitted[0]["lean_strict_failure_domains"] == [
+        "alpha_playbook_contract"
     ]
-
-
-def test_alpha_playbook_stays_a_synthesis_map() -> None:
-    text = PLAYBOOK_PATH.read_text(encoding="utf-8")
-    lines = text.splitlines()
-
-    assert len(lines) <= MAX_LINES, (
-        f"playbook has {len(lines)} lines; synthesize or move trial facts to "
-        f"the logs before exceeding {MAX_LINES}"
-    )
-
-    missing = [heading for heading in REQUIRED_HEADINGS if heading not in text]
-    assert not missing, f"playbook contract sections are missing: {missing}"
-
-    experiment_refs = re.findall(r"\bexp-\d{8}-\d+\b", text)
-    assert len(experiment_refs) <= MAX_EXPERIMENT_REFS, (
-        "too many experiment references; keep at most one representative "
-        "experiment per durable prior"
-    )
-
-    durable_priors = re.findall(r"(?m)^\d+\. \*\*", text)
-    assert len(durable_priors) <= MAX_DURABLE_PRIORS
-
-    active_lanes = re.findall(r"(?m)^### Lane \d+:", text)
-    assert 1 <= len(active_lanes) <= MAX_ACTIVE_LANES
-
-    frozen_section = text.split("## Frozen Zones", 1)[1].split(
-        "### Quantitative Parked-Surface Exceptions", 1
-    )[0]
-    assert len(_markdown_table_data_rows(frozen_section)) <= MAX_FROZEN_FAMILIES
-
-    exception_section = text.split(
-        "### Quantitative Parked-Surface Exceptions", 1
-    )[1].split("## Update Discipline", 1)[0]
-    assert (
-        len(_markdown_table_data_rows(exception_section))
-        <= MAX_QUANTITATIVE_EXCEPTIONS
-    )
-
-    assert "## Current Readout" not in text
-    assert not DATED_STATUS_HEADING.search(text), (
-        "dated readouts belong in generated state or experiment logs, not in "
-        "the durable playbook"
-    )
-    assert "Replace the keyed\nstatement" in text
-    assert "must not write this file" in text
-    assert text.rstrip().endswith("<!-- PLAYBOOK_END -->"), (
-        "content was appended outside the synthesis structure; fold it into a "
-        "keyed section or keep it in the experiment log"
-    )
-
-
-def test_new_experiment_runners_do_not_depend_on_the_playbook() -> None:
-    offenders: list[str] = []
-    for path in (REPO_ROOT / "quant" / "experiments").glob("exp_*.py"):
-        match = re.match(r"exp_(\d{8})_", path.name)
-        if match is None or match.group(1) < RUNNER_CONTRACT_CUTOFF:
-            continue
-        if "alpha-optimization-playbook.md" in path.read_text(encoding="utf-8"):
-            offenders.append(path.relative_to(REPO_ROOT).as_posix())
-
-    assert not offenders, (
-        "experiment runners must write exact facts to their logs, not read or "
-        f"append the synthesized playbook: {offenders}"
-    )
