@@ -750,6 +750,157 @@ def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
     return result
 
 
+_RECIPE_BATCH_EXIT_MARKERS = (
+    "single batch",
+    "one batch",
+    "single pooled batch",
+    "pooled batch",
+    "batch experiment",
+    "batched representatives",
+)
+
+
+def _load_recipe_lanes(repo_root=None):
+    root = Path(repo_root) if repo_root else Path(_repo_root())
+    path = root / "docs" / "recipe_lanes.jsonl"
+    lanes = []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    lanes.append(json.loads(line))
+    except Exception:
+        return []
+    return [lane for lane in lanes if isinstance(lane, dict)]
+
+
+def _recipe_normalize(text):
+    text = str(text or "").lower()
+    text = re.sub(r"[-_/×,;:()\[\]{}]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _recipe_phrase_hits(normalized_text, phrases):
+    hits = []
+    for phrase in phrases or []:
+        p = _recipe_normalize(phrase)
+        if not p:
+            continue
+        pattern = r"(?<!\w)" + re.escape(p).replace(r"\ ", r"\s+") + r"(?!\w)"
+        if re.search(pattern, normalized_text):
+            hits.append(phrase)
+    return hits
+
+
+def classify_recipe_lane_match(text, lanes):
+    """Match free text against curated recipe lanes (docs/recipe_lanes.jsonl).
+
+    A lane matches when the text hits >= min_source_hits distinct source-cluster
+    phrases AND >= min_response_hits distinct response-cluster phrases. This is
+    the machine identity for AGENTS.md §2.4 排名/枚举清单消费: the ordinary
+    novelty gate keys on data_source, so a NEW source consumed by an OLD recipe
+    always looks novel — this classifier keys on the recipe instead.
+    """
+    normalized = _recipe_normalize(text)
+    matches = []
+    for lane in lanes:
+        src_hits = _recipe_phrase_hits(normalized, lane.get("source_cluster"))
+        resp_hits = _recipe_phrase_hits(normalized, lane.get("response_cluster"))
+        min_src = int(lane.get("min_source_hits", 1))
+        min_resp = int(lane.get("min_response_hits", 2))
+        if len(src_hits) >= min_src and len(resp_hits) >= min_resp:
+            matches.append(
+                {
+                    "lane_key": lane.get("lane_key"),
+                    "status": lane.get("status"),
+                    "consecutive_rejects": lane.get("consecutive_rejects"),
+                    "batch_exit_used": bool(lane.get("batch_exit_used")),
+                    "source_hits": src_hits[:6],
+                    "response_hits": resp_hits[:6],
+                    "member_experiments": (lane.get("member_experiments") or [])[:5],
+                    "reopen_condition": lane.get("reopen_condition"),
+                }
+            )
+    return matches
+
+
+def evaluate_recipe_lane_guard(args, repo_root=None):
+    """Machine form of the AGENTS.md §2.4 排名/枚举清单消费 (enumeration-
+    consumption) row for curated burned lanes.
+
+    Recipe-level repetition dominated 2026-07-14..07-21 (45 alpha tickets, 41
+    rejected, 0 accepted; ~15 official-release×fixed-response reskins, 3
+    developer-count reskins) because every other guard keys on data_source and a
+    new source with an old recipe always looks novel. Lanes are curated in
+    docs/recipe_lanes.jsonl; when a lane parks or a new burn pattern is named in
+    a reflection, add/extend a lane entry there in the same experiment.
+
+    Legal exits mirror the prose rule: a single pooled batch (only if the lane
+    has not spent its batch exit; detected via explicit batch markers in the
+    hypothesis) or park. --recipe-lane-override plus --new-evidence-axis
+    escapes for genuinely different mechanisms that collide with the phrase
+    clusters.
+    """
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "batch_exit_detected": False,
+        "matches": [],
+        "rule": (
+            "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite "
+            "taxonomy with one fixed evaluation recipe, one item per ID, is loop "
+            "unrolling — not new evidence. After the lane triggers, only a single "
+            "pooled batch (once) or park is legal. Curated lanes: "
+            "docs/recipe_lanes.jsonl."
+        ),
+    }
+    try:
+        lane = str(getattr(args, "lane", "") or "").lower()
+        if lane not in ALPHA_LANES:
+            return result
+        lanes = _load_recipe_lanes(repo_root)
+        active = [
+            l for l in lanes
+            if str(l.get("status", "")).lower() in {"parked", "triggered"}
+        ]
+        if not active:
+            return result
+        text = " ".join(
+            str(getattr(args, name, "") or "")
+            for name in (
+                "hypothesis",
+                "single_causal_variable",
+                "changed_variable",
+                "trial_family",
+                "mechanism_family",
+                "file_slug",
+            )
+        )
+        matches = classify_recipe_lane_match(text, active)
+        result["matches"] = matches
+        if not matches:
+            return result
+        result["applicable"] = True
+        normalized = _recipe_normalize(text)
+        batch_marker = any(m in normalized for m in _RECIPE_BATCH_EXIT_MARKERS)
+        batch_available = all(not m["batch_exit_used"] for m in matches)
+        result["batch_exit_detected"] = batch_marker
+        if batch_marker and batch_available:
+            # The one legal pooled-batch exit for a lane that still has it.
+            return result
+        if getattr(args, "recipe_lane_override", False) and (
+            str(getattr(args, "new_evidence_axis", "") or "").strip()
+        ):
+            result["override_accepted"] = True
+            return result
+        result["blocked"] = True
+    except Exception:
+        return result
+    return result
+
+
 _IN_FLIGHT_OPEN_STATUSES = {"proposed", "claimed", "running"}
 
 
@@ -1127,6 +1278,57 @@ def _novelty_check(args):
     if routine_guard.get("override_accepted"):
         print("[routine-materialization] override accepted.", file=sys.stderr)
 
+    recipe_guard = evaluate_recipe_lane_guard(args)
+    out["recipe_lane_guard"] = recipe_guard
+    if recipe_guard.get("matches"):
+        for m in recipe_guard["matches"][:3]:
+            print(
+                f"[recipe-lane] matches burned lane '{m['lane_key']}' "
+                f"[{m['status']}, {m['consecutive_rejects']} consecutive rejects, "
+                f"batch_exit_used={m['batch_exit_used']}]: "
+                f"source_hits={m['source_hits']} response_hits={m['response_hits']}",
+                file=sys.stderr,
+            )
+    if recipe_guard.get("blocked") and enforce and alpha_lane:
+        top = (recipe_guard.get("matches") or [{}])[0]
+        batch_note = (
+            "The lane's single pooled-batch exit is still available: state "
+            "explicitly in the hypothesis that this is a single pooled batch "
+            "over the remaining representatives, and the gate passes it once."
+            if not top.get("batch_exit_used")
+            else "This lane's batch exit was already spent; the only legal next "
+            "step is park (or the lane's recorded reopen_condition)."
+        )
+        raise SystemExit(
+            "recipe-lane gate blocked this reservation: the hypothesis matches "
+            f"burned recipe lane '{top.get('lane_key')}' "
+            f"({top.get('consecutive_rejects')} consecutive rejects; members "
+            f"include {', '.join(str(e) for e in top.get('member_experiments') or [])}). "
+            "A NEW data source consumed by this lane's FIXED recipe is loop "
+            "unrolling, not a new evidence axis — the per-source novelty gate "
+            "passing it does not exempt it (AGENTS.md §2.4 排名/枚举清单消费). "
+            + batch_note
+            + " Reopen condition: "
+            + str(top.get("reopen_condition"))
+            + " If this hypothesis is a genuinely different mechanism that "
+            "collides with the phrase clusters, re-run with "
+            "--recipe-lane-override and --new-evidence-axis naming what breaks "
+            "the recipe."
+        )
+    if recipe_guard.get("override_accepted"):
+        print(
+            "[recipe-lane] override accepted; "
+            f"axis={out['new_evidence_axis']}",
+            file=sys.stderr,
+        )
+    if recipe_guard.get("applicable") and recipe_guard.get("batch_exit_detected") and not recipe_guard.get("blocked"):
+        print(
+            "[recipe-lane] pooled-batch exit accepted — this consumes the "
+            "lane's single batch exit; set batch_exit_used=true in "
+            "docs/recipe_lanes.jsonl when closing this experiment.",
+            file=sys.stderr,
+        )
+
     in_flight_guard = evaluate_in_flight_duplicate_guard(args, fingerprint)
     out["in_flight_duplicate_guard"] = in_flight_guard
     if in_flight_guard.get("matches"):
@@ -1388,6 +1590,17 @@ def main(description=__doc__):
             "that wires the materialization into run.py / the settlement "
             "pipeline, or that names a genuine fault recovery — both pass the "
             "gate without an override."
+        ),
+    )
+    parser.add_argument(
+        "--recipe-lane-override",
+        action="store_true",
+        help=(
+            "Proceed despite matching a burned recipe lane in "
+            "docs/recipe_lanes.jsonl (AGENTS.md §2.4 排名/枚举清单消费 machine "
+            "gate). Requires --new-evidence-axis naming what makes the "
+            "mechanism different from the lane's fixed recipe. A new data "
+            "source consumed by the same recipe does not qualify."
         ),
     )
     parser.add_argument(
