@@ -52,7 +52,13 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    或达到 park 时声明的 reopen 计数；同一天的刷新不算新增。小样本翻倍不满足本轴：3→6 行满足
    +50% 但无判力，2026-07-08 同日 3 个 readiness 重审全部 rejected 即此；行数不够时正确动作是
    一行核对计数、不占 ID）；在**未饱和**源上 **(d) 无前例字段**也可作轴，但源一旦饱和即失效——XBRL /
-   标签枚举可被无限满足，基准率不随之改变。**gate shape 指响应/评估结构**（entry 排除 gate、
+   标签枚举可被无限满足，基准率不随之改变。**轴 (a) 指真正新的独立数据源**：已探索源之间的
+   cross-source join / 交叉切片**不构成 (a)**——join 只是配方，变的仍是输入行；且 join 面在
+   fingerprint 里常被误判为其中一个未饱和成员源，令机器 novelty gate 放行非法 override（案例：
+   2026-07-20 exp-002 以 "FINRA ATS × FINRA short-interest join" 声明新源过 override，手工三源
+   审计判非法、Gate 前自拒烧 ID）。声明含 join 的证据轴时，必须在 reserve **前**对每个成员源
+   分别自查饱和 / frozen 状态，任一成员已饱和或已被拒即不得以 join 名义 override。
+   **gate shape 指响应/评估结构**（entry 排除 gate、
    降权 overlay、candidate pool、notional scalar、kill switch 等）；同一源同一配方下换事件子类
    型 / item code / form type 只是换输入行，**不构成 (b)**。换阈值、换响应函数（hard exclusion →
    降权 → tilt / notional 缩放）、换切片条件、复述"还没成熟"，都**不算**。各通道的触发阈值与合法出路：
