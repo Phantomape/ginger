@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "as_of_et": "2026-07-21 11:15 ET",
+  "baseline_universe": [
+    "AAPL", "AMD", "AMZN", "APP", "AVGO", "BKNG", "CAT", "COIN", "CRDO", "CVX",
+    "DDOG", "DE", "DINO", "DIS", "GE", "GOOG", "GS", "HOOD", "ISRG", "JPM", "LLY",
+    "MA", "MCD", "META", "MSFT", "MU", "NFLX", "NOW", "NVDA", "NVO", "PLTR", "RKLB",
+    "RTX", "SNOW", "SPOT", "TSLA", "TSM", "UNH", "V", "XOM"
+  ],
+  "opportunity_cost_winner": {
+    "ticker": "AAPL",
+    "status": "best_cross_sectional_structure_not_immediate_entry",
+    "reason": "Four trend confirmations, positive current main-order flow, and lower ATR than the deep-drawdown basket, but price is already at 0.93 RTH range location. Cash is preferred to chasing."
+  },
+  "evidence_surfaces_used": [
+    {
+      "surface": "price",
+      "source": "moomoo_opend_rth_plus_warehouse",
+      "coverage": "40/40 core stocks; 10/10 held positions",
+      "pit_boundary": "live raw quote plus warehouse history through previous session"
+    },
+    {
+      "surface": "flow",
+      "source": "moomoo_capital_distribution_and_capital_flow_day",
+      "coverage": "25 selected cross-sectional names; daily manifest through 2026-07-20",
+      "pit_boundary": "current distribution is snapshot-only and excluded from historical alpha claims"
+    },
+    {
+      "surface": "derivatives",
+      "source": "options_forward",
+      "coverage": "2026-07-20 chain usable from 2026-07-21; 60 tickers",
+      "pit_boundary": "default-off shadow only; settled outcomes insufficient for a production decision"
+    },
+    {
+      "surface": "event",
+      "source": "current_news_and_official_investor_relations",
+      "coverage": "market, memory, NFLX, RKLB, DINO, HOOD, META, UNH",
+      "pit_boundary": "publicly available by decision time"
+    },
+    {
+      "surface": "portfolio_exposure",
+      "source": "moomoo_opend_account_and_positions",
+      "coverage": "10 positions; cash 55.0%; intraday heat 2.5%",
+      "pit_boundary": "live broker snapshot; DINO fill reconciled"
+    }
+  ],
+  "evidence_surfaces_missing": [
+    {
+      "surface": "positioning",
+      "reason": "borrow_availability has 0% populated values; iBorrowDesk history is stale after 2026-07-15; FINRA short interest is settlement-lagged"
+    },
+    {
+      "surface": "derivatives_settled_forward",
+      "reason": "only 14/12/9 closed rows at 5d/10d/20d and none at 60d in the options observer"
+    },
+    {
+      "surface": "historical_capital_distribution",
+      "reason": "OpenD capital distribution is current snapshot-only and cannot support PIT historical validation"
+    }
+  ],
+  "hypothesis_candidates": [
+    {
+      "name": "trend_flow_quality_over_deep_drawdown",
+      "baseline": "APP/CAT/TSLA/MU deep-drawdown rebound basket or immediate dip buy",
+      "treatment": "AAPL/JPM/UNH-style four-check trend plus positive main-order flow, entered only away from the RTH high",
+      "expected_horizon": "3d_to_10d",
+      "replacement_value": "cash and SPY, net of execution costs",
+      "falsifier": "deep-drawdown basket persistently beats treatment after costs, or treatment loses EMA8/VWAP while flow turns negative"
+    },
+    {
+      "name": "memory_rebound_requires_underlying_repair",
+      "baseline": "add MUU/SNXX during a one-day sector rebound",
+      "treatment": "paper-only underlying MU/SNDK entry after EMA8/SMA20, QQQ/SMH, and positive-flow confirmation",
+      "expected_horizon": "1d_to_5d",
+      "replacement_value": "hold existing small leveraged positions without adding",
+      "falsifier": "confirmed underlying repair has no next-session follow-through or loses VWAP/EMA8 with flow reversal"
+    },
+    {
+      "name": "event_drawdown_rebound_needs_flow_reversal",
+      "baseline": "average down NFLX/RKLB solely because RSI and drawdown are extreme",
+      "treatment": "add only after EMA8/SMA20 reclaim and main-order flow turns positive",
+      "expected_horizon": "3d_to_10d",
+      "replacement_value": "keep current five-share observation positions",
+      "falsifier": "price breaks the intraday invalidation area with continued net outflow, or the confirmed treatment underperforms cash after costs"
+    }
+  ],
+  "selected_hypothesis": "trend_flow_quality_over_deep_drawdown",
+  "economic_mechanism": "After a broad risk-off shock, continuation should be stronger where trend sponsorship and active buying remain intact; deep drawdown alone can reflect unresolved information rather than capitulation.",
+  "falsifier": "The deep-drawdown basket delivers higher 3d-10d replacement value after costs, or the selected trend/flow basket loses confirmation before entry.",
+  "evidence_grade": "lead",
+  "next_machine_action": "Persist no-add/no-sell intraday decisions, settle h1/rth_close/next_close/d3_close outcomes, and append the same fixed cross-sectional formulas daily before considering an experiment ID.",
+  "production_impact": "none_advisory_only",
+  "orders_placed": false
+}

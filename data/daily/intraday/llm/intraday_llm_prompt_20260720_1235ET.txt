@@ -1,0 +1,2907 @@
+You are the semantic-news reviewer for an advisory intraday
+position triage. Code already owns prices, technical calculations, portfolio
+risk blocks, existing exit rules, and the allowed action set.
+
+Hard constraints:
+- For each ticker choose exactly one action from that row's allowed_actions.
+- Never override a blocker, risk_block, stale quote, or existing exit breach.
+- ADD_SMALL is permitted only when code includes it in allowed_actions and
+  verified current news contains no thesis-breaking or event-risk veto.
+- max_add_pct_existing_position is a hard ceiling, not a target.
+- Do not invent prices, indicators, option direction, rules, or orders.
+- Output valid JSON only, using the requested schema.
+
+AS OF: 2026-07-20 12:35 ET (09:35 PT)
+
+MACRO EVENT CONTEXT:
+{
+  "today": [],
+  "upcoming": [],
+  "family_coverage_end": {
+    "NFP": "2026-12-04",
+    "CPI": "2026-12-10",
+    "FOMC": "2027-12-08"
+  },
+  "stale_families": []
+}
+
+MARKET REGIME (intraday-price basis vs last-close basis):
+{
+  "regime": "BULL",
+  "eod_basis_regime": "BULL",
+  "regime_flip_intraday": false,
+  "note": "Intraday-price basis: BULL (last-close basis: BULL).",
+  "indices": {
+    "SPY": {
+      "ticker": "SPY",
+      "close": 743.29,
+      "ma200": 693.44,
+      "above_ma": true,
+      "pct_from_ma": 0.0757,
+      "momentum_10d_pct": -0.002,
+      "intraday_price": 745.97,
+      "price_source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:34",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "eod_above_ma": true,
+      "eod_close": 743.29
+    },
+    "QQQ": {
+      "ticker": "QQQ",
+      "close": 695.33,
+      "ma200": 639.53,
+      "above_ma": true,
+      "pct_from_ma": 0.0984,
+      "momentum_10d_pct": -0.0242,
+      "intraday_price": 702.47,
+      "price_source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:35",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "eod_above_ma": true,
+      "eod_close": 695.33
+    }
+  }
+}
+
+PORTFOLIO HEAT (intraday prices):
+{
+  "portfolio_value_usd": 63068.49,
+  "total_at_risk_usd": 1349.28,
+  "portfolio_heat_pct": 0.0214,
+  "max_heat_pct": 0.08,
+  "can_add_new_positions": true,
+  "heat_note": "Heat 2.1% < 8% cap — new positions permitted",
+  "position_breakdown": [
+    {
+      "ticker": "DDOG",
+      "shares": 18.0,
+      "current_price": 266.62,
+      "hard_stop": 226.69,
+      "effective_stop": 246.05,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 370.35,
+      "at_risk_pct": 0.0059
+    },
+    {
+      "ticker": "DINO",
+      "shares": 40.0,
+      "current_price": 90.28,
+      "hard_stop": 76.52,
+      "effective_stop": 86.34,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 157.6,
+      "at_risk_pct": 0.0025
+    },
+    {
+      "ticker": "HOOD",
+      "shares": 31.0,
+      "current_price": 101.37,
+      "hard_stop": 92.58,
+      "effective_stop": 92.58,
+      "effective_stop_source": "default",
+      "at_risk_usd": 272.56,
+      "at_risk_pct": 0.0043
+    },
+    {
+      "ticker": "MUU",
+      "shares": 10.0,
+      "current_price": 30.06,
+      "hard_stop": 26.69,
+      "effective_stop": 26.69,
+      "effective_stop_source": "default",
+      "at_risk_usd": 33.7,
+      "at_risk_pct": 0.0005
+    },
+    {
+      "ticker": "RKLB",
+      "shares": 5.0,
+      "current_price": 67.5,
+      "hard_stop": 59.51,
+      "effective_stop": 59.51,
+      "effective_stop_source": "default",
+      "at_risk_usd": 39.97,
+      "at_risk_pct": 0.0006
+    },
+    {
+      "ticker": "SNXX",
+      "shares": 20.0,
+      "current_price": 14.93,
+      "hard_stop": 13.89,
+      "effective_stop": 13.89,
+      "effective_stop_source": "default",
+      "at_risk_usd": 20.89,
+      "at_risk_pct": 0.0003
+    },
+    {
+      "ticker": "SPY",
+      "shares": 10.0,
+      "current_price": 745.97,
+      "hard_stop": 663.29,
+      "effective_stop": 733.16,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 128.05,
+      "at_risk_pct": 0.002
+    },
+    {
+      "ticker": "UNH",
+      "shares": 10.0,
+      "current_price": 420.49,
+      "hard_stop": 376.06,
+      "effective_stop": 401.85,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 186.4,
+      "at_risk_pct": 0.003
+    },
+    {
+      "ticker": "META",
+      "shares": 3.0,
+      "current_price": 651.81,
+      "hard_stop": 587.37,
+      "effective_stop": 612.29,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 118.56,
+      "at_risk_pct": 0.0019
+    },
+    {
+      "ticker": "NFLX",
+      "shares": 5.0,
+      "current_price": 67.83,
+      "hard_stop": 59.91,
+      "effective_stop": 63.59,
+      "effective_stop_source": "atr",
+      "at_risk_usd": 21.2,
+      "at_risk_pct": 0.0003
+    }
+  ]
+}
+
+MACHINE TRIAGE (code-owned constraints):
+{
+  "schema_version": 1,
+  "policy": "discretionary_intraday_guardrails_v1",
+  "market_phase": "RTH",
+  "cash_pct": 0.580635,
+  "portfolio_heat_pct": 0.0214,
+  "portfolio_heat_cap_pct": 0.08,
+  "rows": [
+    {
+      "ticker": "DDOG",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "IGV",
+      "market_proxy": "QQQ",
+      "machine_state": "ADD_REVIEW_ELIGIBLE",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT",
+        "ADD_SMALL"
+      ],
+      "blockers": [],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 266.625,
+      "confirmation_level": 265.3139,
+      "invalidation_level": 265.3139,
+      "max_add_pct_existing_position": 0.15,
+      "paper_counterfactual_add_fraction_existing_position": 0.15,
+      "atr_pct": 0.051439,
+      "position_shares": 18.0,
+      "position_avg_cost": 257.603,
+      "position_market_value_at_decision": 4799.25,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 4.8758,
+      "paper_one_way_cost_bps": 7.4379,
+      "paper_round_trip_cost_bps": 14.8758,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "DINO",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "SPY",
+      "market_proxy": "SPY",
+      "machine_state": "ADD_REVIEW_ELIGIBLE",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT",
+        "ADD_SMALL"
+      ],
+      "blockers": [],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 90.28,
+      "confirmation_level": 90.0348,
+      "invalidation_level": 90.0348,
+      "max_add_pct_existing_position": 0.2,
+      "paper_counterfactual_add_fraction_existing_position": 0.2,
+      "atr_pct": 0.029124,
+      "position_shares": 40.0,
+      "position_avg_cost": 86.959,
+      "position_market_value_at_decision": 3611.2,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 11.0779,
+      "paper_one_way_cost_bps": 10.5389,
+      "paper_round_trip_cost_bps": 21.0779,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "HOOD",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "XLF",
+      "market_proxy": "SPY",
+      "machine_state": "WAIT_FOR_CONFIRMATION",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "below_ema8",
+        "below_sma20"
+      ],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 101.3683,
+      "confirmation_level": 108.4568,
+      "invalidation_level": 100.5246,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.15,
+      "atr_pct": 0.068045,
+      "position_shares": 31.0,
+      "position_avg_cost": 105.2,
+      "position_market_value_at_decision": 3142.42,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 1.9732,
+      "paper_one_way_cost_bps": 5.9866,
+      "paper_round_trip_cost_bps": 11.9732,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "MUU",
+      "position_group": "positions",
+      "underlying": "MU",
+      "sector_proxy": "SMH",
+      "market_proxy": "QQQ",
+      "machine_state": "WAIT_FOR_CONFIRMATION",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "atr_risk_too_high_for_add_review",
+        "below_ema8",
+        "below_sma20",
+        "sector_proxy_above_rth_vwap_not_confirmed"
+      ],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": true,
+        "sector_proxy_above_rth_vwap": false,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 30.06,
+      "confirmation_level": 42.0389,
+      "invalidation_level": 29.5795,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.1,
+      "atr_pct": 0.226676,
+      "position_shares": 10.0,
+      "position_avg_cost": 30.33,
+      "position_market_value_at_decision": 300.6,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 6.6534,
+      "paper_one_way_cost_bps": 8.3267,
+      "paper_round_trip_cost_bps": 16.6534,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "RKLB",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "SPY",
+      "market_proxy": "SPY",
+      "machine_state": "WAIT_FOR_CONFIRMATION",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "atr_risk_too_high_for_add_review",
+        "below_ema8",
+        "below_sma20",
+        "weak_rth_range_location"
+      ],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 67.5,
+      "confirmation_level": 87.1815,
+      "invalidation_level": 66.9854,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.1,
+      "atr_pct": 0.121031,
+      "position_shares": 5.0,
+      "position_avg_cost": 67.62,
+      "position_market_value_at_decision": 337.5,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 4.4441,
+      "paper_one_way_cost_bps": 7.2221,
+      "paper_round_trip_cost_bps": 14.4441,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "SNXX",
+      "position_group": "positions",
+      "underlying": "SNDK",
+      "sector_proxy": "SMH",
+      "market_proxy": "QQQ",
+      "machine_state": "HOLD_ONLY",
+      "default_action": "HOLD_ONLY",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "atr_risk_too_high_for_add_review",
+        "below_ema8",
+        "below_sma20",
+        "sector_proxy_above_rth_vwap_not_confirmed"
+      ],
+      "risk_blocks": [
+        "near_existing_stop"
+      ],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": true,
+        "sector_proxy_above_rth_vwap": false,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 14.9299,
+      "confirmation_level": 29.1895,
+      "invalidation_level": 14.5543,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.1,
+      "atr_pct": 0.414677,
+      "position_shares": 20.0,
+      "position_avg_cost": 15.779,
+      "position_market_value_at_decision": 298.6,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 6.7002,
+      "paper_one_way_cost_bps": 8.3501,
+      "paper_round_trip_cost_bps": 16.7002,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "SPY",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "SPY",
+      "market_proxy": "SPY",
+      "machine_state": "HOLD_ONLY",
+      "default_action": "HOLD_ONLY",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "below_ema8",
+        "weak_rth_range_location"
+      ],
+      "risk_blocks": [
+        "near_existing_stop"
+      ],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 745.965,
+      "confirmation_level": 748.9155,
+      "invalidation_level": 745.6841,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.2,
+      "atr_pct": 0.011439,
+      "position_shares": 10.0,
+      "position_avg_cost": 753.74,
+      "position_market_value_at_decision": 7459.65,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 0.1341,
+      "paper_one_way_cost_bps": 5.067,
+      "paper_round_trip_cost_bps": 10.1341,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "UNH",
+      "position_group": "positions",
+      "underlying": null,
+      "sector_proxy": "XLV",
+      "market_proxy": "SPY",
+      "machine_state": "WAIT_FOR_CONFIRMATION",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "below_ema8",
+        "below_rth_vwap",
+        "sector_proxy_above_rth_vwap_not_confirmed",
+        "weak_rth_range_location"
+      ],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": false,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 420.4901,
+      "confirmation_level": 424.1952,
+      "invalidation_level": 421.9318,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.2,
+      "atr_pct": 0.029553,
+      "position_shares": 10.0,
+      "position_avg_cost": 427.34,
+      "position_market_value_at_decision": 4204.9,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 4.7561,
+      "paper_one_way_cost_bps": 7.3781,
+      "paper_round_trip_cost_bps": 14.7561,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "META",
+      "position_group": "observations",
+      "underlying": null,
+      "sector_proxy": "SPY",
+      "market_proxy": "SPY",
+      "machine_state": "ADD_REVIEW_ELIGIBLE",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT",
+        "ADD_SMALL"
+      ],
+      "blockers": [],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 651.81,
+      "confirmation_level": 647.8381,
+      "invalidation_level": 644.7061,
+      "max_add_pct_existing_position": 0.2,
+      "paper_counterfactual_add_fraction_existing_position": 0.2,
+      "atr_pct": 0.040417,
+      "position_shares": 3.0,
+      "position_avg_cost": 667.47,
+      "position_market_value_at_decision": 1955.43,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 3.2218,
+      "paper_one_way_cost_bps": 6.6109,
+      "paper_round_trip_cost_bps": 13.2218,
+      "trade_enabled": false
+    },
+    {
+      "ticker": "NFLX",
+      "position_group": "observations",
+      "underlying": null,
+      "sector_proxy": "SPY",
+      "market_proxy": "SPY",
+      "machine_state": "WAIT_FOR_CONFIRMATION",
+      "default_action": "WAIT",
+      "allowed_actions": [
+        "HOLD_ONLY",
+        "WAIT"
+      ],
+      "blockers": [
+        "below_ema8",
+        "below_sma20"
+      ],
+      "risk_blocks": [],
+      "proxy_confirmation": {
+        "underlying_above_rth_vwap": null,
+        "sector_proxy_above_rth_vwap": true,
+        "market_proxy_above_rth_vwap": true
+      },
+      "pending_risk_actions": [],
+      "reference_price": 67.83,
+      "confirmation_level": 73.881,
+      "invalidation_level": 67.5777,
+      "max_add_pct_existing_position": 0.0,
+      "paper_counterfactual_add_fraction_existing_position": 0.2,
+      "atr_pct": 0.041706,
+      "position_shares": 5.0,
+      "position_avg_cost": 68.078,
+      "position_market_value_at_decision": 339.15,
+      "paper_reduce_fraction_existing_position": 0.25,
+      "spread_bps_at_decision": 2.949,
+      "paper_one_way_cost_bps": 6.4745,
+      "paper_round_trip_cost_bps": 12.949,
+      "trade_enabled": false
+    }
+  ],
+  "add_review_eligible": [
+    "DDOG",
+    "DINO",
+    "META"
+  ],
+  "trade_enabled": false,
+  "strategy_behavior_changed": false
+}
+
+MOOMOO OPEND METRICS (code-derived):
+{
+  "DDOG": {
+    "metrics": {
+      "reference_price": 266.625,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 258.69,
+      "open_price": 258.59,
+      "day_high": 268.83,
+      "day_low": 257.075,
+      "relative_volume": 0.641,
+      "bid": 266.56,
+      "ask": 266.69,
+      "update_time": "2026-07-20 12:35:22",
+      "session_return_pct": 0.030674,
+      "atr14": 13.715053,
+      "atr_pct": 0.051439,
+      "rsi14": 57.66,
+      "sma5": 263.288,
+      "sma10": 261.625,
+      "sma20": 249.916,
+      "sma50": 233.2042,
+      "ema8": 261.000584,
+      "ema21": 251.946419,
+      "return_5d_pct": 0.024535,
+      "return_20d_pct": 0.195628,
+      "rth_vwap": 265.31392,
+      "all_session_vwap": 265.263258,
+      "rth_high": 268.83,
+      "rth_low": 257.075,
+      "rth_range_location": 0.81242,
+      "tail_15m_return_pct": -0.00288,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:22",
+      "last_price": 266.625,
+      "open_price": 258.59,
+      "high_price": 268.83,
+      "low_price": 257.075,
+      "prev_close_price": 258.69,
+      "volume": 1111278.0,
+      "turnover": 294776243.08,
+      "ask_price": 266.69,
+      "bid_price": 266.56,
+      "avg_price": 265.258776903,
+      "volume_ratio": 0.641,
+      "after_volume": 190985.0,
+      "pre_price": 258.59,
+      "pre_high_price": 260.62,
+      "pre_low_price": 256.0,
+      "pre_volume": 5675.0,
+      "after_price": 254.81,
+      "after_high_price": 258.69,
+      "after_low_price": 254.81,
+      "overnight_price": 259.3,
+      "overnight_high_price": 259.57,
+      "overnight_low_price": 258.21,
+      "overnight_volume": 790.0
+    }
+  },
+  "DINO": {
+    "metrics": {
+      "reference_price": 90.28,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 88.59,
+      "open_price": 88.125,
+      "day_high": 90.75,
+      "day_low": 88.0,
+      "relative_volume": 0.757,
+      "bid": 90.22,
+      "ask": 90.32,
+      "update_time": "2026-07-20 12:35:11",
+      "session_return_pct": 0.019077,
+      "atr14": 2.629316,
+      "atr_pct": 0.029124,
+      "rsi14": 80.54,
+      "sma5": 84.834,
+      "sma10": 80.677,
+      "sma20": 74.5055,
+      "sma50": 71.929053,
+      "ema8": 82.668162,
+      "ema21": 77.008262,
+      "return_5d_pct": 0.105018,
+      "return_20d_pct": 0.39969,
+      "rth_vwap": 90.034819,
+      "all_session_vwap": 90.030618,
+      "rth_high": 90.75,
+      "rth_low": 88.0,
+      "rth_range_location": 0.829091,
+      "tail_15m_return_pct": -0.004412,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:11",
+      "last_price": 90.28,
+      "open_price": 88.125,
+      "high_price": 90.75,
+      "low_price": 88.0,
+      "prev_close_price": 88.59,
+      "volume": 1102540.0,
+      "turnover": 99255622.723,
+      "ask_price": 90.32,
+      "bid_price": 90.22,
+      "avg_price": 90.024509517,
+      "volume_ratio": 0.757,
+      "after_volume": 28571.0,
+      "pre_price": 89.4438,
+      "pre_high_price": 89.5,
+      "pre_low_price": 87.52,
+      "pre_volume": 2268.0,
+      "after_price": 88.59,
+      "after_high_price": 88.59,
+      "after_low_price": 88.3593,
+      "overnight_price": 89.86,
+      "overnight_high_price": 89.86,
+      "overnight_low_price": 89.0,
+      "overnight_volume": 257.0
+    }
+  },
+  "HOOD": {
+    "metrics": {
+      "reference_price": 101.3683,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 99.96,
+      "open_price": 102.48,
+      "day_high": 102.48,
+      "day_low": 98.61,
+      "relative_volume": 0.894,
+      "bid": 101.35,
+      "ask": 101.37,
+      "update_time": "2026-07-20 12:35:31",
+      "session_return_pct": 0.014089,
+      "atr14": 6.897617,
+      "atr_pct": 0.068045,
+      "rsi14": 46.61,
+      "sma5": 108.966,
+      "sma10": 111.589,
+      "sma20": 107.292,
+      "sma50": 93.0218,
+      "ema8": 108.456828,
+      "ema21": 105.58221,
+      "return_5d_pct": -0.077296,
+      "return_20d_pct": -0.062706,
+      "rth_vwap": 100.524615,
+      "all_session_vwap": 100.559084,
+      "rth_high": 102.64,
+      "rth_low": 98.61,
+      "rth_range_location": 0.684442,
+      "tail_15m_return_pct": 0.000494,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:31",
+      "last_price": 101.3683,
+      "open_price": 102.48,
+      "high_price": 102.48,
+      "low_price": 98.61,
+      "prev_close_price": 99.96,
+      "volume": 9629625.0,
+      "turnover": 968321578.853,
+      "ask_price": 101.37,
+      "bid_price": 101.35,
+      "avg_price": 100.556519994,
+      "volume_ratio": 0.894,
+      "after_volume": 623512.0,
+      "pre_price": 102.32,
+      "pre_high_price": 102.7,
+      "pre_low_price": 99.97,
+      "pre_volume": 200548.0,
+      "after_price": 99.7,
+      "after_high_price": 100.17,
+      "after_low_price": 99.09,
+      "overnight_price": 100.33,
+      "overnight_high_price": 101.12,
+      "overnight_low_price": 99.65,
+      "overnight_volume": 46579.0
+    }
+  },
+  "IGV": {
+    "metrics": {
+      "reference_price": 93.875,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 92.8,
+      "open_price": 92.12,
+      "day_high": 93.93,
+      "day_low": 92.01,
+      "relative_volume": 0.812,
+      "bid": 93.87,
+      "ask": 93.89,
+      "update_time": "2026-07-20 12:35:34",
+      "session_return_pct": 0.011584,
+      "atr14": 2.788981,
+      "atr_pct": 0.02971,
+      "rsi14": 51.55,
+      "sma5": 93.354,
+      "sma10": 93.446,
+      "sma20": 91.2355,
+      "sma50": 92.756472,
+      "ema8": 93.123083,
+      "ema21": 92.484848,
+      "return_5d_pct": 0.012675,
+      "return_20d_pct": 0.05371,
+      "rth_vwap": 92.856417,
+      "all_session_vwap": 92.854927,
+      "rth_high": 93.93,
+      "rth_low": 92.01,
+      "rth_range_location": 0.971354,
+      "tail_15m_return_pct": 0.002135,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:34",
+      "last_price": 93.875,
+      "open_price": 92.12,
+      "high_price": 93.93,
+      "low_price": 92.01,
+      "prev_close_price": 92.8,
+      "volume": 3955807.0,
+      "turnover": 367307762.278,
+      "ask_price": 93.89,
+      "bid_price": 93.87,
+      "avg_price": 92.852801534,
+      "volume_ratio": 0.812,
+      "after_volume": 46625.0,
+      "pre_price": 92.1,
+      "pre_high_price": 93.39,
+      "pre_low_price": 91.6,
+      "pre_volume": 5998.0,
+      "after_price": 93.19,
+      "after_high_price": 93.24,
+      "after_low_price": 92.5,
+      "overnight_price": 92.72,
+      "overnight_high_price": 93.45,
+      "overnight_low_price": 92.67,
+      "overnight_volume": 5233.0
+    }
+  },
+  "META": {
+    "metrics": {
+      "reference_price": 651.81,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 646.01,
+      "open_price": 645.85,
+      "day_high": 653.3,
+      "day_low": 636.0105,
+      "relative_volume": 0.514,
+      "bid": 651.71,
+      "ask": 651.92,
+      "update_time": "2026-07-20 12:35:35",
+      "session_return_pct": 0.008978,
+      "atr14": 26.344335,
+      "atr_pct": 0.040417,
+      "rsi14": 56.82,
+      "sma5": 661.926,
+      "sma10": 642.931,
+      "sma20": 605.2535,
+      "sma50": 604.231919,
+      "ema8": 647.838128,
+      "ema21": 622.01907,
+      "return_5d_pct": -0.007492,
+      "return_20d_pct": 0.129223,
+      "rth_vwap": 644.706091,
+      "all_session_vwap": 644.727467,
+      "rth_high": 653.3,
+      "rth_low": 636.0105,
+      "rth_range_location": 0.913821,
+      "tail_15m_return_pct": 0.006809,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:35",
+      "last_price": 651.81,
+      "open_price": 645.85,
+      "high_price": 653.3,
+      "low_price": 636.0105,
+      "prev_close_price": 646.01,
+      "volume": 4583618.0,
+      "turnover": 2955178567.228,
+      "ask_price": 651.92,
+      "bid_price": 651.71,
+      "avg_price": 644.726189492,
+      "volume_ratio": 0.514,
+      "after_volume": 1333273.0,
+      "pre_price": 645.85,
+      "pre_high_price": 649.2,
+      "pre_low_price": 642.1,
+      "pre_volume": 85254.0,
+      "after_price": 640.25,
+      "after_high_price": 646.04,
+      "after_low_price": 639.12,
+      "overnight_price": 644.46,
+      "overnight_high_price": 650.04,
+      "overnight_low_price": 640.0,
+      "overnight_volume": 23522.0
+    }
+  },
+  "MU": {
+    "metrics": {
+      "reference_price": 893.15,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 848.95,
+      "open_price": 884.23,
+      "day_high": 900.9999,
+      "day_low": 866.0,
+      "relative_volume": 0.943,
+      "bid": 892.99,
+      "ask": 893.36,
+      "update_time": "2026-07-20 12:35:33",
+      "session_return_pct": 0.052064,
+      "atr14": 85.563,
+      "atr_pct": 0.095799,
+      "rsi14": 41.01,
+      "sma5": 905.31,
+      "sma10": 936.942,
+      "sma20": 1023.333172,
+      "sma50": 933.57405,
+      "ema8": 921.455616,
+      "ema21": 967.3742,
+      "return_5d_pct": -0.046798,
+      "return_20d_pct": -0.212262,
+      "rth_vwap": 884.866468,
+      "all_session_vwap": 884.345227,
+      "rth_high": 900.9999,
+      "rth_low": 866.0,
+      "rth_range_location": 0.775717,
+      "tail_15m_return_pct": -0.00888,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:33",
+      "last_price": 893.15,
+      "open_price": 884.23,
+      "high_price": 900.9999,
+      "low_price": 866.0,
+      "prev_close_price": 848.95,
+      "volume": 20727651.0,
+      "turnover": 18337578742.87,
+      "ask_price": 893.36,
+      "bid_price": 892.99,
+      "avg_price": 884.691600744,
+      "volume_ratio": 0.943,
+      "after_volume": 2355449.0,
+      "pre_price": 882.7,
+      "pre_high_price": 896.23,
+      "pre_low_price": 856.58,
+      "pre_volume": 1260448.0,
+      "after_price": 844.0,
+      "after_high_price": 852.7,
+      "after_low_price": 835.0,
+      "overnight_price": 867.41,
+      "overnight_high_price": 881.87,
+      "overnight_low_price": 841.51,
+      "overnight_volume": 823313.0
+    }
+  },
+  "MUU": {
+    "metrics": {
+      "reference_price": 30.06,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 27.24,
+      "open_price": 29.37,
+      "day_high": 30.5662,
+      "day_low": 28.35,
+      "relative_volume": 1.711,
+      "bid": 30.05,
+      "ask": 30.07,
+      "update_time": "2026-07-20 12:35:31",
+      "session_return_pct": 0.103524,
+      "atr14": 6.813871,
+      "atr_pct": 0.226676,
+      "rsi14": 39.55,
+      "sma5": 31.4125,
+      "sma10": 34.01465,
+      "sma20": 42.038932,
+      "sma50": 38.150764,
+      "ema8": 32.915226,
+      "ema21": 37.75075,
+      "return_5d_pct": -0.113536,
+      "return_20d_pct": -0.442448,
+      "rth_vwap": 29.579483,
+      "all_session_vwap": 29.500186,
+      "rth_high": 30.5662,
+      "rth_low": 28.35,
+      "rth_range_location": 0.771591,
+      "tail_15m_return_pct": -0.016721,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:31",
+      "last_price": 30.06,
+      "open_price": 29.37,
+      "high_price": 30.5662,
+      "low_price": 28.35,
+      "prev_close_price": 27.24,
+      "volume": 25926099.0,
+      "turnover": 765847742.071,
+      "ask_price": 30.07,
+      "bid_price": 30.05,
+      "avg_price": 29.539644281,
+      "volume_ratio": 1.711,
+      "after_volume": 1106734.0,
+      "pre_price": 29.4,
+      "pre_high_price": 30.2995,
+      "pre_low_price": 28.1,
+      "pre_volume": 2670064.0,
+      "after_price": 26.8923,
+      "after_high_price": 27.429,
+      "after_low_price": 26.43,
+      "overnight_price": 28.5,
+      "overnight_high_price": 29.38,
+      "overnight_low_price": 27.01,
+      "overnight_volume": 1937416.0
+    }
+  },
+  "NFLX": {
+    "metrics": {
+      "reference_price": 67.83,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 68.95,
+      "open_price": 68.17,
+      "day_high": 68.38,
+      "day_low": 66.69,
+      "relative_volume": 1.028,
+      "bid": 67.81,
+      "ask": 67.83,
+      "update_time": "2026-07-20 12:35:33",
+      "session_return_pct": -0.016244,
+      "atr14": 2.828916,
+      "atr_pct": 0.041706,
+      "rsi14": 30.72,
+      "sma5": 72.868,
+      "sma10": 74.097,
+      "sma20": 73.881,
+      "sma50": 80.5618,
+      "ema8": 73.090889,
+      "ema21": 75.106496,
+      "return_5d_pct": -0.081268,
+      "return_20d_pct": -0.123417,
+      "rth_vwap": 67.57769,
+      "all_session_vwap": 67.619218,
+      "rth_high": 68.48,
+      "rth_low": 66.69,
+      "rth_range_location": 0.636872,
+      "tail_15m_return_pct": -0.00193,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:33",
+      "last_price": 67.83,
+      "open_price": 68.17,
+      "high_price": 68.38,
+      "low_price": 66.69,
+      "prev_close_price": 68.95,
+      "volume": 31362537.0,
+      "turnover": 2120524818.59,
+      "ask_price": 67.83,
+      "bid_price": 67.81,
+      "avg_price": 67.613306238,
+      "volume_ratio": 1.028,
+      "after_volume": 1094101.0,
+      "pre_price": 68.21,
+      "pre_high_price": 69.0679,
+      "pre_low_price": 68.0,
+      "pre_volume": 739342.0,
+      "after_price": 69.17,
+      "after_high_price": 69.26,
+      "after_low_price": 68.83,
+      "overnight_price": 69.05,
+      "overnight_high_price": 69.2,
+      "overnight_low_price": 68.64,
+      "overnight_volume": 74247.0
+    }
+  },
+  "QQQ": {
+    "metrics": {
+      "reference_price": 702.47,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 695.33,
+      "open_price": 702.35,
+      "day_high": 705.8,
+      "day_low": 698.08,
+      "relative_volume": 0.849,
+      "bid": 702.45,
+      "ask": 702.49,
+      "update_time": "2026-07-20 12:35:35",
+      "session_return_pct": 0.010269,
+      "atr14": 15.281278,
+      "atr_pct": 0.021754,
+      "rsi14": 42.07,
+      "sma5": 710.088,
+      "sma10": 714.292,
+      "sma20": 718.304825,
+      "sma50": 718.514791,
+      "ema8": 711.103924,
+      "ema21": 715.698205,
+      "return_5d_pct": -0.013024,
+      "return_20d_pct": -0.050468,
+      "rth_vwap": 701.867631,
+      "all_session_vwap": 701.774968,
+      "rth_high": 705.8,
+      "rth_low": 698.08,
+      "rth_range_location": 0.568653,
+      "tail_15m_return_pct": -0.00199,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:35",
+      "last_price": 702.47,
+      "open_price": 702.35,
+      "high_price": 705.8,
+      "low_price": 698.08,
+      "prev_close_price": 695.33,
+      "volume": 15510385.0,
+      "turnover": 10885383440.506,
+      "ask_price": 702.49,
+      "bid_price": 702.45,
+      "avg_price": 701.812588179,
+      "volume_ratio": 0.849,
+      "after_volume": 4067901.0,
+      "pre_price": 702.33,
+      "pre_high_price": 703.75,
+      "pre_low_price": 697.65,
+      "pre_volume": 629092.0,
+      "after_price": 693.62,
+      "after_high_price": 695.69,
+      "after_low_price": 693.5,
+      "overnight_price": 698.92,
+      "overnight_high_price": 700.18,
+      "overnight_low_price": 695.46,
+      "overnight_volume": 321607.0
+    }
+  },
+  "RKLB": {
+    "metrics": {
+      "reference_price": 67.5,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 67.62,
+      "open_price": 68.37,
+      "day_high": 69.54,
+      "day_low": 65.86,
+      "relative_volume": 0.979,
+      "bid": 67.49,
+      "ask": 67.52,
+      "update_time": "2026-07-20 12:35:32",
+      "session_return_pct": -0.001775,
+      "atr14": 8.169589,
+      "atr_pct": 0.121031,
+      "rsi14": 31.21,
+      "sma5": 73.342,
+      "sma10": 79.015,
+      "sma20": 87.1815,
+      "sma50": 106.4802,
+      "ema8": 76.318958,
+      "ema21": 86.941941,
+      "return_5d_pct": -0.120292,
+      "return_20d_pct": -0.370571,
+      "rth_vwap": 66.985409,
+      "all_session_vwap": 67.129594,
+      "rth_high": 70.1,
+      "rth_low": 65.86,
+      "rth_range_location": 0.386792,
+      "tail_15m_return_pct": 0.003864,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:32",
+      "last_price": 67.5,
+      "open_price": 68.37,
+      "high_price": 69.54,
+      "low_price": 65.86,
+      "prev_close_price": 67.62,
+      "volume": 9640214.0,
+      "turnover": 646897261.784,
+      "ask_price": 67.52,
+      "bid_price": 67.49,
+      "avg_price": 67.104035427,
+      "volume_ratio": 0.979,
+      "after_volume": 278808.0,
+      "pre_price": 68.36,
+      "pre_high_price": 70.6,
+      "pre_low_price": 68.2,
+      "pre_volume": 401237.0,
+      "after_price": 68.2,
+      "after_high_price": 68.5999,
+      "after_low_price": 67.3577,
+      "overnight_price": 68.73,
+      "overnight_high_price": 69.07,
+      "overnight_low_price": 66.91,
+      "overnight_volume": 217655.0
+    }
+  },
+  "SMH": {
+    "metrics": {
+      "reference_price": 566.14,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 556.53,
+      "open_price": 568.0,
+      "day_high": 572.76,
+      "day_low": 559.91,
+      "relative_volume": 0.591,
+      "bid": 565.99,
+      "ask": 566.17,
+      "update_time": "2026-07-20 12:35:35",
+      "session_return_pct": 0.017268,
+      "atr14": 29.0574,
+      "atr_pct": 0.051325,
+      "rsi14": 41.15,
+      "sma5": 580.43,
+      "sma10": 589.966,
+      "sma20": 610.9265,
+      "sma50": 597.3342,
+      "ema8": 584.763399,
+      "ema21": 598.196881,
+      "return_5d_pct": -0.033264,
+      "return_20d_pct": -0.142056,
+      "rth_vwap": 566.837695,
+      "all_session_vwap": 566.871067,
+      "rth_high": 572.76,
+      "rth_low": 559.91,
+      "rth_range_location": 0.484825,
+      "tail_15m_return_pct": -0.00406,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:35",
+      "last_price": 566.14,
+      "open_price": 568.0,
+      "high_price": 572.76,
+      "low_price": 559.91,
+      "prev_close_price": 556.53,
+      "volume": 3461641.0,
+      "turnover": 1962439478.586,
+      "ask_price": 566.17,
+      "bid_price": 565.99,
+      "avg_price": 566.910167341,
+      "volume_ratio": 0.591,
+      "after_volume": 233387.0,
+      "pre_price": 567.41,
+      "pre_high_price": 571.8,
+      "pre_low_price": 559.3612,
+      "pre_volume": 103875.0,
+      "after_price": 555.55,
+      "after_high_price": 557.01,
+      "after_low_price": 553.66,
+      "overnight_price": 561.25,
+      "overnight_high_price": 564.8,
+      "overnight_low_price": 550.0,
+      "overnight_volume": 43172.0
+    }
+  },
+  "SNDK": {
+    "metrics": {
+      "reference_price": 1443.34,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 1354.82,
+      "open_price": 1409.99,
+      "day_high": 1454.99,
+      "day_low": 1382.47,
+      "relative_volume": 0.945,
+      "bid": 1443.0,
+      "ask": 1444.8,
+      "update_time": "2026-07-20 12:35:32",
+      "session_return_pct": 0.065337,
+      "atr14": 207.214718,
+      "atr_pct": 0.143566,
+      "rsi14": 38.68,
+      "sma5": 1562.538,
+      "sma10": 1667.619,
+      "sma20": 1876.989,
+      "sma50": 1724.2996,
+      "ema8": 1612.662057,
+      "ema21": 1750.314295,
+      "return_5d_pct": -0.137774,
+      "return_20d_pct": -0.339357,
+      "rth_vwap": 1422.964072,
+      "all_session_vwap": 1419.76442,
+      "rth_high": 1454.99,
+      "rth_low": 1382.47,
+      "rth_range_location": 0.839355,
+      "tail_15m_return_pct": -0.006145,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:32",
+      "last_price": 1443.34,
+      "open_price": 1409.99,
+      "high_price": 1454.99,
+      "low_price": 1382.47,
+      "prev_close_price": 1354.82,
+      "volume": 7188328.0,
+      "turnover": 10213619523.898,
+      "ask_price": 1444.8,
+      "bid_price": 1443.0,
+      "avg_price": 1420.861641802,
+      "volume_ratio": 0.945,
+      "after_volume": 646918.0,
+      "pre_price": 1406.46,
+      "pre_high_price": 1425.0,
+      "pre_low_price": 1370.0402,
+      "pre_volume": 495186.0,
+      "after_price": 1350.034,
+      "after_high_price": 1360.88,
+      "after_low_price": 1335.07,
+      "overnight_price": 1374.86,
+      "overnight_high_price": 1405.0,
+      "overnight_low_price": 1338.0,
+      "overnight_volume": 354243.0
+    }
+  },
+  "SNXX": {
+    "metrics": {
+      "reference_price": 14.9299,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 13.2,
+      "open_price": 14.21,
+      "day_high": 15.16,
+      "day_low": 13.75,
+      "relative_volume": 1.082,
+      "bid": 14.92,
+      "ask": 14.93,
+      "update_time": "2026-07-20 12:35:33",
+      "session_return_pct": 0.131053,
+      "atr14": 6.191093,
+      "atr_pct": 0.414677,
+      "rsi14": 38.06,
+      "sma5": 18.182,
+      "sma10": 21.241,
+      "sma20": 29.1895,
+      "sma50": 26.987588,
+      "ema8": 20.0121,
+      "ema21": 25.264407,
+      "return_5d_pct": -0.289052,
+      "return_20d_pct": -0.651007,
+      "rth_vwap": 14.554343,
+      "all_session_vwap": 14.478182,
+      "rth_high": 15.16,
+      "rth_low": 13.75,
+      "rth_range_location": 0.836809,
+      "tail_15m_return_pct": -0.012955,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:33",
+      "last_price": 14.9299,
+      "open_price": 14.21,
+      "high_price": 15.16,
+      "low_price": 13.75,
+      "prev_close_price": 13.2,
+      "volume": 52360118.0,
+      "turnover": 758245267.345,
+      "ask_price": 14.93,
+      "bid_price": 14.92,
+      "avg_price": 14.481351385,
+      "volume_ratio": 1.082,
+      "after_volume": 4676910.0,
+      "pre_price": 14.24,
+      "pre_high_price": 14.5691,
+      "pre_low_price": 13.5,
+      "pre_volume": 3473601.0,
+      "after_price": 12.86,
+      "after_high_price": 13.3454,
+      "after_low_price": 12.68,
+      "overnight_price": 13.58,
+      "overnight_high_price": 14.18,
+      "overnight_low_price": 12.9,
+      "overnight_volume": 292004.0
+    }
+  },
+  "SPY": {
+    "metrics": {
+      "reference_price": 745.965,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 743.29,
+      "open_price": 746.94,
+      "day_high": 748.73,
+      "day_low": 743.71,
+      "relative_volume": 0.771,
+      "bid": 745.96,
+      "ask": 745.97,
+      "update_time": "2026-07-20 12:35:34",
+      "session_return_pct": 0.003599,
+      "atr14": 8.533426,
+      "atr_pct": 0.011439,
+      "rsi14": 48.78,
+      "sma5": 749.964,
+      "sma10": 750.087,
+      "sma20": 745.021,
+      "sma50": 743.233674,
+      "ema8": 748.915479,
+      "ema21": 746.313101,
+      "return_5d_pct": -0.004278,
+      "return_20d_pct": -0.001038,
+      "rth_vwap": 745.684142,
+      "all_session_vwap": 745.69641,
+      "rth_high": 748.73,
+      "rth_low": 743.71,
+      "rth_range_location": 0.449203,
+      "tail_15m_return_pct": -0.001138,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:34",
+      "last_price": 745.965,
+      "open_price": 746.94,
+      "high_price": 748.73,
+      "low_price": 743.71,
+      "prev_close_price": 743.29,
+      "volume": 17031298.0,
+      "turnover": 12700111454.299,
+      "ask_price": 745.97,
+      "bid_price": 745.96,
+      "avg_price": 745.692515878,
+      "volume_ratio": 0.771,
+      "after_volume": 7157635.0,
+      "pre_price": 746.89,
+      "pre_high_price": 748.0,
+      "pre_low_price": 744.65,
+      "pre_volume": 315332.0,
+      "after_price": 742.5,
+      "after_high_price": 743.76,
+      "after_low_price": 742.0,
+      "overnight_price": 745.29,
+      "overnight_high_price": 745.42,
+      "overnight_low_price": 742.65,
+      "overnight_volume": 107009.0
+    }
+  },
+  "UNH": {
+    "metrics": {
+      "reference_price": 420.4901,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 426.09,
+      "open_price": 428.99,
+      "day_high": 431.015,
+      "day_low": 417.38,
+      "relative_volume": 0.494,
+      "bid": 420.41,
+      "ask": 420.61,
+      "update_time": "2026-07-20 12:35:31",
+      "session_return_pct": -0.013143,
+      "atr14": 12.426926,
+      "atr_pct": 0.029553,
+      "rsi14": 58.12,
+      "sma5": 424.454,
+      "sma10": 425.035,
+      "sma20": 420.1905,
+      "sma50": 401.687094,
+      "ema8": 424.195188,
+      "ema21": 418.396361,
+      "return_5d_pct": -0.020042,
+      "return_20d_pct": 0.048708,
+      "rth_vwap": 421.931762,
+      "all_session_vwap": 422.011841,
+      "rth_high": 431.015,
+      "rth_low": 417.38,
+      "rth_range_location": 0.228097,
+      "tail_15m_return_pct": -0.002428,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:31",
+      "last_price": 420.4901,
+      "open_price": 428.99,
+      "high_price": 431.015,
+      "low_price": 417.38,
+      "prev_close_price": 426.09,
+      "volume": 1864089.0,
+      "turnover": 786607097.94,
+      "ask_price": 420.61,
+      "bid_price": 420.41,
+      "avg_price": 421.979367905,
+      "volume_ratio": 0.494,
+      "after_volume": 1539210.0,
+      "pre_price": 426.53,
+      "pre_high_price": 429.9,
+      "pre_low_price": 424.36,
+      "pre_volume": 14449.0,
+      "after_price": 426.8,
+      "after_high_price": 427.08,
+      "after_low_price": 425.0,
+      "overnight_price": 426.01,
+      "overnight_high_price": 427.25,
+      "overnight_low_price": 425.22,
+      "overnight_volume": 4688.0
+    }
+  },
+  "XLF": {
+    "metrics": {
+      "reference_price": 56.195,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 56.26,
+      "open_price": 56.3,
+      "day_high": 56.38,
+      "day_low": 55.89,
+      "relative_volume": 0.731,
+      "bid": 56.19,
+      "ask": 56.2,
+      "update_time": "2026-07-20 12:35:14",
+      "session_return_pct": -0.001155,
+      "atr14": 0.753726,
+      "atr_pct": 0.013413,
+      "rsi14": 65.58,
+      "sma5": 56.364,
+      "sma10": 56.023,
+      "sma20": 54.983146,
+      "sma50": 53.042247,
+      "ema8": 56.067888,
+      "ema21": 55.056432,
+      "return_5d_pct": 0.002229,
+      "return_20d_pct": 0.052678,
+      "rth_vwap": 56.097542,
+      "all_session_vwap": 56.097864,
+      "rth_high": 56.38,
+      "rth_low": 55.89,
+      "rth_range_location": 0.622449,
+      "tail_15m_return_pct": -8.9e-05,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:14",
+      "last_price": 56.195,
+      "open_price": 56.3,
+      "high_price": 56.38,
+      "low_price": 55.89,
+      "prev_close_price": 56.26,
+      "volume": 13661037.0,
+      "turnover": 766338587.065,
+      "ask_price": 56.2,
+      "bid_price": 56.19,
+      "avg_price": 56.096662871,
+      "volume_ratio": 0.731,
+      "after_volume": 1715520.0,
+      "pre_price": 56.32,
+      "pre_high_price": 56.4,
+      "pre_low_price": 56.15,
+      "pre_volume": 9497.0,
+      "after_price": 56.4,
+      "after_high_price": 56.41,
+      "after_low_price": 56.18,
+      "overnight_price": 56.17,
+      "overnight_high_price": 56.46,
+      "overnight_low_price": 56.03,
+      "overnight_volume": 14807.0
+    }
+  },
+  "XLV": {
+    "metrics": {
+      "reference_price": 160.12,
+      "reference_price_source": "moomoo_opend_rth",
+      "prev_close": 161.09,
+      "open_price": 160.96,
+      "day_high": 161.485,
+      "day_low": 160.115,
+      "relative_volume": 0.748,
+      "bid": 160.11,
+      "ask": 160.13,
+      "update_time": "2026-07-20 12:35:32",
+      "session_return_pct": -0.006021,
+      "atr14": 2.769912,
+      "atr_pct": 0.017299,
+      "rsi14": 58.48,
+      "sma5": 160.176,
+      "sma10": 161.259,
+      "sma20": 158.778687,
+      "sma50": 152.482738,
+      "ema8": 160.566148,
+      "ema21": 158.554164,
+      "return_5d_pct": -0.007992,
+      "return_20d_pct": 0.076482,
+      "rth_vwap": 160.549073,
+      "all_session_vwap": 160.551016,
+      "rth_high": 161.485,
+      "rth_low": 160.115,
+      "rth_range_location": 0.00365,
+      "tail_15m_return_pct": -0.001372,
+      "rth_bar_count": 38,
+      "all_session_bar_count": 152,
+      "technical_context_complete": true
+    },
+    "snapshot": {
+      "update_time": "2026-07-20 12:35:32",
+      "last_price": 160.12,
+      "open_price": 160.96,
+      "high_price": 161.485,
+      "low_price": 160.115,
+      "prev_close_price": 161.09,
+      "volume": 3575675.0,
+      "turnover": 574054757.51,
+      "ask_price": 160.13,
+      "bid_price": 160.11,
+      "avg_price": 160.544444757,
+      "volume_ratio": 0.748,
+      "after_volume": 202275.0,
+      "pre_price": 160.96,
+      "pre_high_price": 161.7488,
+      "pre_low_price": 160.71,
+      "pre_volume": 4165.0,
+      "after_price": 161.0082,
+      "after_high_price": 161.16,
+      "after_low_price": 160.88,
+      "overnight_price": 161.04,
+      "overnight_high_price": 162.22,
+      "overnight_low_price": 160.69,
+      "overnight_volume": 4295.0
+    }
+  }
+}
+
+HELD POSITIONS (existing-rule re-check at intraday prices):
+[
+  {
+    "ticker": "DDOG",
+    "status": "OK",
+    "quote": {
+      "price": 266.625,
+      "day_high": 268.83,
+      "day_low": 257.075,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:22",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1498,
+    "distance_to_atr_stop_pct": 0.111,
+    "distance_to_trailing_stop_pct": 0.0453,
+    "distance_to_target_pct": 0.1594,
+    "position_context": {
+      "shares": 18.0,
+      "avg_cost": 257.6,
+      "market_value_usd": 4799.25,
+      "unrealized_pnl_pct": 0.035,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 226.69,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 309.12,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 309.12,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 237.03,
+        "atr_stop_pct": -0.0799
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 268.83,
+      "prev_close": 258.69,
+      "daily_return_pct": 0.0307,
+      "trailing_stop_from_20d_high": 254.56,
+      "drawdown_from_20d_high_pct": -0.0364,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "DINO",
+    "status": "OK",
+    "quote": {
+      "price": 90.28,
+      "day_high": 90.75,
+      "day_low": 88.0,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:11",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1524,
+    "distance_to_atr_stop_pct": 0.0804,
+    "distance_to_trailing_stop_pct": 0.0752,
+    "distance_to_target_pct": 0.1558,
+    "position_context": {
+      "shares": 40.0,
+      "avg_cost": 86.96,
+      "market_value_usd": 3611.2,
+      "unrealized_pnl_pct": 0.0382,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 76.52,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 104.35,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 104.35,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 83.02,
+        "atr_stop_pct": -0.0453
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 90.75,
+      "prev_close": 88.59,
+      "daily_return_pct": 0.0191,
+      "trailing_stop_from_20d_high": 83.49,
+      "drawdown_from_20d_high_pct": -0.0052,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "HOOD",
+    "status": "OK",
+    "quote": {
+      "price": 101.3683,
+      "day_high": 102.48,
+      "day_low": 98.61,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:31",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.0867,
+    "distance_to_atr_stop_pct": 0.0643,
+    "distance_to_trailing_stop_pct": -0.0896,
+    "distance_to_target_pct": 0.2454,
+    "position_context": {
+      "shares": 31.0,
+      "avg_cost": 105.2,
+      "market_value_usd": 3142.42,
+      "unrealized_pnl_pct": -0.0364,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 92.58,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 126.24,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 126.24,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 94.85,
+        "atr_stop_pct": -0.0984
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 102.48,
+      "prev_close": 99.96,
+      "daily_return_pct": 0.0141,
+      "trailing_stop_from_20d_high": 110.45,
+      "drawdown_from_20d_high_pct": -0.1556,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "META",
+    "status": "OK",
+    "quote": {
+      "price": 651.81,
+      "day_high": 653.3,
+      "day_low": 636.0105,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:35",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.0989,
+    "distance_to_atr_stop_pct": 0.0366,
+    "distance_to_trailing_stop_pct": 0.0316,
+    "distance_to_target_pct": 0.2288,
+    "position_context": {
+      "shares": 3.0,
+      "avg_cost": 667.47,
+      "market_value_usd": 1955.43,
+      "unrealized_pnl_pct": -0.0235,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 587.37,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 800.96,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 800.96,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 627.95,
+        "atr_stop_pct": -0.0592
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 653.3,
+      "prev_close": 646.01,
+      "daily_return_pct": 0.009,
+      "trailing_stop_from_20d_high": 631.19,
+      "drawdown_from_20d_high_pct": -0.05,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "MUU",
+    "status": "OK",
+    "quote": {
+      "price": 30.06,
+      "day_high": 30.5662,
+      "day_low": 28.35,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:31",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1121,
+    "distance_to_atr_stop_pct": 0.331,
+    "distance_to_trailing_stop_pct": 0.0579,
+    "distance_to_target_pct": 0.2109,
+    "position_context": {
+      "shares": 10.0,
+      "avg_cost": 30.33,
+      "market_value_usd": 300.6,
+      "unrealized_pnl_pct": -0.0089,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 26.69,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 36.4,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 36.4,
+        "signal_target_pct": 0.2001,
+        "atr_stop_price": 20.11,
+        "atr_stop_pct": -0.337
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 30.57,
+      "prev_close": 27.24,
+      "daily_return_pct": 0.1035,
+      "trailing_stop_from_20d_high": 28.32,
+      "drawdown_from_20d_high_pct": -0.0234,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "NFLX",
+    "status": "OK",
+    "quote": {
+      "price": 67.83,
+      "day_high": 68.38,
+      "day_low": 66.69,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:33",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1168,
+    "distance_to_atr_stop_pct": 0.059,
+    "distance_to_trailing_stop_pct": 0.0725,
+    "distance_to_target_pct": 0.2043,
+    "position_context": {
+      "shares": 5.0,
+      "avg_cost": 68.08,
+      "market_value_usd": 339.15,
+      "unrealized_pnl_pct": -0.0036,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 59.91,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 81.69,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 81.69,
+        "signal_target_pct": 0.1999,
+        "atr_stop_price": 63.83,
+        "atr_stop_pct": -0.0624
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 68.38,
+      "prev_close": 68.95,
+      "daily_return_pct": -0.0162,
+      "trailing_stop_from_20d_high": 62.91,
+      "drawdown_from_20d_high_pct": -0.008,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "RKLB",
+    "status": "OK",
+    "quote": {
+      "price": 67.5,
+      "day_high": 69.54,
+      "day_low": 65.86,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:32",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1184,
+    "distance_to_atr_stop_pct": 0.1797,
+    "distance_to_trailing_stop_pct": 0.0521,
+    "distance_to_target_pct": 0.2021,
+    "position_context": {
+      "shares": 5.0,
+      "avg_cost": 67.62,
+      "market_value_usd": 337.5,
+      "unrealized_pnl_pct": -0.0018,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 59.51,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 81.14,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 81.14,
+        "signal_target_pct": 0.1999,
+        "atr_stop_price": 55.37,
+        "atr_stop_pct": -0.1812
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 69.54,
+      "prev_close": 67.62,
+      "daily_return_pct": -0.0018,
+      "trailing_stop_from_20d_high": 63.98,
+      "drawdown_from_20d_high_pct": -0.0293,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "SNXX",
+    "status": "APPROACHING",
+    "quote": {
+      "price": 14.9299,
+      "day_high": 15.16,
+      "day_low": 13.75,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:33",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [
+      "NEAR_TRAILING_STOP"
+    ],
+    "distance_to_hard_stop_pct": 0.0697,
+    "distance_to_atr_stop_pct": 0.5653,
+    "distance_to_trailing_stop_pct": 0.0013,
+    "distance_to_target_pct": 0.2679,
+    "position_context": {
+      "shares": 20.0,
+      "avg_cost": 15.78,
+      "market_value_usd": 298.6,
+      "unrealized_pnl_pct": -0.0538,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 13.89,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 18.93,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 18.93,
+        "signal_target_pct": 0.1997,
+        "atr_stop_price": 6.49,
+        "atr_stop_pct": -0.5887
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 15.16,
+      "prev_close": 13.2,
+      "daily_return_pct": 0.1311,
+      "trailing_stop_from_20d_high": 14.91,
+      "drawdown_from_20d_high_pct": -0.079,
+      "high_water_mark_source": "20d_high"
+    }
+  },
+  {
+    "ticker": "SPY",
+    "status": "APPROACHING",
+    "quote": {
+      "price": 745.965,
+      "day_high": 748.73,
+      "day_low": 743.71,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:34",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [
+      "NEAR_ATR_STOP"
+    ],
+    "distance_to_hard_stop_pct": 0.1108,
+    "distance_to_atr_stop_pct": 0.0067,
+    "distance_to_trailing_stop_pct": 0.0681,
+    "distance_to_target_pct": 0.2125,
+    "position_context": {
+      "shares": 10.0,
+      "avg_cost": 753.74,
+      "market_value_usd": 7459.65,
+      "unrealized_pnl_pct": -0.0103,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 663.29,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 904.49,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 904.49,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 740.94,
+        "atr_stop_pct": -0.017
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 748.73,
+      "prev_close": 743.29,
+      "daily_return_pct": 0.0036,
+      "trailing_stop_from_20d_high": 695.13,
+      "drawdown_from_20d_high_pct": -0.0127,
+      "high_water_mark_source": "entry_date_high"
+    }
+  },
+  {
+    "ticker": "UNH",
+    "status": "OK",
+    "quote": {
+      "price": 420.4901,
+      "day_high": 431.015,
+      "day_low": 417.38,
+      "source": "moomoo_opend_rth",
+      "quote_time_et": "2026-07-20 12:35:31",
+      "capture_time_et": "2026-07-20 12:35 ET",
+      "decision_time_et": "2026-07-20 12:35 ET",
+      "quote_time_basis": "moomoo_opend_snapshot_update_time",
+      "is_stale": false
+    },
+    "proximity_flags": [],
+    "distance_to_hard_stop_pct": 0.1057,
+    "distance_to_atr_stop_pct": 0.028,
+    "distance_to_trailing_stop_pct": -0.01,
+    "distance_to_target_pct": 0.2196,
+    "position_context": {
+      "shares": 10.0,
+      "avg_cost": 427.34,
+      "market_value_usd": 4204.9,
+      "unrealized_pnl_pct": -0.016,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "breach_status": "OK",
+      "exit_levels": {
+        "hard_stop_price": 376.06,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 512.81,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 45,
+        "signal_target_price": 512.81,
+        "signal_target_pct": 0.2,
+        "atr_stop_price": 408.7,
+        "atr_stop_pct": -0.0436
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "daily_high": 431.01,
+      "prev_close": 426.09,
+      "daily_return_pct": -0.0131,
+      "trailing_stop_from_20d_high": 424.69,
+      "drawdown_from_20d_high_pct": -0.0891,
+      "high_water_mark_source": "entry_date_high"
+    }
+  }
+]
+
+ADVISORY SHADOW ACTIONS (existing-rule projection; no orders):
+[]
+
+OPEN PENDING ACTIONS (unexecuted prior advice):
+[]
+
+NEWS TEXT SANITATION:
+{
+  "rule_version": "intraday_news_text_sanitation_contract_v1",
+  "hash_algorithm": "sha256_16",
+  "items": 11,
+  "flagged_items": 11,
+  "changed_items": 11,
+  "status_counts": {
+    "changed": 10,
+    "suspect": 1
+  },
+  "flag_counts": {
+    "html_entity_unescaped": 11,
+    "mojibake_suspect": 1
+  },
+  "ticker_entity_status_counts": {
+    "explicit_text_match": 11
+  },
+  "all_clear": false
+}
+
+INTRADAY NEWS (trade-filtered, 11 item(s) shown):
+[
+  {
+    "source": "google_news",
+    "title": "Netflix Stock: Wall Street Is Wrong, And I'm Buying (Rating Upgrade) (NASDAQ:NFLX) - Seeking Alpha",
+    "summary": "Netflix Stock: Wall Street Is Wrong, And I'm Buying (Rating Upgrade) (NASDAQ:NFLX)&nbsp;&nbsp;Seeking Alpha",
+    "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPMGplSHpyNEUwMXEwUF9Tb0poUEN4c0xUcVVaMHo2N3hjbHFiOWJTTXMySkZxNXVUUEU2cjR2cE5KT1RIZjNpYjg1TmM4X001d21uTkNXTmExTm5wSnhwTDNOMUxLcUlMQUt0N1dGMFIxdVdqbmNXMUM1TFkwTkVnM0hRaGhCZ0RlZWNoUUsta0NjMUk3SVVuTmpUeXFOR2s?oc=5",
+    "published_at": "2026-07-20T16:30:00+00:00",
+    "tickers": [
+      "NFLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NFLX"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 98,
+          "sanitized_length": 98,
+          "pre_sanitize_hash": "7d246b66a87b06fb",
+          "post_sanitize_hash": "7d246b66a87b06fb",
+          "sanitized_text": "Netflix Stock: Wall Street Is Wrong, And I'm Buying (Rating Upgrade) (NASDAQ:NFLX) - Seeking Alpha"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 107,
+          "sanitized_length": 96,
+          "pre_sanitize_hash": "8c752bcf0bfe4298",
+          "post_sanitize_hash": "b4701832c7f3afdf",
+          "sanitized_text": "Netflix Stock: Wall Street Is Wrong, And I'm Buying (Rating Upgrade) (NASDAQ:NFLX) Seeking Alpha"
+        }
+      },
+      "pre_sanitize_hash": "d67c58658906ed44",
+      "post_sanitize_hash": "a90f6683ccd4aba0",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "NFLX"
+        ],
+        "matched_tickers": [
+          "NFLX"
+        ]
+      },
+      "watched_ticker_overlap": [
+        "NFLX"
+      ]
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Advanced Micro Devices (NASDAQ:AMD) Shares Gap Up Following Analyst Upgrade - MarketBeat",
+    "summary": "Advanced Micro Devices (NASDAQ:AMD) Shares Gap Up Following Analyst Upgrade&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQVXN5dUt0cWpJcU15cmpUY1JvZnQteVNhUDF2a0ZsWjkxNVZOWFZQY0NLaTJNZGEtT3ZMcFRlUWU1S1pKb3l4angzLVRrdXpzM1FTczd2QXdnWnJ0Q1RORldNTHh4RVZxZldVX3M0SVItbjMxTW5vWjRYX3JvZW5BMG1zOVBCcEtTYkFhNjFqamtDMm5wNTFaUEhaTlhTT3lfQlBxUEcxVUFZWXU4TG1mYXU5MF9nUWVHZl9tN3lGRlZISE5Y?oc=5",
+    "published_at": "2026-07-20T14:34:47+00:00",
+    "tickers": [
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "AMD"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 88,
+          "sanitized_length": 88,
+          "pre_sanitize_hash": "add72ada7cbb96ac",
+          "post_sanitize_hash": "add72ada7cbb96ac",
+          "sanitized_text": "Advanced Micro Devices (NASDAQ:AMD) Shares Gap Up Following Analyst Upgrade - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 97,
+          "sanitized_length": 86,
+          "pre_sanitize_hash": "c2ea2083358ec772",
+          "post_sanitize_hash": "fe45b104b4ac81ab",
+          "sanitized_text": "Advanced Micro Devices (NASDAQ:AMD) Shares Gap Up Following Analyst Upgrade MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "5fed13954459ad62",
+      "post_sanitize_hash": "e4eb98f9c28eeec2",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "AMD"
+        ],
+        "matched_tickers": [
+          "AMD"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Meta Platforms Stock Forecast: Trending StrongBuy Among Analysts - TipRanks",
+    "summary": "Meta Platforms Stock Forecast: Trending StrongBuy Among Analysts&nbsp;&nbsp;TipRanks",
+    "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQRVprSVR6ejdTVEdsZVRseXJvNVo2cGVWbXRGTXdrT0gyczlya1Z1dVcyakphYWN3aUxzTHhMQ2MxXzRWbEpFYkJsZ3lqYWNYaWt5Um53UG5uOHJGQ3p6Mm11cVZkWk40dHhvdVJyS2wwdW9Ub2R0cUp2d1ZQcjJ3ODJBX1d2Qzlsc1lyME40WFphX29RSy1ZZGk0NVpDeHlXVUl1aFV4cw?oc=5",
+    "published_at": "2026-07-20T14:05:49+00:00",
+    "tickers": [
+      "META"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "META"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 75,
+          "sanitized_length": 75,
+          "pre_sanitize_hash": "0e05f2685addb824",
+          "post_sanitize_hash": "0e05f2685addb824",
+          "sanitized_text": "Meta Platforms Stock Forecast: Trending StrongBuy Among Analysts - TipRanks"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 84,
+          "sanitized_length": 73,
+          "pre_sanitize_hash": "dfa2c801da1ffbb6",
+          "post_sanitize_hash": "9e97a39de1913668",
+          "sanitized_text": "Meta Platforms Stock Forecast: Trending StrongBuy Among Analysts TipRanks"
+        }
+      },
+      "pre_sanitize_hash": "6bf11bcd62822835",
+      "post_sanitize_hash": "dc43805acc4851b7",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "META"
+        ],
+        "matched_tickers": [
+          "META"
+        ]
+      },
+      "watched_ticker_overlap": [
+        "META"
+      ]
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "SpaceX Stock Outlook Ahead of Tesla Earnings as JPMorgan Calls TSLA-SPCX Merger “Strategically Coherent” - CoinGape",
+    "summary": "SpaceX Stock Outlook Ahead of Tesla Earnings as JPMorgan Calls TSLA-SPCX Merger “Strategically Coherent”&nbsp;&nbsp;CoinGape",
+    "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPSDZaMHMxcmFQbjI5eDB0S21lU0xqcTE0R0ZkeE9qbGpqMG0wYjZ4c3RCTmRsU1BLQjU1aDhjMl9aVFFWQ3ZXNkpaWUNLcFM0N2hxRzJ4RXVpbEhnZUE5Sml6T09CUjZDYUpsZkNaRTE1SFgxVzVzWEJORXQyYWttS2hWYTU1eC15aGVwUlNZZzFFV3hGQUFUYV82Z2F3ZEoxS05XVVNrTGxmc2ZtNjU0ZUNjdFE?oc=5",
+    "published_at": "2026-07-20T12:44:34+00:00",
+    "tickers": [
+      "TSLA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "TSLA"
+      ]
+    },
+    "tier": "T1",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 115,
+          "sanitized_length": 115,
+          "pre_sanitize_hash": "9d8263c05f4ae9cc",
+          "post_sanitize_hash": "9d8263c05f4ae9cc",
+          "sanitized_text": "SpaceX Stock Outlook Ahead of Tesla Earnings as JPMorgan Calls TSLA-SPCX Merger “Strategically Coherent” - CoinGape"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 124,
+          "sanitized_length": 113,
+          "pre_sanitize_hash": "b069427862a61478",
+          "post_sanitize_hash": "808c0085db97e96d",
+          "sanitized_text": "SpaceX Stock Outlook Ahead of Tesla Earnings as JPMorgan Calls TSLA-SPCX Merger “Strategically Coherent” CoinGape"
+        }
+      },
+      "pre_sanitize_hash": "3692528021afad10",
+      "post_sanitize_hash": "495e26623ff478e0",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "TSLA"
+        ],
+        "matched_tickers": [
+          "TSLA"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Jennison Associates LLC Raises Stock Position in McDonald's Corporation $MCD - MarketBeat",
+    "summary": "Jennison Associates LLC Raises Stock Position in McDonald's Corporation $MCD&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNWWFVamVzTk9nYXEwYk01NC1kTnNTMHdNSm8tNWRCSVN0NkdnSGhnUFRvRTlubngtNlFsNkY4ZHRVcUpETVJqeXh5WDdjZHM2ek9WeHlYWUQwYVNDdGhqUjhxX3pBMm1GOExIbzcwVlBmSFBxTkFselk0R2l3QU11N1pKbUgxbTNhNWlCM2Vka254dlF4TlpHUmdCR1Q1b3VMcHNiQnJFQnhRR0J2QWxxX0tnV3JhMVBkNnJFTnlkM1c1Z09IOXJxREVfUlhBUElQ?oc=5",
+    "published_at": "2026-07-20T09:53:57+00:00",
+    "tickers": [
+      "MCD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MCD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MCD"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 89,
+          "sanitized_length": 89,
+          "pre_sanitize_hash": "f629e93130b2d92a",
+          "post_sanitize_hash": "f629e93130b2d92a",
+          "sanitized_text": "Jennison Associates LLC Raises Stock Position in McDonald's Corporation $MCD - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 98,
+          "sanitized_length": 87,
+          "pre_sanitize_hash": "40e398620b6eac70",
+          "post_sanitize_hash": "cd73cae6a4b246bf",
+          "sanitized_text": "Jennison Associates LLC Raises Stock Position in McDonald's Corporation $MCD MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "379cf092abd5b4a3",
+      "post_sanitize_hash": "115654f7e9a31118",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "MCD"
+        ],
+        "matched_tickers": [
+          "MCD"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Taiyo Life Insurance Co. Cuts Holdings in Invesco QQQ $QQQ - MarketBeat",
+    "summary": "Taiyo Life Insurance Co. Cuts Holdings in Invesco QQQ $QQQ&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNSzFkZ2k2anFWQ1B4MmNiWHREZjkzYXptMVJRNGVod3VIckJtMVlCQmNORE9UX3VXNWZJV3ZDVVNvemlCVDdSMHRXV0RlUFVPVjZzQ3RHc3hQR3lENFhxbjJya0FxcXZEckcyQnFJQVEwUU9sQzU4Q3hyb3RET2JrcHVoZUZnZUJLUXZFNFJSa1YwNTFuYzZMaUgtX2MyS1NaaWhWVW5WN3Z4ZzhqZkdVXzZRZHBZbjFm?oc=5",
+    "published_at": "2026-07-20T09:49:49+00:00",
+    "tickers": [
+      "QQQ"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=QQQ+ETF&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "QQQ"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 71,
+          "sanitized_length": 71,
+          "pre_sanitize_hash": "442f36937262da50",
+          "post_sanitize_hash": "442f36937262da50",
+          "sanitized_text": "Taiyo Life Insurance Co. Cuts Holdings in Invesco QQQ $QQQ - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 80,
+          "sanitized_length": 69,
+          "pre_sanitize_hash": "9414360091ad426d",
+          "post_sanitize_hash": "222c8d5e3be8e701",
+          "sanitized_text": "Taiyo Life Insurance Co. Cuts Holdings in Invesco QQQ $QQQ MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "0354ac19bed6785d",
+      "post_sanitize_hash": "ae1570a9eeda1259",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "QQQ"
+        ],
+        "matched_tickers": [
+          "QQQ"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Sumitomo Mitsui Trust Group Inc. Cuts Stock Position in NVIDIA Corporation $NVDA - MarketBeat",
+    "summary": "Sumitomo Mitsui Trust Group Inc. Cuts Stock Position in NVIDIA Corporation $NVDA&nbsp;&nbsp;MarketBeat",
+    "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPUHVLZjM5UlU1UDdKUUt5V29yUERUWlQ0Zy14eU5MaDU1ZWdaLUJvNjMxb245NkxEYkZINzNQYnlxU0hDZ3VFbERNWVZOd183dHk4NC00bmduLTI0Y0VTdFdhSUhLOFMxZTlDWVBscmFfNG5WY1VMZWJWUzhBMHZVNEZVVkgwUHN6RjFfaXZkNVVuXzlseGVzdDNXLThIU215ZmNEWmJhak14MG5fVXpQbHdNRUI2SktZeDRIQk5WN0I3S1l4VXA5Y29IbVltNUdjak5CZlB3?oc=5",
+    "published_at": "2026-07-20T08:55:26+00:00",
+    "tickers": [
+      "NVDA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NVDA"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 93,
+          "sanitized_length": 93,
+          "pre_sanitize_hash": "c84b3e5fd156368f",
+          "post_sanitize_hash": "c84b3e5fd156368f",
+          "sanitized_text": "Sumitomo Mitsui Trust Group Inc. Cuts Stock Position in NVIDIA Corporation $NVDA - MarketBeat"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 102,
+          "sanitized_length": 91,
+          "pre_sanitize_hash": "dbedf64cde1c4fda",
+          "post_sanitize_hash": "5d93a7a0005c2a3b",
+          "sanitized_text": "Sumitomo Mitsui Trust Group Inc. Cuts Stock Position in NVIDIA Corporation $NVDA MarketBeat"
+        }
+      },
+      "pre_sanitize_hash": "73b598673da2d301",
+      "post_sanitize_hash": "dc9614a79c248169",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "NVDA"
+        ],
+        "matched_tickers": [
+          "NVDA"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Tradr 2X Long CRDO Daily ETF To Carry Out 4-for-1 Stock Split On July 21st, 2026 - 富途牛牛",
+    "summary": "Tradr 2X Long CRDO Daily ETF To Carry Out 4-for-1 Stock Split On July 21st, 2026&nbsp;&nbsp;富途牛牛",
+    "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQd0JvZ3NiV0NRbi1lRzBCcVRsZTJpNEZIYXhOczNDb3NzWFVrOVdVck8yNFdFbFZDRmFWSUVSWWhCcTBQaFRhR2FPR2JFQU80V1dvblRuelE5RWwtdjc0cTBsT0I0NlFLdGIybVZNYjdadkRDcWN6aWRQMjBJSjVFVk04THNpMEE3UENtVw?oc=5",
+    "published_at": "2026-07-20T08:35:36+00:00",
+    "tickers": [
+      "CRDO"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=CRDO+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "CRDO"
+      ]
+    },
+    "tier": "T1",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "suspect",
+      "flags": [
+        "html_entity_unescaped",
+        "mojibake_suspect"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "suspect",
+          "flags": [
+            "mojibake_suspect"
+          ],
+          "changed": false,
+          "original_length": 87,
+          "sanitized_length": 87,
+          "pre_sanitize_hash": "fe35fe8a215babbc",
+          "post_sanitize_hash": "fe35fe8a215babbc",
+          "sanitized_text": "Tradr 2X Long CRDO Daily ETF To Carry Out 4-for-1 Stock Split On July 21st, 2026 - 富途牛牛"
+        },
+        "summary": {
+          "status": "suspect",
+          "flags": [
+            "html_entity_unescaped",
+            "mojibake_suspect"
+          ],
+          "changed": true,
+          "original_length": 96,
+          "sanitized_length": 85,
+          "pre_sanitize_hash": "a8932ace0b3a8d7a",
+          "post_sanitize_hash": "424ef2ef0a19999f",
+          "sanitized_text": "Tradr 2X Long CRDO Daily ETF To Carry Out 4-for-1 Stock Split On July 21st, 2026 富途牛牛"
+        }
+      },
+      "pre_sanitize_hash": "e9ac06d07b9314a7",
+      "post_sanitize_hash": "adb5250c92fc2802",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "CRDO"
+        ],
+        "matched_tickers": [
+          "CRDO"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Google Stock Misses Earnings - GOOG Stock Heading Lower? GOOGL Stock Prediction From Season 4 Episode 4 (QgHCZAPIZW) - Mshale",
+    "summary": "Google Stock Misses Earnings - GOOG Stock Heading Lower? GOOGL Stock Prediction From Season 4 Episode 4 (QgHCZAPIZW)&nbsp;&nbsp;Mshale",
+    "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9zQUh6c25UR0txMllTUjlRajBHeXNscy1kMFJEYm1aa1JBNFFJV0VfWXJ0RC1jYW9xRnc4NTRsX2RHS2xtMDVHbTFPNmhsTUhkM2xaRTBIRVRPdW8?oc=5",
+    "published_at": "2026-07-19T00:19:49+00:00",
+    "tickers": [
+      "GOOGL",
+      "GOOG"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=GOOG+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "GOOG",
+        "GOOGL"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 125,
+          "sanitized_length": 125,
+          "pre_sanitize_hash": "9b32e1bf0248bbe0",
+          "post_sanitize_hash": "9b32e1bf0248bbe0",
+          "sanitized_text": "Google Stock Misses Earnings - GOOG Stock Heading Lower? GOOGL Stock Prediction From Season 4 Episode 4 (QgHCZAPIZW) - Mshale"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 134,
+          "sanitized_length": 123,
+          "pre_sanitize_hash": "5d3e048d07173d61",
+          "post_sanitize_hash": "c71413c51865f6f7",
+          "sanitized_text": "Google Stock Misses Earnings - GOOG Stock Heading Lower? GOOGL Stock Prediction From Season 4 Episode 4 (QgHCZAPIZW) Mshale"
+        }
+      },
+      "pre_sanitize_hash": "d2461aa6618a7bdb",
+      "post_sanitize_hash": "b1a0fca16fbb6954",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "GOOGL",
+          "GOOG"
+        ],
+        "matched_tickers": [
+          "GOOGL",
+          "GOOG"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "Coinbase (COIN) Stock Forecast & Analyst Ratings - Moomoo",
+    "summary": "Coinbase (COIN) Stock Forecast & Analyst Ratings&nbsp;&nbsp;Moomoo",
+    "url": "https://news.google.com/rss/articles/CBMipAJBVV95cUxNUUdvOFhYa0FxZE1oY0lJMWRRZWFiVzJJVEtERUJOalFRZ0pxblB4ZmVxcU1MWU9KXzJubVJUQVhQSE1sS2sxdDJtYTgwOC1RcmxhU08zdlMyYmtLRlAwZER4MEoybTZiQl95YjlLWEVQbTJCajlOUlc5VkNrN3l4MGdTZ3FkQUF0VTF2RHN2Wm9BWEMzMWxEMDZEQVg2TlMyNjhhNTNIbXM0MllKWjZQV01ld0Z2X2ltNVl2UHh0ZVBjSVZGeC1vZmhiaWFTLVdpejZydWUyT1JxS1g0cnhCQ051X3RPcldkNnVBNzViblg4ZUdXSkJpTUtaWmRKRnZ0LTBWRmRodTYtM1c5LVZaU0JxV0tSekJiRlA5RkxXd2xmcV9i?oc=5",
+    "published_at": "2026-07-18T15:38:30+00:00",
+    "tickers": [
+      "COIN"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "COIN"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 57,
+          "sanitized_length": 57,
+          "pre_sanitize_hash": "e547a78ee2f2e19d",
+          "post_sanitize_hash": "e547a78ee2f2e19d",
+          "sanitized_text": "Coinbase (COIN) Stock Forecast & Analyst Ratings - Moomoo"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 66,
+          "sanitized_length": 55,
+          "pre_sanitize_hash": "c86079f754aaa41b",
+          "post_sanitize_hash": "ede260c0751c6210",
+          "sanitized_text": "Coinbase (COIN) Stock Forecast & Analyst Ratings Moomoo"
+        }
+      },
+      "pre_sanitize_hash": "643585824a3b1778",
+      "post_sanitize_hash": "8cd91673bce2ba9c",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "COIN"
+        ],
+        "matched_tickers": [
+          "COIN"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  },
+  {
+    "source": "google_news",
+    "title": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings — Why Does Retail See This As A Buying Opportunity? - Stocktwits",
+    "summary": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings — Why Does Retail See This As A Buying Opportunity?&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQYlNTQUZYUnVKZWM4NllkWGE1ekt2NkpMMk90WlRqTF9ZM05USDZ1VXY1TVBqS2tDWFFWenZLMllSckZ2UC1Bdk02WDh4UHdXNVY2RVNxaWkwN1hSWS1pUVVfanBRc2RVMy1yS3daZUVIQ0E3UXBDQkZRNExJc09tYkNOaVZHdVNGU1NMVlZldUdPWld5eElJc0h2ZTFVcFNxZkJROTktMkdnOGhnNFl0d1hCb1ZsbUw5ZkNjOGJFQkJtZw?oc=5",
+    "published_at": "2026-07-17T14:04:20+00:00",
+    "tickers": [
+      "APP"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "APP"
+      ]
+    },
+    "tier": "T3",
+    "text_sanitation": {
+      "rule_version": "intraday_news_text_sanitation_contract_v1",
+      "status": "changed",
+      "flags": [
+        "html_entity_unescaped"
+      ],
+      "changed": true,
+      "field_count": 2,
+      "fields": {
+        "title": {
+          "status": "ok",
+          "flags": [],
+          "changed": false,
+          "original_length": 120,
+          "sanitized_length": 120,
+          "pre_sanitize_hash": "56c753cac0c25877",
+          "post_sanitize_hash": "56c753cac0c25877",
+          "sanitized_text": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings — Why Does Retail See This As A Buying Opportunity? - Stocktwits"
+        },
+        "summary": {
+          "status": "changed",
+          "flags": [
+            "html_entity_unescaped"
+          ],
+          "changed": true,
+          "original_length": 129,
+          "sanitized_length": 118,
+          "pre_sanitize_hash": "933355cc53aa5490",
+          "post_sanitize_hash": "1797e9eff8fea45d",
+          "sanitized_text": "APP Stock Slumps After-Hours Despite Strong Q4 Earnings — Why Does Retail See This As A Buying Opportunity? Stocktwits"
+        }
+      },
+      "pre_sanitize_hash": "52afc4561582cd02",
+      "post_sanitize_hash": "71148d74fa82ae72",
+      "ticker_entity_match": {
+        "status": "explicit_text_match",
+        "confidence": "high",
+        "tickers": [
+          "APP"
+        ],
+        "matched_tickers": [
+          "APP"
+        ]
+      },
+      "watched_ticker_overlap": []
+    }
+  }
+]
+
+OUTPUT JSON SCHEMA:
+{"as_of_et":"...","portfolio_summary":"...","decisions":[
+{"ticker":"...","action_label":"WAIT","confidence":0.0,
+"news_veto":false,"news_refs":[],"reason":"..."}]}
+Return one decision for every machine_triage row in the same order.
+Do not emit Markdown or any text outside the JSON object.
