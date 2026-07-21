@@ -620,6 +620,19 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "cash_conflict_unfilled_entry_fifo_persistence",
         "cash conflict unfilled entry fifo persistence",
     )),
+    # Official Senate Lobbying Disclosure Act quarterly filings are a new
+    # issuer-level regulatory-friction source, distinct from generic SEC
+    # filings, lobbying news, and the broad core-entry admission family. Keep
+    # only compound source/policy spellings here; the singular hyphenated form
+    # is the literal wording of exp-20260720-005's hypothesis.
+    ("senate_lda_quarterly_filings", (
+        "senate_lda_quarterly_filings", "senate lda quarterly filings",
+        "senate lda quarterly-filing",
+        "senate_lda_regulatory_friction", "senate lda regulatory friction",
+        "senate_lda_issue_breadth", "senate lda issue breadth",
+        "official senate lda api", "senate lobbying disclosure act",
+        "lobbying disclosure act quarterly filing", "lda.senate.gov/api",
+    )),
     ("core_entry_admission", (
         "core_entry_admission", "core entry admission", "entry_admission",
         "entry admission", "admission_gate", "admission gate", "no_entry",
@@ -1012,7 +1025,7 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     )),
     ("entry_admission", (
         "core_entry_admission", "core entry admission", "entry_admission",
-        "entry admission", "admission_gate", "admission gate", "no_entry",
+        "entry admission", "entry-admission", "admission_gate", "admission gate", "no_entry",
         "entry_exclusion", "entry exclusion", "core_entry_exclusion",
         "core entry exclusion",
         "admission_overlay", "admission overlay", "core_admission", "core admission",

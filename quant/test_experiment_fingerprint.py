@@ -12,6 +12,69 @@ if str(SCRIPTS) not in sys.path:
 import experiment_fingerprint as fp  # noqa: E402
 
 
+TICKET_20260720_005_HYPOTHESIS = (
+    "Shared-paper-first entry-admission alpha: when a directly mapped core "
+    "issuer's completed Senate LDA quarterly-filing week has at least three "
+    "distinct lobbying issue codes and breadth strictly above the median of "
+    "its prior four nonempty filing weeks, regulatory-friction intensity is "
+    "rising; downweight only new core entries by 50 percent for the next ten "
+    "trading sessions."
+)
+
+
+def test_senate_lda_ticket_hypothesis_has_dedicated_fingerprint():
+    result = fp.infer_fingerprint(TICKET_20260720_005_HYPOTHESIS)
+
+    assert result["data_source"] == "senate_lda_quarterly_filings"
+    assert result["gate_shape"] == "entry_admission"
+
+
+def test_senate_lda_frozen_builder_identifiers_have_dedicated_fingerprint():
+    result = fp.infer_fingerprint(
+        "senate_lda_issuer_regulatory_friction_entry_admission",
+        "senate_lda_issue_breadth_entry_admission_v1",
+        "completed_week_breadth_ge3_above_prior4median_half_notional_h10_v1",
+    )
+
+    assert result["data_source"] == "senate_lda_quarterly_filings"
+    assert result["gate_shape"] == "entry_admission"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "senate_lda_quarterly_filings core_entry_admission",
+        "Senate LDA quarterly filings entry admission",
+        "senate_lda_regulatory_friction entry_admission",
+        "Senate LDA regulatory friction entry admission",
+        "senate_lda_issue_breadth core_entry_admission",
+        "Senate LDA issue breadth entry admission",
+        "official Senate LDA API core entry admission",
+        "Senate Lobbying Disclosure Act entry admission",
+        "Lobbying Disclosure Act quarterly filing entry admission",
+        "lda.senate.gov/api core_entry_admission",
+    ],
+)
+def test_senate_lda_compound_spellings_map_to_dedicated_source(text):
+    result = fp.infer_fingerprint(text)
+
+    assert result["data_source"] == "senate_lda_quarterly_filings"
+    assert result["gate_shape"] == "entry_admission"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "linear discriminant analysis LDA entry admission",
+        "generic SEC quarterly issuer filing entry admission",
+        "Senate stock-trading disclosure entry admission",
+        "generic lobbying news entry admission",
+    ],
+)
+def test_senate_lda_keywords_do_not_capture_adjacent_text(text):
+    assert fp.infer_fingerprint(text)["data_source"] != "senate_lda_quarterly_filings"
+
+
 @pytest.mark.parametrize(
     "text",
     [

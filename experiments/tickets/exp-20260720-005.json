@@ -1,0 +1,386 @@
+{
+  "acceptance_rule": "Gate 1-4 versus exp-20260715-010 cash-feasible anchor: immutable request/response hashes and dt_posted/client effective-date lineage complete; Gate-2 entry_date and target_price sentinels present; preflight remains at least 20 issuer-weeks, 10 tickers and top1 at most 30 percent per window; at least 5 actual fresh-core entry touches per window; Gate-3 survival at least 5 percent; aggregate expected_value_score improves by more than 10 percent (delta greater than 0.6206) and PnL improves by more than 10432.91 USD, no unacceptable window/drawdown/tail/concentration regression, daily/replay parity passes, and live remains disabled; otherwise reject and remove strategy behavior.",
+  "allowed_write_scope": [
+    "quant/senate_lda_regulatory_friction.py",
+    "quant/test_senate_lda_regulatory_friction.py",
+    "quant/experiments/",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "data/non_ohlcv/senate_lda/",
+    "data/paper_sleeves/senate_lda_regulatory_friction/",
+    "data/experiments/",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "experiments/",
+    "docs/frozen_families.jsonl",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260720-005.md",
+  "causal_components": [
+    "official Senate LDA API as-filed dt_posted clock",
+    "frozen 15-ticker direct issuer alias map",
+    "quarterly reports only",
+    "completed Monday-Sunday issuer week",
+    "distinct issue-code breadth at least 3",
+    "strictly above prior-four-nonempty-week median",
+    "first later regular-session activation",
+    "ten-session horizon",
+    "50 percent notional downweight",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "execution envelope",
+    "fingerprint classifier coverage"
+  ],
+  "change_type": "entry_admission_full_stack",
+  "changed_variable": "senate_lda_issue_breadth_entry_admission_v1",
+  "claimed_at": "2026-07-20T19:31:13+00:00",
+  "completed_at": "2026-07-20T20:11:55+00:00",
+  "created_at": "2026-07-20T19:29:16+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260720-005",
+  "experiment_uid": "expuid-8b617fbab5d54d8a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260720-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-20T19:29:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "senate_lda_regulatory_friction"
+  },
+  "hypothesis": "Shared-paper-first entry-admission alpha: when a directly mapped core issuer's completed Senate LDA quarterly-filing week has at least three distinct lobbying issue codes and breadth strictly above the median of its prior four nonempty filing weeks, regulatory-friction intensity is rising; downweight only new core entries by 50 percent for the next ten trading sessions.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source endpoint",
+    "publication clock",
+    "issuer aliases",
+    "quarterly-report filter",
+    "week completion",
+    "breadth floor",
+    "prior-four median",
+    "activation timing",
+    "horizon",
+    "downweight fraction",
+    "windows",
+    "baseline"
+  ],
+  "mechanism_family": "production_visible_senate_lda_regulatory_friction_entry_admission",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "live/default orders or ranking or sizing or exits",
+    "existing paper sleeve ledgers",
+    "user intraday and operator files",
+    "unrelated dirty files"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260715-010",
+    "exp-20260720-003"
+  ],
+  "new_evidence_type": "new_public_senate_lda_quarterly_filings_source",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "score": 0.6222,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "score": 0.6211,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "score": 0.6211,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "score": 0.6203,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "observer_no_entry_status_semantics",
+        "score": 0.6053,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "core_entry_admission",
+      "field_tags": [
+        "50pct",
+        "a",
+        "above",
+        "acceleration",
+        "admission",
+        "alpha",
+        "at",
+        "breadth",
+        "by",
+        "codes",
+        "completed",
+        "core",
+        "directly",
+        "distinct",
+        "downweight",
+        "entries",
+        "entry",
+        "filing",
+        "first",
+        "four",
+        "friction",
+        "has",
+        "intensity",
+        "is",
+        "issue",
+        "issuer",
+        "its",
+        "lda",
+        "least",
+        "lobbying",
+        "mapped",
+        "median",
+        "new",
+        "nonempty",
+        "of",
+        "only",
+        "percent",
+        "prior",
+        "quarterly",
+        "regulatory",
+        "rising",
+        "s",
+        "senate",
+        "sessions",
+        "strictly",
+        "ten",
+        "three",
+        "trading",
+        "week",
+        "weeks",
+        "when"
+      ],
+      "gate_shape": "entry_admission"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+        "score": 0.6222,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+        "score": 0.6211,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+        "score": 0.6211,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "reopen_condition": "A shared production/backtest admission helper that passes Gate 1-4, materially more settled forward rows tagged with this state, or a genuinely independent entry-time state source.",
+        "score": 0.6203,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.6053,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: official public Senate LDA quarterly filings with as-filed dt_posted timestamps and direct issuer mapping; an outcome-blind first-page lower bound cleared 77/71/68 issuer-weeks, 15 tickers per window, and 10.4/11.3/13.2 percent top1 shares. The gate is issuer-specific core-entry notional downweight, not another official-release basket.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "core_entry_admission",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: official public Senate LDA quarterly filings with as-filed dt_posted timestamps and direct issuer mapping; an outcome-blind first-page lower bound cleared 77/71/68 issuer-weeks, 15 tickers per window, and 10.4/11.3/13.2 percent top1 shares. The gate is issuer-specific core-entry notional downweight, not another official-release basket.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: official public Senate LDA quarterly filings with as-filed dt_posted timestamps and direct issuer mapping; an outcome-blind first-page lower bound cleared 77/71/68 issuer-weeks, 15 tickers per window, and 10.4/11.3/13.2 percent top1 shares. The gate is issuer-specific core-entry notional downweight, not another official-release basket.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "entry_admission",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "core_entry_admission",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "A new audit-grade issuer-level source cleared conservative mapping density by wide margins in all windows, but quarterly filings are lagged and the champion hurdle is high.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "quarterly disclosure lag already priced",
+      "issue breadth measures advocacy opportunity rather than friction",
+      "too few fresh-core touches",
+      "window sign instability",
+      "amendment and duplicate-report contamination",
+      "10 percent EV hurdle not beaten"
+    ],
+    "recorded_at": "2026-07-20T19:28:31+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260720-005/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260720-005/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": -0.4016,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": -6954.68
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.3,
+      "actual_ev_delta": -0.4016,
+      "ev_prediction_error": -0.7016,
+      "expected_pnl_delta": 6000.0,
+      "actual_pnl_delta": -6954.68,
+      "pnl_prediction_error": -12954.68,
+      "predicted_failure_modes": [
+        "quarterly disclosure lag already priced",
+        "issue breadth measures advocacy opportunity rather than friction",
+        "too few fresh-core touches",
+        "window sign instability",
+        "amendment and duplicate-report contamination",
+        "10 percent EV hurdle not beaten"
+      ],
+      "realized_failure_mode": "too few fresh-core touches",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Source density was ample, but the fixed signal overlapped zero executed entries in old_thin and mid_weak and only four in late_strong; those late-window sizing changes diluted winners and reduced PnL by 6954.68 USD."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "Source density was ample, but the fixed signal overlapped zero executed entries in old_thin and mid_weak and only four in late_strong; those late-window sizing changes diluted winners and reduced PnL by 6954.68 USD.",
+      "realized_failure_mode": "too few fresh-core touches",
+      "forbidden_near_neighbor_retry": "Do not sweep the issue-breadth floor, prior-week lookback or median, amendment handling, issuer subset, 0.5 scalar, ten-session horizon, or convert this rejected signal among hard exclusion, tilt, or notional responses on the same frozen rows.",
+      "new_evidence_required": "Reopen only for a mechanistically distinct Senate LDA signal, an independent data source, or materially sufficient newly settled forward rows under the unchanged formula; any new historical signal must first clear at least five baseline executed fresh-core touches in each canonical window without reading outcomes."
+    },
+    "production_impact": {
+      "shared_helper_retained_for_reproduction": true,
+      "daily_snapshot_trade_enabled": false,
+      "run_py_changed": false,
+      "live_or_default_orders_changed": false,
+      "production_wiring_retained": false,
+      "live_ready": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260720-005.json",
+  "single_causal_variable": "senate_lda_issue_breadth_acceleration_50pct_core_entry_downweight_10d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260720-005.json",
+  "trial_family": "senate_lda_issuer_regulatory_friction_entry_admission",
+  "trial_variant_id": "completed_week_breadth_ge3_above_prior4median_half_notional_h10_v1"
+}

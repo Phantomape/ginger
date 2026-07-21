@@ -217,6 +217,15 @@ data/backtests/backtest_results_*.json
 - Gate 3：检查 `signals_generated` / `signals_survived` / `survival_rate`；若 survival rate < 5%，禁止继续加过滤器。
 - Gate 4：同一协议重跑 before/after；默认按 `expected_value_score`、PnL、drawdown、trade count、survival、窗口稳定性和 concentration 判断。
 
+**触达密度 preflight（⚠️ 文字规则）**：entry-admission gate、downweight overlay、单票或窄种群类假设，
+跑 Gate 4 前必须先做**不读 outcome** 的触达计数核对：信号与 baseline 已执行 entry（或声明的目标
+种群）的交集，每个标准窗口 ≥5 次触达；不足时正确动作是一行核对计数收尾（记 lead / 一行记录），
+不烧完整实验 ID——触达不足的 Gate 4 无论方向都无判力。**源级行数密度 ≠ 触达密度**：issuer-week /
+事件行数充足，不代表信号会与可执行 entry 相交（案例：2026-07-20 exp-005 Senate LDA 通过全部源
+合同 / PIT / 行数密度 preflight，但与已执行 entry 触达仅 0/0/4，全套 Gate 跑完才发现无统计意义；
+同 family 前例：CISA KEV 与核心成交 0 交集、filer-status 全 universe 0 transitions、MSFT 单票
+pullback 16 年 0 fire-rate）。
+
 保留规则：
 
 - 强保留：主目标明显提升，风险和样本约束没有不可接受恶化。
