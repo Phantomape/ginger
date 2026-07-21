@@ -88,12 +88,15 @@ closeout record.
    independent evidence. Mature ledgers need settled cash, SPY, and QQQ
    replacement values. Representative evidence: `exp-20260714-010`.
 
-8. **A new source must pass a source contract before price evaluation.** Require
-   an immutable vintage or archive, publication clock, point-in-time issuer
-   mapping, legal/attribution provenance, and outcome-blind density and
-   concentration checks. A derived join of already-used sources is not itself a
-   new data source. Otherwise the right result is an observer or identity
-   repair, not alpha. Representative evidence: `exp-20260720-002`.
+8. **A new source must pass source-contract and executable-overlap preflight
+   before price evaluation.** Require an immutable vintage or archive,
+   publication clock, point-in-time issuer mapping, legal/attribution
+   provenance, outcome-blind density/concentration checks, and a zero-price
+   touch check against the actual decision surface. Passing raw source density
+   does not justify a Gate ID when baseline executed touches are absent. A
+   derived join of already-used sources is not itself a new data source.
+   Otherwise the right result is an observer or identity repair, not alpha.
+   Representative evidence: `exp-20260720-005`.
 
 9. **Prove gross economic mapping before building elaborate plumbing.** If a
    simple, causal response has no gross edge or no candidate intersection,
@@ -130,6 +133,10 @@ closeout record.
   preflight. Do not spend an experiment ID merely to discover that the archive,
   issuer map, permission, candidate overlap, or legal new-evidence axis is
   absent.
+- Positive retrospective proxy leads and discovery-layer candidates are queue
+  inputs, not alpha. Freeze the formula and collect point-in-time forward rows;
+  do not reserve an experiment ID until the source contract, candidate touch
+  surface, and baseline/treatment replacement-value plan are already present.
 - Stale or low-touch risk surfaces should begin as context, attribution, or a
   default-off admission audit; hard exclusions need enough executable touches
   and replacement value to prove they are not deleting scarce winners.

@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-20.
+Last refreshed: 2026-07-21.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -14,6 +14,180 @@ in raw experiment records and generated `docs/lessons/*.md`.
 
 These are not authority to add models. They are design patterns that must be
 converted into auditable fields and tested through Gate 1-4.
+
+### Agent Forecasts Need Calibration Before Confidence
+
+FinBench proposes a time-gated financial forecasting benchmark for agentic
+systems: the model must forecast future returns from only information available
+at the decision time, return both a probability and an interval, and then be
+judged with proper calibration and interval scores before any trading result is
+considered. The Ginger translation is an LLM forecast-audit lane, not a new
+trading rule: first prove the model knows when it is uncertain.
+
+Implementable fields:
+
+- `forecast_timegate_id`
+- `forecast_model_version`
+- `forecast_probability_positive_return`
+- `forecast_prediction_interval_80`
+- `forecast_brier_score`
+- `forecast_winkler_interval_score`
+- `forecast_skill_score_baseline`
+- `forecast_confidence_competence_gap_bucket`
+- `forecast_calibration_panel_hash`
+
+Controls:
+
+- store the exact time gate, source set, prompt, model version, probability,
+  and interval before outcome data is available;
+- score Brier and interval quality before PnL, and compare against naive,
+  factor, and price-only baselines;
+- treat overconfident low-skill forecasts as a blocked confidence signal, not a
+  contrarian alpha;
+- allow an LLM forecast to influence a policy only after replacement-value rows
+  show that calibrated probabilities beat deterministic baselines.
+
+Sources:
+
+- [FinBench: Time-Gated Calibration and Uncertainty Benchmarking for Agentic Financial Forecasting](https://arxiv.org/abs/2607.16229)
+
+### Prediction-Market Skill Needs Bet-Execution Separation
+
+Recent prediction-market work separates three problems that Ginger should not
+collapse: whether a forecaster has probability skill, whether that probability
+can be converted into profitable bets under the venue microstructure, and
+whether liquidity provision is compensated for inventory and settlement risk.
+Prediction markets can become useful evidence surfaces, but only if forecast
+edge, sizing, depth, fees, settlement, and cross-asset mapping are separately
+logged.
+
+Implementable fields:
+
+- `prediction_market_price_q`
+- `forecaster_probability_p`
+- `proper_scoring_rule_id`
+- `proper_bet_size`
+- `market_liquidity_depth_bucket`
+- `lvr_uniformity_bucket`
+- `amm_loss_schedule_id`
+- `settlement_inventory_risk_bucket`
+- `prediction_market_execution_replacement_value`
+
+Controls:
+
+- keep forecast accuracy, bet sizing, venue depth, and equity mapping as
+  separate artifacts;
+- use proper scoring or explicit wealth-growth rules before declaring a bet
+  executable;
+- record market-maker loss-versus-rebalancing, liquidity schedule, inventory,
+  time-to-resolution, and downside protection whenever the source is an AMM or
+  market-making surface;
+- never translate a prediction-market view into an equity trade without a
+  point-in-time ticker mapping and settled replacement-value comparison.
+
+Sources:
+
+- [When do prophets profit in prediction markets?](https://arxiv.org/abs/2607.06166)
+- [Uniform-Loss Automated Market Making for Prediction Markets](https://arxiv.org/abs/2607.17428)
+- [Optimal Market Making in Prediction Markets](https://arxiv.org/abs/2607.17991)
+
+### Market-Neutral RL Needs Beta And Cost Audits
+
+AlphaZeroBeta frames deep reinforcement learning as a market-neutral portfolio
+construction problem with rolling walk-forward validation, benchmark
+correlation penalties, and transaction-cost-aware rewards. The useful Ginger
+lesson is not "add RL"; it is to make any learned allocator prove out-of-time
+beta control, turnover discipline, and factor-neutral replacement value before
+it can sit near production.
+
+Implementable fields:
+
+- `market_neutral_policy_version`
+- `benchmark_beta_target`
+- `realized_beta_window`
+- `benchmark_correlation_penalty`
+- `transaction_cost_reward_component`
+- `walk_forward_fold_hash`
+- `market_neutral_turnover_bucket`
+- `market_neutral_replacement_value`
+
+Controls:
+
+- benchmark against simple factor-neutral and beta-hedged baselines, not only
+  buy-and-hold;
+- require rolling walk-forward folds with frozen reward weights and transaction
+  costs;
+- audit realized beta, benchmark correlation, concentration, leverage, and
+  turnover out of sample;
+- treat a private learned policy as research infrastructure until the order
+  semantics, notional caps, and kill switches are deterministic and replayable.
+
+Sources:
+
+- [AlphaZeroBeta: Deep Reinforcement Learning for Market-Neutral Portfolios](https://arxiv.org/abs/2607.18001)
+
+### Liquidity Stress Needs Fundamental-Anchor State
+
+Order-book liquidity research on fundamental anchoring treats liquidity stress
+as a state transition: market makers reduce liquidity when prices drift away
+from fundamental anchors, and a coupled market's resilience depends on whether
+that anchor relationship still holds. The Ginger use case is a risk-state or
+kill-switch input, not a standalone entry signal.
+
+Implementable fields:
+
+- `fundamental_anchor_source_hash`
+- `anchor_distance_bucket`
+- `order_book_one_sidedness_bucket`
+- `liquidity_refill_rate_bucket`
+- `market_maker_withdrawal_bucket`
+- `funding_fire_sale_risk_bucket`
+- `tail_sensitive_performance_measure`
+- `liquidity_anchor_kill_switch_action`
+
+Controls:
+
+- define the fundamental anchor before the trade and keep it independent of
+  subsequent price action;
+- require a point-in-time order-book or liquidity proxy sequence, not only a
+  single stress snapshot;
+- evaluate as an admission, sizing, or kill-switch overlay with CVaR/drawdown
+  and missed-winner accounting;
+- reject if the signal only identifies already-obvious high-volatility days.
+
+Sources:
+
+- [Herding and Liquidity in Order-Book Markets. II. Fundamental Anchoring and the Resilience of Liquidity](https://arxiv.org/abs/2607.16970)
+
+### Volatility Path Geometry Is A Regime Classifier
+
+Signature-based volatility model identification suggests that low-order path
+geometry can classify volatility regimes without hand-picking a single realized
+volatility statistic. Ginger should treat this as a compact state classifier
+candidate: useful only if it improves sleeve-specific regime attribution over
+simple VIX, realized-vol, and drawdown baselines.
+
+Implementable fields:
+
+- `vol_path_signature_level`
+- `vol_signature_window_hash`
+- `vol_model_class_posterior`
+- `vol_path_geometry_classifier_version`
+- `vol_model_misclassification_bucket`
+- `vol_regime_path_geometry_replacement_value`
+
+Controls:
+
+- freeze the signature window, level, normalization, and classifier before
+  scoring outcomes;
+- compare to simple realized-volatility, VIX, and market-state baselines;
+- use the classifier first for attribution or sizing, not hard entry/exit;
+- require sleeve-specific replacement value because global regime overlays are
+  historically fragile in this repository.
+
+Sources:
+
+- [Signature-Based Volatility Model Identification From Path Geometry](https://arxiv.org/abs/2607.06340)
 
 ### LLM Technical Analysis Needs Task-Level Ground Truth
 
