@@ -99,6 +99,7 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
    各规则的来历案例见 `docs/lessons/*.md` 与实验记录；各源实时命中率查
    `docs/frozen_families.jsonl`，不在本文件内联维护快照数字。
 5. 高潜力、生产可见的 default-off paper alpha 默认走 **shared-paper-first**：第一次严肃实验就实现共享 helper，同时覆盖 historical replay 和 daily default-off snapshot，再跑 Gate 1-4。private replay scout 只适合数据形态不确定或非常早期的低成本探索；正向也只能记为 lead，不能算 accepted alpha。
+6. **历史只做约束，不做候选生成排序。** `frozen_families`、失败记录和 trial accounting 用于去重、反证、multiple-testing 与 reopen 审计；禁止按历史赢家、既有 adapter 成熟度或旧实验分数给下一轮 hypothesis family 排优先级。exploration / adjacent / exploitation 的生成预算必须在读候选 outcome 前按机制覆盖预声明，历史成功率不得把搜索分布重新吸回局部最优。
 
 ### Alpha Synthesis Pass（不占实验 ID）
 
@@ -181,7 +182,8 @@ data/backtests/backtest_results_*.json
 - `scripts/judge_experiment.py`：before/after artifact 判定和日志草稿；
 - `scripts/check_experiment_novelty.py`：自由文本假设的近邻 / 防重复检查；`experiment.py new` 已自动调用，alpha 通道默认阻断；
 - `scripts/build_frozen_families.py`：从历史实验重建 `docs/frozen_families.jsonl`（novelty gate 的数据源，需定期刷新）；
-- `quant/meta_research_engine.py`：研究历史、冻结方向和优先队列。
+- `scripts/build_reopen_readiness.py`：从 canonical ledgers 生成 `data/reopen_readiness.json`（各 parked 面 reopen 计数、门槛出处、停滞标记）；做 reopen 核对先跑它再手工补 manual 车道，不要从 ticket/memory 里重新推导阈值；
+- `quant/experiment_history.py`：研究历史去重、trial accounting、校准与冻结证据；只做审计/反重复，不生成或排序下一策略。
 - `scripts/agent_mailbox.py send|recv|transcript|list`：同机并发 agent 间文件对话（本地、未跟踪；参与方式见 `docs/agent_mailbox.md`）。
 
 ---

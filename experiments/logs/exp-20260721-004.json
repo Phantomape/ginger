@@ -1,0 +1,104 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "ledger schema drift breaks a lane counter",
+      "thresholds transcribed wrong from park tickets"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The first-ever materialized calibration report empirically confirmed the base-rate-herding critique: avg Brier 0.0710 looks excellent but 476 families at ~2 predictions each means by_family is unreadable and the aggregate is dominated by easy high-confidence measurement-repair calls."
+  },
+  "causal_components": [
+    "reopen readiness builder",
+    "calibration report generation",
+    "meta learning doc rewrite",
+    "stale memory annotation"
+  ],
+  "change_summary": "Built scripts/build_reopen_readiness.py emitting data/reopen_readiness.json (9 lanes: 5 machine-computed, 1 accumulating, 3 manual-carry with last hand-verified values); counters matched all hand-derived values (exit-lifecycle advisory 17/20, short-volume Q5 15/20 with CRDO 46.7% breaching the 40% concentration cap, entity-theme 50070/71268, MOVE 0/30, flow-PIT-dates 0/10); materialized data/experiment_history_report_latest.json for the first time (973 scored predictions, coverage 39.15%, avg Brier 0.0710, 476 families at ~2 predictions each); rewrote docs/meta_learning_state.md from an unexecuted weekly Brier ritual into a prediction-recording contract with four interpretation guardrails (skill-vs-family-base-rate not raw Brier, minimum sample floors 20/50, non-stationary Gate-4 target caveat, herding gaming vector); added the tool to the AGENTS.md tool list.",
+  "change_type": "measurement_tooling",
+  "changed_variable": "machine-readable reopen-readiness surface plus meta-learning doc contract repair",
+  "component": "scripts/build_reopen_readiness.py, data/reopen_readiness.json, data/experiment_history_report_latest.json, docs/meta_learning_state.md, AGENTS.md, experiments/tickets, experiments/logs, experiments/cards, experiments/manifests, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260721-004",
+  "hypothesis": "Reopen counters for parked lanes are scattered across ticket reflections and memory files with no machine-readable surface, so every session re-derives them by hand and misreads thresholds (Q5>=12 vs the governing Q5>=20); and docs/meta_learning_state.md points at a calibration report that has never been generated despite 100 percent prediction coverage since 2026-07-14. Build a new reopen-readiness builder tool that emits data/reopen_readiness.json from canonical ledgers with declared thresholds, current counts, and stall detection; run the experiment-history calibration report once; and repair the meta-learning doc to a prediction-recording spec with minimum-sample and base-rate-skill guardrails instead of an unexecuted weekly Brier ritual.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "alpha_enabling_measurement_tooling",
+  "next_retry_requires": [],
+  "notes": "Identical before/after artifact by design: pure measurement/governance tooling, no strategy path, gate, or production change (trade_enabled untouched). Fingerprint caveat: the first reserve attempt was blocked by the routine-materialization guard over-matching on the word materialize (same over-match shape as the 2026-07-09 exp-016 misroute); reworded hypothesis classified correctly without consuming the override. Claim required --force over three zombie claimed tickets from May/June (exp-20260530-010, exp-20260602-008, exp-20260607-003) whose broad directory scopes conflict with any new ticket - those stale claims are themselves a hygiene gap worth a separate sweep. Phase-2 estimate-revision lane recorded as manual with an explicit UNVERIFIED-wiring warning: if the new qualification surface is not wired into the daily pipeline its six counters never advance and the NO-GO is permanent.",
+  "parameters": {
+    "locked_variables": [
+      "machine-readable reopen-readiness surface plus meta-learning doc contract repair"
+    ],
+    "single_causal_variable": "machine-readable reopen-readiness surface plus meta-learning doc contract repair"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to add lanes, reformat, or re-derive counters that build_reopen_readiness.py already computes; lane additions ride along with whatever experiment parks the new lane (update the builder in that same ticket). Do not resurrect the weekly Brier ritual or add new aggregate calibration metrics before the guardrail sample floors in docs/meta_learning_state.md are met.",
+    "new_evidence_required": "Automate a manual lane only when its reopen decision actually recurs (allocator conflict join, news-propagation polarity mapping); verify the Phase-2 estimate-revision qualification surface is wired into the daily pipeline (owner codex-root) - if not, that is a separate measurement repair; sweep or force-expire the May/June zombie claimed tickets (exp-20260530-010, exp-20260602-008, exp-20260607-003) blocking directory-scope claims.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The first-ever materialized calibration report empirically confirmed the base-rate-herding critique: avg Brier 0.0710 looks excellent but 476 families at ~2 predictions each means by_family is unreadable and the aggregate is dominated by easy high-confidence measurement-repair calls."
+  },
+  "prediction": {
+    "confidence_reason": "Pure read-only tooling over existing ledgers plus doc repair; main risk is ledger schema drift across lanes which the builder must fail open per-lane rather than crash.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "ledger schema drift breaks a lane counter",
+      "thresholds transcribed wrong from park tickets"
+    ],
+    "recorded_at": "2026-07-21T19:42:47+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-21T19:47:55+00:00",
+  "trial_family": "reopen_readiness_surface",
+  "trial_variant_id": "exp-20260721-004"
+}
