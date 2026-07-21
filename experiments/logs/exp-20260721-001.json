@@ -1,0 +1,233 @@
+{
+  "after_metrics": {
+    "metric_scope": "retrospective_non_pit_proxy_event_study",
+    "arm": "flow_options_interaction_top1",
+    "h1_mean_net_return_pct": -0.09146426,
+    "h3_mean_net_return_pct": 0.30023791,
+    "h5_mean_net_return_pct": 2.0524443,
+    "h10_mean_net_return_pct": 2.54473461,
+    "h10_median_net_return_pct": 1.86254978,
+    "h10_mean_replacement_value_vs_spy_pct": 2.27700393,
+    "h10_mean_replacement_value_vs_qqq_pct": 2.60356038,
+    "h10_event_count": 34,
+    "h10_win_rate_pct": 55.88235294,
+    "max_ticker_selection_share_pct": 14.70588235,
+    "selection_hhi": 0.08304498,
+    "effective_names": 12.041667
+  },
+  "before_metrics": {
+    "metric_scope": "retrospective_non_pit_proxy_event_study",
+    "arm": "rsi_top1_on_identical_complete_case_cohort",
+    "h1_mean_net_return_pct": -0.56931978,
+    "h3_mean_net_return_pct": -0.69474662,
+    "h5_mean_net_return_pct": -0.04806849,
+    "h10_mean_net_return_pct": 0.40188016,
+    "h10_median_net_return_pct": 0.697667,
+    "h10_mean_replacement_value_vs_spy_pct": 0.13414949,
+    "h10_mean_replacement_value_vs_qqq_pct": 0.46070593,
+    "h10_event_count": 34,
+    "h10_win_rate_pct": 55.88235294,
+    "max_ticker_selection_share_pct": 44.11764706,
+    "selection_hhi": 0.28200692,
+    "effective_names": 3.546012
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": true,
+    "brier_score": 0.4225,
+    "calibration_direction": "predeclared_private_proxy_lead_rule_passed",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "treatment_underperforms_rsi",
+      "too_few_settled_decision_dates",
+      "results_concentrated",
+      "proxy_vintage_leakage",
+      "options_chain_truncation"
+    ],
+    "predicted_success_probability": 0.35,
+    "realized_failure_mode": "proxy_vintage_leakage",
+    "surprise_level": "moderate_positive_with_uncertainty",
+    "surprise_note": "H10 paired mean delta was positive and stable across chronological halves, but the overlapping-event moving-block interval crossed zero and the cooldown first half was slightly negative."
+  },
+  "causal_components": [
+    "fixed_candidate_cohort",
+    "fixed_two_arm_ranking",
+    "next_open_h1_h3_h5_h10_net_outcomes",
+    "paired_same_date_attribution"
+  ],
+  "change_summary": "Ran the predeclared RSI-vs-flow/options allocator as a retrospective non-PIT proxy; no strategy or production behavior changed.",
+  "change_type": "private_replay_allocator_source_scout",
+  "changed_variable": "allocator_source_top_choice",
+  "component": "quant/experiments/exp_20260721_001_core_rebound_allocator_proxy.py, data/experiments/exp-20260721-001/exp_20260721_001_core_rebound_allocator_proxy.json, experiments/cards/exp-20260721-001.md, experiments/manifests/exp-20260721-001.json, experiments/tickets/exp-20260721-001.json, experiments/logs/exp-20260721-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-07-20",
+    "start": "2026-05-06"
+  },
+  "decision": "observed_only_positive_replay_lead_retrospective_flow_options_allocator_not_promoted",
+  "accepted": false,
+  "accepted_alpha": false,
+  "observed_only_lead": true,
+  "evidence_grade": "lead",
+  "implementation_mode": "private_replay_scout_retrospective_non_pit_proxy",
+  "delta_metrics": {
+    "metric_scope": "paired_same_date_retrospective_non_pit_proxy",
+    "common_h10_settled_dates": 34,
+    "h10_disagreement_dates": 24,
+    "h1_mean_treatment_minus_rsi_pct": 0.47785552,
+    "h3_mean_treatment_minus_rsi_pct": 0.99498454,
+    "h5_mean_treatment_minus_rsi_pct": 2.10051279,
+    "h10_mean_treatment_minus_rsi_pct": 2.14285445,
+    "h10_median_treatment_minus_rsi_pct": 0.91039951,
+    "h10_disagreement_beat_rate_pct": 79.16666667,
+    "h10_first_half_mean_delta_pct": 2.25923604,
+    "h10_second_half_mean_delta_pct": 2.02647285,
+    "h10_circular_block_bootstrap_95pct_ci_pct": [-0.48055524, 4.61572756],
+    "h10_leave_one_ticker_out_all_positive": true,
+    "h10_leave_one_ticker_out_min_mean_delta_pct": 1.30163783,
+    "cooldown_h10_mean_delta_pct": 2.05510069,
+    "cooldown_h10_first_half_mean_delta_pct": -0.05918755,
+    "private_proxy_lead_rule_passed": true
+  },
+  "experiment_id": "exp-20260721-001",
+  "hypothesis": "allocator_source private retrospective-proxy scout: within a fixed rebound-qualified same-date cohort, the predeclared Moomoo flow-strength times OnclickMedia near-put-OI interaction top choice has higher H10 net outcome than the predeclared RSI top choice",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "scope": "single_recent_2026-05-06_to_2026-07-20_proxy_window",
+    "warning": "No cross-regime or canonical-window inference is permitted."
+  },
+  "mechanism_family": "core_rebound_allocator_source_proxy",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260702-019",
+    "exp-20260617-004",
+    "exp-20260720-004",
+    "exp-20260720-002",
+    "exp-20260613-003",
+    "exp-20260610-021"
+  ],
+  "new_evidence_type": "new predeclared allocator-choice gate shape with 28 outcome-blind disagreement dates; neither the join nor either reused source is claimed as new",
+  "next_retry_requires": [
+    "At least 10 additional independent genuine forward PIT collection dates, reaching at least 14 total batches.",
+    "At least 20 settled paired disagreement decisions under the unchanged formula.",
+    "For a canonical claim, untruncated three-expiry options chains and decision-time Moomoo flow provenance."
+  ],
+  "notes": "Same artifact is intentionally used on both sides because canonical Gate metrics and this event-study proxy are incomparable; detailed paired metrics live in the artifact and enriched shard log.",
+  "parameters": {
+    "locked_variables": [
+      "universe",
+      "candidate_formula",
+      "flow_formula",
+      "put_proxy_formula",
+      "missing_data",
+      "tie_breaks",
+      "entry",
+      "cost",
+      "horizons"
+    ],
+    "single_causal_variable": "allocator_source_flow_options_vs_rsi_top_choice_proxy_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing RSI, drawdown, flow, moneyness, top-N, cost, cooldown, or horizon on these same proxy rows; do not relabel the cross-source join as a new source.",
+    "new_evidence_required": "Reopen only after at least 10 additional genuine forward PIT collection dates and at least 20 settled paired disagreement decisions, or with canonical untruncated three-expiry historical PIT chains plus decision-time flow vintages.",
+    "realized_failure_mode": "proxy_vintage_leakage",
+    "why_result_happened": "The interaction allocator diversified away from an RSI baseline dominated by NFLX and MCD and selected names with stronger contemporaneous absorption and captured-chain put concentration. That produced positive mean deltas at every reported horizon and in both H10 halves, but overlapping daily events, retrospective Moomoo vintages, and weaker cooldown stability leave substantial uncertainty."
+  },
+  "prediction": {
+    "confidence_reason": "Outcome-blind preflight found 194 proxy-complete rows, 39 multi-name dates, and 28 allocator disagreements, but Moomoo history is retrospective backfill and options chains are truncated to two expiries",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "treatment_underperforms_rsi",
+      "too_few_settled_decision_dates",
+      "results_concentrated",
+      "proxy_vintage_leakage",
+      "options_chain_truncation"
+    ],
+    "recorded_at": "2026-07-21T06:21:37+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "lead_basis": "All five predeclared private-proxy H10 conditions passed, while the block-bootstrap interval crossing zero and cooldown instability prevent stronger inference.",
+  "alpha_synthesis": {
+    "baseline_universe": ["37 non-ETF names from quant.filter._BASE_WATCHLIST"],
+    "opportunity_cost_winner": "flow_options_top1_retrospective_proxy",
+    "evidence_surfaces_used": [
+      "price: signal-date OHLCV warehouse",
+      "flow: Moomoo historical backfill, explicitly non-PIT proxy",
+      "derivatives: forward-collected OnclickMedia snapshots with two expiries and truncated strikes"
+    ],
+    "evidence_surfaces_missing": [
+      "canonical historical PIT Moomoo flow; only four genuine forward batches",
+      "full untruncated options chain with at least three expiries",
+      "event, independent positioning, and portfolio exposure context"
+    ],
+    "hypothesis_candidates": [
+      {
+        "baseline": "same-date RSI top1 on the identical complete-case cohort",
+        "treatment": "same-date sqrt(flow-rank * captured-near-put-share-rank) top1",
+        "horizon": "H10 primary; H1/H3/H5 diagnostic",
+        "replacement_value": "same-date RSI plus SPY and QQQ",
+        "falsifier": "H10 delta <=0, beat rate <=50%, either half <=0, <20 paired dates, or treatment ticker share >35%"
+      }
+    ],
+    "selected_hypothesis": "flow/options interaction allocator versus RSI within the fixed rebound cohort",
+    "economic_mechanism": "Informed dip buying plus concentrated downside hedging may separate absorbable drawdowns from generic oscillator oversold names.",
+    "falsifier": "The fixed H10 private-proxy rule fails or sensitivity is dominated by one ticker.",
+    "evidence_grade": "lead",
+    "next_machine_action": "Freeze the formula, continue true forward PIT collection, and make no production change."
+  },
+  "proxy_limitations": [
+    "Moomoo rows before 2026-07-02 were retrieved later and were unavailable to historical decisions; only four batches are genuine forward PIT.",
+    "OnclickMedia chains contain two expiries and capped strikes, so the put measure is captured-chain share rather than the designed full-chain cluster.",
+    "The window is one recent regime and H10 event windows overlap.",
+    "No price-stabilization feature is present, so this is not the original full four-factor test."
+  ],
+  "fingerprint_caveat": "The machine classified this as allocator/allocator_source, which hides member-source history. Moomoo flow and OnclickMedia options were manually audited as reused sources; their join is not new and cannot reopen either source family. The only novelty claim is the predeclared same-date allocator-choice gate shape.",
+  "gate1_4": {
+    "applicable": false,
+    "reason": "The Moomoo history is retrospective non-PIT and the captured options metric cannot cover canonical windows; the canonical baseline file is context only and was not compared numerically."
+  },
+  "production_impact": {
+    "scope": "experiment_local_retrospective_non_pit_proxy",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_boundary_changed": false,
+    "replay_only": true,
+    "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260721_001_core_rebound_allocator_proxy.py",
+    "data/experiments/exp-20260721-001/exp_20260721_001_core_rebound_allocator_proxy.json",
+    "experiments/cards/exp-20260721-001.md",
+    "experiments/manifests/exp-20260721-001.json",
+    "experiments/tickets/exp-20260721-001.json",
+    "experiments/logs/exp-20260721-001.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260721_001_core_rebound_allocator_proxy.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-07-21T06:41:34+00:00",
+  "trial_family": "same_date_flow_options_vs_rsi_allocator_proxy",
+  "trial_variant_id": "exp-20260721-001"
+}
