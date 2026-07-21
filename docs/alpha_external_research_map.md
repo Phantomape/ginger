@@ -51,6 +51,8 @@ Sources:
 
 - [FinBench: Time-Gated Calibration and Uncertainty Benchmarking for Agentic Financial Forecasting](https://arxiv.org/abs/2607.16229)
 
+entry_id: res-20260721-agent-forecasts-need-calibration-before-confiden
+
 ### Prediction-Market Skill Needs Bet-Execution Separation
 
 Recent prediction-market work separates three problems that Ginger should not
@@ -91,6 +93,8 @@ Sources:
 - [Uniform-Loss Automated Market Making for Prediction Markets](https://arxiv.org/abs/2607.17428)
 - [Optimal Market Making in Prediction Markets](https://arxiv.org/abs/2607.17991)
 
+entry_id: res-20260721-prediction-market-skill-needs-bet-execution-sepa
+
 ### Market-Neutral RL Needs Beta And Cost Audits
 
 AlphaZeroBeta frames deep reinforcement learning as a market-neutral portfolio
@@ -126,6 +130,8 @@ Sources:
 
 - [AlphaZeroBeta: Deep Reinforcement Learning for Market-Neutral Portfolios](https://arxiv.org/abs/2607.18001)
 
+entry_id: res-20260721-market-neutral-rl-needs-beta-and-cost-audits
+
 ### Liquidity Stress Needs Fundamental-Anchor State
 
 Order-book liquidity research on fundamental anchoring treats liquidity stress
@@ -159,6 +165,8 @@ Sources:
 
 - [Herding and Liquidity in Order-Book Markets. II. Fundamental Anchoring and the Resilience of Liquidity](https://arxiv.org/abs/2607.16970)
 
+entry_id: res-20260721-liquidity-stress-needs-fundamental-anchor-state
+
 ### Volatility Path Geometry Is A Regime Classifier
 
 Signature-based volatility model identification suggests that low-order path
@@ -188,6 +196,8 @@ Controls:
 Sources:
 
 - [Signature-Based Volatility Model Identification From Path Geometry](https://arxiv.org/abs/2607.06340)
+
+entry_id: res-20260721-volatility-path-geometry-is-a-regime-classifier
 
 ### LLM Technical Analysis Needs Task-Level Ground Truth
 
@@ -222,6 +232,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.15414>
 
+entry_id: res-20260721-llm-technical-analysis-needs-task-level-ground-t
+
 ### News Sentiment Needs Human-Calibrated Aggregation
 
 A July 2026 transformer news-sentiment paper uses sentence-level FinBERT
@@ -252,6 +264,8 @@ Controls:
   news/event comparators after costs.
 
 Source: <https://arxiv.org/abs/2607.13968>
+
+entry_id: res-20260721-news-sentiment-needs-human-calibrated-aggregatio
 
 ### Continuous-Input Sequence Models Need Likelihood Panels
 
@@ -285,6 +299,8 @@ Controls:
   candidate displacement.
 
 Source: <https://arxiv.org/abs/2607.13929>
+
+entry_id: res-20260721-continuous-input-sequence-models-need-likelihood
 
 ### Model Monitoring Needs Power And Tail Geometry
 
@@ -321,6 +337,8 @@ Sources:
 - <https://arxiv.org/abs/2607.12407>
 - <https://arxiv.org/abs/2607.13112>
 
+entry_id: res-20260721-model-monitoring-needs-power-and-tail-geometry
+
 ### LLM Portfolio Agents Need Process Diagnostics, Not Return Leaderboards
 
 CLQT is useful because it treats closed-loop LLM portfolio management as a
@@ -354,6 +372,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.29771>
 
+entry_id: res-20260721-llm-portfolio-agents-need-process-diagnostics-no
+
 ### Learned Cross-Sectional Factors Need Discrete-Code Stability
 
 PRISM-VQ combines prior financial factors with vector-quantized latent factors
@@ -386,6 +406,8 @@ Controls:
   train-panel hash.
 
 Source: <https://arxiv.org/abs/2605.13407>
+
+entry_id: res-20260721-learned-cross-sectional-factors-need-discrete-co
 
 ### Hierarchical Spreads Need Explicit Relation Graphs
 
@@ -421,6 +443,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.25811>
 
+entry_id: res-20260721-hierarchical-spreads-need-explicit-relation-grap
+
 ### Large Trades Need Liquidity-Tail State Before Interpretation
 
 New market-microstructure theory distinguishes informed large trades from rare
@@ -451,6 +475,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.01198>
 
+entry_id: res-20260721-large-trades-need-liquidity-tail-state-before-in
+
 ### LOB Stress Detectors Are Kill-Switch Inputs First
 
 Latent microstructure-regime work models a stable-to-build-up-to-stress path
@@ -480,6 +506,8 @@ Controls:
   for entry or ranking.
 
 Source: <https://arxiv.org/abs/2604.20949>
+
+entry_id: res-20260721-lob-stress-detectors-are-kill-switch-inputs-firs
 
 ### Daily Liquidity Proxies Need Target-Specific Validation
 
@@ -515,6 +543,8 @@ Controls:
 
 Source: <https://www.sciencedirect.com/science/article/pii/S138641812500059X>
 
+entry_id: res-20260721-daily-liquidity-proxies-need-target-specific-val
+
 ### Trading-Code LLMs Need Semantic Backtest Diffing
 
 QuantCode-Bench is a direct warning for agent-generated trading code. The
@@ -548,6 +578,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2604.15151>
 
+entry_id: res-20260721-trading-code-llms-need-semantic-backtest-diffing
+
 ### Intraday Risk Shape Is A Screening Input, Not A Price Signal
 
 Metric Dependence Screening preserves intraday risk curves instead of reducing
@@ -578,6 +610,8 @@ Controls:
   sizing, or capacity.
 
 Source: <https://arxiv.org/abs/2605.02326>
+
+entry_id: res-20260721-intraday-risk-shape-is-a-screening-input-not-a-p
 
 ### Market-Simulation Agents Need Variance Budgets
 
@@ -610,6 +644,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.04627>
 
+entry_id: res-20260721-market-simulation-agents-need-variance-budgets
+
 ### LLM Verifiers Need Risk-Calibrated Alarms
 
 Online LLM monitoring work supports a simple operational boundary: turn a
@@ -638,6 +674,8 @@ Controls:
   trading outcomes.
 
 Source: <https://arxiv.org/abs/2607.02510>
+
+entry_id: res-20260721-llm-verifiers-need-risk-calibrated-alarms
 
 ### Order-Book Reconstruction Is Measurement Infrastructure
 
@@ -669,6 +707,8 @@ Controls:
   proxies before adding strategy logic.
 
 Source: <https://joss.theoj.org/papers/10.21105/joss.10480>
+
+entry_id: res-20260721-order-book-reconstruction-is-measurement-infrast
 
 ### Learned Forecasts Need Base-Rate-Honest Benchmarks
 
@@ -705,6 +745,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.12248>
 
+entry_id: res-20260721-learned-forecasts-need-base-rate-honest-benchmar
+
 ### Cost-Aware RL Allocation Belongs In Activation Envelopes
 
 A July 2026 SciPhyRL portfolio paper shows the right infrastructure boundary:
@@ -738,6 +780,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.15195>
 
+entry_id: res-20260721-cost-aware-rl-allocation-belongs-in-activation-e
+
 ### Filing Text Aggregation Level Is A Decision Variable
 
 A July 2026 10-K sentiment paper finds that full filings work better at sector
@@ -769,6 +813,8 @@ Controls:
   source, or settled forward evidence.
 
 Source: <https://arxiv.org/abs/2607.14174>
+
+entry_id: res-20260721-filing-text-aggregation-level-is-a-decision-vari
 
 ### One-Switch Leakage Tests Before Learned Alpha
 
@@ -805,6 +851,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.23959>
 
+entry_id: res-20260721-one-switch-leakage-tests-before-learned-alpha
+
 ### Impact Models Can Reorder The Algorithm Leaderboard
 
 Recent trading-environment work shows that replacing fixed bps costs with
@@ -836,6 +884,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2603.29086>
 
+entry_id: res-20260721-impact-models-can-reorder-the-algorithm-leaderbo
+
 ### LLM News Models Need Relevance Pooling And Coverage Accounting
 
 A March 2026 multi-stock news-fusion paper uses stock-name embeddings and
@@ -866,6 +916,8 @@ Controls:
 - require after-cost replacement value, not prediction-loss improvement alone.
 
 Source: <https://arxiv.org/abs/2603.19286>
+
+entry_id: res-20260721-llm-news-models-need-relevance-pooling-and-cover
 
 ### Constrained Portfolio Optimizers Are Benchmarks, Not Shortcut Alpha
 
@@ -905,6 +957,8 @@ Sources:
 - <https://arxiv.org/abs/2605.17307>
 - <https://arxiv.org/abs/2607.03218>
 
+entry_id: res-20260721-constrained-portfolio-optimizers-are-benchmarks
+
 ### Correlation Structure Needs Denoising Before Portfolio Claims
 
 Recent network-correlation work separates empirical correlation matrices into
@@ -937,6 +991,8 @@ Controls:
   baseline protocols.
 
 Source: <https://arxiv.org/abs/2607.10297>
+
+entry_id: res-20260721-correlation-structure-needs-denoising-before-por
 
 ### Robust Optimizers Need Adaptive Ambiguity And Naive-Weight Diagnostics
 
@@ -974,6 +1030,8 @@ Sources:
 - <https://arxiv.org/abs/2607.09820>
 - <https://arxiv.org/abs/2607.11054>
 
+entry_id: res-20260721-robust-optimizers-need-adaptive-ambiguity-and-na
+
 ### Tail And Benchmark-Relative Duration Are Activation Metrics
 
 New tail-learning and drawdown-duration work is most useful as execution and
@@ -1009,6 +1067,8 @@ Sources:
 - <https://arxiv.org/abs/2607.10700>
 - <https://arxiv.org/abs/2607.11335>
 
+entry_id: res-20260721-tail-and-benchmark-relative-duration-are-activat
+
 ### Liquidity Impact Is Matrix-Valued Capacity State
 
 The latest multidimensional Kyle-model work treats liquidity depth and price
@@ -1036,6 +1096,8 @@ Controls:
 - fail closed when liquidity state is missing, stale, or vendor-specific.
 
 Source: <https://arxiv.org/abs/2607.10934>
+
+entry_id: res-20260721-liquidity-impact-is-matrix-valued-capacity-state
 
 ### Supply-Chain Macro Shocks Need Network Exposure Provenance
 
@@ -1068,6 +1130,8 @@ Controls:
   present.
 
 Source: <https://arxiv.org/abs/2607.09951>
+
+entry_id: res-20260721-supply-chain-macro-shocks-need-network-exposure
 
 ### Useful Alphas Need Live-Cap And Cost Reality
 
@@ -1102,6 +1166,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.06502>
 
+entry_id: res-20260721-useful-alphas-need-live-cap-and-cost-reality
+
 ### LLM Research Is A Pipeline Checklist, Not A Trading Delegate
 
 The 2025 survey "The New Quant" is useful because it organizes LLM work around
@@ -1135,6 +1201,8 @@ Controls:
 - keep LLMs in evidence construction unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2510.05533>
+
+entry_id: res-20260721-llm-research-is-a-pipeline-checklist-not-a-tradi
 
 ### LLM Forecasts Need PIT Recall Diagnostics
 
@@ -1181,6 +1249,8 @@ Sources:
 - <https://arxiv.org/abs/2512.23847>
 - <https://arxiv.org/abs/2603.19944>
 
+entry_id: res-20260721-llm-forecasts-need-pit-recall-diagnostics
+
 ### Agentic Research Needs Tool Traces And Reproducible Panels
 
 QRAFTI is useful as research-infrastructure guidance rather than a trading
@@ -1210,6 +1280,8 @@ Controls:
 - prefer small auditable helper functions over opaque generated notebooks.
 
 Source: <https://arxiv.org/abs/2604.18500>
+
+entry_id: res-20260721-agentic-research-needs-tool-traces-and-reproduci
 
 ### Hedge-Fund LLM Forecasting Reviews Are Robustness Checklists
 
@@ -1243,6 +1315,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.05211>
 
+entry_id: res-20260721-hedge-fund-llm-forecasting-reviews-are-robustnes
+
 ### Complex ML Return Predictors Need Recency Placebos
 
 The 2025 debate around very complex return predictors is a useful warning:
@@ -1274,6 +1348,8 @@ Controls:
 - treat "more parameters" as model-risk evidence until the placebo clears.
 
 Source: <https://www.ft.com/content/89d88cbf-a92c-43d2-b8af-88ae26529be0>
+
+entry_id: res-20260721-complex-ml-return-predictors-need-recency-placeb
 
 ### Prediction Uncertainty Belongs In Ranking And Admission
 
@@ -1313,6 +1389,8 @@ Sources:
 
 - <https://arxiv.org/abs/2601.00593>
 - <https://arxiv.org/abs/2503.00549>
+
+entry_id: res-20260721-prediction-uncertainty-belongs-in-ranking-and-ad
 
 ### Financial Time-Series Foundation Models Need Contamination Audits
 
@@ -1356,6 +1434,8 @@ Sources:
 - <https://arxiv.org/abs/2510.13654>
 - <https://arxiv.org/abs/2502.18834>
 
+entry_id: res-20260721-financial-time-series-foundation-models-need-con
+
 ### Event Graph RAG Belongs In The Relation Evidence Store
 
 FinKario is useful because it treats evolving fundamentals, events, entities,
@@ -1390,6 +1470,8 @@ Controls:
   date, and score outcomes only after the horizon matures.
 
 Source: <https://arxiv.org/abs/2508.00961>
+
+entry_id: res-20260721-event-graph-rag-belongs-in-the-relation-evidence
 
 ### Learned Portfolio Models Need Risk-Cost Significance Packages
 
@@ -1430,6 +1512,8 @@ Sources:
 - <https://arxiv.org/abs/2503.04143>
 - <https://arxiv.org/abs/2603.01820>
 
+entry_id: res-20260721-learned-portfolio-models-need-risk-cost-signific
+
 ### Price-Driven LLM Agents Are Structured Signal Routers
 
 QuantAgent's useful pattern is the decomposition into indicator, pattern,
@@ -1464,6 +1548,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2509.09995>
 
+entry_id: res-20260721-price-driven-llm-agents-are-structured-signal-ro
+
 ### State-Dependent Predictability
 
 NBER's 2026 "Mosaics of Predictability" argues that return predictability is
@@ -1480,6 +1566,8 @@ Implementable fields:
 - `liquidity_regime_predictability_bucket`
 
 Source: <https://www.nber.org/papers/w35158>
+
+entry_id: res-20260721-state-dependent-predictability
 
 ### Regime Volatility Forecasts Are Risk Gates, Not Alpha By Themselves
 
@@ -1513,6 +1601,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.09478>
 
+entry_id: res-20260721-regime-volatility-forecasts-are-risk-gates-not-a
+
 ### Friction-Aware Regime Conditioning Requires Inaction Bands
 
 FR-LUX is useful because it treats transaction costs and regimes as part of
@@ -1545,6 +1635,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2510.02986>
 
+entry_id: res-20260721-friction-aware-regime-conditioning-requires-inac
+
 ### Agentic LLM Portfolio Control
 
 Recent regime-aware LLM portfolio research supports a strict boundary: LLMs can
@@ -1563,6 +1655,8 @@ Implementable fields:
 - `constraint_shadow_price_bucket`
 
 Source: <https://link.springer.com/article/10.1007/s41060-026-01066-0>
+
+entry_id: res-20260721-agentic-llm-portfolio-control
 
 ### Constrained LLM Alpha Search Needs Hard Financial Grammar
 
@@ -1596,6 +1690,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.06823>
 
+entry_id: res-20260721-constrained-llm-alpha-search-needs-hard-financia
+
 ### Verifiable Forecast Actions For LLM Views
 
 StockR1 is useful because it forces an LLM market view into a structured
@@ -1625,6 +1721,8 @@ Controls:
 - keep forecast actions default-off until a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2605.21975>
+
+entry_id: res-20260721-verifiable-forecast-actions-for-llm-views
 
 ### Stratified LLM Strategy Alignment
 
@@ -1657,6 +1755,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.06024>
 
+entry_id: res-20260721-stratified-llm-strategy-alignment
+
 ### Real-Time LLM Prediction Benchmarks Need Adversarial News Controls
 
 PriceSeer is useful as an evaluation pattern for LLM market views because it is
@@ -1686,6 +1786,8 @@ Controls:
   accepted non-text comparators.
 
 Source: <https://arxiv.org/abs/2601.06088>
+
+entry_id: res-20260721-real-time-llm-prediction-benchmarks-need-adversa
 
 ### Adversarial Headline Sanitation Is A Data Contract
 
@@ -1720,6 +1822,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2601.13082>
 
+entry_id: res-20260721-adversarial-headline-sanitation-is-a-data-contra
+
 ### Index-To-Equity Transfer Learning
 
 Recent transformer work shows that pre-training on market-index behavior can
@@ -1736,6 +1840,8 @@ Implementable fields:
 - `model_signal_after_cost_validity_bucket`
 
 Source: <https://arxiv.org/abs/2605.23962>
+
+entry_id: res-20260721-index-to-equity-transfer-learning
 
 ### Time-Series Foundation Models Are Priors, Not Alpha Engines
 
@@ -1773,6 +1879,8 @@ Sources:
 - <https://arxiv.org/abs/2606.27100>
 - <https://arxiv.org/abs/2605.21504>
 
+entry_id: res-20260721-time-series-foundation-models-are-priors-not-alp
+
 ### Volatility TSFMs Must Beat Log-HAR And Calibration Baselines
 
 A July 2026 realized-volatility benchmark is a useful check on TSFM enthusiasm:
@@ -1806,6 +1914,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.05291>
 
+entry_id: res-20260721-volatility-tsfms-must-beat-log-har-and-calibrati
+
 ### Look-Ahead Freedom Is A Type Contract
 
 A July 2026 pipeline paper formalizes look-ahead freedom as temporal
@@ -1835,6 +1945,8 @@ Controls:
 - treat a silent empirical leak detector as insufficient proof of PIT safety.
 
 Source: <https://arxiv.org/abs/2607.04958>
+
+entry_id: res-20260721-look-ahead-freedom-is-a-type-contract
 
 ### Causal Separators Are Portfolio Covariance Inputs, Not Free Alpha
 
@@ -1869,6 +1981,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.05320>
 
+entry_id: res-20260721-causal-separators-are-portfolio-covariance-input
+
 ### Rotating Driver Manifolds Are Rebalance-Risk Context
 
 Dynamic causal portfolio choice extends the separator idea: the relevant driver
@@ -1897,6 +2011,8 @@ Controls:
 - reject allocator gains that depend on hindsight driver-set changes.
 
 Source: <https://arxiv.org/abs/2607.06702>
+
+entry_id: res-20260721-rotating-driver-manifolds-are-rebalance-risk-con
 
 ### Global Factor Detection Needs Eigenvector Breadth Checks
 
@@ -1928,6 +2044,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.06908>
 
+entry_id: res-20260721-global-factor-detection-needs-eigenvector-breadt
+
 ### RL Manipulation Results Are Execution Safeguards
 
 The July 2026 RL manipulation paper shows that a model-free agent can discover
@@ -1958,6 +2076,8 @@ Controls:
   high.
 
 Source: <https://arxiv.org/abs/2607.06121>
+
+entry_id: res-20260721-rl-manipulation-results-are-execution-safeguards
 
 ### Overnight And Intraday Tails Need Separate Risk States
 
@@ -1992,6 +2112,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.03669>
 
+entry_id: res-20260721-overnight-and-intraday-tails-need-separate-risk
+
 ### Tail Dependence Diagnostics Are Sample-Limited
 
 July 2026 local-Gaussian-correlation work is a useful anti-overfitting warning
@@ -2022,6 +2144,8 @@ Controls:
   tail sample is sparse.
 
 Source: <https://arxiv.org/abs/2607.03888>
+
+entry_id: res-20260721-tail-dependence-diagnostics-are-sample-limited
 
 ### Semantic Retrieval Forecasting Needs Evidence Keys
 
@@ -2059,6 +2183,8 @@ Sources:
 - <https://arxiv.org/abs/2502.05878>
 - <https://arxiv.org/abs/2606.14941>
 
+entry_id: res-20260721-semantic-retrieval-forecasting-needs-evidence-ke
+
 ### Continuous Style Allocation Beats Discrete Regime Rules
 
 A May 2026 growth-versus-defensive allocation paper is most useful as a risk
@@ -2093,6 +2219,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.20636>
 
+entry_id: res-20260721-continuous-style-allocation-beats-discrete-regim
+
 ### Sectoral Regime Allocation Is An Envelope, Not A Signal Shortcut
 
 RegimeFolio's useful engineering pattern is modular: an interpretable
@@ -2122,6 +2250,8 @@ Controls:
   an entry or allocation change.
 
 Source: <https://arxiv.org/abs/2510.14986>
+
+entry_id: res-20260721-sectoral-regime-allocation-is-an-envelope-not-a
 
 ### Regime-HMM/RL Evidence Requires Lagged, Costed Envelopes
 
@@ -2163,6 +2293,8 @@ Sources:
 - <https://arxiv.org/abs/2605.27848>
 - <https://arxiv.org/abs/2605.17307>
 
+entry_id: res-20260721-regime-hmm-rl-evidence-requires-lagged-costed-en
+
 ### Graphs, Correlations, And Market Structure
 
 2026 graph/transformer research emphasizes dynamic relations, stock-stock
@@ -2186,6 +2318,8 @@ Sources:
 - <https://arxiv.org/abs/2601.04602>
 - <https://www.sciencedirect.com/science/article/pii/S0952197626010080>
 - <https://arxiv.org/abs/2603.05917>
+
+entry_id: res-20260721-graphs-correlations-and-market-structure
 
 ### Supply-Chain Text Propagation Needs PIT Relation Edges
 
@@ -2220,6 +2354,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.29290>
 
+entry_id: res-20260721-supply-chain-text-propagation-needs-pit-relation
+
 ### Transaction-Cost Trap
 
 Recent transaction-cost research reinforces Ginger's local rule: prediction
@@ -2240,6 +2376,8 @@ Implementable fields:
 - `hard_to_borrow_availability_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6422358>
+
+entry_id: res-20260721-transaction-cost-trap
 
 ### Cost-Aware Forecast-To-Trade Conversion
 
@@ -2271,6 +2409,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.00060>
 
+entry_id: res-20260721-cost-aware-forecast-to-trade-conversion
+
 ### Multi-Period Optimization Aligns Forecasts With Costs
 
 Integrated Prediction and Multi-period Portfolio Optimization (IPMO) highlights
@@ -2301,6 +2441,8 @@ Controls:
 - use this first for envelope design before changing live or paper capacity.
 
 Source: <https://arxiv.org/abs/2512.11273>
+
+entry_id: res-20260721-multi-period-optimization-aligns-forecasts-with
 
 ### Exit Parameter Searches Need Full-Denominator Oracle Rows
 
@@ -2338,6 +2480,8 @@ production/backtest policy, not a stop-distance or response-curve retune.
 
 Source: <https://arxiv.org/abs/2604.27150>
 
+entry_id: res-20260721-exit-parameter-searches-need-full-denominator-or
+
 ### Agentic Nowcasting
 
 Agentic AI nowcasting papers suggest that autonomous information gathering can
@@ -2356,6 +2500,8 @@ Implementable fields:
 - `nowcast_replacement_value_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6134446>
+
+entry_id: res-20260721-agentic-nowcasting
 
 ### LLM Financial-Headline Alpha
 
@@ -2384,6 +2530,8 @@ Controls:
   coverage is missing.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
+
+entry_id: res-20260721-llm-financial-headline-alpha
 
 ### Explainable Zero-Shot News Is Reliability Context
 
@@ -2423,6 +2571,8 @@ explicit-ticker provenance, and closed replacement value.
 
 Source: <https://arxiv.org/abs/2606.12210>
 
+entry_id: res-20260721-explainable-zero-shot-news-is-reliability-contex
+
 ### Hedge-Fund LLM Forecasting Pitfall Checklist
 
 An April 2026 hedge-fund-oriented review of LLM stock forecasting is useful as
@@ -2451,6 +2601,8 @@ Controls:
 - keep the LLM as a field builder unless a shared helper passes Gate 1-4.
 
 Source: <https://arxiv.org/abs/2605.05211>
+
+entry_id: res-20260721-hedge-fund-llm-forecasting-pitfall-checklist
 
 ### LLM As Conditional Feature For Existing Factors
 
@@ -2488,6 +2640,8 @@ Sources:
 
 - <https://arxiv.org/abs/2510.26228>
 - <https://arxiv.org/abs/2510.15691>
+
+entry_id: res-20260721-llm-as-conditional-feature-for-existing-factors
 
 ### LLM Alpha Mining Requires A Trajectory Ledger
 
@@ -2543,6 +2697,8 @@ Sources:
 - <https://arxiv.org/abs/2602.07085>
 - <https://arxiv.org/abs/2511.18850>
 
+entry_id: res-20260721-llm-alpha-mining-requires-a-trajectory-ledger
+
 ### Human-Directed LLM Beats Autonomous LLM
 
 New 2026 live-signal evidence argues for structured human direction and
@@ -2569,6 +2725,8 @@ Controls:
   shared policy gate.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6705178>
+
+entry_id: res-20260721-human-directed-llm-beats-autonomous-llm
 
 ### AI Agent Behavioral Bias Audit
 
@@ -2598,6 +2756,8 @@ Controls:
 - never let agent consensus override deterministic risk, sizing, or exit logic.
 
 Source: <https://arxiv.org/abs/2604.18373>
+
+entry_id: res-20260721-ai-agent-behavioral-bias-audit
 
 ### Agentic Financial RAG Self-Verification
 
@@ -2633,6 +2793,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.05409>
 
+entry_id: res-20260721-agentic-financial-rag-self-verification
+
 ### Market-Feedback Adaptive Financial RAG
 
 May 2026 work on market-feedback adaptive retrieval for frozen LLMs is directly
@@ -2666,6 +2828,8 @@ Controls:
   it displaces after costs.
 
 Source: <https://arxiv.org/abs/2605.31201>
+
+entry_id: res-20260721-market-feedback-adaptive-financial-rag
 
 ### SEC RAG Must Preserve Filing Structure And Outcome Labels
 
@@ -2705,6 +2869,8 @@ Sources:
 - <https://arxiv.org/abs/2508.06312>
 - <https://arxiv.org/abs/2601.19189>
 
+entry_id: res-20260721-sec-rag-must-preserve-filing-structure-and-outco
+
 ### Agentic Trading Evidence Ledger
 
 A May 2026 survey of LLM trading-agent studies finds that evaluation protocols
@@ -2734,6 +2900,8 @@ Controls:
   controls, or replayable source artifacts.
 
 Source: <https://arxiv.org/abs/2605.19337>
+
+entry_id: res-20260721-agentic-trading-evidence-ledger
 
 ### Financial Tool Agents Need Domain-Alignment Ledgers
 
@@ -2774,6 +2942,8 @@ Sources:
 - <https://arxiv.org/abs/2603.08262>
 - <https://arxiv.org/abs/2602.19073>
 
+entry_id: res-20260721-financial-tool-agents-need-domain-alignment-ledg
+
 ### Trading-R1 Style Reasoning Traces Need Action-Level Attribution
 
 Trading-R1 is useful as an LLM-agent engineering pattern because it trains and
@@ -2805,6 +2975,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2509.11420>
 
+entry_id: res-20260721-trading-r1-style-reasoning-traces-need-action-le
+
 ### Live Prediction-Market LLM Benchmark Discipline
 
 PolyBench is not an equity-alpha paper, but its benchmark design is useful for
@@ -2832,6 +3004,8 @@ Controls:
 - compare against cash, passive benchmarks, and the exact displaced helper.
 
 Source: <https://arxiv.org/abs/2604.14199>
+
+entry_id: res-20260721-live-prediction-market-llm-benchmark-discipline
 
 ### Real-Market Agent Benchmarks Need Comparator Discipline
 
@@ -2875,6 +3049,8 @@ Sources:
 - <https://arxiv.org/abs/2510.11695>
 - <https://arxiv.org/abs/2602.00133>
 
+entry_id: res-20260721-real-market-agent-benchmarks-need-comparator-dis
+
 ### Memory-Controlled LLM Trading Evaluation
 
 KTD-Fin, published in late May 2026, is a useful benchmark design pattern for
@@ -2910,6 +3086,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2605.28359>
 
+entry_id: res-20260721-memory-controlled-llm-trading-evaluation
+
 ### Interaction-Native Agent Memory
 
 Recent financial-agent memory work argues for passive context injection,
@@ -2937,6 +3115,8 @@ Controls:
 - measure whether memory reduces near-neighbor duplicate experiments.
 
 Source: <https://arxiv.org/abs/2606.01886>
+
+entry_id: res-20260721-interaction-native-agent-memory
 
 ### LLM News Sentiment As Modest Feature
 
@@ -2970,6 +3150,8 @@ Sources:
 - <https://arxiv.org/abs/2602.00086>
 - <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
 
+entry_id: res-20260721-llm-news-sentiment-as-modest-feature
+
 ### Adaptive Relation Graphs
 
 New graph-learning stock-prediction work emphasizes adaptive correlations and
@@ -2995,6 +3177,8 @@ Controls:
 - compare directly against accepted relation adapters before promotion.
 
 Source: <https://www.sciencedirect.com/science/article/pii/S0031320326005716>
+
+entry_id: res-20260721-adaptive-relation-graphs
 
 ### Relation Score Gating And Crosstalk Control
 
@@ -3031,6 +3215,8 @@ Sources:
 - <https://arxiv.org/abs/2606.08930>
 - <https://arxiv.org/abs/2604.20204>
 
+entry_id: res-20260721-relation-score-gating-and-crosstalk-control
+
 ### Dynamic Hypergraph And High-Order Relations
 
 Recent 2026 dynamic-hypergraph stock-prediction research argues that static
@@ -3059,6 +3245,8 @@ Controls:
 
 Source: <https://www.sciencedirect.com/science/article/pii/S156849462600400X>
 
+entry_id: res-20260721-dynamic-hypergraph-and-high-order-relations
+
 ### Causal Information-Channel Alignment
 
 Recent causal-momentum work frames cross-sectional prediction as alignment
@@ -3083,6 +3271,8 @@ Controls:
 - reject any channel whose economic story is only "correlation was high."
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6397278>
+
+entry_id: res-20260721-causal-information-channel-alignment
 
 ### Logic-Constrained Alpha Synthesis
 
@@ -3109,6 +3299,8 @@ Controls:
 - compare against accepted default-off adapters, not only against cash.
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6819380>
+
+entry_id: res-20260721-logic-constrained-alpha-synthesis
 
 ### Disclosure Timing And Complexity As Event Context
 
@@ -3140,6 +3332,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2602.17895>
 
+entry_id: res-20260721-disclosure-timing-and-complexity-as-event-contex
+
 ### LLM Herding And Crowded AI Signals
 
 LLM market experiments suggest AI traders may avoid some irrational cascades
@@ -3157,6 +3351,8 @@ Implementable fields:
 - `narrative_unwind_risk_bucket`
 
 Source: <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6805805>
+
+entry_id: res-20260721-llm-herding-and-crowded-ai-signals
 
 ### Trading-Signal Reasoning Benchmarks
 
@@ -3185,6 +3381,8 @@ Controls:
   pullback, volume, or risk fields without Gate 1-4 evidence.
 
 Source: <https://arxiv.org/html/2603.19225v4>
+
+entry_id: res-20260721-trading-signal-reasoning-benchmarks
 
 ### Anonymized LLM-GNN Signal Validation
 
@@ -3215,6 +3413,8 @@ Controls:
 
 Source: <https://arxiv.org/html/2603.17692v1>
 
+entry_id: res-20260721-anonymized-llm-gnn-signal-validation
+
 ### Execution-Assumption Reproducibility Audit
 
 The June 2026 review "Beyond Agent Architecture" finds that LLM trading papers
@@ -3244,6 +3444,8 @@ Controls:
   comparable to accepted local baselines.
 
 Source: <https://arxiv.org/abs/2606.08285>
+
+entry_id: res-20260721-execution-assumption-reproducibility-audit
 
 ### Financial AI Determinism Is A Production Contract
 
@@ -3277,6 +3479,8 @@ Controls:
 - fail closed when a field cannot be reconstructed from committed artifacts.
 
 Source: <https://arxiv.org/abs/2605.23955>
+
+entry_id: res-20260721-financial-ai-determinism-is-a-production-contrac
 
 ### Nonlinear Market Impact And Turnover Discipline
 
@@ -3322,6 +3526,8 @@ Sources:
 - <https://arxiv.org/abs/2603.29086>
 - <https://arxiv.org/abs/2606.24019>
 
+entry_id: res-20260721-nonlinear-market-impact-and-turnover-discipline
+
 ### Cost-Aware Optimization Is A Capacity Surface
 
 FlashFolio is useful less as a dependency than as an engineering lesson:
@@ -3355,6 +3561,8 @@ Controls:
   underlying alpha decision hypothesis.
 
 Source: <https://arxiv.org/abs/2604.22625>
+
+entry_id: res-20260721-cost-aware-optimization-is-a-capacity-surface
 
 ### Anticipatory Optimization Needs A Control-Gap Ledger
 
@@ -3390,6 +3598,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.04258>
 
+entry_id: res-20260721-anticipatory-optimization-needs-a-control-gap-le
+
 ### LLM-Guided State And Reward Interfaces
 
 GIFT uses an LLM to design state-enhancement and reward-shaping interfaces for
@@ -3417,6 +3627,8 @@ Controls:
 - compare against fixed-feature and fixed-reward controls, after costs.
 
 Source: <https://arxiv.org/html/2606.08450v1>
+
+entry_id: res-20260721-llm-guided-state-and-reward-interfaces
 
 ### Correlation-Aware Portfolio Evaluation
 
@@ -3446,6 +3658,8 @@ Controls:
 
 Source: <https://arxiv.org/html/2605.27887v2>
 
+entry_id: res-20260721-correlation-aware-portfolio-evaluation
+
 ### Constrained Macro-Prior LLM Agents
 
 Recent commodity-related ETF allocation work uses fixed macro evidence tables,
@@ -3474,6 +3688,8 @@ Controls:
 - report one-way cost sensitivity and multiple-testing caveats.
 
 Source: <https://arxiv.org/html/2606.08283v1>
+
+entry_id: res-20260721-constrained-macro-prior-llm-agents
 
 ### Domain-Trained Time-Series Foundation Models
 
@@ -3508,6 +3724,8 @@ Sources:
 - <https://arxiv.org/abs/2511.18578>
 - <https://arxiv.org/abs/2505.11163>
 
+entry_id: res-20260721-domain-trained-time-series-foundation-models
+
 ### Related-Series Foundation Model Discipline
 
 A May 2026 Chronos-2 finance study found multivariate inputs helped within
@@ -3539,6 +3757,8 @@ Controls:
   candidate displacement is proven.
 
 Source: <https://arxiv.org/abs/2605.21504>
+
+entry_id: res-20260721-related-series-foundation-model-discipline
 
 ### Limit-Order-Book And Microstructure Reality Check
 
@@ -3584,6 +3804,8 @@ Sources:
 - <https://arxiv.org/abs/2504.13521>
 - <https://arxiv.org/abs/2606.25986>
 
+entry_id: res-20260721-limit-order-book-and-microstructure-reality-chec
+
 ### Dynamic Relation Graphs Need Edge Provenance
 
 2025 dynamic stock-relationship transformer work again points to time-varying
@@ -3613,6 +3835,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2506.18717>
 
+entry_id: res-20260721-dynamic-relation-graphs-need-edge-provenance
+
 ### Event-Aware LLM Labels Are Features, Not Decisions
 
 Recent work using LLM-labeled tweet events supports schema-bound semantic
@@ -3641,6 +3865,8 @@ Controls:
 - treat social/news labels as noisy until forward replacement rows mature.
 
 Source: <https://arxiv.org/abs/2508.07408>
+
+entry_id: res-20260721-event-aware-llm-labels-are-features-not-decision
 
 ### Financial ML Falsification Audit
 
@@ -3673,6 +3899,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2604.15531>
 
+entry_id: res-20260721-financial-ml-falsification-audit
+
 ### Executable Quant LLM Benchmarks
 
 QuantEval's 2026 benchmark design is useful because it evaluates LLMs on
@@ -3703,6 +3931,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2601.08689>
 
+entry_id: res-20260721-executable-quant-llm-benchmarks
+
 ### Deterministic Numeric Extraction Around LLMs
 
 FinSheet-Bench shows that financial spreadsheet and table reasoning remains a
@@ -3731,6 +3961,8 @@ Controls:
   candidate pools, ranks, or risk.
 
 Source: <https://arxiv.org/abs/2603.07316>
+
+entry_id: res-20260721-deterministic-numeric-extraction-around-llms
 
 ### SEC Multi-Document Reasoning Error Taxonomy
 
@@ -3765,6 +3997,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2602.07294>
 
+entry_id: res-20260721-sec-multi-document-reasoning-error-taxonomy
+
 ### Financial Statement Verification Calibration
 
 FinVerBench separates financial statement verification from answer generation:
@@ -3793,6 +4027,8 @@ Controls:
 - distinguish missing/hidden fields from true inconsistencies.
 
 Source: <https://arxiv.org/abs/2605.29586>
+
+entry_id: res-20260721-financial-statement-verification-calibration
 
 ### Layout-Faithful EDGAR Filing Data
 
@@ -3825,6 +4061,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2606.18192>
 
+entry_id: res-20260721-layout-faithful-edgar-filing-data
+
 ### Enforcement-Grounded Misleading Narrative Signals
 
 AuditFraudBench adds a useful SEC semantic target: misleading narratives can be
@@ -3855,6 +4093,8 @@ Controls:
   paper candidate use.
 
 Source: <https://arxiv.org/abs/2606.08345>
+
+entry_id: res-20260721-enforcement-grounded-misleading-narrative-signal
 
 ### Structured Event Representation For Text Alpha
 
@@ -3888,6 +4128,8 @@ Controls:
   material.
 
 Source: <https://arxiv.org/abs/2512.19484>
+
+entry_id: res-20260721-structured-event-representation-for-text-alpha
 
 ### Grounded 8-K Taxonomies Beat Item-Code Enumeration
 
@@ -3923,6 +4165,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.08346>
 
+entry_id: res-20260721-grounded-8-k-taxonomies-beat-item-code-enumerati
+
 ### SEC And Earnings-Call Target Stance Needs Metric-Level Labels
 
 Recent SEC filing and earnings-call stance work argues for sentence-level
@@ -3954,6 +4198,8 @@ Controls:
   structured-event comparators.
 
 Source: <https://arxiv.org/abs/2510.23464>
+
+entry_id: res-20260721-sec-and-earnings-call-target-stance-needs-metric
 
 ### Options Surface As Risk And Execution Context
 
@@ -4007,6 +4253,8 @@ Sources:
 - <https://arxiv.org/abs/2605.13998>
 - <https://arxiv.org/abs/2201.09319>
 
+entry_id: res-20260721-options-surface-as-risk-and-execution-context
+
 ### 13F Is Delayed Ownership And Crowding Context
 
 13F research and disclosure rules make the timing caveat explicit: filings are
@@ -4039,6 +4287,8 @@ Sources:
 
 - <https://arxiv.org/abs/2209.08825>
 - <https://www.sec.gov/divisions/investment/13ffaq>
+
+entry_id: res-20260721-13f-is-delayed-ownership-and-crowding-context
 
 ### 13D / 13G Beneficial Ownership Needs Structured Primary Text
 
@@ -4078,6 +4328,8 @@ Sources:
 - <https://www.sec.gov/newsroom/press-releases/2023-219>
 - <https://www.sec.gov/files/rules/final/2023/33-11253.pdf>
 
+entry_id: res-20260721-13d-13g-beneficial-ownership-needs-structured-pr
+
 ### 10-K Narrative Distress As Risk Context
 
 Recent bankruptcy-prediction work finds that distress-specific 10-K narrative
@@ -4107,6 +4359,8 @@ Controls:
   costs before any paper-sleeve use.
 
 Source: <https://arxiv.org/abs/2606.05623>
+
+entry_id: res-20260721-10-k-narrative-distress-as-risk-context
 
 ### Intangible Investment And Advertising Efficiency Discipline
 
@@ -4139,6 +4393,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2505.16336>
 
+entry_id: res-20260721-intangible-investment-and-advertising-efficiency
+
 ### Short-Trend Alpha Needs Microstructure Viability
 
 A July 2026 q-fin study argues that short-horizon trend following degraded
@@ -4170,6 +4426,8 @@ Controls:
 - avoid retuning momentum labels without a new PIT microstructure field.
 
 Source: <https://arxiv.org/abs/2607.01550>
+
+entry_id: res-20260721-short-trend-alpha-needs-microstructure-viability
 
 ### Order-Flow Impact Is A Liquidity State, Not Raw Flow Alpha
 
@@ -4212,6 +4470,8 @@ Sources:
 - <https://arxiv.org/abs/2607.01377>
 - <https://arxiv.org/abs/2607.04280>
 
+entry_id: res-20260721-order-flow-impact-is-a-liquidity-state-not-raw-f
+
 ### Learning-Agent Impact Cycles Are Stress Tests, Not Alpha
 
 A July 2026 learning-agent market-impact study reports endogenous manipulation
@@ -4244,6 +4504,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.05141>
 
+entry_id: res-20260721-learning-agent-impact-cycles-are-stress-tests-no
+
 ### MACD-Style Signals Need Latent-Drift And Cost Context
 
 New mathematical-finance work derives MACD-like signals from filtered latent
@@ -4274,6 +4536,8 @@ Controls:
 
 Source: <https://arxiv.org/abs/2607.01705>
 
+entry_id: res-20260721-macd-style-signals-need-latent-drift-and-cost-co
+
 ### Factor Models Need Cap-Axis Diagnostics
 
 A July 2026 factor-model diagnostic shows that a low-dimensional model can
@@ -4302,3 +4566,5 @@ Controls:
 - reject broad sources whose edge vanishes after cap-axis and lead-lag checks.
 
 Source: <https://arxiv.org/abs/2607.01765>
+
+entry_id: res-20260721-factor-models-need-cap-axis-diagnostics

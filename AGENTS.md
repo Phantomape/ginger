@@ -118,6 +118,11 @@ LLM 可以承担新闻理解、事件分类、语义强弱判断和风险解释�
 2. **证据面盘点**：至少检查当前可用的 price、flow、derivatives、event、positioning、portfolio
    exposure 面；读取现有 manifest / ledger / 当前状态，明确已用、缺失、PIT 边界、settled count
    和尚未 join 的面。没有机器目录时做一行临时盘点，不得为盘点本身 reserve ID。
+   盘点必须包含读取 `data/research_digest/latest_digest.md`（外部研究消费摘要，合同见
+   `docs/research_digest_pipeline.md`）：对其中每条 fresh 条目给出挑中 / 放弃与一句理由，
+   append 到 `data/research_digest/ledger.jsonl`（不占实验 ID）；挑中条目进入候选假设时在
+   票据 `research_refs` 字段引用 entry_id，实验关闭时把结果状态（rejected/accepted/parked）
+   回填到 ledger。摘要来源不给任何 novelty / recipe-lane / reopen / saturation 豁免。
 3. **机制优先的跨面合成**：生成 `1-3` 个候选假设，至少一个连接此前孤立但经济机制可解释的面；
    然后只选一个进入验证。全排列 join、多个阈值机械拼接、事后挑 winner 不算新机制。
 4. **先写反证**：每个 lead 同时写 baseline、treatment、预期 horizon、主要 replacement-value

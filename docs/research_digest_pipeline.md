@@ -59,6 +59,11 @@ Append-only，一行一个状态事件：
   recipe-lane 预检结果、ledger 状态。
 - **复用** `scripts/create_experiment_ticket.py::classify_recipe_lane_match`
   做车道预检，不要重新实现短语匹配。
+- **实现偏差回写（2026-07-21 首跑发现）**：论文用学术词汇描述已烧车道的源域、
+  不带交易配方应答词（8-K item-code 条目 source 命中 2 / response 命中 0），
+  故 digest 端预检比 reservation guard 更严：单车道 source 簇命中 ≥2 即
+  lane_blocked（`_digest_lane_matches`）。摘要层拦截成本低、宁严勿松；
+  reservation guard 保持 response 命中要求不变（那里误拦成本高）。
 - 排序：fresh 且 crowding=low 且有可观察先验代理的优先；declined 降权；
   lane_blocked / rejected / proposed 不进摘要。
 - 总量硬上限 8KB——上下文预算是真约束。
