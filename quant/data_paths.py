@@ -79,6 +79,18 @@ def atomic_write_json(obj, filepath: str | Path, *, indent=2,
 
 
 DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
+    "alpha_search_evidence_surfaces": (
+        "reference/alpha_search_evidence_surfaces.json",
+        "alpha_search_evidence_surfaces.json",
+    ),
+    "alpha_search_decision_ledger": (
+        "alpha_search/events.jsonl",
+        "alpha_search_events.jsonl",
+    ),
+    "alpha_search_latest_report": (
+        "alpha_search/latest_report.json",
+        "alpha_search_latest_report.json",
+    ),
     "crypto_positions": ("state/crypto/crypto_positions.json", "crypto_positions.json"),
     "macro_events_overlay": (
         "reference/macro_events_overlay.json",

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "estimate_revision_consensus_observer",
+      "data_source": "analyst_estimate_revision",
+      "component_sources": [
+        "analyst_estimate_revision"
+      ],
+      "roles": [
+        "market_expectation",
+        "explicit_consensus",
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/estimate_revision_ledger_summary_20260720.json",
+        "data/non_ohlcv/estimate_revision_ledger_20260720.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 1209,
+      "candidate_overlap_count": 6,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "explicit_consensus",
+        "field": "eps_estimate_revision",
+        "source": "analyst_estimate_revision"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "At least 30 timestamp-safe independent consensus revisions with closed replacement values and materially broader candidate overlap.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-21T07:58:00Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/estimate_revision_ledger_summary_20260720.json": "c9028a959a8355e7540fc88faf2253996bea58b9aef8f1852a07e77e259142f6",
+        "data/non_ohlcv/estimate_revision_ledger_20260720.jsonl": "2a0422712229d1e281a2970c759ea5aede706adf42d6c2f510ad1eb68d1fa630"
+      }
+    },
+    {
+      "surface_id": "moomoo_capital_flow_day_observer",
+      "data_source": "moomoo_capital_flow",
+      "component_sources": [
+        "moomoo_capital_flow"
+      ],
+      "roles": [
+        "positioning_constraint",
+        "flow",
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Materially more independent closed Moomoo forward decisions, a genuinely different vendor flow decomposition, or PIT borrow economics; raw daily rows do not satisfy this condition.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-21T07:58:00Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "3d2e7708d88a498cb749330afd60db1548ee6f6fa4eea89cfbaa94cce6b75708",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "b53fcaf34f5c5450e9b00fefd2d0932bda5a07a3dcb206efcdde1ca168719432"
+      }
+    },
+    {
+      "surface_id": "ohlcv_price_revealed_context",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context"
+      ],
+      "artifacts": [
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "pre_event_price_path",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as a declared market-prior/context proxy; OHLCV relabeling is not a new evidence source.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-21T07:58:00Z",
+      "artifact_snapshot_hashes": {
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "prediction_market_event_probability_observer",
+      "data_source": "prediction_market_event",
+      "component_sources": [
+        "prediction_market_event"
+      ],
+      "roles": [
+        "market_expectation",
+        "event_probability"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/prediction_market_event_observer/source_manifest.json",
+        "data/non_ohlcv/prediction_market_event_observer/latest_summary.json"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 32,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "direct_implied_probability",
+        "field": "probability",
+        "source": "prediction_market_event"
+      },
+      "saturation_status": "parked",
+      "reopen_condition": "At least 60 unique post-repair settled candidates across 10 entry dates and 3 query groups, with top ticker <=15%, top query <=50%, at least 20 nonzero probability changes and 10 moves >=5pp under a frozen exposure map.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-21T07:58:00Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/prediction_market_event_observer/source_manifest.json": "8dca8a7cfbd88c59c6df4a4da7e6c296faa4f7db068bc58d2439760f0c544465",
+        "data/non_ohlcv/prediction_market_event_observer/latest_summary.json": "0ad44b0e7a81326873aa2ccdfa86e4fe4de810f2ddc7b681de3c34b3521f745b"
+      }
+    },
+    {
+      "surface_id": "sec_official_event_evidence",
+      "data_source": "sec_official_event",
+      "component_sources": [
+        "sec_official_event"
+      ],
+      "roles": [
+        "independent_evidence",
+        "official_event"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/daily_non_ohlcv_snapshot_20260720.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "saturated",
+      "reopen_condition": "A new semantic decision surface plus independent settled decisions; SEC form/item enumeration and fixed response templates remain frozen.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-21T07:58:00Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/daily_non_ohlcv_snapshot_20260720.json": "50460a68c8486ae50b4043c477677f41eae15c25467336917b9648e3c428b478"
+      }
+    }
+  ]
+}

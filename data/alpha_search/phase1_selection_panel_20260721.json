@@ -1,0 +1,884 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-8ce58d769661245b96dcfdbf",
+  "created_at": "2026-07-21T08:04:00Z",
+  "data_cutoff": "2026-07-21T08:01:00Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "estimate_revision_consensus_observer",
+      "moomoo_capital_flow_day_observer",
+      "ohlcv_price_revealed_context",
+      "prediction_market_event_probability_observer",
+      "sec_official_event_evidence"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap",
+        "plain_event_lead"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generator_version": "alpha-search-phase1-synthesis-v1",
+      "queue_budgets": {
+        "adjacent": 1,
+        "exploitation": 1,
+        "exploration": 1
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "independent_evidence",
+        "price_revealed_context",
+        "flow",
+        "official_event"
+      ],
+      "required_precommitments": [
+        "baseline",
+        "treatment",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "falsifier",
+        "execution_envelope"
+      ],
+      "required_queues": [
+        "exploration",
+        "adjacent",
+        "exploitation"
+      ],
+      "schema_version": 1,
+      "selection_limit": 1,
+      "selection_policy": "one highest fixed outcome-blind readiness score after D0-D3; no pass means no selection",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-07-21T08:01:00Z",
+    "expected_candidate_count": 3,
+    "freeze_at": "2026-07-21T08:04:00Z",
+    "generator_version": "alpha-search-phase1-synthesis-v1",
+    "manifest_hash": "8ce58d769661245b96dcfdbf127726caedc37dfe2947fd974897e6f0c0ee190c",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-07-21T07:59:32Z",
+    "prior_fingerprint_count": 0,
+    "prior_fingerprint_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "queue_budgets": {
+      "adjacent": 1,
+      "exploitation": 1,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "phase1-alpha-search-20260721",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "18dae1eda9c662ec3539c3ef56425f164dc23ead66d81bf3af47129d4366f6cd",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "8ce58d769661245b96dcfdbf127726caedc37dfe2947fd974897e6f0c0ee190c",
+  "surface_registry_hash": "18dae1eda9c662ec3539c3ef56425f164dc23ead66d81bf3af47129d4366f6cd",
+  "prior_fingerprint_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "prior_fingerprint_count": 0,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 1,
+    "exploitation": 1,
+    "exploration": 1
+  },
+  "queue_actual_counts": {
+    "adjacent": 1,
+    "exploitation": 1,
+    "exploration": 1
+  },
+  "expected_candidate_count": 3,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-c0da7d6c3657fd93d4c6",
+    "cand-ecb99b450542c0cdc11c",
+    "cand-fb98566f716d882e09a7"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-c0da7d6c3657fd93d4c6",
+      "search_queue": "exploitation",
+      "hypothesis": "A timestamp-safe analyst estimate revision whose contemporaneous price-revealed response is unusually muted relative to its frozen calibration identifies underreaction that converges over H5-H20.",
+      "fingerprint": {
+        "data_source": "ohlcv_warehouse",
+        "component_sources": [
+          "analyst_estimate_revision",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "muted_price_response_to_consensus_revision",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "post_revision_drift",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "expectation_underreaction_sleeve"
+      },
+      "surface_ids": [
+        "estimate_revision_consensus_observer",
+        "ohlcv_price_revealed_context"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "ohlcv_warehouse",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "normalized_pre_event_response",
+          "provenance": "Only bars known by the decision clock; OHLCV context is not claimed as a new source."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "estimate-revision-state-v1",
+            "known_at": "2026-07-20T20:00:00Z",
+            "provenance": "Same-event revision ledger, independent of the price path used as prior.",
+            "source": "analyst_estimate_revision",
+            "state": "timestamp_safe_consensus_revision"
+          }
+        ],
+        "gap_definition": "Frozen calibrated price response to a given consensus revision minus the observed response by the entry clock.",
+        "transmission": {
+          "affected_tickers": [],
+          "catalyst": "Subsequent analyst dissemination or earnings confirmation closes the response gap.",
+          "causal_steps": [
+            "consensus changes",
+            "price response is incomplete",
+            "later attention closes the gap"
+          ],
+          "expected_direction": "sign_of_revision_when_response_is_muted",
+          "half_life": "H5-H20"
+        }
+      },
+      "why_not_arbitraged": "The hypothesis requires exact revision clocks, same-event lineage, and a calibration conditioned on prior price response rather than a generic momentum filter.",
+      "falsifier": "Date-shift and ticker-shuffle placebos match the exact mapping, or the effect disappears after the current core opportunity cost and canonical costs.",
+      "baseline": {
+        "policy": "Use current core candidates without the revision-response state.",
+        "universe": "current eligible candidate pool"
+      },
+      "treatment": {
+        "policy": "Admit one candidate per issuer clock only when the frozen revision-response gap is present."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate on identical dates.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "borrow_dependency": "none",
+        "capacity_constraint": "default-off paper cap with one decision per issuer clock",
+        "costs_and_carry": "canonical cost and turnover model",
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "same ADV and spread floor as current core",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "next tradable session after revision and price-prior cutoff",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "estimate_revision_consensus_observer",
+          "snapshot_hash": "f0890d56262a8e7bd50a5d673cfd39eb927933784a6452e7548f02d5c2f63bac"
+        },
+        {
+          "surface_id": "ohlcv_price_revealed_context",
+          "snapshot_hash": "0c03884b69336485e50186061ebda273af64c128e426a55c8c7f5b16f1593907"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Muted price response after a consensus revision",
+      "created_at": "2026-07-21T08:01:23Z",
+      "created_by": "alpha_search_phase1_synthesis",
+      "prediction": {
+        "success_probability": 0.22,
+        "main_failure_modes": [
+          "already_priced",
+          "core_opportunity_cost",
+          "wrong_transmission_mapping"
+        ],
+        "confidence_reason": "This uses an explicit expectation proxy and an existing independent revision surface, but both calibration and source readiness remain incomplete."
+      },
+      "reopen_condition": "At least 30 independent revision clocks, 10 tickers, and 10 actual core cash-conflict comparisons under a frozen calibration.",
+      "next_machine_action": "Build an outcome-blind overlap and clock audit only; no return read and no experiment reservation."
+    },
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-ecb99b450542c0cdc11c",
+      "search_queue": "adjacent",
+      "hypothesis": "A large timestamp-safe analyst-consensus revision that is not yet corroborated by persistent Moomoo main-flow positioning identifies either a delayed confirmation trade or an avoid signal, with direction fixed before any return is read.",
+      "fingerprint": {
+        "data_source": "analyst_estimate_revision",
+        "component_sources": [
+          "analyst_estimate_revision",
+          "moomoo_capital_flow"
+        ],
+        "expectation_proxy": "explicit_consensus",
+        "economic_mechanism": "consensus_positioning_disagreement",
+        "decision_surface": "ranking",
+        "payoff_shape": "cross_sectional_expectation_convergence",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "diversifying_expectation_gap_sleeve"
+      },
+      "surface_ids": [
+        "estimate_revision_consensus_observer",
+        "moomoo_capital_flow_day_observer"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "explicit_consensus",
+          "source": "analyst_estimate_revision",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "estimate_revision",
+          "provenance": "Frozen same-event analyst estimate and revision timestamps."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "moomoo-flow-state-v1",
+            "known_at": "2026-07-20T20:00:00Z",
+            "provenance": "Archived DAY rows with honest vendor_asof; raw rows are not independent decisions.",
+            "source": "moomoo_capital_flow",
+            "state": "persistent_positioning_confirmation_or_disagreement"
+          }
+        ],
+        "gap_definition": "Predeclared sign and magnitude disagreement between explicit consensus revision and normalized positioning confirmation.",
+        "transmission": {
+          "affected_tickers": [],
+          "catalyst": "Next earnings release or guidance update resolves the consensus-positioning disagreement.",
+          "causal_steps": [
+            "consensus changes",
+            "positioning lags or contradicts",
+            "resolution reprices expectations"
+          ],
+          "expected_direction": "frozen_confirmation_or_avoidance_mapping",
+          "half_life": "H5-H20"
+        }
+      },
+      "why_not_arbitraged": "Consensus and broker flow have different clocks and coverage; a usable gap requires honest as-of alignment and cash-conflict accounting.",
+      "falsifier": "The sign mapping fails a predeclared placebo, candidate overlap stays below 20 independent decisions, or costs erase the conditional spread.",
+      "baseline": {
+        "policy": "Use the existing core ranking without consensus-flow disagreement.",
+        "universe": "current eligible candidate pool"
+      },
+      "treatment": {
+        "policy": "Apply one frozen ranking or avoidance response to the predeclared consensus-flow disagreement state."
+      },
+      "replacement_value_comparator": "The displaced eligible core candidate plus cash, SPY, and QQQ.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "borrow_dependency": "none for long/avoid mapping",
+        "capacity_constraint": "default-off paper cap and one decision per issuer clock",
+        "costs_and_carry": "canonical cash-equity costs plus turnover accounting",
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "same eligible-universe liquidity floor as baseline",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "next session after both consensus and flow timestamps",
+        "trade_enabled": false
+      },
+      "evidence_grade": "observer",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "estimate_revision_consensus_observer",
+          "snapshot_hash": "f0890d56262a8e7bd50a5d673cfd39eb927933784a6452e7548f02d5c2f63bac"
+        },
+        {
+          "surface_id": "moomoo_capital_flow_day_observer",
+          "snapshot_hash": "b12e7f64db3e82f683cea5d8c28ab07c67682dc9dc2db995dc61daeb709cb350"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Consensus revision versus positioning disagreement",
+      "created_at": "2026-07-21T08:01:23Z",
+      "created_by": "alpha_search_phase1_synthesis",
+      "prediction": {
+        "success_probability": 0.18,
+        "main_failure_modes": [
+          "duplicate_or_frozen",
+          "no_candidate_overlap",
+          "wrong_transmission_mapping"
+        ],
+        "confidence_reason": "Both inputs exist, but the Moomoo member surface is parked and raw flow has already failed as a standalone source."
+      },
+      "reopen_condition": "At least 20 independent timestamp-aligned candidate decisions with closed replacement values and a non-inert cash-conflict comparison.",
+      "next_machine_action": "Do not reserve an experiment; quantify independent overlap and audit whether this is distinct from the parked Moomoo flow family."
+    },
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-fb98566f716d882e09a7",
+      "search_queue": "exploration",
+      "hypothesis": "For an independently mapped official event, a timestamp-safe official confirmation that implies a materially higher state probability than the still-observed prediction-market prior creates H5-H20 equity repricing after the confirmation clock.",
+      "fingerprint": {
+        "data_source": "prediction_market_event",
+        "component_sources": [
+          "prediction_market_event",
+          "sec_official_event"
+        ],
+        "expectation_proxy": "direct_implied_probability",
+        "economic_mechanism": "official_confirmation_probability_gap",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "event_drift",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "orthogonal_event_sleeve"
+      },
+      "surface_ids": [
+        "prediction_market_event_probability_observer",
+        "sec_official_event_evidence"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "direct_implied_probability",
+          "source": "prediction_market_event",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "probability",
+          "provenance": "Frozen market identifier and quoted probability are required per observation."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "official-event-contract-v1",
+            "known_at": "2026-07-20T20:00:00Z",
+            "provenance": "Timestamped official filing or release; no market return fields.",
+            "source": "sec_official_event",
+            "state": "official_condition_confirmed"
+          }
+        ],
+        "gap_definition": "Frozen calibrated state probability minus the contemporaneous direct implied probability.",
+        "transmission": {
+          "affected_tickers": [],
+          "catalyst": "Official confirmation becomes public after the frozen market-prior timestamp.",
+          "causal_steps": [
+            "official state changes",
+            "cash-flow distribution changes",
+            "mapped equity reprices"
+          ],
+          "expected_direction": "sign_of_probability_gap",
+          "half_life": "H5-H20"
+        }
+      },
+      "why_not_arbitraged": "The edge, if any, depends on point-in-time entity exposure mapping and distinct probability shocks rather than on generic event sentiment.",
+      "falsifier": "No usable issuer overlap, no independent probability shock, or no monotone replacement value after exact timestamp alignment falsifies the mechanism.",
+      "baseline": {
+        "policy": "Do not admit candidates from this event-state mapping.",
+        "universe": "current tradable observation universe"
+      },
+      "treatment": {
+        "policy": "Admit only predeclared issuer mappings whose independent official state implies a calibrated probability gap after the recorded prior timestamp."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate under identical capital constraints.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "borrow_dependency": "none for long mapping; any short mapping is a separate hypothesis",
+        "capacity_constraint": "default-off paper notional cap",
+        "costs_and_carry": "canonical cash-equity cost model",
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "predeclared ADV and spread floor",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "no earlier than next tradable session after both timestamps",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "prediction_market_event_probability_observer",
+          "snapshot_hash": "7e6662ef9e83f788b439464eb7863816e0984fe0d38af8a2145c2aea02338a43"
+        },
+        {
+          "surface_id": "sec_official_event_evidence",
+          "snapshot_hash": "d350a9b6d071a469e97bfda010fbcdbb09fa7bfdc35197ca05431e1504b9cde6"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Prediction-market prior versus official confirmation",
+      "created_at": "2026-07-21T08:01:23Z",
+      "created_by": "alpha_search_phase1_synthesis",
+      "prediction": {
+        "success_probability": 0.12,
+        "main_failure_modes": [
+          "already_priced",
+          "duplicate_or_frozen",
+          "no_candidate_overlap"
+        ],
+        "confidence_reason": "The prior is observable, but event independence, exposure mapping, and reopen counts are not ready."
+      },
+      "reopen_condition": "Meet the registered prediction-market post-repair count and prove at least 10 independent official-event issuer overlaps under one frozen map.",
+      "next_machine_action": "Do not reserve an experiment; cluster distinct probability shocks and audit the registered reopen condition."
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-c0da7d6c3657fd93d4c6": "f9f55c9caf1b23a62bbc2a2b5b7e1f539eb79e0b3b09c52211992e8073781d13",
+    "cand-ecb99b450542c0cdc11c": "d3ebf66df4912fc981f87651caec47177554714a392d40c5c94dbed639cc70ab",
+    "cand-fb98566f716d882e09a7": "1b41efb06e34ccd0323aec5fb5d50cd94ae1e2ee4b3b690012e0c0a3df970db5"
+  },
+  "preflight_decisions": {
+    "cand-c0da7d6c3657fd93d4c6": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-c0da7d6c3657fd93d4c6",
+      "selection_scope_id": "scope-8ce58d769661245b96dcfdbf",
+      "evaluated_at": "2026-07-21T08:04:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-21T08:01:00Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "estimate_revision_consensus_observer": "f0890d56262a8e7bd50a5d673cfd39eb927933784a6452e7548f02d5c2f63bac",
+        "ohlcv_price_revealed_context": "0c03884b69336485e50186061ebda273af64c128e426a55c8c7f5b16f1593907"
+      },
+      "declared_evidence_grade": "lead",
+      "maximum_supported_evidence_grade": "lead",
+      "fingerprint_hash": "bd15aaf0d7d1736dcce0a4a23d13d3f689c0a7a070d4e27ea919b8f86d7bd133",
+      "gates": {
+        "D0": {
+          "status": "park",
+          "reasons": [
+            "surface_source_contract_not_ready:estimate_revision_consensus_observer"
+          ]
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "park",
+          "reasons": [
+            "affected_ticker_mapping_unresolved"
+          ]
+        },
+        "D3": {
+          "status": "pass",
+          "reasons": []
+        }
+      },
+      "decision": "park",
+      "failure_reasons": [
+        "no_candidate_overlap",
+        "pit_or_source_failure"
+      ],
+      "reopen_condition": "At least 30 independent revision clocks, 10 tickers, and 10 actual core cash-conflict comparisons under a frozen calibration.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "17a615fea86b1eb8652301b7b7ba00b8b024a284646b3afd31aa464090bb0dc1"
+    },
+    "cand-ecb99b450542c0cdc11c": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-ecb99b450542c0cdc11c",
+      "selection_scope_id": "scope-8ce58d769661245b96dcfdbf",
+      "evaluated_at": "2026-07-21T08:04:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-21T08:01:00Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "estimate_revision_consensus_observer": "f0890d56262a8e7bd50a5d673cfd39eb927933784a6452e7548f02d5c2f63bac",
+        "moomoo_capital_flow_day_observer": "b12e7f64db3e82f683cea5d8c28ab07c67682dc9dc2db995dc61daeb709cb350"
+      },
+      "declared_evidence_grade": "observer",
+      "maximum_supported_evidence_grade": "observer",
+      "fingerprint_hash": "6af6f9357a1d81703626463367f0d67f70d80156820b9273f22c024045a78329",
+      "gates": {
+        "D0": {
+          "status": "park",
+          "reasons": [
+            "surface_candidate_overlap_absent:moomoo_capital_flow_day_observer",
+            "surface_source_contract_not_ready:estimate_revision_consensus_observer"
+          ]
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "park",
+          "reasons": [
+            "affected_ticker_mapping_unresolved"
+          ]
+        },
+        "D3": {
+          "status": "reject",
+          "reasons": [
+            "component_surface_parked:moomoo_capital_flow_day_observer"
+          ]
+        }
+      },
+      "decision": "reject",
+      "failure_reasons": [
+        "duplicate_or_frozen",
+        "no_candidate_overlap",
+        "pit_or_source_failure"
+      ],
+      "reopen_condition": "At least 20 independent timestamp-aligned candidate decisions with closed replacement values and a non-inert cash-conflict comparison.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "f321feb7522af2a4a2c710a795f4bba7756e677f91766b1b7d9a622a2b1778db"
+    },
+    "cand-fb98566f716d882e09a7": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-fb98566f716d882e09a7",
+      "selection_scope_id": "scope-8ce58d769661245b96dcfdbf",
+      "evaluated_at": "2026-07-21T08:04:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-21T08:01:00Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "prediction_market_event_probability_observer": "7e6662ef9e83f788b439464eb7863816e0984fe0d38af8a2145c2aea02338a43",
+        "sec_official_event_evidence": "d350a9b6d071a469e97bfda010fbcdbb09fa7bfdc35197ca05431e1504b9cde6"
+      },
+      "declared_evidence_grade": "lead",
+      "maximum_supported_evidence_grade": "lead",
+      "fingerprint_hash": "87f22436a5d7ea2eecabe523f0ee8205f4ea7677fab5a3a542a391077c560f5c",
+      "gates": {
+        "D0": {
+          "status": "park",
+          "reasons": [
+            "surface_candidate_overlap_absent:sec_official_event_evidence"
+          ]
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "park",
+          "reasons": [
+            "affected_ticker_mapping_unresolved"
+          ]
+        },
+        "D3": {
+          "status": "reject",
+          "reasons": [
+            "component_surface_parked:prediction_market_event_probability_observer",
+            "component_surface_saturated:sec_official_event_evidence"
+          ]
+        }
+      },
+      "decision": "reject",
+      "failure_reasons": [
+        "duplicate_or_frozen",
+        "no_candidate_overlap"
+      ],
+      "reopen_condition": "Meet the registered prediction-market post-repair count and prove at least 10 independent official-event issuer overlaps under one frozen map.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "42bcdaa7940422c858ee41502cae05c9d072e40466f1649775e46022e3ecb990"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-c0da7d6c3657fd93d4c6": "17a615fea86b1eb8652301b7b7ba00b8b024a284646b3afd31aa464090bb0dc1",
+    "cand-ecb99b450542c0cdc11c": "f321feb7522af2a4a2c710a795f4bba7756e677f91766b1b7d9a622a2b1778db",
+    "cand-fb98566f716d882e09a7": "42bcdaa7940422c858ee41502cae05c9d072e40466f1649775e46022e3ecb990"
+  },
+  "scores": {
+    "cand-c0da7d6c3657fd93d4c6": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 0.45,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.5
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": 0.263,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    },
+    "cand-ecb99b450542c0cdc11c": {
+      "components": {
+        "evidence_maturity": 0.333333,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 0.7,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.75
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.345333,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    },
+    "cand-fb98566f716d882e09a7": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 1.0,
+        "unresolved_source_or_contract_risk": 0.75
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.29,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {
+    "cand-c0da7d6c3657fd93d4c6": [
+      "no_candidate_overlap",
+      "pit_or_source_failure"
+    ],
+    "cand-ecb99b450542c0cdc11c": [
+      "duplicate_or_frozen",
+      "no_candidate_overlap",
+      "pit_or_source_failure"
+    ],
+    "cand-fb98566f716d882e09a7": [
+      "duplicate_or_frozen",
+      "no_candidate_overlap"
+    ]
+  },
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [],
+  "selected_candidate_id": null,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "729cf34a5675e1428d72b378c5f28eddb9b32f710855c0ce0cc517df46363fe8"
+}
