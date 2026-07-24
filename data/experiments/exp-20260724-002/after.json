@@ -1,0 +1,73 @@
+{
+  "artifact_type": "options_collection_measurement_repair",
+  "experiment_id": "exp-20260724-002",
+  "measurement_stage": "after",
+  "expected_value_score": 6.2057,
+  "sharpe": 0.0,
+  "sharpe_daily": 0.0,
+  "max_drawdown_pct": 0.0889,
+  "win_rate": null,
+  "total_trades": 49,
+  "survival_rate": 0.8116,
+  "total_pnl": 130992.36,
+  "benchmarks": {
+    "strategy_total_return_pct": 0.0
+  },
+  "gate1_anchor": {
+    "expected_value_score_sum": 6.2057,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "positive_ev_windows": 3,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889,
+    "baseline_experiment_id": "exp-20260715-010",
+    "baseline_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  },
+  "contract_checks": {
+    "per_request_transient_retry": {
+      "max_attempts_default": 3,
+      "backoff_seconds": [1.0, 5.0],
+      "retried_exceptions": "HTTPError>=500, URLError, TimeoutError",
+      "non_transient_not_retried": "HTTPError 4xx and schema/JSON errors raise immediately (test-verified)",
+      "env_override": "GINGER_OPTIONS_FETCH_MAX_ATTEMPTS"
+    },
+    "whole_snapshot_second_attempt": {
+      "max_second_attempts": 1,
+      "trigger": "rows_written==0 AND error_count>0 AND all errors transient",
+      "default_delay_seconds": 300.0,
+      "env_override": "GINGER_OPTIONS_SNAPSHOT_RETRY_DELAY_SECONDS",
+      "recovery_metadata_persisted_in_summary": true
+    },
+    "same_calendar_day_only": true,
+    "pit_contract_changed": false,
+    "collection_mode_semantics_changed": false,
+    "selector_ranking_sizing_exits_orders_changed": false,
+    "clean_pass_output_identical": "test_persist_daily_options_snapshot_marks_forward_rows_pit_safe still passes with recovery.second_attempt_used=false",
+    "injected_fault_tests": [
+      "test_fetch_retries_transient_5xx_then_succeeds",
+      "test_fetch_does_not_retry_non_transient_4xx",
+      "test_persist_second_attempt_recovers_whole_run_transient_outage",
+      "test_persist_gives_up_after_exactly_one_second_attempt",
+      "test_persist_no_second_attempt_on_non_transient_failure"
+    ],
+    "focused_test_results": "quant/test_options_onclickmedia.py 8 passed; quant/test_daily_non_ohlcv_snapshot.py + quant/test_core_drawdown_flow_put_stabilization_paper_sleeve.py 12 passed",
+    "gate1_metrics_zero_delta": true,
+    "trading_behavior_changed": false
+  },
+  "accepted_alpha": false,
+  "production_impact": "data_collection_resilience_only_no_orders_no_ranking_no_sizing",
+  "source_refs": [
+    "quant/options_onclickmedia.py",
+    "quant/test_options_onclickmedia.py",
+    "data/non_ohlcv/options_onclickmedia_summary_20260723.json"
+  ],
+  "decision": "accepted_measurement_repair",
+  "checks_passed": true,
+  "delta": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "total_trades": 0,
+    "minimum_survival_rate": 0.0,
+    "worst_max_drawdown_pct": 0.0
+  }
+}

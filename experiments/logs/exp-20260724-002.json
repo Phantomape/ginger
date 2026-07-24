@@ -1,0 +1,112 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "retry masks a real contract change",
+      "unbounded sleep delays nightly run",
+      "cache poisoning on partial responses"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The 5xx outage pattern was recurring (3 whole evenings in 2 months) but invisible until an options-dependent lane existed; the summary status field had faithfully recorded failed all along."
+  },
+  "causal_components": [],
+  "change_summary": "Add bounded transient-error resilience to the OnclickMedia forward options snapshot: per-request retry (3 attempts, 1s/5s backoff) for HTTP 5xx/URLError/timeout in fetch_onclickmedia_json, plus exactly one bounded whole-snapshot second attempt (default 300s delay, env-overridable) when a nightly run yields 0 rows with all-transient errors; recovery metadata is persisted in the daily summary. No PIT contract, selector, ranking, sizing, exit, or order changes; injected-fault tests cover recovery and bounded giving-up.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "onclickmedia_forward_snapshot_transient_retry_v1",
+  "component": "quant\\options_onclickmedia.py, quant\\test_options_onclickmedia.py, quant\\experiments, data\\experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260724-002",
+  "hypothesis": "Fault recovery for a recurring upstream publish anomaly: the OnclickMedia daily forward options snapshot is single-shot, so transient upstream outages (HTTP 530/5xx) have permanently destroyed three full forward quote-days (2026-05-25, 2026-06-19, 2026-07-23; 6 more partial days) and the PIT contract correctly forbids backfilling forward vintage, making each lost day unrecoverable and starving the core_drawdown_flow_put_stabilization reopen counter at its binding options_complete stage. Adding bounded transient-error retries per request plus one bounded whole-snapshot second attempt inside the same nightly run converts brief upstream outages into successful same-calendar-day forward captures without changing any PIT contract, selector, ranking, sizing, exits, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "options_collection_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "newly_observed_recurring_upstream_outage_pattern",
+  "next_retry_requires": [],
+  "notes": "Root cause evidence: 2026-07-23 nightly snapshot failed with HTTP Error 530 on all 60 tickers (0 rows) while 07-20..22 wrote ~5.6MB each; historical scan found two more whole-evening outage days (2026-05-25, 2026-06-19) and six partial days. Forward vintage is unrecoverable by contract (exp-20260723-007), so each lost day permanently starves the core_drawdown_flow_put_stabilization reopen counter at its binding options_complete stage. Live probe on 2026-07-24 returned HTTP 200 for the same endpoint, confirming transience. Fingerprint caveat: novelty fingerprint misclassified this face as ohlcv_relation/allocator_source (keyword collision); the true evidence face is the onclickmedia options collection surface, and the 0.60-0.61 near-neighbor WARNs against breakout/volume families are spurious keyword overlaps.",
+  "parameters": {
+    "locked_variables": [
+      "onclickmedia_forward_snapshot_transient_retry_v1"
+    ],
+    "single_causal_variable": "onclickmedia_forward_snapshot_transient_retry_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to retune retry counts, backoff seconds, or delay values; do not add more retry layers or scheduler-level re-runs without a new observed failure mode; do not use the retry machinery to justify backfilling lost forward days (2026-05-25, 2026-06-19, 2026-07-23 remain permanently non-forward per exp-20260723-007).",
+    "new_evidence_required": "Another whole-evening outage that the second attempt fails to recover (recovery.second_attempt_used=true with status=failed in a daily summary) would justify a follow-up with scheduler-level or longer-horizon recovery; otherwise this face is closed and routine daily summaries consume no IDs.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The 5xx outage pattern was recurring (3 whole evenings in 2 months) but invisible until an options-dependent lane existed; the summary status field had faithfully recorded failed all along."
+  },
+  "prediction": {
+    "confidence_reason": "Mechanical resilience repair with injected-fault tests; upstream recovery already verified by live probe returning HTTP 200.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "retry masks a real contract change",
+      "unbounded sleep delays nightly run",
+      "cache poisoning on partial responses"
+    ],
+    "recorded_at": "2026-07-24T16:14:39+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260724-002/before.json",
+    "data/experiments/exp-20260724-002/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-24T16:20:01+00:00",
+  "trial_family": "onclickmedia_forward_snapshot_resilience",
+  "trial_variant_id": "exp-20260724-002"
+}
