@@ -27,8 +27,9 @@ import logging
 import os
 import time
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -44,13 +45,18 @@ from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
 from estimate_revision_outcomes import (
+    materialize_estimate_revision_instrument_map,
     persist_estimate_revision_outcomes,
+    persist_estimate_revision_readiness,
     persist_recent_estimate_revision_outcome_catchup,
 )
 from live_position_control_ledger import build_position_control_ledger
 from operator_input_paths import open_positions_path, repo_relative
 from open_position_schema import core_slot_positions, has_account_positions, positions_by_ticker
 from regime_exit import compute_regime_exit_profile
+
+
+RUN_MARKET_TIMEZONE = ZoneInfo("America/New_York")
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
@@ -886,6 +892,14 @@ def _generate_llm_prompt(trade_items, open_positions, trend_signals_dict):
 # LLM_PROMPT_PRIORITY is on, else inline). They are pure data accumulation over
 # the broad universe and never feed core signals/ranking/sizing/exits.
 
+
+def _market_run_clock(now=None):
+    """Return one timezone-aware New York clock for all artifacts in a run."""
+    observed = now or datetime.now(timezone.utc)
+    if observed.tzinfo is None or observed.utcoffset() is None:
+        raise ValueError("run clock must be timezone-aware")
+    return observed.astimezone(RUN_MARKET_TIMEZONE)
+
 def _refresh_reference_caches_step(universe):
     """Refresh the sector + SEC-ticker reference caches over the broad universe."""
     try:
@@ -903,13 +917,14 @@ def _refresh_reference_caches_step(universe):
         log.warning(f"Reference cache refresh skipped: {e}")
 
 
-def _broad_earnings_merge_step(universe):
+def _broad_earnings_merge_step(universe, *, as_of=None):
     """Fetch broad-universe earnings into the shared earnings snapshot."""
     try:
         from fetch_broad_earnings_snapshot import fetch_broad_universe_earnings
 
+        as_of = as_of or _market_run_clock()
         summary = fetch_broad_universe_earnings(
-            as_of=datetime.now(),
+            as_of=as_of,
             tickers=universe,
             batch_size=EARNINGS_BROAD_BATCH_SIZE,
             batch_sleep_secs=EARNINGS_BROAD_BATCH_SLEEP_SECS,
@@ -1110,6 +1125,91 @@ def _resolve_live_portfolio_value(open_positions, features_dict, portfolio_value
     return portfolio_value
 
 
+def _build_entry_cash_admission_observations(
+    selected_signals,
+    open_positions,
+    current_prices,
+    *,
+    as_of,
+):
+    """Build a read-only, structured cash-admission trace for selected entries.
+
+    The trace never filters or resizes a signal.  It only records whether the
+    already-selected entry sequence would exceed the account cash known at the
+    decision clock, so forward attribution can count real cash conflicts rather
+    than infer them from free-form reason strings.
+    """
+    from portfolio_accounting import resolve_portfolio_accounting
+
+    accounting = resolve_portfolio_accounting(open_positions, current_prices)
+    cash_source = accounting.get("cash_source")
+    starting_cash = accounting.get("cash_usd")
+    reliable_cash = cash_source in {
+        "explicit_cash_usd",
+        "derived_from_portfolio_value_usd",
+    }
+    observations = []
+    remaining_cash = float(starting_cash) if reliable_cash and starting_cash is not None else None
+    for rank, signal in enumerate(selected_signals or [], 1):
+        sizing = signal.get("sizing") or {}
+        requested = sizing.get("position_value_usd")
+        try:
+            requested = float(requested)
+        except (TypeError, ValueError):
+            requested = None
+        if requested is not None and requested <= 0:
+            requested = None
+        ticker = str(signal.get("ticker") or "").upper()
+        if not ticker or requested is None or remaining_cash is None:
+            continue
+        available_before = remaining_cash
+        conflict = requested > available_before + 1e-9
+        conflict_id = (
+            f"cash-conflict:{as_of}:{rank}:{ticker}"
+            if conflict
+            else None
+        )
+        observations.append(
+            {
+                "schema_version": 1,
+                "as_of_date": str(as_of),
+                "ticker": ticker,
+                "strategy": signal.get("strategy"),
+                "rank": rank,
+                "action": "cash_conflict" if conflict else "cash_admitted",
+                "cash_conflict": conflict,
+                "cash_conflict_id": conflict_id,
+                "available_cash_usd": round(available_before, 2),
+                "requested_notional_usd": round(requested, 2),
+                "cash_source": cash_source,
+                "trade_enabled": False,
+                "alters_orders": False,
+            }
+        )
+        if not conflict:
+            remaining_cash -= requested
+    return {
+        "schema_version": 1,
+        "status": "ok" if reliable_cash else "unavailable",
+        "as_of_date": str(as_of),
+        "cash_source": cash_source,
+        "starting_cash_usd": starting_cash if reliable_cash else None,
+        "observation_count": len(observations),
+        "cash_conflict_count": sum(
+            1 for row in observations if row["cash_conflict"] is True
+        ),
+        "observations": observations,
+        "production_impact": {
+            "shared_policy_changed": False,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "trade_enabled": False,
+        },
+    }
+
+
 def _persist_estimate_revision_ledger_step(today_iso):
     """STEP 3 — persist the forward estimate-revision ledger (failure-tolerant)."""
     try:
@@ -1289,6 +1389,44 @@ def _load_options_forward_ledger_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _refresh_options_quality_gate_before_sleeves(today_iso):
+    """exp-20260725-004: rebuild the options collection quality gate BEFORE
+    sleeve builds.  The flow-put stabilization sleeve reads the gate at build
+    time, but the full forward-ledger refresh only runs after all sleeves, so
+    without this the sleeve's own asof quote-date row is always missing and
+    options scoring stays fail-closed forever.  The end-of-run full refresh
+    later rewrites the same file from the same inputs and thresholds."""
+    if not _env_flag("REFRESH_OPTIONS_FORWARD_LEDGER", True):
+        return {
+            "status": "skipped",
+            "as_of_date": today_iso,
+            "reason": "refresh_options_forward_ledger_false",
+        }
+    try:
+        module = _load_options_forward_ledger_module()
+        summary = module.refresh_collection_quality_gate(
+            chain_dir=os.environ.get("OPTIONS_FORWARD_CHAIN_DIR", "data/non_ohlcv"),
+            output_dir=os.environ.get(
+                "OPTIONS_FORWARD_LEDGER_OUTPUT_DIR",
+                "data/non_ohlcv/options_forward",
+            ),
+        )
+        log.info(
+            "Pre-sleeve options quality gate refreshed: quote_dates=%s usable=%s quarantined=%s",
+            len(summary.get("quote_dates") or []),
+            len(summary.get("usable_quote_dates") or []),
+            len(summary.get("quarantined_quote_dates") or []),
+        )
+        return {"status": "ok", "as_of_date": today_iso, **summary}
+    except Exception as e:
+        log.warning(f"Pre-sleeve options quality gate refresh unavailable: {e}")
+        return {
+            "status": "failed_pre_sleeve_options_quality_gate_refresh",
+            "as_of_date": today_iso,
+            "error": str(e),
+        }
 
 
 def _default_options_forward_ohlcv_warehouse() -> str | None:
@@ -1506,6 +1644,26 @@ def _persist_estimate_revision_outcomes_after_quant_signals(
         }
 
     try:
+        try:
+            instrument_map_summary = materialize_estimate_revision_instrument_map(
+                as_of=today_iso,
+                ledger_path=(
+                    "data/non_ohlcv/estimate_revision_ledger_"
+                    f"{today_iso.replace('-', '')}.jsonl"
+                ),
+                data_dir="data",
+                generated_at=datetime.now(timezone.utc),
+            )
+        except Exception as map_exc:
+            log.warning("Estimate revision instrument map refresh unavailable: %s", map_exc)
+            instrument_map_summary = {
+                "status": "failed_instrument_map_refresh",
+                "as_of_date": today_iso,
+                "error": str(map_exc),
+            }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_instrument_map"] = instrument_map_summary
+
         summary = persist_estimate_revision_outcomes(
             as_of=today_iso,
             data_dir="data",
@@ -1543,11 +1701,32 @@ def _persist_estimate_revision_outcomes_after_quant_signals(
             }
         if isinstance(non_ohlcv_snapshot, dict):
             non_ohlcv_snapshot["estimate_revision_outcome_catchup"] = catchup_summary
+        try:
+            readiness_summary = persist_estimate_revision_readiness(
+                as_of=today_iso,
+                data_dir="data",
+                output_dir="data/non_ohlcv",
+                generated_at=datetime.now(timezone.utc),
+            )
+        except Exception as readiness_exc:
+            log.warning("Estimate revision readiness refresh unavailable: %s", readiness_exc)
+            readiness_summary = {
+                "status": "failed_estimate_revision_readiness_refresh",
+                "as_of_date": today_iso,
+                "error": str(readiness_exc),
+            }
+        if isinstance(non_ohlcv_snapshot, dict):
+            non_ohlcv_snapshot["estimate_revision_readiness"] = readiness_summary
+        summary["instrument_map_refresh"] = instrument_map_summary
+        summary["readiness"] = readiness_summary
         log.info(
-            "Estimate revision outcomes settled: matched=%s h3_closed=%s h5_closed=%s catchup_ledgers=%s",
+            "Estimate revision outcomes settled: matched=%s h5_closed=%s h10_closed=%s "
+            "h20_closed=%s independent=%s catchup_ledgers=%s",
             summary.get("matched_candidate_rows"),
-            (summary.get("closed_rows_by_horizon") or {}).get("h3"),
             (summary.get("closed_rows_by_horizon") or {}).get("h5"),
+            (summary.get("closed_rows_by_horizon") or {}).get("h10"),
+            (summary.get("closed_rows_by_horizon") or {}).get("h20"),
+            readiness_summary.get("independent_decisions"),
             catchup_summary.get("refreshed_ledger_count"),
         )
         return summary
@@ -2186,8 +2365,8 @@ def _step5_position_context(
         )
 
     trend_signals_dict = {
-        "generated_at": datetime.now().isoformat(),
-        "asof_date":    datetime.now().strftime("%Y-%m-%d"),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "asof_date":    today_iso,
         "universe":     universe,
         "pilot_universe": pilot_universe,
         "data_universe": data_universe,
@@ -2266,8 +2445,9 @@ def main():
     except Exception:
         pass
 
-    today = datetime.now().strftime("%Y%m%d")
-    today_iso = datetime.now().date().isoformat()
+    run_clock = _market_run_clock()
+    today = run_clock.strftime("%Y%m%d")
+    today_iso = run_clock.date().isoformat()
 
     from paper_sleeve_runner import run_sleeve as _run_sleeve
 
@@ -2527,6 +2707,10 @@ def main():
     from moomoo_capital_flow_paper_sleeve import (
         empty_moomoo_capital_flow_paper_sleeve_snapshot,
         prep_and_build_moomoo_capital_flow_paper_sleeve_snapshot,
+    )
+    from core_drawdown_flow_put_stabilization_paper_sleeve import (
+        empty_core_drawdown_flow_put_snapshot,
+        prep_and_build_core_drawdown_flow_put_snapshot,
     )
     from finra_ats_share_paper_sleeve import (
         empty_finra_ats_share_paper_sleeve_snapshot,
@@ -3004,7 +3188,14 @@ def main():
     # eps_estimate and avg_historical_surprise_pct for earnings_event_long.
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
-    persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
+    # A timezone-aware retrieval clock is mandatory for forward estimate-
+    # revision attribution.  This only changes the default-off observation
+    # artifact; signal generation continues to use the same in-memory data.
+    persist_earnings_snapshot(
+        earnings_dict,
+        as_of=run_clock,
+        logger=log,
+    )
 
     # NOTE: broad-universe OHLCV warehouse accumulation is NOT done here. It is
     # already handled downstream by refresh_warehouse_ohlcv() (exp-20260612-002,
@@ -3021,7 +3212,9 @@ def main():
     # above and signals use the in-memory core earnings), so in priority mode it
     # is deferred until after the Step 6A prompt checkpoint.
     _broad_earnings_job = functools.partial(
-        _broad_earnings_merge_step, post_prompt_accumulation_universe
+        _broad_earnings_merge_step,
+        post_prompt_accumulation_universe,
+        as_of=run_clock,
     )
     if llm_prompt_priority:
         _deferred_after_prompt.append(("broad_earnings_merge", _broad_earnings_job))
@@ -3428,6 +3621,12 @@ def main():
         active_positions_count=strategy_active_positions,
         active_positions_scope="core_strategy_slot_accounting",
     )
+    entry_cash_admission = _build_entry_cash_admission_observations(
+        signals,
+        open_positions,
+        current_prices,
+        as_of=today_iso,
+    )
     entry_candidate_review = build_entry_candidate_review(
         advisory_entry_signals,
         live_selected_signals=signals,
@@ -3453,7 +3652,7 @@ def main():
             "pilot_slot_sliced_signals",
             [],
         ),
-        as_of=datetime.now().date().isoformat(),
+        as_of=today_iso,
         market_context=market_context,
         portfolio_heat=portfolio_heat,
         metadata=pilot_metadata,
@@ -4501,6 +4700,28 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    # exp-20260723-004: full deep-drawdown + owner-authorized stable-PIT
+    # Moomoo flow + forward near-Put-OI + price-stabilization observer.  The
+    # shared helper also drives its historical coverage replay.  It is
+    # default-off, single-slot paper only and never changes core/live orders.
+    # exp-20260725-004: the sleeve reads the options collection quality gate,
+    # which until now was only rebuilt after all sleeves — refresh it first so
+    # the current quote-date row exists at build time.
+    _refresh_options_quality_gate_before_sleeves(today_iso)
+    core_drawdown_flow_put_stabilization_paper_sleeve = _sleeve(
+        lambda: prep_and_build_core_drawdown_flow_put_snapshot(
+            as_of=today_iso,
+            ohlcv_dict=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        ),
+        empty_core_drawdown_flow_put_snapshot,
+        "Core drawdown-flow-Put stabilization",
+        "core_drawdown_flow_put_stabilization_paper_sleeve_build_failed",
+        log_metrics=_STD_SLEEVE_METRICS,
+    )
+
     finra_ats_share_paper_sleeve = _sleeve(
         lambda: prep_and_build_finra_ats_share_paper_sleeve_snapshot(
             as_of=today_iso,
@@ -4600,6 +4821,7 @@ def main():
             "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
             "sec_item101_contract_relation_paper_sleeve": sec_item101_contract_relation_paper_sleeve,
             "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
+            "core_drawdown_flow_put_stabilization_paper_sleeve": core_drawdown_flow_put_stabilization_paper_sleeve,
             "finra_ats_share_paper_sleeve": finra_ats_share_paper_sleeve,
             "finra_otc_internalization_paper_sleeve": finra_otc_internalization_paper_sleeve,
         }
@@ -4882,7 +5104,7 @@ def main():
     )
 
     quant_signals_payload = {
-        "generated_at":   datetime.now().isoformat(),
+        "generated_at":   datetime.now(timezone.utc).isoformat(),
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
         "signals":        signals,
@@ -4893,6 +5115,8 @@ def main():
         "entry_execution_plan": entry_execution_plan,
         "strategy_entry_execution_plan": strategy_entry_execution_plan,
         "entry_candidate_review": entry_candidate_review,
+        "entry_cash_admission": entry_cash_admission,
+        "cash_admission_observations": entry_cash_admission["observations"],
         "candidate_decision_training_ledger": candidate_decision_training_ledger,
         "core_risk_intensity_forward_observation": core_risk_intensity_forward_observation,
         "market_state_snapshot": market_state_snapshot,
@@ -4948,6 +5172,7 @@ def main():
         "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
         "sec_item101_contract_relation_paper_sleeve": sec_item101_contract_relation_paper_sleeve,
         "moomoo_capital_flow_paper_sleeve": moomoo_capital_flow_paper_sleeve,
+        "core_drawdown_flow_put_stabilization_paper_sleeve": core_drawdown_flow_put_stabilization_paper_sleeve,
         "finra_ats_share_paper_sleeve": finra_ats_share_paper_sleeve,
         "finra_otc_internalization_paper_sleeve": finra_otc_internalization_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,

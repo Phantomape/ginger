@@ -809,6 +809,43 @@ def _collection_quality_gate(
     }
 
 
+def refresh_collection_quality_gate(
+    *,
+    chain_dir: str | Path = DEFAULT_CHAIN_DIR,
+    output_dir: str | Path = "data/non_ohlcv/options_forward",
+    min_liquidity_pass_rate: float = DEFAULT_MIN_LIQUIDITY_PASS_RATE,
+    min_liquid_tickers: int = DEFAULT_MIN_LIQUID_TICKERS,
+    min_market_rows_rate: float = DEFAULT_MIN_MARKET_ROWS_RATE,
+) -> dict[str, Any]:
+    """Rebuild only ``options_collection_quality_gate.json`` from local chain files.
+
+    The daily pipeline builds paper sleeves before the full forward-ledger
+    refresh, so the sleeve-facing quality gate must be recomputed first or the
+    current quote date is always missing at sleeve build time
+    (exp-20260725-004). Thresholds and the writer are identical to
+    ``build_ledger``; this never touches the ledger, report, or quarantine
+    artifacts, and the end-of-run full refresh rewrites the same file from the
+    same inputs.
+    """
+    chain_files = discover_chain_files(_repo_path(chain_dir), None)
+    _, option_diagnostics = load_option_rows(chain_files)
+    gate = _collection_quality_gate(
+        option_diagnostics,
+        min_liquidity_pass_rate=min_liquidity_pass_rate,
+        min_liquid_tickers=min_liquid_tickers,
+        min_market_rows_rate=min_market_rows_rate,
+    )
+    quality_gate_path = _repo_path(output_dir) / "options_collection_quality_gate.json"
+    _write_json(quality_gate_path, gate)
+    return {
+        "quality_gate_path": _repo_rel(quality_gate_path),
+        "chain_file_count": len(chain_files),
+        "quote_dates": sorted((gate.get("by_quote_date") or {}).keys()),
+        "usable_quote_dates": gate.get("usable_quote_dates", []),
+        "quarantined_quote_dates": gate.get("quarantined_quote_dates", []),
+    }
+
+
 def _liquidity_anomaly_report(option_diagnostics: dict[str, Any]) -> dict[str, Any]:
     report: dict[str, Any] = {}
     for quote_date, payload in (option_diagnostics.get("by_quote_date") or {}).items():

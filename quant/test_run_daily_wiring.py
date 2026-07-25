@@ -1,5 +1,5 @@
 import ast
-from datetime import date
+from datetime import date, datetime, timezone
 import inspect
 from pathlib import Path
 import sys
@@ -17,6 +17,7 @@ from fundamental_growth_rs_paper_sleeve import (  # noqa: E402
 )
 from run import (  # noqa: E402
     _build_daily_non_ohlcv_snapshot,
+    _build_entry_cash_admission_observations,
     _core_slot_ticker_set,
     _persist_daily_structured_news_observation,
     _persist_drugsfda_approval_observer,
@@ -33,6 +34,7 @@ from run import (  # noqa: E402
     _refresh_estimate_revision_ledger_after_quant_signals,
     _refresh_live_position_control_after_report,
     _refresh_options_forward_ledger_after_quant_signals,
+    _market_run_clock,
     main,
 )
 
@@ -66,6 +68,62 @@ def test_core_slot_ticker_set_only_includes_positive_core_slots():
     }
 
     assert _core_slot_ticker_set(payload) == {"AMZN", "MRVL"}
+
+
+def test_core_drawdown_flow_put_observer_is_wired_default_off_daily():
+    source = inspect.getsource(main)
+    assert "prep_and_build_core_drawdown_flow_put_snapshot" in source
+    assert "core_drawdown_flow_put_stabilization_paper_sleeve" in source
+    assert "empty_core_drawdown_flow_put_snapshot" in source
+
+
+def test_market_run_clock_uses_new_york_business_date():
+    observed = datetime(2026, 7, 21, 1, 30, tzinfo=timezone.utc)
+    market_clock = _market_run_clock(observed)
+    assert market_clock.tzinfo is not None
+    assert market_clock.date().isoformat() == "2026-07-20"
+
+
+def test_cash_admission_observer_uses_structured_account_cash_without_changing_signals():
+    signals = [
+        {
+            "ticker": "AAA",
+            "strategy": "trend",
+            "sizing": {"position_value_usd": 600.0},
+        },
+        {
+            "ticker": "BBB",
+            "strategy": "breakout",
+            "sizing": {"position_value_usd": 500.0},
+        },
+    ]
+    result = _build_entry_cash_admission_observations(
+        signals,
+        {"cash_usd": 1_000.0, "positions": []},
+        {},
+        as_of="2026-07-21",
+    )
+
+    assert result["status"] == "ok"
+    assert result["cash_conflict_count"] == 1
+    assert result["observations"][0]["cash_conflict"] is False
+    assert result["observations"][1]["cash_conflict"] is True
+    assert result["observations"][1]["cash_conflict_id"] == (
+        "cash-conflict:2026-07-21:2:BBB"
+    )
+    assert result["production_impact"]["alters_orders"] is False
+    assert "cash_conflict" not in signals[1]
+
+
+def test_cash_admission_observer_fails_closed_without_reliable_cash():
+    result = _build_entry_cash_admission_observations(
+        [{"ticker": "AAA", "sizing": {"position_value_usd": 100.0}}],
+        {"positions": []},
+        {},
+        as_of="2026-07-21",
+    )
+    assert result["status"] == "unavailable"
+    assert result["observations"] == []
 
 
 def test_fundamental_growth_rs_call_uses_core_slot_ticker_set():
@@ -209,8 +267,15 @@ def test_estimate_revision_ledger_refresh_skips_when_quant_signals_save_failed(
 def test_estimate_revision_outcomes_settle_after_quant_signals(monkeypatch):
     calls = []
 
+    def fake_materialize_estimate_revision_instrument_map(**kwargs):
+        calls.append(("map", kwargs))
+        assert kwargs["as_of"] == "2026-07-02"
+        assert kwargs["ledger_path"].endswith("estimate_revision_ledger_20260702.jsonl")
+        assert kwargs["generated_at"].tzinfo is not None
+        return {"status": "ok", "added_mapping_count": 2}
+
     def fake_persist_estimate_revision_outcomes(**kwargs):
-        calls.append(kwargs)
+        calls.append(("outcomes", kwargs))
         assert kwargs["as_of"] == "2026-07-02"
         assert kwargs["data_dir"] == "data"
         assert kwargs["output_dir"] == "data/non_ohlcv"
@@ -226,10 +291,42 @@ def test_estimate_revision_outcomes_settle_after_quant_signals(monkeypatch):
             },
         }
 
+    def fake_persist_recent_estimate_revision_outcome_catchup(**kwargs):
+        calls.append(("catchup", kwargs))
+        return {"status": "ok", "refreshed_ledger_count": 4}
+
+    def fake_persist_estimate_revision_readiness(**kwargs):
+        calls.append(("readiness", kwargs))
+        assert kwargs["generated_at"].tzinfo is not None
+        return {
+            "status": "parked",
+            "independent_decisions": 3,
+            "settled_independent_decisions_by_horizon": {
+                "h5": 1,
+                "h10": 0,
+                "h20": 0,
+            },
+        }
+
+    monkeypatch.setattr(
+        run_module,
+        "materialize_estimate_revision_instrument_map",
+        fake_materialize_estimate_revision_instrument_map,
+    )
     monkeypatch.setattr(
         run_module,
         "persist_estimate_revision_outcomes",
         fake_persist_estimate_revision_outcomes,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "persist_recent_estimate_revision_outcome_catchup",
+        fake_persist_recent_estimate_revision_outcome_catchup,
+    )
+    monkeypatch.setattr(
+        run_module,
+        "persist_estimate_revision_readiness",
+        fake_persist_estimate_revision_readiness,
     )
     snapshot = {}
 
@@ -239,9 +336,12 @@ def test_estimate_revision_outcomes_settle_after_quant_signals(monkeypatch):
         quant_signals_saved=True,
     )
 
-    assert len(calls) == 1
+    assert [name for name, _ in calls] == ["map", "outcomes", "catchup", "readiness"]
     assert summary["closed_rows_by_horizon"]["h3"] == 2
     assert snapshot["estimate_revision_outcomes"] is summary
+    assert snapshot["estimate_revision_instrument_map"]["status"] == "ok"
+    assert snapshot["estimate_revision_readiness"]["independent_decisions"] == 3
+    assert summary["readiness"]["settled_independent_decisions_by_horizon"]["h20"] == 0
     assert summary["production_impact"]["alters_orders"] is False
 
 
@@ -1858,3 +1958,116 @@ def test_sec_item101_contract_relation_paper_sleeve_not_added_to_prompt_trend_si
                 prompt_facing_assignments.append(node)
 
     assert prompt_facing_assignments == []
+
+
+def test_options_quality_gate_refreshed_before_flow_put_sleeve_build():
+    """exp-20260725-004: the flow-put sleeve reads the options collection
+    quality gate at build time, so the pre-sleeve gate refresh must run
+    before the sleeve build and the full ledger refresh must stay after."""
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    pre_refresh_linenos = []
+    sleeve_build_linenos = []
+    post_ledger_linenos = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func_id = getattr(node.func, "id", None)
+        if func_id == "_refresh_options_quality_gate_before_sleeves":
+            pre_refresh_linenos.append(node.lineno)
+        if func_id == "prep_and_build_core_drawdown_flow_put_snapshot":
+            sleeve_build_linenos.append(node.lineno)
+        if func_id == "_refresh_options_forward_ledger_after_quant_signals":
+            post_ledger_linenos.append(node.lineno)
+
+    assert pre_refresh_linenos, "pre-sleeve quality gate refresh missing from main"
+    assert sleeve_build_linenos, "flow-put sleeve build missing from main"
+    assert post_ledger_linenos, "post-quant options forward ledger refresh missing from main"
+    assert min(pre_refresh_linenos) < min(sleeve_build_linenos)
+    assert min(sleeve_build_linenos) < min(post_ledger_linenos)
+
+
+def test_refresh_collection_quality_gate_writes_current_quote_date(tmp_path, monkeypatch):
+    """exp-20260725-004: the quality-gate-only refresh must materialize a
+    scoring_allowed row for a healthy current quote date and keep genuinely
+    bad dates fail-closed (quarantined)."""
+    import importlib.util
+    import json as _json
+
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "run_options_forward_ledger.py"
+    spec = importlib.util.spec_from_file_location(
+        "run_options_forward_ledger_for_quality_gate_test", script_path
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    chain_dir = tmp_path / "chains"
+    chain_dir.mkdir()
+    healthy_date = "2026-07-24"
+    healthy_rows = []
+    for ticker_index in range(12):
+        ticker = f"TK{ticker_index:02d}"
+        for row_index in range(12):
+            healthy_rows.append(
+                {
+                    "ticker": ticker,
+                    "quote_date": healthy_date,
+                    "bid": 1.0,
+                    "ask": 1.2,
+                    "mid": 1.1,
+                    "volume": 25,
+                    "open_interest": 500,
+                    "delta": 0.4,
+                    "implied_vol": 0.3,
+                    "option_liquidity_pass": True,
+                    "option_liquidity_score": "pass",
+                    "usable_trade_date": "2026-07-27",
+                    "pit_safe": True,
+                    "strike": 100.0 + row_index,
+                    "call_put": "put" if row_index % 2 else "call",
+                    "expiration": "2026-08-21",
+                }
+            )
+    healthy_path = chain_dir / "options_onclickmedia_chain_20260724.jsonl"
+    healthy_path.write_text(
+        "\n".join(_json.dumps(row) for row in healthy_rows) + "\n", encoding="utf-8"
+    )
+
+    sparse_date = "2026-07-23"
+    sparse_rows = [
+        {
+            "ticker": "TK00",
+            "quote_date": sparse_date,
+            "bid": 0.0,
+            "ask": 0.0,
+            "mid": 0.0,
+            "volume": 0,
+            "open_interest": 0,
+            "delta": 0.0,
+            "implied_vol": 0.0,
+            "option_liquidity_pass": False,
+            "option_liquidity_score": "fail",
+        }
+    ]
+    sparse_path = chain_dir / "options_onclickmedia_chain_20260723.jsonl"
+    sparse_path.write_text(
+        "\n".join(_json.dumps(row) for row in sparse_rows) + "\n", encoding="utf-8"
+    )
+
+    output_dir = tmp_path / "options_forward"
+    summary = module.refresh_collection_quality_gate(
+        chain_dir=chain_dir,
+        output_dir=output_dir,
+    )
+
+    gate_path = output_dir / "options_collection_quality_gate.json"
+    assert gate_path.exists()
+    payload = _json.loads(gate_path.read_text(encoding="utf-8"))
+    healthy_row = payload["by_quote_date"][healthy_date]
+    assert healthy_row["scoring_allowed"] is True
+    assert healthy_row["status"] == "usable_for_shadow"
+    sparse_row = payload["by_quote_date"][sparse_date]
+    assert sparse_row["scoring_allowed"] is False
+    assert sparse_row["status"] == "quarantined"
+    assert healthy_date in summary["usable_quote_dates"]
+    assert sparse_date in summary["quarantined_quote_dates"]
