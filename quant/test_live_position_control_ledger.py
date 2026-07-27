@@ -123,10 +123,58 @@ def test_build_position_control_ledger_blocks_ok_to_add_and_is_idempotent(tmp_pa
     assert "exit_now" in state["ok_to_add_control_blockers"]
     assert "fallback_stop" in state["ok_to_add_control_blockers"]
     assert "manual_bracket_orders_not_broker_confirmed" in state["ok_to_add_control_blockers"]
-    assert "report_open_positions_asof_mismatch" in state["ok_to_add_control_blockers"]
+    # positions_as_of (2026-07-08) is FRESHER than report_date (2026-07-07):
+    # the normal evening-run shape must not raise the staleness blocker
+    # (exp-20260727-004).
+    assert "report_open_positions_asof_mismatch" not in state["ok_to_add_control_blockers"]
+    assert state["report_open_positions_asof_mismatch"] is False
     assert first["append_result"]["rows_appended"] > 0
     assert second["append_result"]["rows_appended"] == 0
     assert ledger_path.exists()
+
+
+def test_stale_positions_snapshot_still_blocks_ok_to_add(tmp_path: Path) -> None:
+    # Broker-refresh outage shape (2026-07-26): positions snapshot dated
+    # BEFORE the report must keep raising the staleness blocker.
+    report_path = tmp_path / "report_20260707.txt"
+    positions_path = tmp_path / "open_positions.json"
+    ledger_path = tmp_path / "ledger.jsonl"
+    state_path = tmp_path / "state.json"
+    report_path.write_text(REPORT, encoding="utf-8")
+    _write_json(
+        positions_path,
+        {
+            "as_of": "2026-07-06",
+            "positions": [
+                {
+                    "ticker": "CRDO",
+                    "direction": "long",
+                    "shares": 15,
+                    "avg_cost": 262,
+                    "entry_date": "2026-06-12",
+                    "target_price": 314.4,
+                    "stop_price": 216.5,
+                    "opened_by_strategy": "fomo",
+                    "sleeve": "fomo",
+                    "risk_notes": "systematic entry",
+                    "position_id": 1,
+                }
+            ],
+        },
+    )
+
+    result = build_position_control_ledger(
+        report_path=report_path,
+        positions_path=positions_path,
+        live_drift_state_path=tmp_path / "missing_live_drift.json",
+        ledger_path=ledger_path,
+        state_path=state_path,
+    )
+
+    state = result["state"]
+    assert state["report_open_positions_asof_mismatch"] is True
+    assert "report_open_positions_asof_mismatch" in state["ok_to_add_control_blockers"]
+    assert state["ok_to_add_control_pass"] is False
 
 
 def test_report_only_rows_are_kept(tmp_path: Path) -> None:

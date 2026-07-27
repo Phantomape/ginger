@@ -299,6 +299,21 @@ def _order_summary(orders: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _positions_snapshot_stale(report_date: str | None, positions_as_of: str | None) -> bool:
+    """True only when the positions snapshot is OLDER than the report date.
+
+    ``open_positions.json`` stamps ``as_of`` with the UTC calendar date, so a
+    normal post-close Pacific-evening run yields ``positions_as_of`` one day
+    AHEAD of ``report_date`` — that is a fresher snapshot, not a mismatch
+    (exp-20260727-004; strict equality had fired on 100% of ledger days).
+    A snapshot dated before the report (e.g. the 2026-07-26 broker-refresh
+    outage) is genuinely stale and must keep blocking adds.
+    """
+    if not report_date or not positions_as_of:
+        return False
+    return positions_as_of < report_date
+
+
 def _row_control_blockers(
     *,
     row_source: str,
@@ -323,7 +338,7 @@ def _row_control_blockers(
         blockers.append("manual_bracket_orders_not_broker_confirmed")
     if row_source == "report_only":
         blockers.append("report_only_control_row")
-    if report_date and positions_as_of and report_date != positions_as_of:
+    if _positions_snapshot_stale(report_date, positions_as_of):
         blockers.append("report_open_positions_asof_mismatch")
     if position and not orders and not exit_now and not warnings:
         blockers.append("missing_daily_report_control")
@@ -520,7 +535,7 @@ def _build_state(
     warning_flags = sorted({flag for row in rows for flag in row.get("warning_flags", [])})
     report_date = report.get("report_date")
     positions_as_of = positions_payload.get("as_of")
-    date_mismatch = bool(report_date and positions_as_of and report_date != positions_as_of)
+    date_mismatch = _positions_snapshot_stale(report_date, positions_as_of)
 
     return {
         "asof_date": report_date or positions_as_of,
