@@ -1,0 +1,107 @@
+{
+ "schema_version": 1,
+ "surfaces": [
+  {
+   "surface_id": "cash_feasible_core_price_prior_20260715",
+   "data_source": "ohlcv_warehouse",
+   "component_sources": [
+    "ohlcv_warehouse"
+   ],
+   "roles": [
+    "market_expectation",
+    "price_revealed_context",
+    "opportunity_cost"
+   ],
+   "artifacts": [
+    "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+    "data/warehouse/warehouse_main.sqlite"
+   ],
+   "pit_status": "canonical_pit",
+   "evidence_grade": "gate_candidate",
+   "settled_count": 49,
+   "independent_count": 49,
+   "candidate_overlap_count": 627,
+   "gate_ready": true,
+   "expectation_proxy": {
+    "type": "price_revealed",
+    "field": "cash_feasible_core_candidate_order_or_cash_at_decision",
+    "source": "ohlcv_warehouse"
+   },
+   "saturation_status": "open",
+   "reopen_condition": "Use only as the frozen passive opportunity-cost context; it grants no novelty or promotion authority.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-04T16:21:06Z",
+   "artifact_snapshot_hashes": {
+    "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+    "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+   }
+  },
+  {
+   "surface_id": "massive_trade_size_microstructure_research_pit_20260804",
+   "data_source": "massive_full_market_ohlcv",
+   "component_sources": [
+    "massive_full_market_ohlcv"
+   ],
+   "roles": [
+    "independent_evidence",
+    "candidate_pool",
+    "price_revealed_context",
+    "liquidity"
+   ],
+   "artifacts": [
+    "data/alpha_search/massive_trade_size_field_readiness_20260804.json",
+    "data/alpha_search/massive_block_print_roster_20260804.json",
+    "data/alpha_search/massive_history_warehouse_manifest_20260804.json"
+   ],
+   "pit_status": "research_pit",
+   "evidence_grade": "lead",
+   "settled_count": 0,
+   "independent_count": 5627587,
+   "candidate_overlap_count": 627,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "open",
+   "reopen_condition": "A positive private replay remains observed-only until immutable as-published Massive bar vintages (including transactions and vwap aggregates) are verified.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-04T16:21:06Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/massive_trade_size_field_readiness_20260804.json": "46bfe34a2e44910a94d4d1608f6af7f6fb5c5a4fdde216aad8ab41eb519eee2b",
+    "data/alpha_search/massive_block_print_roster_20260804.json": "edf024b360d3cd3fce57af4e8d487b8dfbe00915d01c69757f90ccd483671861",
+    "data/alpha_search/massive_history_warehouse_manifest_20260804.json": "77a6b36c5a6b179be94ca9a566713c76c17840161d11d0f045c2e0e3b2e3baf6"
+   },
+   "research_pit_basis": "Session-level transactions and vwap aggregates are retrieval-time hash-bound grouped daily bars. Roster decisions at signal date D use only bars with trade_date <= D (trailing 126-session average-trade-size baseline, trailing-20 median dollar volume, same-session open/close relation) plus monthly as-of membership; no post-signal price, volume or outcome field is read before the reserved scout runner. Immutable as-published vintages and vendor aggregate corrections remain unverified.",
+   "known_future_leakage": false
+  },
+  {
+   "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+   "data_source": "massive_reference_asof_identity",
+   "component_sources": [
+    "massive_reference_asof_identity"
+   ],
+   "roles": [
+    "independent_evidence",
+    "candidate_universe",
+    "identity"
+   ],
+   "artifacts": [
+    "data/alpha_search/massive_asof_identity_readiness_20260728.json"
+   ],
+   "pit_status": "research_pit",
+   "evidence_grade": "lead",
+   "settled_count": 0,
+   "independent_count": 188528,
+   "candidate_overlap_count": 627,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "open",
+   "reopen_condition": "A positive private replay remains observed-only until the dated reference endpoint has immutable as-published vintage proof; descriptive revisions and FIGIs remain excluded from decisions.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-04T16:21:06Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/massive_asof_identity_readiness_20260728.json": "04bae7c39f5bb76980c9553165c53c1110e0570b8d4279cf130a9094344e0a00"
+   },
+   "research_pit_basis": "The official dated reference query freezes active=true,type=CS membership by reference snapshot date. Roster decisions use only as_of, ticker, type and active; future descriptive revisions are quarantined and immutable as-published vintage proof remains absent.",
+   "known_future_leakage": false
+  }
+ ]
+}
