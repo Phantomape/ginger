@@ -1,10 +1,14 @@
 import ast
 from datetime import date, datetime, timezone
 import inspect
+import json
 from pathlib import Path
+import sqlite3
 import sys
 import textwrap
 import types
+
+import pandas as pd
 
 
 QUANT_DIR = Path(__file__).resolve().parent
@@ -25,16 +29,21 @@ from run import (  # noqa: E402
     _persist_entity_theme_news_observer,
     _persist_entity_theme_news_outcomes,
     _persist_estimate_revision_outcomes_after_quant_signals,
+    _persist_massive_dividend_restart_forward_observer,
+    _persist_massive_dividend_restart_forward_settlement,
     _persist_ortex_borrow_observer,
+    _run_massive_ohlcv_grouped_catchup,
     _persist_prediction_market_event_observer,
     _persist_prediction_market_event_outcomes,
     _persist_sec_contract_relation_provenance,
     _persist_sec_corporate_event_stream,
     _persist_usaspending_obligation_observer,
+    _refresh_finra_short_interest_before_coverage,
     _refresh_estimate_revision_ledger_after_quant_signals,
     _refresh_live_position_control_after_report,
     _refresh_options_forward_ledger_after_quant_signals,
     _market_run_clock,
+    _resolve_options_forward_inputs,
     main,
 )
 
@@ -82,6 +91,58 @@ def test_market_run_clock_uses_new_york_business_date():
     market_clock = _market_run_clock(observed)
     assert market_clock.tzinfo is not None
     assert market_clock.date().isoformat() == "2026-07-20"
+
+
+def test_options_forward_inputs_use_completed_session_not_latest_partial_row():
+    observed = datetime(2026, 7, 31, 4, 8, tzinfo=timezone.utc)
+
+    def frame(prior_close, partial_close):
+        return pd.DataFrame(
+            {"Close": [prior_close, partial_close]},
+            index=pd.to_datetime(["2026-07-30", "2026-07-31"]),
+        )
+
+    resolved = _resolve_options_forward_inputs(
+        _market_run_clock(observed),
+        {
+            "SPY": frame(700.0, 701.0),
+            "QQQ": frame(620.0, 621.0),
+            "TSLA": frame(300.0, 999.0),
+        },
+        ["SPY", "QQQ", "TSLA"],
+    )
+
+    assert resolved["quote_date"] == "2026-07-30"
+    assert resolved["underlying_prices"] == {
+        "QQQ": 620.0,
+        "SPY": 700.0,
+        "TSLA": 300.0,
+    }
+    assert resolved["health"]["status"] == "ok"
+    assert resolved["health"]["canonical_benchmark_latest_dates"] == {
+        "SPY": "2026-07-31",
+        "QQQ": "2026-07-31",
+    }
+
+
+def test_options_forward_inputs_fail_closed_without_exact_canonical_anchors():
+    observed = datetime(2026, 7, 31, 4, 8, tzinfo=timezone.utc)
+    stale = pd.DataFrame(
+        {"Close": [600.0]},
+        index=pd.to_datetime(["2026-07-29"]),
+    )
+
+    resolved = _resolve_options_forward_inputs(
+        _market_run_clock(observed),
+        {"SPY": stale, "QQQ": stale, "TSLA": stale},
+        ["SPY", "QQQ", "TSLA"],
+    )
+
+    assert resolved["quote_date"] is None
+    assert resolved["tickers"] == []
+    assert resolved["underlying_prices"] == {}
+    assert resolved["health"]["status"] == "blocked"
+    assert resolved["health"]["missing_exact_benchmarks"] == ["SPY", "QQQ"]
 
 
 def test_cash_admission_observer_uses_structured_account_cash_without_changing_signals():
@@ -716,14 +777,23 @@ def test_daily_non_ohlcv_wires_form4_context_into_run_path(monkeypatch):
         data_universe=["CRDO"],
         options_ingest_tickers=["CRDO"],
         option_underlying_prices={"CRDO": 1.0},
+        options_quote_date="2026-07-02",
+        options_collection_health={
+            "status": "ok",
+            "completed_session_date": "2026-07-02",
+        },
         non_ohlcv_catchup_summary={"status": "ok", "days_total": 0},
     )
 
     assert calls["ensure"]
     assert calls["ensure"][0]["profile"] == "daily"
     assert calls["ensure"][0]["refresh_form4_context"] is True
+    assert calls["ensure"][0]["options_quote_date"] == "2026-07-02"
+    assert calls["ensure"][0]["options_collection_health"]["status"] == "ok"
     assert calls["fallback"]
     assert calls["fallback"][0]["refresh_form4_context"] is True
+    assert calls["fallback"][0]["refresh_options"] is True
+    assert calls["fallback"][0]["options_quote_date"] == "2026-07-02"
     form4_context = snapshot["form4_sale_overhang_context"]
     assert form4_context["trade_enabled"] is False
     impact = form4_context["production_impact"]
@@ -731,6 +801,113 @@ def test_daily_non_ohlcv_wires_form4_context_into_run_path(monkeypatch):
     assert impact["alters_candidate_ranking"] is False
     assert impact["alters_sizing"] is False
     assert impact["alters_orders"] is False
+
+
+def test_finra_archive_refresh_precedes_coverage_and_uses_broad_universe(monkeypatch):
+    calls = []
+    old_rows = [
+        {
+            "ticker": "AAA",
+            "publication_date": "2026-07-10",
+            "settlement_date": "2026-06-30",
+        }
+    ]
+    new_rows = old_rows + [
+        {
+            "ticker": "BBB",
+            "publication_date": "2026-07-24",
+            "settlement_date": "2026-07-15",
+        },
+        {
+            "ticker": "CCC",
+            "publication_date": "2026-07-24",
+            "settlement_date": "2026-07-15",
+        },
+    ]
+
+    def fake_refresh(**kwargs):
+        calls.append(kwargs)
+        return new_rows, "local_archive_refreshed", [{"publication_date": "2026-07-24"}]
+
+    monkeypatch.setitem(
+        sys.modules,
+        "finra_iwm_paper_sleeve",
+        types.SimpleNamespace(
+            load_finra_short_interest_rows=lambda: old_rows,
+            refresh_finra_short_interest_archive=fake_refresh,
+        ),
+    )
+
+    summary = _refresh_finra_short_interest_before_coverage(
+        today_iso="2026-07-27",
+        tickers=["aaa", "BBB", "CCC"],
+    )
+
+    assert calls[0]["tickers"] == {"AAA", "BBB", "CCC"}
+    assert calls[0]["as_of"] == "2026-07-27"
+    assert calls[0]["max_staleness_days"] == -1
+    assert summary["status"] == "ok"
+    assert summary["source_status"] == "local_archive_refreshed"
+    assert summary["publication_date_max"] == "2026-07-24"
+    assert summary["settlement_date_max"] == "2026-07-15"
+    assert summary["latest_settlement_ticker_count"] == 2
+    assert summary["latest_settlement_fraction_of_requested_universe"] == 0.666667
+    assert summary["density_forced_refresh"] is True
+    assert summary["archive_changed"] is True
+    assert summary["production_impact"]["alters_signal_generation"] is False
+    assert summary["production_impact"]["alters_candidate_ranking"] is False
+    assert summary["production_impact"]["alters_sizing"] is False
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_finra_precoverage_refresh_is_fail_soft(monkeypatch):
+    def failing_refresh(**_kwargs):
+        raise RuntimeError("synthetic FINRA outage")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "finra_iwm_paper_sleeve",
+        types.SimpleNamespace(
+            load_finra_short_interest_rows=lambda: [],
+            refresh_finra_short_interest_archive=failing_refresh,
+        ),
+    )
+
+    summary = _refresh_finra_short_interest_before_coverage(
+        today_iso="2026-07-27",
+        tickers=["AAA"],
+    )
+
+    assert summary["status"] == "unavailable"
+    assert summary["reason"] == "finra_precoverage_refresh_failed"
+    assert "synthetic FINRA outage" in summary["error"]
+    assert summary["production_impact"]["alters_orders"] is False
+
+
+def test_main_refreshes_finra_archive_before_non_ohlcv_coverage():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    calls = {
+        getattr(node.func, "id", None): node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "id", None)
+        in {
+            "_refresh_finra_short_interest_before_coverage",
+            "_build_daily_non_ohlcv_snapshot",
+            "prep_and_build_sec_ftd_finra_paper_sleeve_snapshot",
+        }
+    }
+
+    refresh_call = calls["_refresh_finra_short_interest_before_coverage"]
+    coverage_call = calls["_build_daily_non_ohlcv_snapshot"]
+    sleeve_call = calls["prep_and_build_sec_ftd_finra_paper_sleeve_snapshot"]
+    assert refresh_call.lineno < coverage_call.lineno < sleeve_call.lineno
+    ticker_args = [
+        keyword.value for keyword in refresh_call.keywords if keyword.arg == "tickers"
+    ]
+    assert len(ticker_args) == 1
+    assert isinstance(ticker_args[0], ast.Name)
+    assert ticker_args[0].id == "broad_ingest_universe"
 
 
 def _install_fake_ortex_wiring_modules(monkeypatch, observer):
@@ -1223,42 +1400,80 @@ def test_entity_theme_news_event_forward_observer_daily_wiring_fail_soft(monkeyp
     assert summary["trade_enabled"] is False
 
 
-def test_drugsfda_approval_observer_daily_wiring_calls_only_with_local_zip(
+def test_drugsfda_approval_observer_produces_before_consuming_and_reports_coverage(
     monkeypatch, tmp_path
 ):
     raw_zip_path = tmp_path / "drugsatfda_official.zip"
     raw_zip_path.write_bytes(b"official fixture")
-    calls = []
+    manifest_path = tmp_path / "snapshot_manifest.json"
+    manifest_path.write_text("{}", encoding="utf-8")
+    calls = {"producer": [], "observer": [], "health": []}
 
-    def fake_persist_daily_drugsfda_approval_observer(**kwargs):
-        calls.append(kwargs)
+    def fake_fetch_daily_drugsfda_snapshot(today):
+        calls["producer"].append(today)
         return {
             "status": "ok",
-            "row_count": 17,
-            "rows_appended": 17,
-            "first_seen_count": 17,
+            "producer_mode": "official_daily_drugsfda_download",
+            "source_mode": "official_producer",
+            "snapshot_path": str(raw_zip_path),
+            "manifest_path": str(manifest_path),
+            "retrieved_at_utc": "2026-07-28T12:00:00Z",
         }
 
+    def fake_persist_daily_drugsfda_approval_observer(**kwargs):
+        calls["observer"].append(kwargs)
+        return {
+            "status": "ok",
+            "parsed_application_count": 17,
+            "rows_appended": 0,
+            "new_forward_event_count": 0,
+            "forward_event_count_total": 0,
+        }
+
+    def fake_persist_producer_health_summary(**kwargs):
+        calls["health"].append(kwargs)
+        return {
+            **kwargs["observer_summary"],
+            "status": "ok",
+            "producer_health_status": "ok",
+            "heartbeat_status": "fresh_success_zero_forward",
+            "snapshot_fresh": True,
+            "zero_event_heartbeat": True,
+        }
+
+    monkeypatch.delenv("GINGER_DRUGSFDA_APPROVAL_SNAPSHOT", raising=False)
     monkeypatch.setitem(
         sys.modules,
         "drugsfda_approval_observer",
         types.SimpleNamespace(
-            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            fetch_daily_drugsfda_snapshot=fake_fetch_daily_drugsfda_snapshot,
             persist_daily_drugsfda_approval_observer=(
                 fake_persist_daily_drugsfda_approval_observer
             ),
+            persist_producer_health_summary=fake_persist_producer_health_summary,
         ),
     )
 
-    summary = _persist_drugsfda_approval_observer("20260713")
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_drugsfda_approval_observer(
+        "20260728", non_ohlcv_snapshot
+    )
 
-    assert calls == [
+    assert calls["producer"] == ["20260728"]
+    assert calls["observer"] == [
         {
-            "today": "20260713",
+            "today": "20260728",
             "raw_zip_path": str(raw_zip_path),
+            "snapshot_manifest_path": str(manifest_path),
+            "observed_at": "2026-07-28T12:00:00Z",
         }
     ]
+    assert len(calls["health"]) == 1
     assert summary["status"] == "ok"
+    assert summary["zero_event_heartbeat"] is True
+    assert non_ohlcv_snapshot["coverage_manifest"][
+        "drugsfda_approval_observer"
+    ]["heartbeat_status"] == "fresh_success_zero_forward"
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
     assert summary["alters_orders"] is False
@@ -1269,29 +1484,48 @@ def test_drugsfda_approval_observer_daily_wiring_calls_only_with_local_zip(
     assert summary["alters_exits"] is False
 
 
-def test_drugsfda_approval_observer_skips_without_local_zip(monkeypatch, tmp_path):
-    calls = []
+def test_drugsfda_approval_observer_missing_override_fails_closed(
+    monkeypatch, tmp_path
+):
+    observer_calls = []
+    health_calls = []
     raw_zip_path = tmp_path / "missing_drugsatfda_official.zip"
 
     def unexpected_persist_daily_drugsfda_approval_observer(**kwargs):
-        calls.append(kwargs)
+        observer_calls.append(kwargs)
 
+    def unexpected_fetch(*_args, **_kwargs):
+        raise AssertionError("configured override must not fetch")
+
+    def fake_persist_producer_health_summary(**kwargs):
+        health_calls.append(kwargs)
+        return {
+            "status": "unavailable",
+            "reason": "producer_unavailable",
+            "producer_health_status": "unavailable",
+            "snapshot_fresh": False,
+        }
+
+    monkeypatch.setenv("GINGER_DRUGSFDA_APPROVAL_SNAPSHOT", str(raw_zip_path))
     monkeypatch.setitem(
         sys.modules,
         "drugsfda_approval_observer",
         types.SimpleNamespace(
-            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            fetch_daily_drugsfda_snapshot=unexpected_fetch,
             persist_daily_drugsfda_approval_observer=(
                 unexpected_persist_daily_drugsfda_approval_observer
             ),
+            persist_producer_health_summary=fake_persist_producer_health_summary,
         ),
     )
 
     summary = _persist_drugsfda_approval_observer("20260713")
 
-    assert calls == []
-    assert summary["status"] == "skipped"
-    assert summary["reason"] == "official_zip_missing"
+    assert observer_calls == []
+    assert len(health_calls) == 1
+    assert summary["status"] == "unavailable"
+    assert summary["reason"] == "producer_unavailable"
+    assert summary["snapshot_fresh"] is False
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
     assert summary["alters_orders"] is False
@@ -1306,19 +1540,40 @@ def test_drugsfda_approval_observer_daily_wiring_fail_soft(monkeypatch, tmp_path
     raw_zip_path = tmp_path / "drugsatfda_official.zip"
     raw_zip_path.write_bytes(b"official fixture")
     calls = []
+    health_calls = []
+
+    def fake_fetch_daily_drugsfda_snapshot(today):
+        return {
+            "status": "ok",
+            "producer_mode": "official_daily_drugsfda_download",
+            "source_mode": "official_producer",
+            "snapshot_path": str(raw_zip_path),
+            "manifest_path": str(tmp_path / "manifest.json"),
+            "retrieved_at_utc": "2026-07-13T12:00:00Z",
+        }
 
     def failing_persist_daily_drugsfda_approval_observer(**kwargs):
         calls.append(kwargs)
         raise RuntimeError("Drugs@FDA observer unavailable")
 
+    def fake_persist_producer_health_summary(**kwargs):
+        health_calls.append(kwargs)
+        return {
+            "status": "unavailable",
+            "reason": "observer_or_producer_error",
+            "error": kwargs.get("error"),
+        }
+
+    monkeypatch.delenv("GINGER_DRUGSFDA_APPROVAL_SNAPSHOT", raising=False)
     monkeypatch.setitem(
         sys.modules,
         "drugsfda_approval_observer",
         types.SimpleNamespace(
-            DEFAULT_RAW_ZIP_PATH=raw_zip_path,
+            fetch_daily_drugsfda_snapshot=fake_fetch_daily_drugsfda_snapshot,
             persist_daily_drugsfda_approval_observer=(
                 failing_persist_daily_drugsfda_approval_observer
             ),
+            persist_producer_health_summary=fake_persist_producer_health_summary,
         ),
     )
 
@@ -1328,6 +1583,8 @@ def test_drugsfda_approval_observer_daily_wiring_fail_soft(monkeypatch, tmp_path
         {
             "today": "20260713",
             "raw_zip_path": str(raw_zip_path),
+            "snapshot_manifest_path": str(tmp_path / "manifest.json"),
+            "observed_at": "2026-07-13T12:00:00Z",
         }
     ]
     assert summary["status"] == "unavailable"
@@ -1354,30 +1611,47 @@ def test_drugsfda_approval_observer_is_wired_in_both_daily_paths():
     assert len(call_expressions) == 2
     assert all(
         isinstance(expression.value, ast.Call)
-        and len(expression.value.args) == 1
+        and len(expression.value.args) == 2
         and isinstance(expression.value.args[0], ast.Name)
         and expression.value.args[0].id == "today"
+        and isinstance(expression.value.args[1], ast.Name)
+        and expression.value.args[1].id == "non_ohlcv_snapshot"
         for expression in call_expressions
     )
 
 
-def test_usaspending_obligation_observer_calls_only_with_local_snapshot(
+def test_usaspending_obligation_observer_preserves_local_snapshot_override(
     monkeypatch, tmp_path
 ):
     snapshot_path = tmp_path / "usaspending_transactions.json"
     snapshot_path.write_text("{}", encoding="utf-8")
-    calls = []
+    observer_calls = []
+    health_calls = []
 
     def fake_run_observer(**kwargs):
-        calls.append(kwargs)
+        observer_calls.append(kwargs)
         return {
             "status": "ok",
-            "row_count": 23,
+            "parsed_transaction_count": 23,
             "rows_appended": 4,
-            "first_seen_count": 4,
+            "new_forward_rows_appended": 4,
             "strategy_behavior_changed": True,
             "trade_enabled": True,
             "alters_orders": True,
+        }
+
+    def unexpected_fetch(*args, **kwargs):
+        raise AssertionError("configured local override must not call the producer")
+
+    def fake_persist_health(**kwargs):
+        health_calls.append(kwargs)
+        return {
+            **dict(kwargs.get("observer_summary") or {}),
+            "status": "stale",
+            "reason": "unverified_local_override",
+            "producer_status": "unverified",
+            "producer_mode": kwargs["producer_result"]["producer_mode"],
+            "snapshot_fresh": False,
         }
 
     monkeypatch.setenv(
@@ -1387,18 +1661,24 @@ def test_usaspending_obligation_observer_calls_only_with_local_snapshot(
     monkeypatch.setitem(
         sys.modules,
         "usaspending_obligation_observer",
-        types.SimpleNamespace(run_observer=fake_run_observer),
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=unexpected_fetch,
+            persist_producer_health_summary=fake_persist_health,
+            run_observer=fake_run_observer,
+        ),
     )
 
     summary = _persist_usaspending_obligation_observer("20260713")
 
-    assert calls == [
+    assert observer_calls == [
         {
             "snapshot_path": str(snapshot_path),
             "observed_at": None,
         }
     ]
-    assert summary["status"] == "ok"
+    assert health_calls[0]["producer_result"]["producer_mode"] == "configured_local_snapshot"
+    assert summary["status"] == "stale"
+    assert summary["snapshot_fresh"] is False
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
     assert summary["alters_orders"] is False
@@ -1407,38 +1687,324 @@ def test_usaspending_obligation_observer_calls_only_with_local_snapshot(
     assert summary["alters_exits"] is False
 
 
-def test_usaspending_obligation_observer_skips_without_configuration(monkeypatch):
-    calls = []
+def test_usaspending_obligation_observer_fetches_official_snapshot_without_override(
+    monkeypatch, tmp_path
+):
+    snapshot_path = tmp_path / "usaspending_transactions.zip"
+    snapshot_path.write_bytes(b"PK-test")
+    calls = {"fetch": [], "observer": [], "health": []}
+
+    def fake_fetch(run_date):
+        calls["fetch"].append(run_date)
+        return {
+            "status": "ok",
+            "producer_mode": "official_daily_download",
+            "snapshot_path": str(snapshot_path),
+            "retrieved_at_utc": "2026-07-13T20:52:47Z",
+            "manifest_path": str(tmp_path / "manifest.json"),
+        }
 
     def fake_run_observer(**kwargs):
-        calls.append(kwargs)
-        return {"status": "ok"}
+        calls["observer"].append(kwargs)
+        return {
+            "status": "ok",
+            "rows_appended": 0,
+            "new_forward_rows_appended": 0,
+            "new_eligible_forward_rows_appended": 0,
+            "forward_event_count_total": 0,
+            "eligible_forward_event_count_total": 0,
+        }
+
+    def fake_persist_health(**kwargs):
+        calls["health"].append(kwargs)
+        return {
+            **dict(kwargs["observer_summary"]),
+            "status": "ok",
+            "producer_status": "ok",
+            "producer_mode": "official_daily_download",
+            "run_date": "2026-07-13",
+            "retrieved_at_utc": "2026-07-13T20:52:47Z",
+            "snapshot_fresh": True,
+            "snapshot_age_days": 0,
+            "heartbeat_status": "fresh_success_zero_forward",
+            "zero_event_heartbeat": True,
+        }
 
     monkeypatch.delenv("GINGER_USASPENDING_TRANSACTION_SNAPSHOT", raising=False)
     monkeypatch.setitem(
         sys.modules,
         "usaspending_obligation_observer",
-        types.SimpleNamespace(run_observer=fake_run_observer),
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=fake_fetch,
+            persist_producer_health_summary=fake_persist_health,
+            run_observer=fake_run_observer,
+        ),
     )
 
-    summary = _persist_usaspending_obligation_observer("20260713")
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_usaspending_obligation_observer(
+        "20260713", non_ohlcv_snapshot
+    )
 
-    assert calls == []
-    assert summary["status"] == "skipped"
-    assert summary["reason"] == "transaction_snapshot_not_configured"
-    assert summary["snapshot_path"] is None
+    assert calls["fetch"] == ["20260713"]
+    assert calls["observer"] == [
+        {
+            "snapshot_path": str(snapshot_path),
+            "observed_at": "2026-07-13T20:52:47Z",
+        }
+    ]
+    assert len(calls["health"]) == 1
+    assert summary["status"] == "ok"
+    assert summary["zero_event_heartbeat"] is True
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
+    assert non_ohlcv_snapshot["coverage_manifest"][
+        "usaspending_obligation_observer"
+    ]["heartbeat_status"] == "fresh_success_zero_forward"
 
 
-def test_usaspending_obligation_observer_skips_when_snapshot_is_missing(
+def test_usaspending_obligation_observer_exposes_pending_resume_health(
+    monkeypatch,
+):
+    producer = {
+        "status": "pending",
+        "producer_mode": "official_daily_transaction_download",
+        "source_mode": "official_producer",
+        "run_date": "2026-07-13",
+        "job_requested_at_utc": "2026-07-13T20:52:00Z",
+        "status_poll_count": 15,
+        "attempt_poll_count": 15,
+        "resumed_pending_job": True,
+        "pending_job_validation_status": "validated",
+        "error": "USAspending status poll budget exhausted",
+    }
+    health_calls = []
+
+    def fake_persist_health(**kwargs):
+        health_calls.append(kwargs)
+        return {
+            **producer,
+            "reason": "producer_pending",
+            "producer_status": "pending",
+            "producer_health_status": "pending",
+            "producer_job_requested_at_utc": producer["job_requested_at_utc"],
+            "producer_status_poll_count": producer["status_poll_count"],
+            "producer_attempt_poll_count": producer["attempt_poll_count"],
+        }
+
+    def unexpected_observer(**_kwargs):
+        raise AssertionError("pending producer must not run the observer")
+
+    monkeypatch.delenv("GINGER_USASPENDING_TRANSACTION_SNAPSHOT", raising=False)
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=lambda _today: producer,
+            persist_producer_health_summary=fake_persist_health,
+            run_observer=unexpected_observer,
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_usaspending_obligation_observer(
+        "20260713", non_ohlcv_snapshot
+    )
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "usaspending_obligation_observer"
+    ]
+
+    assert len(health_calls) == 1
+    assert summary["status"] == "pending"
+    assert summary["trade_enabled"] is False
+    assert coverage["resumed_pending_job"] is True
+    assert coverage["pending_job_validation_status"] == "validated"
+    assert coverage["producer_job_requested_at_utc"] == "2026-07-13T20:52:00Z"
+    assert coverage["producer_status_poll_count"] == 15
+    assert coverage["producer_attempt_poll_count"] == 15
+
+
+def test_usaspending_daily_wiring_blocks_current_day_behind_prior_pending(
+    monkeypatch,
+):
+    producer = {
+        "status": "pending",
+        "producer_mode": "official_daily_transaction_download",
+        "source_mode": "official_producer",
+        "run_date": "2026-07-29",
+        "job_requested_at_utc": "2026-07-30T03:08:17Z",
+        "status_poll_count": 16,
+        "attempt_poll_count": 1,
+        "resumed_pending_job": True,
+        "pending_job_validation_status": "validated",
+        "error": "USAspending status poll budget exhausted",
+    }
+    fetch_calls = []
+    health_calls = []
+
+    def fake_fetch(run_date):
+        fetch_calls.append(run_date)
+        return producer
+
+    def fake_health(**kwargs):
+        health_calls.append(kwargs)
+        return {
+            **producer,
+            "reason": "producer_pending",
+            "producer_status": "pending",
+            "producer_health_status": "pending",
+        }
+
+    def unexpected_observer(**_kwargs):
+        raise AssertionError("a prior pending job must block current-day consumption")
+
+    monkeypatch.delenv("GINGER_USASPENDING_TRANSACTION_SNAPSHOT", raising=False)
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=fake_fetch,
+            persist_producer_health_summary=fake_health,
+            run_observer=unexpected_observer,
+        ),
+    )
+
+    summary = _persist_usaspending_obligation_observer("20260730")
+
+    assert fetch_calls == ["20260730"]
+    assert [call["run_date"] for call in health_calls] == ["2026-07-29"]
+    assert summary["status"] == "pending"
+    assert summary["run_date"] == "2026-07-29"
+    assert summary["trade_enabled"] is False
+
+
+def test_usaspending_daily_wiring_consumes_prior_success_then_persists_current_health(
+    monkeypatch, tmp_path
+):
+    prior_snapshot = tmp_path / "transaction_snapshot_20260729.zip"
+    prior_snapshot.write_bytes(b"PK-prior")
+    persisted_daily_snapshot = tmp_path / "daily_non_ohlcv_snapshot_20260730.json"
+    producer_results = [
+        {
+            "status": "ok",
+            "producer_mode": "official_daily_transaction_download",
+            "source_mode": "official_producer",
+            "run_date": "2026-07-29",
+            "snapshot_path": str(prior_snapshot),
+            "retrieved_at_utc": "2026-07-30T15:00:00Z",
+            "resumed_pending_job": True,
+            "pending_job_validation_status": "validated",
+        },
+        {
+            "status": "pending",
+            "producer_mode": "official_daily_transaction_download",
+            "source_mode": "official_producer",
+            "run_date": "2026-07-30",
+            "job_requested_at_utc": "2026-07-30T15:01:00Z",
+            "resumed_pending_job": False,
+            "pending_job_validation_status": "validated",
+            "error": "USAspending status poll budget exhausted",
+        },
+    ]
+    fetch_calls = []
+    observer_calls = []
+    health_calls = []
+
+    def fake_fetch(run_date):
+        fetch_calls.append(run_date)
+        return producer_results[len(fetch_calls) - 1]
+
+    def fake_observer(**kwargs):
+        observer_calls.append(kwargs)
+        return {
+            "status": "ok",
+            "rows_appended": 3,
+            "new_forward_rows_appended": 3,
+            "new_eligible_forward_rows_appended": 1,
+        }
+
+    def fake_health(**kwargs):
+        health_calls.append(kwargs)
+        producer = dict(kwargs["producer_result"])
+        observer = dict(kwargs.get("observer_summary") or {})
+        status = producer["status"]
+        return {
+            **producer,
+            **observer,
+            "status": status,
+            "producer_status": status,
+            "producer_health_status": status,
+            "reason": None if status == "ok" else "producer_pending",
+        }
+
+    monkeypatch.delenv("GINGER_USASPENDING_TRANSACTION_SNAPSHOT", raising=False)
+    monkeypatch.setitem(
+        sys.modules,
+        "usaspending_obligation_observer",
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=fake_fetch,
+            persist_producer_health_summary=fake_health,
+            run_observer=fake_observer,
+        ),
+    )
+    non_ohlcv_snapshot = {
+        "status": "ok",
+        "paths": {"summary": str(persisted_daily_snapshot)},
+        "coverage_manifest": {},
+    }
+
+    summary = _persist_usaspending_obligation_observer(
+        "20260730", non_ohlcv_snapshot
+    )
+
+    assert fetch_calls == ["20260730", "20260730"]
+    assert observer_calls == [
+        {
+            "snapshot_path": str(prior_snapshot),
+            "observed_at": "2026-07-30T15:00:00Z",
+        }
+    ]
+    assert [call["run_date"] for call in health_calls] == [
+        "2026-07-29",
+        "2026-07-30",
+    ]
+    assert summary["status"] == "pending"
+    assert summary["run_date"] == "2026-07-30"
+    assert summary["recovered_prior_run_date"] == "2026-07-29"
+    assert summary["recovered_prior_status"] == "ok"
+    assert summary["recovered_prior_rows_appended"] == 3
+    assert summary["daily_snapshot_health_persisted"] is True
+    persisted = json.loads(persisted_daily_snapshot.read_text(encoding="utf-8"))
+    coverage = persisted["coverage_manifest"]["usaspending_obligation_observer"]
+    assert coverage["status"] == "pending"
+    assert coverage["run_date"] == "2026-07-30"
+    assert coverage["recovered_prior_run_date"] == "2026-07-29"
+    assert coverage["daily_snapshot_health_persisted"] is True
+    assert summary["trade_enabled"] is False
+
+
+def test_usaspending_obligation_observer_fails_closed_when_override_is_missing(
     monkeypatch, tmp_path
 ):
     snapshot_path = tmp_path / "missing_usaspending_transactions.json"
-    calls = []
+    observer_calls = []
+    health_calls = []
 
     def unexpected_run_observer(**kwargs):
-        calls.append(kwargs)
+        observer_calls.append(kwargs)
+
+    def unexpected_fetch(*args, **kwargs):
+        raise AssertionError("configured local override must not call the producer")
+
+    def fake_persist_health(**kwargs):
+        health_calls.append(kwargs)
+        producer = kwargs["producer_result"]
+        return {
+            **producer,
+            "status": "unavailable",
+            "producer_status": "unavailable",
+            "snapshot_fresh": False,
+        }
 
     monkeypatch.setenv(
         "GINGER_USASPENDING_TRANSACTION_SNAPSHOT",
@@ -1447,15 +2013,21 @@ def test_usaspending_obligation_observer_skips_when_snapshot_is_missing(
     monkeypatch.setitem(
         sys.modules,
         "usaspending_obligation_observer",
-        types.SimpleNamespace(run_observer=unexpected_run_observer),
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=unexpected_fetch,
+            persist_producer_health_summary=fake_persist_health,
+            run_observer=unexpected_run_observer,
+        ),
     )
 
     summary = _persist_usaspending_obligation_observer("20260713")
 
-    assert calls == []
-    assert summary["status"] == "skipped"
+    assert observer_calls == []
+    assert len(health_calls) == 1
+    assert summary["status"] == "unavailable"
     assert summary["reason"] == "transaction_snapshot_missing"
     assert summary["snapshot_path"] == str(snapshot_path)
+    assert summary["snapshot_fresh"] is False
     assert summary["trade_enabled"] is False
     assert summary["strategy_behavior_changed"] is False
 
@@ -1469,6 +2041,15 @@ def test_usaspending_obligation_observer_daily_wiring_is_fail_soft(
     def failing_run_observer(**kwargs):
         raise RuntimeError("USAspending observer unavailable")
 
+    def fake_persist_health(**kwargs):
+        return {
+            **dict(kwargs["producer_result"]),
+            "status": "unavailable",
+            "producer_status": "unavailable",
+            "error": kwargs.get("error"),
+            "snapshot_fresh": False,
+        }
+
     monkeypatch.setenv(
         "GINGER_USASPENDING_TRANSACTION_SNAPSHOT",
         str(snapshot_path),
@@ -1476,7 +2057,11 @@ def test_usaspending_obligation_observer_daily_wiring_is_fail_soft(
     monkeypatch.setitem(
         sys.modules,
         "usaspending_obligation_observer",
-        types.SimpleNamespace(run_observer=failing_run_observer),
+        types.SimpleNamespace(
+            fetch_daily_transaction_snapshot=lambda *_args, **_kwargs: None,
+            persist_producer_health_summary=fake_persist_health,
+            run_observer=failing_run_observer,
+        ),
     )
 
     summary = _persist_usaspending_obligation_observer("20260713")
@@ -1506,9 +2091,11 @@ def test_usaspending_obligation_observer_is_wired_in_both_daily_paths():
     assert len(call_expressions) == 2
     assert all(
         isinstance(expression.value, ast.Call)
-        and len(expression.value.args) == 1
+        and len(expression.value.args) == 2
         and isinstance(expression.value.args[0], ast.Name)
         and expression.value.args[0].id == "today"
+        and isinstance(expression.value.args[1], ast.Name)
+        and expression.value.args[1].id == "non_ohlcv_snapshot"
         for expression in call_expressions
     )
 
@@ -1986,6 +2573,73 @@ def test_options_quality_gate_refreshed_before_flow_put_sleeve_build():
     assert min(sleeve_build_linenos) < min(post_ledger_linenos)
 
 
+def test_options_forward_settlement_reads_canonical_hot_overlay(tmp_path):
+    """exp-20260727-001: recent settlement bars live in the sibling hot DB.
+
+    The options ledger must consume the canonical overlay, preserve cold
+    history, and prefer corrected hot rows on duplicate ticker-dates.
+    """
+    import importlib.util
+
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "run_options_forward_ledger.py"
+    spec = importlib.util.spec_from_file_location(
+        "run_options_forward_ledger_for_hot_overlay_test", script_path
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    cold_path = tmp_path / "warehouse_main.sqlite"
+    hot_path = tmp_path / "warehouse_main_hot.sqlite"
+    schema = """
+        CREATE TABLE ohlcv (
+            ticker TEXT NOT NULL,
+            date TEXT NOT NULL,
+            open REAL,
+            high REAL,
+            low REAL,
+            close REAL,
+            volume REAL,
+            source TEXT,
+            updated_at TEXT,
+            PRIMARY KEY (ticker, date)
+        )
+    """
+    with sqlite3.connect(cold_path) as conn:
+        conn.execute(schema)
+        conn.executemany(
+            "INSERT INTO ohlcv VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                ("AAA", "2026-06-15", 99.0, 101.0, 98.0, 100.0, 1000.0, "cold", "2026-06-16T00:00:00Z"),
+                ("AAA", "2026-07-23", 199.0, 201.0, 198.0, 200.0, 2000.0, "cold", "2026-07-24T00:00:00Z"),
+            ],
+        )
+    with sqlite3.connect(hot_path) as conn:
+        conn.execute(schema)
+        conn.executemany(
+            "INSERT INTO ohlcv VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                ("AAA", "2026-07-23", 219.0, 223.0, 218.0, 222.0, 2200.0, "hot", "2026-07-24T01:00:00Z"),
+                ("AAA", "2026-07-24", 223.0, 226.0, 222.0, 225.0, 2300.0, "hot", "2026-07-25T01:00:00Z"),
+            ],
+        )
+
+    diagnostics = {}
+    rows = module._load_ohlcv_warehouse(
+        cold_path,
+        tickers={"AAA"},
+        diagnostics=diagnostics,
+    )["AAA"]
+    rows_by_date = {row["date"]: row for row in rows}
+
+    assert set(rows_by_date) == {"2026-06-15", "2026-07-23", "2026-07-24"}
+    assert rows_by_date["2026-07-23"]["close"] == 222.0
+    assert diagnostics["hot_exists"] is True
+    assert diagnostics["hot_attached"] is True
+    assert diagnostics["hot_error"] is None
+    assert module.forward_stats(rows, "2026-07-24")["outcome_status"] != "signal_date_missing_in_ohlcv"
+
+
 def test_refresh_collection_quality_gate_writes_current_quote_date(tmp_path, monkeypatch):
     """exp-20260725-004: the quality-gate-only refresh must materialize a
     scoring_allowed row for a healthy current quote date and keep genuinely
@@ -2071,3 +2725,364 @@ def test_refresh_collection_quality_gate_writes_current_quote_date(tmp_path, mon
     assert sparse_row["status"] == "quarantined"
     assert healthy_date in summary["usable_quote_dates"]
     assert sparse_date in summary["quarantined_quote_dates"]
+
+
+def test_massive_dividend_restart_forward_observer_is_wired_in_both_daily_paths():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    call_expressions = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        == "_persist_massive_dividend_restart_forward_observer"
+    ]
+
+    assert len(call_expressions) == 2
+    assert all(
+        isinstance(expression.value, ast.Call)
+        and len(expression.value.args) == 2
+        and isinstance(expression.value.args[0], ast.Name)
+        and expression.value.args[0].id == "today"
+        and isinstance(expression.value.args[1], ast.Name)
+        and expression.value.args[1].id == "non_ohlcv_snapshot"
+        for expression in call_expressions
+    )
+
+
+def test_massive_dividend_restart_forward_observer_reports_coverage(monkeypatch):
+    observer_calls = []
+
+    def fake_persist(today):
+        observer_calls.append(today)
+        return {
+            "status": "ok",
+            "fetched_at": "2026-08-02T21:00:00Z",
+            "content_identity": "a" * 64,
+            "page_count": 3,
+            "positive_usd_row_count": 1200,
+            "max_declaration_date": "2026-07-31",
+            "new_candidate_count": 1,
+            "candidate_count_total": 4,
+            "eligible_candidate_count": 2,
+            "pending_gate_count": 1,
+            "consecutive_unchanged_content_runs": 0,
+            "expected_cadence": (
+                "at_least_one_coverage_row_per_trading_day_zero_candidates_normal"
+            ),
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_observer",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_observer=fake_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_observer(
+        "20260802", non_ohlcv_snapshot
+    )
+
+    assert observer_calls == ["20260802"]
+    assert summary["status"] == "ok"
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_observer"
+    ]
+    assert coverage["status"] == "ok"
+    assert coverage["max_declaration_date"] == "2026-07-31"
+    assert coverage["new_candidate_count"] == 1
+    assert coverage["pending_gate_count"] == 1
+    assert coverage["expected_cadence"].startswith("at_least_one_coverage_row")
+
+
+def test_massive_dividend_restart_forward_observer_nonok_status_binds_alert(
+    monkeypatch,
+):
+    def fake_persist(today):
+        return {
+            "status": "stale_input",
+            "alert": True,
+            "reason": "content_identity_unchanged_for_consecutive_runs",
+            "consecutive_unchanged_content_runs": 3,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_observer",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_observer=fake_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_observer(
+        "20260802", non_ohlcv_snapshot
+    )
+
+    assert summary["status"] == "stale_input"
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_observer"
+    ]
+    assert coverage["status"] == "stale_input"
+    assert coverage["alert"] is True
+    assert coverage["reason"] == "content_identity_unchanged_for_consecutive_runs"
+
+
+def test_massive_dividend_restart_forward_observer_daily_wiring_fail_soft(
+    monkeypatch,
+):
+    def failing_persist(today):
+        raise RuntimeError("simulated observer crash")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_observer",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_observer=failing_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_observer(
+        "20260802", non_ohlcv_snapshot
+    )
+
+    assert summary["status"] == "error"
+    assert summary["reason"] == "observer_exception"
+    assert summary["trade_enabled"] is False
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_observer"
+    ]
+    assert coverage["status"] == "error"
+    assert coverage["alert"] is True
+    assert "simulated observer crash" in coverage["error"]
+
+
+def test_massive_ohlcv_grouped_catchup_is_wired_before_observer():
+    # exp-20260805-004: the settlement chain starved for 12 days because
+    # nothing advanced daily_bars in the daily run. The bounded catch-up must
+    # run ahead of the observer/settlement pair in both daily paths.
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    ordered_names = [
+        node.value.func.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        in (
+            "_run_massive_ohlcv_grouped_catchup",
+            "_persist_massive_dividend_restart_forward_observer",
+            "_persist_massive_dividend_restart_forward_settlement",
+        )
+    ]
+    assert ordered_names == [
+        "_run_massive_ohlcv_grouped_catchup",
+        "_persist_massive_dividend_restart_forward_observer",
+        "_persist_massive_dividend_restart_forward_settlement",
+        "_run_massive_ohlcv_grouped_catchup",
+        "_persist_massive_dividend_restart_forward_observer",
+        "_persist_massive_dividend_restart_forward_settlement",
+    ]
+
+
+def test_massive_ohlcv_grouped_catchup_binds_coverage_and_fail_soft(monkeypatch):
+    def fake_catchup():
+        return {
+            "status": "complete",
+            "alert": False,
+            "latest_completed_session": "2026-08-04",
+            "bars_max_trade_date_before": "2026-07-24",
+            "bars_max_trade_date_after": "2026-08-04",
+            "dates_fetched": 6,
+            "dates_skipped": 1,
+            "rows_fetched": 74634,
+            "remaining_missing_weekdays": 0,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_ohlcv_backfill",
+        types.SimpleNamespace(run_incremental_grouped_catchup=fake_catchup),
+    )
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _run_massive_ohlcv_grouped_catchup("20260805", non_ohlcv_snapshot)
+    assert summary["status"] == "complete"
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_ohlcv_grouped_catchup"
+    ]
+    assert coverage["bars_max_trade_date_after"] == "2026-08-04"
+    assert coverage["dates_fetched"] == 6
+
+    def raising_catchup():
+        raise RuntimeError("boom")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_ohlcv_backfill",
+        types.SimpleNamespace(run_incremental_grouped_catchup=raising_catchup),
+    )
+    snapshot_two = {"coverage_manifest": {}}
+    failed = _run_massive_ohlcv_grouped_catchup("20260805", snapshot_two)
+    assert failed["status"] == "error"
+    assert failed["alert"] is True
+    fail_coverage = snapshot_two["coverage_manifest"][
+        "massive_ohlcv_grouped_catchup"
+    ]
+    assert fail_coverage["status"] == "error"
+    assert fail_coverage["alert"] is True
+
+
+def test_massive_dividend_restart_forward_settlement_is_wired_after_observer():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    settlement_calls = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        == "_persist_massive_dividend_restart_forward_settlement"
+    ]
+
+    assert len(settlement_calls) == 2
+    assert all(
+        len(expression.value.args) == 2
+        and isinstance(expression.value.args[0], ast.Name)
+        and expression.value.args[0].id == "today"
+        and isinstance(expression.value.args[1], ast.Name)
+        and expression.value.args[1].id == "non_ohlcv_snapshot"
+        for expression in settlement_calls
+    )
+
+    # Producer-before-consumer: in the flat statement order of main(), every
+    # settlement call must appear after an observer call.
+    ordered_names = [
+        node.value.func.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and getattr(node.value.func, "id", None)
+        in (
+            "_persist_massive_dividend_restart_forward_observer",
+            "_persist_massive_dividend_restart_forward_settlement",
+        )
+    ]
+    assert ordered_names == [
+        "_persist_massive_dividend_restart_forward_observer",
+        "_persist_massive_dividend_restart_forward_settlement",
+        "_persist_massive_dividend_restart_forward_observer",
+        "_persist_massive_dividend_restart_forward_settlement",
+    ]
+
+
+def test_massive_dividend_restart_forward_settlement_reports_coverage(monkeypatch):
+    settlement_calls = []
+
+    def fake_persist(today):
+        settlement_calls.append(today)
+        return {
+            "status": "ok",
+            "warehouse_max_trade_date": "2026-07-24",
+            "decision_count_total": 3,
+            "settled_decision_count": 1,
+            "settled_restart_decision_count": 1,
+            "voided_decision_count": 0,
+            "pending_settlement_count": 2,
+            "pending_declaration_date_count": 4,
+            "late_discovery_excluded_count": 0,
+            "new_event_count": 2,
+            "reopen_progress": {"required": 30, "settled_restart_decisions": 1},
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_settlement",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_settlement=fake_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_settlement(
+        "20260803", non_ohlcv_snapshot
+    )
+
+    assert settlement_calls == ["20260803"]
+    assert summary["status"] == "ok"
+    assert summary["trade_enabled"] is False
+    assert summary["strategy_behavior_changed"] is False
+    assert summary["alters_orders"] is False
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_settlement"
+    ]
+    assert coverage["status"] == "ok"
+    assert coverage["warehouse_max_trade_date"] == "2026-07-24"
+    assert coverage["settled_restart_decision_count"] == 1
+    assert coverage["pending_settlement_count"] == 2
+    assert coverage["reopen_progress"]["required"] == 30
+
+
+def test_massive_dividend_restart_forward_settlement_nonok_binds_alert(
+    monkeypatch,
+):
+    def fake_persist(today):
+        return {
+            "status": "blocked_missing_bars_database",
+            "alert": True,
+            "reason": "bars_database_not_found",
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_settlement",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_settlement=fake_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_settlement(
+        "20260803", non_ohlcv_snapshot
+    )
+
+    assert summary["status"] == "blocked_missing_bars_database"
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_settlement"
+    ]
+    assert coverage["status"] == "blocked_missing_bars_database"
+    assert coverage["alert"] is True
+    assert coverage["reason"] == "bars_database_not_found"
+
+
+def test_massive_dividend_restart_forward_settlement_daily_wiring_fail_soft(
+    monkeypatch,
+):
+    def failing_persist(today):
+        raise RuntimeError("simulated settlement crash")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "massive_dividend_restart_forward_settlement",
+        types.SimpleNamespace(
+            persist_massive_dividend_restart_forward_settlement=failing_persist
+        ),
+    )
+
+    non_ohlcv_snapshot = {"coverage_manifest": {}}
+    summary = _persist_massive_dividend_restart_forward_settlement(
+        "20260803", non_ohlcv_snapshot
+    )
+
+    assert summary["status"] == "error"
+    assert summary["reason"] == "settlement_exception"
+    assert summary["trade_enabled"] is False
+    coverage = non_ohlcv_snapshot["coverage_manifest"][
+        "massive_dividend_restart_forward_settlement"
+    ]
+    assert coverage["status"] == "error"
+    assert coverage["alert"] is True
+    assert "simulated settlement crash" in coverage["error"]

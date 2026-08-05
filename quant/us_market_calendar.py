@@ -15,6 +15,10 @@ Half-days (early closes) are still sessions and intentionally return True.
 from __future__ import annotations
 
 import datetime
+from zoneinfo import ZoneInfo
+
+
+_NEW_YORK = ZoneInfo("America/New_York")
 
 
 def _easter_sunday(year: int) -> datetime.date:
@@ -85,3 +89,40 @@ def is_us_equity_session(as_of: str | datetime.date) -> bool:
     if date.weekday() >= 5:
         return False
     return date not in nyse_holidays(date.year)
+
+
+def latest_completed_us_equity_session(
+    as_of: datetime.datetime,
+    completion_buffer_minutes: int = 15,
+) -> datetime.date:
+    """Return the latest regular US equity session completed by ``as_of``.
+
+    A regular session is treated as complete at 16:00 America/New_York plus
+    ``completion_buffer_minutes``.  Before that boundary, the current local
+    date is deliberately excluded.  Half-days use the same conservative
+    boundary, while weekends and full-day NYSE holidays are skipped.
+
+    ``as_of`` must be timezone-aware so callers cannot accidentally interpret
+    a UTC wall clock as a New York market date.
+    """
+    if not isinstance(as_of, datetime.datetime):
+        raise TypeError("as_of must be a timezone-aware datetime")
+    if as_of.tzinfo is None or as_of.utcoffset() is None:
+        raise ValueError("as_of must be timezone-aware")
+    if completion_buffer_minutes < 0:
+        raise ValueError("completion_buffer_minutes must be non-negative")
+
+    local_as_of = as_of.astimezone(_NEW_YORK)
+    completion_at = local_as_of.replace(
+        hour=16,
+        minute=0,
+        second=0,
+        microsecond=0,
+    ) + datetime.timedelta(minutes=completion_buffer_minutes)
+    candidate = local_as_of.date()
+    if local_as_of < completion_at:
+        candidate -= datetime.timedelta(days=1)
+
+    while not is_us_equity_session(candidate):
+        candidate -= datetime.timedelta(days=1)
+    return candidate

@@ -1,0 +1,63 @@
+{
+  "experiment_id": "exp-20260805-004",
+  "role": "after",
+  "captured_at": "2026-08-05T16:55:00Z",
+  "repair": {
+    "fault_recovery_backfill": {
+      "command": "quant/massive_ohlcv_backfill.py backfill --start 2026-07-25 --end 2026-08-04",
+      "dates_fetched": 6,
+      "rows_fetched": 74634,
+      "bars_max_trade_date_after": "2026-08-04"
+    },
+    "incremental_catchup_wired": {
+      "entrypoint": "massive_ohlcv_backfill.run_incremental_grouped_catchup",
+      "run_py_call": "_run_massive_ohlcv_grouped_catchup before observer/settlement in both daily paths",
+      "live_smoke": {
+        "status": "fresh",
+        "latest_completed_session": "2026-08-04",
+        "bars_max_trade_date_after": "2026-08-04",
+        "network_calls": 0,
+        "credential_loaded": false
+      },
+      "bounded": "max 15 sessions per run, oldest first, checkpoint-idempotent, fail-soft with alert on API error, fail-closed on empty daily_bars"
+    },
+    "settlement_stale_failclosed": {
+      "rule": "bars_max lag >= 2 completed US-equity sessions (data-calendar anchored via latest_completed_us_equity_session) -> status=stale_bars_input alert=true; 1-session intraday lag and weekends/holidays never flap",
+      "live_rerun": {
+        "status": "ok",
+        "alert": false,
+        "latest_completed_session": "2026-08-04",
+        "bars_stale_sessions": 0,
+        "bars_max_trade_date": "2026-08-04",
+        "resolved_declaration_date_count": 23,
+        "resolved_declaration_date_count_before_backfill": 16,
+        "pending_declaration_date_count": 0,
+        "decision_count_total": 0,
+        "settled_restart_decision_count": 0
+      },
+      "coverage_manifest_keys_added": ["bars_max_trade_date", "latest_completed_session", "bars_stale_sessions"]
+    }
+  },
+  "zero_decision_audit": {
+    "candidates": 199,
+    "gap_variant_distribution": {"no_prior_positive_in_provider_history": 194, "restart_after_observed_gap": 5},
+    "eligible": 12,
+    "eligible_restart": 1,
+    "dominant_ineligible_reason": "insufficient_pre_declaration_bars (161)",
+    "verdict": "natural base rate of a rare event lane, not a starvation fault; reopen counter is calendar-bound as declared at park"
+  },
+  "tests": {
+    "quant/test_massive_dividend_restart_forward_settlement.py": "26 passed (4 new stale/holiday/weekend/garbage cases)",
+    "quant/test_massive_ohlcv_backfill.py": "61 passed (5 new catch-up cases: fresh-no-network, empty-fail-closed, bounded-remainder, api-fail-soft, weekday-arithmetic)",
+    "quant/test_run_daily_wiring.py": "79 passed (2 new: catchup-before-observer ordering in both paths, coverage binding + fail-soft)"
+  },
+  "boundary_smoke": {
+    "next_cycle": "checkpoint-complete dates skipped; rerun with fresh bars returns status=fresh without network",
+    "cross_utc_date": "session anchoring uses latest_completed_us_equity_session(NY close + buffer); tests exercise 01:00 UTC = prior ET evening",
+    "weekend_holiday": "count_stale_sessions skips non-sessions; Sunday run after Friday close = 0 lag",
+    "empty_input": "empty daily_bars is blocked_empty_daily_bars alert=true, never treated as nothing-to-do",
+    "process_crash_or_api_down": "catch-up fail-soft with alert=true; settlement staleness keeps the gap visible until actually closed"
+  },
+  "observer_only": true,
+  "trade_enabled": false
+}

@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1552`
-- Raw records loaded by history report: `5325`
-- History fingerprint: `d1d504690644c48b`
+- Strategy records counted: `1553`
+- Raw records loaded by history report: `5329`
+- History fingerprint: `6d11603a5be06370`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -46,8 +46,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260716-007` `rejected`: EV `+0.0000`, PnL `$0.00`, family `forward_short_volume_soft_tilt`, trial `forward_short_volume_soft_tilt`.
-  Lesson: The advisory override recognized material total-row growth, but the nearest frozen-family record exposed a stricter Q5-specific minimum that had not matured. Do not reserve, read outcomes, test another scalar, change...
 - `exp-20260716-008` `rejected`: EV `-0.5644`, PnL `$-7,804.17`, family `execution_cash_opportunity_cost_persistence`, trial `cash_conflict_persistent_order_queue`.
   Lesson: The queue produced only twelve delayed fills. Old-thin improved, but late-strong and mid-weak both lost EV and PnL; aggregate EV fell 0.5644 and aggregate PnL fell 7804.17. All FIFO, thesis, cash-conservation, and con...
 - `exp-20260716-010` `rejected`: EV `+0.0000`, PnL `$0.00`, family `capital_allocation_ablation_batch`, trial `capital_allocation_ablation_batch`.
@@ -70,6 +68,8 @@ facts before changing strategy behavior.
   Lesson: Machine novelty accepted an explicit override because the inferred source was the unsaturated ATS face, but the manual three-source audit showed the asserted cross-source join is not a valid section 2.4 evidence axis....
 - `exp-20260721-005` `accepted`: EV `+0.0000`, PnL `$0.00`, family `measurement_governance_tooling`, trial `recipe_lane_guard`.
   Lesson: The USDA end-to-end probe also drew a 0.625 novelty near-neighbor WARN, meaning the old gate would have required an override anyway for THIS specific reskin - but the six replayed burned tickets all sailed through the...
+- `exp-20260805-002` `accepted`: EV `+0.0000`, PnL `$0.00`, family `alpha_workflow_operator_contract`, trial `operator_complexity_reduction`.
+  Lesson: Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade. TODO TODO
 
 ## Mechanism Lesson Cards
 
@@ -81,10 +81,10 @@ facts before changing strategy behavior.
 - [`external_event_satellite_overlay_allocation`](lessons/external-event-satellite-overlay-allocation.md)
 - [`sec_earnings_semantic_field`](lessons/sec-earnings-semantic-field.md)
 - [`state_surface_concentration`](lessons/state-surface-concentration.md)
+- [`alpha_workflow_operator_contract`](lessons/alpha-workflow-operator-contract.md)
 - [`measurement_governance_tooling`](lessons/measurement-governance-tooling.md)
 - [`production_visible_finra_venue_short_interest_quiet_absorption_candidate_pool`](lessons/production-visible-finra-venue-short-interest-quiet-absorption-candidate-pool.md)
 - [`production_visible_clinicaltrials_phase3_primary_endpoint_semantic_entry_admission`](lessons/production-visible-clinicaltrials-phase3-primary-endpoint-semantic-entry-admission.md)
-- [`same_issuer_dual_class_relative_value`](lessons/same-issuer-dual-class-relative-value.md)
 
 ## Line Budget
 

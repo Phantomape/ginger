@@ -6,9 +6,9 @@ complete state database.
 
 ## Source Snapshot
 
-- Strategy records counted: `1552`
-- Accepted strategy records: `242`
-- History fingerprint: `d1d504690644c48b`
+- Strategy records counted: `1553`
+- Accepted strategy records: `243`
+- History fingerprint: `6d11603a5be06370`
 - Generated from committed experiment logs when using `--git-ref HEAD`.
 
 ## Exact State Sources
@@ -34,8 +34,6 @@ complete state database.
 
 ## Recent Accepted Strategy Records
 
-- `exp-20260611-007` `accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter`: EV `+0.5286`, PnL `$10,432.91`, family `production_visible_free_ohlcv_tail_state_candidate_pool`, trial `distribution_day_absorption_leadership_shared_default_off_adapter`.
-  Lesson: The shared helper reproduced the private replay lead because it kept the exact distribution-pressure context, absorption/reclaim candidate fields, SPY/QQQ relative leadership, next-open entry, 10-day exit, cost, top-1...
 - `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
   Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 - `exp-20260613-005` `accepted`: EV `+0.0804`, PnL `$1,872.59`, family `regime_router`, trial `market_state_conditioned_sleeve_router`.
@@ -58,11 +56,11 @@ complete state database.
   Lesson: The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off. Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold,...
 - `exp-20260721-005` `accepted`: EV `+0.0000`, PnL `$0.00`, family `measurement_governance_tooling`, trial `recipe_lane_guard`.
   Lesson: The USDA end-to-end probe also drew a 0.625 novelty near-neighbor WARN, meaning the old gate would have required an override anyway for THIS specific reskin - but the six replayed burned tickets all sailed through the...
+- `exp-20260805-002` `accepted`: EV `+0.0000`, PnL `$0.00`, family `alpha_workflow_operator_contract`, trial `operator_complexity_reduction`.
+  Lesson: Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade. TODO TODO
 
 ## Recent Production-Visible Or Default-Off Accepted Records
 
-- `exp-20260612-024` `accepted_allocator_activation_envelope_gate_v2`: EV `+0.0000`, PnL `$0.00`, family `production_visible_default_off_paper_adapter_for_candidate_pool_alpha`, trial `allocator_activation_envelope`.
-  Lesson: The allocator selects at most one ex-ante ranked row per day, so the concurrency cap mostly trims overlapping tail entries; retention and kill-switch outcomes quantify exactly what production can execute. Do not sweep...
 - `exp-20260613-005` `accepted`: EV `+0.0804`, PnL `$1,872.59`, family `regime_router`, trial `market_state_conditioned_sleeve_router`.
   Lesson: First accepted in the regime-router line. All guards clean: agg EV +0.0804 (+1.0%), PnL +$1,873, three windows improved zero regressed, in-cell AND incremental single-ticker share both 20.9% (TOST, well under 50% cap...
 - `exp-20260614-004` `accepted_default_off_sec_financial_report_rs20_leader_notional_1.15x`: EV `+0.1582`, PnL `$3,235.38`, family `position_cap_or_cap_release`, trial `position_cap_or_cap_release`.
@@ -81,6 +79,8 @@ complete state database.
   Lesson: The current after-arbitration lagged_cross_source_consensus signal translated into incremental after-arbitration paper capital without changing selection. Do not retry by sweeping lagged consensus scalar, source rank,...
 - `exp-20260711-004` `accepted_paper_pending_forward`: EV `+0.0000`, PnL `$0.00`, family `production_visible_rate_volatility_relief_candidate_pool`, trial `move_rate_volatility_relief_shared_paper_candidate_pool`.
   Lesson: The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off. Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold,...
+- `exp-20260805-002` `accepted`: EV `+0.0000`, PnL `$0.00`, family `alpha_workflow_operator_contract`, trial `operator_complexity_reduction`.
+  Lesson: Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade. TODO TODO
 
 ## Research Search Contract
 
