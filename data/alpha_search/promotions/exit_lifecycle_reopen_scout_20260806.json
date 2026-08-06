@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "record_type": "alpha_experiment_promotion_request",
+  "proposal": {
+    "lane": "alpha_search",
+    "hypothesis": "Observed-only revalidation under the unchanged exp-20260715-006 attribution policy: on the matured post-2026-06-30 exit-lifecycle cohort (281 settled rows, 40 advisory, 22 hard-stop versus the 141/20/14 cohort judged by exp-20260722-001), high-urgency and hard-stop advisory positions should show persistently worse next-open-to-five-session-close returns than no-advisory positions with negative severity monotonicity, broad date support, and single-name adverse-PnL concentration at or below 50%; no threshold, bucket, horizon, source, or response function changes.",
+    "change_type": "observed_only_attribution",
+    "single_causal_variable": "exit_lifecycle_post_20260630_second_maturation_fixed_bucket_validation_v1",
+    "causal_components": [
+      "cohort frozen to the 20260805 outcome ledger snapshot with sha256 recorded in data/alpha_search/exit_lifecycle_reopen_readiness_20260806.json; settlement bars fail-closed on staleness since exp-20260805-004",
+      "if rejected then redeclare the next reopen bar and sync scripts/build_reopen_readiness.py lane_exit_lifecycle_advisory in this same ticket per the 2026-07-22 reopen-threshold-sync rule",
+      "newly settled post-2026-06-30 production rows through observed_date 2026-07-28: 281 settled / +99% and +140 absolute versus the 141 judged by exp-20260722-001; satisfies section 2.4 axis (c) and the declared 212/30/21 reopen bar",
+      "no strategy / shared-policy / order / ranking / sizing / exit-rule change; result ceiling observed_only; policy promotion would additionally require slot-reuse and winner-collateral accounting plus a shared default-off helper",
+      "unchanged advisory severity buckets and H5 next-open-to-five-session-close settlement and every exp-20260715-006 acceptance bar including the <=50% single-name adverse-PnL concentration cap that rejected the prior probe"
+    ],
+    "mechanism_family": "exit_lifecycle_attribution",
+    "trial_family": "exit_lifecycle_forward_advisory_outcome_attribution",
+    "changed_variable": "exit_lifecycle_post_20260630_second_maturation_fixed_bucket_validation_v1",
+    "prediction": {
+      "confidence_reason": "Four of five frozen checks passed on the prior 141-row cohort and the settled mass has doubled, but the sole prior failure was 68.3% single-name adverse-PnL concentration in a book that remains concentrated, so the 50% cap is still the most likely rejection; separation persistence itself has already failed to confirm in four prior fixed-family probes.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "adverse_pnl_concentration_too_high",
+        "date_support_insufficient",
+        "severity_monotonicity_flat",
+        "severity_separation_not_persistent"
+      ],
+      "success_probability": 0.15
+    }
+  },
+  "proposal_hash": "8c75ee24768fa4c38d05bb47fc32ac066f60a10829b3759ff8c39951608b6d24",
+  "panel_path": "data/alpha_search/exit_lifecycle_reopen_selection_panel_20260806.json",
+  "panel_sha256": "2fc64b6b552db01187d52a3ee78f59b941578635f8248efa8b6913197595b88b",
+  "panel_hash": "4df4fa59015612f2b77b9e38dbe27e735ee8edfd9e9cf8f9921580919fa8b632",
+  "scope_manifest_path": "data/alpha_search/exit_lifecycle_reopen_scope_manifest_20260806.json",
+  "scope_manifest_sha256": "2a8e2059a0f7aca8ba3967602f57b0d6fd67a1b83657006a48636cf045c3eae6",
+  "scope_manifest_hash": "e65a65a105a1f0d7645459c3f01a94d9a9052227cb166b8143a9225439878765",
+  "surface_registry_path": "data/alpha_search/exit_lifecycle_reopen_surfaces_20260806.json",
+  "surface_registry_sha256": "36bcbaf46a89a7b791bd60f945e8146aee12496e11b908da5cc7221429786fd1",
+  "surface_registry_hash": "41975bc4356b964ea960bf81718dcbac97408f1b53ab594e5dddb6fc78692027",
+  "prior_fingerprints_path": "data/alpha_search/exit_lifecycle_reopen_prior_fingerprints_20260806.json",
+  "prior_fingerprints_sha256": "9504f7f172fbbc8748ac07dfeb57b6bde5c76a6e63326cc688cca6c100c356f3",
+  "prior_fingerprint_snapshot_hash": "05843214a23b9e5b854a540a436bde6bfcc755865e7eabe19d814acb82369edb",
+  "selection_scope_id": "scope-e65a65a105a1f0d7645459c3",
+  "candidate_id": "cand-7450407a78ab5900dcf0",
+  "candidate_snapshot_hash": "4c19bbe88b6593af30e9d607dbed4e187323e3185be9c3f43e62ec8f32bbb7ac",
+  "preflight_hash": "62e679ddd04b057915d231e3d38cb059409532575f91f7fd8a6185cd33c2a2e5",
+  "final_candidate_pool_hash": "30194f9714bc99be549438d2ead3852a356eca52e63b0310a5aadcafa694e39c",
+  "research_refs": [],
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "promotion_hash": "cd67d688b9a28b3faffe171dd2c0e880bd414347ce09dba0ed2191d742e3c58c",
+  "admission_class": "settled_forward_attribution",
+  "selected_evidence_grade": "observed_only",
+  "result_ceiling": "observed_only",
+  "paper_live_eligible": false,
+  "source_readiness_bindings": [
+    {
+      "surface_id": "exit_lifecycle_advisory_state_forward_20260806",
+      "pit_status": "settled_forward_sufficient",
+      "source_contract_hash": "86e9b6eda28b1d63f2222627df741f35dbf51a99e609080857a87eff47c795df",
+      "readiness_hash": "1fc4afee1efa80010945723ca725581552688cd0908832bcfa798586a2394198"
+    },
+    {
+      "surface_id": "exit_lifecycle_h5_settlement_forward_20260806",
+      "pit_status": "settled_forward_sufficient",
+      "source_contract_hash": "520154528fe6636a058daf73a13a2cdfc98610f3308212510145c2be5c964ce5",
+      "readiness_hash": "5affb8718cbb2f9d74cebc2cbbeb6ae769d4ee23faaa012cfdf3a372cacba247"
+    }
+  ]
+}

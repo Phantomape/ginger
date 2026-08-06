@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "generated_at": "2026-08-06T16:22:00Z",
+  "generated_by": "claude-scheduled-alpha-20260806",
+  "occupies_experiment_id": false,
+  "baseline_universe": [
+    "core accepted-stack held positions observed by the exit-lifecycle shadow log (27 tickers in the matured post-2026-06-30 cohort, AMD/AMZN/APP/.../UNH)"
+  ],
+  "opportunity_cost_winner": "cash-plus-existing-accepted-stack: live position control blocks new entries (ok_to_add_control_pass=false per data/live_pilot/position_control/state.json), zero reopen lanes other than exit_lifecycle_advisory are ready in data/reopen_readiness.json rebuilt 2026-08-06T16:10:13Z, and the concurrent codex CAT PEAD lead was not_promoted at panel this morning; the only counter-matured evidence surface today is the exit-lifecycle advisory cohort",
+  "evidence_surfaces_used": [
+    "exit_lifecycle forward outcome ledger (data/exit_lifecycle/outcome_ledgers/exit_lifecycle_outcomes_20260805.jsonl): 281 settled post-2026-06-30 rows, 40 advisory, 22 hard-stop; reopen bar 212/30/21 from exp-20260722-001 is met for the first time",
+    "canonical OHLCV warehouse (repaired exp-20260805-004; bars current through the latest completed session, settlement fail-closes on >=2-session staleness)",
+    "live position control snapshot (context only, snapshot_only, grants no novelty)",
+    "reopen readiness surface data/reopen_readiness.json (13 lanes; only exit_lifecycle_advisory ready)"
+  ],
+  "evidence_surfaces_missing": [
+    "slot-reuse/winner-collateral accounting (required before any exit-policy promotion; absent, so result ceiling stays observed_only)",
+    "entity_theme axis-c lane at 91601/109913 settled (not ready, ~1wk)",
+    "short_volume q5 at 16/20 with concentration bar failing (not ready)",
+    "flow-put stabilization at 0/20 independent closed decisions (not ready)"
+  ],
+  "hypothesis_candidates": [
+    "H1 (selected): the matured post-2026-06-30 exit-lifecycle cohort (281 settled, +99% vs the 141 judged by exp-20260722-001) preserves advisory-severity adverse-return separation under the frozen exp-20260715-006 policy, now with enough advisory mass to pass the <=50% single-name adverse-PnL concentration cap that rejected the prior probe",
+    "H2 (declined): entity-theme news axis-c revalidation - reopen counter 91601/109913 not met; burning an ID now would violate the reopen guard",
+    "H3 (declined): short-volume q5 soft tilt revalidation - 16/20 settled and the max-ticker concentration bar currently fails; probing early wastes the ID on a known-failing bar"
+  ],
+  "selected_hypothesis": "H1 exit-lifecycle advisory severity separation revalidation on the matured cohort",
+  "economic_mechanism": "Position-specific path deterioration: positions whose trailing-stop/target lifecycle emits high-urgency or hard-stop advisories are in adverse path states; if their next-open-to-5-session-close returns are persistently below no-advisory positions with broad date and name support, exiting at next open would free scarce slot capital ahead of continued deterioration. This connects the previously isolated exit-lifecycle shadow log to realized H5 settlement outcomes; it makes no price-independent information claim.",
+  "falsifier": "Reject unless, on the frozen cohort: settled>=100, advisory>=20, hard_stop>=8; high-urgency AND hard-stop mean AND median H5 returns below no-advisory; negative severity monotonicity (Spearman); >=3 comparable dates with advisory worse; and max single-name adverse-PnL share <=50%. The prior probe failed only the concentration cap at 0.683; if the doubled cohort still concentrates adverse PnL in one name, the separation is a single-position artifact, not a policy signal.",
+  "pit_tier": "canonical_pit",
+  "evidence_grade": "observed_only",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "Freeze outcome-blind readiness counters, run outcome-blind D0-D3 on the single predeclared candidate, build the schema-v2 promotion request, reserve exactly one observed-only attribution ID, evaluate only the frozen bars, and if rejected declare the next reopen bar and sync scripts/build_reopen_readiness.py in the same ticket",
+  "research_digest_check": "data/research_digest/latest_digest.md unchanged since 2026-07-27 generation; all 9 shown entries already carry declined statuses; digest-scan-20260806 no_fresh_entries appended to data/research_digest/ledger.jsonl; no research_refs for this ticket",
+  "cross_sectional_note": "No user-named ticker this round; the probe targets already-held accepted-stack positions (risk/exit axis), so the cross-section is the held book itself; new-entry cross-section is moot while position control blocks adds and no candidate lane is counter-ready",
+  "outcome_exposure_caveat": "During counter verification before this pass was written, a mis-scoped exploratory aggregation over the full ledger (including the pre-2026-07 cohort already consumed by exp-20260722-001) computed adverse-PnL ticker shares; it used the wrong cohort filter, its output was discarded, and candidate selection is forced by the matured reopen counter alone. Disclosed here and in the ticket; the frozen acceptance bars leave no tunable degree of freedom this peek could bias."
+}
