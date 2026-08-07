@@ -682,14 +682,69 @@ def lane_allocator_cross_source_conflict():
 
 def lane_news_propagation_negative_side():
     """Inverted-polarity news propagation lead. Reopen: 200 closed negative-side
-    forward rows before reading direction again (do not re-slice earlier)."""
+    out-of-replay forward rows before reading direction again (do not re-slice
+    earlier). Machine-counted since 2026-08-07: the observer ledger carries
+    event_polarity and outcome_status directly, so the manual count is obsolete.
+    Out-of-replay = event_date >= 2026-07-01 (replay rows cover 2026-01..06 per
+    exp-20260702-020/021; the run.py-wired daily observer accumulates current
+    events from 2026-07 onward)."""
+    path = os.path.join(
+        REPO_ROOT,
+        "data",
+        "non_ohlcv",
+        "news_event_exposure_observations",
+        "rows.jsonl",
+    )
+    neg_rows = 0
+    neg_events = set()
+    neg_dates = set()
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            r = json.loads(line)
+            if str(r.get("event_date", "")) < "2026-07-01":
+                continue
+            if r.get("outcome_status") != "closed":
+                continue
+            if r.get("event_polarity") != "negative":
+                continue
+            neg_rows += 1
+            neg_events.add(r.get("event_id"))
+            neg_dates.add(r.get("event_date"))
+    counters = {
+        "negative_side_closed": neg_rows,
+        "negative_side_closed_baseline_at_park": 433,
+        "negative_side_closed_unique_events": len(neg_events),
+        "negative_side_closed_unique_event_dates": len(neg_dates),
+    }
+    thresholds = {"negative_side_closed": 650}
     return {
-        "counters": {"negative_side_closed_last_manual": 56},
-        "thresholds": {"negative_side_closed": 200},
-        "status": "manual_check_required",
-        "threshold_source": "news-propagation line park note (project memory, 2026-07-19: 56/200, early mean excess_10d ~ -946bp)",
-        "counter_source": "manual count over news propagation forward ledger (polarity field mapping unresolved)",
-        "note": "Early direction is OPPOSITE the replay lead; record-only until 200 rows.",
+        "counters": counters,
+        "thresholds": thresholds,
+        "status": "ready" if neg_rows >= 650 else "not_ready",
+        "threshold_source": (
+            "exp-20260807-001 post_run_reflection: the 200-row park bar "
+            "(2026-07-19 note, 56 rows then) was consumed at 433 rows by the "
+            "confirmed out-of-replay validation read; another attribution "
+            "re-read needs >= 650 closed negative-side rows (+50% and >= +10 "
+            "absolute from 433)"
+        ),
+        "counter_source": (
+            "data/non_ohlcv/news_event_exposure_observations/rows.jsonl "
+            "(closed out-of-replay rows with event_polarity=negative and "
+            "event_date >= 2026-07-01)"
+        ),
+        "note": (
+            "exp-20260807-001 CONFIRMED the inverted-polarity separation "
+            "forward (event-level +88bp, both halves positive, concentration "
+            "clean; both sides negative vs SPY, so it is a relative/rotation "
+            "signal). The primary next step is NOT another read on this "
+            "counter: it is the shared-paper-first default-off polarity-tilt "
+            "helper with execution envelope under Gate 1-4. This counter only "
+            "gates a further attribution re-read."
+        ),
     }
 
 

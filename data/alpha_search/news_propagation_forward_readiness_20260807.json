@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "record_type": "news_propagation_forward_cohort_readiness",
+  "generated_at": "2026-08-07T16:14:46Z",
+  "generated_by": "claude-scheduled-alpha-20260807",
+  "outcome_blind": true,
+  "ledger_path": "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+  "ledger_sha256": "a5538bab1cf999b1a70ac5c898184d1d2600298f27268394c3fcb86224faa4a3",
+  "forward_predicate": {
+    "event_date_min": "2026-07-01",
+    "outcome_status": "closed",
+    "rationale": "Replay rows (exp-20260702-020/021, exp-20260703-005) cover events 2026-01..06; the run.py-wired daily observer (exp-20260702-028) accumulates current events from 2026-07 onward, so event_date >= 2026-07-01 isolates strictly out-of-replay forward rows."
+  },
+  "park_bar": {
+    "source": "news-propagation line park note 2026-07-19 and data/reopen_readiness.json lane news_propagation_negative_side",
+    "negative_side_closed_required": 200,
+    "negative_side_closed_last_manual_20260719": 56
+  },
+  "cohort": {
+    "negative": {
+      "closed_rows": 433,
+      "unique_events": 43,
+      "unique_event_dates": 15,
+      "unique_tickers": 66,
+      "max_single_ticker_row_share": 0.036952
+    },
+    "positive": {
+      "closed_rows": 509,
+      "unique_events": 44,
+      "unique_event_dates": 16,
+      "unique_tickers": 91,
+      "max_single_ticker_row_share": 0.027505
+    }
+  },
+  "pending_forward_rows": 1951,
+  "relation_type_closed_counts": {
+    "drawdown_or_failed_transaction": 276,
+    "legal_or_regulatory_pressure": 111,
+    "guidance_or_rating_upgrade": 253,
+    "capital_return": 107,
+    "product_or_approval_catalyst": 102,
+    "financial_growth_or_beat": 47,
+    "downgrade_or_target_cut": 46
+  },
+  "polarity_relation_closed_counts": {
+    "negative|drawdown_or_failed_transaction": 276,
+    "negative|legal_or_regulatory_pressure": 111,
+    "positive|guidance_or_rating_upgrade": 253,
+    "positive|capital_return": 107,
+    "positive|product_or_approval_catalyst": 102,
+    "positive|financial_growth_or_beat": 47,
+    "negative|downgrade_or_target_cut": 46
+  },
+  "bar_checks": {
+    "negative_closed_at_least_200": true,
+    "negative_events_at_least_20": true,
+    "negative_event_dates_at_least_10": true,
+    "positive_control_closed_at_least_200": true
+  }
+}
