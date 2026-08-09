@@ -18,6 +18,10 @@ from data_paths import data_artifact_path
 
 try:
     from constants import ROUND_TRIP_COST_PCT
+    from paper_sleeve_execution_contract import (
+        freeze_paper_notional,
+        freeze_pending_paper_notionals,
+    )
     from price_asof_guard import filter_prices_for_asof
     from sec_event_queue import (
         GOVERNANCE_RULE_VERSION,
@@ -25,6 +29,10 @@ try:
     )
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
+    from quant.paper_sleeve_execution_contract import (
+        freeze_paper_notional,
+        freeze_pending_paper_notionals,
+    )
     from quant.price_asof_guard import filter_prices_for_asof
     from quant.sec_event_queue import (
         GOVERNANCE_RULE_VERSION,
@@ -124,6 +132,10 @@ def build_sec_event_sleeve_snapshot(
         state if state is not None else load_sec_event_sleeve_state(state_path)
     )
     _normalise_state(working_state)
+    freeze_pending_paper_notionals(
+        working_state,
+        resolver=lambda _entry: float(cfg["event_notional_usd"]),
+    )
 
     as_of_date = str(as_of)[:10]
     opens = filter_prices_for_asof(
@@ -287,7 +299,6 @@ def _fill_pending_entries(
         return [], []
 
     max_positions = int(config["max_positions"])
-    notional = float(config["event_notional_usd"])
     remaining = []
     filled_today = []
     skipped_today = []
@@ -315,6 +326,7 @@ def _fill_pending_entries(
             remaining.append(entry)
             continue
 
+        notional = float(entry["paper_notional_usd"])
         position = {
             "decision_id": entry["decision_id"],
             "sleeve": SLEEVE_NAME,
@@ -323,6 +335,9 @@ def _fill_pending_entries(
             "entry_date": as_of,
             "entry_price": entry_open,
             "notional": notional,
+            "paper_notional_usd": notional,
+            "paper_notional_frozen": True,
+            "paper_notional_source": entry.get("paper_notional_source"),
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
             "observed_trading_days": 0,
@@ -371,6 +386,11 @@ def _add_queue_candidates(
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
+        freeze_paper_notional(
+            entry,
+            fallback_notional_usd=float(config["event_notional_usd"]),
+            fallback_source="signal_time_event_policy",
+        )
         state["pending_entries"].append(entry)
         new_entries.append(entry)
         existing_ids.add(decision_id)

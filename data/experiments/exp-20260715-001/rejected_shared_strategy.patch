@@ -1,0 +1,981 @@
+diff --git a/quant/accepted_helper_source_priority_allocator_paper_sleeve.py b/quant/accepted_helper_source_priority_allocator_paper_sleeve.py
+index 255c06cc1..7a2822224 100644
+--- a/quant/accepted_helper_source_priority_allocator_paper_sleeve.py
++++ b/quant/accepted_helper_source_priority_allocator_paper_sleeve.py
+@@ -11,6 +11,7 @@ sizing, exits, heat, LLM/news behavior, watchlists, or orders.
+ from __future__ import annotations
+ 
+ import json
++import hashlib
+ import math
+ from collections import Counter, OrderedDict
+ from copy import deepcopy
+@@ -71,13 +72,13 @@ except ImportError:  # pragma: no cover - package-style imports in tests
+ 
+ 
+ SLEEVE_NAME = "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER"
+-RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v3"
++RULE_VERSION = "accepted_helper_source_priority_shared_default_off_allocator_v4"
+ SOURCE_RULE_VERSION = (
+-    "accepted_helper_source_priority_top1_with_lagged_consensus_source_notional_v4"
++    "accepted_helper_source_priority_top1_with_source_relative_quarantine_v5"
+ )
+ OUTCOME_CONTRACT_RULE_VERSION = "allocator_top1_time_exit_outcome_contract_v1"
+ TARGET_PRICE_STATUS = "not_applicable_time_exit"
+-STATE_SCHEMA_VERSION = 1
++STATE_SCHEMA_VERSION = 2
+ LAGGED_CONSENSUS_SOURCE_ARTIFACT = (
+     DATA_ROOT
+     / "experiments"
+@@ -99,6 +100,9 @@ BASE_NOTIONAL_USD = 4_000.0
+ HOLD_DAYS = 10
+ MAX_PAPER_TRADES_PER_DAY = 1
+ SAME_TICKER_COOLDOWN_DAYS = 12
++SOURCE_SHADOW_NOTIONAL_USD = 4_000.0
++SOURCE_QUARANTINE_UNDERWATER_SESSIONS = 21
++SOURCE_QUARANTINE_BENCHMARKS = ("SPY", "QQQ")
+ 
+ DEFAULT_CONFIG = {
+     "enabled": False,
+@@ -110,6 +114,14 @@ DEFAULT_CONFIG = {
+     "hold_days": HOLD_DAYS,
+     "same_ticker_cooldown_days": SAME_TICKER_COOLDOWN_DAYS,
+     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
++    # The shared helper supports the gate, while callers opt in explicitly.
++    # quant/run.py opts in for the default-off daily paper sleeve. Historical
++    # Gate 1 can therefore compare current behavior and quarantine behavior
++    # from the same code and frozen inputs.
++    "source_quarantine_enabled": False,
++    "source_shadow_notional_usd": SOURCE_SHADOW_NOTIONAL_USD,
++    "source_quarantine_underwater_sessions": SOURCE_QUARANTINE_UNDERWATER_SESSIONS,
++    "source_quarantine_benchmarks": SOURCE_QUARANTINE_BENCHMARKS,
+     "source_notional_scalars": {
+         "lagged_cross_source_consensus": 1.25,
+         "industry_laggard_repair": 1.25,
+@@ -263,6 +275,7 @@ def empty_accepted_helper_source_priority_allocator_state() -> dict[str, Any]:
+         "open_positions": [],
+         "closed_positions": [],
+         "skipped_days": [],
++        "source_quarantine": {},
+     }
+ 
+ 
+@@ -340,6 +353,7 @@ def build_accepted_helper_source_priority_allocator_snapshot(
+     as_of: str,
+     source_snapshots: dict[str, dict[str, Any]] | None,
+     ohlcv_by_ticker: dict[str, Any],
++    benchmark_ohlcv_by_ticker: dict[str, Any] | None = None,
+     state: dict[str, Any] | None = None,
+     config: dict[str, Any] | None = None,
+     persist: bool = True,
+@@ -377,12 +391,42 @@ def build_accepted_helper_source_priority_allocator_snapshot(
+         source_snapshots or {},
+         as_of=as_of_date,
+     )
++    source_quarantine_audit = update_source_relative_shadow_quarantine_state(
++        state=working_state,
++        as_of=as_of_date,
++        source_snapshots=source_snapshots or {},
++        ohlcv_by_ticker=rows_by_ticker,
++        benchmark_ohlcv_by_ticker=(
++            benchmark_ohlcv_by_ticker
++            if benchmark_ohlcv_by_ticker is not None
++            else {
++                benchmark: rows_by_ticker.get(benchmark, [])
++                for benchmark in SOURCE_QUARANTINE_BENCHMARKS
++            }
++        ),
++        config=cfg,
++    )
++    daily_source_health = deepcopy(working_state.get("source_quarantine") or {})
++    if cfg.get("source_quarantine_enabled") and not source_quarantine_audit.get(
++        "observable_trading_session", True
++    ):
++        daily_source_health = {
++            source_family: {
++                **_empty_source_quarantine_state(source_family),
++                **deepcopy(daily_source_health.get(source_family) or {}),
++                "available": False,
++                "status": "unavailable",
++                "unavailable_reason": "missing_common_benchmark_session",
++            }
++            for source_family in SOURCE_PRIORITY
++        }
+     selected, rejected, priority_audit = select_accepted_helper_source_priority_rows(
+         source_rows=source_rows,
+         trading_dates=_trading_dates(rows_by_ticker),
+         existing_state=working_state,
+         config=cfg,
+         create_trades=False,
++        source_health_by_date={as_of_date: daily_source_health},
+     )
+     if len(working_state.get("pending_entries") or []) + len(
+         working_state.get("open_positions") or []
+@@ -414,6 +458,8 @@ def build_accepted_helper_source_priority_allocator_snapshot(
+         rejected=rejected,
+         source_coverage=source_coverage,
+         priority_audit=priority_audit,
++        source_quarantine_audit=source_quarantine_audit,
++        source_quarantine_health=daily_source_health,
+         new_pending_entries=new_pending_entries,
+         filled_today=filled_today,
+         closed_today=closed_today,
+@@ -456,6 +502,7 @@ def build_accepted_helper_source_priority_allocator_historical_trades(
+         "filtered_count_by_window": {},
+         "source_audits_by_window": {},
+         "priority_audit_by_window": {},
++        "source_quarantine_audit_by_window": {},
+     }
+     for label, window in windows.items():
+         dates = [
+@@ -473,11 +520,26 @@ def build_accepted_helper_source_priority_allocator_historical_trades(
+             candidate_universe=candidate_universe,
+             calendar_dates=calendar_dates,
+         )
++        source_health_by_date, source_quarantine_audit = (
++            build_historical_source_relative_shadow_quarantine_health(
++                source_rows=source_trades,
++                trading_dates=dates,
++                ohlcv_by_ticker=rows_by_ticker,
++                benchmark_ohlcv_by_ticker={
++                    benchmark: rows_by_ticker.get(benchmark, [])
++                    for benchmark in SOURCE_QUARANTINE_BENCHMARKS
++                },
++                config=cfg,
++            )
++            if cfg.get("source_quarantine_enabled")
++            else ({}, {"enabled": False})
++        )
+         selected, filtered, priority_audit = select_accepted_helper_source_priority_rows(
+             source_rows=source_trades,
+             trading_dates=dates,
+             config=cfg,
+             create_trades=True,
++            source_health_by_date=source_health_by_date,
+         )
+         window_selected = [{**row, "window": label} for row in selected]
+         all_selected.extend(window_selected)
+@@ -492,6 +554,7 @@ def build_accepted_helper_source_priority_allocator_historical_trades(
+         audit["filtered_count_by_window"][label] = len(filtered)
+         audit["source_audits_by_window"][label] = source_audit["source_audits"]
+         audit["priority_audit_by_window"][label] = priority_audit
++        audit["source_quarantine_audit_by_window"][label] = source_quarantine_audit
+     audit["total_selected"] = len(all_selected)
+     return all_selected, leader._safe(audit)
+ 
+@@ -510,6 +573,8 @@ def source_rows_from_snapshots(
+             candidates.append(snapshot["candidate"])
+         coverage[source_family] = {
+             "present": bool(snapshot),
++            "asof_date": str(snapshot.get("asof_date") or "")[:10],
++            "asof_matches": str(snapshot.get("asof_date") or "")[:10] == as_of,
+             "error": snapshot.get("error"),
+             "candidate_count": snapshot.get("candidate_count", len(candidates)),
+             "raw_candidate_count": snapshot.get("raw_candidate_count"),
+@@ -526,6 +591,619 @@ def source_rows_from_snapshots(
+     return rows, coverage
+ 
+ 
++def update_source_relative_shadow_quarantine_state(
++    *,
++    state: dict[str, Any],
++    as_of: str,
++    source_snapshots: dict[str, dict[str, Any]],
++    ohlcv_by_ticker: dict[str, Any],
++    benchmark_ohlcv_by_ticker: dict[str, Any],
++    config: dict[str, Any] | None = None,
++) -> dict[str, Any]:
++    """Advance the PIT source-health state from independent raw-source books.
++
++    Each raw source position is notionally replayed at a fixed dollar amount.
++    The SPY and QQQ comparators use the identical entry/mark interval, so the
++    fixed round-trip cost cancels in the relative curves. A missing/stale source
++    snapshot or benchmark mark fails closed for *new entries from that source*
++    and never alters existing allocator positions.
++    """
++
++    cfg = _config(config)
++    _normalise_state(state)
++    if not cfg.get("source_quarantine_enabled"):
++        return {
++            "enabled": False,
++            "rule": "source_relative_shadow_quarantine_disabled",
++        }
++
++    as_of_date = leader._date10(as_of)
++    rows_by_ticker = leader._normalise_ohlcv_by_ticker(ohlcv_by_ticker)
++    benchmark_rows = leader._normalise_ohlcv_by_ticker(benchmark_ohlcv_by_ticker)
++    return _update_source_relative_shadow_quarantine_state_normalised(
++        state=state,
++        as_of=as_of_date,
++        source_snapshots=source_snapshots,
++        row_index_by_ticker=_date_index_by_ticker(rows_by_ticker),
++        benchmark_index=_date_index_by_ticker(benchmark_rows),
++        config=cfg,
++    )
++
++
++def _update_source_relative_shadow_quarantine_state_normalised(
++    *,
++    state: dict[str, Any],
++    as_of: str,
++    source_snapshots: dict[str, dict[str, Any]],
++    row_index_by_ticker: dict[str, dict[str, dict[str, Any]]],
++    benchmark_index: dict[str, dict[str, dict[str, Any]]],
++    config: dict[str, Any],
++) -> dict[str, Any]:
++    as_of_date = leader._date10(as_of)
++    source_state = state.setdefault("source_quarantine", {})
++    missing_benchmark_sessions = [
++        str(benchmark)
++        for benchmark in config["source_quarantine_benchmarks"]
++        if as_of_date not in benchmark_index.get(str(benchmark), {})
++    ]
++    if missing_benchmark_sessions:
++        return {
++            "enabled": True,
++            "asof_date": as_of_date,
++            "observable_trading_session": False,
++            "missing_benchmark_sessions": missing_benchmark_sessions,
++            "state_advanced": False,
++            "states": deepcopy(source_state),
++        }
++    updated: dict[str, Any] = {}
++    unavailable: dict[str, str] = {}
++    triggers: list[str] = []
++    recoveries: list[str] = []
++    for source_family in SOURCE_PRIORITY:
++        prior = deepcopy(source_state.get(source_family) or {})
++        metrics, error = _source_relative_shadow_metrics(
++            source_family=source_family,
++            source_snapshot=source_snapshots.get(source_family),
++            as_of=as_of_date,
++            prior_state=prior,
++            row_index_by_ticker=row_index_by_ticker,
++            benchmark_index=benchmark_index,
++            config=config,
++        )
++        if error:
++            unavailable[source_family] = error
++            same_observed_date = (
++                str(prior.get("last_observed_date") or "")[:10] == as_of_date
++            )
++            next_state = {
++                **_empty_source_quarantine_state(source_family),
++                **prior,
++                "source_family": source_family,
++                "available": False,
++                "status": "unavailable",
++                "unavailable_reason": error,
++                "last_evaluated_date": as_of_date,
++                "input_conflict_date": (
++                    as_of_date if same_observed_date else prior.get("input_conflict_date")
++                ),
++            }
++        else:
++            next_state = _advance_source_quarantine_state(
++                source_family=source_family,
++                prior=prior,
++                metrics=metrics,
++                as_of=as_of_date,
++                config=config,
++            )
++            if next_state.get("triggered_today"):
++                triggers.append(source_family)
++            if next_state.get("recovered_today"):
++                recoveries.append(source_family)
++        source_state[source_family] = next_state
++        updated[source_family] = deepcopy(next_state)
++    return {
++        "enabled": True,
++        "asof_date": as_of_date,
++        "observable_trading_session": True,
++        "state_advanced": True,
++        "source_count": len(SOURCE_PRIORITY),
++        "available_source_count": sum(
++            1 for row in updated.values() if row.get("available")
++        ),
++        "quarantined_sources": [
++            family for family, row in updated.items() if row.get("quarantined")
++        ],
++        "triggered_today": triggers,
++        "recovered_today": recoveries,
++        "unavailable_sources": unavailable,
++        "states": updated,
++    }
++
++
++def build_historical_source_relative_shadow_quarantine_health(
++    *,
++    source_rows: list[dict[str, Any]],
++    trading_dates: list[str],
++    ohlcv_by_ticker: dict[str, Any],
++    benchmark_ohlcv_by_ticker: dict[str, Any],
++    config: dict[str, Any] | None = None,
++) -> tuple[dict[str, dict[str, dict[str, Any]]], dict[str, Any]]:
++    """Build per-date source health without reading a future outcome.
++
++    A completed historical row is admitted to the synthetic source snapshot
++    only after its entry date. Until its exit date it is marked from that day's
++    close; its future exit price/PnL is never read by the state machine.
++    Windows cold-start independently, matching the canonical Gate 1-4 contract.
++    """
++
++    cfg = _config({**(config or {}), "source_quarantine_enabled": True})
++    state = empty_accepted_helper_source_priority_allocator_state()
++    normalised_rows = leader._normalise_ohlcv_by_ticker(ohlcv_by_ticker)
++    normalised_benchmarks = leader._normalise_ohlcv_by_ticker(
++        benchmark_ohlcv_by_ticker
++    )
++    row_index_by_ticker = _date_index_by_ticker(normalised_rows)
++    benchmark_index = _date_index_by_ticker(normalised_benchmarks)
++    health_by_date: dict[str, dict[str, dict[str, Any]]] = {}
++    unavailable_counts: Counter[str] = Counter()
++    quarantined_date_counts: Counter[str] = Counter()
++    trigger_counts: Counter[str] = Counter()
++    recovery_counts: Counter[str] = Counter()
++    ordered_dates = sorted({leader._date10(day) for day in trading_dates if day})
++    for as_of in ordered_dates:
++        snapshots = _historical_source_snapshots_asof(source_rows, as_of=as_of)
++        daily_audit = _update_source_relative_shadow_quarantine_state_normalised(
++            state=state,
++            as_of=as_of,
++            source_snapshots=snapshots,
++            row_index_by_ticker=row_index_by_ticker,
++            benchmark_index=benchmark_index,
++            config=cfg,
++        )
++        day_state = deepcopy(state.get("source_quarantine") or {})
++        if not daily_audit.get("observable_trading_session", True):
++            day_state = {
++                source_family: {
++                    **_empty_source_quarantine_state(source_family),
++                    **deepcopy(day_state.get(source_family) or {}),
++                    "available": False,
++                    "status": "unavailable",
++                    "unavailable_reason": "missing_common_benchmark_session",
++                }
++                for source_family in SOURCE_PRIORITY
++            }
++        health_by_date[as_of] = day_state
++        for source_family, row in day_state.items():
++            if not row.get("available"):
++                unavailable_counts[source_family] += 1
++            if row.get("quarantined"):
++                quarantined_date_counts[source_family] += 1
++            if row.get("triggered_today"):
++                trigger_counts[source_family] += 1
++            if row.get("recovered_today"):
++                recovery_counts[source_family] += 1
++    audit = {
++        "enabled": True,
++        "trading_session_count": len(ordered_dates),
++        "source_shadow_notional_usd": float(cfg["source_shadow_notional_usd"]),
++        "underwater_sessions": int(cfg["source_quarantine_underwater_sessions"]),
++        "benchmarks": list(cfg["source_quarantine_benchmarks"]),
++        "unavailable_session_counts": dict(unavailable_counts),
++        "quarantined_session_counts": dict(quarantined_date_counts),
++        "trigger_counts": dict(trigger_counts),
++        "recovery_counts": dict(recovery_counts),
++        "final_states": deepcopy(state.get("source_quarantine") or {}),
++    }
++    return health_by_date, audit
++
++
++def _historical_source_snapshots_asof(
++    source_rows: list[dict[str, Any]],
++    *,
++    as_of: str,
++) -> dict[str, dict[str, Any]]:
++    snapshots: dict[str, dict[str, Any]] = {}
++    for source_family in SOURCE_PRIORITY:
++        closed: list[dict[str, Any]] = []
++        open_positions: list[dict[str, Any]] = []
++        for row in source_rows:
++            if not isinstance(row, dict):
++                continue
++            if str(row.get("source_family") or "") != source_family:
++                continue
++            entry_date = str(row.get("entry_date") or "")[:10]
++            exit_date = str(row.get("exit_date") or "")[:10]
++            if not entry_date or entry_date > as_of:
++                continue
++            if exit_date and exit_date <= as_of:
++                closed.append(deepcopy(row))
++            else:
++                open_positions.append(deepcopy(row))
++        snapshots[source_family] = {
++            "asof_date": as_of,
++            "open_positions": open_positions,
++            "closed_positions": closed,
++        }
++    return snapshots
++
++
++def _source_relative_shadow_metrics(
++    *,
++    source_family: str,
++    source_snapshot: dict[str, Any] | None,
++    as_of: str,
++    prior_state: dict[str, Any],
++    row_index_by_ticker: dict[str, dict[str, dict[str, Any]]],
++    benchmark_index: dict[str, dict[str, dict[str, Any]]],
++    config: dict[str, Any],
++) -> tuple[dict[str, Any], str | None]:
++    if not isinstance(source_snapshot, dict):
++        return {}, "missing_source_snapshot"
++    snapshot_asof = str(source_snapshot.get("asof_date") or "")[:10]
++    if snapshot_asof != as_of:
++        return {}, "source_snapshot_asof_mismatch"
++    if source_snapshot.get("error"):
++        return {}, "source_snapshot_error"
++    if not isinstance(source_snapshot.get("open_positions"), list):
++        return {}, "missing_open_positions"
++    if not isinstance(source_snapshot.get("closed_positions"), list):
++        return {}, "missing_closed_positions"
++
++    current_open_ids = {
++        _source_shadow_position_id(source_family, row)
++        for row in source_snapshot.get("open_positions") or []
++        if isinstance(row, dict)
++    }
++    current_closed_ids = {
++        _source_shadow_position_id(source_family, row)
++        for row in source_snapshot.get("closed_positions") or []
++        if isinstance(row, dict)
++    }
++    previous_open_ids = {
++        str(value) for value in prior_state.get("active_shadow_position_ids") or []
++    }
++    disappeared = previous_open_ids - current_open_ids - current_closed_ids
++    if disappeared:
++        return {}, (
++            "source_position_disappeared_without_settlement:"
++            + ",".join(sorted(disappeared))
++        )
++
++    benchmarks = tuple(config["source_quarantine_benchmarks"])
++    for benchmark in benchmarks:
++        if not benchmark_index.get(str(benchmark)):
++            return {}, f"missing_benchmark_history:{benchmark}"
++    notional = float(config["source_shadow_notional_usd"])
++    tracking_started_date = str(
++        prior_state.get("tracking_started_date") or as_of
++    )[:10]
++    settled_contributions = deepcopy(
++        prior_state.get("settled_relative_contributions") or {}
++    )
++    ignored_pre_tracking_closed_ids = set(
++        str(value)
++        for value in prior_state.get("ignored_pre_tracking_closed_ids") or []
++    )
++    relative = {
++        str(benchmark): sum(
++            _float(row.get(str(benchmark)))
++            for row in settled_contributions.values()
++            if isinstance(row, dict)
++        )
++        for benchmark in benchmarks
++    }
++    fingerprint_rows: list[dict[str, Any]] = []
++    seen: set[str] = set()
++    positions = [
++        (row, True) for row in source_snapshot.get("closed_positions") or []
++    ] + [(row, False) for row in source_snapshot.get("open_positions") or []]
++    for position, is_closed in positions:
++        if not isinstance(position, dict):
++            continue
++        ticker = str(position.get("ticker") or "").upper()
++        entry_date = str(position.get("entry_date") or "")[:10]
++        exit_date = str(position.get("exit_date") or "")[:10]
++        decision_id = _source_shadow_position_id(source_family, position)
++        if decision_id in seen:
++            continue
++        seen.add(decision_id)
++        if is_closed and decision_id in settled_contributions:
++            fingerprint_rows.append(
++                {
++                    "decision_id": decision_id,
++                    "settled": True,
++                    "relative_contribution": settled_contributions[decision_id],
++                }
++            )
++            continue
++        if is_closed and decision_id in ignored_pre_tracking_closed_ids:
++            fingerprint_rows.append(
++                {"decision_id": decision_id, "pre_tracking_baseline": True}
++            )
++            continue
++        if not ticker or not entry_date or entry_date > as_of:
++            return {}, "invalid_source_position_contract"
++        if is_closed and (not exit_date or exit_date > as_of):
++            return {}, "invalid_closed_source_position_contract"
++        if is_closed and exit_date < tracking_started_date:
++            ignored_pre_tracking_closed_ids.add(decision_id)
++            fingerprint_rows.append(
++                {"decision_id": decision_id, "pre_tracking_baseline": True}
++            )
++            continue
++        terminal_date = exit_date if exit_date and exit_date <= as_of else as_of
++        entry_bar = row_index_by_ticker.get(ticker, {}).get(entry_date)
++        terminal_bar = row_index_by_ticker.get(ticker, {}).get(terminal_date)
++        if not entry_bar or not terminal_bar:
++            return {}, f"missing_source_mark:{ticker}:{entry_date}:{terminal_date}"
++        entry_price = _float(entry_bar.get("open"), -1.0)
++        terminal_price = _float(terminal_bar.get("close"), -1.0)
++        if entry_price <= 0.0 or terminal_price <= 0.0:
++            return {}, f"invalid_source_mark:{ticker}:{entry_date}:{terminal_date}"
++        source_return = terminal_price / entry_price - 1.0
++        row_fingerprint = {
++            "decision_id": decision_id,
++            "ticker": ticker,
++            "entry_date": entry_date,
++            "terminal_date": terminal_date,
++            "source_return": round(source_return, 12),
++        }
++        row_contribution: dict[str, float] = {}
++        for benchmark in benchmarks:
++            benchmark_name = str(benchmark)
++            benchmark_entry = benchmark_index.get(benchmark_name, {}).get(entry_date)
++            benchmark_terminal = benchmark_index.get(benchmark_name, {}).get(
++                terminal_date
++            )
++            if not benchmark_entry or not benchmark_terminal:
++                return {}, (
++                    f"missing_benchmark_mark:{benchmark_name}:{entry_date}:{terminal_date}"
++                )
++            benchmark_entry_price = _float(benchmark_entry.get("open"), -1.0)
++            benchmark_terminal_price = _float(benchmark_terminal.get("close"), -1.0)
++            if benchmark_entry_price <= 0.0 or benchmark_terminal_price <= 0.0:
++                return {}, (
++                    f"invalid_benchmark_mark:{benchmark_name}:{entry_date}:{terminal_date}"
++                )
++            benchmark_return = benchmark_terminal_price / benchmark_entry_price - 1.0
++            contribution = notional * (source_return - benchmark_return)
++            relative[benchmark_name] += contribution
++            row_contribution[benchmark_name] = leader._round(contribution, 6) or 0.0
++            row_fingerprint[f"{benchmark_name.lower()}_return"] = round(
++                benchmark_return, 12
++            )
++        if is_closed:
++            settled_contributions[decision_id] = {
++                **row_contribution,
++                "entry_date": entry_date,
++                "exit_date": terminal_date,
++                "ticker": ticker,
++            }
++            row_fingerprint = {
++                "decision_id": decision_id,
++                "settled": True,
++                "relative_contribution": settled_contributions[decision_id],
++            }
++        else:
++            row_fingerprint["settled"] = False
++        fingerprint_rows.append(row_fingerprint)
++    fingerprint_rows.sort(key=lambda row: str(row["decision_id"]))
++    payload_hash = hashlib.sha256(
++        json.dumps(fingerprint_rows, sort_keys=True, separators=(",", ":")).encode("utf-8")
++    ).hexdigest()
++    return {
++        "source_family": source_family,
++        "position_count": len(fingerprint_rows),
++        "relative_equity": {
++            benchmark: leader._round(value, 6)
++            for benchmark, value in relative.items()
++        },
++        "input_hash": payload_hash,
++        "tracking_started_date": tracking_started_date,
++        "settled_relative_contributions": settled_contributions,
++        "ignored_pre_tracking_closed_ids": sorted(ignored_pre_tracking_closed_ids),
++        "active_shadow_position_ids": sorted(current_open_ids),
++    }, None
++
++
++def _advance_source_quarantine_state(
++    *,
++    source_family: str,
++    prior: dict[str, Any],
++    metrics: dict[str, Any],
++    as_of: str,
++    config: dict[str, Any],
++) -> dict[str, Any]:
++    benchmarks = [str(value) for value in config["source_quarantine_benchmarks"]]
++    if len(benchmarks) != 2:
++        raise ValueError("source quarantine requires exactly two benchmarks")
++    first_benchmark, second_benchmark = benchmarks
++    current_first = _float(metrics["relative_equity"].get(first_benchmark))
++    current_second = _float(metrics["relative_equity"].get(second_benchmark))
++    prior_state = {**_empty_source_quarantine_state(source_family), **prior}
++    prior_date = str(prior_state.get("last_observed_date") or "")[:10]
++    if prior_date == as_of:
++        if str(prior_state.get("input_conflict_date") or "")[:10] == as_of:
++            return {
++                **prior_state,
++                "available": False,
++                "status": "unavailable",
++                "unavailable_reason": "same_date_shadow_input_changed",
++                "last_evaluated_date": as_of,
++                "triggered_today": False,
++                "recovered_today": False,
++            }
++        if str(prior_state.get("last_input_hash") or "") != str(metrics["input_hash"]):
++            return {
++                **prior_state,
++                "available": False,
++                "status": "unavailable",
++                "unavailable_reason": "same_date_shadow_input_changed",
++                "last_evaluated_date": as_of,
++                "input_conflict_date": as_of,
++                "triggered_today": False,
++                "recovered_today": False,
++            }
++        return {
++            **prior_state,
++            "available": True,
++            "unavailable_reason": None,
++            "last_evaluated_date": as_of,
++            "triggered_today": False,
++            "recovered_today": False,
++        }
++
++    observation_sessions = int(prior_state.get("observation_sessions") or 0) + 1
++    prior_first_hwm = (
++        _float(prior_state.get("first_relative_hwm"))
++        if prior_state.get("observation_sessions")
++        else current_first
++    )
++    prior_second_hwm = (
++        _float(prior_state.get("second_relative_hwm"))
++        if prior_state.get("observation_sessions")
++        else current_second
++    )
++    quarantined = bool(prior_state.get("quarantined"))
++    triggered_today = False
++    recovered_today = False
++    frozen_first_hwm = prior_state.get("frozen_first_relative_hwm")
++    frozen_second_hwm = prior_state.get("frozen_second_relative_hwm")
++    underwater_sessions = int(prior_state.get("underwater_sessions") or 0)
++
++    if quarantined:
++        recovery_first = _float(frozen_first_hwm, prior_first_hwm)
++        recovery_second = _float(frozen_second_hwm, prior_second_hwm)
++        if current_first >= recovery_first and current_second >= recovery_second:
++            quarantined = False
++            recovered_today = True
++            underwater_sessions = 0
++            frozen_first_hwm = None
++            frozen_second_hwm = None
++        elif current_first < prior_first_hwm and current_second < prior_second_hwm:
++            underwater_sessions += 1
++        else:
++            underwater_sessions = 0
++    else:
++        below_both = (
++            observation_sessions > 1
++            and current_first < prior_first_hwm
++            and current_second < prior_second_hwm
++        )
++        underwater_sessions = underwater_sessions + 1 if below_both else 0
++        if underwater_sessions >= int(config["source_quarantine_underwater_sessions"]):
++            quarantined = True
++            triggered_today = True
++            frozen_first_hwm = prior_first_hwm
++            frozen_second_hwm = prior_second_hwm
++
++    next_first_hwm = max(prior_first_hwm, current_first)
++    next_second_hwm = max(prior_second_hwm, current_second)
++    trigger_count = int(prior_state.get("trigger_count") or 0) + int(triggered_today)
++    recovery_count = int(prior_state.get("recovery_count") or 0) + int(recovered_today)
++    status = "quarantined" if quarantined else (
++        "warming" if observation_sessions <= 20 else "active"
++    )
++    return {
++        "source_family": source_family,
++        "available": True,
++        "status": status,
++        "unavailable_reason": None,
++        "quarantined": quarantined,
++        "observation_sessions": observation_sessions,
++        "underwater_sessions": underwater_sessions,
++        "first_benchmark": first_benchmark,
++        "second_benchmark": second_benchmark,
++        "first_relative_equity": leader._round(current_first, 6),
++        "second_relative_equity": leader._round(current_second, 6),
++        "first_relative_hwm": leader._round(next_first_hwm, 6),
++        "second_relative_hwm": leader._round(next_second_hwm, 6),
++        "frozen_first_relative_hwm": (
++            leader._round(_float(frozen_first_hwm), 6)
++            if frozen_first_hwm is not None
++            else None
++        ),
++        "frozen_second_relative_hwm": (
++            leader._round(_float(frozen_second_hwm), 6)
++            if frozen_second_hwm is not None
++            else None
++        ),
++        "shadow_position_count": int(metrics.get("position_count") or 0),
++        "shadow_notional_usd": float(config["source_shadow_notional_usd"]),
++        "tracking_started_date": metrics["tracking_started_date"],
++        "settled_relative_contributions": deepcopy(
++            metrics["settled_relative_contributions"]
++        ),
++        "ignored_pre_tracking_closed_ids": list(
++            metrics["ignored_pre_tracking_closed_ids"]
++        ),
++        "active_shadow_position_ids": list(metrics["active_shadow_position_ids"]),
++        "trigger_count": trigger_count,
++        "recovery_count": recovery_count,
++        "triggered_today": triggered_today,
++        "recovered_today": recovered_today,
++        "last_observed_date": as_of,
++        "last_evaluated_date": as_of,
++        "last_input_hash": metrics["input_hash"],
++        "input_conflict_date": None,
++    }
++
++
++def _empty_source_quarantine_state(source_family: str) -> dict[str, Any]:
++    return {
++        "source_family": source_family,
++        "available": False,
++        "status": "unavailable",
++        "unavailable_reason": "not_observed",
++        "quarantined": False,
++        "observation_sessions": 0,
++        "underwater_sessions": 0,
++        "first_relative_equity": 0.0,
++        "second_relative_equity": 0.0,
++        "first_relative_hwm": 0.0,
++        "second_relative_hwm": 0.0,
++        "frozen_first_relative_hwm": None,
++        "frozen_second_relative_hwm": None,
++        "trigger_count": 0,
++        "recovery_count": 0,
++        "triggered_today": False,
++        "recovered_today": False,
++        "last_observed_date": None,
++        "last_evaluated_date": None,
++        "last_input_hash": None,
++        "input_conflict_date": None,
++        "tracking_started_date": None,
++        "settled_relative_contributions": {},
++        "ignored_pre_tracking_closed_ids": [],
++        "active_shadow_position_ids": [],
++    }
++
++
++def _date_index_by_ticker(
++    rows_by_ticker: dict[str, list[dict[str, Any]]],
++) -> dict[str, dict[str, dict[str, Any]]]:
++    return {
++        ticker: {
++            str(row.get("date") or "")[:10]: row
++            for row in rows
++            if str(row.get("date") or "")[:10]
++        }
++        for ticker, rows in rows_by_ticker.items()
++    }
++
++
++def _source_shadow_position_id(
++    source_family: str,
++    position: dict[str, Any],
++) -> str:
++    ticker = str(position.get("ticker") or "").upper()
++    entry_date = str(position.get("entry_date") or "")[:10]
++    return str(
++        position.get("decision_id")
++        or f"{source_family}:{ticker}:{entry_date}"
++    )
++
++
+ def select_accepted_helper_source_priority_rows(
+     *,
+     source_rows: list[dict[str, Any]],
+@@ -533,6 +1211,7 @@ def select_accepted_helper_source_priority_rows(
+     existing_state: dict[str, Any] | None = None,
+     config: dict[str, Any] | None = None,
+     create_trades: bool,
++    source_health_by_date: dict[str, dict[str, dict[str, Any]]] | None = None,
+ ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+     cfg = _config(config)
+     candidates = [
+@@ -550,6 +1229,22 @@ def select_accepted_helper_source_priority_rows(
+     )
+     date_position = {date_value: idx for idx, date_value in enumerate(trading_dates)}
+     used_date_counts: Counter[str] = Counter()
++    existing_slot_ids: set[str] = set()
++    if existing_state:
++        for bucket in ("pending_entries", "open_positions", "closed_positions"):
++            for existing in existing_state.get(bucket) or []:
++                if not isinstance(existing, dict):
++                    continue
++                signal_date = str(
++                    existing.get("signal_date") or existing.get("date") or ""
++                )[:10]
++                decision_id = str(
++                    existing.get("decision_id")
++                    or f"{bucket}:{signal_date}:{existing.get('ticker')}"
++                )
++                if signal_date in date_position and decision_id not in existing_slot_ids:
++                    existing_slot_ids.add(decision_id)
++                    used_date_counts[signal_date] += 1
+     next_allowed_pos_by_ticker = _state_cooldown_map(
+         existing_state=existing_state,
+         date_position=date_position,
+@@ -557,13 +1252,39 @@ def select_accepted_helper_source_priority_rows(
+     )
+     selected: list[dict[str, Any]] = []
+     rejected: list[dict[str, Any]] = []
++    quarantine_filter_counts: Counter[str] = Counter()
+     for row in candidates:
+         signal_date = str(row.get("signal_date") or "")[:10]
+         ticker = str(row.get("ticker") or "").upper()
++        source_family = str(row.get("source_family") or "")
+         pos = date_position.get(signal_date)
+         if pos is None:
+             rejected.append({**row, "filter_reason": "missing_signal_date_position"})
+             continue
++        if cfg.get("source_quarantine_enabled"):
++            source_health = (
++                (source_health_by_date or {}).get(signal_date, {}).get(source_family)
++            )
++            if not source_health or not source_health.get("available", False):
++                quarantine_filter_counts["source_quarantine_unavailable"] += 1
++                rejected.append(
++                    {
++                        **row,
++                        "filter_reason": "source_quarantine_unavailable",
++                        "source_quarantine_status": deepcopy(source_health),
++                    }
++                )
++                continue
++            if source_health.get("quarantined", False):
++                quarantine_filter_counts["source_relative_shadow_quarantine"] += 1
++                rejected.append(
++                    {
++                        **row,
++                        "filter_reason": "source_relative_shadow_quarantine",
++                        "source_quarantine_status": deepcopy(source_health),
++                    }
++                )
++                continue
+         if used_date_counts[signal_date] >= int(cfg["daily_entry_slots"]):
+             rejected.append({**row, "filter_reason": "daily_top1_source_priority_limit"})
+             continue
+@@ -593,6 +1314,7 @@ def select_accepted_helper_source_priority_rows(
+                 "alters_orders": False,
+             }
+         )
++        out = _with_time_exit_outcome_contract(out, cfg)
+         selected.append(out)
+         used_date_counts[signal_date] += 1
+         next_allowed_pos_by_ticker[ticker] = pos + int(cfg["same_ticker_cooldown_days"])
+@@ -607,8 +1329,11 @@ def select_accepted_helper_source_priority_rows(
+             Counter(str(row.get("source_family") or "unknown") for row in selected)
+         ),
+         "daily_entry_slots": int(cfg["daily_entry_slots"]),
++        "existing_signal_date_slot_count": sum(used_date_counts.values()) - len(selected),
+         "same_ticker_cooldown_days": int(cfg["same_ticker_cooldown_days"]),
+         "source_notional_scalars": _source_notional_scalars(cfg),
++        "source_quarantine_enabled": bool(cfg.get("source_quarantine_enabled")),
++        "source_quarantine_filter_counts": dict(quarantine_filter_counts),
+     }
+     return selected, rejected, audit
+ 
+@@ -873,6 +1598,8 @@ def _snapshot_payload(
+     closed_today: list[dict[str, Any]],
+     rows_by_ticker: dict[str, list[dict[str, Any]]],
+     config: dict[str, Any],
++    source_quarantine_audit: dict[str, Any] | None = None,
++    source_quarantine_health: dict[str, Any] | None = None,
+ ) -> dict[str, Any]:
+     closed = [
+         _with_time_exit_outcome_contract(row, config)
+@@ -937,6 +1664,12 @@ def _snapshot_payload(
+             "source_priority": SOURCE_PRIORITY,
+             "source_coverage": source_coverage,
+             "priority_audit": priority_audit,
++            "source_quarantine": deepcopy(
++                source_quarantine_health
++                if source_quarantine_health is not None
++                else state.get("source_quarantine") or {}
++            ),
++            "source_quarantine_audit": source_quarantine_audit or {"enabled": False},
+         },
+         "context_scan": priority_audit,
+         "new_pending_entries": new_pending_entries,
+@@ -1087,7 +1820,7 @@ def _sector_entries(
+ 
+ 
+ def _normalise_state(state: dict[str, Any]) -> None:
+-    state.setdefault("schema_version", STATE_SCHEMA_VERSION)
++    state["schema_version"] = STATE_SCHEMA_VERSION
+     state.setdefault("sleeve", SLEEVE_NAME)
+     for key in ("pending_entries", "open_positions", "closed_positions", "skipped_days"):
+         if not isinstance(state.get(key), list):
+@@ -1098,6 +1831,8 @@ def _normalise_state(state: dict[str, Any]) -> None:
+             _with_time_exit_outcome_contract(row, cfg) if isinstance(row, dict) else row
+             for row in state[key]
+         ]
++    if not isinstance(state.get("source_quarantine"), dict):
++        state["source_quarantine"] = {}
+ 
+ 
+ def _append_skip_once(state: dict[str, Any], row: dict[str, Any]) -> None:
+@@ -1169,6 +1904,12 @@ def _parameter_summary(config: dict[str, Any]) -> dict[str, Any]:
+         "hold_days": config["hold_days"],
+         "same_ticker_cooldown_days": config["same_ticker_cooldown_days"],
+         "source_priority": SOURCE_PRIORITY,
++        "source_quarantine_enabled": bool(config.get("source_quarantine_enabled")),
++        "source_shadow_notional_usd": float(config["source_shadow_notional_usd"]),
++        "source_quarantine_underwater_sessions": int(
++            config["source_quarantine_underwater_sessions"]
++        ),
++        "source_quarantine_benchmarks": list(config["source_quarantine_benchmarks"]),
+     }
+ 
+ 
+diff --git a/quant/industry_relative_laggard_repair_paper_sleeve.py b/quant/industry_relative_laggard_repair_paper_sleeve.py
+index 1cfd558b0..39ff18d83 100644
+--- a/quant/industry_relative_laggard_repair_paper_sleeve.py
++++ b/quant/industry_relative_laggard_repair_paper_sleeve.py
+@@ -307,6 +307,8 @@ def build_industry_relative_laggard_repair_paper_sleeve_snapshot(
+         "rejected_candidates": rejected[:50],
+         "new_pending_entries": pending,
+         "pending_entries": working_state["pending_entries"],
++        "open_positions": deepcopy(working_state["open_positions"]),
++        "closed_positions": deepcopy(working_state["closed_positions"]),
+         "opened_positions_this_run": lifecycle["opened_this_run"],
+         "closed_positions_this_run": lifecycle["closed_this_run"],
+         "skipped_entries_this_run": lifecycle["skipped_this_run"],
+diff --git a/quant/rolling_corr_peer_shock_paper_sleeve.py b/quant/rolling_corr_peer_shock_paper_sleeve.py
+index 74c05977d..e6e11a3da 100644
+--- a/quant/rolling_corr_peer_shock_paper_sleeve.py
++++ b/quant/rolling_corr_peer_shock_paper_sleeve.py
+@@ -284,6 +284,8 @@ def build_rolling_corr_peer_shock_paper_sleeve_snapshot(
+         "rejected_candidates": rejected[:50],
+         "new_pending_entries": pending,
+         "pending_entries": working_state["pending_entries"],
++        "open_positions": deepcopy(working_state["open_positions"]),
++        "closed_positions": deepcopy(working_state["closed_positions"]),
+         "opened_positions_this_run": lifecycle["opened_this_run"],
+         "closed_positions_this_run": lifecycle["closed_this_run"],
+         "skipped_entries_this_run": lifecycle["skipped_this_run"],
+diff --git a/quant/run.py b/quant/run.py
+index b32af748b..953cdbfb7 100644
+--- a/quant/run.py
++++ b/quant/run.py
+@@ -4267,6 +4267,11 @@ def main():
+                 "industry_stable_core_flow": industry_stable_core_flow_paper_sleeve,
+             },
+             ohlcv_by_ticker=broad_market_ohlcv,
++            benchmark_ohlcv_by_ticker={
++                "SPY": spy_ohlcv if spy_ohlcv is not None else [],
++                "QQQ": qqq_ohlcv if qqq_ohlcv is not None else [],
++            },
++            config={"source_quarantine_enabled": True},
+         ),
+         empty_accepted_helper_source_priority_allocator_snapshot,
+         "Accepted-helper source-priority allocator",
+

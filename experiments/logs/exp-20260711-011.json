@@ -1,0 +1,230 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": 0.3534,
+  "aggregate_strategy_total_pnl_delta": 5953.56,
+  "artifact": "data/experiments/exp-20260711-011/exp_20260711_011_cboe_skew_relief_stock_leadership.json",
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0064,
+    "failed_reasons": [
+      "window_pnl_regression",
+      "drawdown_drift_too_high",
+      "accepted_vixy_comparator_not_beaten"
+    ],
+    "predicted_failure_modes": [
+      "skew_relief_relabels_vixy_risk_on_beta",
+      "accepted_vixy_comparator_not_beaten",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "predicted_failure_modes_hit": [
+      "accepted_vixy_comparator_not_beaten",
+      "drawdown_drift",
+      "skew_relief_relabels_vixy_risk_on_beta",
+      "window_regression"
+    ],
+    "predicted_success_probability": 0.08
+  },
+  "causal_components": [
+    "Yahoo-mirrored Cboe SKEW daily closes",
+    "fixed first cross below trailing 20-session simple mean",
+    "unchanged exp-20260607-018 stock leadership selector",
+    "next-open 10-session paper replay",
+    "canonical costs and Gate 1-4",
+    "accepted VIXY relief comparator"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260711_011_cboe_skew_relief_stock_leadership.py",
+    "data/experiments/exp-20260711-011/**",
+    "experiments/tickets/exp-20260711-011.json",
+    "experiments/cards/exp-20260711-011.md",
+    "experiments/manifests/exp-20260711-011.json",
+    "experiments/logs/exp-20260711-011.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "skew20_cross_below_tail_risk_relief_stock_leadership_v1",
+  "data_coverage": {
+    "all_canonical_windows_covered": true,
+    "relief_events_by_window": {
+      "late_strong": 9,
+      "mid_weak": 13,
+      "old_thin": 15
+    },
+    "row_count": 426,
+    "rows_by_window": {
+      "late_strong": 123,
+      "mid_weak": 127,
+      "old_thin": 138
+    },
+    "source": "Yahoo Finance mirror of Cboe SKEW Index"
+  },
+  "decision": "observed_only_rejected_cboe_skew_relief",
+  "experiment_id": "exp-20260711-011",
+  "fingerprint_caveat": "Reservation overmatched forward_replacement_value; exp011 adds cboe_skew and rebuilds frozen families.",
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "Cboe SKEW daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.3534,
+    "aggregate_pnl_delta": 5953.56,
+    "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "window_pnl_regression",
+      "drawdown_drift_too_high",
+      "accepted_vixy_comparator_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0205,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.128922,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.048149,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 68,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1
+  },
+  "hypothesis": "Private replay scout: a first daily CBOE SKEW Index close below its trailing 20-session mean is an option-implied equity-tail-risk relief event; applying the unchanged exp-20260607-018 liquid stock-leadership selector should add positive next-open 10-session paper replacement value across all canonical windows and beat the accepted VIXY relief comparator without window, drawdown, survival, or concentration failure.",
+  "implementation_mode": "private_replay_scout_new_data_shape",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260711-011.json",
+  "mechanism_family": "production_visible_cboe_tail_risk_relief_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260607-018",
+    "exp-20260710-020",
+    "exp-20260711-001",
+    "exp-20260711-002",
+    "exp-20260711-008"
+  ],
+  "new_evidence_axis": "CBOE SKEW daily history is a genuinely new data source with 426 rows spanning all three canonical windows; no prior experiment used the SKEW index, while the selector and response shape remain frozen.",
+  "new_evidence_type": "new_data_source_cboe_skew",
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing the SKEW moving-average span, adding levels or persistence, changing stock filters, top-N, hold, cooldown, notional, windows, or response shape.",
+    "new_evidence_required": "Reopen only with materially settled prospective rows from a fixed shared helper or a genuinely different publication-timed option-implied tail-risk source.",
+    "why_result_happened": "The fixed SKEW relief event did not add incremental evidence over accepted VIXY relief after costs; it was sparse, window-fragile, or another equity risk-on beta label."
+  },
+  "prediction": {
+    "confidence_reason": "CBOE SKEW is a genuinely new option-implied tail-risk source with complete canonical coverage and a plausible falling-tail-premium relief mechanism; odds remain low because adjacent risk-relief labels often overlap beta or fail the accepted VIXY comparator.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "skew_relief_relabels_vixy_risk_on_beta",
+      "accepted_vixy_comparator_not_beaten",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed",
+      "baseline_identity_drift"
+    ],
+    "recorded_at": "2026-07-11T06:05:44Z",
+    "success_probability": 0.08
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "scope": "experiment_local_private_replay_scout",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "window_pnl_regression;drawdown_drift_too_high;accepted_vixy_comparator_not_beaten",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_011_cboe_skew_relief_stock_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_011_cboe_skew_relief_stock_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "skew20_cross_below_tail_risk_relief_stock_leadership_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-11T06:14:08Z",
+  "trial_family": "cboe_skew_relief_stock_leadership_candidate_pool",
+  "trial_variant_id": "skew20_cross_below_fixed_stock_leadership_v1"
+}

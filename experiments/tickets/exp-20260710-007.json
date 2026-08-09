@@ -1,0 +1,975 @@
+{
+  "acceptance_rule": "Same fixed observed-only source-bundle Gate 4 rule from exp-20260706-012/013: min 250 settled rows, >=6 query groups, positive means cash/SPY/QQQ, nonnegative medians cash/SPY/QQQ, >=4 query groups positive vs SPY and QQQ, concentration caps unchanged.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    "data/experiments/exp-20260710-007/",
+    "experiments/logs/exp-20260710-007.json",
+    "experiments/cards/exp-20260710-007.md",
+    "experiments/manifests/exp-20260710-007.json",
+    "experiments/tickets/exp-20260710-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-007.md",
+  "causal_components": [
+    "read-only 2026-07-09 entity_theme_news observer outcome ledger analysis",
+    "unchanged fixed source-bundle aggregate checks from exp-20260706-012",
+    "materially-more-settled-row comparison versus prior ledgers",
+    "theme/query/ticker/date concentration audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_variable": "entity_theme_news_source_bundle_more_settled_rows_20260709_v1",
+  "claimed_at": "2026-07-10T06:10:35+00:00",
+  "completed_at": "2026-07-10T06:12:00+00:00",
+  "created_at": "2026-07-10T06:10:12+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-007",
+  "experiment_uid": "expuid-8873d9016fed480c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T06:10:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "entity_theme_news_more_settled_forward_value_20260709"
+  },
+  "hypothesis": "Observed-only alpha refresh on entity_theme_news_observer: with 22264 settled rows as of 2026-07-09 versus 13799 in exp-20260707-013, the unchanged fixed source bundle should clear the same 10-day cash/SPY/QQQ replacement-value bar before any shared helper is reconsidered.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source_manifest",
+    "query_theme_maps",
+    "candidate_tickers",
+    "horizon_10d",
+    "notional_4000",
+    "acceptance_rule"
+  ],
+  "mechanism_family": "production_visible_entity_theme_news_observer_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/entity_theme_news_observer.py",
+    "data/daily/orders",
+    "data/daily/signals/quant/quant_signals_20260709.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260703-014",
+    "exp-20260705-017",
+    "exp-20260706-012",
+    "exp-20260707-013"
+  ],
+  "new_evidence_type": "new_closed_forward_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "entity_theme_news_source_bundle_forward_value",
+        "score": 0.5529,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "entity_theme_news",
+      "field_tags": [
+        "alpha",
+        "any",
+        "as",
+        "bar",
+        "before",
+        "bundle",
+        "cash",
+        "clear",
+        "entity",
+        "exp",
+        "forward",
+        "helper",
+        "in",
+        "is",
+        "more",
+        "news",
+        "observed",
+        "observer",
+        "of",
+        "on",
+        "only",
+        "qqq",
+        "reconsidered",
+        "refresh",
+        "replacement",
+        "rows",
+        "same",
+        "settled",
+        "should",
+        "spy",
+        "theme",
+        "unchanged",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_source_bundle_forward_value",
+        "reopen_condition": "A true PIT historical news archive with observation-time availability, or another material batch of prospectively logged daily rows with at least +50% new settled cash/SPY/QQQ replacement-value outcomes under the same fixed manifest.",
+        "score": 0.5529,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_source_bundle_forward_value",
+        "reopen_condition": "Prospectively accumulated daily entity/theme rows with closed cash/SPY/QQQ replacement value, or a true PIT historical news archive with observation-time availability and the same fixed source manifest.",
+        "score": 0.5278,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_outcome_daily_wiring",
+        "reopen_condition": "Closed entity/theme observer outcome rows with cash/SPY/QQQ replacement-value separation, richer relation/economic mapping, or a materially different non-ticker event source.",
+        "score": 0.5026,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_corporate_event_exposure_confirmation",
+        "reopen_condition": "A further retry needs additional prospectively accumulated entity/theme rows beyond the 20260705 ledger under this unchanged confirmation contract, a true PIT historical news archive, or a different independent entity-relation source.",
+        "score": 0.5013,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "entity_theme_news",
+        "family_key": "entity_theme_news_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed forward rows from this observer, a materially richer entity-relation/economic mapping, or a different non-ticker news source such as PR wire full text or prediction-market event data.",
+        "score": 0.4932,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially more settled forward rows: 2026-07-09 entity_theme_news outcome summary reports 22264 settled rows versus 13799 in exp-20260707-013 (+61.3% and +8465 rows); fixed source manifest, horizon, notional, query/theme/ticker maps, and acceptance rule remain unchanged.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "entity_theme_news",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Materially more settled forward rows: 2026-07-09 entity_theme_news outcome summary reports 22264 settled rows versus 13799 in exp-20260707-013 (+61.3% and +8465 rows); fixed source manifest, horizon, notional, query/theme/ticker maps, and acceptance rule remain unchanged.",
+        "categories": [
+          "materially_more_forward_rows"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially more settled forward rows: 2026-07-09 entity_theme_news outcome summary reports 22264 settled rows versus 13799 in exp-20260707-013 (+61.3% and +8465 rows); fixed source manifest, horizon, notional, query/theme/ticker maps, and acceptance rule remain unchanged.",
+      "categories": [
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "entity_theme_news",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.22,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_positive_replacement_value",
+      "theme_mixture_dilution",
+      "row_median_or_spy_qqq_failure",
+      "current_snapshot_pit_caveat",
+      "larger_sample_confirms_prior_rejection"
+    ],
+    "confidence_reason": "Current 22264 settled rows satisfy prior reopen floor (+61.3% versus 13799), but prior fixed ledgers failed medians/query breadth, so odds remain low.",
+    "recorded_at": "2026-07-10T06:09:43+00:00"
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+    "artifact": "data/experiments/exp-20260710-007/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.json",
+    "log": "experiments/logs/exp-20260710-007.json",
+    "runner": "quant/experiments/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    "gate4": {
+      "acceptance_rule": {
+        "min_settled_rows": 250,
+        "min_query_groups": 6,
+        "require_row_level_primary_means_positive": true,
+        "require_row_level_primary_medians_nonnegative": true,
+        "require_observed_date_level_primary_means_positive": true,
+        "min_positive_query_groups_vs_spy_and_qqq": 4,
+        "max_positive_cash_query_share": 0.6,
+        "max_positive_cash_ticker_share": 0.4
+      },
+      "acceptance_checks": {
+        "settled_rows_min_passed": true,
+        "query_groups_min_passed": true,
+        "row_level_primary_means_positive": true,
+        "row_level_primary_medians_nonnegative": false,
+        "observed_date_level_primary_means_positive": true,
+        "positive_query_groups_vs_spy_and_qqq_passed": false,
+        "positive_cash_query_share_passed": true,
+        "positive_cash_ticker_share_passed": true
+      },
+      "failed_reasons": [
+        "row_level_primary_medians_nonnegative",
+        "positive_query_groups_vs_spy_and_qqq_passed"
+      ],
+      "passed": false,
+      "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+      "accepted_alpha": false,
+      "observed_only": true,
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "strategy_behavior_changed": false
+      },
+      "pit_caveat": "Entity/theme source rows come from Google News observer snapshots and include rows returned by the current search process. This is a read-only forward-ledger attribution refresh, not a strict historical PIT deployable candidate-pool proof."
+    },
+    "summary": {
+      "candidate_outcome_rows": 25504,
+      "settled_rows": 22264,
+      "settled_survival_rate": 0.872961,
+      "query_group_count": 6,
+      "ticker_count": 30,
+      "theme_count": 6,
+      "relation_type_count": 6,
+      "row_level": {
+        "cash": {
+          "count": 22264,
+          "sum": 889182.41,
+          "mean": 39.9381,
+          "median": 4.14,
+          "positive_count": 11325,
+          "positive_share": 0.508669
+        },
+        "spy": {
+          "count": 22264,
+          "sum": 545387.56,
+          "mean": 24.4964,
+          "median": 7.18,
+          "positive_count": 11327,
+          "positive_share": 0.508759
+        },
+        "qqq": {
+          "count": 22264,
+          "sum": 102729.45,
+          "mean": 4.6142,
+          "median": -12.78,
+          "positive_count": 10898,
+          "positive_share": 0.48949
+        }
+      },
+      "observed_date_level": {
+        "observed_date_count": 234,
+        "mean_of_date_mean_cash": 93.4592,
+        "mean_of_date_mean_spy": 70.8937,
+        "mean_of_date_mean_qqq": 59.011,
+        "top_dates_by_cash": [
+          {
+            "observed_date": "2026-03-30",
+            "row_count": 56,
+            "mean_cash": 1452.4886,
+            "mean_spy": 1104.9086,
+            "mean_qqq": 996.6286,
+            "median_cash": 1151.63,
+            "positive_cash_sum": 81339.36
+          },
+          {
+            "observed_date": "2026-04-01",
+            "row_count": 128,
+            "mean_cash": 1297.1581,
+            "mean_spy": 955.3381,
+            "mean_qqq": 833.7181,
+            "median_cash": 1202.115,
+            "positive_cash_sum": 166036.24
+          },
+          {
+            "observed_date": "2025-04-25",
+            "row_count": 32,
+            "mean_cash": 1057.5225,
+            "mean_spy": 969.545,
+            "mean_qqq": 950.0925,
+            "median_cash": 955.13,
+            "positive_cash_sum": 38835.68
+          },
+          {
+            "observed_date": "2025-04-27",
+            "row_count": 16,
+            "mean_cash": 1057.5225,
+            "mean_spy": 969.545,
+            "mean_qqq": 950.0925,
+            "median_cash": 955.13,
+            "positive_cash_sum": 19417.84
+          },
+          {
+            "observed_date": "2024-11-20",
+            "row_count": 20,
+            "mean_cash": 1024.1375,
+            "mean_spy": 939.58,
+            "mean_qqq": 919.19,
+            "median_cash": 1053.105,
+            "positive_cash_sum": 20482.75
+          },
+          {
+            "observed_date": "2026-04-06",
+            "row_count": 81,
+            "mean_cash": 995.2601,
+            "mean_spy": 678.0701,
+            "mean_qqq": 577.6001,
+            "median_cash": 1220.18,
+            "positive_cash_sum": 80616.07
+          },
+          {
+            "observed_date": "2026-05-16",
+            "row_count": 56,
+            "mean_cash": 941.47,
+            "mean_spy": 840.31,
+            "mean_qqq": 761.49,
+            "median_cash": 773.6,
+            "positive_cash_sum": 53489.36
+          },
+          {
+            "observed_date": "2025-04-16",
+            "row_count": 32,
+            "mean_cash": 934.4525,
+            "mean_spy": 741.64,
+            "mean_qqq": 690.245,
+            "median_cash": 1105.585,
+            "positive_cash_sum": 31679.84
+          }
+        ],
+        "bottom_dates_by_cash": [
+          {
+            "observed_date": "2026-01-28",
+            "row_count": 66,
+            "mean_cash": -881.4567,
+            "mean_spy": -856.0067,
+            "mean_qqq": -757.9167,
+            "median_cash": -957.13,
+            "positive_cash_sum": 0.0
+          },
+          {
+            "observed_date": "2026-01-22",
+            "row_count": 346,
+            "mean_cash": -845.0054,
+            "mean_spy": -783.7954,
+            "mean_qqq": -698.4854,
+            "median_cash": -1158.04,
+            "positive_cash_sum": 5969.36
+          },
+          {
+            "observed_date": "2025-11-11",
+            "row_count": 48,
+            "mean_cash": -747.68,
+            "mean_spy": -690.61,
+            "mean_qqq": -645.57,
+            "median_cash": -689.71,
+            "positive_cash_sum": 0.0
+          },
+          {
+            "observed_date": "2026-01-20",
+            "row_count": 24,
+            "mean_cash": -673.1917,
+            "mean_spy": -731.3417,
+            "mean_qqq": -719.4617,
+            "median_cash": -665.815,
+            "positive_cash_sum": 0.0
+          },
+          {
+            "observed_date": "2026-01-29",
+            "row_count": 102,
+            "mean_cash": -652.7356,
+            "mean_spy": -591.9056,
+            "mean_qqq": -492.4656,
+            "median_cash": -545.01,
+            "positive_cash_sum": 1948.6
+          },
+          {
+            "observed_date": "2026-01-18",
+            "row_count": 48,
+            "mean_cash": -620.2967,
+            "mean_spy": -701.9967,
+            "mean_qqq": -722.5667,
+            "median_cash": -596.685,
+            "positive_cash_sum": 0.0
+          },
+          {
+            "observed_date": "2025-11-09",
+            "row_count": 7,
+            "mean_cash": -601.2814,
+            "mean_spy": -493.7314,
+            "mean_qqq": -414.8314,
+            "median_cash": -633.68,
+            "positive_cash_sum": 0.0
+          },
+          {
+            "observed_date": "2025-11-08",
+            "row_count": 7,
+            "mean_cash": -601.2814,
+            "mean_spy": -493.7314,
+            "mean_qqq": -414.8314,
+            "median_cash": -633.68,
+            "positive_cash_sum": 0.0
+          }
+        ]
+      },
+      "positive_query_groups_vs_spy_and_qqq": 3,
+      "positive_query_groups_vs_spy_and_qqq_sample": [
+        {
+          "entity_theme_query_id": "frontier_ai_private_capex",
+          "row_count": 5474,
+          "mean_cash": 157.0048,
+          "mean_spy": 134.3528,
+          "mean_qqq": 109.8628,
+          "median_cash": 61.65,
+          "positive_cash_sum": 1570393.05
+        },
+        {
+          "entity_theme_query_id": "ai_export_control_supply_chain",
+          "row_count": 4122,
+          "mean_cash": 153.5631,
+          "mean_spy": 139.2507,
+          "mean_qqq": 115.344,
+          "median_cash": 91.25,
+          "positive_cash_sum": 1006029.86
+        },
+        {
+          "entity_theme_query_id": "glp1_supply_access",
+          "row_count": 1580,
+          "mean_cash": 140.3771,
+          "mean_spy": 116.0373,
+          "mean_qqq": 107.6311,
+          "median_cash": -31.05,
+          "positive_cash_sum": 586290.73
+        }
+      ],
+      "max_positive_cash_query_share": 0.320043,
+      "max_positive_cash_ticker_share": 0.1685,
+      "top_queries_by_cash": [
+        {
+          "entity_theme_query_id": "frontier_ai_private_capex",
+          "row_count": 5474,
+          "mean_cash": 157.0048,
+          "mean_spy": 134.3528,
+          "mean_qqq": 109.8628,
+          "median_cash": 61.65,
+          "positive_cash_sum": 1570393.05
+        },
+        {
+          "entity_theme_query_id": "ai_export_control_supply_chain",
+          "row_count": 4122,
+          "mean_cash": 153.5631,
+          "mean_spy": 139.2507,
+          "mean_qqq": 115.344,
+          "median_cash": 91.25,
+          "positive_cash_sum": 1006029.86
+        },
+        {
+          "entity_theme_query_id": "glp1_supply_access",
+          "row_count": 1580,
+          "mean_cash": 140.3771,
+          "mean_spy": 116.0373,
+          "mean_qqq": 107.6311,
+          "median_cash": -31.05,
+          "positive_cash_sum": 586290.73
+        },
+        {
+          "entity_theme_query_id": "hyperscaler_power_data_center",
+          "row_count": 4333,
+          "mean_cash": 15.7629,
+          "mean_spy": 10.1332,
+          "mean_qqq": -13.6564,
+          "median_cash": 1.97,
+          "positive_cash_sum": 563063.66
+        },
+        {
+          "entity_theme_query_id": "crypto_market_structure_policy",
+          "row_count": 3989,
+          "mean_cash": -73.9711,
+          "mean_spy": -98.6772,
+          "mean_qqq": -117.2959,
+          "median_cash": -76.95,
+          "positive_cash_sum": 845250.46
+        },
+        {
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "row_count": 2766,
+          "mean_cash": -216.2961,
+          "mean_spy": -216.0787,
+          "mean_qqq": -223.1013,
+          "median_cash": -164.14,
+          "positive_cash_sum": 335791.29
+        }
+      ],
+      "bottom_queries_by_cash": [
+        {
+          "entity_theme_query_id": "private_space_launch_contracts",
+          "row_count": 2766,
+          "mean_cash": -216.2961,
+          "mean_spy": -216.0787,
+          "mean_qqq": -223.1013,
+          "median_cash": -164.14,
+          "positive_cash_sum": 335791.29
+        },
+        {
+          "entity_theme_query_id": "crypto_market_structure_policy",
+          "row_count": 3989,
+          "mean_cash": -73.9711,
+          "mean_spy": -98.6772,
+          "mean_qqq": -117.2959,
+          "median_cash": -76.95,
+          "positive_cash_sum": 845250.46
+        },
+        {
+          "entity_theme_query_id": "hyperscaler_power_data_center",
+          "row_count": 4333,
+          "mean_cash": 15.7629,
+          "mean_spy": 10.1332,
+          "mean_qqq": -13.6564,
+          "median_cash": 1.97,
+          "positive_cash_sum": 563063.66
+        },
+        {
+          "entity_theme_query_id": "glp1_supply_access",
+          "row_count": 1580,
+          "mean_cash": 140.3771,
+          "mean_spy": 116.0373,
+          "mean_qqq": 107.6311,
+          "median_cash": -31.05,
+          "positive_cash_sum": 586290.73
+        },
+        {
+          "entity_theme_query_id": "ai_export_control_supply_chain",
+          "row_count": 4122,
+          "mean_cash": 153.5631,
+          "mean_spy": 139.2507,
+          "mean_qqq": 115.344,
+          "median_cash": 91.25,
+          "positive_cash_sum": 1006029.86
+        },
+        {
+          "entity_theme_query_id": "frontier_ai_private_capex",
+          "row_count": 5474,
+          "mean_cash": 157.0048,
+          "mean_spy": 134.3528,
+          "mean_qqq": 109.8628,
+          "median_cash": 61.65,
+          "positive_cash_sum": 1570393.05
+        }
+      ],
+      "top_tickers_by_cash": [
+        {
+          "candidate_ticker": "WW",
+          "row_count": 359,
+          "mean_cash": 671.0729,
+          "mean_spy": 627.8079,
+          "mean_qqq": 638.8375,
+          "median_cash": 1680.0,
+          "positive_cash_sum": 349016.01
+        },
+        {
+          "candidate_ticker": "MU",
+          "row_count": 1469,
+          "mean_cash": 480.8832,
+          "mean_spy": 462.1313,
+          "mean_qqq": 437.9141,
+          "median_cash": 566.53,
+          "positive_cash_sum": 826800.66
+        },
+        {
+          "candidate_ticker": "AMD",
+          "row_count": 1469,
+          "mean_cash": 314.662,
+          "mean_spy": 295.9101,
+          "mean_qqq": 271.6929,
+          "median_cash": 267.05,
+          "positive_cash_sum": 554835.83
+        },
+        {
+          "candidate_ticker": "CRDO",
+          "row_count": 782,
+          "mean_cash": 293.1917,
+          "mean_spy": 270.5397,
+          "mean_qqq": 246.0497,
+          "median_cash": 155.04,
+          "positive_cash_sum": 323962.52
+        },
+        {
+          "candidate_ticker": "RIOT",
+          "row_count": 700,
+          "mean_cash": 190.5984,
+          "mean_spy": 164.1238,
+          "mean_qqq": 143.0668,
+          "median_cash": 122.72,
+          "positive_cash_sum": 239696.28
+        },
+        {
+          "candidate_ticker": "ASML",
+          "row_count": 687,
+          "mean_cash": 170.3788,
+          "mean_spy": 156.0664,
+          "mean_qqq": 132.1598,
+          "median_cash": 137.48,
+          "positive_cash_sum": 153649.02
+        },
+        {
+          "candidate_ticker": "PWR",
+          "row_count": 619,
+          "mean_cash": 116.1161,
+          "mean_spy": 110.4864,
+          "mean_qqq": 86.6968,
+          "median_cash": 79.64,
+          "positive_cash_sum": 109778.97
+        },
+        {
+          "candidate_ticker": "GEV",
+          "row_count": 619,
+          "mean_cash": 101.9465,
+          "mean_spy": 96.3168,
+          "mean_qqq": 72.5272,
+          "median_cash": 107.32,
+          "positive_cash_sum": 113453.22
+        },
+        {
+          "candidate_ticker": "TSM",
+          "row_count": 687,
+          "mean_cash": 90.1367,
+          "mean_spy": 75.8243,
+          "mean_qqq": 51.9176,
+          "median_cash": 117.59,
+          "positive_cash_sum": 86654.89
+        },
+        {
+          "candidate_ticker": "MARA",
+          "row_count": 700,
+          "mean_cash": 82.2429,
+          "mean_spy": 55.7682,
+          "mean_qqq": 34.7113,
+          "median_cash": 247.95,
+          "positive_cash_sum": 219749.57
+        },
+        {
+          "candidate_ticker": "ANET",
+          "row_count": 1401,
+          "mean_cash": 66.7275,
+          "mean_spy": 51.5964,
+          "mean_qqq": 27.4159,
+          "median_cash": 45.38,
+          "positive_cash_sum": 258086.04
+        },
+        {
+          "candidate_ticker": "ETN",
+          "row_count": 619,
+          "mean_cash": 31.7621,
+          "mean_spy": 26.1324,
+          "mean_qqq": 2.3428,
+          "median_cash": 12.11,
+          "positive_cash_sum": 59855.61
+        }
+      ],
+      "top_themes_by_cash": [
+        {
+          "theme": "ai_capex_private_lab",
+          "row_count": 5474,
+          "mean_cash": 157.0048,
+          "mean_spy": 134.3528,
+          "mean_qqq": 109.8628,
+          "median_cash": 61.65,
+          "positive_cash_sum": 1570393.05
+        },
+        {
+          "theme": "ai_chip_export_controls",
+          "row_count": 4122,
+          "mean_cash": 153.5631,
+          "mean_spy": 139.2507,
+          "mean_qqq": 115.344,
+          "median_cash": 91.25,
+          "positive_cash_sum": 1006029.86
+        },
+        {
+          "theme": "glp1_supply_access",
+          "row_count": 1580,
+          "mean_cash": 140.3771,
+          "mean_spy": 116.0373,
+          "mean_qqq": 107.6311,
+          "median_cash": -31.05,
+          "positive_cash_sum": 586290.73
+        },
+        {
+          "theme": "ai_data_center_power",
+          "row_count": 4333,
+          "mean_cash": 15.7629,
+          "mean_spy": 10.1332,
+          "mean_qqq": -13.6564,
+          "median_cash": 1.97,
+          "positive_cash_sum": 563063.66
+        },
+        {
+          "theme": "crypto_regulation",
+          "row_count": 3989,
+          "mean_cash": -73.9711,
+          "mean_spy": -98.6772,
+          "mean_qqq": -117.2959,
+          "median_cash": -76.95,
+          "positive_cash_sum": 845250.46
+        },
+        {
+          "theme": "private_space_contracts",
+          "row_count": 2766,
+          "mean_cash": -216.2961,
+          "mean_spy": -216.0787,
+          "mean_qqq": -223.1013,
+          "median_cash": -164.14,
+          "positive_cash_sum": 335791.29
+        }
+      ],
+      "relation_type_table": [
+        {
+          "relation_type": "private_ai_lab_to_public_ai_infrastructure",
+          "row_count": 5474,
+          "mean_cash": 157.0048,
+          "mean_spy": 134.3528,
+          "mean_qqq": 109.8628,
+          "median_cash": 61.65,
+          "positive_cash_sum": 1570393.05
+        },
+        {
+          "relation_type": "regulatory_policy_to_public_semiconductor_exposure",
+          "row_count": 4122,
+          "mean_cash": 153.5631,
+          "mean_spy": 139.2507,
+          "mean_qqq": 115.344,
+          "median_cash": 91.25,
+          "positive_cash_sum": 1006029.86
+        },
+        {
+          "relation_type": "healthcare_theme_to_public_obesity_drug_exposure",
+          "row_count": 1580,
+          "mean_cash": 140.3771,
+          "mean_spy": 116.0373,
+          "mean_qqq": 107.6311,
+          "median_cash": -31.05,
+          "positive_cash_sum": 586290.73
+        },
+        {
+          "relation_type": "theme_to_public_power_and_infrastructure_exposure",
+          "row_count": 4333,
+          "mean_cash": 15.7629,
+          "mean_spy": 10.1332,
+          "mean_qqq": -13.6564,
+          "median_cash": 1.97,
+          "positive_cash_sum": 563063.66
+        },
+        {
+          "relation_type": "regulatory_policy_to_public_crypto_exposure",
+          "row_count": 3989,
+          "mean_cash": -73.9711,
+          "mean_spy": -98.6772,
+          "mean_qqq": -117.2959,
+          "median_cash": -76.95,
+          "positive_cash_sum": 845250.46
+        },
+        {
+          "relation_type": "private_entity_to_public_space_exposure",
+          "row_count": 2766,
+          "mean_cash": -216.2961,
+          "mean_spy": -216.0787,
+          "mean_qqq": -223.1013,
+          "median_cash": -164.14,
+          "positive_cash_sum": 335791.29
+        }
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-007.json",
+  "single_causal_variable": "entity_theme_news_source_bundle_more_settled_rows_20260709_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260710-007.json",
+  "trial_family": "entity_theme_news_source_bundle_forward_value",
+  "trial_variant_id": "materially_more_settled_rows_20260709_v1",
+  "alpha_hypothesis": "If the entity/theme observer contains deployable event-relation alpha, the 2026-07-09 larger settled forward ledger should clear the unchanged fixed source-bundle bar without relying on any retuned query or theme map.",
+  "implementation_mode": "observed_only_attribution",
+  "new_evidence_axis": "Materially more closed forward rows / settled forward rows: 2026-07-09 entity_theme_news outcome summary reports 22264 settled forward rows versus 13799 in exp-20260707-013 (+61.3% and +8465 rows); fixed source manifest, horizon, notional, query/theme/ticker maps, and acceptance rule remain unchanged.",
+  "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+  "artifact": "data/experiments/exp-20260710-007/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.json",
+  "log": "experiments/logs/exp-20260710-007.json",
+  "card": "experiments/cards/exp-20260710-007.md",
+  "manifest": "experiments/manifests/exp-20260710-007.json",
+  "gate1": {
+    "passed": true,
+    "note": "Observed-only attribution; canonical strategy baseline unchanged.",
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "fields_checked": [
+      "entity_theme_query_id",
+      "theme",
+      "relation_type",
+      "candidate_ticker",
+      "observed_date",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "entry_date_present_rows": 22264,
+    "target_price_relevance": "This observer does not create target exits or orders; target_price is not part of the read-only outcome ledger."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added.",
+    "signals_generated": 25504,
+    "signals_survived": 22264,
+    "survival_rate": 0.872961
+  },
+  "gate4": {
+    "acceptance_rule": {
+      "min_settled_rows": 250,
+      "min_query_groups": 6,
+      "require_row_level_primary_means_positive": true,
+      "require_row_level_primary_medians_nonnegative": true,
+      "require_observed_date_level_primary_means_positive": true,
+      "min_positive_query_groups_vs_spy_and_qqq": 4,
+      "max_positive_cash_query_share": 0.6,
+      "max_positive_cash_ticker_share": 0.4
+    },
+    "acceptance_checks": {
+      "settled_rows_min_passed": true,
+      "query_groups_min_passed": true,
+      "row_level_primary_means_positive": true,
+      "row_level_primary_medians_nonnegative": false,
+      "observed_date_level_primary_means_positive": true,
+      "positive_query_groups_vs_spy_and_qqq_passed": false,
+      "positive_cash_query_share_passed": true,
+      "positive_cash_ticker_share_passed": true
+    },
+    "failed_reasons": [
+      "row_level_primary_medians_nonnegative",
+      "positive_query_groups_vs_spy_and_qqq_passed"
+    ],
+    "passed": false,
+    "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+    "accepted_alpha": false,
+    "observed_only": true,
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false
+    },
+    "pit_caveat": "Entity/theme source rows come from Google News observer snapshots and include rows returned by the current search process. This is a read-only forward-ledger attribution refresh, not a strict historical PIT deployable candidate-pool proof."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "paper_orders_changed": false,
+    "live_orders_changed": false,
+    "feeds_llm_prompt": false,
+    "llm_boundary_changed": false,
+    "trade_enabled": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "parity_note": "Read-only analysis over existing entity_theme_news observer outcome rows. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The larger settled ledger did not overcome source-bundle dilution; row-level or median replacement value stayed below the fixed bar.",
+    "forbidden_near_neighbor_retry": "Do not retune entity/theme queries, theme labels, candidate ticker maps, horizons, notional, response curves, or SEC-confirmation windows on this same source bundle.",
+    "new_evidence_required": "A true PIT historical news archive with observation-time availability, a materially richer entity-relation/economic mapping, or another material batch of prospectively logged daily rows with at least +50% new settled cash/SPY/QQQ replacement-value outcomes versus the 22264-row 2026-07-09 probe under the same fixed manifest."
+  },
+  "next_retry_requires": "A true PIT historical news archive with observation-time availability, a materially richer entity-relation/economic mapping, or another material batch of prospectively logged daily rows with at least +50% new settled cash/SPY/QQQ replacement-value outcomes versus the 22264-row 2026-07-09 probe under the same fixed manifest.",
+  "changed_files": [
+    "quant/experiments/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    "data/experiments/exp-20260710-007/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.json",
+    "experiments/cards/exp-20260710-007.md",
+    "experiments/manifests/exp-20260710-007.json",
+    "experiments/tickets/exp-20260710-007.json",
+    "experiments/logs/exp-20260710-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T06:12:00+00:00"
+}

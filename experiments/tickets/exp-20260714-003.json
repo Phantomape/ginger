@@ -1,0 +1,358 @@
+{
+  "acceptance_rule": "Gate 1-4 must pass under the active post-MTM baseline with positive aggregate EV and PnL, at least two improved and no regressed windows, drawdown within guardrail, survival at least 5 percent, comparator and concentration bars passed; Gate 5 DSR controls live eligibility only.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_*_fdic_call_report_deposit_repair.py",
+    "data/experiments/exp-20260714-003/",
+    "experiments/artifacts/exp-20260714-003_fdic_call_report_deposit_repair.md",
+    "quant/fdic_call_report_deposit_repair_paper_sleeve.py",
+    "quant/test_fdic_call_report_deposit_repair_paper_sleeve.py",
+    "data/non_ohlcv/fdic_call_reports/",
+    "data/paper_sleeves/fdic_call_report_deposit_repair/",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl",
+    "docs/production_backtest_parity_matrix.md",
+    "experiments/cards/exp-20260714-003.md",
+    "experiments/manifests/exp-20260714-003.json",
+    "experiments/tickets/exp-20260714-003.json",
+    "experiments/logs/exp-20260714-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260714-003.md",
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "official QBP availability map",
+    "daily default-off snapshot",
+    "dominant-bank parent mapping",
+    "merger-jump quality gate",
+    "execution envelope",
+    "full-stack verdict",
+    "DSR evidence",
+    "fingerprint coverage"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fdic_deposit_franchise_repair_quarterly_ranking",
+  "claimed_at": "2026-07-14T04:00:09+00:00",
+  "completed_at": "2026-07-14T04:30:14+00:00",
+  "created_at": "2026-07-14T03:59:02+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260714-003",
+  "experiment_uid": "expuid-97d98e6747ea47d1",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260714-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T03:59:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fdic_qbp_deposit_franchise_repair_quarterly_top5_20d_v1"
+  },
+  "hypothesis": "Shared-paper-first candidate-pool alpha: after each official FDIC Quarterly Banking Profile release, publicly listed bank parents whose dominant insured-bank subsidiary exceeds 10 billion USD assets, grows core deposits year over year, and lowers its uninsured-deposit share year over year may have a strengthening deposit franchise that continues to reprice; exclude merger-like asset jumps, rank the five largest uninsured-share improvements, enter the first strictly later open, and hold 20 sessions.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "QBP release dates fixed to official pages",
+    "FDIC financial API snapshot fixed before outcomes",
+    "current exact SEC-name map plus dominant-bank share at least 80 percent",
+    "report-date assets at least 10 billion USD",
+    "absolute YoY asset growth at most 25 percent",
+    "YoY core deposits positive",
+    "YoY uninsured-deposit share delta negative",
+    "rank by most negative uninsured-share delta",
+    "top5 per quarter",
+    "next open strictly after QBP release",
+    "20-session close",
+    "4000 USD per row",
+    "35bps round-trip cost",
+    "KBE XLF SPY QQQ cash comparators",
+    "no threshold rank hold notional or mapping retune"
+  ],
+  "mechanism_family": "production_visible_fdic_call_report_deposit_quality_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "operator_inputs/",
+    "data/live_pilot/",
+    "live/default orders",
+    "live ranking",
+    "live sizing",
+    "live exits"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-016"
+  ],
+  "new_evidence_type": "new_data_source_and_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "fundamental_growth_rs_monotonic_rank_validation",
+        "score": 0.6058,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "accepted_helper_source_priority_allocator_source_extension",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "20d",
+        "a",
+        "after",
+        "alpha",
+        "asset",
+        "assets",
+        "bank",
+        "banking",
+        "billion",
+        "call",
+        "continues",
+        "core",
+        "deposit",
+        "deposits",
+        "dominant",
+        "each",
+        "enter",
+        "exceeds",
+        "exclude",
+        "fdic",
+        "first",
+        "five",
+        "franchise",
+        "grows",
+        "have",
+        "hold",
+        "improvements",
+        "insured",
+        "its",
+        "jumps",
+        "largest",
+        "later",
+        "like",
+        "listed",
+        "lowers",
+        "may",
+        "merger",
+        "official",
+        "over",
+        "parents",
+        "profile",
+        "publicly",
+        "qbp",
+        "quarterly",
+        "rank",
+        "release",
+        "repair",
+        "report",
+        "reprice",
+        "sessions",
+        "share",
+        "strengthening",
+        "strictly",
+        "subsidiary",
+        "that",
+        "to",
+        "top5",
+        "uninsured",
+        "usd",
+        "whose",
+        "year"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "fundamental_growth_rs_monotonic_rank_validation",
+        "reopen_condition": null,
+        "score": 0.6058,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "accepted_helper_source_priority_allocator_source_extension",
+        "reopen_condition": "Retry only with closed forward allocator displacement rows, per-share SBC burden net buybacks, or grant-value normalization evidence that changes the underlying data edge.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_asset_turnover_support",
+        "reopen_condition": null,
+        "score": 0.4676,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "sec_companyfacts_financial_quality_alpha",
+        "reopen_condition": null,
+        "score": 0.4563,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_inventory_discipline_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.4562,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New official FDIC Call Report financials plus exact official QBP publication dates, evaluated as a quarterly cross-sectional deposit-franchise ranking with a shared default-off helper; this is neither the saturated daily official-event response recipe nor a price-only macro relief proxy.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "companyfacts_ratio",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New official FDIC Call Report financials plus exact official QBP publication dates, evaluated as a quarterly cross-sectional deposit-franchise ranking with a shared default-off helper; this is neither the saturated daily official-event response recipe nor a price-only macro relief proxy.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New official FDIC Call Report financials plus exact official QBP publication dates, evaluated as a quarterly cross-sectional deposit-franchise ranking with a shared default-off helper; this is neither the saturated daily official-event response recipe nor a price-only macro relief proxy.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "companyfacts_ratio",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "This is a new official firm-level funding-quality source with 60 exact SEC parent matches and a pre-outcome sample of ten selected rows in each canonical window, but the thirty stock rows collapse to only six quarterly decision clusters and today-snapshot revisions or parent history can overstate evidence.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1200.0,
+    "main_failure_modes": [
+      "quarter_cluster_effective_sample_too_small",
+      "current_vintage_revision_bias",
+      "parent_mapping_survivorship",
+      "merger_contamination",
+      "bank_beta_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-07-14T03:58:18+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260714-003/before.json",
+    "after_result_file": "data/experiments/exp-20260714-003/after.json",
+    "delta_metrics": {
+      "expected_value_score": -0.0745,
+      "total_return_pct": -0.0049,
+      "max_drawdown_pct": 0.0075,
+      "trade_count": 28,
+      "survival_rate": -0.745687,
+      "total_pnl": -492.09
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.15,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.08,
+      "actual_ev_delta": -0.0745,
+      "ev_prediction_error": -0.1545,
+      "expected_pnl_delta": 1200.0,
+      "actual_pnl_delta": -492.09,
+      "pnl_prediction_error": -1692.09,
+      "predicted_failure_modes": [
+        "quarter_cluster_effective_sample_too_small",
+        "current_vintage_revision_bias",
+        "parent_mapping_survivorship",
+        "merger_contamination",
+        "bank_beta_not_incremental",
+        "window_regression",
+        "accepted_comparator_not_beaten",
+        "concentration_failed"
+      ],
+      "realized_failure_mode": "window_regression",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Mid_weak added 891.67 USD and the target beat weak SPY/QQQ on matched dates, but old_thin lost 1342.81 USD, late_strong PnL also regressed, cash was not beaten, and survival remained below 5 percent."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260714-003.json",
+  "single_causal_variable": "fdic_qbp_deposit_franchise_repair_quarterly_top5_20d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260714-003.json",
+  "trial_family": "fdic_qbp_deposit_franchise_repair_candidate_pool",
+  "trial_variant_id": "coredep_growth_uninsured_share_improvement_top5_20d_v1"
+}

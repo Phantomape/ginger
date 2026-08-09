@@ -32,6 +32,11 @@ def test_prediction_market_observer_source_manifest_is_observer_only():
     assert all(source["metadata"]["relevance_groups"] for source in sources)
     assert all(source["metadata"]["min_relevance_groups"] >= 2 for source in sources)
     assert all("clean_trade_news" not in source["url"] for source in sources)
+    # exp-20260718-002: /events ignores its `search` param upstream, so every
+    # query got one identical generic page; collection must use /public-search.
+    assert all(source["url"].endswith("/public-search") for source in sources)
+    assert all(source["params"]["q"] for source in sources)
+    assert all("search" not in source["params"] for source in sources)
 
 
 def test_extract_yes_probability_handles_polymarket_outcome_prices():
@@ -49,17 +54,17 @@ def test_persist_prediction_market_event_observer_writes_separate_artifacts(tmp_
 
     def fake_fetch(url, params, timeout_seconds=10.0):
         calls.append((url, params, timeout_seconds))
-        slug = params["search"].lower().replace(" ", "-")[:80]
+        slug = params["q"].lower().replace(" ", "-")[:80]
         return {
             "events": [
                 {
                     "id": f"event-{len(calls)}",
                     "slug": slug,
-                    "title": params["search"],
+                    "title": params["q"],
                     "markets": [
                         {
                             "id": f"market-{len(calls)}",
-                            "question": f"Will {params['search']} occur?",
+                            "question": f"Will {params['q']} occur?",
                             "outcomes": '["Yes","No"]',
                             "outcomePrices": '["0.31","0.69"]',
                             "volume": "100000",
@@ -205,7 +210,7 @@ def test_prediction_market_relevance_rejects_known_off_theme_markets():
 
 def test_persist_prediction_market_event_observer_records_relevance_rejects(tmp_path):
     def fake_fetch(url, params, timeout_seconds=10.0):
-        if "AI chips export controls" in params["search"]:
+        if "AI chips export controls" in params["q"]:
             return {
                 "events": [
                     {
@@ -236,17 +241,17 @@ def test_persist_prediction_market_event_observer_records_relevance_rejects(tmp_
                     },
                 ]
             }
-        slug = params["search"].lower().replace(" ", "-")[:80]
+        slug = params["q"].lower().replace(" ", "-")[:80]
         return {
             "events": [
                 {
                     "id": f"event-{slug}",
                     "slug": slug,
-                    "title": params["search"],
+                    "title": params["q"],
                     "markets": [
                         {
                             "id": f"market-{slug}",
-                            "question": f"Will {params['search']} occur?",
+                            "question": f"Will {params['q']} occur?",
                             "outcomes": '["Yes","No"]',
                             "outcomePrices": '["0.31","0.69"]',
                         }
@@ -278,7 +283,7 @@ def test_persist_prediction_market_event_observer_records_relevance_rejects(tmp_
 
 def test_persist_prediction_market_event_observer_records_source_errors(tmp_path):
     def failing_fetch(url, params, timeout_seconds=10.0):
-        raise RuntimeError(f"prediction market unavailable for {params['search']}")
+        raise RuntimeError(f"prediction market unavailable for {params['q']}")
 
     summary = persist_prediction_market_event_observer(
         "20260703",

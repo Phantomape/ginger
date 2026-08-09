@@ -1,0 +1,459 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    "data/experiments/exp-20260711-013/**",
+    "experiments/tickets/exp-20260711-013.json",
+    "experiments/cards/exp-20260711-013.md",
+    "experiments/manifests/exp-20260711-013.json",
+    "experiments/logs/exp-20260711-013.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260711-013.md",
+  "causal_components": [
+    "FRED ICE BofA US high-yield OAS daily observations",
+    "fixed first cross below trailing 20-session simple mean",
+    "unchanged exp-20260607-018 stock leadership selector",
+    "next-open 10-session paper replay",
+    "canonical costs and Gate 1-4",
+    "accepted VIXY relief comparator",
+    "shared helper and daily snapshot retained only after Gate 4 passes"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fred_high_yield_oas20_first_cross_below_credit_relief_shared_paper_v1",
+  "claimed_at": "2026-07-11T07:10:56+00:00",
+  "completed_at": "2026-07-11T07:19:08+00:00",
+  "created_at": "2026-07-11T07:06:49+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-013",
+  "experiment_uid": "expuid-d87d85d48a1a489b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T07:06:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "high_yield_oas_credit_relief_shared_paper"
+  },
+  "hypothesis": "candidate_pool/full_stack: the first ICE BofA US high-yield OAS close below its trailing 20-session mean is direct credit-risk relief; the unchanged liquid stock-leadership selector should add next-open 10-session replacement value across all canonical windows and beat the closest accepted relief comparator without drawdown, survival, or concentration failure.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "fred_high_yield_oas20_first_cross_below_credit_relief_shared_paper_v1"
+  ],
+  "mechanism_family": "production_visible_direct_credit_spread_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260711-001",
+    "exp-20260607-020",
+    "exp-20260711-004",
+    "exp-20260607-018"
+  ],
+  "new_evidence_type": "new_data_source_fred_high_yield_oas",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "credit_risk_etf",
+      "field_tags": [
+        "accepted",
+        "across",
+        "add",
+        "all",
+        "beat",
+        "below",
+        "bofa",
+        "canonical",
+        "close",
+        "closest",
+        "comparator",
+        "concentration",
+        "credit",
+        "cross",
+        "direct",
+        "drawdown",
+        "failure",
+        "first",
+        "fred",
+        "full",
+        "high",
+        "ice",
+        "is",
+        "its",
+        "leadership",
+        "liquid",
+        "mean",
+        "oas",
+        "oas20",
+        "or",
+        "replacement",
+        "risk",
+        "selector",
+        "session",
+        "should",
+        "stack",
+        "stock",
+        "survival",
+        "trailing",
+        "unchanged",
+        "us",
+        "value",
+        "windows",
+        "without",
+        "yield"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "credit_risk_etf",
+        "family_key": "credit_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry needs a genuinely different credit-risk-transfer source, materially more settled forward rows from a fixed shared helper, or a predeclared different candidate-source family.",
+        "score": 0.4827,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "credit_risk_etf",
+        "family_key": "credit_relief_cyclical_leadership_candidate_pool",
+        "reopen_condition": "Reopen only with PIT historical credit-risk coverage across all canonical windows: HYG and LQD OHLCV loaded into the warehouse, an official credit-spread series, or closed forward replacement-value rows from a shared default-off credit-relief helper.",
+        "score": 0.4674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "accepted_free_data_cross_source_consensus_displacement_value",
+        "reopen_condition": null,
+        "score": 0.1814,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "breakout_without_2x_volume_precursor_forward_replacement",
+        "reopen_condition": "A genuinely new PIT pre-volume-confirmation field that predicts WHICH breakout-without-2x-volume names go on to work (e.g. PIT borrow/availability, options-implied pressure, breadth persistence), tested out of sample -- not a volume-threshold change. Only such a selector would justify a default-off forward ledger; a blanket ledger of a deflated signal would be measurement treadmill.",
+        "score": 0.1808,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: FRED BAMLH0A0HYM2 is a direct ICE BofA US high-yield option-adjusted credit-spread series with 452 PIT canonical-span rows; exp-20260711-001 explicitly required a genuinely different credit-risk-transfer source after HYG/JNK rejection.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "credit_risk_etf",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: FRED BAMLH0A0HYM2 is a direct ICE BofA US high-yield option-adjusted credit-spread series with 452 PIT canonical-span rows; exp-20260711-001 explicitly required a genuinely different credit-risk-transfer source after HYG/JNK rejection.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: FRED BAMLH0A0HYM2 is a direct ICE BofA US high-yield option-adjusted credit-spread series with 452 PIT canonical-span rows; exp-20260711-001 explicitly required a genuinely different credit-risk-transfer source after HYG/JNK rejection.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "credit_risk_etf",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.15,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "credit_relief_relabels_equity_beta",
+      "accepted_relief_comparator_not_beaten",
+      "old_thin_window_regression",
+      "drawdown_drift",
+      "fred_daily_fetch_unavailable"
+    ],
+    "confidence_reason": "Direct ICE BofA high-yield option-adjusted spread compression removes the duration and ETF-flow noise that weakened HYG/JNK proxies, while 452 PIT observations cover the canonical span; odds remain low because recent macro relief sources usually relabeled broad beta and the accepted relief comparator is demanding.",
+    "recorded_at": "2026-07-11T07:06:05Z"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "rejected_high_yield_oas_credit_relief_shared_paper",
+    "artifact": "data/experiments/exp-20260711-013/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.json",
+    "log": "experiments/logs/exp-20260711-013.json",
+    "runner": "quant/experiments/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "accepted_vixy_comparator_not_beaten"
+      ],
+      "aggregate_ev_delta": 0.2145,
+      "aggregate_pnl_delta": 1088.9,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1,
+      "target_trade_count": 41,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.14118,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.082438,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.15,
+      "actual_success": false,
+      "brier_score": 0.0225,
+      "predicted_failure_modes": [
+        "credit_relief_relabels_equity_beta",
+        "accepted_relief_comparator_not_beaten",
+        "old_thin_window_regression",
+        "drawdown_drift",
+        "fred_daily_fetch_unavailable"
+      ],
+      "predicted_failure_modes_hit": [
+        "accepted_relief_comparator_not_beaten",
+        "credit_relief_relabels_equity_beta",
+        "old_thin_window_regression"
+      ],
+      "failed_reasons": [
+        "window_ev_regression",
+        "window_pnl_regression",
+        "accepted_vixy_comparator_not_beaten"
+      ]
+    },
+    "summary": "Direct high-yield OAS compression did not add robust incremental value over the accepted relief comparator after costs; it remained beta-like or window fragile."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-013.json",
+  "single_causal_variable": "fred_high_yield_oas20_first_cross_below_credit_relief_shared_paper_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260711-013.json",
+  "trial_family": "high_yield_oas_credit_relief_shared_paper_candidate_pool",
+  "trial_variant_id": "fred_bamlh0a0hym2_oas20_cross_below_top2_10d_v1",
+  "implementation_mode": "shared_paper_first_gate4_before_retention",
+  "new_evidence_axis": "New data source: FRED BAMLH0A0HYM2 is the direct ICE BofA US high-yield option-adjusted spread with 452 PIT canonical-span rows; exp-20260711-001 explicitly required a genuinely different credit-risk-transfer source after the HYG/JNK proxy rejection.",
+  "decision": "rejected_high_yield_oas_credit_relief_shared_paper",
+  "artifact": "data/experiments/exp-20260711-013/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.json",
+  "log": "experiments/logs/exp-20260711-013.json",
+  "aggregate_expected_value_delta": 0.2145,
+  "aggregate_strategy_total_pnl_delta": 1088.9,
+  "gate1": {
+    "passed": true,
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "FRED ICE BofA high-yield OAS daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline."
+  },
+  "gate4": {
+    "passed": false,
+    "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression",
+      "accepted_vixy_comparator_not_beaten"
+    ],
+    "aggregate_ev_delta": 0.2145,
+    "aggregate_pnl_delta": 1088.9,
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1,
+    "target_trade_count": 41,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0021,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.14118,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.082438,
+      "positive_pnl_hhi_guardrail": 0.35
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "gate4_before_shared_helper_retention"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Direct high-yield OAS compression did not add robust incremental value over the accepted relief comparator after costs; it remained beta-like or window fragile.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing the OAS moving-average span, adding spread levels or persistence, changing stock filters, top-N, hold, cooldown, notional, windows, or response shape.",
+    "new_evidence_required": "Reopen only with materially settled prospective rows from a fixed shared helper, a different publication-timed credit-risk-transfer source, or a predeclared different candidate-source family."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    "quant/experiments/exp_20260607_018_volatility_relief_stock_leadership.py",
+    "data/experiments/exp-20260711-013/fred_ice_bofa_high_yield_oas_daily.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    "data/experiments/exp-20260711-013/**",
+    "experiments/tickets/exp-20260711-013.json",
+    "experiments/cards/exp-20260711-013.md",
+    "experiments/manifests/exp-20260711-013.json",
+    "experiments/logs/exp-20260711-013.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "fingerprint_caveat": "Reservation initially classified the direct FRED OAS source as credit_risk_etf; exp013 added the dedicated direct_credit_spread key before closeout.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_013_high_yield_oas_credit_relief_shared_paper.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T07:19:08+00:00"
+}

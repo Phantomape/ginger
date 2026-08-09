@@ -68,7 +68,9 @@ def parse_feed_with_diagnostics(url, source_type, metadata=None):
     }
 
     try:
-        logger.info(f"Fetching {source_type} feed: {url}")
+        # DEBUG: 28 feeds × 2 lines per run drowned the log; the caller logs
+        # an aggregate summary, and per-feed detail lands in source_stats.
+        logger.debug(f"Fetching {source_type} feed: {url}")
         request_headers = diagnostics["request_headers_used"] or None
         feed = feedparser.parse(url, request_headers=request_headers)
         diagnostics["status"] = getattr(feed, "status", None)
@@ -94,7 +96,7 @@ def parse_feed_with_diagnostics(url, source_type, metadata=None):
             diagnostics["sec_items_with_cik"] = sum(1 for item in items if item.get("sec_cik"))
             diagnostics["sec_items_with_ticker"] = sum(1 for item in items if item.get("tickers"))
             diagnostics["sec_items_without_ticker"] = sum(1 for item in items if not item.get("tickers"))
-        logger.info(f"Parsed {len(items)} items from {source_type} feed")
+        logger.debug(f"Parsed {len(items)} items from {source_type} feed")
         return items, diagnostics
 
     except Exception as e:

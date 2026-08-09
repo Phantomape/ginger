@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "no_family_clears_10pct_bar",
+      "interaction_masking_between_families",
+      "multiple_comparison_selection",
+      "small_trade_sample_noise"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "no_family_clears_10pct_bar",
+    "surprise_level": "low",
+    "surprise_note": "Defensive haircut stack is 63% of aggregate EV under the cash ledger (removing it: EV 6.21->2.29, PnL -84.6k, DD 8.9%->18.0%); every boost family still pays its way; only clean_spy_leader caps and commodity/gold caps are near-zero or single-window."
+  },
+  "causal_components": [
+    "frozen-input harness reuse",
+    "per-family constant neutralization",
+    "three-window replay per arm",
+    "baseline identity verification",
+    "batch verdict"
+  ],
+  "change_summary": "Batch leave-one-policy-family-out ablation of the accepted default-on sizing/cap/add-on stack on the cash-feasible anchor: 11 arms x 3 windows, Gate-1 identity reproduced, no family clears the predeclared 10% removal bar, no production change.",
+  "change_type": "capital_allocation_ablation_batch",
+  "changed_variable": "leave-one-policy-family-out marginal contribution of the accepted default-on sizing multiplier, position-cap, and add-on policy stack under CASH_LEDGER_ENFORCED on the exp-20260715-010 anchor",
+  "component": "quant/experiments/exp_20260716_010_cash_feasible_policy_stack_ablation.py, data/experiments/exp-20260716-010/exp_20260716_010_cash_feasible_policy_stack_ablation.json, experiments/cards/exp-20260716-010.md, experiments/manifests/exp-20260716-010.json, experiments/tickets/exp-20260716-010.json, experiments/logs/exp-20260716-010.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260716-010",
+  "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010), part of the accepted default-on sizing/cap/add-on policy stack validated in the unenforced leverage regime may no longer pay its way; a single-batch leave-one-policy-family-out ablation across the three canonical windows measures each family's marginal contribution and nominates removal only for a family whose ablation improves aggregate EV by more than 10 percent with no drawdown, survival, or trade-count deterioration.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "capital_allocation_ablation_batch",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260715-010",
+    "exp-20260716-001",
+    "exp-20260716-004",
+    "exp-20260428-025",
+    "exp-20260706-013"
+  ],
+  "new_evidence_type": "new_gate_shape_cash_feasible_anchor_policy_ablation",
+  "next_retry_requires": [],
+  "notes": "Gate 1: unpatched baseline reproduced the anchor identity exactly (trade-row and daily-return hashes, EV/PnL/trade counts) in all three windows. Gate 2: all 49 baseline trades carry entry_date and stop_price; target_mult_used present. Gate 3: no filters added; baseline survival identical to anchor. Gate 4: predeclared removal bar (aggregate EV +10%, PnL up, DD within +1pp, >=2/3 windows improved) not met by any of 11 arms, so decision is rejected with no production change; 11 simultaneous arms are a multiple-comparison surface and the predeclared rules forbid promoting any single arm from this ID. Simplification candidates recorded (|EV delta| <= 2%): clean_spy_leader_family, signal_day_green, quality_slot_topups, addon_stack (note: addon stack is -$7.2k PnL despite the small EV delta - not actually free to remove). Repro: .venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_010_cash_feasible_policy_stack_ablation.py",
+  "parameters": {
+    "locked_variables": [
+      "leave-one-policy-family-out marginal contribution of the accepted default-on sizing multiplier, position-cap, and add-on policy stack under CASH_LEDGER_ENFORCED on the exp-20260715-010 anchor"
+    ],
+    "single_causal_variable": "leave-one-policy-family-out marginal contribution of the accepted default-on sizing multiplier, position-cap, and add-on policy stack under CASH_LEDGER_ENFORCED on the exp-20260715-010 anchor"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run single-family or regrouped ablations of the same default-on sizing/cap/add-on stack on the same three frozen windows, do not sweep neutralization values (partial multipliers between accepted and 1.0), and do not promote the commodities/gold cap removal from the single-window +2.73% signal alone. The per-family marginal-contribution table is now measured and machine-readable in the artifact; repeating it adds no evidence.",
+    "new_evidence_required": "A follow-up confirmation ticket may test ONLY the predeclared complexity-reduction bundle (clean_spy_leader family caps, and optionally commodities/gold caps) with its own fresh Gate 4 on an unseen or extended window set, or with materially new settled forward rows; any boost-family removal retry needs a genuinely new allocator mechanism or out-of-sample window, not a re-read of this table. Defensive haircut removal is falsified at -63% EV and is a frozen direction.",
+    "realized_failure_mode": "no_family_clears_10pct_bar",
+    "why_result_happened": "Under the enforced cash ledger the boost families still add EV (risk-on leader -6.86% when removed, rs top-ups -6.61%, mid-sector dispersion -5.18%, financials -2.61%, 200MA extension -2.02%, add-on stack -1.49% EV / -$7.2k PnL), so the champion is not carrying leverage-era dead weight in its boosts; the defensive haircut stack is the single most load-bearing family (63% of aggregate EV, removing it adds 17 bad trades and doubles worst drawdown to 18%). Near-zero families: clean_spy_leader caps (+0.61% EV when removed; caps above 0.40 rarely bind once cash admission scales fills) and signal_day_green (-0.51%). Commodities/gold caps show +2.73% EV from a single late_strong window only (mid/old byte-identical) - classic single-window noise, below the 10% bar. All 33 ablated window runs had zero negative-cash events; the ledger held everywhere."
+  },
+  "prediction": {
+    "confidence_reason": "The 45 percent overdraft inflation means every boost/cap policy was accepted while free leverage paid for its extra basis; under enforcement extra basis displaces other entries, so some family plausibly flips negative. Disconfirmer: exp-20260716-001/-004 both showed the champion is locally hard to improve on the new anchor.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "no_family_clears_10pct_bar",
+      "interaction_masking_between_families",
+      "multiple_comparison_selection",
+      "small_trade_sample_noise"
+    ],
+    "recorded_at": "2026-07-16T16:34:54+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260716-010/exp_20260716_010_cash_feasible_policy_stack_ablation.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-07-16T17:10:40+00:00",
+  "trial_family": "capital_allocation_ablation_batch",
+  "trial_variant_id": "exp-20260716-010",
+  "closed_at": "2026-07-16T17:10:40+00:00"
+}

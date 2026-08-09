@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "expectation_gap",
+  "candidate_id": "cand-7450407a78ab5900dcf0",
+  "search_queue": "adjacent",
+  "hypothesis": "Observed-only revalidation under the unchanged exp-20260715-006 attribution policy: on the matured post-2026-06-30 exit-lifecycle cohort (281 settled rows, 40 advisory, 22 hard-stop versus the 141/20/14 cohort judged by exp-20260722-001), high-urgency and hard-stop advisory positions should show persistently worse next-open-to-five-session-close returns than no-advisory positions with negative severity monotonicity, broad date support, and single-name adverse-PnL concentration at or below 50%; no threshold, bucket, horizon, source, or response function changes.",
+  "fingerprint": {
+    "data_source": "exit_lifecycle",
+    "component_sources": [
+      "exit_lifecycle",
+      "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "position_path_deterioration_persistence",
+    "decision_surface": "risk_allocation",
+    "payoff_shape": "adverse_return_separation_by_advisory_severity",
+    "horizon": "next_open_to_5_session_close",
+    "execution_dependency": "attribution_only_no_execution_change",
+    "portfolio_role": "held_position_drawdown_diagnostics"
+  },
+  "surface_ids": [
+    "exit_lifecycle_h5_settlement_forward_20260806",
+    "exit_lifecycle_advisory_state_forward_20260806"
+  ],
+  "expectation_gap": {
+    "schema_version": 1,
+    "market_prior": {
+      "observable": true,
+      "proxy_type": "price_revealed",
+      "source": "ohlcv_warehouse",
+      "known_at": "2026-08-05T20:08:00Z",
+      "provenance": {
+        "baseline_policy": "carry every held position unchanged from the next open through the five-session close regardless of advisory state",
+        "price_clock": "advisory state frozen at the daily shadow-log observation, settled at next-open entry and five-session close"
+      }
+    },
+    "independent_evidence": [
+      {
+        "field": "advisory_bucket",
+        "active_action": "high_urgency_or_hard_stop",
+        "known_at": "2026-08-05T20:08:00Z",
+        "policy_version": "exit_lifecycle_shadow_log_v1",
+        "source": "exit_lifecycle"
+      }
+    ],
+    "gap_definition": "The carry-unchanged prior treats every held position as equally worth holding through the next five sessions, while the independently produced exit-lifecycle severity state claims high-urgency and hard-stop positions are in adverse path states that persist into settlement.",
+    "transmission": {
+      "affected_tickers": [
+        "AMD",
+        "APP",
+        "BKNG",
+        "CAT",
+        "COHR",
+        "CRDO",
+        "DDOG",
+        "DINO",
+        "GEV",
+        "HOOD",
+        "MCD",
+        "META",
+        "MRVL",
+        "MSFT",
+        "MU",
+        "MUU",
+        "NBIS",
+        "NFLX",
+        "NOW",
+        "NVDA",
+        "RKLB",
+        "SNXX",
+        "SPY",
+        "TQQQ",
+        "TSLA",
+        "UNH",
+        "WDC"
+      ],
+      "catalyst": "A production trailing-stop/target lifecycle advisory (high_urgency or hard_stop) recorded before the next-open settlement clock.",
+      "expected_direction": "Advisory positions should settle with worse H5 returns than no-advisory positions if path deterioration persists beyond the advisory date.",
+      "half_life": "From the advisory observation date's next open through the fifth following session close."
+    }
+  },
+  "why_not_arbitraged": "The claim concerns only already-held internal positions and their own forward carry; it is not a public entry signal. Any persistent separation would monetize only as freed slot capital via an exit policy, which itself requires slot-reuse/winner-collateral accounting that does not exist yet; four prior fixed-family probes failed to confirm persistence, most recently on adverse-PnL concentration.",
+  "falsifier": "Reject unless on the frozen cohort: settled rows >= 100, advisory rows >= 20, hard-stop rows >= 8; high-urgency AND hard-stop mean AND median H5 returns below no-advisory; negative severity Spearman monotonicity on return and SPY-replacement value; at least three comparable dates with advisory worse; and max single-name adverse-PnL share <= 50%. Even a full pass remains observed-only and promotes no exit policy.",
+  "baseline": {
+    "policy": "Carry each settled held position unchanged from next open through the five-session close; the no-advisory bucket provides the comparison carry.",
+    "universe": "All post-2026-06-30 observed, H5-closed exit-lifecycle rows in the frozen 20260805 outcome ledger."
+  },
+  "treatment": {
+    "policy": "Attribute the identical carry by the recorded advisory_bucket (none / high_urgency / hard_stop) from exit_lifecycle_shadow_log_v1; buckets, thresholds, and horizon are exactly the exp-20260715-006 policy with no retune."
+  },
+  "replacement_value_comparator": "The no-advisory bucket of the same cohort under identical next-open/H5-close settlement, plus SPY same-window replacement value per row.",
+  "expected_horizon": "next_open_to_5_session_close",
+  "execution_envelope": {
+    "borrow_dependency": "None; attribution over already-settled rows only.",
+    "capacity_constraint": "No capital is allocated; the probe reads settled ledger rows and cannot exceed them.",
+    "costs_and_carry": "Gross diagnostic returns as settled in the outcome ledger; no new cost assumptions are introduced.",
+    "intended_instrument": "None; no instrument is traded, mapped, or sized.",
+    "liquidity_dependency": "Settlement prices already exist in the ledger from the canonical warehouse; no new liquidity assumption.",
+    "live_ready": false,
+    "orders_enabled": false,
+    "timing_constraint": "Advisory state precedes settlement by construction (observed_date before h5 entry open); the ledger fail-closes on stale bars since exp-20260805-004.",
+    "trade_enabled": false
+  },
+  "evidence_grade": "observed_only",
+  "source_readiness_snapshot": [
+    {
+      "surface_id": "exit_lifecycle_h5_settlement_forward_20260806",
+      "snapshot_hash": "9e5cb3a5b64510db19ce94be4683b38d04a1bde0a0133d59511ff0db9490a4fa"
+    },
+    {
+      "surface_id": "exit_lifecycle_advisory_state_forward_20260806",
+      "snapshot_hash": "f881d90ffff2a4ad4b40d70660ac2a65fb3e8b388aac4228abbefe7d9475cf0e"
+    }
+  ],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "title": "Exit-lifecycle advisory severity separation on the matured post-2026-06-30 cohort",
+  "created_at": "2026-08-06T16:25:00Z",
+  "created_by": "claude-scheduled-alpha-20260806",
+  "prediction": {
+    "success_probability": 0.15,
+    "main_failure_modes": [
+      "adverse_pnl_concentration_too_high",
+      "severity_separation_not_persistent",
+      "severity_monotonicity_flat",
+      "date_support_insufficient"
+    ],
+    "confidence_reason": "The declared 212/30/21 reopen bar is met outcome-blind at 281/40/22 and four of five prior checks passed last time, but the sole prior failure was 68.3% single-name adverse-PnL concentration and the held book remains concentrated, so the cap is still the most likely rejection."
+  },
+  "reopen_condition": "After this frozen attribution, any further review of the same cohort family requires the bars declared at closeout of the consuming experiment; a rejection must redeclare thresholds and sync scripts/build_reopen_readiness.py in the same ticket.",
+  "next_machine_action": "If outcome-blind D0-D3 pass under this fresh scope, build the debate-free schema-v2 promotion request, reserve exactly one observed-only attribution ID, evaluate only the frozen exp-20260715-006 bars, and leave all production behavior unchanged.",
+  "research_refs": []
+}

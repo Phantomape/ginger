@@ -1,0 +1,136 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-14 13:02 ET (10:02 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: *** CPI (Jun 2026 CPI) ***
+  Scheduled-release day — expect headline-driven volatility.
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 752.01 vs 200MA 691.55 (+8.7%)  [fast_info]
+  QQQ 720.84 vs 200MA 637.21 (+13.1%)  [fast_info]
+
+PORTFOLIO HEAT (intraday prices): 3.1% / cap 8%   (quote coverage 11/11 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+35.5% add-review-eligible=none
+  CRDO   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  DDOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  GEV    RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  HOOD   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_stop,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  MCD    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_stop,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  NVDA   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_target,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  SNXX   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  TQQQ   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: near_existing_stop,market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete,underlying_above_rth_vwap_not_confirmed
+  UNH    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+  APP    RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  META   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: market_proxy_above_rth_vwap_not_confirmed,opend_unavailable,sector_proxy_above_rth_vwap_not_confirmed,technical_context_incomplete
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  APP    $451.41 (+1.9% today, fast_info)
+    ATR_STOP HIGH: Price 451.41 <= ATR stop 455.59
+    TIME_STOP REVIEW: Position held ~348 trading days with insufficient progress below halfway to diagnostic profit target 611.81
+    hard stop 448.66 (+0.6% away) [stop_source=default]
+    ATR stop 455.59 (-0.9% away)
+    trailing 685.96 (-52.0% away)
+    target 611.81 (+35.5% to go)
+    flags: NEAR_HARD_STOP
+  GEV    $1058.68 (+1.5% today, fast_info)
+    ATR_STOP HIGH: Price 1058.68 <= ATR stop 1072.17
+    hard stop 1020.80 (+3.6% away) [stop_source=default]
+    ATR stop 1072.17 (-1.3% away)
+    trailing 1100.26 (-3.9% away)
+    target 1392.00 (+31.5% to go)
+  SNXX   $23.42 (+11.5% today, fast_info)
+    HARD_STOP CRITICAL: Price 23.42 <= hard stop 24.69
+    hard stop 24.69 (-5.5% away) [stop_source=default]
+    ATR stop 18.10 (+22.7% away)
+    trailing 26.65 (-13.8% away)
+    target 33.67 (+43.8% to go)
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  HOOD   $111.63 (+1.6% today, fast_info)
+    hard stop 92.58 (+17.1% away) [stop_source=default]
+    ATR stop 95.08 (+14.8% away)
+    trailing 110.45 (+1.1% away)
+    target 126.24 (+13.1% to go)
+    flags: NEAR_TRAILING_STOP
+  MCD    $270.23 (-0.9% today, fast_info)
+    hard stop 245.30 (+9.2% away) [stop_source=default]
+    ATR stop 269.87 (+0.1% away)
+    trailing 259.09 (+4.1% away)
+    target 334.50 (+23.8% to go)
+    flags: NEAR_ATR_STOP
+  NVDA   $211.23 (+3.8% today, fast_info)
+    hard stop 155.97 (+26.2% away) [stop_source=default]
+    ATR stop 166.41 (+21.2% away)
+    trailing 217.36 (-2.9% away)
+    target 212.69 (+0.7% to go)
+    flags: NEAR_TARGET
+  TQQQ   $75.40 (+3.8% today, fast_info)
+    hard stop 66.72 (+11.5% away) [stop_source=default]
+    ATR stop 68.52 (+9.1% away)
+    trailing 75.02 (+0.5% away)
+    target 90.98 (+20.7% to go)
+    flags: NEAR_TRAILING_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  CRDO   $238.57    day +0.7%   stop +3.4%   target +31.8%  [fast_info]
+  DDOG   $268.79    day +3.3%   stop +16.4%  target +14.0%  [fast_info]
+  META   $664.14    day +1.1%   stop +11.6%  target +20.6%  [fast_info]
+  UNH    $425.29    day -0.9%   stop +11.6%  target +20.6%  [fast_info]
+
+------------------------------------------------------------
+ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)
+------------------------------------------------------------
+  APP    EXIT ATR_STOP HIGH shares=12
+  APP    REVIEW TIME_STOP REVIEW
+  GEV    EXIT ATR_STOP HIGH shares=3
+  SNXX   EXIT HARD_STOP CRITICAL shares=50
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-14 13:02 ET): 13 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] META: Meta Stock Hit with Lawsuit Alleging AI Bias in Mass Layoffs - TipRanks
+  [T3] NVDA: NVIDIA (NVDA) Stock Forecast: White List Cuts Half of Asian Buyers; What It Means at $204 
+  [T3] APP: Wells Fargo Raises PT on AppLovin (APP) Stock - Yahoo Finance
+  [T3] MCD: Cullinan Associates Inc. Cuts Stake in McDonald's Corporation $MCD - MarketBeat
+  [T1] CRDO: CRDO Stock Soars Post-Market On DustPhotonics Acquisition: Retail Eyes Surge To Over $200 
+  [T3] NFLX: Morgan Stanley, Barclays Cut Netflix (NFLX) Stock Price Targets Ahead of Q2 Earnings - Tip
+  [T3] MU: Micron to pay dividends next week; Here’s how much 100 MU shares will earn - Finbold
+  [T1] TSLA: TSLA Stock Back To $400? Jefferies Lays Out Bull Case, Says ​​SpaceX Merger Could Hand Sha
+  [T3] COIN: Coinbase (COIN) Stock Looks Cheap After A 60% Fall But Expensive On Earnings - simplywall.
+  [T3] AMD: AMD or Intel: Buy One AI Chip Stock Ahead of Earnings, Avoid the Other, Says Top Analyst -
+  [T3] IAU: IAU ETF Profile: Dividends, Returns (AMEX:IAU) - TradingView
+  [T3] GOOG: Alphabet (GOOG) Upgraded to Strong Buy: Here's What You Should Know - Yahoo Finance
+  [T3] QQQ: Brindle & Bay Financial Advisors LLC Lowers Holdings in Invesco QQQ $QQQ - MarketBeat
+
+------------------------------------------------------------
+DATA QUALITY: quotes fast_info=11
+  moomoo OpenD status=unavailable available=0/20
+  [!] moomoo OpenD errors=1; see JSON snapshot for details
+  news sources ok=17 failed=0
+  news text sanitation items=13 flagged=13 changed=13 flags=hidden_or_control_char=1 html_entity_unescaped=13
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================

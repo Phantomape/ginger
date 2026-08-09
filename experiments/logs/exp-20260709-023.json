@@ -1,0 +1,646 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_023_candidate_meta_label_readiness.py",
+    "data/experiments/exp-20260709-023/exp_20260709_023_candidate_meta_label_readiness.json",
+    "experiments/cards/exp-20260709-023.md",
+    "experiments/manifests/exp-20260709-023.json",
+    "experiments/tickets/exp-20260709-023.json",
+    "experiments/logs/exp-20260709-023.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "alpha_hypothesis": "Candidate-entry meta-labeling may improve core/default-off candidate admission only if a leak-free settled candidate training table exists; first audit whether current canonical and daily artifacts provide at least 300 complete decision-time candidate rows before any model fitting.",
+  "baseline_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "blocked_candidate_meta_label_training_table_not_ready",
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "insufficient_complete_candidate_rows",
+      "leaky_oracle_labels",
+      "missing_rejected_candidate_outcomes"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "insufficient_complete_candidate_rows",
+    "surprise_level": "low",
+    "surprise_note": "The pre-run concern that selected and skipped candidate rows were too sparse was confirmed."
+  },
+  "causal_components": [
+    "candidate_row_audit",
+    "leak_free_label_gate",
+    "fingerprint_guard_coverage",
+    "blocked_no_model_if_sample_gate_fails"
+  ],
+  "change_type": "model_readiness",
+  "changed_files": [
+    "quant/experiments/exp_20260709_023_candidate_meta_label_readiness.py",
+    "data/experiments/exp-20260709-023/exp_20260709_023_candidate_meta_label_readiness.json",
+    "experiments/logs/exp-20260709-023.json",
+    "experiments/cards/exp-20260709-023.md",
+    "experiments/manifests/exp-20260709-023.json",
+    "experiments/tickets/exp-20260709-023.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "candidate_meta_label_v1_training_table_readiness",
+  "decision": "blocked_candidate_meta_label_training_table_not_ready",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-023",
+  "gate": {
+    "criteria": {
+      "complete_candidate_rows_gte_300": false,
+      "each_fold_has_at_least_50_test_rows": false,
+      "negative_labels_gte_75": false,
+      "no_single_ticker_over_20pct": true,
+      "non_oracle_labels_only": true,
+      "positive_labels_gte_75": false,
+      "selected_and_rejected_candidate_outcomes_present": false,
+      "three_chronological_folds_with_both_classes": true
+    },
+    "decision": "blocked_candidate_meta_label_training_table_not_ready",
+    "failed_criteria": [
+      "complete_candidate_rows_gte_300",
+      "positive_labels_gte_75",
+      "negative_labels_gte_75",
+      "each_fold_has_at_least_50_test_rows",
+      "selected_and_rejected_candidate_outcomes_present"
+    ],
+    "passed": false,
+    "reason": "complete_candidate_rows_gte_300;positive_labels_gte_75;negative_labels_gte_75;each_fold_has_at_least_50_test_rows;selected_and_rejected_candidate_outcomes_present"
+  },
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Read-only readiness audit; no before/after strategy metric change.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_sentinel": {
+      "blocked_reason": "Complete candidate training rows beyond selected trades are not persisted with settlement labels.",
+      "entry_date_present_for_selected_trades": 61,
+      "target_price_not_required_for_readiness_audit": true
+    },
+    "passed": false,
+    "required_training_fields": [
+      "ticker",
+      "signal_date",
+      "intended_entry_date",
+      "entry_price",
+      "strategy_or_source",
+      "selected_or_sliced_or_blocked_status",
+      "decision_time_features",
+      "fixed_horizon_or_stop_target_contract",
+      "cash_spy_qqq_settled_outcome",
+      "logged_comparator_id_if_using_displacement_label"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "baseline_survival_rate": 0.823171,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "passed": false,
+    "reason": "No model was fit because the predeclared sample gate failed.",
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Candidate-entry meta-labeling may improve core/default-off candidate admission only if a leak-free settled candidate training table exists; first audit whether current canonical and daily artifacts provide at least 300 complete decision-time candidate rows before any model fitting.",
+    "2_history_check": "exp-20260709-013 audited core-entry admission/regime state; exp-20260622-017 showed blanket chop scalar harms core; the July 9 ML mailbox challenged Family 1 sample size and required a readiness gate before fitting.",
+    "3_single_causal_variable": "candidate_meta_label_v1_training_table_readiness",
+    "4_acceptance_standard": "Pass the predeclared training-table sample gate; otherwise no model fitting and decision is blocked.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_023_candidate_meta_label_readiness.py"
+  },
+  "headline_metrics": {
+    "candidate_oracle_count_total": 137,
+    "complete_selected_trade_rows": 61,
+    "daily_candidate_like_rows_total": 41,
+    "failed_criteria": [
+      "complete_candidate_rows_gte_300",
+      "positive_labels_gte_75",
+      "negative_labels_gte_75",
+      "each_fold_has_at_least_50_test_rows",
+      "selected_and_rejected_candidate_outcomes_present"
+    ],
+    "negative_selected_labels": 26,
+    "positive_selected_labels": 35,
+    "trainable_rows_vs_required": "61/300"
+  },
+  "hypothesis": "Candidate-entry meta-labeling may improve core/default-off candidate admission only if a leak-free settled candidate training table exists; first audit whether current canonical and daily artifacts provide at least 300 complete decision-time candidate rows before any model fitting.",
+  "implementation_mode": "candidate_meta_label_readiness_audit",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260709-013",
+    "exp-20260622-017",
+    "exp-20260708-028"
+  ],
+  "new_evidence_axis": "New gate shape/readiness contract: candidate_meta_label_v1 requires a predeclared leak-free training table gate before any learned probability or scalar can be tested. This is not a response-function, threshold, notional, hold, or chop-scalar retune.",
+  "new_evidence_type": "new_gate_shape_readiness",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not fit elastic-net, HGB, LSTM, transformer, probability scalar, chop-control model, or no-entry classifier on the 61 selected trades, sparse skipped samples, or oracle top lists. Do not reframe a learned scalar as accepted alpha until the training-table sample gate passes.",
+    "new_evidence_required": "Build an append-only candidate ledger with at least 300 settled rows, at least 75 positive and 75 negative non-oracle labels, selected plus skipped/slot-sliced/blocked coverage, three chronological folds with >=50 test rows and both classes, cash/SPY/QQQ outcomes, and logged comparator IDs for any displacement label.",
+    "next_evidence_needed": "The next legal work is measurement plumbing: persist generated, selected, slot-sliced, and blocked candidate rows with decision-time features and fixed-horizon settlement. Model fitting is blocked until that ledger exists.",
+    "why_result_happened": "The current artifacts prove only 61 complete selected-trade rows in the canonical windows. Skipped samples are partial diagnostics without settled labels, no-entry oracle rows are explicitly lookahead-only, and daily quant snapshots are sparse/open. A meta-labeler trained now would be selected-trade overfit or oracle leakage."
+  },
+  "prediction": {
+    "confidence_reason": "ML/meta-labeling is a new candidate-conditional gate shape discussed in the July 9 prediction-strategy mailbox, but repo evidence suggests only 61 accepted core trades and sparse skipped samples are labelable; the first alpha-valid test is a strict readiness gate, not fitting a model.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "insufficient_complete_candidate_rows",
+      "leaky_oracle_labels",
+      "missing_rejected_candidate_outcomes"
+    ],
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "fingerprint_guard_changed": true,
+    "llm_change_scope": "none",
+    "observed_only_readiness_audit": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "readiness": {
+    "canonical_windows": {
+      "chronological_folds": [
+        {
+          "first_entry_date": "2024-10-11",
+          "fold": 1,
+          "has_both_classes": true,
+          "last_entry_date": "2025-02-11",
+          "meets_min_test_rows": false,
+          "negatives": 11,
+          "positives": 9,
+          "rows": 20
+        },
+        {
+          "first_entry_date": "2025-03-03",
+          "fold": 2,
+          "has_both_classes": true,
+          "last_entry_date": "2025-10-02",
+          "meets_min_test_rows": false,
+          "negatives": 10,
+          "positives": 11,
+          "rows": 21
+        },
+        {
+          "first_entry_date": "2025-10-09",
+          "fold": 3,
+          "has_both_classes": true,
+          "last_entry_date": "2026-04-17",
+          "meets_min_test_rows": false,
+          "negatives": 5,
+          "positives": 15,
+          "rows": 20
+        }
+      ],
+      "complete_selected_trade_rows": 61,
+      "negative_selected_labels": 26,
+      "per_window": [
+        {
+          "complete_selected_trade_rows": 18,
+          "complete_skipped_training_rows": 0,
+          "exists": true,
+          "label": "late_strong",
+          "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_late_strong_20260604.json",
+          "sample_skip_fields": [
+            "available_slots_at_entry_loop",
+            "candidate_rank",
+            "date",
+            "decision",
+            "details",
+            "strategy",
+            "ticker"
+          ],
+          "sample_skip_rows_persisted": 23,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "skip_sample_gap": 0,
+          "skipped_count": 23,
+          "total_trades": 18,
+          "trade_rows": 18
+        },
+        {
+          "complete_selected_trade_rows": 21,
+          "complete_skipped_training_rows": 0,
+          "exists": true,
+          "label": "mid_weak",
+          "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+          "sample_skip_fields": [
+            "available_slots_at_entry_loop",
+            "candidate_rank",
+            "date",
+            "decision",
+            "details",
+            "strategy",
+            "ticker"
+          ],
+          "sample_skip_rows_persisted": 21,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "skip_sample_gap": 0,
+          "skipped_count": 21,
+          "total_trades": 21,
+          "trade_rows": 21
+        },
+        {
+          "complete_selected_trade_rows": 22,
+          "complete_skipped_training_rows": 0,
+          "exists": true,
+          "label": "old_thin",
+          "path": "data/backtests/archive/20260604_ohlcv_warehouse_replay/backtest_results_warehouse_snapshot_old_thin_20260604.json",
+          "sample_skip_fields": [
+            "available_slots_at_entry_loop",
+            "candidate_rank",
+            "date",
+            "decision",
+            "details",
+            "strategy",
+            "ticker"
+          ],
+          "sample_skip_rows_persisted": 25,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "skip_sample_gap": 5,
+          "skipped_count": 30,
+          "total_trades": 22,
+          "trade_rows": 22
+        }
+      ],
+      "positive_selected_labels": 35,
+      "sample_rows": [
+        {
+          "entry_date": "2025-11-04",
+          "exit_date": "2025-11-12",
+          "label_positive_cash": true,
+          "pnl": 6609.38,
+          "strategy": "breakout_long",
+          "ticker": "LLY",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2025-10-31",
+          "exit_date": "2025-11-25",
+          "label_positive_cash": true,
+          "pnl": 7450.31,
+          "strategy": "trend_long",
+          "ticker": "GOOG",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-23",
+          "label_positive_cash": true,
+          "pnl": 10713.35,
+          "strategy": "trend_long",
+          "ticker": "SLV",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "label_positive_cash": false,
+          "pnl": -2296.65,
+          "strategy": "trend_long",
+          "ticker": "CVX",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "label_positive_cash": false,
+          "pnl": -1867.92,
+          "strategy": "breakout_long",
+          "ticker": "XOM",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2025-12-15",
+          "exit_date": "2026-01-12",
+          "label_positive_cash": true,
+          "pnl": 3652.39,
+          "strategy": "breakout_long",
+          "ticker": "IAU",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2025-12-15",
+          "exit_date": "2026-01-12",
+          "label_positive_cash": true,
+          "pnl": 3609.31,
+          "strategy": "breakout_long",
+          "ticker": "GLD",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-07",
+          "exit_date": "2026-01-27",
+          "label_positive_cash": true,
+          "pnl": 9425.48,
+          "strategy": "breakout_long",
+          "ticker": "MU",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "label_positive_cash": true,
+          "pnl": 9911.0,
+          "strategy": "trend_long",
+          "ticker": "GLD",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "label_positive_cash": true,
+          "pnl": 9968.06,
+          "strategy": "trend_long",
+          "ticker": "IAU",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-02-02",
+          "label_positive_cash": false,
+          "pnl": -298.79,
+          "strategy": "breakout_long",
+          "ticker": "GS",
+          "window": "late_strong"
+        },
+        {
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-03",
+          "label_positive_cash": true,
+          "pnl": 8646.3,
+          "strategy": "breakout_long",
+          "ticker": "XOM",
+          "window": "late_strong"
+        }
+      ],
+      "selected_ticker_count": 30,
+      "selected_top_ticker": "SLV",
+      "selected_top_ticker_rows": 5,
+      "selected_top_ticker_share": 0.081967
+    },
+    "daily_signal_rows": {
+      "candidate_like_rows_total": 41,
+      "file_summaries": [
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260313.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260410.json",
+          "rows": 2
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260412.json",
+          "rows": 2
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260413.json",
+          "rows": 2
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260414.json",
+          "rows": 4
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260422.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260429.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260508.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260509.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260510.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260511.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260528.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260529.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260530.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260531.json",
+          "rows": 3
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260601.json",
+          "rows": 2
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260617.json",
+          "rows": 1
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260619.json",
+          "rows": 4
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260620.json",
+          "rows": 4
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260621.json",
+          "rows": 4
+        },
+        {
+          "path": "data/daily/signals/quant/quant_signals_20260628.json",
+          "rows": 3
+        }
+      ],
+      "files_scanned": 90,
+      "files_with_candidate_like_rows": 21,
+      "rows_with_any_outcome_field": {},
+      "rows_with_entry_or_signal_date": {},
+      "section_counts": {
+        "core_risk_intensity_forward_observation.rows": 1,
+        "entry_candidate_review.candidates": 10,
+        "entry_execution_plan.slot_sliced_signals": 5,
+        "pilot_signals": 5,
+        "signals": 20
+      },
+      "trainability_reason": "daily production rows are sparse/open and do not provide settled leak-free cash/SPY/QQQ labels in the quant_signals snapshots.",
+      "trainable_rows": 0
+    },
+    "gate": {
+      "complete_trainable_rows_counted": 61,
+      "criteria": {
+        "complete_candidate_rows_gte_300": false,
+        "each_fold_has_at_least_50_test_rows": false,
+        "negative_labels_gte_75": false,
+        "no_single_ticker_over_20pct": true,
+        "non_oracle_labels_only": true,
+        "positive_labels_gte_75": false,
+        "selected_and_rejected_candidate_outcomes_present": false,
+        "three_chronological_folds_with_both_classes": true
+      },
+      "failed_criteria": [
+        "complete_candidate_rows_gte_300",
+        "positive_labels_gte_75",
+        "negative_labels_gte_75",
+        "each_fold_has_at_least_50_test_rows",
+        "selected_and_rejected_candidate_outcomes_present"
+      ],
+      "negative_labels_counted": 26,
+      "passed": false,
+      "positive_labels_counted": 35,
+      "sample_gate": {
+        "max_single_ticker_share": 0.2,
+        "min_chronological_folds": 3,
+        "min_complete_candidate_rows": 300,
+        "min_negative_labels": 75,
+        "min_positive_labels": 75,
+        "min_test_rows_per_fold": 50,
+        "requires_non_oracle_labels": true,
+        "requires_selected_and_rejected_candidate_coverage": true
+      }
+    },
+    "oracle_rows": {
+      "candidate_count_total": 137,
+      "trainability_reason": "candidate_forward_oracle explicitly uses future highs/lookahead and persists only diagnostics, not leak-free labels.",
+      "trainable_rows": 0,
+      "windows": [
+        {
+          "candidate_count": 40,
+          "exists": true,
+          "is_tradable": false,
+          "label": "late_strong",
+          "lookahead_warning": "Uses future highs after candidate dates. This estimates candidate-pool opportunity, not achievable strategy PnL.",
+          "missing_candidate_count": 1,
+          "path": "data/experiments/oracle_no_entry_restriction_3window/late_strong_oracle.json",
+          "persisted_missing_candidate_rows": 1,
+          "persisted_top_opportunity_rows": 10
+        },
+        {
+          "candidate_count": 42,
+          "exists": true,
+          "is_tradable": false,
+          "label": "mid_weak",
+          "lookahead_warning": "Uses future highs after candidate dates. This estimates candidate-pool opportunity, not achievable strategy PnL.",
+          "missing_candidate_count": 0,
+          "path": "data/experiments/oracle_no_entry_restriction_3window/mid_weak_oracle.json",
+          "persisted_missing_candidate_rows": 0,
+          "persisted_top_opportunity_rows": 10
+        },
+        {
+          "candidate_count": 55,
+          "exists": true,
+          "is_tradable": false,
+          "label": "old_thin",
+          "lookahead_warning": "Uses future highs after candidate dates. This estimates candidate-pool opportunity, not achievable strategy PnL.",
+          "missing_candidate_count": 0,
+          "path": "data/experiments/oracle_no_entry_restriction_3window/old_thin_oracle.json",
+          "persisted_missing_candidate_rows": 0,
+          "persisted_top_opportunity_rows": 10
+        }
+      ]
+    }
+  },
+  "realized_failure_mode": "insufficient_complete_candidate_rows",
+  "rejection_reason": "complete_candidate_rows_gte_300;positive_labels_gte_75;negative_labels_gte_75;each_fold_has_at_least_50_test_rows;selected_and_rejected_candidate_outcomes_present",
+  "related_files": [
+    "quant/experiments/exp_20260709_023_candidate_meta_label_readiness.py",
+    "data/experiments/exp-20260709-023/exp_20260709_023_candidate_meta_label_readiness.json",
+    "experiments/logs/exp-20260709-023.json",
+    "experiments/cards/exp-20260709-023.md",
+    "experiments/manifests/exp-20260709-023.json",
+    "experiments/tickets/exp-20260709-023.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "single_causal_variable": "candidate_meta_label_v1_training_table_readiness",
+  "status": "blocked",
+  "timestamp": "2026-07-09T21:12:27Z",
+  "trial_family": "candidate_meta_label_training_table_readiness",
+  "trial_variant_id": "candidate_meta_label_v1_readiness_audit"
+}

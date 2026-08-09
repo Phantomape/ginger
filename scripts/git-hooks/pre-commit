@@ -1,24 +1,44 @@
 #!/bin/sh
-# Block commits that add a NEW self-registering experiment runner.
+# Repository contract gate.
 #
-# A runner that writes docs/experiment_registry.json directly bypasses
-# require_pre_run_prediction. New runners must use experiment.py new/close or
-# experiment_registry.persist_self_registered_result(). Legacy offenders are
-# grandfathered in quant/experiments/_self_register_legacy_allowlist.txt.
-#
-# Enable repo-wide (one time, applies to this working copy):
-#   git config core.hooksPath scripts/git-hooks
-#
-# Fail-open: this hook blocks ONLY on a confirmed new offender (exit 1). Any
-# tooling problem (missing python, import error) lets the commit through so a
-# broken hook never halts the whole fleet.
+# The alpha-playbook check is fail-closed and reads the Git index, not the
+# worktree. This makes partial staging deterministic: unstaged repairs cannot
+# hide a bad staged document, and unstaged drafts cannot block a valid commit.
+# The legacy self-registration check remains fail-open on tooling errors and
+# blocks only confirmed new direct registry writers.
 
-PY="python"
-command -v "$PY" >/dev/null 2>&1 || PY="python3"
-command -v "$PY" >/dev/null 2>&1 || PY=".venv/Scripts/python.exe"
-[ -x "$PY" ] || command -v "$PY" >/dev/null 2>&1 || exit 0
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$repo_root" ] || ! cd "$repo_root"; then
+  echo "Commit blocked: cannot resolve the repository root." >&2
+  exit 1
+fi
 
-"$PY" scripts/self_registration_guard.py --staged
+PY=""
+if [ -x ".venv/Scripts/python.exe" ]; then
+  PY=".venv/Scripts/python.exe"
+elif [ -x ".venv/bin/python" ]; then
+  PY=".venv/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+  PY="python3"
+elif command -v python >/dev/null 2>&1; then
+  PY="python"
+fi
+
+if [ -z "$PY" ]; then
+  echo "Commit blocked: Python is required to validate the alpha playbook contract." >&2
+  exit 1
+fi
+
+"$PY" -B scripts/alpha_playbook_guard.py --staged
+status=$?
+if [ "$status" -ne 0 ]; then
+  echo "" >&2
+  echo "Commit blocked by the alpha playbook contract guard." >&2
+  echo "Fix the staged playbook/runner content and stage it again." >&2
+  exit 1
+fi
+
+"$PY" -B scripts/self_registration_guard.py --staged
 status=$?
 if [ "$status" -eq 1 ]; then
   echo "" >&2
@@ -27,4 +47,5 @@ if [ "$status" -eq 1 ]; then
   echo "with: python scripts/refresh_self_register_allowlist.py --accept-new" >&2
   exit 1
 fi
+
 exit 0

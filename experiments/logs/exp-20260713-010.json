@@ -1,0 +1,192 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.4057,
+    "max_drawdown_pct": 0.0977,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.255814,
+    "total_pnl": 238329.07,
+    "total_return_pct": 2.3833,
+    "trade_count": 84,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.1359,
+    "actual_pnl_delta": 476.8,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.1141,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 4500.0,
+    "pnl_prediction_error": -4023.2,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "recall_report_delay",
+      "medical_device_ticker_concentration",
+      "accepted_comparator_not_beaten",
+      "parent_mapping_survivorship"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "accepted_comparator_not_beaten",
+    "surprise_level": "low",
+    "surprise_note": "The new source was directionally positive in aggregate but only added $21.67 per target trade, regressed old_thin, and concentrated 95.97% of positive contribution in five tickers."
+  },
+  "causal_components": [
+    "official report_date",
+    "exact recalling-firm ticker map",
+    "Class I eligibility",
+    "event-level dedupe",
+    "strictly-post-report confirmation",
+    "green and SPY-relative confirmation",
+    "top-1 excess-return rank",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_summary": "Tested a shared FDA Class I enforcement-report absorption candidate; Gate 4 rejected it and daily production wiring was rolled back.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_device_class1_report_green_spy_relative_top1_10d_v1",
+  "component": "quant/fda_device_class1_enforcement_paper_sleeve.py, quant/test_fda_device_class1_enforcement_paper_sleeve.py, quant/run.py, quant/test_run_daily_wiring.py, quant/experiments/exp_20260713_010_fda_device_class1_report_green_spy_relative_top1_10d_v1.py, data/non_ohlcv/fda_device_class1_enforcement, data/paper_sleeves/fda_device_class1_enforcement, data/experiments/exp-20260713-010, docs/production_backtest_parity_matrix.md, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, experiments/tickets/exp-20260713-010.json, experiments/cards/exp-20260713-010.md, experiments/manifests/exp-20260713-010.json, experiments/logs/exp-20260713-010.json, experiments/artifacts/exp-20260713-010_fda_device_class1_enforcement.md, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected_fda_device_class1_enforcement_candidate_pool",
+  "delta_metrics": {
+    "expected_value_score": 0.1359,
+    "max_drawdown_pct": 0.0002,
+    "survival_rate": -0.532686,
+    "total_pnl": 476.8,
+    "total_return_pct": 0.0048,
+    "trade_count": 22
+  },
+  "experiment_id": "exp-20260713-010",
+  "hypothesis": "candidate_pool: after an FDA weekly Device Enforcement Report publicly lists a mapped issuer's Class I recall, an issuer that closes green and ahead of SPY on the first strictly subsequent trading session has absorbed the severe product-risk news and should continue from the next open through the tenth trading-session close.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_fda_device_class1_enforcement_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260713-008",
+    "exp-20260611-007"
+  ],
+  "new_evidence_type": "official_openfda_device_enforcement_report_class1",
+  "next_retry_requires": [
+    "A materially new report-time device-severity or issuer-financial-materiality field with audited PIT availability",
+    "or at least 30 closed forward replacement-value rows from a complete daily candidate lifecycle"
+  ],
+  "notes": "Frozen 536 official raw rows into 86 deduped mapped events. The fixed policy produced 22 trades across 10 tickers and all three windows, aggregate EV +0.1359 and PnL +$476.80, but old_thin regressed, concentration caps failed, and accepted distribution EV/PnL comparators were not beaten. Complete off-vs-on DSR panel was not computable because the expected-maximum approximation was negative; Gate 5 failed closed without changing Gate 4.",
+  "parameters": {
+    "locked_variables": [
+      "firm map",
+      "Class I eligibility",
+      "report_date",
+      "event dedupe",
+      "strict-after confirmation",
+      "green and SPY-relative gates",
+      "top-1 rank",
+      "cooldown",
+      "hold",
+      "notional",
+      "cost"
+    ],
+    "single_causal_variable": "fda_device_class1_report_green_spy_relative_top1_10d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune firm aliases or mappings, Class-I product slices, green/SPY-relative thresholds, rank, cooldown, hold, notional, costs, or window slices on this frozen openFDA response.",
+    "new_evidence_required": "A materially new report-time device-severity or issuer-financial-materiality field with audited PIT availability, or at least 30 closed forward replacement-value rows from a complete daily candidate lifecycle.",
+    "realized_failure_mode": "accepted_comparator_not_beaten",
+    "why_result_happened": "The new source was directionally positive in aggregate but only added $21.67 per target trade, regressed old_thin, and concentrated 95.97% of positive contribution in five tickers."
+  },
+  "prediction": {
+    "confidence_reason": "A new official PIT source supplies 86 deduped mapped events across 19 price-covered tickers and all three windows, but severe recalls can be idiosyncratic and the comparator bar is high.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "recall_report_delay",
+      "medical_device_ticker_concentration",
+      "accepted_comparator_not_beaten",
+      "parent_mapping_survivorship"
+    ],
+    "recorded_at": "2026-07-14T00:52:22+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Gate 4 failed window stability, concentration, and both accepted-distribution comparators.",
+  "reopen_condition": "A materially new report-time device-severity or issuer-financial-materiality field, or at least 30 closed forward replacement-value rows from a complete daily candidate lifecycle; no threshold, mapping, rank, cooldown, hold, notional, cost, or window retune on this frozen response.",
+  "production_impact": {
+    "changes_live_orders": false,
+    "changes_default_ranking": false,
+    "changes_default_sizing": false,
+    "changes_default_exits": false,
+    "daily_wiring_retained": false,
+    "replay_only": true
+  },
+  "gate_evidence": {
+    "gate2_passed": true,
+    "signals_generated": 86,
+    "signals_survived": 22,
+    "survival_rate": 0.255814,
+    "target_ticker_count": 10,
+    "target_window_count": 3,
+    "old_thin_ev_delta": -0.0338,
+    "old_thin_pnl_delta": -691.23,
+    "single_ticker_positive_share": 0.508333,
+    "top_5_contribution_pct": 0.959709,
+    "accepted_comparator_ev_delta": 0.5286,
+    "accepted_comparator_pnl_delta": 10432.91,
+    "dsr_status": "not_computable",
+    "dsr_reason": "expected_maximum_approximation_negative"
+  },
+  "related_files": [
+    "quant/fda_device_class1_enforcement_paper_sleeve.py",
+    "quant/experiments/exp_20260713_010_fda_device_class1_report_green_spy_relative_top1_10d_v1.py",
+    "data/non_ohlcv/fda_device_class1_enforcement/events.json",
+    "data/non_ohlcv/fda_device_class1_enforcement/raw/openfda_fetch_manifest.json",
+    "data/experiments/exp-20260713-010/fda_device_class1_enforcement_replay.json",
+    "data/experiments/exp-20260713-010/deflated_sharpe_report.json",
+    "experiments/artifacts/exp-20260713-010_fda_device_class1_enforcement.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260713_010_fda_device_class1_report_green_spy_relative_top1_10d_v1.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_fda_device_class1_enforcement_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_run_daily_wiring.py quant\\test_deflated_sharpe_cli.py quant\\test_full_stack_candidate_pool.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T01:11:53+00:00",
+  "trial_family": "fda_device_class1_enforcement_absorption_candidate_pool",
+  "trial_variant_id": "fda_device_class1_report_green_spy_relative_top1_10d_v1"
+}

@@ -5,6 +5,119 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## ORTEX Cost-to-Borrow-New Observer
+
+`exp-20260718-003` adds a shared, default-off ORTEX borrow-economics
+observer. Historical source dates are conservatively mapped to the strictly
+next caller-supplied NYSE session; same-day use is forbidden. The fixed
+research surface contains 20 Moomoo-covered stocks across three predeclared
+40-session blocks. Daily collection rotates through at most four names that
+are at least five calendar days stale, stops before a 250-credit reserve, and
+can be disabled with `ORTEX_BORROW_REFRESH_DISABLED=1`. Every snapshot and
+outcome remains `trade_enabled=false`.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off ORTEX CTB-new observer and generic H5/H10 outcomes | `ortex_data_sidecar.py`, `ortex_borrow_observer.py`, `data/non_ohlcv/ortex/`, `run.py` | canonical core backtests do not consume the observer; research replays may use only the append-only normalized rows, the fixed 20-name/three-block universe, strict next-session usable clock, usable-session open entry, and fifth/tenth later-session close outcomes versus cash/SPY/QQQ | daily run performs bounded stale-name refresh only once per US equity session, always settles locally available rows, and mounts the result under `non_ohlcv_snapshot["ortex_borrow_observer"]`; failures are isolated in a default-off stub | historical rows use the conservative inferred next-session clock while prospective rows also retain local collection time; neither path may change candidates, orders, ranking, sizing, exits, or claim short executability without a separate shared alpha policy, broker locate/availability evidence, and Gate 1-4 experiment |
+| Rejected ORTEX CTB-new × Moomoo short-volume pair spread (`exp-20260718-004`) | `ortex_moomoo_borrow_pair_paper_sleeve.py`, `experiments/exp_20260718_004_ortex_moomoo_borrow_pair.py` | frozen replay uses the exact 20-name same-date cross-section, top-4 intersection, highest rank-sum short without fallback, lowest-stress correlated cluster peer, next-open entry, fifth-session close, cash collateral, marked-gross guard, 45bp per leg, and observed CTB accrual | shared daily builder was implemented and tested before Gate 4, then all pair-specific `run.py` mounts were removed after rejection; the helper remains only for reproducibility and emits no executable orders | Gate 2/3 passed but 38 pairs lost `$584.28`; 90/10 EV fell `6.2057 -> 5.4239`, PnL fell `$130,992.36 -> $114,688.52`, and 3/3 windows materially regressed. Do not wire or retune this family on the same rows. Bulk coverage was 17/20 at 75.55 credits/request and Moomoo locate fields were empty, so it was also not forward-operational or live-ready. |
+
+## SEC Same-Issuer Dual-Class Spread
+
+`exp-20260718-007` tests a new non-price pair-linkage source: the official SEC
+same-CIK identity of dual-class common shares. Six identities are audited, but
+GOOG/GOOGL is outcome-blind excluded because its historical legs do not share
+one provider/adjustment vintage; the five-pair economic whitelist is frozen in
+the shared helper. Candidate prices come only from the saved, hash-bound cold
+panel; hot warehouse overlays are forbidden.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Rejected same-CIK dual-class robust premium spread (`exp-20260718-007`) | `sec_same_issuer_dual_class_spread_paper_sleeve.py`, `experiments/exp_20260718_007_sec_same_issuer_dual_class_spread.py`, `data/reference/sec_company_tickers.json` | shared replay uses exactly 120 strictly prior common sessions, robust median/MAD, `|z| >= 2.5`, at least 1% anchor deviation, next-common-session whole-share long-cheap/short-rich entry, one open-or-pending pair, ten-session same-pair cooldown, convergence/3% adverse/ten-session exits, cash collateral, 45bp round trip per leg, 5% annualized short carry, and measurement-only final-window settlement | the same helper exposes an exact-date, fail-closed default-off daily snapshot and append-only lifecycle API, but it is not mounted in `run.py` after economic rejection and never emits orders; current SEC identity is not effective-dated and broker locate/size is absent | Gate 2/3 passed, but 23 funded pairs lost `$1,454.49` after costs, standalone EV was `-0.4463`, and 0/3 windows were nonnegative on both EV/PnL. SPY beta was only `0.0105`, yet 90/10 EV fell `6.2057 -> 5.3236`, PnL fell `$130,992.36 -> $113,458.64`, and all three windows materially regressed. Do not wire or retune this frozen policy; GOOG/GOOGL requires a same-batch two-leg refreeze before any separate revisit. |
+
+## Shared Paper-Sleeve Execution-Sizing Boundary
+
+`exp-20260712-018` adds one repository-wide, fail-closed sizing audit in
+`quant/paper_sleeve_execution_contract.py`. Historical and forward paper
+notionals remain each sleeve's unchanged evidence units. The five event-ledger
+adapters freeze `paper_notional_usd` on pending creation so a later config
+change cannot resize an aged signal. `run.py` annotates all 40 built paper
+surfaces, publishes their aggregate contract in trend and quant JSON, and also
+publishes the previously omitted deep-drawdown rebound surface.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Paper evidence notional vs executable experiment amount | `paper_sleeve_execution_contract.py`, five event-ledger adapters, `run.py` | core backtests and existing paper replays keep their original notional and PnL rules; this measurement repair does not alter selection, sizing, exits, or Gate-1 metrics | daily snapshots label paper notionals as evidence-only and emit `experiment_notional_usd=null` unless a complete envelope, passed forward gate, and enabled trade adapter are all present | paper surfaces may have different evidence notionals by design; no paper notional may silently become an order size, and live activation still requires its own declared and measured execution envelope |
+
+## USAspending Obligation-Conversion First-Seen Observer
+
+`exp-20260713-007` adds a shared, default-off observer over a locally frozen
+official USAspending transaction snapshot. `exp-20260727-003` restores its
+daily producer, `exp-20260729-008` journals resumable async jobs, and
+`exp-20260730-001` drains a still-valid prior-day job before the next daily
+request while durably exposing its health. The historical current
+snapshot is seed-only: agency action dates are regulatory metadata and may not
+be used as policy availability. Availability begins only at the locally persisted
+`first_seen_at`. This means local first observation, not proof of first public
+availability. The observation clock must be monotonic, later rows must pass a
+post-initialization `initial_report_date` freshness guard before they can count
+as prospective evidence, Department of Defense and USACE transactions are
+excluded, and the observer remains `trade_enabled=false`.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off USAspending obligation-conversion first-seen observer | `usaspending_obligation_observer.py`, `data/non_ohlcv/usaspending_obligation_observer/`, `run.py` | canonical backtests do not consume the historical current snapshot; all initial rows are `seed_not_forward`, action dates cannot backdate availability, and a replay may begin only from persisted local `first_seen_at` rows after the seed that also passed the source-freshness guard | when no explicit local override is configured, the daily run requests the fixed official transaction download with a bounded wait, freezes a validated immutable ZIP plus manifest, and binds availability to actual retrieval UTC. Immediately after a job is created, a durable dated receipt journals the `submitted`, polling, and `finished-awaiting-download` phases; transient status or file GET failures therefore resume the same job before another POST, including across a UTC date boundary. Resume uses the receipt's original run date and frozen request only when official HTTPS URLs, bounded status history, monotonic clocks, and the 24-hour TTL all revalidate. A prior job that is still pending blocks the current-day POST; once finished, its original dated snapshot is consumed first, its journal is explicitly retired as completed, and the current day may then proceed. Invalid or expired receipts remain non-ok. Pending, failed, missing, or stale production is persisted as non-ok health and atomically copied into the dated non-OHLCV snapshot, while a fresh zero-event snapshot remains an explicit successful heartbeat. An explicit local snapshot override is still supported. Every row remains observer-only and `trade_enabled=false`, so it cannot alter candidates, orders, ranking, sizing, or exits | production may accumulate eligible prospective rows while backtests have no eligible historical rows; performance evaluation remains parked until >=75 settled unique eligible events across >=15 local first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete cash/SPY/QQQ outcomes |
+
+## Drugs@FDA Original NDA/BLA First-Seen Observer
+
+`exp-20260713-006` adds a default-off observer over the official CDER
+Drugs@FDA ZIP; `exp-20260728-001` repairs its silently starved daily producer.
+The observer records original NDA/BLA
+approval rows and assigns `first_seen_at` only when this policy first reads the
+snapshot. The current ZIP is a current-state snapshot, not a historical
+point-in-time archive, so its older approval dates cannot be treated as
+historically observable decisions. The surface has no issuer/ticker mapping
+and therefore cannot generate candidates, signals, or orders. The daily path
+now acquires the fixed official FDA ZIP before consuming it, freezes a dated
+snapshot plus manifest, and exposes source freshness separately from process
+success; failures remain isolated from strategy execution but no longer look
+healthy.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off CDER original NDA/BLA first-seen observer | `drugsfda_approval_observer.py`, `data/non_ohlcv/drugsfda_approval_observer/raw/`, `run.py` | canonical backtests do not consume this surface; the current snapshot is not historical PIT evidence, older approval dates may not be backdated to strategy decisions, and no replay is allowed until separately frozen timestamped snapshots and a PIT issuer/ticker relation exist | without an explicit local override, the daily path requests the fixed official FDA HTTPS endpoint with bounded timeout and size, validates the required ZIP tables, freezes `drugsatfda_YYYYMMDD.zip` plus `snapshot_manifest_YYYYMMDD.json`, and binds `first_seen_at` to the manifest retrieval UTC. Missing, unavailable, stale, or unverifiable production persists non-ok health; an unchanged valid daily snapshot emits an explicit healthy zero-event heartbeat. Every row remains `trade_enabled=false` | production may accumulate prospective first-seen rows while backtests have no eligible rows; no ticker mapping, candidate generation, live/default orders, ranking, sizing, exits, watchlists, or LLM/news policy may consume this observer without a separate shared policy and Gate 1-4 experiment |
+
+## Rejected FDA Orange Book Monthly NEWA Release Basket
+
+`exp-20260715-004` evaluated the official monthly Orange Book
+Additions/Deletions PDFs as a hash-bound historical PIT archive. The shared
+helper uses the PDF HTTP `Last-Modified` UTC value as availability, treats the
+approval date only as a 0-45-day freshness field, accepts only `>A>` rows with
+terminal `NEWA`, and divides a fixed `$16,000` release budget equally across
+all exact-mapped issuers for next-open through tenth-session-close replay.
+Fresenius Kabi was explicitly excluded after audit because FMS is not its
+economic parent. Gate 4 rejected the sleeve, so its temporary `run.py` wiring
+was removed.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Rejected Orange Book fresh-NEWA release basket | `orange_book_newa_release_basket_paper_sleeve.py`, `data/non_ohlcv/fda_orange_book_newa/` | the experiment runner may replay only the frozen 19-PDF manifest with exact SHA-256 verification, the official HTTP availability clock, event-date issuer mapping, one issuer leg per release, equal release budget, next-open entry, fixed 10-session close, and 35bps round-trip cost | no daily adapter is retained and `run.py` does not call the helper; the policy cannot alter candidates, orders, ranking, sizing, exits, watchlists, LLM, or news | the helper retains a default-off seed/forward lifecycle callable for reproducibility, but canonical production accumulates no Orange Book decisions; any future observer wiring or activation requires a separately authorized experiment and new evidence |
+
+## Entity-Theme News Prospective First-Seen Observer
+
+`exp-20260713-003` adds a production-visible, default-off evidence observer for
+the entity-theme news lead. Policy availability is the timestamp at which the
+daily policy first observes an exact URL (`first_seen_at`); source
+`published_at` is retained only as metadata and may never backdate a decision.
+Each new exact URL receives one stable decision ID and a fixed `$4,000` paper
+event notional split equally across its unique mapped tickers. Outcomes use a
+next-session-open entry and fixed 10-trading-session exit. This surface is
+evidence-only: `trade_enabled=false`, and it cannot change live/default
+orders, core universe, ranking, sizing, exits, watchlists, or LLM/news policy.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off entity-theme prospective first-seen observer | `entity_theme_news_event_forward_observer.py`, `run.py` | canonical core backtests do not consume or trade this surface; any future replay must use persisted policy-time `first_seen_at`, one stable exact-URL decision, equal unique-ticker legs sharing `$4,000`, next-session-open entry, and fixed 10-session exit; `published_at` remains metadata only | daily run appends unseen exact-URL decisions idempotently, advances pending outcomes only from available market sessions, and emits observer summaries with `trade_enabled=false` | production may have pending rows without future prices while a completed replay has settled rows; neither path may use `published_at` as availability or feed orders/ranking/sizing/exits; performance evaluation remains parked until >=75 settled unique-URL events across >=15 decision dates and >=3 themes, max theme share <=30%, with complete cash/SPY/QQQ outcomes |
+
 ## Rejected SEC Item 1.01 Contract-Relation Paper Candidate
 
 `exp-20260703-019` tested promotion of the fixed `exp-20260703-018`
@@ -206,6 +319,21 @@ alpha-attribution metadata, and a human-report block. It remains observe-only:
 sizing, exit, watchlist, LLM/news, or activation behavior may diverge between
 replay and production.
 
+## MOVE Rate-Volatility Relief Paper Adapter
+
+`exp-20260711-004` promotes the positive `exp-20260711-002` MOVE replay lead
+into `quant/move_rate_volatility_relief_paper_sleeve.py`. Historical replay
+and daily observation must use the same fixed first MOVE close below its
+trailing 20-session mean, the unchanged `exp-20260607-018` sector-known liquid
+stock-leadership selector, same-day selected-core same-ticker exclusion,
+top-2/day, `$4,000` paper notional, next-open entry, 10-session close,
+same-ticker cooldown, slippage, and round-trip costs. Daily delivery uses the
+Yahoo `^MOVE` mirror and records it internally as `MOVE`; the signal is known
+only after the signal-day close. The adapter emits context, pending/open/closed
+paper state, attribution, and report output with `trade_enabled=false`. It does
+not enter the accepted-helper allocator and cannot change live/default orders,
+core universe, ranking, sizing, exits, watchlists, or LLM/news behavior.
+
 ## Industry-Relative Laggard Repair Paper Adapter
 
 `exp-20260607-008` promoted the positive `exp-20260607-007`
@@ -360,6 +488,7 @@ LLM/news, or activation behavior may diverge between replay and production.
 | Earnings proximity and post-earnings continuation data | `data_layer.py`, `backtester.py`, `feature_layer.py`, `risk_engine.py`, `signal_engine.py`, `run.py` | canonical replay uses daily production earnings snapshots for `next_earnings_date` and `days_to_earnings` when present; when same-day actual EPS is known and a later future earnings date exists, it exposes `last_earnings_date`, `days_since_last_earnings`, `post_earnings_continuation_confirmed`, and `post_earnings_event_date`, then rolls forward DTE to the next future earnings date | daily run emits the production earnings snapshot used by the live feature path and the same continuation fields; same-day continuation is allowed only after actual EPS is known | fallback only for missing archived snapshots; canonical fixed-window Gate 1 metrics use PIT snapshot DTE as of `exp-20260601-025` plus explicit post-earnings continuation semantics as of `exp-20260602-003` |
 | Default-off post-earnings underpriced drift paper sleeve | `post_earnings_underpriced_drift_paper_sleeve.py`, `run.py`, `default_off_alpha_attribution.py`, `report_generator.py` | default core backtests do not trade it; historical evidence comes from accepted `exp-20260602-026`, accepted `exp-20260602-027` high-liquidity support, accepted `exp-20260603-004` sector-residual support, and accepted `exp-20260603-022` non-core-overlap support, and must use the shared helper with daily earnings snapshot transition detection, the fixed positive-surprise drift gates, `pre_event_rs20_vs_spy <= 0`, fixed `$10k` base paper notional, `1.10x` paper support only when `avg_dollar_volume_20d >= $1B`, additional `1.05x` paper support only when signal-date 20-day return is at least the public-sector median with at least `3` sector-member return observations, additional `1.05x` paper support only when same-day selected core A/B ticker context is available and has no same-ticker overlap, top-1/day, next-open paper entry, 10-trading-day close exit, and concentration guard before promotion | daily run derives candidates from the already-loaded daily OHLCV universe plus `SPY`, loads local earnings snapshot history and `data/reference/broad_market_sector_map.json`, receives date-keyed selected core entry ticker context from `plan_entry_candidates`, emits candidate/audit/high-liquidity-support/sector-residual-support/non-core-overlap-support metadata, pending/open/closed paper ledger state, replacement-value report, forward paper gate, default-off alpha-attribution surface, and human-report block | observe-only; no core universe expansion, no live orders, no core ranking/sizing/exit changes, no LLM/news changes, and activation requires closed forward replacement-value outcomes plus a separate Gate 1-4 trade adapter |
 | Default-off volatility relief leadership paper sleeve | `volatility_relief_stock_leadership_paper_sleeve.py`, `run.py`, `default_off_alpha_attribution.py`, `report_generator.py` | default core backtests do not trade it; historical evidence comes from accepted `exp-20260607-019` and must use the shared helper with fixed VIXY selloff / SPY+QQQ relief gates, broad-market sector-known liquid stock universe, selected-core same-ticker overlap disclosure, top-2/day, next-open paper entry, 10-trading-day close exit, fixed `$4,000` paper notional, costs, cooldown, and concentration guard before promotion | daily run derives candidates from the already-loaded broad-market OHLCV universe plus exact `SPY`/`QQQ`/`VIXY`, receives same-day selected core entry ticker context from `plan_entry_candidates`, emits volatility-relief context, pending/open/closed paper ledger state, forward paper gate, default-off alpha-attribution surface, and human-report block | observe-only; no core universe expansion, no live orders, no core ranking/sizing/exit changes, no LLM/news changes, and activation requires closed forward replacement-value outcomes plus a separate Gate 1-4 activation envelope |
+| Default-off MOVE rate-volatility relief leadership paper sleeve | `move_rate_volatility_relief_paper_sleeve.py`, `run.py`, `default_off_alpha_attribution.py`, `report_generator.py` | default core backtests do not trade it; historical evidence comes from positive `exp-20260711-002` and accepted shared-paper promotion `exp-20260711-004`; replay must use the fixed MOVE20 first-cross-below event and unchanged stock selector, top-2/day, next-open entry, 10-session close, `$4,000` paper notional, costs, and cooldown | daily run loads Yahoo `^MOVE` point-in-time close history, maps it to the shared `MOVE` context, receives selected-core overlap context, and emits a separate paper ledger, attribution surface, and report block | observe-only and excluded from accepted-helper allocation; no live/default orders or core/LLM behavior changes; live eligibility requires at least 30 closed forward trades, positive replacement value, and kill-switch parity under the declared envelope |
 | Default-off turn-of-month liquid leadership paper sleeve | `turn_of_month_liquid_leadership_paper_sleeve.py`, `run.py` | default core backtests do not trade it; historical evidence comes from positive `exp-20260609-026` and accepted shared-helper promotion `exp-20260609-027`; replay must use the shared helper with full loaded trading-calendar month labels, sector-known liquid stock universe, `SPY`-relative 20-day and 60-day leadership, high close-location, volume and volatility guards, same-ticker selected core overlap exclusion, top-1/day, fixed `$4,000` paper notional, 10-trading-day same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs, and concentration guard before promotion | daily observation derives candidates from the same broad-market free-OHLCV universe plus `SPY`; first-three-trading-day labels may use the observed sequence, but last-trading-day labels require explicit `calendar_dates` or `known_month_end_dates`; without explicit month-end context the month-end route fails closed; `exp-20260610-005` wires the snapshot into daily quant artifacts so the accepted-helper allocator can consume the same source surface | observe-only; no core universe expansion, no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and activation requires daily forward closed replacement-value outcomes plus a separate Gate 1-4 activation envelope |
 | Default-off 52-week-high proximity core-flow paper sleeve | `fiftytwo_week_high_proximity_paper_sleeve.py` | default core backtests do not trade it; historical evidence comes from positive `exp-20260610-007` and accepted full-stack promotion `exp-20260610-008`; replay must use the shared helper with a >= 252-prior-trading-day deep snapshot of past bars, trailing 252-day-high proximity (close >= 97% of the 252-day high), new 60-day-high breakout, sector-known liquid stock universe, `SPY`-relative 20-day leadership, signal-day return/close-location/volume/volatility guards, same-day core A/B entry-flow confirmation, same-ticker selected core overlap exclusion, top-1/day, fixed `$4,000` paper notional, 10-trading-day same-ticker cooldown, next-open paper entry, 10-trading-day close exit, costs, and concentration guard before promotion | daily observation derives candidates from the same broad-market free-OHLCV universe plus `SPY` and same-day selected core entry context; with fewer than 252 prior trading days the rule fails closed; the parity-tested kill switch (8% committed-capital realized drawdown hard kill, 5% sleeve stop, positive-PnL concentration kill) blocks new pending paper entries when triggered | observe-only; no core universe expansion, no live/default orders, no core ranking/sizing/exit/watchlist/LLM/news changes, and live activation requires >= 30 closed forward 10-day paper trades, positive forward PnL, and replacement value under the declared execution envelope (config/checklist change, not a new alpha search) |
 | Read-only market-state / sentiment analysis | `regime_engine.py`, `sentiment_surface.py`, `market_state_analysis.py`, `backtest_sentiment_attribution.py`, `report_generator.py` | emits `result["market_state_sentiment_attribution"]` after canonical metrics are computed; diagnostic only | emits `market_state_snapshot` in daily quant artifacts and report; diagnostic only | no entry, ranking, sizing, exit, heat, LLM/news, or order behavior may read this block without a separate Gate 1-4 experiment |

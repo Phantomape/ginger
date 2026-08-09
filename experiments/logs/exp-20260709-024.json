@@ -1,0 +1,218 @@
+{
+  "acceptance_rule": "Accepted measurement repair if the runner creates reproducible candidate event artifacts, enriches rows with fixed-horizon cash/SPY/QQQ labels where available, records readiness counts versus the exp-20260709-023 gate, and changes no strategy behavior.",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "after_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "complete_10d_candidate_rows": 130,
+    "entry_date_present_count": 137,
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "target_price_present_count": 138,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "training_ledger_rows": 138,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "experiments/logs/exp-20260709-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Alpha blocker: candidate-entry meta-labeling is blocked by missing leak-free candidate decision rows; first-build a canonical-window candidate training ledger by saving full backtester entry candidate events and fixed-horizon cash/SPY/QQQ labels without changing strategy behavior.",
+  "alpha_ready": false,
+  "alpha_ready_reason": "Model fitting remains blocked by the predeclared exp-20260709-023 training-table gate.",
+  "baseline_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "before_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "causal_components": [
+    "canonical_backtest_candidate_events",
+    "fixed_horizon_labels",
+    "training_table_readiness_gate",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/logs/exp-20260709-024.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "changed_variable": "candidate_meta_label_training_ledger_materialization_v1",
+  "decision": "accepted_measurement_repair_candidate_training_ledger_materialized_model_still_blocked",
+  "delta_metrics": {
+    "candidate_training_rows_materialized_delta": 138,
+    "complete_10d_candidate_rows_materialized_delta": 130,
+    "expected_value_score_delta": 0.0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "evaluation": "<stripped 633KB oversized field; full value retained in the experiment artifact>",
+  "experiment_id": "exp-20260709-024",
+  "gate": {
+    "decision": "accepted_measurement_repair_candidate_training_ledger_materialized_model_still_blocked",
+    "passed": true,
+    "readiness_failed_criteria": [
+      "complete_candidate_rows_gte_300",
+      "negative_labels_gte_75",
+      "each_fold_has_at_least_50_test_rows"
+    ],
+    "readiness_gate_passed": false,
+    "reason": "measurement_repair_materialized_candidate_training_ledger"
+  },
+  "gate1": {
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Read-only measurement repair; no before/after strategy metric change.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_sentinel": {
+      "entry_date_missing_count": 1,
+      "entry_date_present_count": 137,
+      "target_price_missing_count": 0,
+      "target_price_present_count": 138
+    },
+    "passed": true,
+    "required_fields_checked": [
+      "signal_date",
+      "ticker",
+      "decision",
+      "intended_entry_date",
+      "target_price",
+      "fixed_horizon_cash_spy_qqq_labels"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "baseline_survival_rate": 0.823171,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "passed": false,
+    "reason": "No alpha is accepted; this materializes measurement rows only. A future meta-label model remains blocked unless readiness passes.",
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Alpha blocker: candidate-entry meta-labeling is blocked by missing leak-free candidate decision rows; first-build a canonical-window candidate training ledger by saving full backtester entry candidate events and fixed-horizon cash/SPY/QQQ labels without changing strategy behavior.",
+    "2_history_check": "exp-20260709-023 blocked model fitting because only selected trade rows and sparse skipped diagnostics were trainable. This experiment first materializes the missing full candidate decision ledger.",
+    "3_single_causal_variable": "candidate_meta_label_training_ledger_materialization_v1",
+    "4_acceptance_standard": "Accepted measurement repair if the runner creates reproducible candidate event artifacts, enriches rows with fixed-horizon cash/SPY/QQQ labels where available, records readiness counts versus the exp-20260709-023 gate, and changes no strategy behavior.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_024_candidate_training_ledger_materialization.py"
+  },
+  "headline_metrics": {
+    "complete_10d_candidate_rows": 130,
+    "complete_20d_candidate_rows": 123,
+    "negative_10d_cash_labels": 54,
+    "positive_10d_cash_labels": 76,
+    "readiness_failed_criteria": [
+      "complete_candidate_rows_gte_300",
+      "negative_labels_gte_75",
+      "each_fold_has_at_least_50_test_rows"
+    ],
+    "readiness_gate_passed": false,
+    "rejected_or_unselected_complete_10d_rows": 71,
+    "selected_complete_10d_rows": 59,
+    "strategy_behavior_changed": false,
+    "training_ledger_rows": 138
+  },
+  "hypothesis": "Alpha blocker: candidate-entry meta-labeling is blocked by missing leak-free candidate decision rows; first-build a canonical-window candidate training ledger by saving full backtester entry candidate events and fixed-horizon cash/SPY/QQQ labels without changing strategy behavior.",
+  "implementation_mode": "canonical_candidate_training_ledger_materialization",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260709-023"
+  ],
+  "new_evidence_axis": "False-positive routine guard override: this is the first canonical candidate-training ledger contract for candidate_meta_label, not a routine delta append to an accepted observer or default-off forward ledger; it creates non-oracle candidate decision rows across the three fixed windows.",
+  "new_evidence_type": "new_training_rows",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not train or tune a candidate meta-label model on this ledger unless the readiness gate passes. Do not retune thresholds, model class, probability scalar, or response function to bypass the row/class/fold requirements.",
+    "new_evidence_required": "A model experiment needs at least 300 complete candidate rows, 75 positive and 75 negative fixed-horizon labels, selected and rejected/unselected coverage, three chronological folds with >=50 test rows and both classes, and no single ticker above 20% of complete rows.",
+    "next_evidence_needed": "If the gate still fails, the next legal step is pipeline wiring or additional settled candidate rows, not model fitting.",
+    "why_result_happened": "The existing backtester entry-candidate hook produced a canonical candidate-decision population and fixed-horizon non-oracle labels. The ledger repairs the measurement gap from exp-20260709-023, but the sample gate still blocks model fitting until the row/class/fold thresholds pass."
+  },
+  "prediction": null,
+  "production_impact": {
+    "accepted_measurement_repair": true,
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "artifact_only": true,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "realized_failure_mode": null,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260709_024_candidate_training_ledger_materialization.py",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "experiments/logs/exp-20260709-024.json",
+    "experiments/cards/exp-20260709-024.md",
+    "experiments/manifests/exp-20260709-024.json",
+    "experiments/tickets/exp-20260709-024.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "candidate_meta_label_training_ledger_materialization_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-09T22:18:08Z",
+  "trial_family": "candidate_meta_label_training_ledger_materialization",
+  "trial_variant_id": "candidate_training_ledger_v1"
+}

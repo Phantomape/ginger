@@ -1,0 +1,348 @@
+{
+  "acceptance_rule": "Observed-only lead only if old_thin+mid_weak can select exactly one unselected decision cohort using fixed train criteria, and that same cohort validates on late_strong with positive cash/SPY/QQQ 10d averages, cash win rate >=50%, cash average above entered late_strong candidates, >=3 holdout rows, and max single ticker share <=40%. No alpha can be accepted here.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "experiments/cards/exp-20260710-018.md",
+    "experiments/manifests/exp-20260710-018.json",
+    "experiments/tickets/exp-20260710-018.json",
+    "experiments/logs/exp-20260710-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-018.md",
+  "causal_components": [
+    "exp024_candidate_training_ledger",
+    "train_before_test_cohort_selection",
+    "holdout_10d_cash_spy_qqq_validation",
+    "no_model_training",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "candidate_meta_label_train_selected_decision_cohort_validation_v1",
+  "claimed_at": "2026-07-10T17:06:27+00:00",
+  "completed_at": "2026-07-10T17:09:34+00:00",
+  "created_at": "2026-07-10T17:06:17+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-018",
+  "experiment_uid": "expuid-1debf88b19674ba4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T17:06:17+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "candidate_meta_label_train_before_test_cohort"
+  },
+  "hypothesis": "candidate_meta_label train-before-test alpha: the leak-free canonical candidate ledger may contain an unselected entry-decision cohort that can be selected using only earlier chronological rows and then validated on later rows for positive 10d cash/SPY/QQQ replacement value versus entered candidates; if no cohort is train-selected and test-valid, candidate meta-label promotion remains blocked.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "candidate_meta_label_train_selected_decision_cohort_validation_v1"
+  ],
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-023",
+    "exp-20260709-024",
+    "exp-20260709-025"
+  ],
+  "new_evidence_type": "new_gate_shape_train_before_test",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "candidate_meta_label",
+      "field_tags": [
+        "alpha",
+        "an",
+        "be",
+        "before",
+        "blocked",
+        "can",
+        "candidates",
+        "canonical",
+        "cash",
+        "chronological",
+        "cohort",
+        "contain",
+        "decision",
+        "earlier",
+        "entered",
+        "entry",
+        "if",
+        "is",
+        "label",
+        "later",
+        "leak",
+        "ledger",
+        "may",
+        "meta",
+        "no",
+        "on",
+        "only",
+        "positive",
+        "promotion",
+        "qqq",
+        "remains",
+        "replacement",
+        "rows",
+        "selected",
+        "spy",
+        "test",
+        "that",
+        "then",
+        "train",
+        "unselected",
+        "using",
+        "valid",
+        "validated",
+        "validation",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "candidate_meta_label",
+        "family_key": "candidate_meta_label_entry_decision_cohort_attribution",
+        "reopen_condition": "A valid retry needs at least 300 complete candidate rows with 75 positive and 75 negative labels, new settled candidate rows from pipeline wiring, or a genuinely new non-oracle decision-time field.",
+        "score": 0.4926,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "candidate_meta_label",
+        "family_key": "candidate_meta_label_training_ledger_materialization",
+        "reopen_condition": "A model experiment needs at least 300 complete candidate rows, 75 positive and 75 negative fixed-horizon labels, selected and rejected/unselected coverage, three chronological folds with >=50 test rows and both classes, and no single ticker above 20% of complete rows.",
+        "score": 0.475,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "candidate_meta_label",
+        "family_key": "candidate_meta_label_training_table_readiness",
+        "reopen_condition": "Build an append-only candidate ledger with at least 300 settled rows, at least 75 positive and 75 negative non-oracle labels, selected plus skipped/slot-sliced/blocked coverage, three chronological folds with >=50 test rows and both classes, cash/SPY/QQQ outcomes, and logged comparator IDs for any displacement label.",
+        "score": 0.466,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.2025,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.1892,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape explicitly allowed by the candidate_meta_label freeze: chronological train-before-test cohort selection and holdout validation on the existing leak-free ledger, not another decision-name reslice, threshold sweep, model fit, or response curve.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "candidate_meta_label",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape explicitly allowed by the candidate_meta_label freeze: chronological train-before-test cohort selection and holdout validation on the existing leak-free ledger, not another decision-name reslice, threshold sweep, model fit, or response curve.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape explicitly allowed by the candidate_meta_label freeze: chronological train-before-test cohort selection and holdout validation on the existing leak-free ledger, not another decision-name reslice, threshold sweep, model fit, or response curve.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "model_readiness",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "candidate_meta_label",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.21,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "train_segment_selects_no_cohort",
+      "holdout_window_instability",
+      "entered_candidates_remain_best",
+      "sample_too_thin"
+    ],
+    "confidence_reason": "exp025 rejected fixed batch cohorts, but the playbook allows a train-before-test gate shape; sample remains small at 130 complete rows, so success probability is low and this cannot promote a model.",
+    "recorded_at": "2026-07-10T17:05:35+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+    "artifact": "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "log": "experiments/logs/exp-20260710-018.json",
+    "runner": "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "gate4": {
+      "passed": false,
+      "evaluation_type": "observed_only_train_before_test_no_strategy_change",
+      "accepted_alpha": false,
+      "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+      "reason": "The train-before-test cohort gate did not validate; no candidate meta-label or entry-planning change is justified."
+    },
+    "headline_metrics": {
+      "complete_10d_rows": 130,
+      "train_rows": 93,
+      "holdout_rows": 37,
+      "selected_train_cohort_decision": "slot_sliced",
+      "holdout_passed": false,
+      "failed_reasons": [
+        "avg_cash_positive",
+        "avg_spy_positive",
+        "avg_qqq_positive",
+        "cash_win_rate_gte_50pct",
+        "cash_avg_beats_entered"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-018.json",
+  "single_causal_variable": "candidate_meta_label_train_selected_decision_cohort_validation_v1",
+  "status": "observed_only_rejected_train_selected_cohort_fails_holdout",
+  "ticket_file": "experiments/tickets/exp-20260710-018.json",
+  "trial_family": "candidate_meta_label_train_before_test_cohort_validation",
+  "trial_variant_id": "train_select_holdout_10d_v1",
+  "alpha_hypothesis": "candidate_meta_label train-before-test alpha: the leak-free canonical candidate ledger may contain an unselected entry-decision cohort that can be selected using only earlier chronological rows and then validated on later rows for positive 10d cash/SPY/QQQ replacement value versus entered candidates; if no cohort is train-selected and test-valid, candidate meta-label promotion remains blocked.",
+  "implementation_mode": "candidate_meta_label_train_before_test_observed_only",
+  "new_evidence_axis": "New gate shape explicitly allowed by the candidate_meta_label freeze: chronological train-before-test cohort selection and holdout validation on the existing leak-free ledger, not another decision-name reslice, threshold sweep, model fit, or response curve.",
+  "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+  "artifact": "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+  "log": "experiments/logs/exp-20260710-018.json",
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "source_artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  },
+  "gate2": {
+    "passed": true,
+    "complete_10d_rows": 130,
+    "required_fields_checked": [
+      "ticker",
+      "window",
+      "decision",
+      "intended_entry_date",
+      "target_price",
+      "horizons.10d.replacement_value_vs_cash_usd",
+      "horizons.10d.replacement_value_vs_spy_usd",
+      "horizons.10d.replacement_value_vs_qqq_usd"
+    ],
+    "target_price_contract_changed": false
+  },
+  "gate3": {
+    "passed": true,
+    "adds_filter": false,
+    "survival_rate_not_applicable": true,
+    "baseline_survival_rate": 0.823171
+  },
+  "gate4": {
+    "passed": false,
+    "evaluation_type": "observed_only_train_before_test_no_strategy_change",
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_train_selected_cohort_fails_holdout",
+    "reason": "The train-before-test cohort gate did not validate; no candidate meta-label or entry-planning change is justified."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "shared_policy_changed": false,
+    "llm_change_scope": "none",
+    "observed_only_attribution": true,
+    "model_trained": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The only legal candidate_meta_label reopen path tested here was a train-before-test gate. Any apparent cohort edge had to be selected from old_thin+mid_weak before late_strong was evaluated.",
+    "forbidden_near_neighbor_retry": "Do not rerun this same ledger by changing train/holdout windows, min row thresholds, comparator set, decision names, model class, probability scalar, horizon, or response curve. Do not train a candidate_meta_label model until the exp024 readiness gate passes.",
+    "new_evidence_required": "A valid retry needs at least 300 complete candidate rows with 75 positive and 75 negative labels, materially new settled candidate rows from pipeline wiring, or a genuinely new non-oracle decision-time field."
+  },
+  "rejection_reason": "No train-selected unselected cohort validated on late_strong holdout under the fixed cash/SPY/QQQ, entered-comparison, sample, and concentration gates.",
+  "related_files": [
+    "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "experiments/logs/exp-20260710-018.json",
+    "experiments/cards/exp-20260710-018.md",
+    "experiments/manifests/exp-20260710-018.json",
+    "experiments/tickets/exp-20260710-018.json",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_018_candidate_meta_label_train_before_test_cohort.py",
+    "data/experiments/exp-20260710-018/exp_20260710_018_candidate_meta_label_train_before_test_cohort.json",
+    "experiments/logs/exp-20260710-018.json",
+    "experiments/cards/exp-20260710-018.md",
+    "experiments/manifests/exp-20260710-018.json",
+    "experiments/tickets/exp-20260710-018.json",
+    "docs/experiment_registry.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T17:09:34+00:00"
+}

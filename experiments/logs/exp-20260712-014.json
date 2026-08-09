@@ -1,0 +1,221 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": -0.138876,
+  "aggregate_strategy_total_pnl_delta": -940.72,
+  "artifact": "data/experiments/exp-20260712-014/exp_20260712_014_ovx_oil_volatility_relief_energy_leadership.json",
+  "calibration": {
+    "actual_ev_delta": -0.138876,
+    "actual_pnl_delta": -940.72,
+    "actual_success": false,
+    "brier_score": 0.0225,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows"
+    ],
+    "predicted_failure_modes": [
+      "energy_beta_relabel",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed"
+    ],
+    "predicted_success_probability": 0.15
+  },
+  "causal_components": [
+    "CBOE OVX daily closes",
+    "fixed first cross below trailing 20-session SMA",
+    "Energy-only frozen liquid leadership selector",
+    "next-open 10-session paper replay",
+    "schema-v1 daily paper MTM and Sharpe evidence"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260712_014_ovx_oil_volatility_relief_energy_leadership.py",
+    "data/experiments/exp-20260712-014/exp_20260712_014_ovx_oil_volatility_relief_energy_leadership.json",
+    "experiments/tickets/exp-20260712-014.json",
+    "experiments/cards/exp-20260712-014.md",
+    "experiments/manifests/exp-20260712-014.json",
+    "experiments/logs/exp-20260712-014.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "ovx20_cross_below_energy_leadership_candidate_pool_v1",
+  "data_coverage": {
+    "all_canonical_windows_covered": true,
+    "move_relief_events_by_window": {
+      "late_strong": 7,
+      "mid_weak": 11,
+      "old_thin": 14
+    },
+    "relief_events_by_window": {
+      "late_strong": 7,
+      "mid_weak": 11,
+      "old_thin": 14
+    },
+    "row_count": 432,
+    "rows_by_window": {
+      "late_strong": 123,
+      "mid_weak": 127,
+      "old_thin": 138
+    },
+    "source": "Yahoo Finance mirror of CBOE OVX"
+  },
+  "decision": "observed_only_rejected_ovx_energy_leadership",
+  "experiment_id": "exp-20260712-014",
+  "fingerprint_caveat": "Reservation wording overmatched forward_replacement_value; this experiment added the dedicated cboe_ovx classifier and test, rebuilt frozen_families, and verified the family now uses cboe_ovx plus candidate_pool_top1_10d.",
+  "gate1": {
+    "passed": true,
+    "protocol": "same-run current-code schema-v1 baseline and challenger",
+    "windows": {
+      "late_strong": {
+        "after_paper_mtm_schema_version": 1,
+        "after_sharpe_inference_schema_version": 1,
+        "before_paper_mtm_schema_version": 1,
+        "before_sharpe_inference_schema_version": 1,
+        "passed": true
+      },
+      "mid_weak": {
+        "after_paper_mtm_schema_version": 1,
+        "after_sharpe_inference_schema_version": 1,
+        "before_paper_mtm_schema_version": 1,
+        "before_sharpe_inference_schema_version": 1,
+        "passed": true
+      },
+      "old_thin": {
+        "after_paper_mtm_schema_version": 1,
+        "after_sharpe_inference_schema_version": 1,
+        "before_paper_mtm_schema_version": 1,
+        "before_sharpe_inference_schema_version": 1,
+        "passed": true
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": -0.138876,
+    "aggregate_pnl_delta": -940.72,
+    "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows"
+    ],
+    "max_drawdown_worse": 0.002862,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.465118,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.265089,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 26,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "Private replay scout: a first daily CBOE Crude Oil ETF Volatility Index (OVX) close below its trailing 20-session mean identifies oil-risk relief; selecting the strongest liquid Energy leaders on that signal day should add positive after-cost next-open 10-session paper replacement value across all three canonical windows.",
+  "implementation_mode": "private_replay_scout_new_data_shape",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260712-014.json",
+  "mechanism_family": "cboe_oil_volatility_relief_energy_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260711-002",
+    "exp-20260711-004",
+    "exp-20260711-013"
+  ],
+  "new_evidence_axis": "New data source: CBOE OVX daily oil-volatility closes with complete three-window coverage; no prior family used OVX or an oil-volatility-to-Energy relation, and the response is not a MOVE/VIX/credit threshold retune.",
+  "new_evidence_type": "new_data_source_cboe_ovx",
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing the OVX moving-average span, level/percent threshold, Energy ticker list, stock filters, top-N, hold, cooldown, notional, or response scalar on the frozen windows.",
+    "new_evidence_required": "Reopen only with materially settled forward rows from a fixed helper, a distinct PIT oil-risk source such as options term structure, or a genuinely different gate shape.",
+    "why_result_happened": "The fixed OVX cross did not isolate durable after-cost Energy continuation across all canonical windows; the signal was sparse, window-fragile, drawdown-worse, concentrated, or an Energy-beta relabel."
+  },
+  "prediction": {
+    "confidence_reason": "OVX is a new options-implied oil-risk source with full canonical coverage and a direct Energy-sector transmission mechanism; accepted MOVE relief supports volatility-risk normalization, while recent macro-proxy failures make beta relabeling and window fragility the main disconfirmers.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 3000.0,
+    "main_failure_modes": [
+      "energy_beta_relabel",
+      "signal_too_sparse",
+      "window_regression",
+      "drawdown_drift",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-07-12T17:06:22+00:00",
+    "success_probability": 0.15
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "scope": "experiment_local_private_replay_scout",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive;aggregate_pnl_not_positive;window_ev_regression;window_pnl_regression;fewer_than_two_ev_improved_windows",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260712_014_ovx_oil_volatility_relief_energy_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_014_ovx_oil_volatility_relief_energy_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "ovx20_cross_below_energy_leadership_candidate_pool_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-12T17:12:52Z",
+  "trial_family": "ovx_oil_volatility_relief_energy_leadership_candidate_pool",
+  "trial_variant_id": "ovx20_cross_below_energy_leadership_v1"
+}

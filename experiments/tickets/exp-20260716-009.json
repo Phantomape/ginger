@@ -1,0 +1,362 @@
+{
+  "acceptance_rule": "Against the cash-feasible Gate-1 anchor (aggregate EV 6.2057, PnL 130992.36): aggregate expected_value_score delta must exceed +10% (>0.62057), aggregate PnL delta positive, at least two windows improve both EV and PnL, no window EV or PnL regression, zero negative-cash events, zero core displacement (core-cash-priority forced overlay exits allowed per frozen contract), NAV reconciliation error count zero, worst drawdown drift <=0.005, every window survival >=5%, positive-PnL single-ticker share <=50% and HHI <=0.35, Gate-1 identity (trade_rows_sha256) must match the anchor in all windows.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260716_009_low_deployment_etf_cash_feasible_reopen.py",
+    "data/experiments/exp-20260716-009",
+    "experiments/artifacts/exp-20260716-009.json",
+    "experiments/cards/exp-20260716-009.md",
+    "experiments/logs/exp-20260716-009.json",
+    "experiments/manifests/exp-20260716-009.json",
+    "experiments/tickets/exp-20260716-009.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260716-009.md",
+  "causal_components": [
+    "unchanged ETF selector",
+    "10k overlay cap",
+    "one open overlay position",
+    "next-open entry",
+    "10-day close",
+    "core-cash-priority forced exit",
+    "residual settled cash only",
+    "no leverage",
+    "no core displacement"
+  ],
+  "change_type": "capital_allocation",
+  "changed_variable": "cash_feasible_residual_cash_etf_overlay_replay_v1",
+  "claimed_at": "2026-07-16T16:19:54+00:00",
+  "completed_at": "2026-07-16T16:25:40+00:00",
+  "created_at": "2026-07-16T16:18:04+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260716-009",
+  "experiment_uid": "expuid-87d9a083db634e88",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T16:18:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "low_deployment_etf_cash_feasible_reopen"
+  },
+  "hypothesis": "Under the enforced execution-date cash ledger and the cash-feasible Gate-1 anchor (exp-20260715-010, aggregate EV 6.2057), replaying the unchanged accepted low-deployment ETF cash-substitute sleeve (exp-20260715-003 selector, 10000 USD cap, one open overlay position, next-open entry, 10-trading-day close, shared costs, core-cash-priority forced exit) on genuinely remaining settled cash should add aggregate expected value, because exp-20260715-005's only structural failure mode - core notional exhausting reconstructed cash - is eliminated by the accepted deterministic scale-or-skip cash admission gate.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cash-feasible Gate-1 anchor",
+    "CASH_LEDGER_ENFORCED default True",
+    "ETF selector",
+    "overlay cap 10000",
+    "hold rule",
+    "cost model",
+    "three frozen windows",
+    ">10% aggregate EV acceptance hurdle"
+  ],
+  "mechanism_family": "low_deployment_dynamic_etf_overlay_allocation",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/low_deployment_etf_overlay.py",
+    "quant/constants.py",
+    "live order defaults",
+    "core entry/exit/ranking/sizing policy"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-003",
+    "exp-20260715-008",
+    "exp-20260715-010"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "score": 0.6299,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "score": 0.6246,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "score": 0.6169,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "observer_no_entry_status_semantics",
+        "score": 0.6092,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "core_entry_admission",
+      "field_tags": [
+        "accepted",
+        "add",
+        "admission",
+        "aggregate",
+        "allocation",
+        "anchor",
+        "because",
+        "by",
+        "cap",
+        "cash",
+        "close",
+        "core",
+        "costs",
+        "date",
+        "deployment",
+        "deterministic",
+        "dynamic",
+        "eliminated",
+        "enforced",
+        "entry",
+        "etf",
+        "ev",
+        "execution",
+        "exhausting",
+        "exit",
+        "exp",
+        "expected",
+        "failure",
+        "feasible",
+        "forced",
+        "gate",
+        "genuinely",
+        "is",
+        "ledger",
+        "low",
+        "mode",
+        "notional",
+        "on",
+        "one",
+        "only",
+        "or",
+        "overlay",
+        "position",
+        "priority",
+        "reconstructed",
+        "remaining",
+        "reopen",
+        "replaying",
+        "residual",
+        "s",
+        "scale",
+        "selector",
+        "settled",
+        "should",
+        "skip",
+        "sleeve",
+        "structural",
+        "substitute",
+        "trading",
+        "unchanged",
+        "under",
+        "usd",
+        "value"
+      ],
+      "gate_shape": "entry_admission"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+        "score": 0.6299,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+        "score": 0.6246,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "reopen_condition": "A shared production/backtest admission helper that passes Gate 1-4, materially more settled forward rows tagged with this state, or a genuinely independent entry-time state source.",
+        "score": 0.6169,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.6092,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "exp-20260715-005's declared new_evidence_required is now satisfied: exp-20260715-008/010 shipped deterministic execution-date cash reservations (scale-or-skip core admission) as the backtester default and published the cash-feasible Gate-1 anchor. The ETF sleeve replays UNCHANGED on genuinely remaining settled cash under this new admission gate shape; no ETF cap, hold, universe, or threshold is retuned. Fingerprint caveat: the novelty matches (core_high_vol_high_beta_admission_overlay, core_entry_admission_fingerprint_coverage) are keyword collisions on 'admission'; the true surface is low_deployment_dynamic_etf_overlay_allocation whose last ticket exp-20260715-005 predeclared exactly this reopen. Pre-reserve feasibility: median residual settled cash 26k-65k per window, >=10k available on 50-76% of days.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "core_entry_admission",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "exp-20260715-005's declared new_evidence_required is now satisfied: exp-20260715-008/010 shipped deterministic execution-date cash reservations (scale-or-skip core admission) as the backtester default and published the cash-feasible Gate-1 anchor. The ETF sleeve replays UNCHANGED on genuinely remaining settled cash under this new admission gate shape; no ETF cap, hold, universe, or threshold is retuned. Fingerprint caveat: the novelty matches (core_high_vol_high_beta_admission_overlay, core_entry_admission_fingerprint_coverage) are keyword collisions on 'admission'; the true surface is low_deployment_dynamic_etf_overlay_allocation whose last ticket exp-20260715-005 predeclared exactly this reopen. Pre-reserve feasibility: median residual settled cash 26k-65k per window, >=10k available on 50-76% of days.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "exp-20260715-005's declared new_evidence_required is now satisfied: exp-20260715-008/010 shipped deterministic execution-date cash reservations (scale-or-skip core admission) as the backtester default and published the cash-feasible Gate-1 anchor. The ETF sleeve replays UNCHANGED on genuinely remaining settled cash under this new admission gate shape; no ETF cap, hold, universe, or threshold is retuned. Fingerprint caveat: the novelty matches (core_high_vol_high_beta_admission_overlay, core_entry_admission_fingerprint_coverage) are keyword collisions on 'admission'; the true surface is low_deployment_dynamic_etf_overlay_allocation whose last ticket exp-20260715-005 predeclared exactly this reopen. Pre-reserve feasibility: median residual settled cash 26k-65k per window, >=10k available on 50-76% of days.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "entry_admission",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "core_entry_admission",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-alpha",
+  "prediction": {
+    "confidence_reason": "Residual settled cash is real and sizable under the enforced ledger (median 26k-65k), and the sleeve was positive in all three windows in exp-20260715-005 (+0.172 EV, +2828 PnL) even on fictional cash; but the fixed 10k cap and the 10% EV hurdle on the new 6.2057 anchor demand roughly 3.6x the previously observed delta, so rejection remains the likely outcome.",
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "overlay_ev_below_10pct_bar",
+      "residual_cash_windows_too_short_for_10d_hold",
+      "forced_core_priority_exit_churn",
+      "etf_momentum_flat_in_frozen_windows",
+      "single_etf_concentration"
+    ],
+    "recorded_at": "2026-07-16T16:17:19+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-009/before.json",
+    "after_result_file": "data/experiments/exp-20260716-009/after.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.65,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 6000.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "overlay_ev_below_10pct_bar",
+        "residual_cash_windows_too_short_for_10d_hold",
+        "forced_core_priority_exit_churn",
+        "etf_momentum_flat_in_frozen_windows",
+        "single_etf_concentration"
+      ],
+      "realized_failure_mode": "forced_core_priority_exit_churn",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The lower cash-feasible anchor did not make the sleeve easier to accept: executable funding erased the old additive edge and exposed that selling a losing ETF cannot always restore enough cash for the unchanged later core order."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260716-009.json",
+  "single_causal_variable": "cash_feasible_residual_cash_etf_overlay_replay_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-009.json",
+  "trial_family": "low_deployment_etf_cash_substitute",
+  "trial_variant_id": "v3_cash_feasible_anchor_reopen"
+}

@@ -1,0 +1,305 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate": {
+    "after_expected_value_score_sum": 6.2746,
+    "after_total_pnl_sum": 135831.79,
+    "before_expected_value_score_sum": 6.2057,
+    "before_total_pnl_sum": 130992.36,
+    "expected_value_score_delta_sum": 0.0689,
+    "max_drawdown_worse_max": 0.0515,
+    "total_pnl_delta_sum": 4839.43,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1
+  },
+  "anti_js": {
+    "evidence": "Python shared helper, evaluator, and tests only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260716-005/result.json",
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0256,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "predicted_success_probability": 0.16,
+    "realized_ev_delta": 0.0689,
+    "realized_ev_error": -0.1811,
+    "realized_failure_mode": "window_regression",
+    "realized_pnl_delta": 4839.43,
+    "realized_pnl_error": -160.57,
+    "surprise_note": "Aggregate PnL was positive, but old-window losses and drawdown, mid-window QQQ replacement, concentration, and non-PIT multi-share peer selection invalidated promotion."
+  },
+  "causal_components": [
+    "shared historical and daily helper",
+    "hash-bound official PCAOB Form AP archive",
+    "original non-fund issuer filings",
+    "primary plus other engagement-partner IDs",
+    "250-500 day prior-fiscal-period partner-change gate",
+    "unchanged same-industry peer candidate pool",
+    "trailing-60-session dollar-volume rank",
+    "top1 per entry day",
+    "strict next-open 20-session paper replay",
+    "cash and QQQ replacement value",
+    "core-plus-sleeve Gate 4"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "pcaob_partner_change_unaffected_industry_peer_candidate_source_v1",
+  "concentration": {
+    "hhi_positive_pnl_concentration": 0.110463,
+    "single_ticker_positive_pnl_share": 0.217693,
+    "top_5_positive_pnl_share": 0.657283,
+    "top_5_positive_pnl_share_cap": 0.6
+  },
+  "decision": "rejected_pcaob_partner_change_peer_substitution",
+  "deflated_sharpe": {
+    "declared_selection_pool_complete": false,
+    "dsr_probability": null,
+    "gate4_independent": true,
+    "honest_attempt_count": 1,
+    "report": "data/experiments/exp-20260716-005/deflated_sharpe_report.json",
+    "status": "not_computable",
+    "use": "Live-eligibility only; it did not cause the historical Gate-4 rejection."
+  },
+  "experiment_id": "exp-20260716-005",
+  "fingerprint": {
+    "audit_passed": true,
+    "data_source": "pcaob_form_ap",
+    "gate_shape": "peer_substitution_candidate_pool_top1_20d"
+  },
+  "fingerprint_caveat": "Reservation initially over-matched the new PCAOB source to ohlcv_relation/peer_propagation before this experiment added dedicated source and gate keywords. The final evaluator re-inferred and validated pcaob_form_ap/peer_substitution_candidate_pool_top1_20d.",
+  "gate1": {
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "baseline_experiment_id": "exp-20260715-010",
+    "passed": true
+  },
+  "gate2": {
+    "current_industry_map_survivorship_disclosed": true,
+    "hard_failures": [
+      "selected_peer_multi_share_class_mapping_not_pit"
+    ],
+    "missing_sentinel_decision_ids": [],
+    "passed": false,
+    "selected_peer_multi_share_ciks": [
+      "0001067983",
+      "0001652044"
+    ],
+    "selected_peer_multi_share_trade_count": 2,
+    "selected_target_multi_share_ciks": [
+      "0000046619"
+    ],
+    "selected_target_multi_share_trade_count": 1,
+    "signal_contract_fields": [
+      "entry_date",
+      "target_price",
+      "entry_price",
+      "exit_date",
+      "exit_price"
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 559,
+    "signals_survived": 143,
+    "survival_rate": 0.255814,
+    "unit": "PCAOB partner-change target event"
+  },
+  "gate4": {
+    "accepted_comparator": {
+      "expected_value_score_delta_sum": 0.5286,
+      "experiment_id": "exp-20260611-007",
+      "total_pnl_delta_sum": 10432.91
+    },
+    "hard_failures": [
+      "insufficient_ev_improved_windows",
+      "ev_regressed_windows",
+      "drawdown_worse_guardrail",
+      "top_5_contribution_pct_cap",
+      "selected_peer_multi_share_class_mapping_not_pit",
+      "standalone_cash_or_qqq_replacement_failed:old_thin",
+      "standalone_cash_or_qqq_replacement_failed:mid_weak",
+      "accepted_candidate_pool_ev_comparator_not_beaten",
+      "accepted_candidate_pool_pnl_comparator_not_beaten"
+    ],
+    "passed": false
+  },
+  "gate5": {
+    "blockers": [
+      "forward_rows_immature:0/30",
+      "forward_pnl_not_positive",
+      "replacement_value_not_passed",
+      "kill_switch_parity_not_passed",
+      "dsr_report_incomplete"
+    ],
+    "closed_forward_trades": 0,
+    "dsr_status": "not_computable",
+    "live_ready": false,
+    "passed": false
+  },
+  "generated_at": "2026-07-16T09:45:09+00:00",
+  "hypothesis": "When official PCAOB Form AP first reports an engagement-partner change versus the prior distinct 250-500 day fiscal period, audit uncertainty should shift demand toward an unaffected same-industry liquid peer; buy the unchanged peer with the highest trailing 60-session dollar volume at the first open strictly after the filing-plus-one-day availability clock, keep one row per day, and exit after 20 sessions.",
+  "implementation_mode": "shared_paper_first",
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260716-005.json",
+  "mechanism_family": "regulatory_audit_uncertainty_peer_substitution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260712-016",
+    "exp-20260531-013"
+  ],
+  "new_evidence_axis": "A new official source and a new response structure: hash-bound PCAOB Form AP engagement-partner identities become a PIT issuer-change event and an unaffected same-industry peer-substitution candidate pool.",
+  "new_evidence_type": "new_official_data_source_and_new_gate_shape",
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "availability_lag_calendar_days": 1,
+    "daily_top_n": 1,
+    "entry": "first regular-session open strictly after availability date",
+    "filing_scope": "latest original non-fund issuer Form AP",
+    "hold_sessions": 20,
+    "industry": "current yfinance GICS proxy v1",
+    "minimum_tradable_industry_peers": 2,
+    "paper_notional_usd": 4000.0,
+    "partner_identity": "primary ID union other IDs",
+    "peer_exclusion": "partner changed in same ISO filing week",
+    "peer_rank": "trailing 60-session mean close times volume descending",
+    "prior_fiscal_period_gap_days": [
+      250,
+      500
+    ],
+    "round_trip_cost_pct": 0.0035,
+    "rule_version": "pcaob_form_ap_partner_change_peer_top1_20s_v1",
+    "share_class_rule": "maximum worst-window median dollar volume then ticker",
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the filing scope, partner definition, prior-period gap, share-class mapping, industry taxonomy, peer pool, trailing-liquidity rank, daily top1 rule, entry clock, hold, notional, costs, or issuer subsets on these frozen PCAOB rows.",
+    "new_evidence_required": "Reopen only with a genuinely new data source or gate shape, or at least 30 prospectively settled unchanged-policy PCAOB decisions with positive replacement value and point-in-time industry and share-class mappings; a same-day recount or threshold sweep is insufficient.",
+    "realized_failure_mode": "window_regression",
+    "why_result_happened": "The positive aggregate PnL was not robust alpha: old_thin lost money and suffered a 5.15 percentage-point drawdown increase, mid_weak missed QQQ replacement by $21.60, two of three windows lost EV, positive PnL was concentrated, and two selected peers depended on a future-informed multi-share-class choice."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Audit-partner turnover should redirect demand toward an unchanged liquid industry peer.",
+    "2_history_check": "No prior experiment used PCAOB audit personnel; novelty was the official Form AP source plus the peer-substitution candidate-pool gate.",
+    "3_single_policy_bundle": "One frozen source-to-peer policy with shared historical/daily helper, execution envelope, replay, and parity tests.",
+    "4_success_failure_standard": "Every window needed density, positive standalone cash and QQQ replacement value, and robust core-plus-sleeve improvement above the accepted comparator without material drawdown or concentration deterioration.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_005_pcaob_partner_change_peer_substitution.py --evaluate"
+  },
+  "production_impact": {
+    "backtest_replay_implemented": true,
+    "core_exits_changed": false,
+    "core_ranking_changed": false,
+    "core_sizing_changed": false,
+    "daily_snapshot_exposed": true,
+    "daily_wiring_retained": false,
+    "forward_collection_automatic": false,
+    "historical_and_daily_selection_share_helper": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": true,
+    "paper_orders_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/pcaob_form_ap_partner_change_peer_substitution_paper_sleeve.py",
+    "quant/test_pcaob_form_ap_partner_change_peer_substitution_paper_sleeve.py",
+    "quant/experiments/exp_20260716_005_pcaob_partner_change_peer_substitution.py",
+    "data/non_ohlcv/pcaob_form_ap/source/FirmFilings_20260716.zip",
+    "data/non_ohlcv/pcaob_form_ap/source_manifest.json",
+    "data/experiments/exp-20260716-005/result.json",
+    "data/paper_sleeves/pcaob_form_ap_partner_change_peer_substitution/latest_snapshot.json"
+  ],
+  "reproduction": {
+    "commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_005_pcaob_partner_change_peer_substitution.py --evaluate",
+      ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pcaob_form_ap_partner_change_peer_substitution_paper_sleeve.py quant\\test_experiment_fingerprint.py -q"
+    ],
+    "deterministic_rerun": "exit 0; all decision metrics matched the first run",
+    "tests": "169 passed"
+  },
+  "residual_unknowns": [
+    "The current yfinance-derived industry map is survivorship-prone and is not point-in-time membership.",
+    "The exact-CIK share-class tie-break uses three-window liquidity; selected multi-share peers are therefore non-PIT.",
+    "The declared selection pool is incomplete, so DSR cannot quantify selection bias and fails closed for live use.",
+    "No prospectively settled unchanged-policy forward rows, replacement-value proof, or kill-switch parity exist.",
+    "Historical association cannot establish audit-demand substitution rather than an industry-wide risk response."
+  ],
+  "schema": "experiment_log_entry_v3",
+  "single_causal_variable": "pcaob_partner_change_unaffected_industry_peer_candidate_source_v1",
+  "source": {
+    "archive": "data/non_ohlcv/pcaob_form_ap/source/FirmFilings_20260716.zip",
+    "archive_bytes": 13109236,
+    "archive_sha256": "0f51a6b213da6dff8087d41a251545a5280143429492233d0ee798f00e4d1396",
+    "filtered_filing_count": 81004,
+    "input_filing_count": 154821,
+    "partner_change_cik_count": 8889,
+    "partner_change_event_count": 16319,
+    "resolved_cik_count": 1230,
+    "resolved_multi_share_class_cik_count": 5,
+    "source_contract_passed": true,
+    "source_member": "FirmFilings.csv",
+    "source_member_sha256": "5dbddbbdedf08d6bc2cfed12306a8ac66f2dcd5cd3ba8e9439fc26ea0a0cdc3e"
+  },
+  "status": "rejected",
+  "trial_family": "pcaob_form_ap_partner_change_peer_substitution",
+  "trial_variant_id": "original_issuer_primary_partner_change_same_industry_adv60_top1_h20_v1",
+  "windows": {
+    "late_strong": {
+      "after_ev": 3.9509,
+      "after_pnl": 72362.31,
+      "before_ev": 4.1067,
+      "before_pnl": 70075.18,
+      "cash_replacement_value": 2287.14,
+      "delta_ev": -0.1558,
+      "delta_max_drawdown_pct": 0.0013,
+      "delta_pnl": 2287.13,
+      "peer_ticker_count": 28,
+      "peer_top1_share": 0.136364,
+      "qqq_replacement_value": 3057.53,
+      "settled_decisions": 44,
+      "standalone_net_pnl": 2287.14,
+      "target_ticker_count": 44,
+      "target_top1_share": 0.022727
+    },
+    "mid_weak": {
+      "after_ev": 2.2761,
+      "after_pnl": 56757.19,
+      "before_ev": 1.9908,
+      "before_pnl": 51976.41,
+      "cash_replacement_value": 4780.77,
+      "delta_ev": 0.2853,
+      "delta_max_drawdown_pct": -0.0076,
+      "delta_pnl": 4780.78,
+      "peer_ticker_count": 23,
+      "peer_top1_share": 0.111111,
+      "qqq_replacement_value": -21.6,
+      "settled_decisions": 27,
+      "standalone_net_pnl": 4780.77,
+      "target_ticker_count": 27,
+      "target_top1_share": 0.037037
+    },
+    "old_thin": {
+      "after_ev": 0.0476,
+      "after_pnl": 6712.29,
+      "before_ev": 0.1082,
+      "before_pnl": 8940.77,
+      "cash_replacement_value": -2228.47,
+      "delta_ev": -0.0606,
+      "delta_max_drawdown_pct": 0.0515,
+      "delta_pnl": -2228.48,
+      "peer_ticker_count": 31,
+      "peer_top1_share": 0.090909,
+      "qqq_replacement_value": 5237.76,
+      "settled_decisions": 44,
+      "standalone_net_pnl": -2228.47,
+      "target_ticker_count": 44,
+      "target_top1_share": 0.022727
+    }
+  }
+}

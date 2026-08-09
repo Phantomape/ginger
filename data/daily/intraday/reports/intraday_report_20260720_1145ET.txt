@@ -1,0 +1,82 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-20 11:45 ET (08:45 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 745.84 vs 200MA 693.44 (+7.6%)  [moomoo_opend_rth]
+  QQQ 701.70 vs 200MA 639.53 (+9.7%)  [moomoo_opend_rth]
+
+PORTFOLIO HEAT (intraday prices): 2.0% / cap 8%   (quote coverage 8/8 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+59.2% add-review-eligible=DINO,META
+  DDOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=264.72 invalid=264.72
+         blocks: market_proxy_above_rth_vwap_not_confirmed
+  DINO   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=89.69 invalid=89.69
+  HOOD   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=108.46 invalid=100.37
+         blocks: below_ema8,below_sma20
+  MUU    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=42.04 invalid=29.43
+         blocks: atr_risk_too_high_for_add_review,below_ema8,below_rth_vwap,below_sma20,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+  SNXX   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=29.19 invalid=14.48
+         blocks: atr_risk_too_high_for_add_review,below_ema8,below_sma20,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed
+  SPY    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=748.92 invalid=745.59
+         blocks: near_existing_stop,below_ema8,weak_rth_range_location
+  UNH    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=424.20 invalid=422.07
+         blocks: below_ema8,below_rth_vwap,sector_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+  META   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=647.84 invalid=643.48
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  none
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  SPY    $745.84 (+0.3% today, moomoo_opend_rth 2026-07-20 11:45:16)
+    hard stop 663.29 (+11.1% away) [stop_source=default]
+    ATR stop 740.94 (+0.7% away)
+    trailing 695.13 (+6.8% away)
+    target 904.49 (+21.3% to go)
+    flags: NEAR_ATR_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  DDOG   $265.13    day +2.5%   stop +14.5%  target +16.6%  [moomoo_opend_rth]
+  DINO   $90.56     day +2.2%   stop +15.5%  target +15.2%  [moomoo_opend_rth]
+  HOOD   $100.87    day +0.9%   stop +8.2%   target +25.1%  [moomoo_opend_rth]
+  META   $648.53    day +0.4%   stop +9.4%   target +23.5%  [moomoo_opend_rth]
+  MUU    $29.41     day +8.0%   stop +9.2%   target +23.8%  [moomoo_opend_rth]
+  SNXX   $14.54     day +10.2%  stop +4.5%   target +30.1%  [moomoo_opend_rth]
+  UNH    $420.79    day -1.2%   stop +10.6%  target +21.9%  [moomoo_opend_rth]
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-20 11:45 ET): 11 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] META: Meta Platforms Stock Forecast: Trending StrongBuy Among Analysts - TipRanks
+  [T3] AMD: Advanced Micro Devices (NASDAQ:AMD) Shares Gap Up Following Analyst Upgrade - MarketBeat
+  [T1] TSLA: SpaceX Stock Outlook Ahead of Tesla Earnings as JPMorgan Calls TSLA-SPCX Merger “Strategic
+  [T3] NFLX: Netflix (NASDAQ:NFLX) stock drops after earnings; investors await ad business growth test 
+  [T3] MCD: Jennison Associates LLC Raises Stock Position in McDonald's Corporation $MCD - MarketBeat
+  [T3] QQQ: Taiyo Life Insurance Co. Cuts Holdings in Invesco QQQ $QQQ - MarketBeat
+  [T3] NVDA: Sumitomo Mitsui Trust Group Inc. Cuts Stock Position in NVIDIA Corporation $NVDA - MarketB
+  [T1] CRDO: Tradr 2X Long CRDO Daily ETF To Carry Out 4-for-1 Stock Split On July 21st, 2026 - 富途牛牛
+  [T3] GOOGL,GOOG: Google Stock Misses Earnings - GOOG Stock Heading Lower? GOOGL Stock Prediction From Seaso
+  [T3] COIN: Coinbase (COIN) Stock Forecast & Analyst Ratings - Moomoo
+  [T3] APP: APP Stock Slumps After-Hours Despite Strong Q4 Earnings — Why Does Retail See This As A Bu
+
+------------------------------------------------------------
+DATA QUALITY: quotes moomoo_opend_rth=8
+  moomoo OpenD status=ok available=15/15
+  news sources ok=17 failed=0
+  news text sanitation items=11 flagged=11 changed=11 flags=html_entity_unescaped=11 mojibake_suspect=1
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================

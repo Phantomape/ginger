@@ -1,0 +1,310 @@
+{
+  "acceptance_rule": "Lead only if mean AND median matched-horizon replacement value (sleeve minus core, both after 35bp) are positive, at least 2 of 3 windows have positive mean, and max single-pair share of aggregate positive replacement value <=50%. Otherwise rejected and the arbitration lane parks with a quantitative forward-conflict reopen count. Positive result stays a lead; no production or order change.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260720_004_cross_source_slot_arbitration_observed_only.py",
+    "data/experiments/exp-20260720-004/exp_20260720_004_cross_source_slot_arbitration_observed_only.json",
+    "experiments/cards/exp-20260720-004.md",
+    "experiments/manifests/exp-20260720-004.json",
+    "experiments/tickets/exp-20260720-004.json",
+    "experiments/logs/exp-20260720-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260720-004.md",
+  "causal_components": [
+    "fixed 36-pair conflict cohort from cash_feasible_20260715 champion trades and four accepted sleeve historical replay artifacts",
+    "matched-horizon core-ticker counterfactual from warehouse OHLCV with identical next-open entry and hold-end close semantics",
+    "identical 35bp round-trip cost on both sides",
+    "SPY same-window control",
+    "no strategy or order change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "entry_time_cross_source_slot_arbitration_matched_horizon_replacement_value_v1",
+  "claimed_at": "2026-07-20T16:20:36+00:00",
+  "completed_at": "2026-07-20T16:25:29+00:00",
+  "created_at": "2026-07-20T16:19:58+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260720-004",
+  "experiment_uid": "expuid-c05da4dd553a4d38",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260720-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-20T16:19:58+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cross_source_slot_arbitration_observed_only"
+  },
+  "hypothesis": "Observed-only capital-allocation alpha: on the fixed cash-feasible champion cohort, for each same-day entry-slot conflict where an accepted default-off sleeve (sbc burden, supplier financing debt relief, distribution-day absorption, MOVE relief) generated a candidate on the exact date the core stack executed an entry, the sleeve candidate's settled matched-horizon net return should exceed the same-window return of the displaced core entry ticker, establishing entry-time cross-source slot arbitration as a viable new allocator mechanism.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "cohort=36 day-sleeve pairs frozen from preflight;sleeve outcomes read from committed replay artifacts unchanged;core counterfactual window=sleeve entry_date next-open to exit_date close;costs=35bp both sides;no retuning of any sleeve or core parameter"
+  ],
+  "mechanism_family": "allocator_cross_source_entry_arbitration",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260716-008",
+    "exp-20260720-003",
+    "exp-20260716-009",
+    "exp-20260621-007",
+    "exp-20260715-006"
+  ],
+  "new_evidence_type": "new_gate_shape_entry_time_cross_source_slot_arbitration_on_actual_cash_conflicts",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "move_rate_volatility",
+      "field_tags": [
+        "a",
+        "absorption",
+        "accepted",
+        "allocation",
+        "allocator",
+        "alpha",
+        "an",
+        "arbitration",
+        "as",
+        "burden",
+        "capital",
+        "cash",
+        "champion",
+        "cohort",
+        "conflict",
+        "core",
+        "cross",
+        "date",
+        "debt",
+        "displaced",
+        "distribution",
+        "each",
+        "entry",
+        "establishing",
+        "exact",
+        "exceed",
+        "executed",
+        "feasible",
+        "financing",
+        "generated",
+        "horizon",
+        "matched",
+        "mechanism",
+        "move",
+        "net",
+        "new",
+        "observed",
+        "of",
+        "on",
+        "only",
+        "replacement",
+        "return",
+        "s",
+        "same",
+        "sbc",
+        "settled",
+        "should",
+        "sleeve",
+        "slot",
+        "stack",
+        "supplier",
+        "ticker",
+        "time",
+        "value",
+        "viable",
+        "where",
+        "window"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.32,
+        "data_source": "move_rate_volatility",
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "reopen_condition": "If rejected, reopen only with at least 30 closed prospective MOVE rows carrying allocator displacement replacement value, or a genuinely independent rate-volatility source. If accepted, collect those rows before any live activation work.",
+        "score": 0.4758,
+        "status": "has_accepted",
+        "trials": 25
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "Reopen only with materially settled forward rows from a fixed shared helper or a genuinely different rate-volatility source such as publication-timed swaption/term-premium data.",
+        "score": 0.4627,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_shared_paper_candidate_pool",
+        "reopen_condition": "Live review requires at least 30 closed prospective rows, positive cash/SPY/QQQ replacement value, concentration control, and kill-switch parity; routine daily materialization uses run.py and needs no new experiment ID.",
+        "score": 0.4625,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_kill_switch",
+        "reopen_condition": "Reopen only with at least 30 closed prospective MOVE rows carrying lifecycle signals, or a genuinely different publication-timed rate-volatility invalidation source.",
+        "score": 0.4563,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_sector_priority_ranking",
+        "reopen_condition": "A retry requires at least 30 closed prospective MOVE rows with sector-aware replacement value, a genuinely new issuer-duration field, or a different ranking gate justified before observing outcomes.",
+        "score": 0.4563,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "move_rate_volatility",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "move_rate_volatility",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "fable-alpha-automation",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "core trend entries beat 10d sleeve holds on matched horizon",
+      "single NVDA-like pair dominates positive side",
+      "conflict cohort too concentrated in old_thin",
+      "horizon mismatch makes comparison advisory-only"
+    ],
+    "confidence_reason": "All prior capital-displacement designs (24/76 blends, entry exclusion exp-20260720-003, cash queue exp-20260716-008) rejected because core wins on displaced capital; this is the first entry-time slot-level comparison on actual same-day conflicts, but the prior says core likely wins, hence 0.25.",
+    "recorded_at": "2026-07-20T16:18:24+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_cross_source_slot_arbitration_median_negative",
+    "artifact": "data/experiments/exp-20260720-004/exp_20260720_004_cross_source_slot_arbitration_observed_only.json",
+    "log": "experiments/logs/exp-20260720-004.json",
+    "runner": "quant/experiments/exp_20260720_004_cross_source_slot_arbitration_observed_only.py",
+    "gate4": {
+      "acceptance_rule": "Lead only if mean AND median matched-horizon replacement value (sleeve minus core, both after 35bp) are positive, at least 2 of 3 windows have positive mean, and max single-pair share of aggregate positive replacement value <=50%. Otherwise rejected and the arbitration lane parks with a quantitative forward-conflict reopen count. Positive result stays a lead; no production or order change.",
+      "measured": {
+        "pair_count": 36,
+        "mean_replacement_value": 0.014504979410701982,
+        "median_replacement_value": -0.008732590464993544,
+        "windows_with_positive_mean": 2,
+        "max_single_pair_share_of_positive": 0.27998245973783875,
+        "mean_sleeve_net_return": 0.05053197222222222,
+        "mean_core_matched_net_return": 0.03602699281152024,
+        "mean_spy_matched_net_return": -0.001410181517765788,
+        "by_window_mean_replacement_value": {
+          "old_thin": 0.04982813131143693,
+          "mid_weak": 0.009104353037351576,
+          "late_strong": -0.08066322354480206
+        },
+        "by_sleeve_mean_replacement_value": {
+          "sbc_burden_improvement": -0.03611907447228074,
+          "supplier_financing_debt_relief": 0.05847105364404817,
+          "distribution_day_absorption": 0.013855464589208884,
+          "move_rate_volatility_relief": 0.07708083037608937
+        }
+      },
+      "failed_reasons": [
+        "median_replacement_value_negative",
+        "late_strong_mean_replacement_value_-0.0807"
+      ],
+      "passed": false
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260720-004.json",
+  "single_causal_variable": "entry_time_cross_source_slot_arbitration_matched_horizon_replacement_value_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260720-004.json",
+  "trial_family": "allocator_cross_source_entry_arbitration",
+  "trial_variant_id": "exp-20260720-004",
+  "updated_at": "2026-07-20T16:25:29+00:00"
+}

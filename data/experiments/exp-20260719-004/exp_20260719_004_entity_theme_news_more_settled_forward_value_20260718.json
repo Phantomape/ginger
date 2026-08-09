@@ -1,0 +1,821 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "alpha_hypothesis": "If the fixed entity/theme source bundle contains a monetizable event-relation edge, the more-than-doubled settled cohort should show broad positive 10-day replacement value versus cash, SPY, and QQQ without any map or policy retune.",
+  "alpha_ready": false,
+  "artifact": "data/experiments/exp-20260719-004/exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.json",
+  "calibration": {
+    "actual_success": 0.0,
+    "brier_score": 0.0324,
+    "matched_prediction_failure_modes": [
+      "qqq_median_negative",
+      "only_three_query_groups_beat_spy_and_qqq"
+    ],
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "qqq_median_negative",
+      "only_three_query_groups_beat_spy_and_qqq",
+      "source_bundle_dilution",
+      "current_search_snapshot_not_strict_pit"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_modes": [
+      "row_level_primary_means_positive",
+      "row_level_primary_medians_nonnegative",
+      "positive_query_groups_vs_spy_and_qqq_passed"
+    ],
+    "surprise_note": "Low surprise: the larger settled cohort still failed the fixed source-bundle bar."
+  },
+  "card": "experiments/cards/exp-20260719-004.md",
+  "causal_components": [
+    "read-only 2026-07-18 entity-theme outcome-ledger analysis",
+    "unchanged fixed source-bundle aggregate checks from exp-20260710-007",
+    "materially-more-settled-row comparison",
+    "theme/query/ticker/date concentration audit",
+    "no strategy behavior change"
+  ],
+  "change_type": "candidate_pool_observed_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.py",
+    "data/experiments/exp-20260719-004/exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.json",
+    "experiments/cards/exp-20260719-004.md",
+    "experiments/manifests/exp-20260719-004.json",
+    "experiments/tickets/exp-20260719-004.json",
+    "experiments/logs/exp-20260719-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "entity_theme_news_source_bundle_more_settled_rows_20260718_v1",
+  "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "settled_row_growth_vs_exp_20260707_013_pct": 2.443148,
+    "settled_row_growth_vs_exp_20260710_007_pct": 1.134028,
+    "settled_rows_vs_exp_20260703_014": 44784,
+    "settled_rows_vs_exp_20260707_013": 33713,
+    "settled_rows_vs_exp_20260710_007": 25248,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260719-004",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/experiments/exp-20260715-010/after_measurement.json",
+      "expected_value_score_sum": 6.2057,
+      "signals_generated": 188,
+      "signals_survived": 164,
+      "survival_rate": 0.87234,
+      "total_pnl": 130992.36,
+      "trade_count": 49,
+      "window_count": 3
+    },
+    "note": "Observed-only attribution; canonical strategy baseline unchanged.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_present_rows": 47512,
+    "fields_checked": [
+      "entity_theme_query_id",
+      "theme",
+      "relation_type",
+      "candidate_ticker",
+      "observed_date",
+      "entry_date",
+      "exit_date",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "passed": true,
+    "target_price_relevance": "This observer does not create target exits or orders; target_price is not part of the read-only outcome ledger."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter, ranking, sizing, exit, prompt, or order rule was added.",
+    "passed": true,
+    "signals_generated": 54376,
+    "signals_survived": 47512,
+    "survival_rate": 0.873768
+  },
+  "gate4": {
+    "acceptance_checks": {
+      "observed_date_level_primary_means_positive": true,
+      "positive_cash_query_share_passed": true,
+      "positive_cash_ticker_share_passed": true,
+      "positive_query_groups_vs_spy_and_qqq_passed": false,
+      "query_groups_min_passed": true,
+      "row_level_primary_means_positive": false,
+      "row_level_primary_medians_nonnegative": false,
+      "settled_rows_min_passed": true
+    },
+    "acceptance_rule": {
+      "max_positive_cash_query_share": 0.6,
+      "max_positive_cash_ticker_share": 0.4,
+      "min_positive_query_groups_vs_spy_and_qqq": 4,
+      "min_query_groups": 6,
+      "min_settled_rows": 250,
+      "require_observed_date_level_primary_means_positive": true,
+      "require_row_level_primary_means_positive": true,
+      "require_row_level_primary_medians_nonnegative": true
+    },
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+    "failed_reasons": [
+      "row_level_primary_means_positive",
+      "row_level_primary_medians_nonnegative",
+      "positive_query_groups_vs_spy_and_qqq_passed"
+    ],
+    "observed_only": true,
+    "passed": false,
+    "pit_caveat": "Entity/theme source rows come from Google News observer snapshots and include rows returned by the current search process. This is a read-only forward-ledger attribution refresh, not a strict historical PIT deployable candidate-pool proof.",
+    "strategy_rerun_required": false
+  },
+  "hypothesis": "Observed-only alpha refresh: with 47512 settled entity-theme news observer rows as of 2026-07-18 versus 22264 in exp-20260710-007, the unchanged fixed source bundle should clear the same 10-day cash/SPY/QQQ replacement-value bar before any shared helper is reconsidered.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "log": "experiments/logs/exp-20260719-004.json",
+  "manifest": "experiments/manifests/exp-20260719-004.json",
+  "mechanism_family": "production_visible_entity_theme_news_observer_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260703-014",
+    "exp-20260706-012",
+    "exp-20260707-013",
+    "exp-20260710-007",
+    "exp-20260713-001",
+    "exp-20260713-003"
+  ],
+  "new_evidence_axis": "Materially more settled forward rows: the 2026-07-18 entity_theme_news summary reports 47512 settled cash/SPY/QQQ rows versus 22264 in exp-20260710-007 (+25248, +113.4%), exceeding the recorded 33396-row reopen floor; source manifest, horizon, notional, query/theme/ticker maps, and acceptance rule remain unchanged.",
+  "new_evidence_type": "new_closed_forward_rows",
+  "observed_only_lead": false,
+  "observer_summary": {
+    "candidate_outcome_row_count": 54376,
+    "candidate_ticker_count": 32,
+    "daily_item_file_count": 17,
+    "path": "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260718.json",
+    "settled_count": 47512,
+    "status_counts": {
+      "future_entry_session_not_reached": 690,
+      "settled": 47512,
+      "unsettled_horizon": 5685,
+      "unsettled_no_entry_bar": 489
+    },
+    "unsettled_count": 6864
+  },
+  "owner": "codex-root",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune entity/theme queries, theme labels, candidate ticker maps, horizons, notional, response curves, or SEC-confirmation windows on this same source bundle.",
+    "new_evidence_required": "Park this fixed source-bundle row-attribution surface until at least 71268 settled cash/SPY/QQQ rows under the unchanged manifest, a true PIT historical news archive, or a materially richer independent entity-relation/economic source.",
+    "why_result_happened": "The enlarged cohort stayed positive versus cash and SPY, but its QQQ mean and median were negative and only three query groups beat both ETF comparators.  Breadth and concentration passed, so more rows confirmed benchmark-relative source-bundle dilution rather than a deployable relation edge."
+  },
+  "prediction": {
+    "confidence_reason": "The settled cohort more than doubled and exactly clears the recorded reopen condition, but all three prior fixed-bundle probes were rejected and the last probe still had a negative QQQ median with only three query groups beating both ETFs.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "qqq_median_negative",
+      "only_three_query_groups_beat_spy_and_qqq",
+      "source_bundle_dilution",
+      "current_search_snapshot_not_strict_pit"
+    ],
+    "recorded_at": "2026-07-19T20:23:31+00:00",
+    "success_probability": 0.18
+  },
+  "prior_comparison": {
+    "exp-20260703-014": {
+      "candidate_outcome_rows": 3194,
+      "decision": "observed_only_rejected_no_entity_theme_source_bundle_edge",
+      "settled_rows": 2728
+    },
+    "exp-20260705-017": {
+      "candidate_outcome_rows": 3194,
+      "decision": "observed_only_rejected_entity_theme_sec_confirmation_no_edge",
+      "settled_rows": 2735
+    },
+    "exp-20260706-012": {
+      "candidate_outcome_rows": 9534,
+      "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+      "settled_rows": 8158
+    },
+    "exp-20260707-013": {
+      "candidate_outcome_rows": 15918,
+      "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+      "settled_rows": 13799
+    },
+    "exp-20260710-007": {
+      "candidate_outcome_rows": 25504,
+      "decision": "observed_only_rejected_entity_theme_more_settled_no_edge",
+      "settled_rows": 22264
+    }
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "feeds_llm_prompt": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_boundary_changed": false,
+    "paper_orders_changed": false,
+    "parity_note": "Read-only analysis over existing entity_theme_news observer outcome rows. No helper, adapter, order, rank, size, exit, watchlist, or LLM behavior changed.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "row_level_primary_means_positive; row_level_primary_medians_nonnegative; positive_query_groups_vs_spy_and_qqq_passed",
+  "related_files": [
+    "quant/experiments/exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.py",
+    "quant/experiments/exp_20260710_007_entity_theme_news_more_settled_forward_value_20260709.py",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/entity_theme_news_observer_outcomes_20260718.jsonl",
+    "data/non_ohlcv/entity_theme_news_observer/outcome_summaries/entity_theme_news_observer_outcome_summary_20260718.json",
+    "experiments/logs/exp-20260710-007.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260719_004_entity_theme_news_more_settled_forward_value_20260718.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "saturation_accounting": {
+    "classifier_caveat": "Legacy fixed-bundle rows are classified under gate_shape=other while this ticket fingerprints as candidate_pool_top1_10d, so the machine source-saturation cell reports 0 trials. Manual accounting is 4/12.",
+    "data_source": "entity_theme_news",
+    "frozen_family_gate_shape": "other",
+    "machine_gate_shape": "candidate_pool_top1_10d",
+    "manual_same_family_trials_after_run": 4,
+    "saturated": false,
+    "saturation_threshold": 12
+  },
+  "single_causal_variable": "entity_theme_news_source_bundle_more_settled_rows_20260718_v1",
+  "status": "observed_only_rejected",
+  "summary": {
+    "bottom_queries_by_cash": [
+      {
+        "entity_theme_query_id": "private_space_launch_contracts",
+        "mean_cash": -343.073,
+        "mean_qqq": -314.6245,
+        "mean_spy": -346.8907,
+        "median_cash": -223.04,
+        "positive_cash_sum": 442745.69,
+        "row_count": 5190
+      },
+      {
+        "entity_theme_query_id": "crypto_market_structure_policy",
+        "mean_cash": -74.9847,
+        "mean_qqq": -117.3342,
+        "mean_spy": -101.4352,
+        "median_cash": -79.84,
+        "positive_cash_sum": 1798310.84,
+        "row_count": 8552
+      },
+      {
+        "entity_theme_query_id": "hyperscaler_power_data_center",
+        "mean_cash": 16.7381,
+        "mean_qqq": -7.07,
+        "mean_spy": 12.8271,
+        "median_cash": 3.33,
+        "positive_cash_sum": 1192670.27,
+        "row_count": 9380
+      },
+      {
+        "entity_theme_query_id": "ai_export_control_supply_chain",
+        "mean_cash": 127.4455,
+        "mean_qqq": 93.7706,
+        "mean_spy": 105.8579,
+        "median_cash": 81.41,
+        "positive_cash_sum": 2087957.65,
+        "row_count": 9090
+      },
+      {
+        "entity_theme_query_id": "glp1_supply_access",
+        "mean_cash": 156.2905,
+        "mean_qqq": 124.4017,
+        "mean_spy": 130.5764,
+        "median_cash": -22.46,
+        "positive_cash_sum": 1307668.98,
+        "row_count": 3400
+      },
+      {
+        "entity_theme_query_id": "frontier_ai_private_capex",
+        "mean_cash": 160.7041,
+        "mean_qqq": 112.8573,
+        "mean_spy": 136.9952,
+        "median_cash": 64.42,
+        "positive_cash_sum": 3413575.02,
+        "row_count": 11900
+      }
+    ],
+    "candidate_outcome_rows": 54376,
+    "max_positive_cash_query_share": 0.333262,
+    "max_positive_cash_ticker_share": 0.169303,
+    "observed_date_level": {
+      "bottom_dates_by_cash": [
+        {
+          "mean_cash": -859.5987,
+          "mean_qqq": -713.0787,
+          "mean_spy": -798.3887,
+          "median_cash": -1158.04,
+          "observed_date": "2026-01-22",
+          "positive_cash_sum": 12684.89,
+          "row_count": 706
+        },
+        {
+          "mean_cash": -840.6416,
+          "mean_qqq": -717.1016,
+          "mean_spy": -815.1916,
+          "median_cash": -918.31,
+          "observed_date": "2026-01-28",
+          "positive_cash_sum": 294.56,
+          "row_count": 127
+        },
+        {
+          "mean_cash": -747.68,
+          "mean_qqq": -645.57,
+          "mean_spy": -690.61,
+          "median_cash": -689.71,
+          "observed_date": "2025-11-11",
+          "positive_cash_sum": 0.0,
+          "row_count": 102
+        },
+        {
+          "mean_cash": -731.3041,
+          "mean_qqq": -595.8541,
+          "mean_spy": -702.1841,
+          "median_cash": -294.77,
+          "observed_date": "2026-07-05",
+          "positive_cash_sum": 628.72,
+          "row_count": 266
+        },
+        {
+          "mean_cash": -708.7572,
+          "mean_qqq": -548.4872,
+          "mean_spy": -647.9272,
+          "median_cash": -844.46,
+          "observed_date": "2026-01-29",
+          "positive_cash_sum": 3117.76,
+          "row_count": 216
+        },
+        {
+          "mean_cash": -673.1917,
+          "mean_qqq": -719.4617,
+          "mean_spy": -731.3417,
+          "median_cash": -665.815,
+          "observed_date": "2026-01-20",
+          "positive_cash_sum": 0.0,
+          "row_count": 78
+        },
+        {
+          "mean_cash": -641.1443,
+          "mean_qqq": -505.6943,
+          "mean_spy": -612.0243,
+          "median_cash": -265.91,
+          "observed_date": "2026-07-02",
+          "positive_cash_sum": 3030.25,
+          "row_count": 477
+        },
+        {
+          "mean_cash": -620.2967,
+          "mean_qqq": -722.5667,
+          "mean_spy": -701.9967,
+          "median_cash": -596.685,
+          "observed_date": "2026-01-18",
+          "positive_cash_sum": 0.0,
+          "row_count": 102
+        }
+      ],
+      "mean_of_date_mean_cash": 85.8187,
+      "mean_of_date_mean_qqq": 54.1338,
+      "mean_of_date_mean_spy": 61.2497,
+      "observed_date_count": 259,
+      "top_dates_by_cash": [
+        {
+          "mean_cash": 1452.4886,
+          "mean_qqq": 996.6286,
+          "mean_spy": 1104.9086,
+          "median_cash": 1151.63,
+          "observed_date": "2026-03-30",
+          "positive_cash_sum": 162678.72,
+          "row_count": 112
+        },
+        {
+          "mean_cash": 1301.1158,
+          "mean_qqq": 837.6758,
+          "mean_spy": 959.2958,
+          "median_cash": 1234.59,
+          "observed_date": "2026-04-01",
+          "positive_cash_sum": 342193.45,
+          "row_count": 263
+        },
+        {
+          "mean_cash": 1102.775,
+          "mean_qqq": 675.505,
+          "mean_spy": 771.725,
+          "median_cash": 1252.04,
+          "observed_date": "2026-04-02",
+          "positive_cash_sum": 46316.55,
+          "row_count": 42
+        },
+        {
+          "mean_cash": 1057.5225,
+          "mean_qqq": 950.0925,
+          "mean_spy": 969.545,
+          "median_cash": 955.13,
+          "observed_date": "2025-04-25",
+          "positive_cash_sum": 82525.82,
+          "row_count": 68
+        },
+        {
+          "mean_cash": 1057.5225,
+          "mean_qqq": 950.0925,
+          "mean_spy": 969.545,
+          "median_cash": 955.13,
+          "observed_date": "2025-04-27",
+          "positive_cash_sum": 63107.98,
+          "row_count": 52
+        },
+        {
+          "mean_cash": 1024.1375,
+          "mean_qqq": 919.19,
+          "mean_spy": 939.58,
+          "median_cash": 1053.105,
+          "observed_date": "2024-11-20",
+          "positive_cash_sum": 57351.7,
+          "row_count": 56
+        },
+        {
+          "mean_cash": 988.7168,
+          "mean_qqq": 571.0568,
+          "mean_spy": 671.5268,
+          "median_cash": 1220.18,
+          "observed_date": "2026-04-06",
+          "positive_cash_sum": 154239.82,
+          "row_count": 156
+        },
+        {
+          "mean_cash": 941.47,
+          "mean_qqq": 761.49,
+          "mean_spy": 840.31,
+          "median_cash": 773.6,
+          "observed_date": "2026-05-16",
+          "positive_cash_sum": 80234.04,
+          "row_count": 84
+        }
+      ]
+    },
+    "positive_query_groups_vs_spy_and_qqq": 3,
+    "positive_query_groups_vs_spy_and_qqq_sample": [
+      {
+        "entity_theme_query_id": "frontier_ai_private_capex",
+        "mean_cash": 160.7041,
+        "mean_qqq": 112.8573,
+        "mean_spy": 136.9952,
+        "median_cash": 64.42,
+        "positive_cash_sum": 3413575.02,
+        "row_count": 11900
+      },
+      {
+        "entity_theme_query_id": "glp1_supply_access",
+        "mean_cash": 156.2905,
+        "mean_qqq": 124.4017,
+        "mean_spy": 130.5764,
+        "median_cash": -22.46,
+        "positive_cash_sum": 1307668.98,
+        "row_count": 3400
+      },
+      {
+        "entity_theme_query_id": "ai_export_control_supply_chain",
+        "mean_cash": 127.4455,
+        "mean_qqq": 93.7706,
+        "mean_spy": 105.8579,
+        "median_cash": 81.41,
+        "positive_cash_sum": 2087957.65,
+        "row_count": 9090
+      }
+    ],
+    "query_group_count": 6,
+    "relation_type_count": 6,
+    "relation_type_table": [
+      {
+        "mean_cash": 160.7041,
+        "mean_qqq": 112.8573,
+        "mean_spy": 136.9952,
+        "median_cash": 64.42,
+        "positive_cash_sum": 3413575.02,
+        "relation_type": "private_ai_lab_to_public_ai_infrastructure",
+        "row_count": 11900
+      },
+      {
+        "mean_cash": 156.2905,
+        "mean_qqq": 124.4017,
+        "mean_spy": 130.5764,
+        "median_cash": -22.46,
+        "positive_cash_sum": 1307668.98,
+        "relation_type": "healthcare_theme_to_public_obesity_drug_exposure",
+        "row_count": 3400
+      },
+      {
+        "mean_cash": 127.4455,
+        "mean_qqq": 93.7706,
+        "mean_spy": 105.8579,
+        "median_cash": 81.41,
+        "positive_cash_sum": 2087957.65,
+        "relation_type": "regulatory_policy_to_public_semiconductor_exposure",
+        "row_count": 9090
+      },
+      {
+        "mean_cash": 16.7381,
+        "mean_qqq": -7.07,
+        "mean_spy": 12.8271,
+        "median_cash": 3.33,
+        "positive_cash_sum": 1192670.27,
+        "relation_type": "theme_to_public_power_and_infrastructure_exposure",
+        "row_count": 9380
+      },
+      {
+        "mean_cash": -74.9847,
+        "mean_qqq": -117.3342,
+        "mean_spy": -101.4352,
+        "median_cash": -79.84,
+        "positive_cash_sum": 1798310.84,
+        "relation_type": "regulatory_policy_to_public_crypto_exposure",
+        "row_count": 8552
+      },
+      {
+        "mean_cash": -343.073,
+        "mean_qqq": -314.6245,
+        "mean_spy": -346.8907,
+        "median_cash": -223.04,
+        "positive_cash_sum": 442745.69,
+        "relation_type": "private_entity_to_public_space_exposure",
+        "row_count": 5190
+      }
+    ],
+    "row_level": {
+      "cash": {
+        "count": 47512,
+        "mean": 28.1494,
+        "median": 3.93,
+        "positive_count": 24102,
+        "positive_share": 0.507282,
+        "sum": 1337432.39
+      },
+      "qqq": {
+        "count": 47512,
+        "mean": -1.7747,
+        "median": -12.26,
+        "positive_count": 23279,
+        "positive_share": 0.48996,
+        "sum": -84317.18
+      },
+      "spy": {
+        "count": 47512,
+        "mean": 10.2907,
+        "median": 3.34,
+        "positive_count": 23920,
+        "positive_share": 0.503452,
+        "sum": 488932.72
+      }
+    },
+    "settled_rows": 47512,
+    "settled_survival_rate": 0.873768,
+    "theme_count": 6,
+    "ticker_count": 30,
+    "top_queries_by_cash": [
+      {
+        "entity_theme_query_id": "frontier_ai_private_capex",
+        "mean_cash": 160.7041,
+        "mean_qqq": 112.8573,
+        "mean_spy": 136.9952,
+        "median_cash": 64.42,
+        "positive_cash_sum": 3413575.02,
+        "row_count": 11900
+      },
+      {
+        "entity_theme_query_id": "glp1_supply_access",
+        "mean_cash": 156.2905,
+        "mean_qqq": 124.4017,
+        "mean_spy": 130.5764,
+        "median_cash": -22.46,
+        "positive_cash_sum": 1307668.98,
+        "row_count": 3400
+      },
+      {
+        "entity_theme_query_id": "ai_export_control_supply_chain",
+        "mean_cash": 127.4455,
+        "mean_qqq": 93.7706,
+        "mean_spy": 105.8579,
+        "median_cash": 81.41,
+        "positive_cash_sum": 2087957.65,
+        "row_count": 9090
+      },
+      {
+        "entity_theme_query_id": "hyperscaler_power_data_center",
+        "mean_cash": 16.7381,
+        "mean_qqq": -7.07,
+        "mean_spy": 12.8271,
+        "median_cash": 3.33,
+        "positive_cash_sum": 1192670.27,
+        "row_count": 9380
+      },
+      {
+        "entity_theme_query_id": "crypto_market_structure_policy",
+        "mean_cash": -74.9847,
+        "mean_qqq": -117.3342,
+        "mean_spy": -101.4352,
+        "median_cash": -79.84,
+        "positive_cash_sum": 1798310.84,
+        "row_count": 8552
+      },
+      {
+        "entity_theme_query_id": "private_space_launch_contracts",
+        "mean_cash": -343.073,
+        "mean_qqq": -314.6245,
+        "mean_spy": -346.8907,
+        "median_cash": -223.04,
+        "positive_cash_sum": 442745.69,
+        "row_count": 5190
+      }
+    ],
+    "top_themes_by_cash": [
+      {
+        "mean_cash": 160.7041,
+        "mean_qqq": 112.8573,
+        "mean_spy": 136.9952,
+        "median_cash": 64.42,
+        "positive_cash_sum": 3413575.02,
+        "row_count": 11900,
+        "theme": "ai_capex_private_lab"
+      },
+      {
+        "mean_cash": 156.2905,
+        "mean_qqq": 124.4017,
+        "mean_spy": 130.5764,
+        "median_cash": -22.46,
+        "positive_cash_sum": 1307668.98,
+        "row_count": 3400,
+        "theme": "glp1_supply_access"
+      },
+      {
+        "mean_cash": 127.4455,
+        "mean_qqq": 93.7706,
+        "mean_spy": 105.8579,
+        "median_cash": 81.41,
+        "positive_cash_sum": 2087957.65,
+        "row_count": 9090,
+        "theme": "ai_chip_export_controls"
+      },
+      {
+        "mean_cash": 16.7381,
+        "mean_qqq": -7.07,
+        "mean_spy": 12.8271,
+        "median_cash": 3.33,
+        "positive_cash_sum": 1192670.27,
+        "row_count": 9380,
+        "theme": "ai_data_center_power"
+      },
+      {
+        "mean_cash": -74.9847,
+        "mean_qqq": -117.3342,
+        "mean_spy": -101.4352,
+        "median_cash": -79.84,
+        "positive_cash_sum": 1798310.84,
+        "row_count": 8552,
+        "theme": "crypto_regulation"
+      },
+      {
+        "mean_cash": -343.073,
+        "mean_qqq": -314.6245,
+        "mean_spy": -346.8907,
+        "median_cash": -223.04,
+        "positive_cash_sum": 442745.69,
+        "row_count": 5190,
+        "theme": "private_space_contracts"
+      }
+    ],
+    "top_tickers_by_cash": [
+      {
+        "candidate_ticker": "WW",
+        "mean_cash": 687.7723,
+        "mean_qqq": 655.6452,
+        "mean_spy": 644.0778,
+        "median_cash": 1680.0,
+        "positive_cash_sum": 764331.23,
+        "row_count": 772
+      },
+      {
+        "candidate_ticker": "MU",
+        "mean_cash": 426.7192,
+        "mean_qqq": 385.5505,
+        "mean_spy": 404.0098,
+        "median_cash": 506.47,
+        "positive_cash_sum": 1734154.39,
+        "row_count": 3215
+      },
+      {
+        "candidate_ticker": "AMD",
+        "mean_cash": 304.5058,
+        "mean_qqq": 263.3371,
+        "mean_spy": 281.7965,
+        "median_cash": 252.85,
+        "positive_cash_sum": 1183469.98,
+        "row_count": 3215
+      },
+      {
+        "candidate_ticker": "CRDO",
+        "mean_cash": 281.9129,
+        "mean_qqq": 234.066,
+        "mean_spy": 258.2039,
+        "median_cash": 155.04,
+        "positive_cash_sum": 686521.46,
+        "row_count": 1700
+      },
+      {
+        "candidate_ticker": "RIOT",
+        "mean_cash": 180.6066,
+        "mean_qqq": 134.4727,
+        "mean_spy": 152.5271,
+        "median_cash": 120.27,
+        "positive_cash_sum": 511776.02,
+        "row_count": 1503
+      },
+      {
+        "candidate_ticker": "ASML",
+        "mean_cash": 129.8303,
+        "mean_qqq": 96.1554,
+        "mean_spy": 108.2427,
+        "median_cash": 106.88,
+        "positive_cash_sum": 296615.57,
+        "row_count": 1515
+      },
+      {
+        "candidate_ticker": "PWR",
+        "mean_cash": 103.4982,
+        "mean_qqq": 79.6901,
+        "mean_spy": 99.5872,
+        "median_cash": 77.92,
+        "positive_cash_sum": 225974.46,
+        "row_count": 1340
+      },
+      {
+        "candidate_ticker": "GEV",
+        "mean_cash": 93.5824,
+        "mean_qqq": 69.7743,
+        "mean_spy": 89.6714,
+        "median_cash": 77.87,
+        "positive_cash_sum": 238934.47,
+        "row_count": 1340
+      },
+      {
+        "candidate_ticker": "ANET",
+        "mean_cash": 78.4866,
+        "mean_qqq": 41.2357,
+        "mean_spy": 63.5043,
+        "median_cash": 52.8,
+        "positive_cash_sum": 564739.39,
+        "row_count": 3040
+      },
+      {
+        "candidate_ticker": "MARA",
+        "mean_cash": 73.3536,
+        "mean_qqq": 27.2197,
+        "mean_spy": 45.2741,
+        "median_cash": 157.58,
+        "positive_cash_sum": 459212.11,
+        "row_count": 1503
+      },
+      {
+        "candidate_ticker": "TSM",
+        "mean_cash": 49.6676,
+        "mean_qqq": 15.9926,
+        "mean_spy": 28.0799,
+        "median_cash": 75.3,
+        "positive_cash_sum": 171456.51,
+        "row_count": 1515
+      },
+      {
+        "candidate_ticker": "ETN",
+        "mean_cash": 31.8086,
+        "mean_qqq": 8.0005,
+        "mean_spy": 27.8976,
+        "median_cash": 12.11,
+        "positive_cash_sum": 125892.19,
+        "row_count": 1340
+      }
+    ]
+  },
+  "timestamp": "2026-07-19T20:31:24Z",
+  "trial_family": "entity_theme_news_source_bundle_forward_value",
+  "trial_variant_id": "materially_more_settled_rows_20260718_v1"
+}

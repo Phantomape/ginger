@@ -1,0 +1,67 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Extended yf_no_price_cache recorder to also cache the 'possibly delisted; no price data found' log shape when the message's own request window spans >=25 days (single and bulk bracket forms, with/without Yahoo-error suffix). Removed run.py's ineffective yfinance setLevel(CRITICAL) which conflicted with the cache's filter-based recording contract. Verbatim replay of all 166 yfinance ERROR lines from data/logs/run_20260715.log: 8/8 offender tickers (SATS IAC BK CTRA CUK TPH BOK SFG) recorded, 0 live tickers poisoned; 18 cache tests + 8 data_layer tests pass.",
+  "change_type": "measurement_repair",
+  "changed_variable": "yf_no_price_cache recorder message-shape coverage: add long-window 'no price data found' (single and bulk list forms) to the recorded signal set",
+  "component": "quant/yf_no_price_cache.py, quant/test_yf_no_price_cache.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260717-001",
+  "hypothesis": "The yfinance no-price negative cache only records the 'possibly delisted; no timezone found' log shape, so permanently dead tickers that emit 'possibly delisted; no price data found' (SATS/IAC/BK since 2025-06, CTRA/CUK/TPH since 2026-04, BOK/SFG since 2025-05 in the 2026-07-15 run log) are re-fetched at full lookback every daily run, wasting yfinance quota and contributing to same-run YFRateLimitError on live tickers (SPY, CTRA retries exhausted). Extending the recorder to also cache the no-price-data shape when the message's own request window spans >=25 days (a live ticker cannot produce a zero-row month; 14-day TTL and clear-on-real-data self-heal retained) stops the waste without risking false suppression of live tickers.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "fault_recovery_upstream_log_shape_gap",
+  "next_retry_requires": [],
+  "notes": "Fault-recovery measurement repair: dead tickers were burning yfinance quota every run and contributing to same-run rate-limiting of live tickers (SPY, CTRA). Safety: window threshold 25d (calendar gaps max ~4d), TTL 14d re-probe, clear-on-real-data self-heal both retained. Files: quant/yf_no_price_cache.py, quant/test_yf_no_price_cache.py, quant/run.py (comment-only logging fix). Repro: pytest quant/test_yf_no_price_cache.py; replay script embedded in artifacts.",
+  "parameters": {
+    "locked_variables": [
+      "yf_no_price_cache recorder message-shape coverage: add long-window 'no price data found' (single and bulk list forms) to the recorded signal set"
+    ],
+    "single_causal_variable": "yf_no_price_cache recorder message-shape coverage: add long-window 'no price data found' (single and bulk list forms) to the recorded signal set"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not extend the fundamentals cache (yf_negative_cache) to the bare 'No earnings dates found' line: today's log proves it fires on rate-limited live mega-caps (ADBE); its 404-only design is correct. Do not lower MIN_NO_PRICE_WINDOW_DAYS below ~7 without new evidence of a false-positive-free shorter signal.",
+    "new_evidence_required": "Next daily run's log should show zero 'no price data found' retry chains for SATS/IAC/BK/CTRA/CUK/TPH/BOK/SFG and reduced YFRateLimitError incidence; if offenders reappear after the 14d TTL despite still being dead, consider a longer TTL tier for repeat observations.",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The two negative caches were healthy; the gap was a deliberately-excluded message shape whose safety concern (weekend gaps) is void once the window length embedded in the message is checked. Also: 42 bare 'No earnings dates found' lines today were rate-limit noise on live tickers (ADBE), confirming the fundamentals cache's 404-only design is correct."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260717-001/before.json",
+    "data/experiments/exp-20260717-001/after.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-17T05:13:52+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260717-001"
+}

@@ -1,0 +1,654 @@
+{
+  "acceptance_rule": "Accept measurement repair only if regression tests show latest decision per ticker/execution/horizon is selected, raw duplicate counts remain auditable, the current 33 raw settled rows become 22 effective economic cohorts with 11 exclusions, and all actions/costs/execution/outcome rows/orders remain unchanged; this cannot accept alpha.",
+  "allowed_write_scope": [
+    "quant/intraday_backtester.py",
+    "quant/test_intraday_backtester.py",
+    "quant/experiments",
+    "data/experiments",
+    "data/daily/intraday/backtests",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/daily/intraday/backtests/latest_scorecard.json",
+  "card_file": "experiments/cards/exp-20260714-010.md",
+  "causal_components": [
+    "economic_cohort_identity",
+    "latest_pre_execution_selection",
+    "raw_duplicate_audit"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "intraday_triage_latest_decision_per_execution_cohort_v1",
+  "claimed_at": "2026-07-14T23:37:50+00:00",
+  "completed_at": "2026-07-14T23:44:16+00:00",
+  "created_at": "2026-07-14T23:36:36+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260714-010",
+  "experiment_uid": "expuid-04e6f4ef691847f1",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260714-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T23:36:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_economic_cohort_dedup"
+  },
+  "hypothesis": "Alpha hypothesis: intraday advisory shadow-action guardrails plus semantic news selection should add positive net next-close decision value versus machine-default and no-adjustment actions; evaluation is currently untrustworthy because economically identical weekend decisions sharing ticker, execution timestamp, and horizon are double-counted as independent settled evidence, so selecting only the latest pre-execution decision per economic cohort should repair the 20/50/100 thresholds and counterfactual PnL without changing actions, costs, execution, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "execution_rule_version",
+    "outcome_rule_version",
+    "final_action",
+    "machine_default_action",
+    "cost_bps",
+    "trade_enabled"
+  ],
+  "mechanism_family": "intraday_triage_counterfactual_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/intraday_triage.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "data/daily/intraday/decisions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-022",
+    "exp-20260711-024"
+  ],
+  "new_evidence_type": "fault_recovery_semantic_correlation_defect",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "intraday_advisory",
+      "field_tags": [
+        "action",
+        "actions",
+        "add",
+        "adjustment",
+        "advisory",
+        "alpha",
+        "are",
+        "as",
+        "because",
+        "changing",
+        "close",
+        "cohort",
+        "costs",
+        "counted",
+        "counterfactual",
+        "currently",
+        "decision",
+        "decisions",
+        "dedup",
+        "deduplication",
+        "double",
+        "economic",
+        "economically",
+        "evaluation",
+        "evidence",
+        "execution",
+        "guardrails",
+        "horizon",
+        "hypothesis",
+        "identical",
+        "independent",
+        "intraday",
+        "is",
+        "latest",
+        "machine",
+        "measurement",
+        "net",
+        "news",
+        "no",
+        "only",
+        "or",
+        "orders",
+        "per",
+        "plus",
+        "pnl",
+        "positive",
+        "pre",
+        "repair",
+        "selecting",
+        "semantic",
+        "settled",
+        "shadow",
+        "sharing",
+        "should",
+        "so",
+        "thresholds",
+        "ticker",
+        "timestamp",
+        "triage",
+        "untrustworthy",
+        "value",
+        "versus",
+        "weekend",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.4808,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_native_advisory_shadow_action_contract",
+        "reopen_condition": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_forward_outcome",
+        "reopen_condition": "Reopen only after current h1/h3 settled rows materially exceed 141/117 under the same fixed helper, or after true quote timestamps or broker bar IDs, materially larger native primary-action coverage, and slot-reuse/replacement-value accounting are available.",
+        "score": 0.4729,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_shadow_action_forward_outcome",
+        "reopen_condition": "More snapshots generated after this contract, with h1/h3/h5/h10 settled outcomes and replacement-value accounting. Broker bar IDs or true quote_time_et would further strengthen causality.",
+        "score": 0.4671,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_state_forward_outcome_settlement",
+        "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+        "score": 0.4613,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially new settled forward rows: 0 to 33 primary next-close rows crossed the declared early-review threshold and exposed 11 duplicated economic execution cohorts; this is a genuine semantic-correlation fault recovery, not a routine refresh or threshold retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "intraday_advisory",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially new settled forward rows: 0 to 33 primary next-close rows crossed the declared early-review threshold and exposed 11 duplicated economic execution cohorts; this is a genuine semantic-correlation fault recovery, not a routine refresh or threshold retune.",
+      "categories": [
+        "materially_more_forward_rows"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "intraday_advisory",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.95,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legitimate_distinct_decisions_collapsed",
+      "pending_rows_miscounted",
+      "scorecard_backward_compatibility_break"
+    ],
+    "confidence_reason": "The current ledger contains 11 exact two-row economic duplicates across Saturday and Sunday with identical ticker, execution_time, horizon_time, prices, and actions; selection can be isolated in scorecard aggregation.",
+    "recorded_at": "2026-07-14T23:35:52+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_intraday_economic_cohort_dedup",
+    "artifact": "data/experiments/exp-20260714-010/exp_20260714_010_intraday_economic_cohort_dedup.json",
+    "log": "experiments/logs/exp-20260714-010.json",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_intraday_economic_cohort_dedup",
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "strategy_behavior_changed": false,
+      "failed_reasons": []
+    },
+    "headline_metrics": {
+      "checks_passed": 11,
+      "checks_total": 11,
+      "raw_settled_primary_next_close_decisions": 33,
+      "effective_economic_cohorts": 22,
+      "duplicate_rows_excluded": 11,
+      "semantic_action_overrides": 0,
+      "incremental_pnl_vs_no_adjustment_usd": -108.4669,
+      "semantic_lift_vs_machine_default_usd": 0.0,
+      "final_vs_always_add_usd": -66.5349,
+      "strategy_behavior_delta": 0
+    },
+    "production_impact": {
+      "canonical_backtester_changed": false,
+      "counterfactual_outcome_rows_changed": false,
+      "counterfactual_actions_changed": false,
+      "counterfactual_costs_changed": false,
+      "counterfactual_execution_semantics_changed": false,
+      "scorecard_aggregation_repaired": true,
+      "live_orders_changed": false,
+      "trade_enabled": false
+    },
+    "post_run_reflection": {
+      "why_result_happened": "Primary status was scoped to ticker-day, so Saturday and Sunday snapshots that could only execute in the same Monday bar were treated as independent. Latest-pre-execution cohort selection keeps immutable raw rows while removing correlation inflation.",
+      "forbidden_near_neighbor_retry": "Do not reserve another ID for routine scorecard refreshes, raw ticker-day recounts, weekend reslicing, or action-threshold retuning.",
+      "new_evidence_required": "Review stability at 50 effective next-close economic cohorts. Only at 100 effective cohorts may a separately frozen alpha promotion hypothesis be reserved; zero semantic overrides still means the semantic component is unidentified."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260714-010.json",
+  "single_causal_variable": "intraday_triage_latest_decision_per_execution_cohort_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260714-010.json",
+  "trial_family": "intraday_triage_economic_cohort_deduplication",
+  "trial_variant_id": "latest_decision_per_ticker_execution_horizon_v1",
+  "timestamp": "2026-07-14T23:44:16Z",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "decision": "accepted_measurement_repair_intraday_economic_cohort_dedup",
+  "alpha_hypothesis": "Intraday guardrails plus semantic news selection add positive net next-close decision value versus machine-default and no-adjustment actions.",
+  "calibration": {
+    "predicted_success_probability": 0.95,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "realized_failure_mode": null
+  },
+  "before": {
+    "artifact": "data/experiments/exp-20260714-010/before_scorecard.json",
+    "settled_primary_next_close_decisions": 33,
+    "next_close": {
+      "action_counts": {
+        "HOLD_ONLY": 11,
+        "REDUCE_RISK": 3,
+        "WAIT": 19
+      },
+      "closed": 33,
+      "final_vs_always_add_on_position_bps": {
+        "count": 33,
+        "mean": -16.39393,
+        "median": -2.853,
+        "positive_rate": 0.454545,
+        "sum": -540.9997
+      },
+      "final_vs_always_add_usd": {
+        "count": 33,
+        "mean": 1.719727,
+        "median": -0.84,
+        "positive_rate": 0.454545,
+        "sum": 56.751
+      },
+      "incremental_pnl_vs_no_adjustment_usd": {
+        "count": 33,
+        "mean": -3.286876,
+        "median": 0.0,
+        "positive_rate": 0.030303,
+        "sum": -108.4669
+      },
+      "incremental_return_on_position_bps": {
+        "count": 33,
+        "mean": -24.609139,
+        "median": 0.0,
+        "positive_rate": 0.030303,
+        "sum": -812.1016
+      },
+      "pending": 11,
+      "rows": 44,
+      "semantic_lift_on_position_bps": {
+        "count": 33,
+        "mean": 0.0,
+        "median": 0.0,
+        "positive_rate": 0.0,
+        "sum": 0.0
+      },
+      "semantic_lift_vs_machine_default_usd": {
+        "count": 33,
+        "mean": 0.0,
+        "median": 0.0,
+        "positive_rate": 0.0,
+        "sum": 0.0
+      },
+      "ticker_return_bps": {
+        "count": 33,
+        "mean": -27.978758,
+        "median": 24.2653,
+        "positive_rate": 0.545455,
+        "sum": -923.299
+      }
+    }
+  },
+  "after": {
+    "artifact": "data/experiments/exp-20260714-010/after_scorecard.json",
+    "readiness": {
+      "settled_primary_next_close_decisions": 22,
+      "raw_settled_primary_next_close_decisions": 33,
+      "duplicate_settled_economic_rows_excluded": 11,
+      "evidence_stage": "observed_only_early",
+      "alpha_claim_allowed": false,
+      "promotion_note": "This scorecard is forward measurement only. A production rule still requires a frozen attributable hypothesis and Gate 1-4."
+    },
+    "next_close": {
+      "rows": 33,
+      "raw_rows": 44,
+      "closed": 22,
+      "raw_closed": 33,
+      "pending": 11,
+      "duplicate_economic_cohorts": 11,
+      "duplicate_rows_excluded": 11,
+      "action_counts": {
+        "HOLD_ONLY": 6,
+        "WAIT": 13,
+        "REDUCE_RISK": 3
+      },
+      "semantic_action_override_count": 0,
+      "incremental_pnl_vs_no_adjustment_usd": {
+        "count": 22,
+        "mean": -4.930314,
+        "median": 0.0,
+        "positive_rate": 0.045455,
+        "sum": -108.4669
+      },
+      "semantic_lift_vs_machine_default_usd": {
+        "count": 22,
+        "mean": 0.0,
+        "median": 0.0,
+        "positive_rate": 0.0,
+        "sum": 0.0
+      },
+      "final_vs_always_add_usd": {
+        "count": 22,
+        "mean": -3.024314,
+        "median": -1.0917,
+        "positive_rate": 0.409091,
+        "sum": -66.5349
+      },
+      "incremental_return_on_position_bps": {
+        "count": 22,
+        "mean": -36.913709,
+        "median": 0.0,
+        "positive_rate": 0.045455,
+        "sum": -812.1016
+      },
+      "semantic_lift_on_position_bps": {
+        "count": 22,
+        "mean": 0.0,
+        "median": 0.0,
+        "positive_rate": 0.0,
+        "sum": 0.0
+      },
+      "final_vs_always_add_on_position_bps": {
+        "count": 22,
+        "mean": -36.164141,
+        "median": -3.67405,
+        "positive_rate": 0.409091,
+        "sum": -795.6111
+      },
+      "ticker_return_bps": {
+        "count": 22,
+        "mean": 19.647764,
+        "median": 28.37025,
+        "positive_rate": 0.590909,
+        "sum": 432.2508
+      }
+    }
+  },
+  "delta_metrics": {
+    "raw_settled_rows_delta": 0,
+    "effective_minus_pre_repair_count": -11,
+    "duplicate_rows_excluded": 11,
+    "strategy_behavior_delta": 0
+  },
+  "checks": {
+    "baseline_had_33_raw_settled_rows": true,
+    "raw_settled_rows_preserved": true,
+    "effective_economic_cohorts_are_22": true,
+    "eleven_duplicate_rows_are_explicit": true,
+    "latest_decision_aggregation_contract_active": true,
+    "raw_outcome_ledger_byte_identical": true,
+    "outcome_rule_unchanged": true,
+    "execution_rule_unchanged": true,
+    "strategy_behavior_unchanged": true,
+    "trade_remains_disabled": true,
+    "early_review_stage_retained": true
+  },
+  "alpha_early_review": {
+    "status": "observed_only_early_negative_no_semantic_lift",
+    "accepted_alpha": false,
+    "raw_settled_rows": 33,
+    "effective_economic_cohorts": 22,
+    "duplicate_rows_excluded": 11,
+    "decision_dates": [
+      "2026-07-12",
+      "2026-07-13"
+    ],
+    "unique_tickers": 11,
+    "top_ticker_share": 0.090909,
+    "semantic_action_overrides": 0,
+    "incremental_pnl_vs_no_adjustment_usd": {
+      "count": 22,
+      "mean": -4.930314,
+      "median": 0.0,
+      "positive_rate": 0.045455,
+      "sum": -108.4669
+    },
+    "semantic_lift_vs_machine_default_usd": {
+      "count": 22,
+      "mean": 0.0,
+      "median": 0.0,
+      "positive_rate": 0.0,
+      "sum": 0.0
+    },
+    "final_vs_always_add_usd": {
+      "count": 22,
+      "mean": -3.024314,
+      "median": -1.0917,
+      "positive_rate": 0.409091,
+      "sum": -66.5349
+    },
+    "daily_portfolio_curve": {
+      "days": 2,
+      "total_pnl_usd": -108.4669,
+      "cumulative_incremental_return_bps": -26.2908,
+      "max_drawdown_usd": -108.4669,
+      "max_drawdown_bps": -26.2908,
+      "curve": [
+        {
+          "date": "2026-07-12",
+          "position_value_base_usd": 42726.58,
+          "daily_pnl_usd": 0.0,
+          "daily_incremental_return_bps": 0.0,
+          "cumulative_pnl_usd": 0.0,
+          "cumulative_incremental_return_bps": 0.0,
+          "drawdown_usd": 0.0,
+          "drawdown_bps": 0.0
+        },
+        {
+          "date": "2026-07-13",
+          "position_value_base_usd": 41256.53,
+          "daily_pnl_usd": -108.4669,
+          "daily_incremental_return_bps": -26.2908,
+          "cumulative_pnl_usd": -108.4669,
+          "cumulative_incremental_return_bps": -26.2908,
+          "drawdown_usd": -108.4669,
+          "drawdown_bps": -26.2908
+        }
+      ]
+    },
+    "interpretation": "The current policy has no identifiable semantic lift because every effective final action equals the machine default. Its three REDUCE_RISK decisions lost net value versus no adjustment; the sample remains an early forward read, not Gate 1-4 alpha evidence."
+  },
+  "headline_metrics": {
+    "checks_passed": 11,
+    "checks_total": 11,
+    "raw_settled_primary_next_close_decisions": 33,
+    "effective_economic_cohorts": 22,
+    "duplicate_rows_excluded": 11,
+    "semantic_action_overrides": 0,
+    "incremental_pnl_vs_no_adjustment_usd": -108.4669,
+    "semantic_lift_vs_machine_default_usd": 0.0,
+    "final_vs_always_add_usd": -66.5349,
+    "strategy_behavior_delta": 0
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/experiments/exp-20260714-010/before_scorecard.json",
+    "note": "Forward measurement repair; canonical three-window strategy is unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "ticker",
+      "decision_timestamp",
+      "execution_time",
+      "horizon",
+      "observation_id",
+      "final_action",
+      "machine_default_action"
+    ],
+    "sentinel_note": "entry_date and target_price remain canonical signal sentinels; this advisory measurement surface does not generate entries."
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_intraday_economic_cohort_dedup",
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "canonical_backtester_changed": false,
+    "counterfactual_outcome_rows_changed": false,
+    "counterfactual_actions_changed": false,
+    "counterfactual_costs_changed": false,
+    "counterfactual_execution_semantics_changed": false,
+    "scorecard_aggregation_repaired": true,
+    "live_orders_changed": false,
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Primary status was scoped to ticker-day, so Saturday and Sunday snapshots that could only execute in the same Monday bar were treated as independent. Latest-pre-execution cohort selection keeps immutable raw rows while removing correlation inflation.",
+    "forbidden_near_neighbor_retry": "Do not reserve another ID for routine scorecard refreshes, raw ticker-day recounts, weekend reslicing, or action-threshold retuning.",
+    "new_evidence_required": "Review stability at 50 effective next-close economic cohorts. Only at 100 effective cohorts may a separately frozen alpha promotion hypothesis be reserved; zero semantic overrides still means the semantic component is unidentified."
+  },
+  "reopen_condition": "50 effective next-close economic cohorts under aggregation rule v1 for stability review; 100 effective cohorts before a frozen Gate 1-4 alpha promotion hypothesis.",
+  "changed_files": [
+    "quant/intraday_backtester.py",
+    "quant/test_intraday_backtester.py",
+    "quant/experiments/exp_20260714_010_intraday_economic_cohort_dedup.py",
+    "data/experiments/exp-20260714-010/before_scorecard.json",
+    "data/experiments/exp-20260714-010/after_scorecard.json",
+    "data/experiments/exp-20260714-010/exp_20260714_010_intraday_economic_cohort_dedup.json",
+    "data/daily/intraday/backtests/latest_scorecard.json",
+    "data/daily/intraday/backtests/scorecards/intraday_triage_scorecard_20260714.json",
+    "data/daily/intraday/backtests/reports/intraday_triage_scorecard_20260714.txt",
+    "experiments/logs/exp-20260714-010.json",
+    "experiments/cards/exp-20260714-010.md",
+    "experiments/manifests/exp-20260714-010.json",
+    "experiments/tickets/exp-20260714-010.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "related_files": [
+    "quant/intraday_backtester.py",
+    "quant/test_intraday_backtester.py",
+    "quant/experiments/exp_20260714_010_intraday_economic_cohort_dedup.py",
+    "data/experiments/exp-20260714-010/before_scorecard.json",
+    "data/experiments/exp-20260714-010/after_scorecard.json",
+    "data/experiments/exp-20260714-010/exp_20260714_010_intraday_economic_cohort_dedup.json",
+    "data/daily/intraday/backtests/latest_scorecard.json",
+    "data/daily/intraday/backtests/scorecards/intraday_triage_scorecard_20260714.json",
+    "data/daily/intraday/backtests/reports/intraday_triage_scorecard_20260714.txt",
+    "experiments/logs/exp-20260714-010.json",
+    "experiments/cards/exp-20260714-010.md",
+    "experiments/manifests/exp-20260714-010.json",
+    "experiments/tickets/exp-20260714-010.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_intraday_backtester.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_010_intraday_economic_cohort_dedup.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "artifact": "data/experiments/exp-20260714-010/exp_20260714_010_intraday_economic_cohort_dedup.json",
+  "log": "experiments/logs/exp-20260714-010.json",
+  "updated_at": "2026-07-14T23:44:16+00:00"
+}

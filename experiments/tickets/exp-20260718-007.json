@@ -1,0 +1,471 @@
+{
+  "acceptance_rule": "Retain only if Gate 2/3 pass, at least 30 funded closed pairs across at least three pair identities, standalone after-cost aggregate EV and PnL are positive with at least two of three windows nonnegative on both, absolute SPY beta is at most 0.10, max drawdown is at most 5 percent, concentration and cash/gross limits pass. It counts as a capital-promoted independent engine only if the cash-conserving 90 percent core plus 10 percent candidate blend also improves aggregate EV and PnL versus 100 percent core with at most one material window regression and no more than 0.5 percentage-point drawdown drift; otherwise it is at most a default-off positive paper candidate, not a new engine.",
+  "allowed_write_scope": [
+    "quant/sec_same_issuer_dual_class_spread_paper_sleeve.py",
+    "quant/test_sec_same_issuer_dual_class_spread_paper_sleeve.py",
+    "quant/experiments/exp_20260718_007_sec_same_issuer_dual_class_spread.py",
+    "data/experiments/exp-20260718-007",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "experiments/tickets/exp-20260718-007.json",
+    "experiments/cards/exp-20260718-007.md",
+    "experiments/manifests/exp-20260718-007.json",
+    "experiments/logs/exp-20260718-007.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260718-007.md",
+  "causal_components": [
+    "official same-CIK non-price linkage",
+    "frozen common-share pair whitelist",
+    "strictly-prior robust premium anchor",
+    "next-open equal-dollar long-short entry",
+    "convergence-stop-timeout exit",
+    "cash collateral",
+    "whole-share execution",
+    "two-leg costs and short carry",
+    "shared historical replay",
+    "daily default-off snapshot",
+    "portfolio contribution diagnostic"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_same_cik_dual_class_robust_premium_spread_v1",
+  "claimed_at": "2026-07-18T21:06:56+00:00",
+  "completed_at": "2026-07-18T21:38:19+00:00",
+  "created_at": "2026-07-18T21:04:13+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260718-007",
+  "experiment_uid": "expuid-94252cadf1da4005",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260718-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-18T21:04:13+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_same_issuer_dual_class_spread"
+  },
+  "hypothesis": "Shared-paper-first market-neutral alpha: for a frozen official-SEC same-CIK whitelist of liquid dual-class common equities with substantially shared economics but different voting rights, a class premium at least 1.0 percent away from its strictly-prior 120-session robust median and robust MAD z-score at least 2.5 should converge; buy the cheap class and short the rich class at the next open with equal cash-collateralized whole-share notionals, then exit on premium convergence, a 3 percent adverse-spread stop, or ten-session timeout, charging 45bp round trip per leg plus 5 percent annualized short carry.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "pair whitelist",
+    "120-session median/MAD",
+    "2.5 robust-z",
+    "1.0pct absolute premium deviation",
+    "next-open",
+    "5k per leg",
+    "one concurrent pair",
+    "10-session pair cooldown",
+    "0.25pct convergence band",
+    "3pct spread stop",
+    "10-session timeout",
+    "45bp round trip per leg",
+    "5pct annualized short carry",
+    "10pct portfolio weight"
+  ],
+  "mechanism_family": "same_issuer_dual_class_relative_value",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "existing paper sleeve semantics"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260708-025",
+    "exp-20260718-004"
+  ],
+  "new_evidence_type": "new_official_sec_same_cik_non_price_pair_linkage_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "45bp",
+        "a",
+        "adverse",
+        "alpha",
+        "annualized",
+        "at",
+        "away",
+        "but",
+        "buy",
+        "carry",
+        "cash",
+        "charging",
+        "cheap",
+        "cik",
+        "class",
+        "collateralized",
+        "common",
+        "converge",
+        "convergence",
+        "different",
+        "dual",
+        "economics",
+        "equal",
+        "equities",
+        "exit",
+        "first",
+        "from",
+        "frozen",
+        "issuer",
+        "its",
+        "least",
+        "leg",
+        "liquid",
+        "mad",
+        "market",
+        "median",
+        "neutral",
+        "notionals",
+        "of",
+        "official",
+        "on",
+        "or",
+        "per",
+        "percent",
+        "plus",
+        "premium",
+        "prior",
+        "relative",
+        "rich",
+        "rights",
+        "robust",
+        "round",
+        "same",
+        "score",
+        "session",
+        "share",
+        "short",
+        "should",
+        "spread",
+        "stop",
+        "strictly",
+        "substantially",
+        "ten",
+        "then",
+        "timeout",
+        "trip",
+        "value",
+        "voting",
+        "whitelist",
+        "whole",
+        "z"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "alpha_score_market_regime_source_consensus_support",
+        "reopen_condition": "If positive, add a shared default-off source-consensus adapter and collect forward replacement-value rows. If rejected, do not retune the scalar on these frozen windows.",
+        "score": 0.1658,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.1654,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "alpha_score_market_regime_external_macro_context",
+        "reopen_condition": "If revisiting macro context, first add shared production/backtest VIX ingestion and only then test forward replacement rows. Do not retune VIX thresholds on this frozen sample.",
+        "score": 0.165,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "post_scalar_direction_gate",
+        "reopen_condition": null,
+        "score": 0.1632,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_open_crowding_paper_allocation",
+        "reopen_condition": "If rejected, do not retry adjacent same-sector support scalars without new forward closed outcomes. Next broad-market data edge should use a distinct field such as industry-level leadership breadth or cost-adjusted replacement value.",
+        "score": 0.1605,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source and pair-linkage axis: official SEC same-CIK multi-share-class issuer identity plus a frozen common-equity rights whitelist. Prior exp-20260708-025 used only trailing price correlation in chop and explicitly required a non-price linkage source; exp-20260718-004 used ORTEX/Moomoo borrow-pressure clusters. This source names a structural same-issuer economic relation before price outcomes and is not a threshold retune of either family.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source and pair-linkage axis: official SEC same-CIK multi-share-class issuer identity plus a frozen common-equity rights whitelist. Prior exp-20260708-025 used only trailing price correlation in chop and explicitly required a non-price linkage source; exp-20260718-004 used ORTEX/Moomoo borrow-pressure clusters. This source names a structural same-issuer economic relation before price outcomes and is not a threshold retune of either family.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source and pair-linkage axis: official SEC same-CIK multi-share-class issuer identity plus a frozen common-equity rights whitelist. Prior exp-20260708-025 used only trailing price correlation in chop and explicitly required a non-price linkage source; exp-20260718-004 used ORTEX/Moomoo borrow-pressure clusters. This source names a structural same-issuer economic relation before price outcomes and is not a threshold retune of either family.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The economic link is materially stronger than price-correlation pairs because both securities share one SEC CIK and issuer economics, and exp-20260708-025 explicitly named a new non-price linkage as a legal reopen axis. Odds remain modest because voting premiums can be persistent, liquid class spreads are small, short feasibility is not historically observed, and a market-neutral sleeve must overcome two-leg costs plus a very strong cash-feasible core comparator.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "dual_class_premium_is_persistent_not_transitory",
+      "two_leg_costs_and_short_carry_consume_gross_edge",
+      "too_few_extreme_spreads",
+      "one_pair_concentration",
+      "current_sec_identity_not_effective_dated",
+      "core_opportunity_cost_not_covered"
+    ],
+    "recorded_at": "2026-07-18T21:02:40+00:00",
+    "success_probability": 0.25
+  },
+  "pre_run_policy_clarifications": {
+    "frozen_pair_whitelist": [
+      {
+        "cik": "0001652044",
+        "pair": [
+          "GOOG",
+          "GOOGL"
+        ]
+      },
+      {
+        "cik": "0001754301",
+        "pair": [
+          "FOX",
+          "FOXA"
+        ]
+      },
+      {
+        "cik": "0001564708",
+        "pair": [
+          "NWS",
+          "NWSA"
+        ]
+      },
+      {
+        "cik": "0000046619",
+        "pair": [
+          "HEI",
+          "HEI-A"
+        ]
+      },
+      {
+        "cik": "0001617640",
+        "pair": [
+          "Z",
+          "ZG"
+        ]
+      },
+      {
+        "cik": "0001336917",
+        "pair": [
+          "UA",
+          "UAA"
+        ]
+      }
+    ],
+    "identity_contract": "Parse the official SEC company-tickers snapshot as one CIK to many tickers, assert each allowlisted pair shares the frozen CIK, and bind the source file hash. Do not auto-trade other same-CIK symbols, preferreds, warrants, units, OTC duplicates, or leveraged products.",
+    "price_provenance_contract": "Audit all six identity candidates before outcomes. GOOG/GOOGL is identity-verified but excluded from the economic replay and daily eligible-pair policy because the two legs are not from one provider/adjustment vintage and later hot data revised one leg by about 6bp. The fixed economically admitted set is FOX/FOXA, NWS/NWSA, HEI/HEI-A, Z/ZG, and UA/UAA. GOOG/GOOGL may reopen only after both legs are reacquired in one batch/vintage and the exp-local panel is hash-bound.",
+    "signal_contract": "At each signal close, freeze the strictly-prior 120-session log-price-ratio median and scaled MAD. Require robust |z| >= 2.5 and absolute premium distance from the frozen median >= 1.0 percent.",
+    "selection_contract": "Maintain at most one open or pending pair. At a signal close with neither, rank all eligible pairs by descending absolute robust z-score and then ascending pair_id, and schedule only the first for the next session open. Signals observed while a pair is open or pending are discarded rather than queued.",
+    "cooldown_contract": "After a pair exits, it is ineligible on the next ten complete trading sessions and may signal again on the following session.",
+    "risk_contract": "Funded-close concentration must have maximum pair-identity share <= 0.50 and pair-identity HHI <= 0.35. Entry marked gross must not exceed the $10,000 candidate initial NAV, cash may never be negative, and concurrent open-or-pending pairs may never exceed one.",
+    "entry_contract": "$5,000 per leg is a cap. Whole-share leg quantities must be deterministically downscaled until long basis plus equal short collateral plus entry costs fits the $10,000 candidate cash account; short proceeds are never reusable.",
+    "sizing_contract": "Require long/short entry-dollar imbalance <=5 percent. Among feasible whole-share quantities, maximize the smaller leg notional, then total gross, then prefer lower imbalance, with deterministic share-count tie breaks.",
+    "exit_contract": "Close when premium distance to the frozen entry anchor is <=0.25 percent, when the log spread moves an additional 3 percent adversely from entry, or at the close of entry session plus nine (ten held sessions).",
+    "window_boundary_contract": "Historical fixed-window measurement cancels an unfilled pending entry and force-closes any open pair at the final replay-session close with the normal exit charge and accrued short carry, labeled window_end_force_close. This is a no-lookahead measurement boundary only; the daily paper policy has no calendar-window exit.",
+    "cost_contract": "Charge 45bp all-in round trip per leg plus 5 percent annualized short carry on initial short notional for inclusive calendar days / 365.",
+    "pit_caveat": "The SEC ticker snapshot is current rather than effective-dated. Historical evidence is conditional on the frozen whitelist and exact contemporaneous bars; no live-ready claim is allowed without effective-dated identity and broker locate/size evidence."
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "decision": "rejected_same_issuer_dual_class_spread_economics",
+    "status": "rejected",
+    "accepted_alpha": false,
+    "independent_engine_counted": false,
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/experiments/exp-20260718-007/exp_20260718_007_sec_same_issuer_dual_class_spread.json",
+    "artifact_sha256": "ef90bf2a16b90a64e5c64b3c91ceb395b972d6cd123ccc0ca108b4db89936802",
+    "cold_panel_file": "data/experiments/exp-20260718-007/cold_ohlcv_panel.json",
+    "cold_panel_sha256": "d63c8d1cac9f44de0e2049c09c04ca76cdebf7d6d8c377150588fc257d4c3e6c",
+    "before_metrics": {
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "candidate_metrics": {
+      "expected_value_score": -0.4463,
+      "total_pnl": -1454.49,
+      "gross_pnl": -248.04409758464772,
+      "trade_cost": 1001.0249908084979,
+      "short_carry": 205.4185694185324,
+      "funded_closed_pairs": 23,
+      "pair_identities": 5,
+      "nonnegative_ev_and_pnl_windows": 0,
+      "worst_max_drawdown_pct": 0.0777,
+      "spy_beta": 0.010454678658053737,
+      "exit_reason_counts": {
+        "max_hold_timeout": 20,
+        "adverse_spread_stop": 2,
+        "window_end_force_close": 1,
+        "spread_converged": 0
+      }
+    },
+    "after_metrics": {
+      "expected_value_score": 5.3236,
+      "total_pnl": 113458.64,
+      "worst_max_drawdown_pct": 0.0822
+    },
+    "delta_metrics": {
+      "expected_value_score": -0.8821,
+      "total_pnl_vs_recomputed_core": -17533.71,
+      "material_regressed_window_count": 3
+    },
+    "gate2_passed": true,
+    "gate3_passed": true,
+    "standalone_acceptance_passed": false,
+    "portfolio_promotion_passed": false,
+    "rejection_reasons": [
+      "funded_closed_pairs_23_lt_30",
+      "standalone_ev_and_pnl_negative",
+      "zero_of_three_nonnegative_ev_and_pnl_windows",
+      "standalone_drawdown_7_77pct_gt_5pct",
+      "portfolio_ev_and_pnl_worse",
+      "three_material_window_regressions"
+    ],
+    "post_reservation_fingerprint": {
+      "data_source": "sec_same_cik_share_class_identity",
+      "gate_shape": "pair_spread",
+      "reservation_classifier_caveat": "The ticket originally recorded other/notional_scalar; the same experiment repaired the classifier before close and rebuilt frozen families.",
+      "focused_test_count": 211
+    },
+    "calibration": {
+      "actual_decision": "rejected_same_issuer_dual_class_spread_economics",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.1,
+      "actual_ev_delta": -0.8821,
+      "ev_prediction_error": -0.9821,
+      "expected_pnl_delta": 500.0,
+      "actual_pnl_delta": -17533.71,
+      "pnl_prediction_error": -18033.71,
+      "predicted_failure_modes": [
+        "dual_class_premium_is_persistent_not_transitory",
+        "two_leg_costs_and_short_carry_consume_gross_edge",
+        "too_few_extreme_spreads",
+        "one_pair_concentration",
+        "current_sec_identity_not_effective_dated",
+        "core_opportunity_cost_not_covered"
+      ],
+      "realized_failure_mode": "persistent_premium_no_convergence_plus_two_leg_cost_drag",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "No funded trade reached the convergence exit; gross PnL was already negative before more than $1,200 of trade cost and carry."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "Twenty of 23 pairs timed out and none reached the convergence band. Gross PnL was -$248 before $1,001 of trading cost and $205 of carry, so the structural identity relation did not imply ten-session convergence.",
+      "forbidden_near_neighbor_retry": "Do not sweep lookback, z, distance, band, stop, hold, cooldown, pair subset, costs, direction, or portfolio weight on this same cold panel.",
+      "new_evidence_required": "A genuinely different economic anchor/gate shape, or at least 35 new pre-frozen prospective settled pairs across five identities with effective-dated identity and broker locate/size. A GOOG/GOOGL provenance refreeze alone is insufficient."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260718-007.json",
+  "single_causal_variable": "sec_same_cik_dual_class_robust_premium_spread_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260718-007.json",
+  "trial_family": "sec_same_issuer_dual_class_spread_convergence",
+  "trial_variant_id": "robust120_z250_abs100bp_nextopen_converge25bp_stop300bp_timeout10_v1"
+}

@@ -27,16 +27,17 @@ multiple docs.
 
 1. Read the startup sources from `AGENTS.md`.
 2. Answer the five pre-run questions in the ticket, card, artifact, or log.
-3. Reserve an ID before writing runner, artifact, data, ticket, or log files.
-4. Claim the ticket before work when other agents may be active.
-5. For production-visible candidate-pool or paper-sleeve alpha, use the
+3. For `alpha_search`, `alpha_discovery`, or `universe_scout`, first complete the outcome-blind D0-D3 panel and tracked promotion request. These discovery artifacts do not consume an experiment ID; multi-model debate is not required.
+4. Reserve an ID before writing runner, artifact, data, ticket, or log files.
+5. Claim the ticket before work when other agents may be active; claim revalidates the promotion proof.
+6. For production-visible candidate-pool or paper-sleeve alpha, use the
    full-stack candidate-pool contract by default.
-6. Implement the single predeclared decision hypothesis or policy bundle.
-7. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md`.
-8. Record production impact and parity boundary.
-9. Write artifact, log, card, ticket, manifest, and JSONL closeout.
-10. Run `scripts/experiment.py audit --lean-strict`.
-11. Commit when the task or automation requires a committed experiment result.
+7. Implement the single predeclared decision hypothesis or policy bundle.
+8. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md`.
+9. Record production impact and parity boundary.
+10. Write artifact, log, card, ticket, manifest, and JSONL closeout.
+11. Run `scripts/experiment.py audit --lean-strict`.
+12. Commit when the task or automation requires a committed experiment result.
 
 ## Reserve
 
@@ -46,6 +47,7 @@ paper-sleeve ideas:
 ```powershell
 .\.venv\Scripts\python.exe -B scripts\experiment.py new `
   --lane alpha_search `
+  --promotion-request data\alpha_search\promotions\<promotion>.json `
   --hypothesis "One sentence hypothesis." `
   --change-type candidate_pool_full_stack `
   --decision-variable "single decision hypothesis or fixed policy bundle" `
@@ -57,13 +59,53 @@ paper-sleeve ideas:
   --confidence-reason "Mechanism, prior evidence, and disconfirmers."
 ```
 
+`--promotion-request` is mandatory for new alpha/scout tickets. It is produced
+only after a complete candidate pool has passed D0-D3 and been frozen into a
+one-winner selection panel. The request binds the ticket proposal, candidate,
+panel, external-context inputs, source-readiness/PIT evidence, and
+`research_refs` by hash. Missing, outcome-contaminated, revoked, or tampered
+artifacts fail before ticket creation. Multi-model debate and launcher receipts
+are not admission requirements and supply no novelty, saturation, recipe-lane,
+reopen, or in-flight override.
+
+The promotion request and every durable artifact it names must live under the
+repository root; a temporary or external absolute path is rejected. Claim and
+audit reopen the frozen tracked files and recompute their hashes. Optional
+mailbox discussion is temporary coordination only and is not part of the
+admission proof.
+
+There are two machine-bound admission classes. A selected `gate_candidate`
+backed by `canonical_pit` receives normal canonical promotion. A selected
+`lead` whose registered dependencies are all `research_pit` or
+`canonical_pit` (with at least one `research_pit`) may receive only
+`research_replay` admission, and only when `--change-type
+private_replay_scout` is predeclared. The latter freezes
+`result_ceiling=observed_only` and `paper_live_eligible=false`; reserve, claim,
+audit, and close all revalidate that boundary. It authorizes historical
+measurement, not shared policy, default-off paper, activation, or live work.
+See [`research_pit_policy.md`](research_pit_policy.md).
+
+Research-only reservation uses the same hash-bound request and normal alpha lane:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\experiment.py new `
+  --lane alpha_search `
+  --promotion-request data\alpha_search\promotions\<research-replay>.json `
+  --hypothesis "One timestamped-history hypothesis." `
+  --change-type private_replay_scout `
+  --decision-variable "one frozen research-only policy" `
+  --success-probability 0.25 `
+  --main-failure-modes "no_gross_edge,known_temporal_leakage,not_incremental" `
+  --confidence-reason "Mechanism, timestamp basis, vintage caveat, and falsifier."
+```
+
 Use `--change-type candidate_pool_full_stack` as the default for
 production-visible default-off candidate-pool or paper-sleeve alpha. Choose a
 different alpha change type only when the decision variable is not a
 candidate-pool source, paper sleeve, source allocator, or replacement-value
-route. Mark the ticket `implementation_mode=private_replay_scout` only when the
-data shape is genuinely uncertain or the idea is too speculative to justify the
-shared helper up front; record that escape reason before running the scout.
+route. Use `change_type=private_replay_scout` only for `research_pit`, uncertain
+data shape, or an idea too speculative to justify the shared helper up front;
+record the escape reason and canonical blockers before running the scout.
 
 For measurement repair:
 
@@ -101,6 +143,24 @@ Escape hatches: `--no-enforce-novelty` makes a single reservation warn-only;
 `=block`/`1` forces it. The check fails safe — if the tooling/registry is
 missing it silently skips. Check ad hoc with
 `scripts/check_experiment_novelty.py --describe "..." --trial-family ...`.
+
+### In-flight duplicate gate (concurrent/self-retry reservations)
+
+The frozen-family data above only covers **closed** experiments, so two
+concurrent agents — or one agent retrying a reserve call that actually
+succeeded asynchronously — could reserve the same hypothesis twice; the loser
+burned the ID as `duplicate_reservation_accounting` (AGENTS.md §7). Since
+exp-20260714-007, `experiment.py new` also fingerprints every **open**
+(proposed/claimed/running) ticket whose ID date is within the last 7 days and
+**refuses the reservation on every lane** when the best score (classified
+distance or raw field-tag Jaccard, whichever is higher) reaches **0.65**.
+Calibration on real pairs: true duplicates score 0.75–0.95, related but
+legitimately distinct same-family neighbors ≤ 0.51. Stale proposed tickets
+older than the window never block. Tune with `GINGER_IN_FLIGHT_DUP_THRESHOLD`
+/ `GINGER_IN_FLIGHT_WINDOW_DAYS`; if the open ticket is genuinely different
+work, re-run with `--in-flight-duplicate-override` (recorded on the ticket).
+When it fires, the right response is usually to read the open ticket and
+coordinate via `scripts/agent_mailbox.py`, not to override.
 
 ### Source-saturation gate (anti-field-churn)
 
@@ -141,9 +201,11 @@ Preferred command:
 ```
 
 `scripts/experiment.py claim` delegates to `scripts/claim_experiment.py`, which
-checks active ticket conflicts by `allowed_write_scope` and `locked_variables`.
-Do not bypass a conflict unless you can prove the active work cannot touch the
-same behavior.
+first reopens and re-hashes the alpha promotion and panel artifacts,
+then checks active ticket conflicts by `allowed_write_scope` and
+`locked_variables`. `--force` can bypass only a proven write-scope conflict; it
+cannot bypass missing or changed discovery evidence. Do not bypass a conflict
+unless you can prove the active work cannot touch the same behavior.
 
 ## Lean Alpha Contract
 
@@ -214,9 +276,11 @@ Minimum implementation:
   forward default-off observation.
 
 Positive private replay scouts are allowed only when data shape is uncertain or
-the idea is too speculative to justify a helper. A positive scout must be
+the source is `research_pit` or the idea is too speculative to justify a helper.
+A positive scout must be
 recorded as `positive_replay_lead_not_promoted`, explain why shared-paper-first
-was skipped, and name the exact helper/parity work required.
+was skipped, name the exact canonical-PIT/helper/parity work required, and close
+as `observed_only` rather than `accepted`.
 
 ## Data-Edge Promotion
 
@@ -236,17 +300,20 @@ capital, answer:
 6. Does the change pass `docs/backtesting.md` Gate 1-4?
 7. Is the experiment recorded whether accepted or rejected?
 
-If the answer to 1-4 is no, keep the field read-only and continue accumulating
-history. If the field is already PIT-safe, replayable, and easy for daily output
-to emit, do not force passive-only staging; start the serious test as a
-shared-paper-first helper.
+If the field has no decision timestamp or has known future leakage, it cannot
+produce alpha evidence. If it is authorized, timestamped, replayable, and has no
+known leakage but its as-known vintage is unverified, use a research-only replay.
+If it is `canonical_pit` and easy for daily output to emit, do not force
+passive-only staging; start the serious test as a shared-paper-first helper.
 
 ## Full-Stack Candidate-Pool Contract
 
 For production-visible candidate-pool alpha, the one-shot full-stack contract
 is the default experiment specification, not a follow-up promotion path. Start
-here when the candidate source can be computed point-in-time and exposed by the
-daily default-off path.
+here only when the candidate source is `canonical_pit` and can be exposed by the
+daily default-off path. A `research_pit` replay may use the same metrics for
+diagnosis, but its verdict is `research_only`, never
+`accepted_paper_pending_forward` or `live_eligible`.
 
 - Template: `quant/experiments/_templates/candidate_pool_full_stack_template.py`
 - Verdict helper: `quant/full_stack_candidate_pool.py`
@@ -280,6 +347,16 @@ Verdicts:
 
 An incomplete execution envelope blocks only `live_eligible`; it does not block
 `accepted_paper_pending_forward`. Declare the envelope up front anyway.
+
+Within this full-stack candidate-pool contract, Gate 5 also requires
+trial-adjusted significance evidence: a computed DSR of
+at least `0.95`, backed by a complete explicit selection pool, a non-empty
+panel hash, and a selection-scope ID.  Missing or sub-threshold evidence blocks
+only `live_eligible`; it does not overturn Gate 4 or default-off paper
+acceptance.  Do not synthesize DSR from `prior_trial_count` or rounded Sharpe
+summaries. The verdict helper consumes the full CLI report and recomputes its
+retained panel; a summary dict alone is not evidence. The full contract is
+`docs/deflated_sharpe_protocol.md`.
 
 Gate-4 evaluation note: `evaluate_gate4` includes the AGENTS.md scout
 materiality floor (>= $500 average per-trade PnL delta or >= 5pp average return
@@ -368,7 +445,9 @@ Active alpha automation should run:
 .\.venv\Scripts\python.exe -B scripts\experiment.py audit --lean-strict
 ```
 
-`lean_quality_passed` is the actionable verdict. Historical debt is visibility
+`lean_quality_passed` remains the prediction/reflection quality sub-verdict.
+`lean_strict_passed` is the actionable end-of-turn verdict: it also requires
+the machine-enforced alpha playbook contract. Historical debt is visibility
 only unless the audit says it blocks current post-enforcement work.
 
 Self-registration guard:

@@ -9,6 +9,7 @@ from quant.moomoo_capital_flow_paper_sleeve import (
     empty_moomoo_capital_flow_paper_state,
     flow_rows_by_ticker,
     normalise_flow_rows,
+    refresh_moomoo_capital_flow_archive,
     replay_moomoo_capital_flow_paper_trades,
 )
 
@@ -277,3 +278,41 @@ def test_normalise_flow_rows_maps_vendor_timestamp():
     )
     assert rows and rows[0]["flow_date"] == "2026-03-30"
     assert rows[0]["ticker"] == "US.STRONG"
+
+
+def test_refresh_attempts_each_new_session_instead_of_waiting_three_days():
+    existing = [
+        {
+            "ticker": "STRONG",
+            "flow_date": "2026-07-20",
+            "main_in_flow": 1_000.0,
+            "fetched_at": "2026-07-21T01:00:00+00:00",
+        }
+    ]
+    calls: list[dict] = []
+
+    def _fetch(**kwargs):
+        calls.append(kwargs)
+        return (
+            [
+                {
+                    "ticker": "STRONG",
+                    "flow_date": "2026-07-21",
+                    "main_in_flow": 2_000.0,
+                    "fetched_at": "2026-07-22T01:00:00+00:00",
+                }
+            ],
+            [{"ticker": "STRONG", "row_count": 2}],
+        )
+
+    rows, status, _ = refresh_moomoo_capital_flow_archive(
+        existing_rows=existing,
+        tickers={"STRONG"},
+        as_of="2026-07-21",
+        fetch_fn=_fetch,
+        save=False,
+    )
+
+    assert status == "local_archive_refreshed"
+    assert calls == [{"tickers": {"STRONG"}, "start": "2026-07-20", "end": "2026-07-21"}]
+    assert max(row["flow_date"] for row in rows) == "2026-07-21"

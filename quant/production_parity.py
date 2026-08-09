@@ -1060,6 +1060,16 @@ def build_followthrough_addon_actions(
 
     for pos in _positive_positions(open_positions):
         ticker = str(pos.get("ticker", "")).upper()
+        if not position_consumes_core_slot(pos):
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "not_core_strategy_position",
+                "sleeve": _position_sleeve(pos),
+                "slot_policy": pos.get("slot_policy"),
+            })
+            continue
+
         df = (ohlcv_dict or {}).get(ticker)
         if df is None or len(df) == 0:
             audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_ohlcv"})

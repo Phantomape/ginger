@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "exit_lifecycle_h5_settlement_forward_20260806",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context"
+      ],
+      "artifacts": [
+        "data/alpha_search/exit_lifecycle_reopen_readiness_20260806.json"
+      ],
+      "pit_status": "settled_forward_sufficient",
+      "evidence_grade": "observed_only",
+      "settled_count": 281,
+      "independent_count": 281,
+      "candidate_overlap_count": 281,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "held_position_carry_through_h5_close",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "The post-2026-06-30 cohort crossed the exp-20260722-001 declared 212/30/21 reopen bar for the first time (281 settled/40 advisory/22 hard-stop); this one frozen attribution consumes that maturation, and any further review requires the bars declared at closeout of the consuming experiment.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T16:20:00Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/exit_lifecycle_reopen_readiness_20260806.json": "f00c2e32d51f4aa7399566d1dd153fd1fba126b9d43e7dfdc27c28236dd79961"
+      }
+    },
+    {
+      "surface_id": "exit_lifecycle_advisory_state_forward_20260806",
+      "data_source": "exit_lifecycle",
+      "component_sources": [
+        "exit_lifecycle"
+      ],
+      "roles": [
+        "independent_evidence",
+        "portfolio_exposure",
+        "risk_action"
+      ],
+      "artifacts": [
+        "data/alpha_search/exit_lifecycle_reopen_readiness_20260806.json"
+      ],
+      "pit_status": "settled_forward_sufficient",
+      "evidence_grade": "observed_only",
+      "settled_count": 281,
+      "independent_count": 281,
+      "candidate_overlap_count": 40,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Advisory-severity buckets (none/high_urgency/hard_stop) are produced daily by the production shadow log with decision timestamps preceding H5 settlement; the matured cohort holds 40 advisory and 22 hard-stop settled rows against the declared 30/21 bar.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T16:20:00Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/exit_lifecycle_reopen_readiness_20260806.json": "f00c2e32d51f4aa7399566d1dd153fd1fba126b9d43e7dfdc27c28236dd79961"
+      }
+    }
+  ]
+}

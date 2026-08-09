@@ -1,0 +1,45 @@
+{
+  "after": {
+    "entry_date": "2026-07-02",
+    "invalid_reason": "stale lot: 200 shares were fully sold 2026-07-08 and 50 shares were rebought 2026-07-10",
+    "ticker": "SNXX"
+  },
+  "before": {
+    "entry_date": null,
+    "ticker": "SNXX"
+  },
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_entry_date_live_drift_fallback_v1",
+  "checks": {
+    "average_cost_preserved": true,
+    "current_snapshot_entry_date_repaired": false,
+    "ledger_position_id_recovers_entry_date": false,
+    "shares_preserved": true,
+    "target_price_preserved": true
+  },
+  "decision": "rejected_invalidated_stale_position_id_not_lot_identity",
+  "experiment_id": "exp-20260711-006",
+  "hypothesis": "Repair the moomoo open-position entry-date contract so a currently held position whose recent deal reconstruction and prior snapshot both miss entry_date deterministically recovers the last known entry_date from the append-only live-drift ledger by position_id/ticker; this unblocks Gate 2 without changing trades, levels, sizing, or orders.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "invalidated_by": "exp-20260711-009",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use broker position_id or ticker history as lot identity after a full close and reopen.",
+    "new_evidence_required": "Use exp-20260711-009 current-quantity anchored backward fill reconstruction; a future repair needs a concrete unresolved corporate-action or transfer case.",
+    "why_result_happened": "The same position_id was reused after the July 2 lot was fully sold July 8 and a new 50-share lot was bought July 10, so the ledger fallback selected a stale lot."
+  },
+  "production_impact": {
+    "exit_levels_changed": false,
+    "measurement_only": true,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_moomoo_open_positions.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_006_moomoo_entry_date_live_drift_fallback.py"
+  ],
+  "single_causal_variable": "moomoo_entry_date_live_drift_fallback_v1",
+  "status": "rejected"
+}

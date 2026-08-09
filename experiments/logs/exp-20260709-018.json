@@ -1,0 +1,808 @@
+{
+  "acceptance_rule": "Accepted measurement repair only if >=30 accepted SBC target trades have same-date local SEC filing text, >=20 trades have numeric grant-date fair-value or fair-value-of-awards evidence, >=2 canonical windows have >=5 numeric evidence rows, and no single ticker supplies >40% of numeric evidence. This does not accept an alpha; it only authorizes a future fixed grant-value normalization parser plus Gate 1-4.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "max_single_ticker_numeric_share": 0.0,
+    "numeric_grant_value_trades": 0,
+    "text_matched_trades": 21,
+    "windows_with_numeric_minimum": 0
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_018_sbc_grant_value_normalization_readiness.py",
+    "data/experiments/exp-20260709-018/exp_20260709_018_sbc_grant_value_normalization_readiness.json",
+    "data/experiments/exp-20260709-018/sbc_grant_value_text_matches.jsonl",
+    "experiments/logs/exp-20260709-018.json",
+    "experiments/cards/exp-20260709-018.md",
+    "experiments/manifests/exp-20260709-018.json",
+    "experiments/tickets/exp-20260709-018.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/frozen_families.jsonl"
+  ],
+  "alpha_hypothesis": "alpha_blocker/measurement_repair: accepted SBC burden improvement can only legally reopen with grant-value normalization, richer option/vesting context, or materially more closed forward outcome evidence. Audit whether local SEC filing text already contains enough grant-date fair-value and equity-award evidence on the accepted exp-20260616-015 target trades to support one future fixed shared parser and Gate 1-4 run.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "accepted_sbc_target_trade_summary": {
+      "by_ticker_count": {
+        "AMD": 16,
+        "CRDO": 11,
+        "DDOG": 10,
+        "MRVL": 13,
+        "MU": 13,
+        "NOW": 10,
+        "NVDA": 27,
+        "PLTR": 8
+      },
+      "by_ticker_pnl": {
+        "AMD": 6433.62,
+        "CRDO": 518.84,
+        "DDOG": 833.45,
+        "MRVL": 2893.08,
+        "MU": 2652.27,
+        "NOW": 174.61,
+        "NVDA": 131.89,
+        "PLTR": 2110.43
+      },
+      "by_window_pnl": {
+        "late_strong": 6269.93,
+        "mid_weak": 8388.43,
+        "old_thin": 1089.83
+      },
+      "max_single_positive_pnl_share": 0.408531,
+      "positive_by_ticker_pnl": {
+        "AMD": 6433.62,
+        "CRDO": 518.84,
+        "DDOG": 833.45,
+        "MRVL": 2893.08,
+        "MU": 2652.27,
+        "NOW": 174.61,
+        "NVDA": 131.89,
+        "PLTR": 2110.43
+      },
+      "positive_pnl_hhi": 0.251049,
+      "total_pnl": 15748.19,
+      "total_trade_count": 108,
+      "windows_with_target_trades": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ]
+    },
+    "accepted_sbc_target_trades": 108
+  },
+  "causal_components": [
+    "accepted_sbc_burden_target_trades",
+    "sec_filing_text_join_by_ticker_and_sbc_current_sbc_filed",
+    "grant_date_fair_value_text_parser_readiness",
+    "equity_award_vesting_context_coverage",
+    "no_sbc_threshold_rank_allocator_or_order_change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260709_018_sbc_grant_value_normalization_readiness.py",
+    "data/experiments/exp-20260709-018/exp_20260709_018_sbc_grant_value_normalization_readiness.json",
+    "data/experiments/exp-20260709-018/sbc_grant_value_text_matches.jsonl",
+    "experiments/logs/exp-20260709-018.json",
+    "experiments/cards/exp-20260709-018.md",
+    "experiments/manifests/exp-20260709-018.json",
+    "experiments/tickets/exp-20260709-018.json"
+  ],
+  "changed_variable": "sbc_grant_value_normalization_text_surface_readiness_v1",
+  "coverage": {
+    "accepted_sbc_target_trades": 108,
+    "best_form_counts": {
+      "8-K": 21
+    },
+    "by_window": {
+      "late_strong": {
+        "grant_value_evidence_trades": 0,
+        "numeric_grant_value_trades": 0,
+        "target_trades": 40,
+        "text_matched_trades": 9,
+        "tickers_with_numeric_evidence": []
+      },
+      "mid_weak": {
+        "grant_value_evidence_trades": 0,
+        "numeric_grant_value_trades": 0,
+        "target_trades": 46,
+        "text_matched_trades": 11,
+        "tickers_with_numeric_evidence": []
+      },
+      "old_thin": {
+        "grant_value_evidence_trades": 0,
+        "numeric_grant_value_trades": 0,
+        "target_trades": 22,
+        "text_matched_trades": 1,
+        "tickers_with_numeric_evidence": []
+      }
+    },
+    "criteria": {
+      "max_single_ticker_numeric_share": {
+        "actual": 0.0,
+        "passed": true,
+        "threshold": 0.4
+      },
+      "min_numeric_grant_value_trades": {
+        "actual": 0,
+        "passed": false,
+        "threshold": 20
+      },
+      "min_text_matched_trades": {
+        "actual": 21,
+        "passed": false,
+        "threshold": 30
+      },
+      "min_windows_with_numeric": {
+        "actual": 0,
+        "passed": false,
+        "per_window_minimum": 5,
+        "threshold": 2
+      }
+    },
+    "equity_award_context_trades": 21,
+    "evidence_type_counts": {
+      "equity_award_context_only": 21
+    },
+    "grant_value_evidence_trades": 0,
+    "max_single_ticker_numeric_share": 0.0,
+    "numeric_by_ticker": {},
+    "numeric_grant_value_share": 0.0,
+    "numeric_grant_value_trades": 0,
+    "passed": false,
+    "text_match_share": 0.194444,
+    "text_matched_trades": 21,
+    "unique_tickers": 8,
+    "windows_with_numeric_minimum": 0
+  },
+  "decision": "blocked_sbc_grant_value_surface_not_ready",
+  "delta_metrics": {
+    "measurement_surface_numeric_rows": 0,
+    "strategy_expected_value_score_delta_sum": 0.0,
+    "strategy_total_pnl_delta_sum": 0.0,
+    "strategy_trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-018",
+  "gate1": {
+    "baseline": "accepted_exp_20260616_015_sbc_burden_improvement_shared_adapter",
+    "baseline_artifact": "data/experiments/exp-20260616-015/exp_20260616_015_sbc_burden_improvement_shared_adapter.json",
+    "canonical_protocol_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "metrics": {
+      "after_windows": {
+        "late_strong": {
+          "expected_value_score": 5.6366,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 123342.85,
+          "trade_count": 18
+        },
+        "mid_weak": {
+          "expected_value_score": 2.5777,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 86498.54,
+          "trade_count": 21
+        },
+        "old_thin": {
+          "expected_value_score": 0.6236,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "total_pnl": 40757.79,
+          "trade_count": 22
+        }
+      },
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "source_experiment": "exp-20260616-015",
+      "survival_rate": 0.823171,
+      "target_trade_count": 108
+    }
+  },
+  "gate2": {
+    "field_contract": "read_only_sec_text_join_no_executable_signal_contract_change",
+    "missing_trade_field_counts": {
+      "entry_date": 0,
+      "sbc_current_revenue_value": 0,
+      "sbc_current_sbc_filed": 0,
+      "sbc_current_sbc_value": 0,
+      "sbc_sbc_ratio_improvement": 0,
+      "signal_date": 0,
+      "ticker": 0
+    },
+    "passed": true,
+    "required_sec_text_fields": [
+      "ticker",
+      "filing_date",
+      "form_base",
+      "accession_number",
+      "primary_document",
+      "combined_text",
+      "text_word_count"
+    ],
+    "required_source_trade_fields": [
+      "ticker",
+      "signal_date",
+      "entry_date",
+      "sbc_current_sbc_filed",
+      "sbc_current_sbc_value",
+      "sbc_current_revenue_value",
+      "sbc_sbc_ratio_improvement"
+    ],
+    "sentinel_entry_date_present": true,
+    "target_price_contract_changed": false
+  },
+  "gate3": {
+    "baseline_survival": {
+      "after_windows": {
+        "late_strong": {
+          "expected_value_score": 5.6366,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 123342.85,
+          "trade_count": 18
+        },
+        "mid_weak": {
+          "expected_value_score": 2.5777,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 86498.54,
+          "trade_count": 21
+        },
+        "old_thin": {
+          "expected_value_score": 0.6236,
+          "signals_generated": 60,
+          "signals_survived": 52,
+          "survival_rate": 0.8667,
+          "total_pnl": 40757.79,
+          "trade_count": 22
+        }
+      },
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "source_experiment": "exp-20260616-015",
+      "survival_rate": 0.823171,
+      "target_trade_count": 108
+    },
+    "new_filters_added": false,
+    "passed": true,
+    "survival_check": "unchanged_from_exp_20260616_015",
+    "survival_rate_below_5pct": false
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "evaluation_type": "measurement_repair_readiness_no_strategy_change",
+    "pass_fail": {
+      "criteria": "Accepted measurement repair only if >=30 accepted SBC target trades have same-date local SEC filing text, >=20 trades have numeric grant-date fair-value or fair-value-of-awards evidence, >=2 canonical windows have >=5 numeric evidence rows, and no single ticker supplies >40% of numeric evidence. This does not accept an alpha; it only authorizes a future fixed grant-value normalization parser plus Gate 1-4.",
+      "passed": false
+    },
+    "readiness_summary": {
+      "accepted_sbc_target_trades": 108,
+      "best_form_counts": {
+        "8-K": 21
+      },
+      "by_window": {
+        "late_strong": {
+          "grant_value_evidence_trades": 0,
+          "numeric_grant_value_trades": 0,
+          "target_trades": 40,
+          "text_matched_trades": 9,
+          "tickers_with_numeric_evidence": []
+        },
+        "mid_weak": {
+          "grant_value_evidence_trades": 0,
+          "numeric_grant_value_trades": 0,
+          "target_trades": 46,
+          "text_matched_trades": 11,
+          "tickers_with_numeric_evidence": []
+        },
+        "old_thin": {
+          "grant_value_evidence_trades": 0,
+          "numeric_grant_value_trades": 0,
+          "target_trades": 22,
+          "text_matched_trades": 1,
+          "tickers_with_numeric_evidence": []
+        }
+      },
+      "criteria": {
+        "max_single_ticker_numeric_share": {
+          "actual": 0.0,
+          "passed": true,
+          "threshold": 0.4
+        },
+        "min_numeric_grant_value_trades": {
+          "actual": 0,
+          "passed": false,
+          "threshold": 20
+        },
+        "min_text_matched_trades": {
+          "actual": 21,
+          "passed": false,
+          "threshold": 30
+        },
+        "min_windows_with_numeric": {
+          "actual": 0,
+          "passed": false,
+          "per_window_minimum": 5,
+          "threshold": 2
+        }
+      },
+      "equity_award_context_trades": 21,
+      "evidence_type_counts": {
+        "equity_award_context_only": 21
+      },
+      "grant_value_evidence_trades": 0,
+      "max_single_ticker_numeric_share": 0.0,
+      "numeric_by_ticker": {},
+      "numeric_grant_value_share": 0.0,
+      "numeric_grant_value_trades": 0,
+      "passed": false,
+      "text_match_share": 0.194444,
+      "text_matched_trades": 21,
+      "unique_tickers": 8,
+      "windows_with_numeric_minimum": 0
+    },
+    "strategy_metrics_delta": {
+      "expected_value_score_delta_sum": 0.0,
+      "explanation": "Read-only parser-readiness audit; no strategy, admission, ranking, sizing, exit, or order behavior changed.",
+      "total_pnl_delta_sum": 0.0,
+      "trade_count_delta": 0
+    }
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "alpha_blocker/measurement_repair: accepted SBC burden improvement can only legally reopen with grant-value normalization, richer option/vesting context, or materially more closed forward outcome evidence. Audit whether local SEC filing text already contains enough grant-date fair-value and equity-award evidence on the accepted exp-20260616-015 target trades to support one future fixed shared parser and Gate 1-4 run.",
+    "2_history_check": "exp-20260616-015 accepted the shared default-off SBC burden adapter. exp-20260616-016 allocator insertion and exp-20260616-017 per-share/buyback retune failed. The playbook only permits reopen via closed forward rows, option/vesting context, or grant-value normalization; this audit tests that last alpha-enabling measurement axis without retuning the policy.",
+    "3_single_causal_variable": "sbc_grant_value_normalization_text_surface_readiness_v1",
+    "4_acceptance_standard": "Accepted measurement repair only if >=30 accepted SBC target trades have same-date local SEC filing text, >=20 trades have numeric grant-date fair-value or fair-value-of-awards evidence, >=2 canonical windows have >=5 numeric evidence rows, and no single ticker supplies >40% of numeric evidence. This does not accept an alpha; it only authorizes a future fixed grant-value normalization parser plus Gate 1-4.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_018_sbc_grant_value_normalization_readiness.py"
+  },
+  "headline_metrics": {
+    "accepted_measurement_repair": false,
+    "accepted_sbc_target_trades": 108,
+    "max_single_ticker_numeric_share": 0.0,
+    "numeric_grant_value_trades": 0,
+    "text_matched_trades": 21,
+    "windows_with_numeric_minimum": 0
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: accepted SBC burden improvement can only legally reopen with grant-value normalization, richer option/vesting context, or materially more closed forward outcome evidence. Audit whether local SEC filing text already contains enough grant-date fair-value and equity-award evidence on the accepted exp-20260616-015 target trades to support one future fixed shared parser and Gate 1-4 run.",
+  "implementation_mode": "self_registered_readiness_audit_no_strategy_change",
+  "input_surface": {
+    "accepted_sbc_target_trades": 108,
+    "ticker_date_pairs": 13,
+    "unique_sbc_current_sbc_filed_dates": [
+      "2024-01-25",
+      "2024-02-20",
+      "2024-02-21",
+      "2025-01-30",
+      "2025-02-05",
+      "2025-02-20",
+      "2025-02-26",
+      "2025-03-12",
+      "2025-07-02",
+      "2025-10-03",
+      "2026-02-04",
+      "2026-02-25",
+      "2026-03-11"
+    ],
+    "unique_tickers": [
+      "AMD",
+      "CRDO",
+      "DDOG",
+      "MRVL",
+      "MU",
+      "NOW",
+      "NVDA",
+      "PLTR"
+    ]
+  },
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "match_rows_output": "data/experiments/exp-20260709-018/sbc_grant_value_text_matches.jsonl",
+  "mechanism_family": "sbc_dilution_quality_grant_value_normalization",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260616-015",
+    "exp-20260616-016",
+    "exp-20260616-017",
+    "exp-20260617-012",
+    "exp-20260618-021",
+    "exp-20260620-004",
+    "exp-20260628-001"
+  ],
+  "new_evidence_axis": "New evidence axis permitted by the SBC playbook: grant-value normalization readiness on the accepted exp-20260616-015 SBC target trade surface, joined to local SEC filing text by ticker and companyfacts filed date. This is not a threshold, rank, per-share buyback, allocator, hold, or notional retune.",
+  "new_evidence_type": "measurement_repair_alpha_enabling_grant_value_normalization",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune SBC burden thresholds, rank insertion, allocator source, per-share/buyback adjustment, hold days, notional, or cooldown from this audit. Do not retry with only a different regex list unless new text/proxy/vesting data materially changes the evidence row count.",
+    "new_evidence_required": "Run the future SBC grant-value normalization alpha only after this surface has >=30 same-date accepted-SBC trade text matches, >=20 numeric grant-value evidence rows across >=2 windows with >=5 each, and max single-ticker numeric evidence share <=40%; or introduce a new independent option-exercise/vesting/proxy data source.",
+    "next_evidence_needed": "Run the future SBC grant-value normalization alpha only after this surface has >=30 same-date accepted-SBC trade text matches, >=20 numeric grant-value evidence rows across >=2 windows with >=5 each, and max single-ticker numeric evidence share <=40%; or introduce a new independent option-exercise/vesting/proxy data source.",
+    "reopen_condition": "Run the future SBC grant-value normalization alpha only after this surface has >=30 same-date accepted-SBC trade text matches, >=20 numeric grant-value evidence rows across >=2 windows with >=5 each, and max single-ticker numeric evidence share <=40%; or introduce a new independent option-exercise/vesting/proxy data source.",
+    "why_result_happened": "Joined 21 of 108 accepted SBC target trades to local SEC text and found 0 numeric grant-value evidence rows. The result is measurement-only and leaves SBC burden policy unchanged."
+  },
+  "prediction": {
+    "confidence_reason": "The accepted SBC sleeve uses annual companyfacts filed dates from a small technology universe. 10-K/10-Q filing text often carries share-based compensation footnotes, but grant-value detail can live in proxies or award tables, so readiness is uncertain.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "periodic_filing_text_not_joinable_to_companyfacts_filed_date",
+      "grant_value_evidence_in_proxy_not_10k_10q",
+      "too_few_windows_with_numeric_grant_value_rows",
+      "parser_evidence_dominated_by_nvda_or_single_ticker"
+    ],
+    "recorded_at": "2026-07-09T15:41:00Z",
+    "success_probability": 0.42
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": false,
+    "live_ready": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "readiness_audit_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false,
+    "uses_accepted_sbc_artifact": true,
+    "uses_free_sec_text": true,
+    "uses_llm": false
+  },
+  "rejection_reason": "Local SEC filing text does not yet satisfy the minimum joined numeric grant-value evidence coverage required to reopen the accepted SBC surface with a fixed parser.",
+  "related_files": [
+    "data/experiments/exp-20260616-015/exp_20260616_015_sbc_burden_improvement_shared_adapter.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "data/non_ohlcv/sec_filing_text_YYYYMMDD.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_018_sbc_grant_value_normalization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260709_018_sbc_grant_value_normalization_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "sample_numeric_matches": [],
+  "sample_text_misses": [
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-10-24",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": 470.05,
+      "pnl_pct_net": 0.117512,
+      "sbc_current_period_end": "2025-08-28",
+      "sbc_current_revenue_value": 37378000000.0,
+      "sbc_current_sbc_filed": "2025-10-03",
+      "sbc_current_sbc_to_revenue": 0.026005,
+      "sbc_current_sbc_value": 972000000.0,
+      "sbc_sbc_ratio_improvement": 0.007168,
+      "signal_date": "2025-10-23",
+      "target_trade_index": 0,
+      "text_match_count": 0,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-10-28",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": -251.77,
+      "pnl_pct_net": -0.062942,
+      "sbc_current_period_end": "2024-12-28",
+      "sbc_current_revenue_value": 25785000000.0,
+      "sbc_current_sbc_filed": "2025-02-05",
+      "sbc_current_sbc_to_revenue": 0.054567,
+      "sbc_current_sbc_value": 1407000000.0,
+      "sbc_sbc_ratio_improvement": 0.006456,
+      "signal_date": "2025-10-27",
+      "target_trade_index": 2,
+      "text_match_count": 0,
+      "ticker": "AMD",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-10-29",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": -181.8,
+      "pnl_pct_net": -0.045451,
+      "sbc_current_period_end": "2025-05-03",
+      "sbc_current_revenue_value": 436775000.0,
+      "sbc_current_sbc_filed": "2025-07-02",
+      "sbc_current_sbc_to_revenue": 0.177105,
+      "sbc_current_sbc_value": 77355000.0,
+      "sbc_sbc_ratio_improvement": 0.025113,
+      "signal_date": "2025-10-28",
+      "target_trade_index": 3,
+      "text_match_count": 0,
+      "ticker": "CRDO",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-10-30",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": -15.76,
+      "pnl_pct_net": -0.003941,
+      "sbc_current_period_end": "2025-02-01",
+      "sbc_current_revenue_value": 5767300000.0,
+      "sbc_current_sbc_filed": "2025-03-12",
+      "sbc_current_sbc_to_revenue": 0.103584,
+      "sbc_current_sbc_value": 597400000.0,
+      "sbc_sbc_ratio_improvement": 0.007134,
+      "signal_date": "2025-10-29",
+      "target_trade_index": 4,
+      "text_match_count": 0,
+      "ticker": "MRVL",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-10-31",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": 601.75,
+      "pnl_pct_net": 0.150439,
+      "sbc_current_period_end": "2024-12-31",
+      "sbc_current_revenue_value": 2684275000.0,
+      "sbc_current_sbc_filed": "2025-02-20",
+      "sbc_current_sbc_to_revenue": 0.212473,
+      "sbc_current_sbc_value": 570336000.0,
+      "sbc_sbc_ratio_improvement": 0.014133,
+      "signal_date": "2025-10-30",
+      "target_trade_index": 5,
+      "text_match_count": 0,
+      "ticker": "DDOG",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-11-10",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": -672.13,
+      "pnl_pct_net": -0.168032,
+      "sbc_current_period_end": "2025-08-28",
+      "sbc_current_revenue_value": 37378000000.0,
+      "sbc_current_sbc_filed": "2025-10-03",
+      "sbc_current_sbc_to_revenue": 0.026005,
+      "sbc_current_sbc_value": 972000000.0,
+      "sbc_sbc_ratio_improvement": 0.007168,
+      "signal_date": "2025-11-07",
+      "target_trade_index": 6,
+      "text_match_count": 0,
+      "ticker": "MU",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-11-13",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": 136.89,
+      "pnl_pct_net": 0.034223,
+      "sbc_current_period_end": "2025-05-03",
+      "sbc_current_revenue_value": 436775000.0,
+      "sbc_current_sbc_filed": "2025-07-02",
+      "sbc_current_sbc_to_revenue": 0.177105,
+      "sbc_current_sbc_value": 77355000.0,
+      "sbc_sbc_ratio_improvement": 0.025113,
+      "signal_date": "2025-11-12",
+      "target_trade_index": 8,
+      "text_match_count": 0,
+      "ticker": "CRDO",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-11-17",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": -588.17,
+      "pnl_pct_net": -0.147044,
+      "sbc_current_period_end": "2024-12-31",
+      "sbc_current_revenue_value": 2684275000.0,
+      "sbc_current_sbc_filed": "2025-02-20",
+      "sbc_current_sbc_to_revenue": 0.212473,
+      "sbc_current_sbc_value": 570336000.0,
+      "sbc_sbc_ratio_improvement": 0.014133,
+      "signal_date": "2025-11-14",
+      "target_trade_index": 9,
+      "text_match_count": 0,
+      "ticker": "DDOG",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-11-20",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": 690.65,
+      "pnl_pct_net": 0.172662,
+      "sbc_current_period_end": "2025-02-01",
+      "sbc_current_revenue_value": 5767300000.0,
+      "sbc_current_sbc_filed": "2025-03-12",
+      "sbc_current_sbc_to_revenue": 0.103584,
+      "sbc_current_sbc_value": 597400000.0,
+      "sbc_sbc_ratio_improvement": 0.007134,
+      "signal_date": "2025-11-19",
+      "target_trade_index": 10,
+      "text_match_count": 0,
+      "ticker": "MRVL",
+      "window": "late_strong"
+    },
+    {
+      "best_accession_number": null,
+      "best_form_base": null,
+      "best_primary_document": null,
+      "best_source_file": null,
+      "best_text_word_count": null,
+      "entry_date": "2025-11-26",
+      "evidence_count": 0,
+      "evidence_examples": [],
+      "evidence_type_counts": {},
+      "has_equity_award_context": false,
+      "has_grant_value_evidence": false,
+      "has_numeric_grant_value_evidence": false,
+      "has_text_match": false,
+      "numeric_evidence_count": 0,
+      "pnl": 575.26,
+      "pnl_pct_net": 0.143815,
+      "sbc_current_period_end": "2025-08-28",
+      "sbc_current_revenue_value": 37378000000.0,
+      "sbc_current_sbc_filed": "2025-10-03",
+      "sbc_current_sbc_to_revenue": 0.026005,
+      "sbc_current_sbc_value": 972000000.0,
+      "sbc_sbc_ratio_improvement": 0.007168,
+      "signal_date": "2025-11-25",
+      "target_trade_index": 11,
+      "text_match_count": 0,
+      "ticker": "MU",
+      "window": "late_strong"
+    }
+  ],
+  "single_causal_variable": "sbc_grant_value_normalization_text_surface_readiness_v1",
+  "source_artifacts": {
+    "accepted_sbc_adapter_artifact": "data/experiments/exp-20260616-015/exp_20260616_015_sbc_burden_improvement_shared_adapter.json",
+    "canonical_backtest_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  },
+  "status": "completed",
+  "text_scan": {
+    "candidate_text_rows": 5,
+    "deduped_candidate_pairs": 5,
+    "form_counts": {
+      "8-K": 5
+    },
+    "paths_read": [
+      "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250130.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250205.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250220.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250226.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250312.jsonl",
+      "data/non_ohlcv/sec_filing_text_20250702.jsonl",
+      "data/non_ohlcv/sec_filing_text_20251003.jsonl",
+      "data/non_ohlcv/sec_filing_text_20260204.jsonl",
+      "data/non_ohlcv/sec_filing_text_20260225.jsonl",
+      "data/non_ohlcv/sec_filing_text_20260311.jsonl"
+    ],
+    "scanned_rows": 508,
+    "source_counts": {
+      "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl": 2,
+      "data/non_ohlcv/sec_filing_text_20250312.jsonl": 2,
+      "data/non_ohlcv/sec_filing_text_20250702.jsonl": 1
+    },
+    "source_path_count": 11,
+    "status_counts": {
+      "ok": 5
+    }
+  },
+  "timestamp": "2026-07-09T15:20:18Z",
+  "trial_family": "sbc_grant_value_normalization_surface_readiness",
+  "trial_variant_id": "accepted_sbc_trade_sec_text_grant_value_readiness_v1"
+}

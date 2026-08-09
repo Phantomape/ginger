@@ -1,0 +1,336 @@
+{
+  "acceptance_rule": "Source ZIP hash and schema, exact CIK mapping, PIT clock, entry/exit fields, and fingerprint coverage must validate. Every window must retain at least 20 settled top1 decisions, 10 target tickers, 10 peer tickers, and target/peer top1 shares at most 30 percent. Accepted default-off alpha requires positive standalone net PnL and positive cash and QQQ replacement value in every window; core-plus-sleeve aggregate EV delta must exceed 0.5286 and PnL delta exceed 10432.91 with at least two improved and no materially regressed windows, worst drawdown no more than 0.5 percentage point worse, and top-five positive-PnL share at most 60 percent. DSR probability at least 0.95 over a complete declared selection panel is required only for live eligibility.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/pcaob_form_ap_partner_change_peer_substitution_paper_sleeve.py",
+    "quant/test_pcaob_form_ap_partner_change_peer_substitution_paper_sleeve.py",
+    "quant/experiments/",
+    "data/non_ohlcv/pcaob_form_ap/",
+    "data/paper_sleeves/pcaob_form_ap_partner_change_peer_substitution/",
+    "data/experiments/",
+    "experiments/artifacts/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/logs/",
+    "experiments/tickets/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260716-005.md",
+  "causal_components": [
+    "shared helper",
+    "hash-bound official Form AP archive",
+    "original issuer filings",
+    "exact CIK share-class map",
+    "prior-period partner-change gate",
+    "unchanged same-industry peer selection",
+    "trailing-60-session liquidity rank",
+    "top1 daily",
+    "next-open 20-session replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "pcaob_partner_change_unaffected_industry_peer_candidate_source_v1",
+  "claimed_at": "2026-07-16T09:17:44+00:00",
+  "completed_at": "2026-07-16T09:45:09+00:00",
+  "created_at": "2026-07-16T09:17:01+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260716-005",
+  "experiment_uid": "expuid-db246cf708e14128",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T09:17:01+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pcaob_partner_change_peer_substitution"
+  },
+  "hypothesis": "Shared-paper-first candidate-pool alpha: when an official PCAOB Form AP first reports an engagement-partner change versus the prior distinct 250-500 day fiscal period, audit uncertainty should shift demand toward an unaffected same-industry liquid peer; buy at the next open the unchanged peer with the highest trailing 60-session dollar volume, keep one top-ranked row per day, and exit after 20 sessions.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source=official_PCAOB_FirmFilings_ZIP_hash_bound;filing_scope=latest_original_nonfund_issuer;partner_set=primary_ID_plus_other_IDs;prior_fiscal_gap_days=250_500;PIT=filing_date_plus_one_daily_cycle;CIK_map=exact_choose_max_worst_window_median_ADV_then_ticker;industry=yfinance_gics_proxy_v1;peer_exclusion=partner_changed_same_ISO_week;min_peer_pool=2;peer_rank=prior_60_session_mean_dollar_volume;daily_rank=top1_selected_peer_ADV;entry=strict_next_open_after_update_day;hold_sessions=20;notional_usd=4000;round_trip_cost_pct=0.0035;trade_enabled=false;no_threshold_gap_hold_rank_mapping_or_subset_sweep"
+  ],
+  "mechanism_family": "regulatory_audit_uncertainty_peer_substitution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/filter.py",
+    "operator_inputs/",
+    "data/live_pilot/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260712-016",
+    "exp-20260531-013"
+  ],
+  "new_evidence_type": "new_official_data_source_and_new_gate_shape",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "resolved_s1_f1_peer_substitution_attribution",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "after",
+        "alpha",
+        "an",
+        "ap",
+        "at",
+        "audit",
+        "buy",
+        "change",
+        "demand",
+        "distinct",
+        "dollar",
+        "engagement",
+        "exit",
+        "first",
+        "fiscal",
+        "form",
+        "highest",
+        "industry",
+        "keep",
+        "liquid",
+        "official",
+        "one",
+        "partner",
+        "pcaob",
+        "peer",
+        "per",
+        "period",
+        "prior",
+        "ranked",
+        "regulatory",
+        "reports",
+        "row",
+        "same",
+        "session",
+        "sessions",
+        "shift",
+        "should",
+        "substitution",
+        "top",
+        "toward",
+        "trailing",
+        "unaffected",
+        "uncertainty",
+        "unchanged",
+        "versus",
+        "volume",
+        "when"
+      ],
+      "gate_shape": "peer_propagation_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "resolved_s1_f1_peer_substitution_attribution",
+        "reopen_condition": "A valid retry needs richer offering economics such as registered amount, resale versus primary issuance, selling-holder identity, effectiveness date, prospectus-supplement terms, or fresh forward rows under a shared helper.",
+        "score": 0.6143,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_industry_characteristic_peer_shock_candidate_pool",
+        "reopen_condition": "Need materially new PIT relation provenance such as supplier/customer links, product-line similarity, source-family event transfer, or forward replacement-value rows before revisiting.",
+        "score": 0.4745,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "same_industry_peer_shock_candidate_pool",
+        "reopen_condition": "A valid retry needs forward replacement-value rows or a materially stronger non-price peer relation source, such as true earnings-calendar peer events, customer/supplier links, or audited theme propagation.",
+        "score": 0.474,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_volume_breadth_core_flow_confirmed_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT relation evidence, such as forward default-off replacement rows, peer taxonomy quality, supplier/customer links, borrow/option flow, or industry earnings/revision propagation.",
+        "score": 0.4731,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "industry_peer_moderate_shock_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger non-price relation source such as customer/supplier links, source overlap, or audited multi-season early-peer earnings transfer.",
+        "score": 0.466,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source and gate shape: hash-bound official PCAOB Form AP engagement-partner identities are transformed into a PIT issuer-change event and an unaffected same-industry peer-substitution candidate pool; no prior experiment used PCAOB audit personnel or this cross-issuer response.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source and gate shape: hash-bound official PCAOB Form AP engagement-partner identities are transformed into a PIT issuer-change event and an unaffected same-industry peer-substitution candidate pool; no prior experiment used PCAOB audit personnel or this cross-issuer response.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source and gate shape: hash-bound official PCAOB Form AP engagement-partner identities are transformed into a PIT issuer-change event and an unaffected same-industry peer-substitution candidate pool; no prior experiment used PCAOB audit personnel or this cross-issuer response.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "peer_propagation_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The new official source clears fixed pre-outcome density by wide margins in all three windows, but the economic transfer from affected issuer to a liquid same-industry peer is indirect and the champion comparator is demanding.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "audit_uncertainty_is_industry_wide_not_substitution",
+      "liquidity_rank_is_generic_beta",
+      "current_industry_map_survivorship",
+      "next_open_absorbs_signal",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "positive_pnl_concentration"
+    ],
+    "recorded_at": "2026-07-16T09:16:16+00:00",
+    "success_probability": 0.16
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-005/before.json",
+    "after_result_file": "data/experiments/exp-20260716-005/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0689,
+      "total_return_pct": 0.0484,
+      "max_drawdown_pct": 0.0515,
+      "trade_count": 115,
+      "survival_rate": -0.555786,
+      "total_pnl": 4839.43
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.16,
+      "brier_score": 0.0256,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 0.0689,
+      "ev_prediction_error": -0.1811,
+      "expected_pnl_delta": 5000.0,
+      "actual_pnl_delta": 4839.43,
+      "pnl_prediction_error": -160.57,
+      "predicted_failure_modes": [
+        "audit_uncertainty_is_industry_wide_not_substitution",
+        "liquidity_rank_is_generic_beta",
+        "current_industry_map_survivorship",
+        "next_open_absorbs_signal",
+        "window_regression",
+        "accepted_comparator_not_beaten",
+        "positive_pnl_concentration"
+      ],
+      "realized_failure_mode": "window_regression",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Aggregate PnL was positive, but old-window losses/drawdown, mid-window QQQ replacement, concentration, and non-PIT multi-share peer selection invalidated promotion."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260716-005.json",
+  "single_causal_variable": "pcaob_partner_change_unaffected_industry_peer_candidate_source_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-005.json",
+  "trial_family": "pcaob_form_ap_partner_change_peer_substitution",
+  "trial_variant_id": "original_issuer_primary_partner_change_same_industry_adv60_top1_h20_v1"
+}

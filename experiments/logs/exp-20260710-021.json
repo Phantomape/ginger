@@ -1,0 +1,138 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.1829,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 213931.54,
+    "total_return_pct": null,
+    "trade_count": 59,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 7.8941,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 234850.99,
+    "total_return_pct": null,
+    "trade_count": 61,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": -0.7112,
+    "actual_pnl_delta": -20919.45,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": -1.0612,
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 8000.0,
+    "pnl_prediction_error": -28919.45,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "backwardation_days_already_blocked_by_bear_regime",
+      "gate_removes_convex_recovery_winners",
+      "sample_too_thin",
+      "one_window_concentration",
+      "yahoo_cboe_date_gaps"
+    ],
+    "predicted_success_probability": 0.28,
+    "realized_failure_mode": "duplicate_reservation_no_new_evidence_axis",
+    "surprise_level": "not_scored",
+    "surprise_note": "The ticket was reserved before the completed exp-20260710-020 closeout became visible; the correct action is duplicate closure, not rerunning the signal."
+  },
+  "causal_components": [
+    "yfinance-mirrored CBOE VIX9D/VIX daily closes",
+    "fixed VIX9D>VIX signal-day gate",
+    "canonical BacktestEngine replay",
+    "missing-date fail-open",
+    "experiment-local monkeypatch",
+    "CBOE fingerprint coverage"
+  ],
+  "change_summary": "Close accidental duplicate reservation after exp-20260710-020 already completed the identical fixed VIX9D>VIX replay.",
+  "change_type": "entry_exclusion_private_replay_scout",
+  "changed_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1",
+  "component": "quant/experiments/exp_20260710_020_*, data/experiments/exp-20260710-020/**, experiments/tickets/exp-20260710-020.json, experiments/cards/exp-20260710-020.md, experiments/manifests/exp-20260710-020.json, experiments/logs/exp-20260710-020.json, docs/experiment_registry.json, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "delta_metrics": {
+    "expected_value_score": -0.7112,
+    "total_pnl": -20919.45,
+    "trade_count": -2
+  },
+  "experiment_id": "exp-20260710-021",
+  "hypothesis": "Private replay scout: CBOE VIX9D close above VIX close on the signal day is an option-implied near-term backwardation stress state in which current core next-open entries should be excluded; the fixed no-entry gate should improve canonical multi-window EV, PnL, and drawdown without threshold tuning.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "cboe_volatility_term_structure_entry_admission",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260603-024",
+    "exp-20260607-018",
+    "exp-20260607-023",
+    "exp-20260708-028"
+  ],
+  "new_evidence_type": "new_data_source",
+  "next_retry_requires": [],
+  "notes": "No new experiment was run. This ticket duplicated exp-20260710-020, whose Gate 4 result rejected the same hypothesis. The exp-20260710-021 allowed_write_scope also incorrectly pointed to exp-20260710-020 paths, confirming reservation duplication. Do not count this closeout as a new evidence probe.",
+  "parameters": {
+    "locked_variables": [
+      "VIX9D>VIX threshold",
+      "signal-day close semantics",
+      "missing-date fail-open",
+      "core universe",
+      "entry/exit/ranking/sizing/cost rules",
+      "canonical windows"
+    ],
+    "single_causal_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun or retune VIX9D/VIX thresholds, ratios, lookbacks, VIX3M/VIX6M substitutes, ticker or window slices, or scalar responses; exp-20260710-020 already rejected the identical fixed signal.",
+    "new_evidence_required": "Reopen only with a genuinely different volatility risk-transfer source or materially settled forward rows from a predeclared shared helper; this duplicate reservation provides no new evidence.",
+    "realized_failure_mode": "duplicate_reservation_no_new_evidence_axis",
+    "why_result_happened": "The ticket was reserved before the completed exp-20260710-020 closeout became visible; the correct action is duplicate closure, not rerunning the signal."
+  },
+  "prediction": {
+    "confidence_reason": "The existing VIXY relief sleeve was a positive replay lead and exp-20260607-018/023 explicitly named actual VIX term structure as the next legal evidence. A strict VIX9D>VIX state is interpretable, but core regime gates may already absorb stress and hard exclusion can delete rebound winners, so pass odds remain below one third.",
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "backwardation_days_already_blocked_by_bear_regime",
+      "gate_removes_convex_recovery_winners",
+      "sample_too_thin",
+      "one_window_concentration",
+      "yahoo_cboe_date_gaps"
+    ],
+    "recorded_at": "2026-07-10T23:50:57+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260710-020/before_measurement.json",
+    "data/experiments/exp-20260710-020/after_measurement.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-07-11T02:05:18+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "cboe_vix9d_gt_vix_core_entry_exclusion_v1"
+}

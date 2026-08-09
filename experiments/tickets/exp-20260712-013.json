@@ -1,0 +1,333 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_013_iborrowdesk_borrow_econ_surface.py",
+    "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+    "experiments/cards/exp-20260712-013.md",
+    "experiments/manifests/exp-20260712-013.json",
+    "experiments/tickets/exp-20260712-013.json",
+    "experiments/logs/exp-20260712-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/iborrowdesk_data_source.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "data/non_ohlcv/iborrowdesk/",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260712-013.md",
+  "causal_components": [
+    "iBorrowDesk daily fee/rebate/available history",
+    "resumable throttling-safe archive fetcher",
+    "warehouse fresh-universe scope",
+    "daily refresh wiring",
+    "observed-only 10-session replacement-value read on covered windows"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "iborrowdesk_borrow_fee_availability_avoidance_context_v1",
+  "claimed_at": "2026-07-12T16:16:58+00:00",
+  "completed_at": "2026-07-12T16:50:28+00:00",
+  "created_at": "2026-07-12T16:16:08+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260712-013",
+  "experiment_uid": "expuid-a593cef669534c28",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-013",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T16:16:08+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "iborrowdesk_borrow_econ_surface"
+  },
+  "hypothesis": "PIT borrow-fee/availability economics from the free iBorrowDesk (IBKR shortable-stock mirror) daily history: liquid warehouse-universe names with elevated or rising indicative borrow fee or shrinking lendable availability underperform SPY over the next 10 sessions, giving the accepted candidate stack a new avoidance/tilt context and the first universe-wide PIT borrow-economics surface (prior ORTEX sidecar was single-ticker AAPL).",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "iborrowdesk_borrow_fee_availability_avoidance_context_v1"
+  ],
+  "mechanism_family": "iborrowdesk_borrow_economics_surface",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260628-004",
+    "exp-20260627-023",
+    "exp-20260625-018"
+  ],
+  "new_evidence_type": "new_data_source_iborrowdesk_ibkr_borrow_economics",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ortex_borrow",
+      "field_tags": [
+        "a",
+        "aapl",
+        "accepted",
+        "availability",
+        "avoidance",
+        "borrow",
+        "context",
+        "daily",
+        "econ",
+        "economics",
+        "elevated",
+        "fee",
+        "first",
+        "from",
+        "giving",
+        "history",
+        "ibkr",
+        "iborrowdesk",
+        "indicative",
+        "lendable",
+        "liquid",
+        "mirror",
+        "names",
+        "new",
+        "or",
+        "ortex",
+        "over",
+        "pit",
+        "prior",
+        "rising",
+        "sessions",
+        "shortable",
+        "shrinking",
+        "sidecar",
+        "single",
+        "spy",
+        "stack",
+        "stock",
+        "surface",
+        "ticker",
+        "tilt",
+        "underperform",
+        "warehouse",
+        "was",
+        "wide"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 borrow-fee tickers over 20 decision dates, then closed forward replacement-value rows versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4908,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ortex_borrow",
+        "family_key": "borrow_availability_ortex_fingerprint_coverage",
+        "reopen_condition": "Borrow/ORTEX alpha remains parked until populated PIT borrow-fee, utilization, loan-availability, or short-availability rows meet the prior forward-date floors and have closed cash/SPY/QQQ replacement-value attribution.",
+        "score": 0.4755,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_short_interest_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+        "score": 0.4651,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_10q_spy_context_repeat_cooldown_candidate_pool",
+        "reopen_condition": "Do not retry nearby 10-Q/SPY-context scalar or cooldown variants on these frozen windows without forward replacement-value evidence or a materially different stable disclosure-quality field.",
+        "score": 0.174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "sec13f_manager_skill_candidate_pool",
+        "reopen_condition": "Non-quarterly manager flow, a genuinely new manager-quality source, or materially settled forward replacement rows.",
+        "score": 0.1735,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md 搂2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ortex_borrow",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md 搂2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ortex_borrow",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-scheduled-20260712",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "flat_gc_fee_no_cross_sectional_variance",
+      "host_throttled_fetch",
+      "thin_covered_window_sample",
+      "not_incremental_vs_accepted_sources"
+    ],
+    "confidence_reason": "Mechanism: high/rising borrow fee and shrinking availability proxy informed short demand and lending-supply stress, the keystone PIT borrow economics named missing on 2026-06-24 and required by the exp-20260625-018 informed-flow lead. Disconfirmers: megacap-liquid names may sit at flat GC fee with capped availability; rolling 1y history covers late_strong fully, mid_weak partially, old_thin not at all, so any positive read is observed-only.",
+    "recorded_at": "2026-07-12T16:15:27+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": true,
+    "decision": "observed_only_borrow_stress_avoidance_lead",
+    "artifact": "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+    "log": "experiments/logs/exp-20260712-013.json",
+    "runner": "quant/experiments/exp_20260712_013_iborrowdesk_borrow_econ_surface.py",
+    "gate4": {
+      "applicable": false,
+      "note": "no before/after strategy delta; observed-only verdict per predeclared floors",
+      "failed_reasons": []
+    },
+    "calibration": {
+      "predicted_success_probability": 0.2,
+      "unresolved_failure_mode": null
+    },
+    "summary": "194 stressed-transition events across covered windows with mean delta -91.88bp vs same-date universe mean; fee>=0.5% ever seen on 203 of 363 analysis tickers."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-013.json",
+  "single_causal_variable": "iborrowdesk_borrow_fee_availability_avoidance_context_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260712-013.json",
+  "trial_family": "iborrowdesk_borrow_fee_availability_avoidance_context",
+  "trial_variant_id": "iborrowdesk_stress_transition_avoidance_v1",
+  "scope_extension_reason": "Observer first-build per AGENTS.md 2.4: durable archive must live under data/non_ohlcv (rolling 1y source erodes daily), daily refresh must wire into run.py in the same ID, and new-population fingerprint keywords must land in the same experiment per the classifier-coverage warning.",
+  "implementation_mode": "observer_first_build_plus_observed_only_read",
+  "new_evidence_axis": "New data source: iBorrowDesk mirror of the IBKR shortable-stock feed with ~1 rolling year of per-ticker daily borrow fee, rebate, and availability. No prior family had universe-wide PIT borrow economics; ORTEX covered one AAPL sidecar and FINRA short interest is bi-monthly without fee/supply.",
+  "decision": "observed_only_borrow_stress_avoidance_lead",
+  "artifact": "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+  "log": "experiments/logs/exp-20260712-013.json",
+  "gate1": {
+    "applicable": false,
+    "note": "observed-only read plus data-collection wiring; no strategy policy changed"
+  },
+  "gate2": {
+    "applicable": false,
+    "note": "no signal-contract fields touched; entry_date/target_price paths unchanged"
+  },
+  "gate3": {
+    "applicable": false,
+    "note": "no filter added to any production or backtest signal path"
+  },
+  "gate4": {
+    "applicable": false,
+    "note": "no before/after strategy delta; observed-only verdict per predeclared floors",
+    "failed_reasons": []
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "data-collection only: sharded iBorrowDesk archive refresh added to run.py; no order, ranking, sizing, exit, or LLM behavior changes"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "194 stressed-transition events across covered windows with mean delta -91.88bp vs same-date universe mean; fee>=0.5% ever seen on 203 of 363 analysis tickers.",
+    "forbidden_near_neighbor_retry": "Do not retry by retuning fee level, fee 5-session delta, availability ratio, lookback, hold, cooldown, or the comparator on this same archived span. The archive grows daily; the only legal reopen axes are materially more archived/settled sessions (>= 60 new sessions or >= 20 additional stressed events), a genuinely different gate shape consuming this surface, or a different borrow-economics source with deeper history.",
+    "new_evidence_required": ">=60 new archived sessions or >=20 additional stressed-transition events, or a historical borrow source covering old_thin."
+  },
+  "related_files": [
+    "quant/iborrowdesk_data_source.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "data/non_ohlcv/iborrowdesk/fetch_state.json",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260712_013_iborrowdesk_borrow_econ_surface.py",
+    "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+    "experiments/cards/exp-20260712-013.md",
+    "experiments/manifests/exp-20260712-013.json",
+    "experiments/tickets/exp-20260712-013.json",
+    "experiments/logs/exp-20260712-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/iborrowdesk_data_source.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "data/non_ohlcv/iborrowdesk/",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "fingerprint_caveat": "experiment.py new routed this hypothesis to data_source=ortex_borrow via the 'borrow fee' keywords. That is the correct borrow-economics evidence face for streak/saturation counting, and this experiment additionally adds 'iborrowdesk'/'shortable' keywords to that population so future iborrowdesk-only wording cannot escape to 'other'.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_013_iborrowdesk_borrow_econ_surface.py materialize",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_013_iborrowdesk_borrow_econ_surface.py analyze"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-12T16:50:28+00:00"
+}

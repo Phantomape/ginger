@@ -1,0 +1,1244 @@
+{
+  "aggregate": {
+    "after_ev": 12.4418,
+    "before_ev": 12.2698,
+    "ev_delta": 0.172,
+    "ev_delta_pct": 0.014018,
+    "ev_improved_windows": 3,
+    "overlay_trade_count": 17,
+    "pnl_delta": 2827.84,
+    "pnl_improved_windows": 3,
+    "worst_drawdown_drift": 0.000487
+  },
+  "concentration": {
+    "hhi": 0.310667,
+    "max_single_ticker_share": 0.446484,
+    "positive_pnl_by_ticker": {
+      "GLD": 1932.8,
+      "IWM": 1173.43,
+      "QQQ": 182.55,
+      "SLV": 779.74,
+      "SPY": 260.41
+    }
+  },
+  "decision": "rejected_explicit_cash_low_deployment_etf",
+  "experiment_id": "exp-20260715-005",
+  "gate1": {
+    "baseline": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "passed": true
+  },
+  "gate2": {
+    "cash_contract": "dated debits/releases; core exits then core entries; ETF forced out at open if needed; ETF entries use remaining cash only",
+    "entry_date": "present",
+    "passed": false,
+    "target_price": "core baseline present"
+  },
+  "gate3": {
+    "passed": true
+  },
+  "gate4": {
+    "acceptance_rule": "Accept only if the explicit dated ledger has zero negative-cash events, zero core displacements, exact daily cash plus marked positions equals NAV, aggregate EV improves by more than 10%, aggregate PnL is positive, at least two windows improve with no window EV or PnL regression, drawdown worsening is at most 0.5 percentage points, and concentration stays below 50% single ticker and 0.35 HHI; otherwise reject and retain default-off.",
+    "failed_reasons": [
+      "negative_cash_events",
+      "aggregate_ev_improvement_not_above_10pct"
+    ],
+    "passed": false
+  },
+  "hypothesis": "Capital-allocation alpha revalidation: replay the unchanged accepted low-deployment ETF sleeve through an explicit shared dated cash ledger that books core entries/exits first and permits the ETF only from remaining settled cash, with the exp-20260715-003 selector, 10% cap, holding rule, costs, and Gate 4 thresholds frozen.",
+  "parameters": {
+    "initial_cash_usd": 100000.0,
+    "overlay_cap_usd": 10000.0
+  },
+  "production_impact": "experiment-only shared cash helper; default behavior, live orders, run.py, core policy, and paper ledger unchanged",
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260715_005_low_deployment_etf_explicit_cash.py",
+  "status": "rejected",
+  "windows": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 7.2704,
+        "max_drawdown_pct": 0.059128,
+        "sharpe_daily": 6.16,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.180483,
+        "survival_rate": 0.8039,
+        "total_pnl": 118048.3,
+        "trade_count": 24
+      },
+      "before": {
+        "expected_value_score": 7.2115,
+        "max_drawdown_pct": 0.0594,
+        "sharpe_daily": 6.16,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "cash_audit": {
+        "cash_conservation_error": 3.7e-09,
+        "cash_conservation_passed": true,
+        "core_displacement_count": 0,
+        "ending_cash": 218048.29168248,
+        "event_count": 48,
+        "forced_core_priority_exits": 2,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "nav_reconciliation_errors": [],
+        "negative_cash_event_count": 18,
+        "negative_cash_events": [
+          {
+            "amount": -57137.92,
+            "cash_after": -7628.52150166,
+            "cash_before": 49509.39849834,
+            "date": "2025-11-04",
+            "event_id": "LLY:2025-11-04:892.7800:lot-0:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 64.0,
+              "ticker": "LLY"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -65663.4,
+            "cash_after": -4570.28327055,
+            "cash_before": 61093.11672945,
+            "date": "2025-12-15",
+            "event_id": "GLD:2025-12-15:397.9600:lot-6:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 165.0,
+              "ticker": "GLD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -65933.5,
+            "cash_after": -70503.78327055,
+            "cash_before": -4570.28327055,
+            "date": "2025-12-15",
+            "event_id": "IAU:2025-12-15:81.5000:lot-5:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 809.0,
+              "ticker": "IAU"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 64313.39,
+            "cash_after": -6190.39327055,
+            "cash_before": -70503.78327055,
+            "date": "2025-12-23",
+            "event_id": "SLV:2025-12-02:52.8600:lot-2:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 63.65,
+              "shares": 1014.0,
+              "ticker": "SLV"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -62290.0,
+            "cash_after": -17914.24327055,
+            "cash_before": 44375.75672945,
+            "date": "2026-01-06",
+            "event_id": "XOM:2026-01-06:124.5800:lot-4:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 500.0,
+              "ticker": "XOM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -43614.72,
+            "cash_after": -61528.96327055,
+            "cash_before": -17914.24327055,
+            "date": "2026-01-07",
+            "event_id": "MU:2026-01-07:340.7400:lot-7:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 128.0,
+              "ticker": "MU"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -88811.28,
+            "cash_after": -11481.64327055,
+            "cash_before": 77329.63672945,
+            "date": "2026-01-15",
+            "event_id": "XOM:2026-01-15:128.3400:lot-11:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 692.0,
+              "ticker": "XOM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -73314.56,
+            "cash_after": -84796.20327055,
+            "cash_before": -11481.64327055,
+            "date": "2026-01-22",
+            "event_id": "GLD:2026-01-22:447.0400:lot-8:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 164.0,
+              "ticker": "GLD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -73713.85,
+            "cash_after": -158510.05327055,
+            "cash_before": -84796.20327055,
+            "date": "2026-01-22",
+            "event_id": "IAU:2026-01-22:91.5700:lot-9:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 805.0,
+              "ticker": "IAU"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 53040.2,
+            "cash_after": -105469.85327055,
+            "cash_before": -158510.05327055,
+            "date": "2026-01-27",
+            "event_id": "MU:2026-01-07:340.7400:lot-7:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 415.83,
+              "shares": 128.0,
+              "ticker": "MU"
+            },
+            "priority": 10
+          },
+          {
+            "amount": 83225.56,
+            "cash_after": -22244.29327055,
+            "cash_before": -105469.85327055,
+            "date": "2026-01-29",
+            "event_id": "GLD:2026-01-22:447.0400:lot-8:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 509.26,
+              "shares": 164.0,
+              "ticker": "GLD"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -108030.45,
+            "cash_after": -46592.83327055,
+            "cash_before": 61437.61672945,
+            "date": "2026-01-30",
+            "event_id": "CAT:2026-01-30:654.7300:lot-12:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 165.0,
+              "ticker": "CAT"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 7260.49,
+            "cash_after": -39332.34327055,
+            "cash_before": -46592.83327055,
+            "date": "2026-02-02",
+            "event_id": "GS:2026-01-06:944.9100:lot-10:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 910.75,
+              "shares": 8.0,
+              "ticker": "GS"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -107921.8,
+            "cash_after": -147254.14327055,
+            "cash_before": -39332.34327055,
+            "date": "2026-02-02",
+            "event_id": "CVX:2026-02-02:171.8500:lot-13:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 628.0,
+              "ticker": "CVX"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 97457.58,
+            "cash_after": -49796.56327055,
+            "cash_before": -147254.14327055,
+            "date": "2026-02-03",
+            "event_id": "XOM:2026-01-15:128.3400:lot-11:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 141.33,
+              "shares": 692.0,
+              "ticker": "XOM"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -116167.64,
+            "cash_after": -165964.20327055,
+            "cash_before": -49796.56327055,
+            "date": "2026-02-04",
+            "event_id": "XOM:2026-02-04:143.2400:lot-14:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 811.0,
+              "ticker": "XOM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 122523.9,
+            "cash_after": -43440.30327055,
+            "cash_before": -165964.20327055,
+            "date": "2026-02-10",
+            "event_id": "CAT:2026-01-30:654.7300:lot-12:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 745.18,
+              "shares": 165.0,
+              "ticker": "CAT"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -102053.82,
+            "cash_after": -10508.58831752,
+            "cash_before": 91545.23168248,
+            "date": "2026-04-17",
+            "event_id": "AMD:2026-04-17:281.1400:lot-17:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 363.0,
+              "ticker": "AMD"
+            },
+            "priority": 20
+          }
+        ],
+        "skipped_overlay_entries_for_cash": [
+          {
+            "available_cash": 0.0,
+            "date": "2025-12-15",
+            "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-12-12:SLV"
+          }
+        ]
+      },
+      "delta": {
+        "expected_value_score": 0.0589,
+        "max_drawdown_pct": -0.000272,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.009783,
+        "survival_rate": 0.0,
+        "total_pnl": 975.38,
+        "trade_count": 6
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-10-23:GLD",
+          "entry_date": "2025-10-24",
+          "entry_price": 378.6993,
+          "exit_date": "2025-11-04",
+          "exit_price": 363.2983,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-11-06",
+          "pnl": -406.68,
+          "shares": 26.4061750312187,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-13:SPY",
+          "entry_date": "2025-11-14",
+          "entry_price": 661.9436,
+          "exit_date": "2025-11-28",
+          "exit_price": 679.1811,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-11-28",
+          "pnl": 260.41,
+          "shares": 15.107027245221497,
+          "ticker": "SPY"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-28:SLV",
+          "entry_date": "2025-12-01",
+          "entry_price": 52.016,
+          "exit_date": "2025-12-12",
+          "exit_price": 56.0719,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-12-12",
+          "pnl": 779.74,
+          "shares": 192.24853891110428,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-03:GLD",
+          "entry_date": "2026-03-04",
+          "entry_price": 475.0574,
+          "exit_date": "2026-03-17",
+          "exit_price": 459.0404,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-03-17",
+          "pnl": -337.16,
+          "shares": 21.050087842016566,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-17:SLV",
+          "entry_date": "2026-03-18",
+          "entry_price": 69.5448,
+          "exit_date": "2026-03-31",
+          "exit_price": 68.1059,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-03-31",
+          "pnl": -206.9,
+          "shares": 143.79220301158392,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-04-06:IWM",
+          "entry_date": "2026-04-07",
+          "entry_price": 251.3356,
+          "exit_date": "2026-04-17",
+          "exit_price": 273.6031,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2026-04-20",
+          "pnl": 885.97,
+          "shares": 39.787439582773,
+          "ticker": "IWM"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 61,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 7,
+        "skipped": {
+          "core_above_low_deployment_threshold": 62,
+          "no_etf_passing_signal_close_state": 3,
+          "overlay_position_cap_full": 51
+        }
+      }
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 3.7736,
+        "max_drawdown_pct": 0.049284,
+        "sharpe_daily": 4.83,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.781339,
+        "survival_rate": 0.7885,
+        "total_pnl": 78133.94,
+        "trade_count": 26
+      },
+      "before": {
+        "expected_value_score": 3.7446,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 4.81,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.7785,
+        "survival_rate": 0.7885,
+        "total_pnl": 77845.53,
+        "trade_count": 21
+      },
+      "cash_audit": {
+        "cash_conservation_error": -3.9e-09,
+        "cash_conservation_passed": true,
+        "core_displacement_count": 0,
+        "ending_cash": 196005.34860907,
+        "event_count": 51,
+        "forced_core_priority_exits": 2,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "nav_reconciliation_errors": [],
+        "negative_cash_event_count": 19,
+        "negative_cash_events": [
+          {
+            "amount": -57411.22,
+            "cash_after": -9876.88613364,
+            "cash_before": 47534.33386636,
+            "date": "2025-06-03",
+            "event_id": "SLV:2025-06-03:31.5100:lot-5:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 1822.0,
+              "ticker": "SLV"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -1522.82,
+            "cash_after": -11399.70613364,
+            "cash_before": -9876.88613364,
+            "date": "2025-06-11",
+            "event_id": "DIS:2025-06-11:117.1400:lot-8:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 13.0,
+              "ticker": "DIS"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -4351.66,
+            "cash_after": -15751.36613364,
+            "cash_before": -11399.70613364,
+            "date": "2025-06-17",
+            "event_id": "AMD:2025-06-17:127.9900:lot-2:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 34.0,
+              "ticker": "AMD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -64694.52,
+            "cash_after": -80445.88613364,
+            "cash_before": -15751.36613364,
+            "date": "2025-06-23",
+            "event_id": "GS:2025-06-23:634.2600:lot-1:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 102.0,
+              "ticker": "GS"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 65390.82,
+            "cash_after": -15055.06613364,
+            "cash_before": -80445.88613364,
+            "date": "2025-06-24",
+            "event_id": "COIN:2025-05-14:257.9600:lot-0:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 321.67,
+              "shares": 204.0,
+              "ticker": "COIN"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -61719.54,
+            "cash_after": -76774.60613364,
+            "cash_before": -15055.06613364,
+            "date": "2025-06-26",
+            "event_id": "COIN:2025-06-26:354.7100:lot-3:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 174.0,
+              "ticker": "COIN"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 71445.81,
+            "cash_after": -5328.79613364,
+            "cash_before": -76774.60613364,
+            "date": "2025-06-30",
+            "event_id": "GS:2025-06-23:634.2600:lot-1:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 702.91,
+              "shares": 102.0,
+              "ticker": "GS"
+            },
+            "priority": 10
+          },
+          {
+            "amount": 5248.25,
+            "cash_after": -80.54613364,
+            "cash_before": -5328.79613364,
+            "date": "2025-07-15",
+            "event_id": "AMD:2025-06-17:127.9900:lot-2:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 154.9,
+              "shares": 34.0,
+              "ticker": "AMD"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -84593.6,
+            "cash_after": -25809.89139093,
+            "cash_before": 58783.70860907,
+            "date": "2025-08-25",
+            "event_id": "IWM:2025-08-25:232.4000:lot-18:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 364.0,
+              "ticker": "IWM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -6874.45,
+            "cash_after": -32684.34139093,
+            "cash_before": -25809.89139093,
+            "date": "2025-08-29",
+            "event_id": "SNOW:2025-08-29:237.0500:lot-11:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 29.0,
+              "ticker": "SNOW"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -71540.8,
+            "cash_after": -104225.14139093,
+            "cash_before": -32684.34139093,
+            "date": "2025-09-02",
+            "event_id": "SLV:2025-09-02:36.6500:lot-13:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 1952.0,
+              "ticker": "SLV"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -81652.08,
+            "cash_after": -185877.22139093,
+            "cash_before": -104225.14139093,
+            "date": "2025-09-03",
+            "event_id": "GLD:2025-09-03:327.9200:lot-14:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 249.0,
+              "ticker": "GLD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 6429.26,
+            "cash_after": -179447.96139093,
+            "cash_before": -185877.22139093,
+            "date": "2025-09-04",
+            "event_id": "SNOW:2025-08-29:237.0500:lot-11:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 222.48,
+              "shares": 29.0,
+              "ticker": "SNOW"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -8884.64,
+            "cash_after": -188332.60139093,
+            "cash_before": -179447.96139093,
+            "date": "2025-09-09",
+            "event_id": "APP:2025-09-09:555.2900:lot-15:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 16.0,
+              "ticker": "APP"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 91493.51,
+            "cash_after": -96839.09139093,
+            "cash_before": -188332.60139093,
+            "date": "2025-09-22",
+            "event_id": "AAPL:2025-08-11:228.2600:lot-12:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 252.93,
+              "shares": 363.0,
+              "ticker": "AAPL"
+            },
+            "priority": 10
+          },
+          {
+            "amount": 77709.46,
+            "cash_after": -19129.63139093,
+            "cash_before": -96839.09139093,
+            "date": "2025-09-22",
+            "event_id": "SLV:2025-09-02:36.6500:lot-13:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 39.95,
+              "shares": 1952.0,
+              "ticker": "SLV"
+            },
+            "priority": 10
+          },
+          {
+            "amount": 11286.69,
+            "cash_after": -7842.94139093,
+            "cash_before": -19129.63139093,
+            "date": "2025-09-29",
+            "event_id": "APP:2025-09-09:555.2900:lot-15:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 707.9,
+              "shares": 16.0,
+              "ticker": "APP"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -110575.44,
+            "cash_after": -31172.90139093,
+            "cash_before": 79402.53860907,
+            "date": "2025-09-29",
+            "event_id": "SLV:2025-09-29:42.4800:lot-16:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 2603.0,
+              "ticker": "SLV"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -10681.06,
+            "cash_after": -41853.96139093,
+            "cash_before": -31172.90139093,
+            "date": "2025-10-02",
+            "event_id": "LLY:2025-10-02:821.6200:lot-19:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 13.0,
+              "ticker": "LLY"
+            },
+            "priority": 20
+          }
+        ],
+        "skipped_overlay_entries_for_cash": []
+      },
+      "delta": {
+        "expected_value_score": 0.029,
+        "max_drawdown_pct": -0.000916,
+        "sharpe_daily": 0.02,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.002839,
+        "survival_rate": 0.0,
+        "total_pnl": 288.41,
+        "trade_count": 5
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-23:GLD",
+          "entry_date": "2025-04-24",
+          "entry_price": 307.1335,
+          "exit_date": "2025-05-07",
+          "exit_price": 310.5946,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-05-07",
+          "pnl": 112.69,
+          "shares": 32.559131452609364,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-07:GLD",
+          "entry_date": "2025-05-08",
+          "entry_price": 309.9149,
+          "exit_date": "2025-05-21",
+          "exit_price": 305.6671,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-05-21",
+          "pnl": -137.06,
+          "shares": 32.26692230673646,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-21:QQQ",
+          "entry_date": "2025-05-22",
+          "entry_price": 511.4412,
+          "exit_date": "2025-06-03",
+          "exit_price": 520.7774,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-06-05",
+          "pnl": 182.55,
+          "shares": 19.55258981873185,
+          "ticker": "QQQ"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-07-24:SLV",
+          "entry_date": "2025-07-25",
+          "entry_price": 35.2976,
+          "exit_date": "2025-08-07",
+          "exit_price": 34.7426,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-08-07",
+          "pnl": -157.23,
+          "shares": 283.3053805357871,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-08-21:IWM",
+          "entry_date": "2025-08-22",
+          "entry_price": 225.6807,
+          "exit_date": "2025-08-25",
+          "exit_price": 232.1681,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-09-05",
+          "pnl": 287.46,
+          "shares": 44.31039074231868,
+          "ticker": "IWM"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 39,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 10,
+        "skipped": {
+          "core_above_low_deployment_threshold": 88,
+          "missing_entry_or_exit_price": 5,
+          "overlay_position_cap_full": 29
+        }
+      }
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 1.3978,
+        "max_drawdown_pct": 0.097987,
+        "sharpe_daily": 3.14,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.444979,
+        "survival_rate": 0.9032,
+        "total_pnl": 44497.87,
+        "trade_count": 29
+      },
+      "before": {
+        "expected_value_score": 1.3137,
+        "max_drawdown_pct": 0.0975,
+        "sharpe_daily": 3.06,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.4293,
+        "survival_rate": 0.9032,
+        "total_pnl": 42933.82,
+        "trade_count": 23
+      },
+      "cash_audit": {
+        "cash_conservation_error": 2.7e-09,
+        "cash_conservation_passed": true,
+        "core_displacement_count": 0,
+        "ending_cash": 144497.87188927,
+        "event_count": 58,
+        "forced_core_priority_exits": 2,
+        "initial_cash": 100000.0,
+        "nav_reconciliation_error_count": 0,
+        "nav_reconciliation_errors": [],
+        "negative_cash_event_count": 20,
+        "negative_cash_events": [
+          {
+            "amount": -55230.45,
+            "cash_after": -7762.34255908,
+            "cash_before": 47468.10744092,
+            "date": "2024-10-14",
+            "event_id": "JPM:2024-10-14:216.5900:lot-3:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 255.0,
+              "ticker": "JPM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -51481.92,
+            "cash_after": -23234.2483062,
+            "cash_before": 28247.6716938,
+            "date": "2024-10-21",
+            "event_id": "NFLX:2024-10-21:76.6100:lot-4:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 672.0,
+              "ticker": "NFLX"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -7853.55,
+            "cash_after": -31087.7983062,
+            "cash_before": -23234.2483062,
+            "date": "2024-10-25",
+            "event_id": "NOW:2024-10-25:191.5500:lot-8:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 41.0,
+              "ticker": "NOW"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 1719.07,
+            "cash_after": -29368.7283062,
+            "cash_before": -31087.7983062,
+            "date": "2024-10-28",
+            "event_id": "TSM:2024-10-18:202.1000:lot-1:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 191.68,
+              "shares": 9.0,
+              "ticker": "TSM"
+            },
+            "priority": 10
+          },
+          {
+            "amount": 12022.26,
+            "cash_after": -17346.4683062,
+            "cash_before": -29368.7283062,
+            "date": "2024-10-31",
+            "event_id": "ISRG:2024-10-21:519.3000:lot-2:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 502.69,
+              "shares": 24.0,
+              "ticker": "ISRG"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -54568.32,
+            "cash_after": -71914.7883062,
+            "cash_before": -17346.4683062,
+            "date": "2024-11-01",
+            "event_id": "BKNG:2024-11-01:186.2400:lot-6:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 293.0,
+              "ticker": "BKNG"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -58530.95,
+            "cash_after": -130445.7383062,
+            "cash_before": -71914.7883062,
+            "date": "2024-11-04",
+            "event_id": "AMZN:2024-11-04:198.4100:lot-9:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 295.0,
+              "ticker": "AMZN"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 59941.93,
+            "cash_after": -70503.8083062,
+            "cash_before": -130445.7383062,
+            "date": "2024-11-06",
+            "event_id": "JPM:2024-10-14:216.5900:lot-3:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 235.89,
+              "shares": 255.0,
+              "ticker": "JPM"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -54078.57,
+            "cash_after": -124582.3783062,
+            "cash_before": -70503.8083062,
+            "date": "2024-11-08",
+            "event_id": "APP:2024-11-08:249.2100:lot-5:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 217.0,
+              "ticker": "APP"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 69034.84,
+            "cash_after": -55547.5383062,
+            "cash_before": -124582.3783062,
+            "date": "2024-11-19",
+            "event_id": "APP:2024-11-08:249.2100:lot-5:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 319.25,
+              "shares": 217.0,
+              "ticker": "APP"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -92906.25,
+            "cash_after": -37544.47088548,
+            "cash_before": 55361.77911452,
+            "date": "2025-01-16",
+            "event_id": "JPM:2025-01-16:247.7500:lot-15:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 375.0,
+              "ticker": "JPM"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -64876.91,
+            "cash_after": -102421.38088548,
+            "cash_before": -37544.47088548,
+            "date": "2025-01-23",
+            "event_id": "NFLX:2025-01-23:95.8300:lot-20:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 677.0,
+              "ticker": "NFLX"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -10039.03,
+            "cash_after": -112460.41088548,
+            "cash_before": -102421.38088548,
+            "date": "2025-01-28",
+            "event_id": "SPOT:2025-01-28:528.3700:lot-14:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 19.0,
+              "ticker": "SPOT"
+            },
+            "priority": 20
+          },
+          {
+            "amount": -76207.74,
+            "cash_after": -188668.15088548,
+            "cash_before": -112460.41088548,
+            "date": "2025-01-31",
+            "event_id": "GLD:2025-01-31:259.2100:lot-21:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 294.0,
+              "ticker": "GLD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 11278.53,
+            "cash_after": -177389.62088548,
+            "cash_before": -188668.15088548,
+            "date": "2025-02-04",
+            "event_id": "SPOT:2025-01-28:528.3700:lot-14:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 595.69,
+              "shares": 19.0,
+              "ticker": "SPOT"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -733.32,
+            "cash_after": -178122.94088548,
+            "cash_before": -177389.62088548,
+            "date": "2025-02-05",
+            "event_id": "PLTR:2025-02-05:104.7600:lot-18:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 7.0,
+              "ticker": "PLTR"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 99896.5,
+            "cash_after": -78226.44088548,
+            "cash_before": -178122.94088548,
+            "date": "2025-02-06",
+            "event_id": "JPM:2025-01-16:247.7500:lot-15:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 267.33,
+              "shares": 375.0,
+              "ticker": "JPM"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -97720.68,
+            "cash_after": -175947.12088548,
+            "cash_before": -78226.44088548,
+            "date": "2025-02-11",
+            "event_id": "MCD:2025-02-11:298.8400:lot-17:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 327.0,
+              "ticker": "MCD"
+            },
+            "priority": 20
+          },
+          {
+            "amount": 83391.32,
+            "cash_after": -92555.80088548,
+            "cash_before": -175947.12088548,
+            "date": "2025-02-18",
+            "event_id": "GS:2025-01-16:598.0000:lot-16:exit",
+            "kind": "core_exit",
+            "metadata": {
+              "reported_exit_price": 653.78,
+              "shares": 128.0,
+              "ticker": "GS"
+            },
+            "priority": 10
+          },
+          {
+            "amount": -79305.6,
+            "cash_after": -76177.07088548,
+            "cash_before": 3128.52911452,
+            "date": "2025-03-03",
+            "event_id": "V:2025-03-03:360.4800:lot-19:entry",
+            "kind": "core_entry",
+            "metadata": {
+              "shares": 220.0,
+              "ticker": "V"
+            },
+            "priority": 20
+          }
+        ],
+        "skipped_overlay_entries_for_cash": [
+          {
+            "available_cash": 0.0,
+            "date": "2025-01-16",
+            "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-01-15:GLD"
+          }
+        ]
+      },
+      "delta": {
+        "expected_value_score": 0.0841,
+        "max_drawdown_pct": 0.000487,
+        "sharpe_daily": 0.08,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.015679,
+        "survival_rate": 0.0,
+        "total_pnl": 1564.05,
+        "trade_count": 6
+      },
+      "executed_overlay_trades": [
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-02:SLV",
+          "entry_date": "2024-10-03",
+          "entry_price": 28.9245,
+          "exit_date": "2024-10-14",
+          "exit_price": 28.4558,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2024-10-16",
+          "pnl": -162.04,
+          "shares": 345.7276703140936,
+          "ticker": "SLV"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-17:GLD",
+          "entry_date": "2024-10-18",
+          "entry_price": 250.125,
+          "exit_date": "2024-10-21",
+          "exit_price": 252.6136,
+          "exit_reason": "core_cash_priority",
+          "notional": 10000.0,
+          "planned_exit_date": "2024-10-31",
+          "pnl": 99.49,
+          "shares": 39.9800099950025,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-12-20:QQQ",
+          "entry_date": "2024-12-23",
+          "entry_price": 516.5355,
+          "exit_date": "2025-01-07",
+          "exit_price": 511.6789,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-01-07",
+          "pnl": -94.02,
+          "shares": 19.35975358905632,
+          "ticker": "QQQ"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-07:GLD",
+          "entry_date": "2025-03-10",
+          "entry_price": 267.7538,
+          "exit_date": "2025-03-21",
+          "exit_price": 278.3507,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-03-21",
+          "pnl": 395.77,
+          "shares": 37.34774259039461,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-21:GLD",
+          "entry_date": "2025-03-24",
+          "entry_price": 279.0495,
+          "exit_date": "2025-04-04",
+          "exit_price": 279.5801,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-04-04",
+          "pnl": 19.01,
+          "shares": 35.83593591817939,
+          "ticker": "GLD"
+        },
+        {
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-04:GLD",
+          "entry_date": "2025-04-07",
+          "entry_price": 278.9994,
+          "exit_date": "2025-04-21",
+          "exit_price": 315.4322,
+          "exit_reason": "scheduled_10_session_close",
+          "notional": 10000.0,
+          "planned_exit_date": "2025-04-21",
+          "pnl": 1305.84,
+          "shares": 35.84237098717775,
+          "ticker": "GLD"
+        }
+      ],
+      "gate1_identity_passed": true,
+      "replay_audit": {
+        "low_deployment_day_count": 52,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 9,
+        "skipped": {
+          "core_above_low_deployment_threshold": 86,
+          "missing_entry_or_exit_price": 2,
+          "no_etf_passing_signal_close_state": 3,
+          "overlay_position_cap_full": 40
+        }
+      }
+    }
+  }
+}

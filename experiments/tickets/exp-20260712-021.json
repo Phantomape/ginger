@@ -1,0 +1,797 @@
+{
+  "acceptance_rule": "Observed-only positive lead only if strict PIT feature coverage is at least 95% overall and in every window; rising and non-rising groups each have at least 10 pooled trades and 3 trades per window; pooled mean pnl_pct_net difference is positive; pooled Spearman rho is positive; and the rising-minus-non-rising mean difference is positive in at least two of three windows. Otherwise reject and freeze this field/response neighborhood. No strategy change is accepted in this ticket.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_021_cftc_tff_asset_manager_positioning.py",
+    "data/experiments/exp-20260712-021",
+    "experiments/tickets/exp-20260712-021.json",
+    "experiments/logs/exp-20260712-021.json",
+    "experiments/cards/exp-20260712-021.md",
+    "experiments/manifests/exp-20260712-021.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260712-021.md",
+  "causal_components": [
+    "official CFTC TFF futures-only annual files",
+    "S&P 500 and Nasdaq-100 consolidated contracts",
+    "equal-weight Asset Manager net share",
+    "four-report change",
+    "conservative report-date plus eight-calendar-day availability",
+    "existing baseline trade pnl_pct_net"
+  ],
+  "change_type": "cftc_tff_asset_manager_positioning_risk_context_observed_only",
+  "changed_variable": "cftc_tff_equity_index_asset_manager_net_share_four_report_change_sign_v1",
+  "claimed_at": "2026-07-13T02:41:26+00:00",
+  "completed_at": "2026-07-13T02:52:07+00:00",
+  "created_at": "2026-07-13T02:41:07+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260712-021",
+  "experiment_uid": "expuid-79b76bd2f97a4a99",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T02:41:07+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cftc_tff_asset_manager_positioning"
+  },
+  "hypothesis": "Observed-only risk-allocation attribution: when the strictly PIT CFTC Traders in Financial Futures Asset Manager net-long share across S&P 500 and Nasdaq-100 consolidated futures has risen over four reports, existing accepted core long trades should earn higher net return than trades entered when institutional positioning is flat or falling, consistently across the three post-MTM canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "two exact consolidated equity-index markets",
+    "Asset Manager long-minus-short divided by open interest",
+    "equal market weighting",
+    "four-report difference",
+    "conservative report_date plus 8 calendar days with available_from on or before entry_date",
+    "sign split only",
+    "no threshold or field sweep",
+    "observed-only baseline trades"
+  ],
+  "mechanism_family": "cftc_tff_institutional_positioning_risk_context",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "shared strategy policy",
+    "production orders",
+    "ranking",
+    "eligibility",
+    "sizing",
+    "exits",
+    "LLM/news rules"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260712-020",
+    "exp-20260712-014",
+    "exp-20260711-025"
+  ],
+  "new_evidence_type": "new_data_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accepted",
+        "across",
+        "allocation",
+        "asset",
+        "attribution",
+        "canonical",
+        "cftc",
+        "change",
+        "consistently",
+        "consolidated",
+        "context",
+        "core",
+        "earn",
+        "entered",
+        "equity",
+        "existing",
+        "falling",
+        "financial",
+        "flat",
+        "four",
+        "futures",
+        "has",
+        "higher",
+        "in",
+        "index",
+        "institutional",
+        "is",
+        "long",
+        "manager",
+        "mtm",
+        "nasdaq",
+        "net",
+        "observed",
+        "only",
+        "or",
+        "over",
+        "p",
+        "pit",
+        "positioning",
+        "post",
+        "report",
+        "reports",
+        "return",
+        "risen",
+        "risk",
+        "s",
+        "share",
+        "should",
+        "sign",
+        "strictly",
+        "tff",
+        "than",
+        "three",
+        "traders",
+        "trades",
+        "when",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_actual_risk_intensity",
+        "reopen_condition": "A valid promotion path needs a shared default-off daily ledger or ablation that records risk-intensity rank before execution, then enough forward closed rows to prove that any incremental ranking/sizing rule improves EV without worse drawdown.",
+        "score": 0.0475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_residual_attribution",
+        "reopen_condition": "A valid promotion path needs a shared default-off daily ledger or forward attribution surface that records pre-execution risk-intensity rank, then enough closed rows to test whether incremental sizing or ranking improves EV without worse drawdown or concentration.",
+        "score": 0.0467,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_risk_intensity_exit_outcome_attribution",
+        "reopen_condition": "Closed forward observations with selected/sliced status, pre-execution risk-intensity rank, realized PnL, exit outcome, and replacement value before any sizing/ranking promotion.",
+        "score": 0.0323,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "risk_allocation_observed_only",
+        "reopen_condition": "A valid retry needs either forward/live outcomes under a predeclared cluster envelope or a shared risk-allocation helper with canonical before/after Gate 1-4 metrics.",
+        "score": 0.0317,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec13f_ownership",
+        "family_key": "accepted_core_13f_crowding_risk_attribution",
+        "reopen_condition": "Independent active-manager quality, non-quarterly ownership/flow data, borrow/options confirmation, or prospective forward rows closed after a shared default-off 13F context logger.",
+        "score": 0.0303,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: official CFTC Traders in Financial Futures Asset Manager positioning for consolidated S&P 500 and Nasdaq-100 futures has no prior experiment in the repository. This ticket will add its missing fingerprint key and test in the same first-build experiment; it does not reuse OHLCV, macro-relief candidate pools, or a rejected response threshold.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: official CFTC Traders in Financial Futures Asset Manager positioning for consolidated S&P 500 and Nasdaq-100 futures has no prior experiment in the repository. This ticket will add its missing fingerprint key and test in the same first-build experiment; it does not reuse OHLCV, macro-relief candidate pools, or a rejected response threshold.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: official CFTC Traders in Financial Futures Asset Manager positioning for consolidated S&P 500 and Nasdaq-100 futures has no prior experiment in the repository. This ticket will add its missing fingerprint key and test in the same first-build experiment; it does not reuse OHLCV, macro-relief candidate pools, or a rejected response threshold.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.18,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no monotonic relation",
+      "window sign instability",
+      "group imbalance",
+      "weekly state too stale",
+      "positioning crowds winners and reverses"
+    ],
+    "confidence_reason": "The source is independent and complete, but recent macro-context searches were window-fragile and positioning may be contemporaneous rather than predictive.",
+    "recorded_at": "2026-07-13T02:40:45Z"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_cftc_tff_positioning",
+    "artifact": "data/experiments/exp-20260712-021/exp_20260712_021_cftc_tff_asset_manager_positioning.json",
+    "log": "experiments/logs/exp-20260712-021.json",
+    "summary": {
+      "raw_trades": 62,
+      "joined_trades": 62,
+      "coverage": 1.0,
+      "rising": {
+        "count": 42,
+        "mean_pnl_pct_net": 0.04810464,
+        "median_pnl_pct_net": 0.0702465,
+        "win_rate": 0.547619
+      },
+      "non_rising": {
+        "count": 20,
+        "mean_pnl_pct_net": 0.06055655,
+        "median_pnl_pct_net": 0.0656905,
+        "win_rate": 0.65
+      },
+      "rising_minus_non_rising_mean_pnl_pct_net": -0.01245191,
+      "spearman_change_vs_pnl_pct_net": -0.11648089344115134
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-021.json",
+  "single_causal_variable": "cftc_tff_equity_index_asset_manager_net_share_four_report_change_sign_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260712-021.json",
+  "trial_family": "cftc_tff_equity_index_asset_manager_positioning",
+  "trial_variant_id": "four_report_net_share_change_sign_observed_only_v1",
+  "timestamp": "2026-07-13T02:52:07Z",
+  "decision": "observed_only_rejected_cftc_tff_positioning",
+  "accepted": false,
+  "accepted_alpha": false,
+  "observed_only_lead": false,
+  "alpha_hypothesis": "Observed-only risk-allocation attribution: when the strictly PIT CFTC Traders in Financial Futures Asset Manager net-long share across S&P 500 and Nasdaq-100 consolidated futures has risen over four reports, existing accepted core long trades should earn higher net return than trades entered when institutional positioning is flat or falling, consistently across the three post-MTM canonical windows.",
+  "new_evidence_axis": "Official CFTC TFF positioning is a new repository data source with a dedicated fingerprint key.",
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.18,
+    "brier_score": 0.0324,
+    "realized_failure_modes": [
+      "window_group_below_3_trades",
+      "pooled_rising_minus_non_rising_not_positive",
+      "pooled_spearman_not_positive",
+      "fewer_than_two_positive_windows"
+    ]
+  },
+  "parameters": {
+    "target_markets": [
+      "S&P 500 Consolidated - CHICAGO MERCANTILE EXCHANGE",
+      "NASDAQ-100 Consolidated - CHICAGO MERCANTILE EXCHANGE"
+    ],
+    "feature": "equal mean of (Asset_Mgr_Positions_Long_All - Asset_Mgr_Positions_Short_All) / Open_Interest_All",
+    "change_reports": 4,
+    "publication_lag_days": 8,
+    "join_contract": "latest available_from <= entry_date",
+    "split": "four_report_change > 0 versus <= 0",
+    "no_threshold_or_field_sweep": true
+  },
+  "source_manifest": {
+    "sources": [
+      {
+        "year": 2024,
+        "url": "https://www.cftc.gov/files/dea/history/fut_fin_txt_2024.zip",
+        "cache_hit": true,
+        "path": "data/experiments/exp-20260712-021/fut_fin_txt_2024.zip",
+        "sha256": "3f00585741a7cf76c207df640951d644dd91ff22a1106b38ca37a2469c765637",
+        "bytes": 563591,
+        "archive_member": "FinFutYY.txt",
+        "all_rows": 3163,
+        "selected_rows": 106
+      },
+      {
+        "year": 2025,
+        "url": "https://www.cftc.gov/files/dea/history/fut_fin_txt_2025.zip",
+        "cache_hit": true,
+        "path": "data/experiments/exp-20260712-021/fut_fin_txt_2025.zip",
+        "sha256": "2ea0cda6395f7dd6501c27422be3763e1f2f5b41b768cfd36b871f092a07d438",
+        "bytes": 627068,
+        "archive_member": "FinFutYY.txt",
+        "all_rows": 3686,
+        "selected_rows": 104
+      },
+      {
+        "year": 2026,
+        "url": "https://www.cftc.gov/files/dea/history/fut_fin_txt_2026.zip",
+        "cache_hit": true,
+        "path": "data/experiments/exp-20260712-021/fut_fin_txt_2026.zip",
+        "sha256": "5a897aeaca15c6865a3549250ab41720344d64ff1258b3dc83e2039561afa1ea",
+        "bytes": 376439,
+        "archive_member": "FinFutYY.txt",
+        "all_rows": 2321,
+        "selected_rows": 54
+      }
+    ],
+    "selected_rows": 264,
+    "normalized_sha256": "dd0e8873a8bf0c96dfa5795062d602cef565d2c4ec4b62d2cbe352b3dcc04b43"
+  },
+  "gate1": {
+    "passed": true,
+    "summary_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "summary_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "aggregate": {
+      "expected_value_score_sum": 12.2698,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.7885,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0594,
+        "trade_rows_sha256": "10e32056090c13c3334dca251de35897e18b0c512259e6087384bbdaafafeb36"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "max_drawdown_pct": 0.0502,
+        "trade_rows_sha256": "a4144004a161c98bafe83714f2b7197ce70a1ffa5fc1075c320a9cd509943662"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "max_drawdown_pct": 0.0975,
+        "trade_rows_sha256": "9c29588c11c13dcc4ee93d025866e373fc2707e9f4b417e9d597b225776c773e"
+      }
+    ],
+    "artifact_identity_checks": [
+      {
+        "label": "late_strong",
+        "path": "data/backtests/post_mtm_20260712/late_strong_exp-20260712-015.json",
+        "sha256": "3353d45e1eb17721fb92bff9acd22b5eff7ea0de606ce5d9dd5b00a5ee43594b",
+        "passed": true
+      },
+      {
+        "label": "mid_weak",
+        "path": "data/backtests/post_mtm_20260712/mid_weak_exp-20260712-015.json",
+        "sha256": "de253903ac23fceecb9a04fad61931f3f793864fecc4cd8ec34ef80c1a417304",
+        "passed": true
+      },
+      {
+        "label": "old_thin",
+        "path": "data/backtests/post_mtm_20260712/old_thin_exp-20260712-015.json",
+        "sha256": "f2c09405455e7df822bd07eec7eedb3ff9c1d00fe81f417b0438fe7d8063aab2",
+        "passed": true
+      }
+    ]
+  },
+  "gate2": {
+    "passed": true,
+    "entry_date_complete": 62,
+    "entry_date_expected": 62,
+    "required_cftc_fields": [
+      "Report_Date_as_YYYY-MM-DD",
+      "Open_Interest_All",
+      "Asset_Mgr_Positions_Long_All",
+      "Asset_Mgr_Positions_Short_All"
+    ],
+    "target_price_note": "Closed-trade artifacts omit target_price; the unchanged accepted baseline signal engine owns that sentinel."
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 62,
+    "signals_survived": 62,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_cftc_tff_positioning",
+    "failed_reasons": [
+      "window_group_below_3_trades",
+      "pooled_rising_minus_non_rising_not_positive",
+      "pooled_spearman_not_positive",
+      "fewer_than_two_positive_windows"
+    ],
+    "acceptance_rule": "Observed-only positive lead only if strict PIT feature coverage is at least 95% overall and in every window; rising and non-rising groups each have at least 10 pooled trades and 3 trades per window; pooled mean pnl_pct_net difference is positive; pooled Spearman rho is positive; and the rising-minus-non-rising mean difference is positive in at least two of three windows. Otherwise reject and freeze this field/response neighborhood. No strategy change is accepted in this ticket."
+  },
+  "before_metrics": {
+    "summary_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "summary_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "aggregate": {
+      "expected_value_score_sum": 12.2698,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.7885,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0594,
+        "trade_rows_sha256": "10e32056090c13c3334dca251de35897e18b0c512259e6087384bbdaafafeb36"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "max_drawdown_pct": 0.0502,
+        "trade_rows_sha256": "a4144004a161c98bafe83714f2b7197ce70a1ffa5fc1075c320a9cd509943662"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "max_drawdown_pct": 0.0975,
+        "trade_rows_sha256": "9c29588c11c13dcc4ee93d025866e373fc2707e9f4b417e9d597b225776c773e"
+      }
+    ]
+  },
+  "after_metrics": {
+    "summary_path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "summary_sha256": "a0e18b26b470d75ef5c3e8b9e0b75211e235b7c03b3baf07b73a59977231c638",
+    "aggregate": {
+      "expected_value_score_sum": 12.2698,
+      "total_pnl_sum": 237852.27,
+      "trade_count_sum": 62,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.7885,
+      "worst_max_drawdown_pct": 0.0975
+    },
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 7.2115,
+        "total_pnl": 117072.92,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "max_drawdown_pct": 0.0594,
+        "trade_rows_sha256": "10e32056090c13c3334dca251de35897e18b0c512259e6087384bbdaafafeb36"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 3.7446,
+        "total_pnl": 77845.53,
+        "trade_count": 21,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "survival_rate": 0.7885,
+        "max_drawdown_pct": 0.0502,
+        "trade_rows_sha256": "a4144004a161c98bafe83714f2b7197ce70a1ffa5fc1075c320a9cd509943662"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 1.3137,
+        "total_pnl": 42933.82,
+        "trade_count": 23,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "survival_rate": 0.9032,
+        "max_drawdown_pct": 0.0975,
+        "trade_rows_sha256": "9c29588c11c13dcc4ee93d025866e373fc2707e9f4b417e9d597b225776c773e"
+      }
+    ]
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "read_only_saved_trade_attribution"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The weekly institutional-positioning change did not separate accepted core trade returns with the predeclared pooled and cross-window consistency.",
+    "forbidden_near_neighbor_retry": "Do not retry Asset Manager gross fields, 1/2/8/13-report changes, percentile or z-score thresholds, reverse sign, ES/NQ-only variants, ticker/strategy/window slices, or a soft scalar on these frozen rows.",
+    "new_evidence_required": "A positive lead requires a separate shared-paper-first policy and full Gate 1-4 replay. A rejection requires a genuinely different data source or materially more settled forward rows, not another CFTC field/threshold response."
+  },
+  "rejection_reason": "window_group_below_3_trades;pooled_rising_minus_non_rising_not_positive;pooled_spearman_not_positive;fewer_than_two_positive_windows",
+  "next_retry_requires": [
+    "shared-paper-first helper and full Gate 1-4 if positive",
+    "new data source or materially more settled forward rows if rejected"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260712_021_cftc_tff_asset_manager_positioning.py",
+    "data/experiments/exp-20260712-021/exp_20260712_021_cftc_tff_asset_manager_positioning.json",
+    "data/experiments/exp-20260712-021/cftc_tff_normalized.json",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2024.zip",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2025.zip",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2026.zip",
+    "experiments/logs/exp-20260712-021.json",
+    "experiments/cards/exp-20260712-021.md",
+    "experiments/manifests/exp-20260712-021.json",
+    "experiments/tickets/exp-20260712-021.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/experiments/exp-20260712-021/cftc_tff_normalized.json",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2024.zip",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2025.zip",
+    "data/experiments/exp-20260712-021/fut_fin_txt_2026.zip"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260712_021_cftc_tff_asset_manager_positioning.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_021_cftc_tff_asset_manager_positioning.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "attribution": {
+    "aggregate": {
+      "raw_trades": 62,
+      "joined_trades": 62,
+      "coverage": 1.0,
+      "rising": {
+        "count": 42,
+        "mean_pnl_pct_net": 0.04810464,
+        "median_pnl_pct_net": 0.0702465,
+        "win_rate": 0.547619
+      },
+      "non_rising": {
+        "count": 20,
+        "mean_pnl_pct_net": 0.06055655,
+        "median_pnl_pct_net": 0.0656905,
+        "win_rate": 0.65
+      },
+      "rising_minus_non_rising_mean_pnl_pct_net": -0.01245191,
+      "spearman_change_vs_pnl_pct_net": -0.11648089344115134
+    },
+    "by_window": {
+      "late_strong": {
+        "raw_trades": 18,
+        "joined_trades": 18,
+        "coverage": 1.0,
+        "rising": {
+          "count": 11,
+          "mean_pnl_pct_net": 0.07829264,
+          "median_pnl_pct_net": 0.108412,
+          "win_rate": 0.727273
+        },
+        "non_rising": {
+          "count": 7,
+          "mean_pnl_pct_net": 0.09720843,
+          "median_pnl_pct_net": 0.078519,
+          "win_rate": 1.0
+        },
+        "rising_minus_non_rising_mean_pnl_pct_net": -0.01891579,
+        "spearman_change_vs_pnl_pct_net": -0.03316090664274764
+      },
+      "mid_weak": {
+        "raw_trades": 21,
+        "joined_trades": 21,
+        "coverage": 1.0,
+        "rising": {
+          "count": 19,
+          "mean_pnl_pct_net": 0.04297853,
+          "median_pnl_pct_net": -0.001338,
+          "win_rate": 0.473684
+        },
+        "non_rising": {
+          "count": 2,
+          "mean_pnl_pct_net": 0.1558915,
+          "median_pnl_pct_net": 0.1558915,
+          "win_rate": 1.0
+        },
+        "rising_minus_non_rising_mean_pnl_pct_net": -0.11291297,
+        "spearman_change_vs_pnl_pct_net": -0.47300025038558924
+      },
+      "old_thin": {
+        "raw_trades": 23,
+        "joined_trades": 23,
+        "coverage": 1.0,
+        "rising": {
+          "count": 12,
+          "mean_pnl_pct_net": 0.02854867,
+          "median_pnl_pct_net": 0.020012,
+          "win_rate": 0.5
+        },
+        "non_rising": {
+          "count": 11,
+          "mean_pnl_pct_net": 0.019899,
+          "median_pnl_pct_net": -0.028361,
+          "win_rate": 0.363636
+        },
+        "rising_minus_non_rising_mean_pnl_pct_net": 0.00864967,
+        "spearman_change_vs_pnl_pct_net": 0.09615911121343654
+      }
+    },
+    "positive_windows": [
+      "old_thin"
+    ]
+  },
+  "updated_at": "2026-07-13T02:52:07+00:00",
+  "fingerprint_caveat": {
+    "reservation_data_source": "other",
+    "reason": "This was the first ticket on the surface, so its source keyword did not exist at reservation time.",
+    "post_implementation": {
+      "data_source": "cftc_tff_positioning",
+      "field_tags": [
+        "accepted",
+        "across",
+        "allocation",
+        "asset",
+        "attribution",
+        "canonical",
+        "cftc",
+        "consistently",
+        "consolidated",
+        "core",
+        "earn",
+        "entered",
+        "existing",
+        "falling",
+        "financial",
+        "flat",
+        "four",
+        "futures",
+        "has",
+        "higher",
+        "in",
+        "institutional",
+        "is",
+        "long",
+        "manager",
+        "mtm",
+        "nasdaq",
+        "net",
+        "observed",
+        "only",
+        "or",
+        "over",
+        "p",
+        "pit",
+        "positioning",
+        "post",
+        "reports",
+        "return",
+        "risen",
+        "risk",
+        "s",
+        "share",
+        "should",
+        "strictly",
+        "than",
+        "three",
+        "traders",
+        "trades",
+        "when",
+        "windows"
+      ],
+      "gate_shape": "other"
+    },
+    "required_post_close_check": "docs/frozen_families.jsonl must contain data_source=cftc_tff_positioning after rebuild"
+  }
+}

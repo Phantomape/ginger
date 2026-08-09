@@ -107,6 +107,8 @@ def persist_daily_non_ohlcv_snapshots(
     refresh_options: bool = False,
     options_tickers: list[str] | None = None,
     option_underlying_prices: dict[str, float] | None = None,
+    options_quote_date: str | date | datetime | None = None,
+    options_collection_health: dict[str, Any] | None = None,
     options_max_expirations: int | None = 2,
     options_max_strikes_per_side: int | None = 12,
     options_max_tickers: int | None = None,
@@ -127,6 +129,13 @@ def persist_daily_non_ohlcv_snapshots(
 
     as_of_date = _parse_as_of(as_of)
     tag = as_of_date.strftime("%Y%m%d")
+    options_health = dict(options_collection_health or {})
+    options_date = (
+        _parse_as_of(options_quote_date)
+        if options_quote_date is not None
+        else (None if options_health.get("status") == "blocked" else as_of_date)
+    )
+    options_tag = (options_date or as_of_date).strftime("%Y%m%d")
     start_date = as_of_date - timedelta(days=max(0, int(lookback_days)))
     root = Path(data_dir)
     root.mkdir(parents=True, exist_ok=True)
@@ -140,8 +149,8 @@ def persist_daily_non_ohlcv_snapshots(
         "form4_summary": root / f"form4_backfill_summary_{tag}.json",
         "form4_sale_overhang_context": root / f"form4_sale_overhang_context_{tag}.jsonl",
         "form4_sale_overhang_context_summary": root / f"form4_sale_overhang_context_summary_{tag}.json",
-        "options_onclickmedia_chain": root / f"options_onclickmedia_chain_{tag}.jsonl",
-        "options_onclickmedia_summary": root / f"options_onclickmedia_summary_{tag}.json",
+        "options_onclickmedia_chain": root / f"options_onclickmedia_chain_{options_tag}.jsonl",
+        "options_onclickmedia_summary": root / f"options_onclickmedia_summary_{options_tag}.json",
         "form144_planned_sale_context": root / f"form144_planned_sale_context_{tag}.jsonl",
         "form144_planned_sale_context_summary": root / f"form144_planned_sale_context_summary_{tag}.json",
         "borrow_availability_rows": Path(BORROW_AVAILABILITY_ROWS_PATH),
@@ -153,6 +162,8 @@ def persist_daily_non_ohlcv_snapshots(
         "schema_version": 1,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "asof_date": as_of_date.isoformat(),
+        "options_quote_date": options_date.isoformat() if options_date else None,
+        "options_collection_health": options_health or None,
         "date_tag": tag,
         "lookback_days": int(lookback_days),
         "date_range": {
@@ -246,9 +257,30 @@ def persist_daily_non_ohlcv_snapshots(
             ),
         }
 
-    if refresh_options and options_tickers:
+    if refresh_options and options_health.get("status") == "blocked":
+        snapshot["options_onclickmedia"] = {
+            "status": "failed",
+            "reason": options_health.get("reason") or "options_input_contract_blocked",
+            "run_asof_date": as_of_date.isoformat(),
+            "source_quote_date": None,
+            "input_health": options_health,
+            "output_path": _path_text(paths["options_onclickmedia_chain"]),
+            "summary_output": _path_text(paths["options_onclickmedia_summary"]),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "options_data_collection_fail_closed",
+            },
+        }
+    elif refresh_options and options_tickers and options_date is not None:
         snapshot["options_onclickmedia"] = _run_options_onclickmedia(
-            as_of_date=as_of_date,
+            as_of_date=options_date,
             data_dir=root,
             tickers=options_tickers,
             underlying_prices=option_underlying_prices,
@@ -257,6 +289,13 @@ def persist_daily_non_ohlcv_snapshots(
             max_tickers=options_max_tickers,
             refresh=refresh_options_cache,
             sleep_seconds=sleep_seconds,
+        )
+        snapshot["options_onclickmedia"].update(
+            {
+                "run_asof_date": as_of_date.isoformat(),
+                "source_quote_date": options_date.isoformat(),
+                "input_health": options_health or None,
+            }
         )
     else:
         snapshot["options_onclickmedia"] = {

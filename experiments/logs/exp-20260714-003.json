@@ -1,0 +1,203 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.1953,
+    "max_drawdown_pct": 0.105,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.042813,
+    "total_pnl": 237360.18,
+    "total_return_pct": 2.3736,
+    "trade_count": 90,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.0745,
+    "actual_pnl_delta": -492.09,
+    "actual_success": 0,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.1545,
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1200.0,
+    "pnl_prediction_error": -1692.09,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "quarter_cluster_effective_sample_too_small",
+      "current_vintage_revision_bias",
+      "parent_mapping_survivorship",
+      "merger_contamination",
+      "bank_beta_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "predicted_success_probability": 0.15,
+    "realized_failure_mode": "window_regression",
+    "surprise_level": "very_low",
+    "surprise_note": "Mid_weak added 891.67 USD and the target beat weak SPY/QQQ on matched dates, but old_thin lost 1342.81 USD, late_strong PnL also regressed, cash was not beaten, and survival remained below 5 percent."
+  },
+  "causal_components": [
+    "shared helper",
+    "historical replay",
+    "official QBP availability map",
+    "daily default-off snapshot",
+    "dominant-bank parent mapping",
+    "merger-jump quality gate",
+    "execution envelope",
+    "full-stack verdict",
+    "DSR evidence",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Shared-paper-first FDIC Call Report deposit-franchise ranking used exact official QBP dates, DEPUNINS/DEPDOM, unique RSSDHCR parent groups, quarterly top5, next-open entry, 20-session close, 4000 USD notional, and 35bps cost. The fixed 28-trade policy lost 492.09 USD with EV delta -0.0745 and is rejected without retuning.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fdic_deposit_franchise_repair_quarterly_ranking",
+  "component": "quant/experiments/exp_*_fdic_call_report_deposit_repair.py, data/experiments/exp-20260714-003/, experiments/artifacts/exp-20260714-003_fdic_call_report_deposit_repair.md, quant/fdic_call_report_deposit_repair_paper_sleeve.py, quant/test_fdic_call_report_deposit_repair_paper_sleeve.py, data/non_ohlcv/fdic_call_reports/, data/paper_sleeves/fdic_call_report_deposit_repair/, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/frozen_families.jsonl, docs/production_backtest_parity_matrix.md, experiments/cards/exp-20260714-003.md, experiments/manifests/exp-20260714-003.json, experiments/tickets/exp-20260714-003.json, experiments/logs/exp-20260714-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.0745,
+    "max_drawdown_pct": 0.0075,
+    "survival_rate": -0.745687,
+    "total_pnl": -492.09,
+    "total_return_pct": -0.0049,
+    "trade_count": 28
+  },
+  "experiment_id": "exp-20260714-003",
+  "hypothesis": "Shared-paper-first candidate-pool alpha: after each official FDIC Quarterly Banking Profile release, publicly listed bank parents whose dominant insured-bank subsidiary exceeds 10 billion USD assets, grows core deposits year over year, and lowers its uninsured-deposit share year over year may have a strengthening deposit franchise that continues to reprice; exclude merger-like asset jumps, rank the five largest uninsured-share improvements, enter the first strictly later open, and hold 20 sessions.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_fdic_call_report_deposit_quality_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260711-016"
+  ],
+  "new_evidence_type": "new_data_source_and_gate_shape",
+  "next_retry_requires": [
+    "First-release or as-of FDIC Call Report vintages plus historical CERT/RSSDHCR and listed-security mappings, with an exact-top5 sensitivity audit",
+    "Or enough prospectively first-seen QBP quarters to satisfy the declared forward and cluster evidence thresholds; same-sample field, threshold, rank, hold, cost, mapping, or window retunes do not qualify"
+  ],
+  "notes": "Gate3 correctly failed at 28/654=4.2813 percent after fixing a window-denominator triple count; selected rows and outcomes were unchanged. One EV window and two PnL windows regressed, drawdown worsened 0.75pp, top5 positive contribution was 83.58 percent, cash and accepted exp-20260611-007 comparators were not beaten, and required XLF/KBE bars were unavailable. Current-vintage FDIC amendments and current CERT/RSSDHCR/SEC mappings are not historical PIT, so measurement validity also fails. DSR is honestly not computable from one attempt and zero prospective quarters. No run.py, daily ledger, order, ranking, sizing, or exit path changed. Reservation fingerprint caveat: the pre-reserve classifier misrouted this new FDIC source to companyfacts_ratio/allocator_source; coverage was repaired to fdic_call_report_financials/candidate_pool_top5_20d with 136 fingerprint tests passing, and the rebuilt frozen family now carries that exact source/gate key. Do not retune any field, threshold, rank, hold, cost, mapping, or window on this frozen sample. Reopen only with first-release/as-of FDIC vintages plus historical entity/security mapping and exact-top5 sensitivity, or materially sufficient prospective settled QBP quarters.",
+  "parameters": {
+    "locked_variables": [
+      "QBP release dates fixed to official pages",
+      "FDIC financial API snapshot fixed before outcomes",
+      "current exact SEC-name map plus dominant-bank share at least 80 percent",
+      "report-date assets at least 10 billion USD",
+      "absolute YoY asset growth at most 25 percent",
+      "YoY core deposits positive",
+      "YoY uninsured-deposit share delta negative",
+      "rank by most negative uninsured-share delta",
+      "top5 per quarter",
+      "next open strictly after QBP release",
+      "20-session close",
+      "4000 USD per row",
+      "35bps round-trip cost",
+      "KBE XLF SPY QQQ cash comparators",
+      "no threshold rank hold notional or mapping retune"
+    ],
+    "single_causal_variable": "fdic_qbp_deposit_franchise_repair_quarterly_top5_20d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this frozen FDIC sample by changing DEPDOM fields, the 10 billion USD or 80 percent or 25 percent gates, exact-name mapping, rank, top-N, release timing, holding period, notional, costs, comparator set, or window slices. Gate 3 is already below 5 percent, so adding filters is specifically forbidden.",
+    "new_evidence_required": "Reopen only with first-release/as-of FDIC vintages plus historical CERT/RSSDHCR/security mapping and an exact-top5 sensitivity audit, or with materially sufficient prospectively first-seen settled QBP quarters. Same-source alternative fields or threshold sweeps are not a legal new evidence axis.",
+    "realized_failure_mode": "window_regression",
+    "why_result_happened": "Mid_weak added 891.67 USD and the target beat weak SPY/QQQ on matched dates, but old_thin lost 1342.81 USD, late_strong PnL also regressed, cash was not beaten, and survival remained below 5 percent."
+  },
+  "prediction": {
+    "confidence_reason": "This is a new official firm-level funding-quality source with 60 exact SEC parent matches and a pre-outcome sample of ten selected rows in each canonical window, but the thirty stock rows collapse to only six quarterly decision clusters and today-snapshot revisions or parent history can overstate evidence.",
+    "expected_ev_delta": 0.08,
+    "expected_pnl_delta": 1200.0,
+    "main_failure_modes": [
+      "quarter_cluster_effective_sample_too_small",
+      "current_vintage_revision_bias",
+      "parent_mapping_survivorship",
+      "merger_contamination",
+      "bank_beta_not_incremental",
+      "window_regression",
+      "accepted_comparator_not_beaten",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-07-14T03:58:18+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "The fixed policy produced aggregate EV -0.0745 and PnL -492.09 USD, regressed one EV window and two PnL windows, worsened maximum drawdown by 0.75 percentage points, failed the 5 percent survival floor at 28/654, exceeded the top-five contribution cap, failed cash and the accepted exp-20260611-007 comparator, and lacked required XLF/KBE bars. Current-vintage values and current entity mappings also fail historical PIT validity.",
+  "related_files": [
+    "quant/experiments/exp_20260714_003_fdic_call_report_deposit_repair.py",
+    "quant/fdic_call_report_deposit_repair_paper_sleeve.py",
+    "quant/test_fdic_call_report_deposit_repair_paper_sleeve.py",
+    "data/experiments/exp-20260714-003/before.json",
+    "data/experiments/exp-20260714-003/after.json",
+    "data/experiments/exp-20260714-003/fdic_call_report_deposit_repair_replay.json",
+    "data/experiments/exp-20260714-003/auxiliary_ohlcv.json",
+    "data/experiments/exp-20260714-003/deflated_sharpe_panel.json",
+    "data/experiments/exp-20260714-003/deflated_sharpe_report.json",
+    "data/non_ohlcv/fdic_call_reports/source_manifest.json",
+    "data/non_ohlcv/fdic_call_reports/canonical_records.json",
+    "data/non_ohlcv/fdic_call_reports/sec_exact_parent_map_current.json",
+    "data/non_ohlcv/fdic_call_reports/official_qbp_release_dates.json",
+    "data/paper_sleeves/fdic_call_report_deposit_repair/latest_snapshot.json",
+    "experiments/artifacts/exp-20260714-003_fdic_call_report_deposit_repair.md",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "production_impact": {
+    "trade_enabled": false,
+    "retained_shared_policy_change": false,
+    "daily_candidate_parity_complete": false,
+    "automatic_forward_collection": false,
+    "summary": "Rejected research asset only. The shared helper and one-shot empty default-off snapshot are retained for reproducibility, but no run.py, report, ledger, live/default order, core ranking, sizing, exit, or risk-budget path changed."
+  },
+  "fingerprint_caveat": {
+    "reservation_fingerprint": "companyfacts_ratio/allocator_source",
+    "actual_fingerprint": "fdic_call_report_financials/candidate_pool_top5_20d",
+    "cause": "The new FDIC source and quarterly top5/20-session gate phrases were absent from the classifier at reservation time.",
+    "repair": "Added narrow source and gate keywords before generic Companyfacts/allocator rules; 136 fingerprint tests passed. The rebuilt frozen_families.jsonl now records fdic_call_report_financials/candidate_pool_top5_20d for this family."
+  },
+  "gate_evidence": {
+    "gate_1": "Used the active 2026-07-12 post-MTM three-window baseline.",
+    "gate_2": "All 28 selected and settled trades carried entry_date and target_price; DEPUNINS/DEPDOM and regulatory parent_group_id contracts were complete.",
+    "gate_3": "Failed: 28 of 654 window-local parent-quarter rows survived, 4.2813 percent. The initial 1962 denominator triple-count was repaired without changing any selected row or outcome.",
+    "gate_4": "Rejected: aggregate EV -0.0745, PnL -492.09 USD, one EV and two PnL window regressions, drawdown +0.75pp, top-five contribution 83.58 percent, cash and accepted comparator failures, and required XLF/KBE gaps. Historical PIT validity also failed.",
+    "gate_5": "Fail-closed and independent of Gate 4: one honest trial is insufficient for DSR, there are only six release clusters, zero prospective settled quarters, no stock-liquidity envelope, no kill-switch parity, and no automatic daily forward collection."
+  },
+  "reopen_condition": "Park this FDIC deposit-franchise ranking family until first-release/as-of financial vintages and historical CERT/RSSDHCR/security mappings can reproduce the exact quarterly top5, or until prospectively first-seen settled QBP quarters satisfy the declared forward/cluster evidence threshold. Do not reopen for fields, thresholds, rank, hold, costs, mappings, or window retunes on the frozen sample.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_003_fdic_call_report_deposit_repair.py --offline --source-only",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_003_fdic_call_report_deposit_repair.py --offline",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant\\test_fdic_call_report_deposit_repair_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_full_stack_candidate_pool.py quant\\test_sharpe_inference.py quant\\test_deflated_sharpe_cli.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T04:30:15+00:00",
+  "trial_family": "fdic_qbp_deposit_franchise_repair_candidate_pool",
+  "trial_variant_id": "coredep_growth_uninsured_share_improvement_top5_20d_v1"
+}

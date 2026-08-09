@@ -1,7 +1,7 @@
 """Build compact alpha-research memory from experiment records.
 
-This generator deliberately keeps the registry light. It reads the raw
-per-experiment facts through ``quant.meta_research_engine`` and writes derived,
+This generator deliberately keeps the registry light. It reads canonical raw
+experiment facts through ``quant.experiment_history`` and writes derived,
 LLM-sized memory surfaces:
 
 - ``docs/alpha_context_pack.md``: default short context for new agents.
@@ -29,7 +29,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from quant.meta_research_engine import (  # noqa: E402
+from quant.experiment_history import (  # noqa: E402
     _changed_variable,
     _decision,
     _dedupe_records_by_experiment_id,
@@ -39,10 +39,9 @@ from quant.meta_research_engine import (  # noqa: E402
     _is_rejected_decision,
     _mechanism_family,
     _trial_family,
-    build_meta_report,
+    build_history_report,
     is_strategy_iteration_record,
     load_experiment_logs,
-    score_experiment,
 )
 
 
@@ -137,7 +136,6 @@ def record_summary(record, root=REPO_ROOT):
         "changed_variable": _changed_variable(record),
         "ev_delta": round(_delta(record, "expected_value_score"), 4),
         "pnl_delta": round(_delta(record, "total_pnl") or _delta(record, "pnl"), 2),
-        "score": score_experiment(record),
         "reflection": compact_reflection(record),
         "summary": one_line(
             record.get("hypothesis")
@@ -203,93 +201,51 @@ def trial_guidance_for_mechanism(report, mechanism):
 
 
 def select_lesson_mechanisms(records, report, count):
+    """Choose cards for anti-repeat coverage rather than winner imitation."""
     groups = group_by_mechanism(records)
-    scored = []
     high_risk_mechanisms = set()
     for row in report.get("trial_accounting", {}).get("high_risk_groups", []):
         high_risk_mechanisms.update(row.get("mechanism_families") or [])
 
-    priority_families = {
-        item.get("family")
-        for item in report.get("strategy_research_priorities", [])[: count * 2]
-    }
-
-    for mechanism, rows in groups.items():
-        stats = mechanism_stats(rows)
-        recency_bonus = 1.0 if stats["latest_experiment"] else 0.0
-        high_risk_bonus = 3.0 if mechanism in high_risk_mechanisms else 0.0
-        priority_bonus = 2.0 if mechanism in priority_families else 0.0
-        accepted_bonus = min(3.0, stats["accepted"] * 0.8)
-        volume_bonus = min(3.0, stats["experiments"] * 0.15)
-        evidence_bonus = min(3.0, abs(stats["sum_ev_delta"]) * 0.2)
-        scored.append(
-            (
-                high_risk_bonus
-                + priority_bonus
-                + accepted_bonus
-                + volume_bonus
-                + evidence_bonus
-                + recency_bonus,
-                mechanism,
-            )
+    def latest_experiment(mechanism):
+        return max(
+            (_experiment_id(row) for row in groups[mechanism]),
+            default="",
         )
 
-    return [
-        mechanism
-        for _, mechanism in sorted(scored, key=lambda item: (-item[0], item[1]))[:count]
-    ]
+    high_risk = sorted(
+        [name for name in groups if name in high_risk_mechanisms],
+        key=latest_experiment,
+        reverse=True,
+    )
+    remaining = sorted(
+        [name for name in groups if name not in high_risk_mechanisms],
+        key=latest_experiment,
+        reverse=True,
+    )
+    return (high_risk + remaining)[:count]
 
 
 def build_memory_model(root=REPO_ROOT, lesson_count=12, recent_count=12):
     root = Path(root)
     records = load_strategy_records(root)
-    report = build_meta_report(root)
+    report = build_history_report(root)
     lesson_mechanisms = select_lesson_mechanisms(records, report, lesson_count)
     groups = group_by_mechanism(records)
-    top_positive = sorted(
-        [record_summary(record, root=root) for record in records],
-        key=lambda row: (row["score"], row["ev_delta"], row["pnl_delta"]),
-        reverse=True,
-    )[:recent_count]
     recent = [
         record_summary(record, root=root)
         for record in sorted_records(records)[-recent_count:]
     ]
     return {
         "schema_version": 1,
-        "source": "raw experiment logs via quant.meta_research_engine",
+        "source": "raw experiment logs via quant.experiment_history",
         "records": records,
         "report": report,
         "fingerprint": record_fingerprint(records, root=root),
         "lesson_mechanisms": lesson_mechanisms,
         "groups": groups,
-        "top_positive": top_positive,
         "recent": recent,
     }
-
-
-def render_priority_rows(report, limit=8):
-    lines = []
-    for item in report.get("strategy_research_priorities", [])[:limit]:
-        summary = item.get("evidence_summary") or {}
-        lines.append(
-            "- `{family}` priority `{priority:.4f}`: experiments `{experiments}`, "
-            "accept `{accept_rate:.2%}`, sum EV `{ev}`, sum PnL `{pnl}`.".format(
-                family=item.get("family"),
-                priority=float(item.get("priority") or 0.0),
-                experiments=summary.get("experiments"),
-                accept_rate=float(summary.get("accept_rate") or 0.0),
-                ev=signed(float(summary.get("sum_ev_delta") or 0.0)),
-                pnl=money(float(summary.get("sum_pnl_delta") or 0.0)),
-            )
-        )
-        why = item.get("why") or []
-        penalties = item.get("penalties") or []
-        if why:
-            lines.append(f"  Reason: {one_line('; '.join(why), 240)}")
-        if penalties:
-            lines.append(f"  Guardrail: {one_line('; '.join(penalties), 240)}")
-    return lines
 
 
 def render_freeze_rows(report, limit=10):
@@ -410,18 +366,12 @@ def render_current_state_snapshot(model, state_line_budget=DEFAULT_STATE_LINE_BU
     lines.extend(render_experiment_rows(recent_visible) if recent_visible else [
         "- No production-visible/default-off accepted records found in loaded logs."
     ])
-    lines.extend(["", "## Current Research Queue Pointers", ""])
-    for item in report.get("strategy_research_priorities", [])[:5]:
-        summary = item.get("evidence_summary") or {}
-        lines.append(
-            "- `{family}` priority `{priority:.4f}`, experiments `{experiments}`, "
-            "accept `{accept_rate:.2%}`.".format(
-                family=item.get("family"),
-                priority=float(item.get("priority") or 0.0),
-                experiments=summary.get("experiments"),
-                accept_rate=float(summary.get("accept_rate") or 0.0),
-            )
-        )
+    lines.extend(["", "## Research Search Contract", ""])
+    lines.extend([
+        "- Experiment history is memory and anti-repeat evidence, not an alpha queue.",
+        "- Generate hypotheses from current cross-surface synthesis and falsifiers.",
+        "- Use trial accounting only to reject near-neighbor retries or require new evidence.",
+    ])
     lines.extend(["", "## State Migration Note", ""])
     lines.extend([
         "- The verbose accepted-stack / experiment-consolidation history has been",
@@ -459,7 +409,7 @@ def render_context_pack(model, context_line_budget=DEFAULT_CONTEXT_LINE_BUDGET):
         "## Source Snapshot",
         "",
         f"- Strategy records counted: `{len(records)}`",
-        f"- Raw records loaded by meta report: `{report.get('records_loaded')}`",
+        f"- Raw records loaded by history report: `{report.get('records_loaded')}`",
         f"- History fingerprint: `{model['fingerprint']}`",
         "- Authoritative raw facts: `experiments/tickets`, `experiments/logs`,",
         "  `experiments/cards`, `experiments/artifacts`, and committed code.",
@@ -477,10 +427,13 @@ def render_context_pack(model, context_line_budget=DEFAULT_CONTEXT_LINE_BUDGET):
         "  after closing and committing material alpha experiments so this pack",
         "  reflects the latest committed lessons.",
         "",
-        "## Current Research Priorities",
+        "## Search Boundary",
         "",
     ]
-    lines.extend(render_priority_rows(report))
+    lines.extend([
+        "- History is anti-repeat memory, not a next-strategy ranking.",
+        "- Generate hypotheses from current cross-surface synthesis and falsifiers.",
+    ])
     lines.extend(
         [
             "",
@@ -498,14 +451,6 @@ def render_context_pack(model, context_line_budget=DEFAULT_CONTEXT_LINE_BUDGET):
         ]
     )
     lines.extend(render_experiment_rows(model["recent"]))
-    lines.extend(
-        [
-            "",
-            "## Highest-Signal Historical Records",
-            "",
-        ]
-    )
-    lines.extend(render_experiment_rows(model["top_positive"][:8]))
     lines.extend(
         [
             "",
@@ -600,8 +545,10 @@ def render_lesson_card(mechanism, records, report, *, root=REPO_ROOT):
             failure = row.get("most_recent_failure")
             if failure:
                 lines.append(
-                    f"  Latest failure: `{failure.get('experiment_id')}` "
-                    f"{one_line(failure.get('rejection_reason'), 220)}"
+                    (
+                        f"  Latest failure: `{failure.get('experiment_id')}` "
+                        f"{one_line(failure.get('rejection_reason'), 220)}"
+                    ).rstrip()
                 )
     else:
         lines.append("- Use standard Gate 1-4; no high-risk trial group is linked.")

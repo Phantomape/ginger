@@ -1,0 +1,148 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.4418,
+    "max_drawdown_pct": 0.000487,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": 2827.84,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.172,
+    "actual_pnl_delta": 2827.84,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.028,
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 4430.0,
+    "pnl_prediction_error": -1602.16,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "core_trade_lifecycle_cannot_be_reconstructed_from_closed_rows",
+      "core_notional_exhausts_cash",
+      "ETF_drawdown_breach",
+      "EV_below_10pct_threshold"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "core_notional_exhausts_cash",
+    "surprise_level": "low",
+    "surprise_note": "The ETF remained positive in every window after core-priority forced exits, but the canonical core reached substantially negative reconstructed cash."
+  },
+  "causal_components": [
+    "shared_cash_ledger",
+    "core_priority",
+    "remaining_cash_only",
+    "unchanged_etf_policy",
+    "daily_mtm",
+    "gate4"
+  ],
+  "change_summary": "Added an experiment-scoped shared dated cash ledger and replayed the unchanged low-deployment ETF policy with core-first cash priority across all frozen windows.",
+  "change_type": "capital_allocation_full_stack",
+  "changed_variable": "explicit_cash_ledger_measurement",
+  "component": "quant/backtest_cash_ledger.py, quant/test_backtest_cash_ledger.py, quant/experiments/exp_20260715_005_low_deployment_etf_explicit_cash.py, data/experiments/exp-20260715-005, experiments/cards/exp-20260715-005.md, experiments/manifests/exp-20260715-005.json, experiments/tickets/exp-20260715-005.json, experiments/logs/exp-20260715-005.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.172,
+    "expected_value_score_pct": 0.014018,
+    "max_drawdown_pct_worst_window": 0.000487,
+    "total_pnl": 2827.84,
+    "overlay_trade_count": 17
+  },
+  "experiment_id": "exp-20260715-005",
+  "hypothesis": "Capital-allocation alpha revalidation: replay the unchanged accepted low-deployment ETF sleeve through an explicit shared dated cash ledger that books core entries/exits first and permits the ETF only from remaining settled cash, with the exp-20260715-003 selector, 10% cap, holding rule, costs, and Gate 4 thresholds frozen.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "low_deployment_dynamic_etf_overlay_allocation",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260715-003",
+    "exp-20260605-035",
+    "exp-20260606-001"
+  ],
+  "new_evidence_type": "new_gate_shape_explicit_dated_cash_ledger",
+  "next_retry_requires": [
+    "Shared core fill-date cash reservation allocator",
+    "Dated add-on and partial-reduction cash events",
+    "Unaffordable core orders scaled or rejected before ETF admission"
+  ],
+  "notes": "Rejected: all three windows improved, aggregate EV +1.4018% and PnL +2827.84 with only +0.0487pp worst drawdown drift, but this missed the locked >10% EV hurdle. The reconstructed core generated 18/19/20 negative-cash events and minimum cash ranged from about -166k to -189k. Largest regret: prior standalone ETF acceptance treated notional as deployable cash without a core cash contract. The remaining unknown is incremental ETF value after core orders, dated add-ons, and partial reductions are genuinely cash-constrained.",
+  "parameters": {
+    "locked_variables": [
+      "core_entry_exit_ranking_sizing",
+      "ETF_universe",
+      "SMA200",
+      "momentum20",
+      "max_active_core_positions_1",
+      "hold_10_sessions",
+      "next_open_entry",
+      "one_overlay_position",
+      "cost_model",
+      "initial_equity_cap_10pct",
+      "no_leverage",
+      "no_core_displacement",
+      "gate4_thresholds"
+    ],
+    "single_causal_variable": "explicit_dated_cash_ledger_core_priority_low_deployment_etf_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep ETF cap, hold period, universe, SMA/momentum thresholds, or lower the greater-than-10-percent acceptance hurdle on these frozen windows.",
+    "new_evidence_required": "Implement a shared core allocator with actual execution-date cash reservations, dated add-ons and partial reductions, and deterministic scaling or rejection of unaffordable core orders; only then rerun the unchanged ETF sleeve on genuinely remaining cash.",
+    "realized_failure_mode": "core_notional_exhausts_cash",
+    "why_result_happened": "The ETF remained positive in every window after core-priority forced exits, but the canonical core reached substantially negative reconstructed cash."
+  },
+  "prediction": {
+    "confidence_reason": "The synthetic overlay improved all windows in exp-20260715-003, but its 1.78% EV gain was far below the 10% ratchet and the core cash contract was unverifiable.",
+    "expected_ev_delta": 0.2,
+    "expected_pnl_delta": 4430.0,
+    "main_failure_modes": [
+      "core_trade_lifecycle_cannot_be_reconstructed_from_closed_rows",
+      "core_notional_exhausts_cash",
+      "ETF_drawdown_breach",
+      "EV_below_10pct_threshold"
+    ],
+    "recorded_at": "2026-07-15T13:58:25+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260715-005/before.json",
+    "data/experiments/exp-20260715-005/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T14:04:14+00:00",
+  "trial_family": "cash_ledger_reopen",
+  "trial_variant_id": "explicit_dated_core_priority_v2"
+}

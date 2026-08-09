@@ -1,0 +1,53 @@
+{
+  "experiment_id": "exp-20260714-006",
+  "timestamp": "2026-07-14T08:22:19Z",
+  "status": "rejected",
+  "decision": "rejected_governance_and_temporal_leakage_preflight",
+  "evaluation_ran": false,
+  "strategy_behavior_changed": false,
+  "reason": "Independent pre-run review found that the proposed experiment did not validly reopen the parked portfolio-covariance lane and could not produce a leakage-free chronological holdout under the locked design.",
+  "blocking_findings": [
+    {
+      "code": "owner_reopen_not_independently_authorized",
+      "detail": "The parked lane requires an owner-level prospective acceptance-clause revision before a new experiment. Creating that revision inside the same experiment would let the experiment authorize itself."
+    },
+    {
+      "code": "incomplete_parked_batch_scope",
+      "detail": "The parked contract permits one batch re-judgment of all 31 ranked representatives after a valid owner revision; the ticket fixed only the 11 already materialized and historically selected representatives."
+    },
+    {
+      "code": "old_train_crosses_holdout_boundary",
+      "detail": "Eight of eleven old_thin trade sets contain exits after 2025-04-22. Using their complete lifecycle to estimate eligibility, volatility, or correlation consumes mid_weak prices and PnL before weights are frozen."
+    },
+    {
+      "code": "cross_protocol_comparison_prohibited",
+      "detail": "The active 2026-07-12 post-MTM baseline explicitly forbids cross-protocol EV, Sharpe, and drawdown comparison, while the prior overlay summaries use the 2026-06-04 core and source-dependent MTM proxy calendars."
+    },
+    {
+      "code": "dsr_selection_panel_incomplete",
+      "detail": "A twelve-row candidates-plus-joint panel omits core-only and does not represent the original 31-family selection set (or the wider historical search). Synthetic shifted dates would conceal overlapping real dates rather than repair the chronological split."
+    }
+  ],
+  "additional_design_defects": [
+    "sum(weights)=0.10 with a 0.025 family cap is infeasible when fewer than four families remain eligible; a valid contract needs sum(weights)<=0.10, cash residual, and zero-volatility/missing-score fallbacks.",
+    "The locked score uses only each family's volatility and correlation to core. It does not use candidate-by-candidate covariance, so calling it a joint covariance allocator overstates the mechanism.",
+    "Source artifacts mix base notionals and concurrent trade counts. Coefficients summing to 10 percent do not imply a 10 percent capital or risk budget without common unit-capital/target-vol normalization and name-level overlap caps.",
+    "Prior MTM reconstruction books the full cost residual on exit. Truncating training at 2025-04-22 would omit already-incurred entry cost unless costs are split causally between entry and exit.",
+    "Because the candidate families were selected using all three canonical windows, later windows can only be described as weight-fit pseudo-holdouts or conditional OOT, never untouched OOS."
+  ],
+  "required_redesign": [
+    "Obtain an owner-level prospective lane revision independently of the experiment reservation.",
+    "Use the complete 31-family scope required by the parked-lane contract, or choose a genuinely new data source/gate outside this parked surface.",
+    "Replay every configuration from raw trade rows on one active post-MTM calendar and cost contract; do not reuse old combined or delta summaries.",
+    "Define a real-calendar train/holdout boundary: training information must stop on 2025-04-22, with open-position state and later PnL assigned prospectively to holdout under a predeclared rule.",
+    "Declare the full selection history and include at least core-only, every eligible single-family configuration, and the joint configuration in the DSR evidence; do not shift dates synthetically."
+  ],
+  "production_impact": {
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled": false
+  }
+}

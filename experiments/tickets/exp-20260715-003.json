@@ -1,0 +1,338 @@
+{
+  "acceptance_rule": "Gate 1 must reuse the active post-MTM frozen-input identity. Gate 2 requires entry_date/target_price plus real daily cash and active-core-position fields. Gate 3 core survival must remain at least 5%. Accept only if aggregate EV improves by more than 10%, aggregate PnL is positive, at least two windows improve with no window EV or PnL regression, max-drawdown worsening is at most 0.5 percentage points, overlay uses no leverage and never displaces a core entry, and concentration remains within 50% single ticker and 0.35 HHI. Otherwise reject and leave default behavior off.",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/low_deployment_etf_overlay.py",
+    "quant/test_low_deployment_etf_overlay.py",
+    "quant/test_backtester.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-003.md",
+  "causal_components": [
+    "shared_helper",
+    "core_daily_deployment_context",
+    "cash_reservation",
+    "mark_to_market",
+    "next_open_10d_exit",
+    "costs",
+    "gate4"
+  ],
+  "change_type": "capital_allocation_full_stack",
+  "changed_variable": "low_deployment_etf_cash_only_integrated_portfolio_activation",
+  "claimed_at": "2026-07-15T06:03:15+00:00",
+  "completed_at": "2026-07-15T06:09:10+00:00",
+  "created_at": "2026-07-15T06:02:21+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260715-003",
+  "experiment_uid": "expuid-661875c497134f44",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T06:02:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_only_low_deployment_etf_10pct_integrated_portfolio_sleeve_v1"
+  },
+  "hypothesis": "Capital-allocation alpha: integrate the already accepted low-deployment ETF cash-substitute shared helper into the core post-MTM backtest as a cash-only 10%-of-initial-equity sleeve when active core positions are at most one; keep the frozen QQQ/SPY/IWM/GLD/SLV selector, SMA200, positive 20-session momentum, next-open entry, 10-session close exit, one overlay position, and costs unchanged, while forbidding leverage or displacement of core entries.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core_entry_exit_ranking_sizing",
+    "ETF_universe",
+    "SMA200",
+    "momentum20",
+    "max_active_core_positions_1",
+    "hold_10_sessions",
+    "next_open_entry",
+    "one_overlay_position",
+    "cost_model",
+    "initial_equity_cap_10pct",
+    "no_leverage",
+    "no_core_displacement"
+  ],
+  "mechanism_family": "low_deployment_dynamic_etf_overlay_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "operator_inputs/position_tags.json",
+    "data/live_pilot",
+    "data/paper_sleeves/low_deployment_etf"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260605-035",
+    "exp-20260606-001",
+    "exp-20260614-003"
+  ],
+  "new_evidence_type": "new_gate_shape_cash_shared_integrated_portfolio",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "10pct",
+        "a",
+        "accepted",
+        "active",
+        "allocation",
+        "alpha",
+        "already",
+        "are",
+        "as",
+        "at",
+        "backtest",
+        "capital",
+        "cash",
+        "close",
+        "core",
+        "costs",
+        "deployment",
+        "displacement",
+        "dynamic",
+        "entries",
+        "entry",
+        "equity",
+        "etf",
+        "exit",
+        "forbidding",
+        "frozen",
+        "gld",
+        "helper",
+        "initial",
+        "integrate",
+        "integrated",
+        "into",
+        "iwm",
+        "keep",
+        "leverage",
+        "low",
+        "momentum",
+        "most",
+        "mtm",
+        "of",
+        "one",
+        "only",
+        "or",
+        "overlay",
+        "portfolio",
+        "position",
+        "positions",
+        "positive",
+        "post",
+        "qqq",
+        "selector",
+        "session",
+        "sleeve",
+        "slv",
+        "sma200",
+        "spy",
+        "substitute",
+        "unchanged",
+        "when",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "low_deployment_dynamic_etf_overlay_allocation",
+        "reopen_condition": null,
+        "score": 0.5,
+        "status": "frozen_rejected",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broker_authoritative_entry_fill_h5_continuation",
+        "reopen_condition": "Reopen only with materially more trusted closed broker lifecycles (>=+50% and +10) or a strategy-tagged execution cohort. A positive lead still requires shared policy and full Gate 1-4 before any entry behavior changes.",
+        "score": 0.4735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_monotonicity_audit",
+        "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+        "score": 0.4679,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "event_benchmark_momentum_context",
+        "reopen_condition": null,
+        "score": 0.4679,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "smooth_momentum_path_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, require forward paper outcomes or an orthogonal production-visible event/source confirmation field. Do not just retune ret60, ret20, max-daily-return, or top-N thresholds on the frozen sample.",
+        "score": 0.4679,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: the accepted independent default-off ETF observer is evaluated for the first time as a portfolio-integrated cash-reserved sleeve with explicit no-leverage/no-core-displacement semantics and daily mark-to-market, rather than replay-only standalone notional or off-trigger forward observation.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: the accepted independent default-off ETF observer is evaluated for the first time as a portfolio-integrated cash-reserved sleeve with explicit no-leverage/no-core-displacement semantics and daily mark-to-market, rather than replay-only standalone notional or off-trigger forward observation.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: the accepted independent default-off ETF observer is evaluated for the first time as a portfolio-integrated cash-reserved sleeve with explicit no-leverage/no-core-displacement semantics and daily mark-to-market, rather than replay-only standalone notional or off-trigger forward observation.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The unchanged helper previously improved all three windows with aggregate EV +3.0292 and PnL +44.3k at larger sizing, but a cash-only 10% cap may dilute the gain below the current post-MTM >10% acceptance threshold.",
+    "expected_ev_delta": 0.45,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "10pct_cap_below_materiality",
+      "low_deployment_is_risk_off_cash_signal",
+      "window_regression",
+      "cash_accounting_or_mtm_parity_error",
+      "ETF_concentration"
+    ],
+    "recorded_at": "2026-07-15T06:01:06+00:00",
+    "success_probability": 0.55
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260715-003/before.json",
+    "after_result_file": "data/experiments/exp-20260715-003/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.2189,
+      "max_drawdown_pct": 0.000278,
+      "trade_count": 19,
+      "survival_rate": 0.0,
+      "total_pnl": 4430.71
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.55,
+      "brier_score": 0.3025,
+      "calibration_direction": "overconfident",
+      "surprise_level": "medium",
+      "expected_ev_delta": 0.45,
+      "actual_ev_delta": 0.2189,
+      "ev_prediction_error": -0.2311,
+      "expected_pnl_delta": 4500.0,
+      "actual_pnl_delta": 4430.71,
+      "pnl_prediction_error": -69.29,
+      "predicted_failure_modes": [
+        "10pct_cap_below_materiality",
+        "low_deployment_is_risk_off_cash_signal",
+        "window_regression",
+        "cash_accounting_or_mtm_parity_error",
+        "ETF_concentration"
+      ],
+      "realized_failure_mode": "cash_accounting_or_mtm_parity_error",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Direction was consistently positive across all three windows, but the 10% sleeve was too small for the ratchet bar and exposed that the current core replay cannot prove cash-only capital conservation."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260715-003.json",
+  "single_causal_variable": "cash_only_low_deployment_etf_10pct_integrated_portfolio_sleeve_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260715-003.json",
+  "trial_family": "low_deployment_etf_cash_only_integrated_portfolio",
+  "trial_variant_id": "initial_equity_10pct_cash_only_v1"
+}

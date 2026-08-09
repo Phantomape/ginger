@@ -735,42 +735,111 @@ def build_parsed_rows(events: list[dict[str, Any]], *, fetch: bool, refresh: boo
         governance_terms = classify_item4_governance_terms(
             item4_text, filing_date=ev.get("filing_date")
         )
-        rows.append(
-            {
-                "ticker": ev["ticker"],
-                "issuer_cik": ev["issuer_cik"],
-                "accession_number": ev["accession_number"],
-                "form": ev["form"],
-                "family": ev["family"],
-                "is_amendment": ev["is_amendment"],
-                "filing_date": ev["filing_date"],
-                "accepted_at": ev["accepted_at"],
-                "usable_trade_date": ev["usable_trade_date"],
-                "window": ev["window"],
-                "submission_type": parsed["submission_type"],
-                "amendment_no": parsed["amendment_no"],
-                "event_date": parsed["event_date"],
-                "issuer_name": parsed["issuer_name"],
-                "issuer_cusip": parsed["issuer_cusip"],
-                "reporting_persons": parsed["reporting_persons"],
-                "comments": parsed["comments"],
-                "item4_governance_terms": governance_terms,
-                "item4_text_present": governance_terms["item4_text_present"],
-                "item4_governance_terms_present": governance_terms[
-                    "governance_terms_present"
-                ],
-                "item4_governance_terms_bucket": governance_terms[
-                    "governance_terms_bucket"
-                ],
-                "item4_board_appointment_count": governance_terms[
-                    "board_appointment_count"
-                ],
-                "item4_standstill_duration_days": governance_terms[
-                    "standstill_duration_days"
-                ],
-                **flags,
-            }
+        direction_fields = (
+            parse_13ga_direction_fields(raw)
+            if raw and ev.get("family") == "13G" and ev.get("is_amendment")
+            else None
         )
+        row = {
+            "ticker": ev["ticker"],
+            "issuer_cik": ev["issuer_cik"],
+            "accession_number": ev["accession_number"],
+            "form": ev["form"],
+            "family": ev["family"],
+            "is_amendment": ev["is_amendment"],
+            "filing_date": ev["filing_date"],
+            "accepted_at": ev["accepted_at"],
+            "usable_trade_date": ev["usable_trade_date"],
+            "window": ev["window"],
+            "submission_type": parsed["submission_type"],
+            "amendment_no": parsed["amendment_no"],
+            "event_date": parsed["event_date"],
+            "issuer_name": parsed["issuer_name"],
+            "issuer_cusip": parsed["issuer_cusip"],
+            "reporting_persons": parsed["reporting_persons"],
+            "comments": parsed["comments"],
+            "item4_governance_terms": governance_terms,
+            "item4_text_present": governance_terms["item4_text_present"],
+            "item4_governance_terms_present": governance_terms[
+                "governance_terms_present"
+            ],
+            "item4_governance_terms_bucket": governance_terms[
+                "governance_terms_bucket"
+            ],
+            "item4_board_appointment_count": governance_terms[
+                "board_appointment_count"
+            ],
+            "item4_standstill_duration_days": governance_terms[
+                "standstill_duration_days"
+            ],
+            "sec13ga_previous_accession": None,
+            "sec13ga_below_5pct": None,
+            "sec13ga_current_max_percent": None,
+            "sec13ga_current_max_shares": None,
+            "sec13ga_item4_person_count": 0,
+            "sec13ga_previous_max_percent": None,
+            "sec13ga_percent_delta": None,
+            "sec13ga_stake_change_direction": None,
+            "sec13ga_direction_status": "not_13ga_amendment",
+            **flags,
+        }
+        if direction_fields is not None:
+            row.update(
+                {
+                    "sec13ga_previous_accession": direction_fields[
+                        "previous_accession"
+                    ],
+                    "sec13ga_below_5pct": direction_fields["below_5pct"],
+                    "sec13ga_current_max_percent": direction_fields[
+                        "item4_current_max_percent"
+                    ],
+                    "sec13ga_current_max_shares": direction_fields[
+                        "item4_current_max_shares"
+                    ],
+                    "sec13ga_item4_person_count": direction_fields[
+                        "item4_person_count"
+                    ],
+                    "sec13ga_direction_status": "pending_previous_join",
+                }
+            )
+        rows.append(row)
+    by_accession = {row.get("accession_number"): row for row in rows}
+    for row in rows:
+        if row.get("family") != "13G" or not row.get("is_amendment"):
+            continue
+        if row.get("sec13ga_below_5pct") is True:
+            row["sec13ga_stake_change_direction"] = "exit_below_5pct"
+            row["sec13ga_direction_status"] = "computed"
+            continue
+        previous_accession = row.get("sec13ga_previous_accession")
+        current_pct = row.get("sec13ga_current_max_percent")
+        if not previous_accession:
+            row["sec13ga_direction_status"] = "unknown_missing_previous_accession"
+            continue
+        previous = by_accession.get(previous_accession)
+        if previous is None:
+            row["sec13ga_direction_status"] = "unknown_previous_row_missing"
+            continue
+        previous_pct = previous.get("sec13ga_current_max_percent")
+        if previous_pct is None:
+            previous_pct = previous.get("max_class_percent")
+        row["sec13ga_previous_max_percent"] = previous_pct
+        if current_pct is None:
+            row["sec13ga_direction_status"] = "unknown_current_percent_missing"
+            continue
+        if previous_pct is None:
+            row["sec13ga_direction_status"] = "unknown_previous_percent_missing"
+            continue
+        delta = round(current_pct - previous_pct, 6)
+        row["sec13ga_percent_delta"] = delta
+        if delta > 0.05:
+            direction = "increase"
+        elif delta < -0.05:
+            direction = "decrease"
+        else:
+            direction = "unchanged"
+        row["sec13ga_stake_change_direction"] = direction
+        row["sec13ga_direction_status"] = "computed"
     return {"rows": rows, "fetch_status": dict(status_counter)}
 
 

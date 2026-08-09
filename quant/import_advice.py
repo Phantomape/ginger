@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Manual-import helper for LLM trading advice.
+Manual fallback helper for LLM trading advice.
 
-Current workflow: user runs run.py → gets
-data/daily/llm/prompts/llm_prompt_<date>.txt → pastes it
-into ChatGPT / Claude web → copies the JSON response back. Without this helper,
-the response is thrown away and the LLM replay archive never compounds.
+Current default workflow: run.py writes
+data/daily/llm/prompts/llm_prompt_<date>.txt, calls local Codex, and archives
+valid JSON automatically. This helper remains the fallback for days when local
+Codex is disabled, unavailable, or returns a response that needs manual repair.
 
 This script takes the pasted response (which may include markdown fences,
 leading commentary, or partial JSON) and writes a replayable archive. In the

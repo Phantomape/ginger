@@ -1,0 +1,155 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.309,
+    "max_drawdown_pct": 0.0884,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.394231,
+    "total_pnl": 132132.63,
+    "total_return_pct": 1.3213,
+    "trade_count": 90,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 1.3099,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.1033,
+    "actual_pnl_delta": 1140.27,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "safety_reporting_mix_not_product_quality",
+      "quarterly_signal_absorbed",
+      "current_title_sector_survivorship",
+      "small_release_count",
+      "window_instability",
+      "benchmark_underperformance"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "pseudoreplication_window_instability_non_cash_conserving_capital",
+    "surprise_level": "low",
+    "surprise_note": "Aggregate diagnostic EV and PnL were positive, but that apparent improvement was concentrated in late_strong and in correlated issuer legs rather than independent release decisions."
+  },
+  "causal_components": [
+    "shared_helper",
+    "historical_replay",
+    "default_off_paper_snapshot",
+    "strict_issuer_map",
+    "gate1_4",
+    "execution_envelope",
+    "dsr_report",
+    "fingerprint_coverage"
+  ],
+  "change_summary": "Built and evaluated a hash-bound shared default-off FAERS serious-share improvement quarterly basket; rejected it because the additive positive diagnostic failed window replacement value, independent-decision, concentration, and cash-conservation gates.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "faers_serious_outcome_share_improvement_quarterly_candidate_pool_v1",
+  "component": "quant/faers_serious_share_improvement_paper_sleeve.py, quant/test_faers_serious_share_improvement_paper_sleeve.py, quant/experiments/exp_20260716_006_faers_serious_share_improvement_basket.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/paper_sleeves/faers_serious_share_improvement/latest_snapshot.json, data/non_ohlcv/faers_quarterly/source_manifest.json, data/experiments/exp-20260716-006/before.json, data/experiments/exp-20260716-006/after.json, data/experiments/exp-20260716-006/deflated_sharpe_panel.json, data/experiments/exp-20260716-006/deflated_sharpe_report.json, data/experiments/exp-20260716-006/preflight.json, data/experiments/exp-20260716-006/exp_20260716_006_faers_serious_share_improvement_basket.json, experiments/cards/exp-20260716-006.md, experiments/manifests/exp-20260716-006.json, experiments/tickets/exp-20260716-006.json, experiments/logs/exp-20260716-006.json, docs/alpha-optimization-playbook.md, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": "old_thin:2024-10-02..2025-04-22",
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.1033,
+    "max_drawdown_pct": -0.0005,
+    "survival_rate": -0.417369,
+    "total_pnl": 1140.27,
+    "total_return_pct": 0.0114,
+    "trade_count": 41
+  },
+  "experiment_id": "exp-20260716-006",
+  "hypothesis": "Shared-paper-first candidate-pool alpha: among strictly mapped liquid Healthcare issuers, a quarter-over-quarter decline in official FDA FAERS serious-outcome share is a safety-quality signal; rank only improving issuers, cap the ten largest improvements per quarterly release, allocate one equal-weight 10000 USD event basket at the first PIT session open, and close at the twentieth-session close with 35 bps round-trip cost.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "candidate_pool_full_stack",
+  "multiple_testing_risk_bucket": "medium",
+  "nearby_prior_experiments": [
+    "exp-20260714-009",
+    "exp-20260715-004"
+  ],
+  "new_evidence_type": "new_official_data_source_and_new_gate_shape",
+  "next_retry_requires": [
+    "At least 30 independent prospectively settled quarterly release decisions under the unchanged policy, with at least 10 independent decisions in each standard window.",
+    "An explicit cash-conserving funding and displacement contract for the 10000 USD event basket.",
+    "An effective-dated sponsor or product-exposure relation that removes current-title issuer-mapping survivorship; otherwise use an independent PIT data source or genuinely different gate shape."
+  ],
+  "notes": "Gate 4 hard failures: one EV-regressing window; only six independent quarterly release decisions (two per window); old_thin lost cash/SPY/QQQ and mid_weak lost SPY/QQQ; top-five positive PnL share 76.11%; additive 10000 USD overlay did not model a cash-conserving funding source. DSR not computable and non-selecting; no live orders changed.",
+  "parameters": {
+    "locked_variables": [
+      "faers_serious_outcome_share_improvement_quarterly_candidate_pool_v1"
+    ],
+    "single_causal_variable": "faers_serious_outcome_share_improvement_quarterly_candidate_pool_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune issuer identity, serious-outcome definition, case-count or volume-ratio guards, delta threshold, rank/top-N, entry timing, hold length, notional, or trading cost on the same frozen quarters. Do not count correlated issuer legs as independent decisions.",
+    "new_evidence_required": "Reopen only after at least 30 independent prospectively settled quarterly release decisions under the unchanged policy (at least 10 per standard window), together with an explicit cash-conserving funding/displacement contract and an effective-dated sponsor or product-exposure relation; otherwise require an independent PIT source or genuinely different gate shape.",
+    "realized_failure_mode": "pseudoreplication_window_instability_non_cash_conserving_capital",
+    "why_result_happened": "The additive external-capital diagnostic gained 0.1033 EV and 1140.27 USD, but the gain was late-window-driven: old_thin lost cash/SPY/QQQ, mid_weak lost SPY/QQQ, and only late_strong passed replacement value. Forty-one issuer legs represented just six correlated quarterly release decisions, top-five positive-PnL concentration reached 76.11%, and the overlay did not model where its 10000 USD of capital came from."
+  },
+  "prediction": {
+    "confidence_reason": "A preregistered zero-ID preflight on seven hash-bound official FAERS quarterly ASCII extracts passed every window at 12/14/15 selected issuer-releases, 11/12/14 tickers, and top1 below 17%; unlike the prior zero-ID core-entry exclusion, this is a standalone quarterly candidate-pool gate.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "safety_reporting_mix_not_product_quality",
+      "quarterly_signal_absorbed",
+      "current_title_sector_survivorship",
+      "small_release_count",
+      "window_instability",
+      "benchmark_underperformance"
+    ],
+    "recorded_at": "2026-07-16T11:23:21+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Gate 4 failed because one of three windows regressed in EV; the sample contained only six independent quarterly release decisions (two per window, below 30 overall and 10 per window); old_thin failed cash, SPY, and QQQ replacement value and mid_weak failed SPY and QQQ; top-five positive-PnL concentration was 76.11% versus the 60% cap; and the additive overlay lacked a cash-conserving funding source.",
+  "gate_summary": {
+    "gate_1": "passed_cash_feasible_standard_window_baseline",
+    "gate_2": "passed_runtime_fields_and_pit_source_contract",
+    "gate_3": "passed_104_generated_41_survived_39_4231pct",
+    "gate_4": "failed_ev_window_stability_independent_sample_replacement_value_concentration_and_cash_conservation",
+    "independent_release_decisions": 6,
+    "independent_decisions_per_window": 2,
+    "top_5_positive_pnl_contribution_pct": 76.1087,
+    "dsr": "not_computable_report_only_non_selecting"
+  },
+  "new_evidence_axis": "Seven SHA-256-bound official FDA FAERS quarterly PIT ASCII extracts (2024Q2-2025Q4) feeding a standalone quarterly candidate-pool gate; the prior FAERS probe was only a core-entry exclusion and touched 0/0/1 core trades.",
+  "fingerprint_caveat": "Reservation initially over-matched companyfacts_ratio/allocator_source. This experiment added precise FAERS and standalone_quarterly_candidate_pool fingerprint precedence plus regression coverage; frozen-family rebuilding must use the repaired classifier.",
+  "production_impact": "Default-off paper snapshot only: trade_enabled=false, orders=[], and no live/default orders, ranking, sizing, exits, or capital allocation changed.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_006_faers_serious_share_improvement_basket.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_faers_serious_share_improvement_paper_sleeve.py quant\\test_experiment_fingerprint.py -q"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260716-006/before.json",
+    "data/experiments/exp-20260716-006/after.json",
+    "data/experiments/exp-20260716-006/exp_20260716_006_faers_serious_share_improvement_basket.json",
+    "data/experiments/exp-20260716-006/preflight.json",
+    "data/experiments/exp-20260716-006/deflated_sharpe_report.json",
+    "data/non_ohlcv/faers_quarterly/source_manifest.json",
+    "data/paper_sleeves/faers_serious_share_improvement/latest_snapshot.json"
+  ],
+  "secondary_windows": [
+    "mid_weak:2025-04-23..2025-10-22",
+    "late_strong:2025-10-23..2026-04-21"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-16T11:43:38+00:00",
+  "trial_family": "candidate_pool_full_stack",
+  "trial_variant_id": "exp-20260716-006"
+}

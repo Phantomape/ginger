@@ -1,0 +1,245 @@
+{
+  "acceptance_rule": "Accepted measurement repair if focused fingerprint examples resolve to gdelt_news_tone, adjacent news/event sources remain on their specific data_source keys, and no strategy/live behavior changes.",
+  "allowed_write_scope": [
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/exp_20260710_006_gdelt_news_tone_fingerprint_regression.py",
+    "data/experiments/exp-20260710-006/",
+    "experiments/logs/exp-20260710-006.json",
+    "experiments/cards/exp-20260710-006.md",
+    "experiments/manifests/exp-20260710-006.json",
+    "experiments/tickets/exp-20260710-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-006.md",
+  "causal_components": [],
+  "change_type": "gdelt_news_tone_fingerprint_regression_measurement_repair",
+  "changed_variable": "gdelt_news_tone_fingerprint_regression_coverage_v1",
+  "claimed_at": "2026-07-10T04:11:40+00:00",
+  "completed_at": "2026-07-10T04:14:58+00:00",
+  "created_at": "2026-07-10T04:11:02+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-006",
+  "experiment_uid": "expuid-48e9d14e40bd47f4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-006",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T04:11:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "gdelt_news_tone_fingerprint_regression"
+  },
+  "hypothesis": "Alpha hypothesis: GDELT daily company-news tone/volume shocks may become a replayable entry-risk or allocator signal once archive coverage is available; measurement blocker is that gdelt_news_tone must stay machine-classified outside data_source=other.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "gdelt_news_tone_fingerprint_regression_coverage_v1"
+  ],
+  "mechanism_family": "external_news_tone_archive_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_repair_for_new_data_source_guard",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "gdelt_news_tone",
+      "field_tags": [
+        "a",
+        "allocator",
+        "alpha",
+        "archive",
+        "available",
+        "become",
+        "blocker",
+        "can",
+        "classified",
+        "company",
+        "coverage",
+        "daily",
+        "data",
+        "entry",
+        "external",
+        "fingerprint",
+        "future",
+        "gdelt",
+        "guards",
+        "hypothesis",
+        "is",
+        "machine",
+        "may",
+        "measurement",
+        "must",
+        "new",
+        "news",
+        "novelty",
+        "once",
+        "or",
+        "other",
+        "outside",
+        "regression",
+        "reopen",
+        "repairs",
+        "replayable",
+        "risk",
+        "saturation",
+        "shocks",
+        "signal",
+        "so",
+        "stay",
+        "that",
+        "tone",
+        "track",
+        "volume"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_short_volume",
+        "family_key": "moomoo_daily_short_volume_clean_flow_quality_gate",
+        "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a materially different non-OHLCV flow field.",
+        "score": 0.1718,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "moomoo_short_volume",
+        "family_key": "toxic_q5_notional_downweight",
+        "reopen_condition": "A retry needs materially more closed forward accepted-allocator rows tagged with entry-time short_volume_ratio percentile, true PIT borrow fee/utilization/loan-availability economics, or a different non-OHLCV flow field.",
+        "score": 0.1714,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "data_source": "allocator",
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+        "score": 0.1651,
+        "status": "has_accepted",
+        "trials": 24
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "post_supplier_allocator_nonrepeat_surface_readiness",
+        "reopen_condition": null,
+        "score": 0.1648,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "volume_breadth_breakout_rank_monotonic_attribution",
+        "reopen_condition": null,
+        "score": 0.1648,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new data-source guard coverage for GDELT news-tone archive; this does not retry the parked alpha and only locks future novelty/reopen classification",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "gdelt_news_tone",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new data-source guard coverage for GDELT news-tone archive; this does not retry the parked alpha and only locks future novelty/reopen classification",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "gdelt_news_tone",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.95,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "test_does_not_cover_generic_news_overmatch",
+      "current_mapping_missing_or_shadowed",
+      "runner_record_not_reproducible"
+    ],
+    "confidence_reason": "Current mapping exists, but quant/test_experiment_fingerprint.py had no GDELT regression before this measurement repair.",
+    "recorded_at": "2026-07-10T04:14:58+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "expected_value_score_delta": 0.0,
+    "total_return_pct_delta": 0.0,
+    "sharpe_daily_delta": 0.0,
+    "trade_count_delta": 0,
+    "survival_rate_delta": 0.0,
+    "notes": "Fingerprint/test-only measurement repair; no strategy backtest delta."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-006.json",
+  "single_causal_variable": "gdelt_news_tone_fingerprint_regression_coverage_v1",
+  "status": "accepted_measurement_repair_gdelt_news_tone_fingerprint_regression",
+  "ticket_file": "experiments/tickets/exp-20260710-006.json",
+  "trial_family": "gdelt_news_tone_fingerprint_regression_coverage",
+  "trial_variant_id": "gdelt_news_tone_source_keyword_regression_v1",
+  "new_evidence_axis": "GDELT news-tone archive data_source guard regression coverage; does not retry the parked alpha or consume forward-row evidence.",
+  "result_summary": "accepted_measurement_repair_gdelt_news_tone_fingerprint_regression",
+  "changed_files": [
+    "quant/experiments/exp_20260710_006_gdelt_news_tone_fingerprint_regression.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-006/exp_20260710_006_gdelt_news_tone_fingerprint_regression.json",
+    "experiments/logs/exp-20260710-006.json",
+    "experiments/cards/exp-20260710-006.md",
+    "experiments/manifests/exp-20260710-006.json",
+    "experiments/tickets/exp-20260710-006.json",
+    "docs/experiment_registry.json"
+  ],
+  "updated_at": "2026-07-10T04:14:58+00:00"
+}

@@ -1,0 +1,322 @@
+{
+  "acceptance_rule": "Canonical three-window Gate 1-4 after costs; at least 20 target trades across all three windows and at least 3 tickers; no window EV or PnL regression; drawdown delta <=0.005; pass concentration guard; beat accepted distribution comparator exp-20260611-007 EV +0.5286 and PnL +10432.91; default-off only.",
+  "allowed_write_scope": [
+    "quant/fda_device_class1_enforcement_paper_sleeve.py",
+    "quant/test_fda_device_class1_enforcement_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260713_010_fda_device_class1_report_green_spy_relative_top1_10d_v1.py",
+    "data/non_ohlcv/fda_device_class1_enforcement",
+    "data/paper_sleeves/fda_device_class1_enforcement",
+    "data/experiments/exp-20260713-010",
+    "docs/production_backtest_parity_matrix.md",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "experiments/tickets/exp-20260713-010.json",
+    "experiments/cards/exp-20260713-010.md",
+    "experiments/manifests/exp-20260713-010.json",
+    "experiments/logs/exp-20260713-010.json",
+    "experiments/artifacts/exp-20260713-010_fda_device_class1_enforcement.md",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260713-010.md",
+  "causal_components": [
+    "official report_date",
+    "exact recalling-firm ticker map",
+    "Class I eligibility",
+    "event-level dedupe",
+    "strictly-post-report confirmation",
+    "green and SPY-relative confirmation",
+    "top-1 excess-return rank",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily snapshot",
+    "parity test",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_device_class1_report_green_spy_relative_top1_10d_v1",
+  "claimed_at": "2026-07-14T00:52:52+00:00",
+  "completed_at": "2026-07-14T01:11:52+00:00",
+  "decision": "rejected_fda_device_class1_enforcement_candidate_pool",
+  "created_at": "2026-07-14T00:52:42+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260713-010",
+  "experiment_uid": "expuid-3a3e923faa2f403b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260713-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T00:52:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fda_device_class1_report_green_spy_relative_top1_10d_v1"
+  },
+  "hypothesis": "candidate_pool: after an FDA weekly Device Enforcement Report publicly lists a mapped issuer's Class I recall, an issuer that closes green and ahead of SPY on the first strictly subsequent trading session has absorbed the severe product-risk news and should continue from the next open through the tenth trading-session close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "firm map",
+    "Class I eligibility",
+    "report_date",
+    "event dedupe",
+    "strict-after confirmation",
+    "green and SPY-relative gates",
+    "top-1 rank",
+    "cooldown",
+    "hold",
+    "notional",
+    "cost"
+  ],
+  "mechanism_family": "production_visible_fda_device_class1_enforcement_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM trend_signals"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-008",
+    "exp-20260611-007"
+  ],
+  "new_evidence_type": "official_openfda_device_enforcement_report_class1",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "absorbed",
+        "absorption",
+        "after",
+        "ahead",
+        "an",
+        "class",
+        "class1",
+        "close",
+        "closes",
+        "continue",
+        "device",
+        "enforcement",
+        "fda",
+        "first",
+        "from",
+        "green",
+        "has",
+        "i",
+        "issuer",
+        "lists",
+        "mapped",
+        "news",
+        "of",
+        "on",
+        "product",
+        "publicly",
+        "recall",
+        "relative",
+        "report",
+        "risk",
+        "s",
+        "session",
+        "severe",
+        "should",
+        "spy",
+        "strictly",
+        "subsequent",
+        "tenth",
+        "that",
+        "through",
+        "trading",
+        "weekly"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "duplicate_reservation_accounting",
+        "family_key": "duplicate_reservation_accounting",
+        "reopen_condition": "Use exp-20260713-008 as the sole owner of all substantive work.",
+        "score": 0.182,
+        "status": "frozen_rejected",
+        "trials": 11
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "clinicaltrials_results",
+        "family_key": "clinicaltrials_phase3_results_price_confirmed_candidate_pool",
+        "reopen_condition": "A genuinely new clinical-results semantic direction or endpoint source with audited point-in-time labels, or at least 30 closed forward replacement-value rows; threshold and sponsor-map sweeps are not new evidence.",
+        "score": 0.175,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "dollar_weakness_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT dollar/liquidity evidence, such as DXY/FX baskets, currency-flow, ETF creation/redemption, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.1726,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_periodic_report_absorption_leadership_candidate_pool",
+        "reopen_condition": "A retry needs a materially richer free PIT field, such as parsed report-quality change, cross-filing fundamental surprise, or forward daily replacement-value evidence.",
+        "score": 0.1678,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "form144_sale_notice_absorption_candidate_pool",
+        "reopen_condition": "Parsed Form 144 document fields, holder role, planned-sale size as percent of float, holder identity, a broader PIT universe, or forward replacement-value rows from a shared helper.",
+        "score": 0.167,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "New official data source: openFDA Device Enforcement Reports using report_date for Class I recalls; preflight has 86 deduped mapped issuer events across 19 price-covered tickers and all three canonical windows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New official data source: openFDA Device Enforcement Reports using report_date for Class I recalls; preflight has 86 deduped mapped issuer events across 19 price-covered tickers and all three canonical windows.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New official data source: openFDA Device Enforcement Reports using report_date for Class I recalls; preflight has 86 deduped mapped issuer events across 19 price-covered tickers and all three canonical windows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "A new official PIT source supplies 86 deduped mapped events across 19 price-covered tickers and all three windows, but severe recalls can be idiosyncratic and the comparator bar is high.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 4500.0,
+    "main_failure_modes": [
+      "recall_report_delay",
+      "medical_device_ticker_concentration",
+      "accepted_comparator_not_beaten",
+      "parent_mapping_survivorship"
+    ],
+    "recorded_at": "2026-07-14T00:52:22+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Gate 4 failed window stability, concentration, and both accepted-distribution comparators.",
+  "reopen_condition": "A materially new report-time device-severity or issuer-financial-materiality field, or at least 30 closed forward replacement-value rows from a complete daily candidate lifecycle; no threshold, mapping, rank, cooldown, hold, notional, cost, or window retune on this frozen response.",
+  "result": {
+    "decision": "rejected_fda_device_class1_enforcement_candidate_pool",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260713-010/before.json",
+    "after_result_file": "data/experiments/exp-20260713-010/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.1359,
+      "total_return_pct": 0.0048,
+      "max_drawdown_pct": 0.0002,
+      "trade_count": 22,
+      "survival_rate": -0.532686,
+      "total_pnl": 476.8
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.25,
+      "actual_ev_delta": 0.1359,
+      "ev_prediction_error": -0.1141,
+      "expected_pnl_delta": 4500.0,
+      "actual_pnl_delta": 476.8,
+      "pnl_prediction_error": -4023.2,
+      "predicted_failure_modes": [
+        "recall_report_delay",
+        "medical_device_ticker_concentration",
+        "accepted_comparator_not_beaten",
+        "parent_mapping_survivorship"
+      ],
+      "realized_failure_mode": "accepted_comparator_not_beaten",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The new source was directionally positive in aggregate but only added $21.67 per target trade, regressed old_thin, and concentrated 95.97% of positive contribution in five tickers."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260713-010.json",
+  "single_causal_variable": "fda_device_class1_report_green_spy_relative_top1_10d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260713-010.json",
+  "trial_family": "fda_device_class1_enforcement_absorption_candidate_pool",
+  "trial_variant_id": "fda_device_class1_report_green_spy_relative_top1_10d_v1"
+}

@@ -1,0 +1,235 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "candidate_pool/full_stack: newly materialized Schedule 13D Item-4 concrete campaign outcomes, limited to actual board appointments, board-size changes, board departures, or nomination withdrawals, may isolate fresher activist catalysts than exp-20260629-009's broad governance_terms_present source.",
+  "blocked_alpha_attempts": [
+    {
+      "hypothesis": "candidate_pool/full_stack: newly materialized Schedule 13D Item-4 concrete campaign outcomes, limited to actual board appointments, board-size changes, board departures, or nomination withdrawals, may isolate fresher activist catalysts than exp-20260629-009's broad governance_terms_present source.",
+      "observed_blocker": "Pre-repair alpha reservation was blocked as a near-neighbor of sec_13d_item4_governance_terms_candidate_pool and then by saturated sec_text_event candidate_pool_top1_10d."
+    },
+    {
+      "hypothesis": "Alpha blocker: parsed SEC 13D/13G ownership and Item-4 campaign-provenance alpha proposals are overmatched into saturated generic ownership/text cells, so novelty/saturation gates block valid campaign-outcome experiments instead of counting the true parsed 13D ownership surface.",
+      "observed_blocker": "The measurement-repair ticket itself fingerprinted as sec13f_ownership because the prior generic holder keyword captured 13D/13G holder-stake language."
+    }
+  ],
+  "causal_components": [
+    "sec13d_ownership_data_source_keyword",
+    "fingerprint_regression_tests",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260710_004_sec13d_item4_campaign_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-004/exp_20260710_004_sec13d_item4_campaign_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-004.json",
+    "experiments/cards/exp-20260710-004.md",
+    "experiments/manifests/exp-20260710-004.json",
+    "experiments/tickets/exp-20260710-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec13d_item4_campaign_fingerprint_data_source_repair",
+  "decision": "accepted_measurement_repair_sec13d_item4_fingerprint_coverage",
+  "experiment_id": "exp-20260710-004",
+  "fingerprint_checks": {
+    "sec13d_campaign_candidate_pool": {
+      "actual": {
+        "data_source": "sec13d_ownership",
+        "field_tags": [
+          "13d",
+          "appointment",
+          "board",
+          "campaign",
+          "item",
+          "parsed",
+          "provenance"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec13d_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "parsed SEC 13D Item-4 campaign-provenance board appointment candidate pool"
+    },
+    "sec13d_forward_rows": {
+      "actual": {
+        "data_source": "sec13d_ownership",
+        "field_tags": [
+          "13d",
+          "campaign",
+          "forward",
+          "item4",
+          "replacement",
+          "rows",
+          "schedule"
+        ],
+        "gate_shape": "forward_attribution"
+      },
+      "expected_shape": "forward_attribution",
+      "expected_source": "sec13d_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "Schedule 13D item4 campaign forward replacement rows"
+    },
+    "sec13d_holder_stake_readiness": {
+      "actual": {
+        "data_source": "sec13d_ownership",
+        "field_tags": [
+          "13d",
+          "13g",
+          "action",
+          "holder",
+          "readiness",
+          "stake"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec13d_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 13D/13G holder stake action readiness"
+    },
+    "sec13f_control": {
+      "actual": {
+        "data_source": "sec13f_ownership",
+        "field_tags": [
+          "13f",
+          "holder",
+          "institutional",
+          "signal",
+          "sponsorship"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec13f_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 13F institutional sponsorship holder signal"
+    },
+    "sec_text_control": {
+      "actual": {
+        "data_source": "sec_text_event",
+        "field_tags": [
+          "entry",
+          "item",
+          "k",
+          "listing",
+          "noncompliance",
+          "risk"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_text_event",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 8-K item 3.01 listing noncompliance entry risk"
+    }
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals.",
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "sec13d_ownership",
+      "sec13f_ownership",
+      "sec_text_event"
+    ]
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "note": "No buy/sell/filter/ranking behavior changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "acceptance_rule": "Accepted measurement repair if SEC 13D/13G and Item-4 campaign examples resolve to sec13d_ownership, 13F remains sec13f_ownership, generic 8-K text remains sec_text_event, and no strategy/live behavior changes.",
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_sec13d_item4_fingerprint_coverage",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "checks_passed": 5,
+    "checks_total": 5,
+    "failed_checks": [],
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Alpha blocker: parsed SEC 13D/13G ownership and Item-4 campaign-provenance alpha proposals are overmatched into saturated generic ownership/text cells, so novelty/saturation gates block valid campaign-outcome experiments instead of counting the true parsed 13D ownership surface.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260629-009",
+    "exp-20260710-003"
+  ],
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Future 13D/13G alpha still needs a legal new evidence axis and Gate 1-4; do not sweep Item-4 phrases, holder types, classPercent, notional, hold days, or response shape on frozen rows.",
+    "new_evidence_required": "After this repair, a valid 13D alpha ticket should fingerprint as sec13d_ownership and must still rely on a fixed campaign/board-seat policy, materially more settled rows, or another allowed evidence axis.",
+    "why_result_happened": "The keyword table had generic SEC text and 13F holder entries but no dedicated parsed 13D/13G ownership key. As a result, 13D Item-4 campaign proposals inherited the wrong saturation history and were blocked before a valid alpha read could run."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "novelty_guard_accounting_changed": true,
+    "ranking_sizing_exits_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260710_004_sec13d_item4_campaign_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-004/exp_20260710_004_sec13d_item4_campaign_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-004.json",
+    "experiments/cards/exp-20260710-004.md",
+    "experiments/manifests/exp-20260710-004.json",
+    "experiments/tickets/exp-20260710-004.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_004_sec13d_item4_campaign_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec13d_item4_campaign_fingerprint_data_source_repair",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-10T03:12:46Z",
+  "trial_family": "sec13d_item4_campaign_fingerprint_coverage",
+  "trial_variant_id": "sec13d_ownership_source_key_v1"
+}

@@ -1,0 +1,339 @@
+{
+  "acceptance_rule": "Positive replay lead only if aggregate EV and PnL improve, at least two of three windows improve EV, no window regresses EV or PnL, max drawdown drift is <=0.5pp, remaining trades retain statistical meaning, and survival stays >=5%; even a pass requires shared-paper-first promotion before any behavior change.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_020_*",
+    "data/experiments/exp-20260710-020/**",
+    "experiments/tickets/exp-20260710-020.json",
+    "experiments/cards/exp-20260710-020.md",
+    "experiments/manifests/exp-20260710-020.json",
+    "experiments/logs/exp-20260710-020.json",
+    "docs/experiment_registry.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260710-021.md",
+  "causal_components": [
+    "yfinance-mirrored CBOE VIX9D/VIX daily closes",
+    "fixed VIX9D>VIX signal-day gate",
+    "canonical BacktestEngine replay",
+    "missing-date fail-open",
+    "experiment-local monkeypatch",
+    "CBOE fingerprint coverage"
+  ],
+  "change_type": "entry_exclusion_private_replay_scout",
+  "changed_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1",
+  "claimed_at": "2026-07-11T02:05:04+00:00",
+  "completed_at": "2026-07-11T02:05:17+00:00",
+  "created_at": "2026-07-10T23:51:49+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260710-021",
+  "experiment_uid": "expuid-e5dc54820d8e436c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T23:51:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cboe_vix9d_vix_backwardation_core_entry_gate"
+  },
+  "hypothesis": "Private replay scout: CBOE VIX9D close above VIX close on the signal day is an option-implied near-term backwardation stress state in which current core next-open entries should be excluded; the fixed no-entry gate should improve canonical multi-window EV, PnL, and drawdown without threshold tuning.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "VIX9D>VIX threshold",
+    "signal-day close semantics",
+    "missing-date fail-open",
+    "core universe",
+    "entry/exit/ranking/sizing/cost rules",
+    "canonical windows"
+  ],
+  "mechanism_family": "cboe_volatility_term_structure_entry_admission",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/production_parity.py",
+    "live orders",
+    "ranking",
+    "sizing",
+    "exits",
+    "LLM decisions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260603-024",
+    "exp-20260607-018",
+    "exp-20260607-023",
+    "exp-20260708-028"
+  ],
+  "new_evidence_type": "new_data_source",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "score": 0.6261,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "observer_no_entry_status_semantics",
+        "score": 0.6119,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "core_entry_admission",
+      "field_tags": [
+        "above",
+        "admission",
+        "an",
+        "backwardation",
+        "be",
+        "canonical",
+        "cboe",
+        "close",
+        "core",
+        "current",
+        "drawdown",
+        "entries",
+        "entry",
+        "ev",
+        "excluded",
+        "exclusion",
+        "gate",
+        "gt",
+        "implied",
+        "improve",
+        "in",
+        "is",
+        "multi",
+        "near",
+        "no",
+        "on",
+        "option",
+        "pnl",
+        "private",
+        "should",
+        "signal",
+        "state",
+        "stress",
+        "structure",
+        "term",
+        "threshold",
+        "tuning",
+        "vix",
+        "vix9d",
+        "volatility",
+        "which",
+        "window",
+        "without"
+      ],
+      "gate_shape": "entry_admission"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+        "score": 0.6333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+        "score": 0.6261,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "reopen_condition": "A shared production/backtest admission helper that passes Gate 1-4, materially more settled forward rows tagged with this state, or a genuinely independent entry-time state source.",
+        "score": 0.6235,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.6119,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuinely new data source: CBOE option-implied VIX9D versus VIX term structure, explicitly named as required reopen evidence by exp-20260607-018 and exp-20260607-023; no prior family used VIX9D/VIX backwardation. The classifier overmatches core_entry_admission, so this experiment also adds dedicated CBOE fingerprint coverage.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "core_entry_admission",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Genuinely new data source: CBOE option-implied VIX9D versus VIX term structure, explicitly named as required reopen evidence by exp-20260607-018 and exp-20260607-023; no prior family used VIX9D/VIX backwardation. The classifier overmatches core_entry_admission, so this experiment also adds dedicated CBOE fingerprint coverage.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuinely new data source: CBOE option-implied VIX9D versus VIX term structure, explicitly named as required reopen evidence by exp-20260607-018 and exp-20260607-023; no prior family used VIX9D/VIX backwardation. The classifier overmatches core_entry_admission, so this experiment also adds dedicated CBOE fingerprint coverage.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "entry_admission",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "core_entry_admission",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The existing VIXY relief sleeve was a positive replay lead and exp-20260607-018/023 explicitly named actual VIX term structure as the next legal evidence. A strict VIX9D>VIX state is interpretable, but core regime gates may already absorb stress and hard exclusion can delete rebound winners, so pass odds remain below one third.",
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "backwardation_days_already_blocked_by_bear_regime",
+      "gate_removes_convex_recovery_winners",
+      "sample_too_thin",
+      "one_window_concentration",
+      "yahoo_cboe_date_gaps"
+    ],
+    "recorded_at": "2026-07-10T23:50:57+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260710-020/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260710-020/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": -0.7112,
+      "trade_count": -2,
+      "total_pnl": -20919.45
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.28,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.35,
+      "actual_ev_delta": -0.7112,
+      "ev_prediction_error": -1.0612,
+      "expected_pnl_delta": 8000.0,
+      "actual_pnl_delta": -20919.45,
+      "pnl_prediction_error": -28919.45,
+      "predicted_failure_modes": [
+        "backwardation_days_already_blocked_by_bear_regime",
+        "gate_removes_convex_recovery_winners",
+        "sample_too_thin",
+        "one_window_concentration",
+        "yahoo_cboe_date_gaps"
+      ],
+      "realized_failure_mode": "duplicate_reservation_no_new_evidence_axis",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The ticket was reserved before the completed exp-20260710-020 closeout became visible; the correct action is duplicate closure, not rerunning the signal."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-021.json",
+  "single_causal_variable": "cboe_vix9d_gt_vix_core_entry_exclusion_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260710-021.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "cboe_vix9d_gt_vix_core_entry_exclusion_v1"
+}

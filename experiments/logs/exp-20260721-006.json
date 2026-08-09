@@ -1,0 +1,107 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "zero lane_blocked because map entries are methodology-shaped rather than recipe-shaped",
+      "digest exceeds byte cap",
+      "entry slug collisions"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Only 1 of 133 entries overlaps a burned lane even under the stricter source-only rule - the daily scan has been extracting methodology lessons, not tradeable recipes, which means the map was never the source of the burned-lane reskins; those came from agents own generation. The extraction-template change matters more than the pre-filter."
+  },
+  "causal_components": [
+    "entry id backfill",
+    "consumption ledger",
+    "digest builder with lane precheck",
+    "synthesis pass consumption step",
+    "scan prompt extraction template"
+  ],
+  "change_summary": "Implemented the research digest consumption contract (docs/research_digest_pipeline.md, deliverables A-F): backfilled stable entry_ids into all 133 sections of alpha_external_research_map.md; seeded data/research_digest/ledger.jsonl with 133 fresh events (append-only, latest-event-wins); scripts/build_research_digest.py emits latest_digest.md (4.1KB) and .json (5.6KB) under the 8192-byte cap, top-10 eligible entries ranked by freshness/expectation-proxy/crowding, reusing the recipe-lane classifier with a digest-side stricter rule (>=2 source-cluster hits from one lane blocks even without response hits - papers describe source domains in academic vocabulary; deviation written back to the spec); the 8-K item-code entry is lane_blocked satisfying the >=1 acceptance floor; AGENTS.md synthesis-pass step 2 now requires digest consumption with pick/decline reasons written to the ledger and close-time status write-back, with explicit no-guard-exemption language; external scan automation prompt (C:/Users/Administrator/.codex/automations/commit/automation.toml clause 6, located by codex recon in mailbox channel research-digest-pipeline-20260721) updated to the candidate-lead extraction template with lane pre-filtering and a digest-refresh finishing step. 5 new focused tests pass plus 7 recipe-guard regression tests.",
+  "change_type": "measurement_tooling",
+  "changed_variable": "research digest consumption contract per docs/research_digest_pipeline.md",
+  "component": "docs/alpha_external_research_map.md, data/research_digest, scripts/build_research_digest.py, scripts/test_build_research_digest.py, AGENTS.md, experiments/tickets/exp-20260721-006.json, experiments/logs/exp-20260721-006.json, experiments/cards/exp-20260721-006.md, experiments/manifests/exp-20260721-006.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260721-006",
+  "hypothesis": "The daily external research scan writes docs/alpha_external_research_map.md (133 sections, 146 papers) that no experiment ticket has ever cited, and there is no consumption state machine, so a digest-reading alpha agent would recreate the repetition loop at the digest layer (same entry re-proposed by concurrent agents, rejected entries returning under new numbering). Implement the consumption contract per docs/research_digest_pipeline.md: stable entry_id backfill for all 133 map sections, an append-only consumption ledger, a size-capped pre-filtered digest builder that reuses classify_recipe_lane_match for lane prechecks, the AGENTS.md synthesis-pass consumption step, and the candidate-lead extraction template in the external scan automation prompt.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "alpha_enabling_measurement_tooling",
+  "next_retry_requires": [],
+  "notes": "Identical before/after artifact by design: measurement/governance tooling only. Division of labor: codex was dispatched first per the user request but its mailbox-dispatched session is hard-bounded to mailbox-directory writes and no reservations; it returned read-only recon (section count, classifier signature, scan-prompt location) and an executor checklist which this parent session executed. The zero-lane_blocked first run was the predicted failure mode (methodology-shaped entries lack trading-recipe response vocabulary), resolved by the digest-side source-only rule rather than loosening the shared reservation guard where false blocks are expensive.",
+  "parameters": {
+    "locked_variables": [
+      "research digest consumption contract per docs/research_digest_pipeline.md"
+    ],
+    "single_causal_variable": "research digest consumption contract per docs/research_digest_pipeline.md"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve IDs to reformat the digest, retune ranking weights, or re-derive consumption state the ledger already holds; do not loosen the shared reservation guard to academic vocabulary - the digest-side source-only rule exists precisely so the guard does not have to.",
+    "new_evidence_required": "The pipeline proves itself on the next scan cycle: the daily automation must produce entry_id-tagged sections with extraction fields and a refreshed digest (spec section 5 item 5, left as follow-up to verify tomorrow). Judge the mechanism by rejected-with-information rate of research_refs tickets and D0-D3 pass rate of picked entries, not Gate-4 accept rate (spec section 6).",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Only 1 of 133 entries overlaps a burned lane even under the stricter source-only rule - the daily scan has been extracting methodology lessons, not tradeable recipes, which means the map was never the source of the burned-lane reskins; those came from agents own generation. The extraction-template change matters more than the pre-filter."
+  },
+  "prediction": {
+    "confidence_reason": "Spec is fully written and codex recon verified all integration points (classifier signature, 133 sections, prompt location); main risk is the 8KB cap forcing aggressive summarization and the lane precheck finding zero matches against methodology-heavy entries.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "zero lane_blocked because map entries are methodology-shaped rather than recipe-shaped",
+      "digest exceeds byte cap",
+      "entry slug collisions"
+    ],
+    "recorded_at": "2026-07-21T23:28:05+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-21T23:33:11+00:00",
+  "trial_family": "research_digest_consumption_contract",
+  "trial_variant_id": "exp-20260721-006"
+}

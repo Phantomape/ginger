@@ -1,0 +1,286 @@
+{
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "candidate_pool/relation graph: Item 1.01 contract relationships may become useful only after counterparty identity is CIK-linked and shared by replay and daily code; this run repairs guard accounting only and makes no alpha claim.",
+  "causal_components": [
+    "sec_contract_relation_data_source_keyword",
+    "fingerprint_regression_tests",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260710_012_sec_contract_relation_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-012/exp_20260710_012_sec_contract_relation_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-012.json",
+    "experiments/cards/exp-20260710-012.md",
+    "experiments/manifests/exp-20260710-012.json",
+    "experiments/tickets/exp-20260710-012.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "sec_contract_relation_fingerprint_data_source_repair_v1",
+  "decision": "accepted_measurement_repair_sec_contract_relation_fingerprint_coverage",
+  "experiment_id": "exp-20260710-012",
+  "fingerprint_checks": {
+    "ohlcv_relation_control": {
+      "actual": {
+        "data_source": "ohlcv_relation",
+        "field_tags": [
+          "corr",
+          "lag",
+          "lead",
+          "peer",
+          "relation",
+          "rolling"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "ohlcv_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "lead_lag peer rolling_corr relation candidate pool"
+    },
+    "sec13d_control": {
+      "actual": {
+        "data_source": "sec13d_ownership",
+        "field_tags": [
+          "13d",
+          "appointment",
+          "board",
+          "campaign",
+          "item",
+          "parsed",
+          "provenance"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec13d_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "parsed SEC 13D Item-4 campaign-provenance board appointment candidate pool"
+    },
+    "sec13f_control": {
+      "actual": {
+        "data_source": "sec13f_ownership",
+        "field_tags": [
+          "13f",
+          "holder",
+          "institutional",
+          "signal",
+          "sponsorship"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec13f_ownership",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 13F institutional sponsorship holder signal"
+    },
+    "sec_contract_relation_cik_graph": {
+      "actual": {
+        "data_source": "sec_contract_relation",
+        "field_tags": [
+          "cik",
+          "customer",
+          "graph",
+          "item",
+          "linked",
+          "rows",
+          "supplier"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_contract_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "CIK-linked customer-supplier graph for Item 1.01 rows"
+    },
+    "sec_contract_relation_daily_source": {
+      "actual": {
+        "data_source": "sec_contract_relation",
+        "field_tags": [
+          "contract",
+          "daily",
+          "key",
+          "provenance",
+          "relation"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_contract_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "sec_contract_relation_provenance daily source key"
+    },
+    "sec_contract_relation_public_counterparty": {
+      "actual": {
+        "data_source": "sec_contract_relation",
+        "field_tags": [
+          "contract",
+          "counterparty",
+          "item101",
+          "public",
+          "relation",
+          "target"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_contract_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC item101 contract relation public-counterparty target"
+    },
+    "sec_contract_relation_surface": {
+      "actual": {
+        "data_source": "sec_contract_relation",
+        "field_tags": [
+          "contract",
+          "item",
+          "provenance",
+          "relation"
+        ],
+        "gate_shape": "candidate_pool_top1_10d"
+      },
+      "expected_shape": "candidate_pool_top1_10d",
+      "expected_source": "sec_contract_relation",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC Item 1.01 contract-relation provenance candidate pool"
+    },
+    "sec_text_control": {
+      "actual": {
+        "data_source": "sec_text_event",
+        "field_tags": [
+          "entry",
+          "item",
+          "k",
+          "listing",
+          "noncompliance",
+          "risk"
+        ],
+        "gate_shape": "other"
+      },
+      "expected_shape": "other",
+      "expected_source": "sec_text_event",
+      "passed": true,
+      "shape_ok": true,
+      "source_ok": true,
+      "text": "SEC 8-K item 3.01 listing noncompliance entry risk"
+    }
+  },
+  "gate1": {
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay.",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals.",
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "sec_contract_relation",
+      "sec13d_ownership",
+      "sec13f_ownership",
+      "sec_text_event",
+      "ohlcv_relation"
+    ]
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "note": "No buy/sell/filter/ranking behavior changed.",
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "acceptance_rule": "Accepted measurement repair if SEC contract-relation examples resolve to sec_contract_relation, SEC 13D/13G remains sec13d_ownership, SEC 13F remains sec13f_ownership, generic 8-K text remains sec_text_event, OHLCV relation remains ohlcv_relation, and no strategy/live behavior changes.",
+    "accepted_alpha": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "decision": "accepted_measurement_repair_sec_contract_relation_fingerprint_coverage",
+    "failed_reasons": [],
+    "measurement_repair_only": true,
+    "passed": true,
+    "strategy_behavior_changed": false
+  },
+  "headline_metrics": {
+    "checks_passed": 8,
+    "checks_total": 8,
+    "failed_checks": [],
+    "strategy_behavior_delta": 0
+  },
+  "hypothesis": "Alpha blocker: SEC Item 1.01 contract-relation provenance proposals are overmatched into generic SEC text, so novelty and saturation guards count a real relation evidence surface against the wrong population before future CIK-linked customer-supplier graph work can be evaluated.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "alpha_novelty_guard_data_source_coverage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260703-017",
+    "exp-20260704-004",
+    "exp-20260710-004"
+  ],
+  "new_evidence_axis": "Fingerprint classifier repair for a distinct SEC Item 1.01 contract-relation evidence surface; this changes novelty accounting only, not relation regexes, thresholds, candidate ranking, holds, notional, or alpha response shape.",
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Future SEC contract-relation work still needs a legal evidence axis such as CIK-linked customer/supplier graph rows, contract value/duration/revenue exposure, a non-SEC relation source, or materially more closed replacement rows. Do not sweep relation regexes, aliases, priorities, top-N, hold days, notional, or response shape on the same rows.",
+    "new_evidence_required": "A valid next alpha ticket should fingerprint as sec_contract_relation and must still satisfy the prior contract-relation reopen constraints.",
+    "why_result_happened": "The keyword table had specific keys for 13D/13G ownership and generic SEC text, but no dedicated SEC contract-relation key. As a result, Item 1.01 relation proposals inherited the wrong SEC text population history."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "novelty_guard_accounting_changed": true,
+    "ranking_sizing_exits_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260710_012_sec_contract_relation_fingerprint_repair.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-012/exp_20260710_012_sec_contract_relation_fingerprint_repair.json",
+    "experiments/logs/exp-20260710-012.json",
+    "experiments/cards/exp-20260710-012.md",
+    "experiments/manifests/exp-20260710-012.json",
+    "experiments/tickets/exp-20260710-012.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\experiments\\exp_20260710_012_sec_contract_relation_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_012_sec_contract_relation_fingerprint_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_contract_relation_fingerprint_data_source_repair_v1",
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-10T12:15:31Z",
+  "trial_family": "sec_contract_relation_fingerprint_coverage",
+  "trial_variant_id": "sec_contract_relation_source_key_v1"
+}

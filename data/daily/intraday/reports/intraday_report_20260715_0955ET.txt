@@ -1,0 +1,119 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-15 09:55 ET (06:55 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 754.08 vs 200MA 691.55 (+9.0%)  [moomoo_opend_rth]
+  QQQ 719.84 vs 200MA 637.21 (+13.0%)  [moomoo_opend_rth]
+
+PORTFOLIO HEAT (intraday prices): 3.0% / cap 8%   (quote coverage 9/9 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+37.8% add-review-eligible=none
+  CRDO   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  DDOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=269.47 invalid=269.47
+         blocks: below_rth_vwap,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+  HOOD   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=114.73 invalid=114.73
+         blocks: near_existing_stop,below_rth_vwap,market_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+  MCD    RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  NVDA   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  SPY    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=754.34 invalid=754.34
+         blocks: near_existing_stop,below_rth_vwap,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+  TQQQ   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=76.62 invalid=75.68
+         blocks: near_existing_stop,below_rth_vwap,below_sma20,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed,underlying_above_rth_vwap_not_confirmed,weak_rth_range_location
+  UNH    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=425.22 invalid=418.58
+         blocks: below_ema8,market_proxy_above_rth_vwap_not_confirmed
+  META   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=660.58 invalid=660.58
+         blocks: below_rth_vwap,market_proxy_above_rth_vwap_not_confirmed,sector_proxy_above_rth_vwap_not_confirmed,weak_rth_range_location
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  CRDO   $230.50 (-2.4% today, moomoo_opend_rth 2026-07-15 09:55:37)
+    HARD_STOP CRITICAL: Price 230.50 <= hard stop 230.56
+    hard stop 230.56 (-0.0% away) [stop_source=default]
+    ATR stop 223.51 (+3.0% away)
+    trailing 283.98 (-23.2% away)
+    target 314.40 (+36.4% to go)
+  MCD    $267.71 (-1.8% today, moomoo_opend_rth 2026-07-15 09:55:36)
+    ATR_STOP HIGH: Price 267.71 <= ATR stop 269.87
+    hard stop 245.30 (+8.4% away) [stop_source=default]
+    ATR stop 269.87 (-0.8% away)
+    trailing 259.09 (+3.2% away)
+    target 334.50 (+24.9% to go)
+  NVDA   $211.19 (+3.8% today, moomoo_opend_rth 2026-07-15 09:55:37)
+    SIGNAL_TARGET HIGH: daily_high 213.81 >= signal target 212.69 (+20.0%) - full-position target exit
+    hard stop 155.97 (+26.2% away) [stop_source=default]
+    ATR stop 166.41 (+21.2% away)
+    trailing 217.36 (-2.9% away)
+    target 212.69 (+0.7% to go)
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  HOOD   $112.33 (-1.0% today, moomoo_opend_rth 2026-07-15 09:55:36)
+    hard stop 92.58 (+17.6% away) [stop_source=default]
+    ATR stop 95.31 (+15.2% away)
+    trailing 110.45 (+1.7% away)
+    target 126.24 (+12.4% to go)
+    flags: NEAR_TRAILING_STOP
+  SPY    $754.08 (+0.7% today, moomoo_opend_rth 2026-07-15 09:55:37)
+    hard stop 663.29 (+12.0% away) [stop_source=default]
+    ATR stop 740.09 (+1.8% away)
+    trailing 695.13 (+7.8% away)
+    target 904.49 (+20.0% to go)
+    flags: NEAR_ATR_STOP
+  TQQQ   $75.08 (+3.4% today, moomoo_opend_rth 2026-07-15 09:55:37)
+    hard stop 66.72 (+11.1% away) [stop_source=default]
+    ATR stop 68.52 (+8.7% away)
+    trailing 75.02 (+0.1% away)
+    target 90.98 (+21.2% to go)
+    flags: NEAR_TRAILING_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  DDOG   $266.78    day -1.5%   stop +15.0%  target +15.9%  [moomoo_opend_rth]
+  META   $659.15    day -0.3%   stop +10.9%  target +21.5%  [moomoo_opend_rth]
+  UNH    $421.11    day -1.9%   stop +10.7%  target +21.8%  [moomoo_opend_rth]
+
+------------------------------------------------------------
+ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)
+------------------------------------------------------------
+  CRDO   EXIT HARD_STOP CRITICAL shares=15
+  MCD    EXIT ATR_STOP HIGH shares=15
+  NVDA   EXIT SIGNAL_TARGET HIGH shares=31
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-15 09:55 ET): 12 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] MCD: McDonald's Corp (NYSE:MCD): A High-Quality Dividend Stock for Reliable Income - ChartMill
+  [T3] NVDA: Ariose Capital Management Ltd Lowers Stock Position in NVIDIA Corporation $NVDA - MarketBe
+  [T3] META: Meta's Q2 results will be discussed during a July 29 call - Stock Titan
+  [T3] NFLX: Netflix (NFLX) Stock Price Forecast: Can Earnings Finally End the 2026 Selloff? - FXLeader
+  [T3] AMD: AMD Stock Price Forecast: AMD Holds Above Support as AI Deals Fuel Growth Outlook - FXLead
+  [T3] QQQ: Advisors Preferred LLC Cuts Position in Invesco QQQ $QQQ - MarketBeat
+  [T1] TSLA: TSLA Stock Climbs Overnight: ‘SPAC King’ Chamath Palihapitiya Sees ‘Obvious’ Logic In Tesl
+  [T3] MU: Micron to pay dividends next week; Here’s how much 100 MU shares will earn - Finbold
+  [T3] COIN: Coinbase (COIN) Stock Looks Cheap After A 60% Fall But Expensive On Earnings - simplywall.
+  [T3] IAU: IAU ETF Profile: Dividends, Returns (AMEX:IAU) - TradingView
+  [T3] GOOG: Alphabet (GOOG) Upgraded to Strong Buy: Here's What You Should Know - Yahoo Finance
+  [T3] APP: Wells Fargo Raises PT on AppLovin (APP) Stock - Yahoo Finance
+
+------------------------------------------------------------
+DATA QUALITY: quotes moomoo_opend_rth=9
+  moomoo OpenD status=ok available=15/15
+  news sources ok=17 failed=0
+  news text sanitation items=12 flagged=12 changed=12 flags=html_entity_unescaped=12
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================

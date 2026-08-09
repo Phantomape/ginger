@@ -28,6 +28,10 @@ import pandas as pd
 try:
     import broad_market_sector_map
     from broad_market_paper_sleeve import DEFAULT_UNIVERSE_PATH
+    from entry_universe_ledger import (
+        append_membership_snapshot,
+        build_membership_snapshot,
+    )
     from ohlcv_warehouse import (
         DEFAULT_WAREHOUSE_PATH,
         connect_overlay_reader,
@@ -36,6 +40,10 @@ try:
 except ImportError:  # pragma: no cover - package-style imports for tests
     from quant import broad_market_sector_map
     from quant.broad_market_paper_sleeve import DEFAULT_UNIVERSE_PATH
+    from quant.entry_universe_ledger import (
+        append_membership_snapshot,
+        build_membership_snapshot,
+    )
     from quant.ohlcv_warehouse import (
         DEFAULT_WAREHOUSE_PATH,
         connect_overlay_reader,
@@ -44,6 +52,11 @@ except ImportError:  # pragma: no cover - package-style imports for tests
 
 
 FEED_RULE_VERSION = "warehouse_sector_cache_feed_v1"
+FORWARD_GENERATION = "broad_market_clean_forward_v1"
+DEFAULT_CLEAN_CUTOFF = "2026-07-17"
+DEFAULT_MEMBERSHIP_LEDGER_PATH = Path(DEFAULT_UNIVERSE_PATH).with_name(
+    "universe_membership.jsonl"
+)
 DEFAULT_FRESHNESS_DAYS = 7
 DEFAULT_MIN_ROWS = 60
 COVERAGE_LOOKBACK_DAYS = 420
@@ -118,10 +131,23 @@ def generate_broad_market_paper_universe(
     min_rows: int = DEFAULT_MIN_ROWS,
     sector_entries: dict[str, Any] | None = None,
     out_path: str | Path = DEFAULT_UNIVERSE_PATH,
+    ledger_path: str | Path = DEFAULT_MEMBERSHIP_LEDGER_PATH,
+    clean_cutoff: Any = DEFAULT_CLEAN_CUTOFF,
+    forward_generation: str = FORWARD_GENERATION,
     write: bool = True,
 ) -> dict[str, Any]:
-    """Build (and by default persist) the broad-market paper universe feed."""
+    """Build and, after the declared cutoff, ledger the complete membership.
+
+    ``clean_cutoff`` is deliberately prospective: calls whose ``as_of`` date is
+    earlier are labelled but never appended.  ``write=False`` is fully dry-run
+    for both the maintained feed and the append-only membership ledger.
+    """
     as_of_ts = _as_of_date(as_of)
+    as_of_text = str(as_of_ts.date())
+    clean_cutoff_text = (
+        str(_as_of_date(clean_cutoff).date()) if clean_cutoff is not None else None
+    )
+    generated_at = _utc_now_iso()
     eligible = _eligible_sector_entries(sector_entries)
     coverage = _warehouse_coverage(db_path, sorted(eligible), as_of=as_of_ts)
     freshness_floor = str((as_of_ts - pd.Timedelta(days=freshness_days)).date())
@@ -154,8 +180,8 @@ def generate_broad_market_paper_universe(
     payload: dict[str, Any] = {
         "status": "generated",
         "rule_version": FEED_RULE_VERSION,
-        "generated_at": _utc_now_iso(),
-        "as_of": str(as_of_ts.date()),
+        "generated_at": generated_at,
+        "as_of": as_of_text,
         "freshness_days": freshness_days,
         "min_rows": min_rows,
         "source": {
@@ -167,6 +193,54 @@ def generate_broad_market_paper_universe(
         "tickers": sorted(records),
         "records": records,
     }
+
+    membership_snapshot = build_membership_snapshot(
+        effective_as_of=as_of_text,
+        tickers=payload["tickers"],
+        source="broad_market_universe_feed",
+        clean_cutoff=clean_cutoff_text,
+        provenance={
+            "generation": forward_generation,
+            "feed_rule_version": FEED_RULE_VERSION,
+            "freshness_days": int(freshness_days),
+            "min_rows": int(min_rows),
+            "sector_source": "broad_market_sector_map_cache",
+            "warehouse_source": "ohlcv_warehouse_overlay",
+        },
+        generated_at=generated_at,
+    )
+    membership_result: dict[str, Any]
+    if not write:
+        membership_result = {"status": "dry_run_not_persisted"}
+    elif clean_cutoff_text is not None and as_of_text < clean_cutoff_text:
+        membership_result = {"status": "pre_clean_not_persisted"}
+    else:
+        membership_result = append_membership_snapshot(
+            Path(ledger_path), membership_snapshot
+        )
+
+    membership = {
+        "effective_as_of": membership_snapshot["effective_as_of"],
+        "membership_hash": membership_snapshot["membership_hash"],
+        "snapshot_hash": membership_snapshot["snapshot_hash"],
+        "ticker_count": membership_snapshot["ticker_count"],
+        "snapshot_semantics": membership_snapshot["snapshot_semantics"],
+        "clean_cutoff": clean_cutoff_text,
+        "forward_generation": forward_generation,
+        "ledger_path": str(ledger_path),
+        "ledger_status": membership_result.get("status"),
+        "ledger_hash": membership_result.get("ledger_hash"),
+    }
+    payload["membership"] = membership
+    # Flat copies keep downstream snapshot attribution simple and preserve the
+    # existing feed's records/tickers shape for older consumers.
+    payload["membership_hash"] = membership["membership_hash"]
+    payload["membership_as_of"] = membership["effective_as_of"]
+    payload["membership_snapshot_hash"] = membership["snapshot_hash"]
+    payload["membership_ledger_hash"] = membership["ledger_hash"]
+    payload["membership_ledger_status"] = membership["ledger_status"]
+    payload["clean_cutoff"] = clean_cutoff_text
+    payload["forward_generation"] = forward_generation
     if write:
         target = Path(out_path)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -207,6 +281,10 @@ def main() -> None:
     parser.add_argument("--freshness-days", type=int, default=DEFAULT_FRESHNESS_DAYS)
     parser.add_argument("--min-rows", type=int, default=DEFAULT_MIN_ROWS)
     parser.add_argument("--out", default=str(DEFAULT_UNIVERSE_PATH))
+    parser.add_argument(
+        "--membership-ledger", default=str(DEFAULT_MEMBERSHIP_LEDGER_PATH)
+    )
+    parser.add_argument("--clean-cutoff", default=DEFAULT_CLEAN_CUTOFF)
     parser.add_argument("--dry-run", action="store_true", help="Build without writing the file.")
     args = parser.parse_args()
     payload = generate_broad_market_paper_universe(
@@ -215,6 +293,8 @@ def main() -> None:
         freshness_days=args.freshness_days,
         min_rows=args.min_rows,
         out_path=args.out,
+        ledger_path=args.membership_ledger,
+        clean_cutoff=args.clean_cutoff,
         write=not args.dry_run,
     )
     digest = {key: payload[key] for key in payload if key != "records"}

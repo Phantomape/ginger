@@ -1,0 +1,344 @@
+{
+  "acceptance_rule": "Measurement repair acceptance: (1) with CASH_LEDGER_ENFORCED=False the three-window replay under the exp-20260712-015 frozen behavior inputs reproduces the published post-MTM baseline headline metrics exactly (no behavior change when the flag is off); (2) with CASH_LEDGER_ENFORCED=True every canonical window reports zero negative-cash events, every unaffordable core entry/add-on is deterministically scaled down or skipped with a logged event, and ending cash reconciles to initial capital plus realized core PnL within 1e-6; (3) the unenforced audit independently reproduces the exp-20260715-005 overdraft phenomenon (nonzero negative-cash events per window); (4) per-window EV/PnL/drawdown/trade-count deltas under enforcement are reported as the honest re-measurement, with no acceptance requirement that they improve. Default config stays False in this ticket; the canonical default flip and re-baseline are an explicit follow-up decision.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260715_008_cash_constrained_core_admission.py",
+    "data/experiments/exp-20260715-008/exp_20260715_008_cash_constrained_core_admission.json",
+    "experiments/cards/exp-20260715-008.md",
+    "experiments/manifests/exp-20260715-008.json",
+    "experiments/tickets/exp-20260715-008.json",
+    "experiments/logs/exp-20260715-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/backtester.py",
+    "quant/test_backtester_cash_ledger.py",
+    "experiments/artifacts/exp-20260715-008_cash_constrained_core_admission.md",
+    "data/experiments/exp-20260715-008",
+    "docs/backtesting.md",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-008.md",
+  "causal_components": [
+    "cash_ledger_state",
+    "entry_admission_scaling",
+    "addon_admission_scaling",
+    "exit_and_partial_reduce_cash_release",
+    "audit_and_conservation_reporting",
+    "frozen_input_before_after_replay"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "execution_date_cash_constrained_core_order_admission",
+  "claimed_at": "2026-07-15T16:28:06+00:00",
+  "completed_at": "2026-07-15T16:43:59+00:00",
+  "created_at": "2026-07-15T16:26:16+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260715-008",
+  "experiment_uid": "expuid-6247517e492f4b46",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T16:26:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_constrained_core_admission"
+  },
+  "hypothesis": "The canonical core backtester books entry and add-on fills with no execution-date cash constraint, producing 18-20 negative-cash events per canonical window and up to -23,234 USD reconstructed overdraft on 100,000 USD initial capital (exp-20260715-005 dated-ledger audit); enforcing an execution-date cash ledger with deterministic scale-down or rejection of unaffordable core entries and add-ons, and cash release on exits and partial reduces, repairs this production/backtest parity defect and re-baselines the canonical windows on executable capital only.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "execution_date_cash_constrained_core_order_admission"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "operator_inputs/open_positions.json",
+    "operator_inputs/position_tags.json",
+    "data/live_pilot",
+    "data/experiments/exp-20260712-015",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-003",
+    "exp-20260712-015"
+  ],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "score": 0.6271,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "score": 0.6185,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "observer_no_entry_status_semantics",
+        "score": 0.615,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "core_entry_admission",
+      "field_tags": [
+        "add",
+        "admission",
+        "an",
+        "audit",
+        "backtest",
+        "backtester",
+        "baselines",
+        "books",
+        "canonical",
+        "capital",
+        "cash",
+        "constrained",
+        "constraint",
+        "core",
+        "date",
+        "dated",
+        "defect",
+        "deterministic",
+        "down",
+        "enforcing",
+        "entries",
+        "entry",
+        "events",
+        "executable",
+        "execution",
+        "exits",
+        "exp",
+        "fills",
+        "initial",
+        "ledger",
+        "negative",
+        "no",
+        "of",
+        "on",
+        "only",
+        "ons",
+        "or",
+        "order",
+        "overdraft",
+        "parity",
+        "partial",
+        "per",
+        "producing",
+        "re",
+        "reconstructed",
+        "reduces",
+        "rejection",
+        "release",
+        "repairs",
+        "scale",
+        "this",
+        "to",
+        "unaffordable",
+        "up",
+        "usd",
+        "window",
+        "windows"
+      ],
+      "gate_shape": "entry_admission"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_high_vol_high_beta_admission_overlay",
+        "reopen_condition": "A positive next step would require a shared production/backtest admission helper and full Gate 1-4 replay. After a negative result, move to a different admission field, PEAD/revision activation/envelope work with legal evidence, or a short-cycle family with new evidence rather than retuning this low-vol/high-beta diagnostic.",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_trend_long_severe_haircut_no_entry_admission",
+        "reopen_condition": "A positive next step requires a shared production/backtest admission helper and full Gate 1-4 replay; a retry after a negative result requires an independent admission field, a different external baseline family, or materially new settled forward rows. Also consider a measurement repair that gives core_entry_admission_gate a dedicated fingerprint data_source instead of 'other'.",
+        "score": 0.6328,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "core_entry_admission_fingerprint_coverage",
+        "reopen_condition": "Future core admission alpha needs a genuinely independent admission field, a new data source, materially more settled forward rows, or a shared production/backtest helper that passes Gate 1-4.",
+        "score": 0.6271,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "core_entry_admission",
+        "family_key": "broad_dispersion_core_entry_admission_diagnostic",
+        "reopen_condition": "A shared production/backtest admission helper that passes Gate 1-4, materially more settled forward rows tagged with this state, or a genuinely independent entry-time state source.",
+        "score": 0.6185,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.615,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "core_entry_admission",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "entry_admission",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "core_entry_admission",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-cash-ledger",
+  "prediction": {
+    "confidence_reason": "exp-20260715-005 dated ledger already quantified the overdraft with zero NAV reconciliation errors; the repair is deterministic bookkeeping at four known mutation points in backtester.py; main risk is magnitude of champion re-baselining, not correctness.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "cash_scaling_changes_champion_materially",
+      "addon_partial_reduce_basis_drift",
+      "frozen_input_identity_break"
+    ],
+    "recorded_at": "2026-07-15T16:25:32+00:00",
+    "success_probability": 0.6
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "acceptance_reasons": [],
+    "after_result_file": "data/experiments/exp-20260715-008/after.json",
+    "before_result_file": "data/experiments/exp-20260715-008/before.json",
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_ev_delta": null,
+      "actual_pnl_delta": null,
+      "actual_success": null,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "ev_prediction_error": null,
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_mode_hit": false,
+      "predicted_failure_modes": [
+        "cash_scaling_changes_champion_materially",
+        "addon_partial_reduce_basis_drift",
+        "frozen_input_identity_break"
+      ],
+      "predicted_success_probability": 0.6,
+      "realized_failure_mode": "none_all_acceptance_checks_passed",
+      "surprise_level": "not_scored",
+      "surprise_note": "The inline ledger shows peak overdrafts of -188k, roughly 8x deeper than exp-20260715-005's closed-rows reconstruction (-23k), because add-on fills and marked-value position sizing compound: the champion books up to 189k more basis than settled cash at peaks; old_thin EV nearly vanishes (1.31->0.11) under enforcement."
+    },
+    "decision": "accepted_measurement_repair",
+    "delta_metrics": {}
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260715-008.json",
+  "scope_note": "allowed_write_scope extended at claim time by owner claude-cash-ledger: the repair necessarily edits quant/backtester.py (the measured surface), adds a unit test, and documents the flag in docs/backtesting.md. DEFAULT_CONFIG['CASH_LEDGER_ENFORCED'] stays False so all existing baselines remain byte-identical.",
+  "single_causal_variable": "execution_date_cash_constrained_core_order_admission",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260715-008.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260715-008"
+}

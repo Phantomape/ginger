@@ -1,0 +1,394 @@
+{
+  "acceptance_rule": "Accepted measurement repair only if canonical-window 6-K text/cache rows become replayable inside the official SEC filing-text surface, or if an exact backfill input plus fetch capability is sufficient to run the repair without changing strategy behavior. Otherwise close as rejected/blocked with quantified reopen condition.",
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "historical_6k_cache_present": 0,
+    "historical_6k_event_input_exported_rows": 236,
+    "historical_6k_text_rows": 0
+  },
+  "alpha_hypothesis": "alpha_blocker/measurement_repair: SEC 6-K/6-KA structured financial and guidance text could be a production-visible SEC semantic alpha surface, but canonical-window replay is not trustworthy because sec_filing_events has historical 6-K event rows while sec_filing_text has zero deduped 6-K text rows inside old_thin/mid_weak/late_strong. Materialize or quantify the historical 6-K text/cache gap without changing any trading rule.",
+  "anti_js": {
+    "evidence": "Python runner only.",
+    "used_javascript": false
+  },
+  "before_metrics": {
+    "historical_6k_cache_present": 0,
+    "historical_6k_event_rows": 236,
+    "historical_6k_text_rows": 0
+  },
+  "blocked_backfill_command": ".\\.venv\\Scripts\\python.exe -B quant\\sec_filing_text_backfill.py --events data/experiments/exp-20260709-012/missing_historical_6k_events.jsonl --forms 6-K 6-K/A --item-codes all --output data\\non_ohlcv\\sec_filing_text_6k_20241002_20260421.jsonl --summary-output data\\non_ohlcv\\sec_filing_text_6k_20241002_20260421_summary.json",
+  "causal_components": [
+    "dedupe 6-K event rows",
+    "audit canonical-window cache coverage",
+    "export missing historical 6-K event input rows",
+    "probe SEC archive fetch capability",
+    "no phrase/ranking/entry retune"
+  ],
+  "change_type": "measurement_repair",
+  "changed_files": [
+    "quant/experiments/exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    "data/experiments/exp-20260709-012/exp_20260709_012_sec_6k_historical_text_cache_materialization.json",
+    "data/experiments/exp-20260709-012/missing_historical_6k_events.jsonl",
+    "experiments/logs/exp-20260709-012.json",
+    "experiments/cards/exp-20260709-012.md",
+    "experiments/manifests/exp-20260709-012.json",
+    "experiments/tickets/exp-20260709-012.json"
+  ],
+  "changed_variable": "sec_6k_historical_text_cache_materialization_v1",
+  "coverage": {
+    "cache": {
+      "cache_dir": "data/cache/sec/filing_text",
+      "historical_cache_missing": 236,
+      "historical_cache_missing_by_window": {
+        "late_strong": 76,
+        "mid_weak": 59,
+        "old_thin": 101
+      },
+      "historical_cache_present": 0,
+      "historical_cache_present_by_window": {}
+    },
+    "events": {
+      "aggregate_files_with_6k": {
+        "sec_filing_events_6k_20241002_20260421.jsonl": 236
+      },
+      "canonical_aggregate_event_file": "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+      "canonical_aggregate_form_counts": {
+        "10-K": 93,
+        "10-Q": 204,
+        "8-K": 989
+      },
+      "deduped_6k_events": 242,
+      "deduped_by_window": {
+        "late_strong": 76,
+        "mid_weak": 59,
+        "old_thin": 101,
+        "post_forward": 6
+      },
+      "historical_by_window": {
+        "late_strong": 76,
+        "mid_weak": 59,
+        "old_thin": 101
+      },
+      "historical_deduped_events": 236,
+      "historical_tickers": [
+        {
+          "rows": 98,
+          "ticker": "NVO"
+        },
+        {
+          "rows": 90,
+          "ticker": "TSM"
+        },
+        {
+          "rows": 30,
+          "ticker": "IREN"
+        },
+        {
+          "rows": 18,
+          "ticker": "SPOT"
+        }
+      ],
+      "raw_6k_rows": 282,
+      "raw_event_rows": 13454,
+      "source_files_scanned": 481,
+      "source_files_with_6k": {
+        "sec_filing_events_20260622.jsonl": 1,
+        "sec_filing_events_20260623.jsonl": 1,
+        "sec_filing_events_20260624.jsonl": 2,
+        "sec_filing_events_20260625.jsonl": 3,
+        "sec_filing_events_20260626.jsonl": 2,
+        "sec_filing_events_20260627.jsonl": 2,
+        "sec_filing_events_20260628.jsonl": 2,
+        "sec_filing_events_20260629.jsonl": 3,
+        "sec_filing_events_20260630.jsonl": 3,
+        "sec_filing_events_20260701.jsonl": 3,
+        "sec_filing_events_20260702.jsonl": 4,
+        "sec_filing_events_20260703.jsonl": 4,
+        "sec_filing_events_20260704.jsonl": 4,
+        "sec_filing_events_20260705.jsonl": 3,
+        "sec_filing_events_20260706.jsonl": 3,
+        "sec_filing_events_20260707.jsonl": 3,
+        "sec_filing_events_20260708.jsonl": 3,
+        "sec_filing_events_6k_20241002_20260421.jsonl": 236
+      }
+    },
+    "missing_official_text": {
+      "by_window": {
+        "late_strong": 76,
+        "mid_weak": 59,
+        "old_thin": 101
+      },
+      "output": "data/experiments/exp-20260709-012/missing_historical_6k_events.jsonl",
+      "rows": 236,
+      "sample": [
+        {
+          "accepted_at": "2024-10-03T21:19:35",
+          "accession_number": "0001046179-24-000112",
+          "cik": "0001046179",
+          "filing_date": "2024-10-03",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "amkorandtsmctoexpandpartne.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "TSM",
+          "usable_trade_date": "2024-10-04"
+        },
+        {
+          "accepted_at": "2024-10-04T12:44:11",
+          "accession_number": "0001878848-24-000017",
+          "cik": "0001878848",
+          "filing_date": "2024-10-04",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "form6-ksepmonthlyupdate.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "IREN",
+          "usable_trade_date": "2024-10-07"
+        },
+        {
+          "accepted_at": "2024-10-07T11:57:23",
+          "accession_number": "0001171843-24-005538",
+          "cik": "0000353278",
+          "filing_date": "2024-10-07",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "f6k_100724.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "NVO",
+          "usable_trade_date": "2024-10-08"
+        },
+        {
+          "accepted_at": "2024-10-09T10:15:02",
+          "accession_number": "0001046179-24-000114",
+          "cik": "0001046179",
+          "filing_date": "2024-10-09",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "tsm-revenue20241009.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "TSM",
+          "usable_trade_date": "2024-10-10"
+        },
+        {
+          "accepted_at": "2024-10-10T10:52:29",
+          "accession_number": "0001878848-24-000023",
+          "cik": "0001878848",
+          "filing_date": "2024-10-10",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "form6-kagm2024.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "IREN",
+          "usable_trade_date": "2024-10-11"
+        },
+        {
+          "accepted_at": "2024-10-15T10:05:04",
+          "accession_number": "0001171843-24-005606",
+          "cik": "0000353278",
+          "filing_date": "2024-10-15",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "f6k_101424.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "NVO",
+          "usable_trade_date": "2024-10-16"
+        },
+        {
+          "accepted_at": "2024-10-16T11:29:35",
+          "accession_number": "0001878848-24-000026",
+          "cik": "0001878848",
+          "filing_date": "2024-10-16",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "a6-kcover16oct24.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "IREN",
+          "usable_trade_date": "2024-10-17"
+        },
+        {
+          "accepted_at": "2024-10-17T10:13:36",
+          "accession_number": "0001046179-24-000116",
+          "cik": "0001046179",
+          "filing_date": "2024-10-17",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "tsm-20241017x6k.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "TSM",
+          "usable_trade_date": "2024-10-18"
+        },
+        {
+          "accepted_at": "2024-10-21T12:31:34",
+          "accession_number": "0001171843-24-005708",
+          "cik": "0000353278",
+          "filing_date": "2024-10-21",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "f6k_102124.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "NVO",
+          "usable_trade_date": "2024-10-22"
+        },
+        {
+          "accepted_at": "2024-10-21T14:34:45",
+          "accession_number": "0001171843-24-005710",
+          "cik": "0000353278",
+          "filing_date": "2024-10-21",
+          "form_base": "6-K",
+          "form_type": "6-K",
+          "primary_document": "f6k_102124.htm",
+          "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+          "ticker": "NVO",
+          "usable_trade_date": "2024-10-22"
+        }
+      ]
+    },
+    "text": {
+      "deduped_6k_text_rows": 6,
+      "deduped_by_window": {
+        "post_forward": 6
+      },
+      "historical_by_window": {},
+      "historical_deduped_text_rows": 0,
+      "historical_tickers": [],
+      "post_forward_by_window": {
+        "post_forward": 6
+      },
+      "raw_6k_text_rows": 46,
+      "raw_text_rows": 9567,
+      "source_files_scanned": 481
+    }
+  },
+  "decision": "rejected_blocked_sec_6k_historical_text_cache_gap",
+  "delta_metrics": {
+    "historical_6k_cache_present_delta": 0,
+    "historical_6k_event_input_exported_rows": 236,
+    "historical_6k_text_rows_delta": 0
+  },
+  "experiment_id": "exp-20260709-012",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "reason": "measurement-only SEC text replay surface audit",
+    "strategy_behavior_changed": false
+  },
+  "gate2": {
+    "entry_date_required": false,
+    "event_fields_checked": [
+      "accession_number",
+      "ticker",
+      "cik",
+      "filing_date",
+      "usable_trade_date",
+      "primary_document"
+    ],
+    "missing_field_counts": {
+      "accession_number": 0,
+      "cik": 0,
+      "filing_date": 0,
+      "primary_document": 0,
+      "ticker": 0,
+      "usable_trade_date": 0
+    },
+    "target_price_required": false
+  },
+  "gate3": {
+    "reason": "no strategy signal generation; blocker is replay text coverage",
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null
+  },
+  "gate4": {
+    "accepted_measurement_repair": false,
+    "before_after_strategy_behavior_changed": false,
+    "failure_reasons": [
+      "zero_deduped_historical_6k_text_rows",
+      "historical_6k_cache_missing:236",
+      "canonical_aggregate_events_file_has_zero_6k_rows",
+      "sec_archive_fetch_probe_failed"
+    ]
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: SEC 6-K/6-KA structured financial and guidance text could be a production-visible SEC semantic alpha surface, but canonical-window replay is not trustworthy because sec_filing_events has historical 6-K event rows while sec_filing_text has zero deduped 6-K text rows inside old_thin/mid_weak/late_strong. Materialize or quantify the historical 6-K text/cache gap without changing any trading rule.",
+  "implementation_mode": "self_registered_blocker_audit_no_strategy_change",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "sec_6k_text_replay_measurement",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260708-003",
+    "exp-20260708-014"
+  ],
+  "network_probe": {
+    "attempted": true,
+    "elapsed_sec": 2.124,
+    "error": "<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "error_type": "URLError",
+    "event": {
+      "accepted_at": "2024-10-03T21:19:35",
+      "accession_number": "0001046179-24-000112",
+      "cik": "0001046179",
+      "filing_date": "2024-10-03",
+      "form_base": "6-K",
+      "form_type": "6-K",
+      "primary_document": "amkorandtsmctoexpandpartne.htm",
+      "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl",
+      "ticker": "TSM",
+      "usable_trade_date": "2024-10-04"
+    },
+    "ok": false,
+    "url": "https://www.sec.gov/Archives/edgar/data/1046179/000104617924000112/index.json"
+  },
+  "new_evidence_axis": "New data materialization axis: historical 6-K/6-KA SEC filing text/cache coverage across canonical windows, where current deduped text rows are 0 despite historical event rows; this is not a 6-K phrase, liquidity, top-N, hold, or response-shape retune.",
+  "new_evidence_type": "measurement_repair_alpha_enabling_historical_text_cache",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep 6-K phrase lists, positive/negative text labels, liquidity gates, top-N, hold days, or response shape on this surface until historical 6-K/6-KA text bodies exist in a replayable official surface or at least 20 current daily 6-K rows close with replacement value.",
+    "new_evidence_required": "Run an official-scope SEC 6-K text backfill that writes historical cache/text rows from the exported missing_historical_6k_events.jsonl into data/cache/sec/filing_text and data/non_ohlcv/sec_filing_text_*.jsonl, or provide equivalent cached SEC archive documents. After that, test one fixed structured semantic helper with guidance-revision magnitude, issuer-country/ADR liquidity provenance, or translation-quality fields.",
+    "realized_failure_mode": "network_disabled_or_sec_fetch_blocked",
+    "why_result_happened": "The watched-ticker SEC filing event stream already contains 236 deduped historical 6-K rows across the canonical windows, but the official SEC filing-text surface has 0 deduped historical 6-K text rows and 0 local historical cache files. The canonical aggregate event file also has zero 6-K rows, so the current single-file text backfill entrypoint cannot replay this lane without a generated 6-K event input."
+  },
+  "prediction": {
+    "confidence_reason": "Historical 6-K event rows already exist across all canonical windows, but local filing_text cache is missing for all historical accessions; success depends on whether the environment can fetch SEC archives or otherwise reuse cached source text.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "network_disabled_or_sec_fetch_blocked",
+      "cache_missing_for_historical_6k",
+      "too_few_replayable_6k_rows_after_backfill",
+      "duplicate_daily_snapshot_rows"
+    ],
+    "recorded_at": "2026-07-09T09:12:32+00:00",
+    "success_probability": 0.35
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "note": "No official data surface was mutated. The runner exports a missing historical 6-K event input file under data/experiments only.",
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "measurement_repair_sec_6k_text_replay_surface",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "zero_deduped_historical_6k_text_rows;historical_6k_cache_missing:236;canonical_aggregate_events_file_has_zero_6k_rows;sec_archive_fetch_probe_failed",
+  "related_files": [
+    "data/non_ohlcv/sec_filing_events_*.jsonl",
+    "data/non_ohlcv/sec_filing_text_*.jsonl",
+    "data/cache/sec/filing_text",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "sec_6k_historical_text_cache_materialization_v1",
+  "status": "rejected_blocked_sec_6k_historical_text_cache_gap",
+  "timestamp": "2026-07-09T09:18:49Z",
+  "trial_family": "historical_sec_6k_text_cache_materialization",
+  "trial_variant_id": "canonical_windows_6k_text_cache_materialization_v1"
+}

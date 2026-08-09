@@ -1,0 +1,710 @@
+{
+  "acceptance_rule": "Observed-only lead only: covered rows >=20, top and bottom buckets >=5 rows, top skew bucket beats bottom on cash/SPY/QQQ replacement value, top bucket is positive on at least two comparators, Spearman is positive on at least two comparators, and max ticker/sleeve share <=40%; no strategy behavior can be accepted.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_007_broad_skew_forward_replacement_state.py",
+    "data/experiments/exp-20260709-007/exp_20260709_007_broad_skew_forward_replacement_state.json",
+    "experiments/cards/exp-20260709-007.md",
+    "experiments/manifests/exp-20260709-007.json",
+    "experiments/tickets/exp-20260709-007.json",
+    "experiments/logs/exp-20260709-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-007.md",
+  "causal_components": [
+    "closed_forward_replacement_rows",
+    "prior_close_cross_sectional_skew",
+    "quartile_lead_test",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_forward_attribution",
+  "changed_variable": "broad_cross_sectional_skew_forward_replacement_state_v1",
+  "claimed_at": "2026-07-09T06:06:51+00:00",
+  "completed_at": "2026-07-09T06:11:54+00:00",
+  "created_at": "2026-07-09T06:06:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-007",
+  "experiment_uid": "expuid-4f116b4a93e44594",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T06:06:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broad_skew_forward_replacement_state"
+  },
+  "hypothesis": "Observed-only alpha: actual default-off forward replacement rows should have better cash/SPY/QQQ replacement value when the prior-close broad-universe cross-sectional return skew is positive/upside-led rather than negative/left-tail-led, because broad dispersion only helps stock-picking when the opportunity set is right-tail dominated rather than stress dominated.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "broad_cross_sectional_skew_forward_replacement_state_v1"
+  ],
+  "mechanism_family": "production_visible_default_off_forward_regime_state_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-004",
+    "exp-20260709-005",
+    "exp-20260709-006"
+  ],
+  "new_evidence_type": "new_gate_shape_on_settled_forward_replacement_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.6511,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "market_state_family_replacement_value_attribution",
+        "score": 0.65,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "observed_only_attribution",
+        "score": 0.649,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "score": 0.6417,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "actual",
+        "alpha",
+        "attribution",
+        "because",
+        "better",
+        "cash",
+        "close",
+        "cross",
+        "dispersion",
+        "dominated",
+        "forward",
+        "have",
+        "helps",
+        "is",
+        "led",
+        "left",
+        "negative",
+        "observed",
+        "only",
+        "opportunity",
+        "picking",
+        "positive",
+        "prior",
+        "qqq",
+        "rather",
+        "regime",
+        "replacement",
+        "return",
+        "right",
+        "rows",
+        "sectional",
+        "set",
+        "should",
+        "skew",
+        "spy",
+        "state",
+        "stock",
+        "stress",
+        "tail",
+        "than",
+        "upside",
+        "value",
+        "when"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.6511,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.65,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.649,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_entry_exhaustion_replacement_value_attribution",
+        "reopen_condition": "Reopen only after materially more stretched closed forward rows settle under the same fixed helper, or after a genuinely new PIT entry-fragility data source appears.",
+        "score": 0.6417,
+        "status": "frozen_rejected",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "New gate shape: prior-close broad-universe cross-sectional return skewness distinguishes right-tail opportunity from left-tail stress; it is not a dispersion/correlation threshold, sector dispersion variant, comparator retune, or response-curve change on exp-20260709-004/005/006 rows.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 2,
+      "streak_experiments": [
+        "exp-20260709-005",
+        "exp-20260709-006"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: prior-close broad-universe cross-sectional return skewness distinguishes right-tail opportunity from left-tail stress; it is not a dispersion/correlation threshold, sector dispersion variant, comparator retune, or response-curve change on exp-20260709-004/005/006 rows.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: prior-close broad-universe cross-sectional return skewness distinguishes right-tail opportunity from left-tail stress; it is not a dispersion/correlation threshold, sector dispersion variant, comparator retune, or response-curve change on exp-20260709-004/005/006 rows.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.27,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "skew_collinear_with_dispersion",
+      "no_cash_spy_qqq_separation",
+      "ticker_or_sleeve_concentration",
+      "too_few_extreme_bucket_rows"
+    ],
+    "confidence_reason": "exp-20260709-005 found a broad dispersion/correlation forward-row lead while exp-20260709-006 rejected sector dispersion; skewness is a different entry-time state construct that tests right-tail opportunity versus left-tail stress, but sample size and concentration remain thin.",
+    "recorded_at": "2026-07-09T06:05:55+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_broad_skew_forward_replacement_state",
+    "artifact": "data/experiments/exp-20260709-007/exp_20260709_007_broad_skew_forward_replacement_state.json",
+    "log": "experiments/logs/exp-20260709-007.json",
+    "gate4": {
+      "passed": false,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "observed_only_rejected_broad_skew_forward_replacement_state",
+      "measurement_blockers": [],
+      "alpha_blockers": [
+        "predeclared_forward_state_lead_criteria_not_met"
+      ],
+      "strategy_rerun_required": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "max_drawdown_pct_delta": 0.0,
+        "live_order_behavior_changed": false,
+        "strategy_behavior_changed": false
+      },
+      "observed_only_lead_passed": false,
+      "criteria": {
+        "covered_rows_gte_min": true,
+        "top_rows_gte_min": true,
+        "bottom_rows_gte_min": true,
+        "max_ticker_share_lte_guard": true,
+        "max_sleeve_share_lte_guard": true,
+        "top_max_ticker_share_lte_guard": true,
+        "bottom_max_ticker_share_lte_guard": false,
+        "top_beats_bottom_all_comparators": false,
+        "top_beats_bottom_fields": [],
+        "top_positive_at_least_two_comparators": false,
+        "top_positive_fields": [],
+        "spearman_positive_at_least_two_comparators": false,
+        "spearman_positive_fields": []
+      },
+      "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha."
+    },
+    "delta_metrics": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0,
+      "live_order_behavior_changed": false,
+      "strategy_behavior_changed": false,
+      "raw_enriched_forward_rows": 77,
+      "covered_forward_rows": 26,
+      "coverage_rate": 0.337662,
+      "state_quartile_counts": {
+        "high_mid_skew_q3": 6,
+        "left_tail_skew_q1": 7,
+        "low_mid_skew_q2": 6,
+        "right_tail_skew_q4": 7
+      },
+      "lead_passed": false,
+      "criteria": {
+        "covered_rows_gte_min": true,
+        "top_rows_gte_min": true,
+        "bottom_rows_gte_min": true,
+        "max_ticker_share_lte_guard": true,
+        "max_sleeve_share_lte_guard": true,
+        "top_max_ticker_share_lte_guard": true,
+        "bottom_max_ticker_share_lte_guard": false,
+        "top_beats_bottom_all_comparators": false,
+        "top_beats_bottom_fields": [],
+        "top_positive_at_least_two_comparators": false,
+        "top_positive_fields": [],
+        "spearman_positive_at_least_two_comparators": false,
+        "spearman_positive_fields": []
+      },
+      "panel_shape": [
+        90,
+        8491
+      ],
+      "feature_dates_usable": 51
+    },
+    "calibration": {
+      "predicted_success_probability": 0.27,
+      "actual_success": 0,
+      "brier_score": 0.0729,
+      "predicted_failure_modes": [
+        "skew_collinear_with_dispersion",
+        "no_cash_spy_qqq_separation",
+        "ticker_or_sleeve_concentration",
+        "too_few_extreme_bucket_rows"
+      ],
+      "realized_failure_modes": [
+        "bottom_max_ticker_share_lte_guard",
+        "top_beats_bottom_all_comparators",
+        "top_positive_at_least_two_comparators",
+        "spearman_positive_at_least_two_comparators"
+      ],
+      "predicted_failure_mode_hit": true,
+      "calibration_note": "Success means observed-only lead criteria passed; no alpha acceptance or live behavior change is possible in this runner."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-007.json",
+  "single_causal_variable": "broad_cross_sectional_skew_forward_replacement_state_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260709-007.json",
+  "trial_family": "broad_cross_sectional_skew_forward_replacement_state",
+  "trial_variant_id": "prior_close_broad_return_skew_quartile_v1",
+  "alpha_hypothesis": "Observed-only alpha: actual default-off forward replacement rows should have better cash/SPY/QQQ replacement value when the prior-close broad-universe cross-sectional return skew is positive/upside-led rather than negative/left-tail-led, because broad dispersion only helps stock-picking when the opportunity set is right-tail dominated rather than stress dominated.",
+  "implementation_mode": "read_only_observed_forward_attribution",
+  "decision": "observed_only_rejected_broad_skew_forward_replacement_state",
+  "artifact": "data/experiments/exp-20260709-007/exp_20260709_007_broad_skew_forward_replacement_state.json",
+  "log": "experiments/logs/exp-20260709-007.json",
+  "gate1": {
+    "passed": true,
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "window_count": 3,
+      "expected_value_score_sum": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "max_drawdown_pct_worst": 0.1119
+    }
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "fields_checked": [
+      "entry_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "prior_close_broad_return_skew"
+    ],
+    "missing_required_forward_fields": {},
+    "feature_coverage": {
+      "raw_enriched_rows": 77,
+      "covered_rows": 26,
+      "uncovered_rows": 51,
+      "coverage_rate": 0.337662,
+      "uncovered_reason_counts": {
+        "low_eligible_count": 51
+      },
+      "uncovered_examples": [
+        {
+          "entry_date": "2026-06-12",
+          "ticker": "CRDO",
+          "state_feature_date": "2026-06-11",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-22",
+          "ticker": "SBUX",
+          "state_feature_date": "2026-06-18",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-18",
+          "ticker": "DDOG",
+          "state_feature_date": "2026-06-17",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-22",
+          "ticker": "MU",
+          "state_feature_date": "2026-06-18",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-23",
+          "ticker": "INTC",
+          "state_feature_date": "2026-06-22",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-16",
+          "ticker": "WDC",
+          "state_feature_date": "2026-06-15",
+          "sleeve_key": "accepted_source_consensus",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-22",
+          "ticker": "BE",
+          "state_feature_date": "2026-06-18",
+          "sleeve_key": "accepted_source_consensus",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-10",
+          "ticker": "SNOW",
+          "state_feature_date": "2026-06-09",
+          "sleeve_key": "alpha_score_market_regime",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-10",
+          "ticker": "UNH",
+          "state_feature_date": "2026-06-09",
+          "sleeve_key": "alpha_score_market_regime",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-11",
+          "ticker": "MRVL",
+          "state_feature_date": "2026-06-10",
+          "sleeve_key": "alpha_score_market_regime",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-12",
+          "ticker": "CRDO",
+          "state_feature_date": "2026-06-11",
+          "sleeve_key": "alpha_score_market_regime",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-06-12",
+          "ticker": "GE",
+          "state_feature_date": "2026-06-11",
+          "sleeve_key": "alpha_score_market_regime",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-05-28",
+          "ticker": "IRDM",
+          "state_feature_date": "2026-05-27",
+          "sleeve_key": "broad_market",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-05-26",
+          "ticker": "RKLB",
+          "state_feature_date": "2026-05-25",
+          "sleeve_key": "broad_market",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        },
+        {
+          "entry_date": "2026-05-27",
+          "ticker": "RKLB",
+          "state_feature_date": "2026-05-26",
+          "sleeve_key": "broad_market",
+          "reason": "low_eligible_count",
+          "eligible_count": 1
+        }
+      ]
+    },
+    "entry_date_scope": "Forward entry_date joined to latest prior warehouse feature date.",
+    "target_price_scope": "Not applicable; observed-only closed forward rows."
+  },
+  "gate3": {
+    "passed": true,
+    "filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "feature_covered_rows": 26,
+    "note": "No strategy filter was added. Feature coverage is an observed-only analysis limitation, not a production survival filter."
+  },
+  "gate4": {
+    "passed": false,
+    "accepted_alpha": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_broad_skew_forward_replacement_state",
+    "measurement_blockers": [],
+    "alpha_blockers": [
+      "predeclared_forward_state_lead_criteria_not_met"
+    ],
+    "strategy_rerun_required": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0,
+      "live_order_behavior_changed": false,
+      "strategy_behavior_changed": false
+    },
+    "observed_only_lead_passed": false,
+    "criteria": {
+      "covered_rows_gte_min": true,
+      "top_rows_gte_min": true,
+      "bottom_rows_gte_min": true,
+      "max_ticker_share_lte_guard": true,
+      "max_sleeve_share_lte_guard": true,
+      "top_max_ticker_share_lte_guard": true,
+      "bottom_max_ticker_share_lte_guard": false,
+      "top_beats_bottom_all_comparators": false,
+      "top_beats_bottom_fields": [],
+      "top_positive_at_least_two_comparators": false,
+      "top_positive_fields": [],
+      "spearman_positive_at_least_two_comparators": false,
+      "spearman_positive_fields": []
+    },
+    "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha."
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "max_drawdown_pct_worst": 0.1119
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "max_drawdown_pct_delta": 0.0,
+    "live_order_behavior_changed": false,
+    "strategy_behavior_changed": false,
+    "raw_enriched_forward_rows": 77,
+    "covered_forward_rows": 26,
+    "coverage_rate": 0.337662,
+    "state_quartile_counts": {
+      "high_mid_skew_q3": 6,
+      "left_tail_skew_q1": 7,
+      "low_mid_skew_q2": 6,
+      "right_tail_skew_q4": 7
+    },
+    "lead_passed": false,
+    "criteria": {
+      "covered_rows_gte_min": true,
+      "top_rows_gte_min": true,
+      "bottom_rows_gte_min": true,
+      "max_ticker_share_lte_guard": true,
+      "max_sleeve_share_lte_guard": true,
+      "top_max_ticker_share_lte_guard": true,
+      "bottom_max_ticker_share_lte_guard": false,
+      "top_beats_bottom_all_comparators": false,
+      "top_beats_bottom_fields": [],
+      "top_positive_at_least_two_comparators": false,
+      "top_positive_fields": [],
+      "spearman_positive_at_least_two_comparators": false,
+      "spearman_positive_fields": []
+    },
+    "panel_shape": [
+      90,
+      8491
+    ],
+    "feature_dates_usable": 51
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "scope": "read_only_forward_replacement_value_attribution"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Prior-close broad return skew did not pass the fixed forward lead criteria on actual replacement rows. Coverage was 26/77; criteria were {'covered_rows_gte_min': True, 'top_rows_gte_min': True, 'bottom_rows_gte_min': True, 'max_ticker_share_lte_guard': True, 'max_sleeve_share_lte_guard': True, 'top_max_ticker_share_lte_guard': True, 'bottom_max_ticker_share_lte_guard': False, 'top_beats_bottom_all_comparators': False, 'top_beats_bottom_fields': [], 'top_positive_at_least_two_comparators': False, 'top_positive_fields': [], 'spearman_positive_at_least_two_comparators': False, 'spearman_positive_fields': []}; comparator evidence was replacement_value_vs_cash_usd q4-q1=-1205.0572 rho=-0.283017; replacement_value_vs_spy_usd q4-q1=-1273.7186 rho=-0.302619; replacement_value_vs_qqq_usd q4-q1=-1290.1743 rho=-0.312473.",
+    "forbidden_near_neighbor_retry": "This is the third consecutive observed-only close on forward_replacement_value. Do not add another same-row join, condition field, threshold, quartile, comparator, skew formula, eligible-name floor, or response-curve retry. Reopen only with materially more closed forward rows, a genuinely new data source, or a new shared policy/Gate 1-4.",
+    "new_evidence_required": "Materially more closed forward replacement rows with broad-state coverage, a genuinely different data source, or a shared helper Gate 1-4. Another same-row forward attribution field is not enough."
+  },
+  "next_retry_requires": [
+    "materially more closed forward replacement rows",
+    "or a genuinely different data source",
+    "or a shared helper with Gate 1-4",
+    "no more same-row forward-attribution field joins after this third probe"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260709_007_broad_skew_forward_replacement_state.py",
+    "data/experiments/exp-20260709-007/exp_20260709_007_broad_skew_forward_replacement_state.json",
+    "experiments/logs/exp-20260709-007.json",
+    "experiments/cards/exp-20260709-007.md",
+    "experiments/manifests/exp-20260709-007.json",
+    "experiments/tickets/exp-20260709-007.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/warehouse/warehouse_main.sqlite",
+    "data/warehouse/warehouse_main_hot.sqlite",
+    "quant/broad_dispersion_features.py"
+  ],
+  "lean_quality_passed": true,
+  "calibration": {
+    "predicted_success_probability": 0.27,
+    "actual_success": 0,
+    "brier_score": 0.0729,
+    "predicted_failure_modes": [
+      "skew_collinear_with_dispersion",
+      "no_cash_spy_qqq_separation",
+      "ticker_or_sleeve_concentration",
+      "too_few_extreme_bucket_rows"
+    ],
+    "realized_failure_modes": [
+      "bottom_max_ticker_share_lte_guard",
+      "top_beats_bottom_all_comparators",
+      "top_positive_at_least_two_comparators",
+      "spearman_positive_at_least_two_comparators"
+    ],
+    "predicted_failure_mode_hit": true,
+    "calibration_note": "Success means observed-only lead criteria passed; no alpha acceptance or live behavior change is possible in this runner."
+  },
+  "updated_at": "2026-07-09T06:11:54+00:00"
+}

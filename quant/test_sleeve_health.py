@@ -102,6 +102,126 @@ def test_report_accepts_as_of_snapshot_key(tmp_path):
     assert "core_risk_intensity_forward_observation" not in report["stalled_sleeves"]
 
 
+def test_report_recognizes_latest_snapshot_json_surface(tmp_path):
+    # exp-20260717-002: newer sleeves persist a single overwritten
+    # latest_snapshot.json instead of appending to snapshots.jsonl; an alive
+    # sleeve must not read as never_persisted.
+    root = tmp_path / "paper_sleeves"
+    d = root / "treasury_auction_weak_demand_tbt"
+    d.mkdir(parents=True)
+    (d / "latest_snapshot.json").write_text(
+        json.dumps({"as_of_date": "2026-07-15", "candidate_count": 112}),
+        encoding="utf-8",
+    )
+    stale = root / "eia_wpsr_destocking_energy_basket"
+    stale.mkdir(parents=True)
+    (stale / "latest_snapshot.json").write_text(
+        json.dumps({"as_of_date": "2026-07-01", "candidate_count": 0}),
+        encoding="utf-8",
+    )
+    report = sh.build_sleeve_health_report(
+        "2026-07-16", {}, sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl", persist=False,
+    )
+    fresh_entry = report["disk_status"]["treasury_auction_weak_demand_tbt"]
+    assert fresh_entry["status"] == "fresh_summary"
+    assert fresh_entry["last_summary"] == "2026-07-15"
+    assert fresh_entry["summary_file"] == "latest_snapshot.json"
+    assert "treasury_auction_weak_demand_tbt" not in report["stalled_sleeves"]
+    # A genuinely stale latest_snapshot surface is still reported with its date.
+    assert report["disk_status"]["eia_wpsr_destocking_energy_basket"]["status"] == "stale_summary"
+    assert "eia_wpsr_destocking_energy_basket" in report["stalled_sleeves"]
+
+
+def test_report_excludes_retired_sleeves_from_stalled(tmp_path):
+    # exp-20260717-002: a retired sleeve legitimately stops persisting; it must
+    # not sit in stalled_sleeves forever (finra_iwm sat there 21 sessions).
+    root = tmp_path / "paper_sleeves"
+    _mk_sleeve(root, "finra_iwm", "2026-06-15")
+    payloads = {
+        "finra_iwm_paper_sleeve": {"error": "retired_default_off_paper_disabled"},
+    }
+    report = sh.build_sleeve_health_report(
+        "2026-07-16", payloads, sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl", persist=False,
+    )
+    assert "finra_iwm" not in report["stalled_sleeves"]
+    assert report["disk_status"]["finra_iwm"]["retired"] is True
+    assert report["failing_builds"] == []
+
+
+def test_report_still_flags_dateless_state_only_surface(tmp_path):
+    # A sleeve persisting only a dateless, non-heartbeat state.json has no
+    # verifiable freshness surface and must stay flagged.
+    root = tmp_path / "paper_sleeves"
+    _mk_state(root, "candidate_decision_training_ledger", {"candidate_count": 0})
+    report = sh.build_sleeve_health_report(
+        "2026-07-16", {}, sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl", persist=False,
+    )
+    assert report["disk_status"]["candidate_decision_training_ledger"]["status"] == "never_persisted"
+    assert "candidate_decision_training_ledger" in report["stalled_sleeves"]
+
+
+def test_report_recognizes_candidate_training_ledger_state_with_rows(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    name = "candidate_decision_training_ledger"
+    _mk_state(
+        root,
+        name,
+        {
+            "surface_contract": "append_only_candidate_decision_training_ledger",
+            "as_of": "2026-07-25",
+            "rows_seen": 1,
+        },
+    )
+    (root / name / "rows.jsonl").write_text(
+        json.dumps({"as_of": "2026-07-25", "ticker": "AAPL"}) + chr(10),
+        encoding="utf-8",
+    )
+    report = sh.build_sleeve_health_report(
+        "2026-07-25",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    entry = report["disk_status"][name]
+    assert entry["status"] == "fresh_summary"
+    assert entry["last_summary"] == "2026-07-25"
+    assert entry["summary_file"] == "state.json"
+    assert name not in report["stalled_sleeves"]
+
+
+def test_report_rejects_unrecognized_or_incomplete_state_contracts(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    payloads = {
+        "unknown": {
+            "surface_contract": "unknown_append_only_ledger",
+            "as_of": "2026-07-25",
+        },
+        "unmarked": {"as_of": "2026-07-25"},
+        "missing_rows": {
+            "surface_contract": "append_only_candidate_decision_training_ledger",
+            "as_of": "2026-07-25",
+        },
+    }
+    for name, payload in payloads.items():
+        _mk_state(root, name, payload)
+        if name != "missing_rows":
+            (root / name / "rows.jsonl").write_text("{}\n", encoding="utf-8")
+    report = sh.build_sleeve_health_report(
+        "2026-07-25",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    for name in payloads:
+        assert report["disk_status"][name]["status"] == "never_persisted"
+        assert name in report["stalled_sleeves"]
+
+
 def test_report_uses_marked_heartbeat_state_when_snapshot_is_older(tmp_path):
     root = tmp_path / "paper_sleeves"
     name = "core_risk_intensity_forward_observation"

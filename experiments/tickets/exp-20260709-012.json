@@ -1,0 +1,354 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    "data/experiments/exp-20260709-012/exp_20260709_012_sec_6k_historical_text_cache_materialization.json",
+    "data/experiments/exp-20260709-012/missing_historical_6k_events.jsonl",
+    "experiments/logs/exp-20260709-012.json",
+    "experiments/cards/exp-20260709-012.md",
+    "experiments/manifests/exp-20260709-012.json",
+    "experiments/tickets/exp-20260709-012.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-012.md",
+  "causal_components": [
+    "dedupe 6-K event rows",
+    "audit canonical-window cache coverage",
+    "export missing historical 6-K event input rows",
+    "probe SEC archive fetch capability",
+    "no phrase/ranking/entry retune"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "sec_6k_historical_text_cache_materialization_v1",
+  "claimed_at": "2026-07-09T09:13:38+00:00",
+  "completed_at": "2026-07-09T09:18:49+00:00",
+  "created_at": "2026-07-09T09:13:09+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-012",
+  "experiment_uid": "expuid-3c153a6f131c4c75",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-012",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T09:13:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_6k_historical_text_cache_materialization"
+  },
+  "hypothesis": "alpha_blocker/measurement_repair: SEC 6-K/6-KA structured financial and guidance text could be a production-visible SEC semantic alpha surface, but canonical-window replay is not trustworthy because sec_filing_events has historical 6-K event rows while sec_filing_text has zero deduped 6-K text rows inside old_thin/mid_weak/late_strong. Materialize or quantify the historical 6-K text/cache gap without changing any trading rule.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "sec_6k_historical_text_cache_materialization_v1"
+  ],
+  "mechanism_family": "sec_6k_text_replay_measurement",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260708-003",
+    "exp-20260708-014"
+  ],
+  "new_evidence_type": "measurement_repair_alpha_enabling_historical_text_cache",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "6k",
+        "a",
+        "alpha",
+        "any",
+        "be",
+        "because",
+        "blocker",
+        "but",
+        "cache",
+        "canonical",
+        "changing",
+        "could",
+        "deduped",
+        "event",
+        "events",
+        "filing",
+        "financial",
+        "gap",
+        "guidance",
+        "has",
+        "historical",
+        "inside",
+        "is",
+        "k",
+        "ka",
+        "late",
+        "materialization",
+        "materialize",
+        "measurement",
+        "mid",
+        "not",
+        "old",
+        "or",
+        "quantify",
+        "repair",
+        "rows",
+        "rule",
+        "semantic",
+        "strong",
+        "structured",
+        "surface",
+        "text",
+        "thin",
+        "trading",
+        "trustworthy",
+        "weak",
+        "while",
+        "window",
+        "without",
+        "zero"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_10k_10q_text_default_coverage_repair",
+        "reopen_condition": "Run SEC filing-text materialization with the repaired defaults for historical 10-K/10-Q events, parse cover-page filer-status booleans by accession/accepted_at, then rerun one fixed shared-paper-first filer-status transition rule.",
+        "score": 0.4714,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_6k_current_operating_guidance_semantic_ledger",
+        "reopen_condition": "Populate historical 6-K/6-KA text bodies, or accumulate at least 20 current daily 6-K rows with closed forward replacement values, then build one shared default-off helper using fixed semantic fields.",
+        "score": 0.4714,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_fact_tone_gap_provenance",
+        "reopen_condition": null,
+        "score": 0.4711,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_text_structured_contract_economics_candidate_pool",
+        "reopen_condition": "A retry needs a materially richer structured event tuple, such as counterparty identity, contract duration/value normalization by market cap, source-document evidence spans, or closed forward replacement rows. Do not sweep regex phrase lists, value thresholds, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.4654,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_guidance_raise_selloff_event_sleeve",
+        "reopen_condition": null,
+        "score": 0.4651,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data materialization axis: historical 6-K/6-KA SEC filing text/cache coverage across canonical windows, where current deduped text rows are 0 despite 236 historical event rows; this is not a 6-K phrase, liquidity, top-N, hold, or response-shape retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec_text_event",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data materialization axis: historical 6-K/6-KA SEC filing text/cache coverage across canonical windows, where current deduped text rows are 0 despite 236 historical event rows; this is not a 6-K phrase, liquidity, top-N, hold, or response-shape retune.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "network_disabled_or_sec_fetch_blocked",
+      "cache_missing_for_historical_6k",
+      "too_few_replayable_6k_rows_after_backfill",
+      "duplicate_daily_snapshot_rows"
+    ],
+    "confidence_reason": "Historical 6-K event rows already exist across all canonical windows, but local filing_text cache is missing for all historical accessions; success depends on whether the environment can fetch SEC archives or otherwise reuse cached source text.",
+    "recorded_at": "2026-07-09T09:12:32+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "decision": "rejected_blocked_sec_6k_historical_text_cache_gap",
+    "artifact": "data/experiments/exp-20260709-012/exp_20260709_012_sec_6k_historical_text_cache_materialization.json",
+    "log": "experiments/logs/exp-20260709-012.json",
+    "runner": "quant/experiments/exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    "coverage": {
+      "historical_6k_events": 236,
+      "historical_6k_text_rows": 0,
+      "historical_6k_cache_missing": 236
+    },
+    "network_probe": {
+      "attempted": true,
+      "ok": false,
+      "url": "https://www.sec.gov/Archives/edgar/data/1046179/000104617924000112/index.json",
+      "error_type": "URLError",
+      "error": "<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+      "elapsed_sec": 2.124,
+      "event": {
+        "ticker": "TSM",
+        "cik": "0001046179",
+        "accession_number": "0001046179-24-000112",
+        "form_type": "6-K",
+        "form_base": "6-K",
+        "filing_date": "2024-10-03",
+        "usable_trade_date": "2024-10-04",
+        "accepted_at": "2024-10-03T21:19:35",
+        "primary_document": "amkorandtsmctoexpandpartne.htm",
+        "source_file": "data/non_ohlcv/sec_filing_events_6k_20241002_20260421.jsonl"
+      }
+    },
+    "summary": "The watched-ticker SEC filing event stream already contains 236 deduped historical 6-K rows across the canonical windows, but the official SEC filing-text surface has 0 deduped historical 6-K text rows and 0 local historical cache files. The canonical aggregate event file also has zero 6-K rows, so the current single-file text backfill entrypoint cannot replay this lane without a generated 6-K event input."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-012.json",
+  "single_causal_variable": "sec_6k_historical_text_cache_materialization_v1",
+  "status": "rejected_blocked_sec_6k_historical_text_cache_gap",
+  "ticket_file": "experiments/tickets/exp-20260709-012.json",
+  "trial_family": "historical_sec_6k_text_cache_materialization",
+  "trial_variant_id": "canonical_windows_6k_text_cache_materialization_v1",
+  "alpha_hypothesis": "alpha_blocker/measurement_repair: SEC 6-K/6-KA structured financial and guidance text could be a production-visible SEC semantic alpha surface, but canonical-window replay is not trustworthy because sec_filing_events has historical 6-K event rows while sec_filing_text has zero deduped 6-K text rows inside old_thin/mid_weak/late_strong. Materialize or quantify the historical 6-K text/cache gap without changing any trading rule.",
+  "implementation_mode": "self_registered_blocker_audit_no_strategy_change",
+  "new_evidence_axis": "New data materialization axis: historical 6-K/6-KA SEC filing text/cache coverage across canonical windows, where current deduped text rows are 0 despite historical event rows; this is not a 6-K phrase, liquidity, top-N, hold, or response-shape retune.",
+  "decision": "rejected_blocked_sec_6k_historical_text_cache_gap",
+  "rejection_reason": "zero_deduped_historical_6k_text_rows;historical_6k_cache_missing:236;canonical_aggregate_events_file_has_zero_6k_rows;sec_archive_fetch_probe_failed",
+  "artifact": "data/experiments/exp-20260709-012/exp_20260709_012_sec_6k_historical_text_cache_materialization.json",
+  "log": "experiments/logs/exp-20260709-012.json",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "strategy_behavior_changed": false,
+    "reason": "measurement-only SEC text replay surface audit"
+  },
+  "gate2": {
+    "entry_date_required": false,
+    "target_price_required": false,
+    "event_fields_checked": [
+      "accession_number",
+      "ticker",
+      "cik",
+      "filing_date",
+      "usable_trade_date",
+      "primary_document"
+    ],
+    "missing_field_counts": {
+      "accession_number": 0,
+      "ticker": 0,
+      "cik": 0,
+      "filing_date": 0,
+      "usable_trade_date": 0,
+      "primary_document": 0
+    }
+  },
+  "gate3": {
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "reason": "no strategy signal generation; blocker is replay text coverage"
+  },
+  "gate4": {
+    "before_after_strategy_behavior_changed": false,
+    "accepted_measurement_repair": false,
+    "failure_reasons": [
+      "zero_deduped_historical_6k_text_rows",
+      "historical_6k_cache_missing:236",
+      "canonical_aggregate_events_file_has_zero_6k_rows",
+      "sec_archive_fetch_probe_failed"
+    ]
+  },
+  "production_impact": {
+    "scope": "measurement_repair_sec_6k_text_replay_surface",
+    "trade_enabled": false,
+    "orders_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "run_adapter_changed": false,
+    "backtester_adapter_changed": false,
+    "shared_policy_changed": false,
+    "note": "No official data surface was mutated. The runner exports a missing historical 6-K event input file under data/experiments only."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The watched-ticker SEC filing event stream already contains 236 deduped historical 6-K rows across the canonical windows, but the official SEC filing-text surface has 0 deduped historical 6-K text rows and 0 local historical cache files. The canonical aggregate event file also has zero 6-K rows, so the current single-file text backfill entrypoint cannot replay this lane without a generated 6-K event input.",
+    "forbidden_near_neighbor_retry": "Do not sweep 6-K phrase lists, positive/negative text labels, liquidity gates, top-N, hold days, or response shape on this surface until historical 6-K/6-KA text bodies exist in a replayable official surface or at least 20 current daily 6-K rows close with replacement value.",
+    "new_evidence_required": "Run an official-scope SEC 6-K text backfill that writes historical cache/text rows from the exported missing_historical_6k_events.jsonl into data/cache/sec/filing_text and data/non_ohlcv/sec_filing_text_*.jsonl, or provide equivalent cached SEC archive documents. After that, test one fixed structured semantic helper with guidance-revision magnitude, issuer-country/ADR liquidity provenance, or translation-quality fields.",
+    "realized_failure_mode": "network_disabled_or_sec_fetch_blocked"
+  },
+  "related_files": [
+    "data/non_ohlcv/sec_filing_events_*.jsonl",
+    "data/non_ohlcv/sec_filing_text_*.jsonl",
+    "data/cache/sec/filing_text",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260709_012_sec_6k_historical_text_cache_materialization.py",
+    "data/experiments/exp-20260709-012/exp_20260709_012_sec_6k_historical_text_cache_materialization.json",
+    "data/experiments/exp-20260709-012/missing_historical_6k_events.jsonl",
+    "experiments/logs/exp-20260709-012.json",
+    "experiments/cards/exp-20260709-012.md",
+    "experiments/manifests/exp-20260709-012.json",
+    "experiments/tickets/exp-20260709-012.json"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-09T09:18:49+00:00"
+}

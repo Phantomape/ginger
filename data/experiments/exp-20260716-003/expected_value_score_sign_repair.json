@@ -1,0 +1,88 @@
+{
+  "accepted_alpha": false,
+  "active_baseline": {
+    "aggregate_expected_value_score_after": 6.2057,
+    "aggregate_expected_value_score_before": 6.2057,
+    "aggregate_identity_passed": true,
+    "artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "artifact_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "windows": {
+      "late_strong": {"after": 4.1067, "before": 4.1067},
+      "mid_weak": {"after": 1.9908, "before": 1.9908},
+      "old_thin": {"after": 0.1082, "before": 0.1082}
+    }
+  },
+  "canonical_contract": {
+    "after": "strategy_total_return_pct * abs(sharpe_daily)",
+    "before": "strategy_total_return_pct * sharpe_daily",
+    "round_decimals": 4,
+    "score_direction_field": "strategy_total_return_pct"
+  },
+  "decision": "accepted_expected_value_score_sign_preserving_measurement_repair",
+  "experiment_id": "exp-20260716-003",
+  "historical_fixture": {
+    "artifact": "data/experiments/exp-20260716-002/exp_20260716_002_treasury_auction_indirect_bidder_share_tbt.json",
+    "artifact_sha256": "b2d515acb19bcccf49dca8ba41f5d428f6e7b018ae587989eec054ca207381d1",
+    "legacy_aggregate_expected_value_score": 0.1674,
+    "sign_preserving_aggregate_expected_value_score": -0.164,
+    "total_pnl": -6534.63,
+    "windows": {
+      "late_strong": {
+        "legacy_expected_value_score": 0.0017,
+        "sharpe_daily": 0.43,
+        "sign_preserving_expected_value_score": 0.0017,
+        "strategy_total_return_pct": 0.004,
+        "total_pnl": 398.25
+      },
+      "mid_weak": {
+        "legacy_expected_value_score": 0.0466,
+        "sharpe_daily": -1.84,
+        "sign_preserving_expected_value_score": -0.0466,
+        "strategy_total_return_pct": -0.0253,
+        "total_pnl": -2526.56
+      },
+      "old_thin": {
+        "legacy_expected_value_score": 0.1191,
+        "sharpe_daily": -2.7,
+        "sign_preserving_expected_value_score": -0.1191,
+        "strategy_total_return_pct": -0.0441,
+        "total_pnl": -4406.32
+      }
+    }
+  },
+  "historical_reproduction_boundary": {
+    "legacy_direct_formula_runners_are_not_rewritten": true,
+    "legacy_direct_formula_runners": [
+      "quant/experiments/exp_20260504_036_bear_shallow_risk_budget.py",
+      "quant/experiments/exp_20260504_047_sleeve_isolation_direction.py",
+      "quant/experiments/exp_20260506_010_event_leader_profit_ladder.py",
+      "quant/experiments/exp_20260516_007_gap_cancel_pullback_entry_replacement.py"
+    ],
+    "non_experiment_canonical_formula_count": 1,
+    "rule": "Closed experiment runners retain their historical arithmetic; all new canonical backtester results use quant/convergence.py."
+  },
+  "lane": "measurement_repair",
+  "production_impact": {
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "metric_only": true
+  },
+  "quadrant_contract": [
+    {"expected_value_score": 0.5, "sharpe_daily": 2.5, "strategy_total_return_pct": 0.2},
+    {"expected_value_score": 0.5, "sharpe_daily": -2.5, "strategy_total_return_pct": 0.2},
+    {"expected_value_score": -0.5, "sharpe_daily": 2.5, "strategy_total_return_pct": -0.2},
+    {"expected_value_score": -0.5, "sharpe_daily": -2.5, "strategy_total_return_pct": -0.2},
+    {"expected_value_score": 0.0, "sharpe_daily": -2.5, "strategy_total_return_pct": 0.0}
+  ],
+  "status": "accepted_measurement_repair",
+  "tests": {
+    "full_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_quant.py -q",
+    "full_passed": 314,
+    "targeted_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_quant.py::test_compute_expected_value_score_basic quant\\test_quant.py::test_compute_expected_value_score_preserves_total_return_sign quant\\test_quant.py::test_compute_expected_value_score_none_when_inputs_missing quant\\test_quant.py::test_backtester_emits_sharpe_daily_alongside_legacy -q",
+    "targeted_passed": 4,
+    "status": "passed"
+  }
+}

@@ -1,0 +1,297 @@
+{
+  "acceptance_rule": "Accept as measurement repair if finalized decision rows can be idempotently settled under frozen execution/cost semantics into per-horizon final-vs-default-vs-no-adjustment/proxy outcomes and a daily scorecard, zero-row readiness is explicit, focused tests pass, and no live/EOD/backtest strategy or order behavior changes.",
+  "allowed_write_scope": [
+    "quant/intraday_backtester.py",
+    "quant/run_intraday_backtest.py",
+    "quant/intraday_triage.py",
+    "quant/finalize_intraday_decision.py",
+    "quant/run_intraday.py",
+    "quant/test_intraday_backtester.py",
+    "quant/test_intraday_triage.py",
+    "docs/intraday_code_driven_triage.md",
+    "README.md",
+    "data/daily/intraday/backtests",
+    "data/experiments"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-021.md",
+  "causal_components": [
+    "fixed execution contract",
+    "action counterfactuals",
+    "forward outcome ledger",
+    "daily scorecard",
+    "idempotent runner",
+    "tests",
+    "documentation"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "intraday_triage_counterfactual_outcome_settlement_v1",
+  "claimed_at": "2026-07-14T15:20:27+00:00",
+  "completed_at": "2026-07-14T15:20:39+00:00",
+  "created_at": "2026-07-11T16:44:36+00:00",
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-021",
+  "duplicate_of": "exp-20260711-022",
+  "experiment_uid": "expuid-17354fef3b2f4656",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-021",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T16:44:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_triage_counterfactual_settlement"
+  },
+  "hypothesis": "Alpha-enabling measurement repair: finalized code-driven intraday ADD/WAIT/HOLD/REDUCE decisions cannot be evaluated credibly until fixed next-5m execution, transaction costs, and machine-default/no-adjustment/proxy counterfactuals are settled into a separate daily scorecard; this framework will test whether the eventual triage policy has positive net incremental decision value without changing orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "intraday_triage_counterfactual_outcome_settlement_v1"
+  ],
+  "mechanism_family": "intraday_discretionary_triage_outcome_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260707-024",
+    "exp-20260710-009",
+    "exp-20260704-024"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "5m",
+        "a",
+        "add",
+        "adjustment",
+        "alpha",
+        "are",
+        "be",
+        "cannot",
+        "changing",
+        "code",
+        "costs",
+        "counterfactual",
+        "counterfactuals",
+        "credibly",
+        "daily",
+        "decision",
+        "decisions",
+        "discretionary",
+        "driven",
+        "enabling",
+        "evaluated",
+        "eventual",
+        "execution",
+        "finalized",
+        "framework",
+        "has",
+        "hold",
+        "incremental",
+        "into",
+        "intraday",
+        "machine",
+        "measurement",
+        "net",
+        "no",
+        "orders",
+        "outcome",
+        "policy",
+        "positive",
+        "proxy",
+        "reduce",
+        "repair",
+        "scorecard",
+        "separate",
+        "settled",
+        "settlement",
+        "test",
+        "this",
+        "transaction",
+        "triage",
+        "until",
+        "value",
+        "wait",
+        "whether",
+        "will",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.84,
+        "data_source": "other",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "Materially more settled options_forward rows, preferably after warehouse OHLCV extends beyond 2026-06-15, followed by shared-paper-first Gate 1-4 before any alpha promotion.",
+        "score": 0.0262,
+        "status": "has_accepted",
+        "trials": 25
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_outcome_settlement",
+        "reopen_condition": "A future alpha iteration needs automatically accumulated settled forward rows, a distinct gate shape, or a new data source; this measurement repair alone is not alpha evidence.",
+        "score": 0.02,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "production_parity_repair",
+        "reopen_condition": "Only revisit trailing with a genuinely different mechanism: e.g. regime-conditional trailing (trail only in chop/old_thin where giveback bites, static in trends), a percent-of-MFE giveback stop rather than ATR-offset, or forward live giveback data. A flat ATR trail is closed.",
+        "score": 0.02,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_state_forward_outcome_settlement",
+        "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+        "score": 0.0197,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "daily_clean_trade_news_event_taxonomy_forward_value",
+        "reopen_condition": "A replayable PIT structured event ledger with actor/object/relation/magnitude/evidence spans and enough closed replacement-value rows, or historical daily-news coverage spanning the canonical windows.",
+        "score": 0.019,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape and source surface: settle finalized discretionary intraday_triage decision rows with action-specific next-5m execution and machine-default/no-adjustment/proxy counterfactuals; existing intraday_advisory work only attributed exit shadow states and existing structured-news work settled event observers.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape and source surface: settle finalized discretionary intraday_triage decision rows with action-specific next-5m execution and machine-default/no-adjustment/proxy counterfactuals; existing intraday_advisory work only attributed exit shadow states and existing structured-news work settled event observers.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The finalized decision schema and OpenD bar adapter now exist, so a deterministic settlement layer is engineering-feasible; the main uncertainty is forward sample availability, not implementation, and no alpha acceptance will be claimed from zero or thin rows.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "no_finalized_decisions",
+      "insufficient_5m_history",
+      "ambiguous_action_sizing",
+      "correlated_repeat_decisions"
+    ],
+    "recorded_at": "2026-07-11T16:43:53+00:00",
+    "success_probability": 0.9
+  },
+  "change_summary": "Duplicate reservation accounting only; exp-20260711-022 owns and completed the identical intraday triage settlement repair.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun this policy bundle under exp-20260711-021 or reserve another duplicate; follow exp-20260711-022.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "A concurrent reservation left this losing duplicate proposed after exp-20260711-022 completed the same repair."
+  },
+  "rejection_reason": "duplicate_reservation_accounting",
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "rejection_reason": "duplicate_reservation_accounting",
+    "before_result_file": "data/experiments/exp-20260711-022/zero_row_scorecard.json",
+    "after_result_file": "data/experiments/exp-20260711-022/zero_row_scorecard.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.9,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "no_finalized_decisions",
+        "insufficient_5m_history",
+        "ambiguous_action_sizing",
+        "correlated_repeat_decisions"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "A concurrent reservation left this losing duplicate proposed after exp-20260711-022 completed the same repair."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-021.json",
+  "single_causal_variable": "intraday_triage_counterfactual_outcome_settlement_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260711-021.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "next_5m_machine_default_no_adjustment_proxy_v1"
+}

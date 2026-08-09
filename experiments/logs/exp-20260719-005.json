@@ -1,0 +1,150 @@
+{
+  "after_metrics": {
+    "expected_value_score": 4.7736,
+    "max_drawdown_pct": 0.0661,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7368,
+    "total_pnl": 111421.58,
+    "total_return_pct": 1.1142,
+    "trade_count": 40,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 1.3099,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -1.4321,
+    "actual_pnl_delta": -19570.78,
+    "actual_success": 0,
+    "brier_score": 0.0144,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -1.7821,
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 5000.0,
+    "pnl_prediction_error": -24570.78,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "winner_collateral",
+      "quarterly_signal_staleness",
+      "cash_displacement",
+      "holdout_sign_instability",
+      "insufficient_trade_count"
+    ],
+    "predicted_success_probability": 0.12,
+    "realized_failure_mode": "winner_collateral",
+    "surprise_level": "very_low",
+    "surprise_note": "The negative breadth filter removed winners across all three canonical windows and the holdout; additionally, the shared BacktestEngine resolver coupled entry eligibility into one COIN add-on checkpoint, independently invalidating the locked entry-only attribution."
+  },
+  "causal_components": [
+    "shared PIT ownership-breadth helper",
+    "minimum 20 matched series",
+    "negative zero-crossing candidate eligibility",
+    "next-open resolver",
+    "canonical cash-feasible replay",
+    "frozen unseen holdout",
+    "daily default-off snapshot",
+    "parity tests",
+    "execution envelope",
+    "full-stack verdict"
+  ],
+  "change_summary": "Implemented and evaluated a shared default-off SEC N-PORT independent holder-breadth fresh-entry eligibility policy across three canonical windows and a separate frozen holdout.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "sec_nport_net_new_holder_breadth_negative_fresh_core_eligibility_v1",
+  "component": "quant/sec_nport_ownership_breadth_gate.py, quant/test_sec_nport_ownership_breadth_gate.py, quant/experiments/exp_20260719_005_sec_nport_ownership_breadth_gate.py, data/experiments/exp-20260719-005/exp_20260719_005_sec_nport_ownership_breadth_gate.json, data/experiments/exp-20260719-005/before_measurement.json, data/experiments/exp-20260719-005/after_measurement.json, experiments/cards/exp-20260719-005.md, experiments/manifests/exp-20260719-005.json, experiments/tickets/exp-20260719-005.json, experiments/logs/exp-20260719-005.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -1.4321,
+    "max_drawdown_pct": -0.0228,
+    "survival_rate": -0.0748,
+    "total_pnl": -19570.78,
+    "total_return_pct": -0.1957,
+    "trade_count": -9
+  },
+  "experiment_id": "exp-20260719-005",
+  "hypothesis": "SEC N-PORT public-holdings filing-date PIT independent ownership breadth should identify weakening institutional sponsorship: with at least 20 matched continuously reporting fund series, a negative (bought-from-zero minus sold-to-zero) breadth makes only a fresh core candidate ineligible at its next open; missing or zero breadth passes, while existing positions, add-ons, exits, sizing, ordering, and costs stay unchanged. The shared default-off helper should improve the active cash-feasible strategy across all three canonical windows and confirm direction on the frozen unseen 2026-04-22..2026-07-16 holdout.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "independent_institutional_sponsorship_deterioration",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260715-009",
+    "exp-20260715-010",
+    "exp-20260717-006"
+  ],
+  "new_evidence_type": "new_gate_shape_and_unseen_holdout",
+  "next_retry_requires": [
+    "a genuinely different data source rather than threshold or response retuning on the frozen N-PORT surface",
+    "materially new settled forward rows supporting a distinct economic mechanism and an adapter that cannot affect add-ons"
+  ],
+  "notes": "Rejected. Negative holder breadth touched 47 canonical fresh candidates and 8 holdout candidates, but aggregate EV fell 6.2057 to 4.7736, PnL fell by 19570.78 USD, every canonical window and the holdout regressed, and the shared resolver suppressed one COIN add-on checkpoint. Daily parity passed on 51 candidate dates and Gate 2/3 passed. Do not retune the sign, threshold, minimum series, report gap, exclusion response, or notional response on this frozen N-PORT surface. Reopen only with a genuinely different data source or materially new settled forward rows supporting a new economic mechanism. The reusable helper remains trade-inert; the experiment-only daily run adapter was rolled back.",
+  "parameters": {
+    "locked_variables": [
+      "N-PORT UNIT=NS ASSET_CAT=EC PAYOFF_PROFILE=Long; filing_date strictly before next-open action date; report gap 70-110 days; minimum matched series=20; breadth=(bought_from_zero-sold_to_zero)/matched_series; negative excludes; zero/missing fail open; existing positions/add-ons/exits/sizing/ranking/costs unchanged"
+    ],
+    "single_causal_variable": "sec_nport_net_new_holder_breadth_negative_fresh_core_eligibility_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune breadth sign/threshold, minimum matched-series count, report-gap bounds, exclusion response, or notional scaling on this frozen N-PORT surface.",
+    "new_evidence_required": "A genuinely different data source, or materially new settled forward rows supporting a distinct mechanism and an adapter that cannot affect add-ons.",
+    "realized_failure_mode": "winner_collateral",
+    "why_result_happened": "The negative breadth filter removed winners across all three canonical windows and the holdout; additionally, the shared BacktestEngine resolver coupled entry eligibility into one COIN add-on checkpoint, independently invalidating the locked entry-only attribution."
+  },
+  "prediction": {
+    "confidence_reason": "Outcome-blind preflight found negative breadth on 13/12/14 canonical candidates and 8 of 20 unseen holdout candidates, including five entered trades; however the prior N-PORT aggregate-share scalar failed every window and a hard exclusion can remove winners.",
+    "expected_ev_delta": 0.35,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "winner_collateral",
+      "quarterly_signal_staleness",
+      "cash_displacement",
+      "holdout_sign_instability",
+      "insufficient_trade_count"
+    ],
+    "recorded_at": "2026-07-19T21:32:32+00:00",
+    "success_probability": 0.12
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": "All three canonical windows and the separate holdout lost EV and PnL; aggregate EV fell 1.4321 and PnL fell 19570.78 USD, while one COIN add-on checkpoint also violated the fresh-entry-only attribution contract.",
+  "related_files": [
+    "quant/sec_nport_ownership_breadth_gate.py",
+    "quant/test_sec_nport_ownership_breadth_gate.py",
+    "quant/experiments/exp_20260719_005_sec_nport_ownership_breadth_gate.py",
+    "data/experiments/exp-20260719-005/before_measurement.json",
+    "data/experiments/exp-20260719-005/after_measurement.json",
+    "data/experiments/exp-20260719-005/exp_20260719_005_sec_nport_ownership_breadth_gate.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2026-07-16",
+      "start": "2026-04-22"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-19T22:31:58+00:00",
+  "trial_family": "sec_nport_fund_ownership_breadth_negative_candidate_eligibility",
+  "trial_variant_id": "v1_negative_breadth_fail_open_missing"
+}

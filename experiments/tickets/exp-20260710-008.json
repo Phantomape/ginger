@@ -1,0 +1,342 @@
+{
+  "acceptance_rule": "Accept only if exit_lifecycle/exit lifecycle shadow/log/advisory lifecycle text maps to data_source=exit_lifecycle, existing intraday_advisory examples remain intraday_advisory, tests pass, audit passes, and no trading behavior changes.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-008.md",
+  "causal_components": [
+    "exit_lifecycle_data_source_keyword",
+    "fingerprint_regression_tests",
+    "no_strategy_change"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "exit_lifecycle_fingerprint_data_source_v1",
+  "claimed_at": "2026-07-10T07:12:26+00:00",
+  "completed_at": "2026-07-10T07:15:43+00:00",
+  "created_at": "2026-07-10T07:11:54+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-008",
+  "experiment_uid": "expuid-dbf61805684b4c78",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T07:11:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_fingerprint_coverage"
+  },
+  "hypothesis": "Alpha blocker: exit lifecycle and LLM/advisory outcome rows may become an exit-scoring or risk-allocation evidence surface, but novelty fingerprints routed exit_lifecycle_shadow_log and exit advisory lifecycle text into intraday_advisory or other; repair the data_source key before future exit-lifecycle alpha or forward-row reopen checks.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "exit_lifecycle_fingerprint_data_source_v1"
+  ],
+  "mechanism_family": "exit_lifecycle_advisory_outcome",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_repair_guard_coverage",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "intraday_advisory",
+      "field_tags": [
+        "advisory",
+        "allocation",
+        "alpha",
+        "an",
+        "any",
+        "become",
+        "before",
+        "blocker",
+        "but",
+        "check",
+        "coverage",
+        "currently",
+        "data",
+        "evidence",
+        "exit",
+        "fingerprint",
+        "fingerprints",
+        "forward",
+        "future",
+        "into",
+        "intraday",
+        "key",
+        "lifecycle",
+        "llm",
+        "log",
+        "may",
+        "novelty",
+        "or",
+        "other",
+        "outcome",
+        "reopen",
+        "repair",
+        "risk",
+        "route",
+        "row",
+        "rows",
+        "scoring",
+        "shadow",
+        "surface",
+        "text"
+      ],
+      "gate_shape": "forward_observer"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_forward_outcome",
+        "reopen_condition": "Reopen only after current h1/h3 settled rows materially exceed 141/117 under the same fixed helper, or after true quote timestamps or broker bar IDs, materially larger native primary-action coverage, and slot-reuse/replacement-value accounting are available.",
+        "score": 0.4944,
+        "status": "frozen_rejected",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_state_forward_outcome_settlement",
+        "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+        "score": 0.4856,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_shadow_action_forward_outcome",
+        "reopen_condition": "More snapshots generated after this contract, with h1/h3/h5/h10 settled outcomes and replacement-value accounting. Broker bar IDs or true quote_time_et would further strengthen causality.",
+        "score": 0.4856,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.4779,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_native_advisory_shadow_action_contract",
+        "reopen_condition": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+        "score": 0.4779,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New measurement surface key, not a strategy retune: exit_lifecycle_shadow_log rows are a distinct observer population from intraday_advisory; this repair prevents future novelty and saturation counts from sharing the wrong data_source.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "intraday_advisory",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New measurement surface key, not a strategy retune: exit_lifecycle_shadow_log rows are a distinct observer population from intraday_advisory; this repair prevents future novelty and saturation counts from sharing the wrong data_source.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_observer",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "intraday_advisory",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "The repair is a deterministic keyword-ordering change with existing fingerprint regression tests; risk is overmatching generic exit advisory text.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "keyword overmatch steals intraday_advisory",
+      "novelty gate rejects as duplicate measurement repair",
+      "audit finds weak reflection"
+    ],
+    "recorded_at": "2026-07-10T07:11:11+00:00",
+    "success_probability": 0.88
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+    "artifact": "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+    "log": "experiments/logs/exp-20260710-008.json",
+    "runner": "quant/experiments/exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "strategy_behavior_changed": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0
+      },
+      "failed_reasons": [],
+      "acceptance_rule": "Accepted measurement repair if exit lifecycle examples resolve to exit_lifecycle, existing intraday_advisory examples remain intraday_advisory, tests pass, and no strategy/live behavior changes."
+    },
+    "headline_metrics": {
+      "checks_total": 5,
+      "checks_passed": 5,
+      "failed_checks": [],
+      "strategy_behavior_delta": 0
+    },
+    "summary": "measurement_repair_exit_lifecycle_fingerprint_coverage"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-008.json",
+  "single_causal_variable": "exit_lifecycle_fingerprint_data_source_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260710-008.json",
+  "trial_family": "exit_lifecycle_fingerprint_coverage",
+  "trial_variant_id": "exit_lifecycle_data_source_key_v1",
+  "alpha_hypothesis": "Exit lifecycle and advisory outcome rows may eventually support LLM exit scoring or risk allocation once the observer has settled forward replacement-value evidence.",
+  "implementation_mode": "fingerprint_data_source_guard_repair",
+  "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+  "artifact": "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+  "log": "experiments/logs/exp-20260710-008.json",
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "experiment_fingerprint._DATA_SOURCE_KEYWORDS",
+      "experiment_fingerprint.infer_fingerprint",
+      "exit_lifecycle",
+      "intraday_advisory"
+    ],
+    "entry_date_target_price_applicability": "Not applicable: this runner changes novelty accounting only and emits no trading signals."
+  },
+  "gate3": {
+    "passed": true,
+    "new_core_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "note": "No buy/sell/filter/ranking behavior changed."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_exit_lifecycle_fingerprint_coverage",
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "failed_reasons": [],
+    "acceptance_rule": "Accepted measurement repair if exit lifecycle examples resolve to exit_lifecycle, existing intraday_advisory examples remain intraday_advisory, tests pass, and no strategy/live behavior changes."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "ranking_sizing_exits_changed": false,
+    "novelty_guard_accounting_changed": true,
+    "daily_snapshot_exposed": false,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The fingerprint keyword table had intraday advisory shadow action coverage but no dedicated exit_lifecycle key, so lifecycle rows and future exit/advisory outcome probes could share the wrong saturation population.",
+    "forbidden_near_neighbor_retry": "Do not use this repair as alpha evidence. Do not run exit lifecycle policy, LLM exit-scoring, threshold, or response curve experiments until the observer has settled forward replacement-value rows or another legal evidence axis.",
+    "new_evidence_required": "A future exit-lifecycle alpha needs settled forward rows under this repaired data_source, a distinct gate shape, or a new PIT field; fingerprint coverage alone is not signal."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+    "experiments/logs/exp-20260710-008.json",
+    "experiments/cards/exp-20260710-008.md",
+    "experiments/manifests/exp-20260710-008.json",
+    "experiments/tickets/exp-20260710-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/experiments/exp-20260710-008/exp_20260710_008_exit_lifecycle_fingerprint_coverage.json",
+    "experiments/logs/exp-20260710-008.json",
+    "experiments/cards/exp-20260710-008.md",
+    "experiments/manifests/exp-20260710-008.json",
+    "experiments/tickets/exp-20260710-008.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\experiment_fingerprint.py quant\\test_experiment_fingerprint.py quant\\experiments\\exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_008_exit_lifecycle_fingerprint_coverage.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T07:15:43+00:00"
+}

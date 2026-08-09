@@ -195,10 +195,21 @@ _filter_installed = False
 def install_yf_log_filter() -> None:
     """Attach the recorder to the ``yfinance`` logger (idempotent)."""
     global _filter_installed
-    if _filter_installed:
+    yf_logger = logging.getLogger("yfinance")
+    yf_logger.disabled = False
+    if yf_logger.level == logging.NOTSET or yf_logger.level > logging.ERROR:
+        yf_logger.setLevel(logging.ERROR)
+    if _filter_installed and any(
+        isinstance(existing, _FundamentalsMissingFilter)
+        for existing in yf_logger.filters
+    ):
         return
     with _lock:
-        if _filter_installed:
+        if any(
+            isinstance(existing, _FundamentalsMissingFilter)
+            for existing in yf_logger.filters
+        ):
+            _filter_installed = True
             return
-        logging.getLogger("yfinance").addFilter(_FundamentalsMissingFilter())
+        yf_logger.addFilter(_FundamentalsMissingFilter())
         _filter_installed = True

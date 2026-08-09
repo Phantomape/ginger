@@ -1,0 +1,538 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_018_move_relief_sma20_reentry_kill_switch.py",
+    "data/experiments/exp-20260711-018/exp_20260711_018_move_relief_sma20_reentry_kill_switch.json",
+    "experiments/cards/exp-20260711-018.md",
+    "experiments/manifests/exp-20260711-018.json",
+    "experiments/tickets/exp-20260711-018.json",
+    "experiments/logs/exp-20260711-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/move_rate_volatility_relief_kill_switch.py",
+    "quant/test_move_rate_volatility_relief_kill_switch.py",
+    "quant/run.py",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260711-018.md",
+  "causal_components": [
+    "shared paper exit helper",
+    "historical replay",
+    "daily default-off state transition",
+    "parity test",
+    "execution envelope",
+    "champion verdict"
+  ],
+  "change_type": "exit_policy_full_stack",
+  "changed_variable": "move_relief_sma20_reentry_next_open_kill_switch_v1",
+  "claimed_at": "2026-07-11T13:09:07+00:00",
+  "completed_at": "2026-07-11T13:15:50+00:00",
+  "created_at": "2026-07-11T13:08:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-018",
+  "experiment_uid": "expuid-90c2312dc0974be4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T13:08:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "move_relief_sma20_reentry_kill_switch"
+  },
+  "hypothesis": "exit/full_stack: for the accepted MOVE rate-volatility relief shared paper sleeve, the first MOVE close back above the unchanged trailing 20-session mean during an open paper position invalidates the relief thesis; exiting at the next session open should improve accepted MOVE v1 EV, PnL, and drawdown without window regression.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "move_relief_sma20_reentry_next_open_kill_switch_v1"
+  ],
+  "mechanism_family": "production_visible_rate_volatility_relief_exit_policy",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260711-004",
+    "exp-20260711-015"
+  ],
+  "new_evidence_type": "new_gate_shape_exit_kill_switch",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "above",
+        "accepted",
+        "an",
+        "any",
+        "at",
+        "back",
+        "canonical",
+        "close",
+        "drawdown",
+        "during",
+        "ev",
+        "exit",
+        "exiting",
+        "first",
+        "full",
+        "improve",
+        "invalidates",
+        "kill",
+        "mean",
+        "move",
+        "overlay",
+        "pnl",
+        "position",
+        "rate",
+        "reentry",
+        "regression",
+        "session",
+        "should",
+        "sleeve",
+        "sma20",
+        "stack",
+        "switch",
+        "that",
+        "thesis",
+        "trailing",
+        "unchanged",
+        "volatility",
+        "window",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_shared_paper_candidate_pool",
+        "reopen_condition": "Live review requires at least 30 closed prospective rows, positive cash/SPY/QQQ replacement value, concentration control, and kill-switch parity; routine daily materialization uses run.py and needs no new experiment ID.",
+        "score": 0.0364,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "accepted_sleeve_admission_fire_rate_autopsy",
+        "reopen_condition": "For each underfiring sleeve, capture a representative historical replay admission day and compare the shared helper's daily context inputs to the backtest admission inputs, then repair only a proven production/backtest measurement drift.",
+        "score": 0.0286,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "fixed_entry_exit_oracle_full_trade_rows",
+        "reopen_condition": "A valid exit-policy alpha retry now needs a shared production/backtest exit helper using only pre-exit fields, or prospective shadow exit advisory rows with settled replacement value. Oracle exit dates/prices remain future-only labels.",
+        "score": 0.0279,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_sector_priority_ranking",
+        "reopen_condition": "A retry requires at least 30 closed prospective MOVE rows with sector-aware replacement value, a genuinely new issuer-duration field, or a different ranking gate justified before observing outcomes.",
+        "score": 0.0279,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially settled prospective rows from a fixed shared helper if this is a lead, or a genuinely different publication-timed housing demand/permit/mortgage-application source if rejected.",
+        "score": 0.0273,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: a paper-only lifecycle kill switch using the exact opposite MOVE20 first-cross-above invalidation event and next-session-open exit on the accepted MOVE v1 positions; entry trigger, candidate eligibility, ranking, top-2 budget, notional, costs, and SMA span remain locked.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: a paper-only lifecycle kill switch using the exact opposite MOVE20 first-cross-above invalidation event and next-session-open exit on the accepted MOVE v1 positions; entry trigger, candidate eligibility, ranking, top-2 budget, notional, costs, and SMA span remain locked.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: a paper-only lifecycle kill switch using the exact opposite MOVE20 first-cross-above invalidation event and next-session-open exit on the accepted MOVE v1 positions; entry trigger, candidate eligibility, ranking, top-2 budget, notional, costs, and SMA span remain locked.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "winner_truncation",
+      "whipsaw_exit",
+      "window_regression",
+      "champion_not_beaten"
+    ],
+    "confidence_reason": "The fixed accepted MOVE relief sleeve has 49 trades across all canonical windows, and a no-outcome trigger-count preflight found 30 positions exposed to the exact opposite first-cross-above invalidation event. The mechanism is coherent but odds remain modest because rapid rate-volatility normalization can whipsaw and early exits may truncate the sleeve's convex winners.",
+    "recorded_at": "2026-07-11T13:07:55+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "decision": "rejected_move_relief_kill_switch",
+    "artifact": "data/experiments/exp-20260711-018/exp_20260711_018_move_relief_sma20_reentry_kill_switch.json",
+    "champion_gate": {
+      "passed": false,
+      "decision": "rejected_move_relief_kill_switch",
+      "failed_reasons": [
+        "accepted_move_v1_window_regression",
+        "accepted_move_v1_material_ev_not_beaten",
+        "accepted_move_v1_material_pnl_not_beaten"
+      ],
+      "champion_experiment_id": "exp-20260711-004",
+      "by_window": {
+        "late_strong": {
+          "champion_ev": 5.249,
+          "challenger_ev": 5.177,
+          "ev_delta": -0.072,
+          "champion_pnl": 118218.95,
+          "challenger_pnl": 117661.19,
+          "pnl_delta": -557.76,
+          "passed": false
+        },
+        "mid_weak": {
+          "champion_ev": 2.3036,
+          "challenger_ev": 2.1812,
+          "ev_delta": -0.1224,
+          "champion_pnl": 81404.22,
+          "challenger_pnl": 79031.78,
+          "pnl_delta": -2372.44,
+          "passed": false
+        },
+        "old_thin": {
+          "champion_ev": 0.6759,
+          "challenger_ev": 0.6974,
+          "ev_delta": 0.0215,
+          "champion_pnl": 42776.72,
+          "challenger_pnl": 43591.9,
+          "pnl_delta": 815.18,
+          "passed": true
+        }
+      },
+      "changed_trades_by_window": {
+        "late_strong": 8,
+        "mid_weak": 18,
+        "old_thin": 4
+      },
+      "changed_trade_count": 30,
+      "champion_aggregate": {
+        "expected_value_score": 8.2285,
+        "total_pnl": 242399.89,
+        "max_drawdown_pct": 0.111
+      },
+      "challenger_aggregate": {
+        "expected_value_score": 8.0556,
+        "total_pnl": 240284.87,
+        "max_drawdown_pct": 0.1112
+      },
+      "aggregate_ev_delta_vs_champion": -0.1729,
+      "aggregate_pnl_delta_vs_champion": -2115.02,
+      "minimum_ev_improvement": 0.03344,
+      "minimum_pnl_improvement": 754.89,
+      "drawdown_worse_vs_champion": 0.0002,
+      "max_drawdown_worse": 0.005
+    },
+    "calibration": {
+      "predicted_success_probability": 0.3,
+      "actual_success": false,
+      "brier_score": 0.09,
+      "predicted_failure_modes": [
+        "winner_truncation",
+        "whipsaw_exit",
+        "window_regression",
+        "champion_not_beaten"
+      ],
+      "predicted_failure_modes_hit": [
+        "accepted_move_v1_window_regression",
+        "accepted_move_v1_material_ev_not_beaten",
+        "accepted_move_v1_material_pnl_not_beaten"
+      ],
+      "realized_failure_mode": "accepted_move_v1_window_regression"
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-018.json",
+  "single_causal_variable": "move_relief_sma20_reentry_next_open_kill_switch_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260711-018.json",
+  "trial_family": "move_rate_volatility_relief_kill_switch",
+  "trial_variant_id": "move_relief_sma20_reentry_next_open_kill_switch_v1",
+  "timestamp": "2026-07-11T13:14:31Z",
+  "decision": "rejected_move_relief_kill_switch",
+  "accepted": false,
+  "accepted_alpha": false,
+  "implementation_mode": "shared_paper_first_conditional_on_champion_gate",
+  "new_evidence_axis": "New gate shape: a paper-only lifecycle kill switch using the exact opposite MOVE20 first-cross-above invalidation event and next-session-open exit; entry trigger, eligibility, ranking, top-2 budget, notional, costs, and SMA span remain locked.",
+  "champion_gate": {
+    "passed": false,
+    "decision": "rejected_move_relief_kill_switch",
+    "failed_reasons": [
+      "accepted_move_v1_window_regression",
+      "accepted_move_v1_material_ev_not_beaten",
+      "accepted_move_v1_material_pnl_not_beaten"
+    ],
+    "champion_experiment_id": "exp-20260711-004",
+    "by_window": {
+      "late_strong": {
+        "champion_ev": 5.249,
+        "challenger_ev": 5.177,
+        "ev_delta": -0.072,
+        "champion_pnl": 118218.95,
+        "challenger_pnl": 117661.19,
+        "pnl_delta": -557.76,
+        "passed": false
+      },
+      "mid_weak": {
+        "champion_ev": 2.3036,
+        "challenger_ev": 2.1812,
+        "ev_delta": -0.1224,
+        "champion_pnl": 81404.22,
+        "challenger_pnl": 79031.78,
+        "pnl_delta": -2372.44,
+        "passed": false
+      },
+      "old_thin": {
+        "champion_ev": 0.6759,
+        "challenger_ev": 0.6974,
+        "ev_delta": 0.0215,
+        "champion_pnl": 42776.72,
+        "challenger_pnl": 43591.9,
+        "pnl_delta": 815.18,
+        "passed": true
+      }
+    },
+    "changed_trades_by_window": {
+      "late_strong": 8,
+      "mid_weak": 18,
+      "old_thin": 4
+    },
+    "changed_trade_count": 30,
+    "champion_aggregate": {
+      "expected_value_score": 8.2285,
+      "total_pnl": 242399.89,
+      "max_drawdown_pct": 0.111
+    },
+    "challenger_aggregate": {
+      "expected_value_score": 8.0556,
+      "total_pnl": 240284.87,
+      "max_drawdown_pct": 0.1112
+    },
+    "aggregate_ev_delta_vs_champion": -0.1729,
+    "aggregate_pnl_delta_vs_champion": -2115.02,
+    "minimum_ev_improvement": 0.03344,
+    "minimum_pnl_improvement": 754.89,
+    "drawdown_worse_vs_champion": 0.0002,
+    "max_drawdown_worse": 0.005
+  },
+  "gate1": {
+    "passed": true,
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "ICE BofA MOVE daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+    "failed_reasons": [],
+    "aggregate_ev_delta": 0.1615,
+    "aggregate_pnl_delta": 5433.88,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0,
+    "target_trade_count": 49,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.307554,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.1371,
+      "positive_pnl_hhi_guardrail": 0.35
+    }
+  },
+  "calibration": {
+    "predicted_success_probability": 0.3,
+    "actual_success": false,
+    "brier_score": 0.09,
+    "predicted_failure_modes": [
+      "winner_truncation",
+      "whipsaw_exit",
+      "window_regression",
+      "champion_not_beaten"
+    ],
+    "predicted_failure_modes_hit": [
+      "accepted_move_v1_window_regression",
+      "accepted_move_v1_material_ev_not_beaten",
+      "accepted_move_v1_material_pnl_not_beaten"
+    ],
+    "realized_failure_mode": "accepted_move_v1_window_regression"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "default_off_move_rate_volatility_relief_paper_kill_switch"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The opposite MOVE20 cross was not a reliable thesis invalidation event; it truncated winners or whipsawed too late to beat the accepted fixed-horizon sleeve.",
+    "forbidden_near_neighbor_retry": "Do not retry MOVE exit thresholds, SMA spans, persistence, grace days, close-versus-open execution, partial exits, or response curves on these rows.",
+    "new_evidence_required": "Reopen only with at least 30 closed prospective MOVE rows carrying lifecycle signals, or a genuinely different publication-timed rate-volatility invalidation source."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260711_018_move_relief_sma20_reentry_kill_switch.py",
+    "data/experiments/exp-20260711-018/exp_20260711_018_move_relief_sma20_reentry_kill_switch.json",
+    "experiments/tickets/exp-20260711-018.json",
+    "experiments/cards/exp-20260711-018.md",
+    "experiments/manifests/exp-20260711-018.json",
+    "experiments/logs/exp-20260711-018.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_018_move_relief_sma20_reentry_kill_switch.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "fingerprint_caveat": "Reservation initially classified this source/shape as other; the same experiment adds move_relief and exit_kill_switch coverage.",
+  "artifact": "data/experiments/exp-20260711-018/exp_20260711_018_move_relief_sma20_reentry_kill_switch.json",
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T13:15:50+00:00"
+}

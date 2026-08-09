@@ -1,0 +1,419 @@
+{
+  "acceptance_rule": "Same current schema-v1 baseline/challenger; aggregate EV and PnL positive, no window EV/PnL regression, at least 20 paper trades across 3 windows, survival >=5%, drawdown drift <=0.5pp, concentration pass, and current-schema accepted comparators required before any acceptance",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_011_accruals_cash_conversion_schema_v1.py",
+    "data/experiments/exp-20260712-011/exp_20260712_011_accruals_cash_conversion_schema_v1.json",
+    "experiments/cards/exp-20260712-011.md",
+    "experiments/manifests/exp-20260712-011.json",
+    "experiments/tickets/exp-20260712-011.json",
+    "experiments/logs/exp-20260712-011.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260712-006/current_working_stack_sharpe_inference.json",
+  "card_file": "experiments/cards/exp-20260712-011.md",
+  "causal_components": [
+    "unchanged PIT Companyfacts accruals policy",
+    "unchanged OHLCV selector",
+    "current-code canonical baseline",
+    "schema-v1 daily paper MTM",
+    "Gate 1-4 revalidation",
+    "shared-helper retention only if numeric Gate 4 passes"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "unchanged_accruals_cash_conversion_quality_v1_under_schema_v1_daily_mtm",
+  "claimed_at": "2026-07-12T14:12:17+00:00",
+  "completed_at": "2026-07-12T14:23:04+00:00",
+  "created_at": "2026-07-12T14:11:54+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260712-011",
+  "experiment_uid": "expuid-8b8e3888d2ad4c6a",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-011",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T14:11:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accruals_cash_conversion_schema_v1"
+  },
+  "hypothesis": "candidate_pool/protocol revalidation: the unchanged annual accruals and cash-conversion quality source may retain positive all-window after-cost value without violating drawdown when measured by the corrected schema-v1 daily MTM equity curve.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "MIN_CASH_CONVERSION",
+    "MAX_ACCRUALS_TO_ASSETS",
+    "MAX_ANNUAL_FACT_AGE_DAYS",
+    "MIN_PRICE",
+    "MIN_AVG_DOLLAR_VOLUME_20D",
+    "MIN_RET20_EXCESS_SPY",
+    "MIN_RET60_EXCESS_SPY",
+    "MIN_SIGNAL_RETURN",
+    "MAX_SIGNAL_RETURN",
+    "MIN_CLOSE_LOCATION",
+    "MAX_REALIZED_VOL_20D",
+    "BASE_NOTIONAL_USD",
+    "HOLD_DAYS",
+    "MAX_PAPER_TRADES_PER_DAY",
+    "SAME_TICKER_COOLDOWN_DAYS"
+  ],
+  "mechanism_family": "production_visible_free_sec_companyfacts_quality_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/run.py",
+    "live orders",
+    "core policy",
+    "accrual thresholds",
+    "price thresholds",
+    "top-N",
+    "hold",
+    "cooldown",
+    "notional"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260614-020",
+    "exp-20260614-021",
+    "exp-20260614-023",
+    "exp-20260712-006"
+  ],
+  "new_evidence_type": "corrected_gate_shape_schema_v1_daily_mtm",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "score": 0.6182,
+        "status": "frozen_rejected",
+        "trials": 11
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "portfolio_covariance_lane_gate_calibration",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "portfolio_covariance_lane",
+      "field_tags": [
+        "5pp",
+        "accruals",
+        "all",
+        "annual",
+        "bundle",
+        "cash",
+        "companyfacts",
+        "conversion",
+        "corrected",
+        "curve",
+        "daily",
+        "drawdown",
+        "equity",
+        "ev",
+        "exp",
+        "guard",
+        "longer",
+        "mark",
+        "market",
+        "may",
+        "mtm",
+        "no",
+        "pnl",
+        "positive",
+        "protocol",
+        "retain",
+        "revalidation",
+        "schema",
+        "should",
+        "to",
+        "top",
+        "unchanged",
+        "under",
+        "violate",
+        "window"
+      ],
+      "gate_shape": "portfolio_daily_equity_overlay"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_daily_equity_overlay",
+        "reopen_condition": "A shared default-off helper or activation-envelope Gate 1-4 that implements a fixed portfolio lane, materially new ranked candidate families with replayable daily-equity paths, or fresh closed forward replacement-value rows for the unchanged peer earnings reaction source.",
+        "score": 0.6182,
+        "status": "frozen_rejected",
+        "trials": 11
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_candidate_ranking",
+        "reopen_condition": "A valid next experiment needs a true daily mark-to-market equity replay for the ranked overlay families, or materially new rejected-positive candidate families with replayable trade rows; changing overlay weight, correlation thresholds, or source thresholds is not new evidence.",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "portfolio_covariance_lane",
+        "family_key": "portfolio_covariance_lane_gate_calibration",
+        "reopen_condition": "One of: (1) owner-level revision of the lane acceptance clause adding a portfolio-level window materiality threshold and a bar reachable under the 10% weight cap, after which a single batch experiment may re-judge all 31 representatives reusing the materialized daily-equity paths; (2) a new rejected-positive candidate family with standalone aggregate EV within ~1x of the champion (~10.6 daily-mtm ",
+        "score": 0.6,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "accruals_cash_conversion_improvement_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially richer PIT earnings-quality evidence such as quarterly same-period operating-cash-flow accruals, analyst-count/dispersion confirmation, or closed forward replacement rows; do not sweep the current/prior improvement, static accruals, price-confirmation, top-N, hold, cooldown, or notional thresholds.",
+        "score": 0.0571,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "accruals_cash_conversion_quality_candidate_pool",
+        "reopen_condition": "The positive-EV-but-drawdown-failing readout means the next valid test is a DIFFERENT decision hypothesis: a drawdown-aware deployment of this quality source (concurrent-position cap, per-name protective stop, or a risk-budgeted sub-sleeve) sized to the accepted comparators, or a sharper quality discriminator (PIT TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when repor",
+        "score": 0.0571,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: exp-20260712-006 replaced the archived equity-curve measurement with schema-v1 dated daily MTM, including open paper positions and final liquidation costs; archived Sharpe/EV/drawdown are explicitly non-comparable, so this is an unchanged-policy protocol revalidation, not a field, threshold, response, or sizing retune.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "portfolio_covariance_lane",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: exp-20260712-006 replaced the archived equity-curve measurement with schema-v1 dated daily MTM, including open paper positions and final liquidation costs; archived Sharpe/EV/drawdown are explicitly non-comparable, so this is an unchanged-policy protocol revalidation, not a field, threshold, response, or sizing retune.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: exp-20260712-006 replaced the archived equity-curve measurement with schema-v1 dated daily MTM, including open paper positions and final liquidation costs; archived Sharpe/EV/drawdown are explicitly non-comparable, so this is an unchanged-policy protocol revalidation, not a field, threshold, response, or sizing retune.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "portfolio_daily_equity_overlay",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "portfolio_covariance_lane",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.16,
+    "expected_ev_delta": 0.6,
+    "expected_pnl_delta": 18000.0,
+    "main_failure_modes": [
+      "drawdown_drift_persists",
+      "current_mtm_reveals_window_regression",
+      "accruals_relabels_momentum",
+      "current_schema_comparator_not_beaten"
+    ],
+    "confidence_reason": "The unchanged prior policy added about $21.3k with positive EV/PnL in all three windows and failed only drawdown. The signal is credible, but its broad 369-trade deployment likely remains too risky after the schema-v1 MTM repair.",
+    "recorded_at": "2026-07-12T14:11:12+00:00"
+  },
+  "prior_trial_count": 3,
+  "result": {
+    "decision": "rejected_accruals_cash_conversion_schema_v1_revalidation",
+    "accepted": false,
+    "numeric_gate4_passed": false,
+    "artifact": "data/experiments/exp-20260712-011/exp_20260712_011_accruals_cash_conversion_schema_v1.json",
+    "log": "experiments/logs/exp-20260712-011.json",
+    "aggregate_expected_value_delta": 0.786046,
+    "aggregate_strategy_total_pnl_delta": 21322.65,
+    "gate4": {
+      "passed": false,
+      "decision": "rejected_accruals_cash_conversion_schema_v1_revalidation",
+      "failed_reasons": [
+        "window_ev_regression",
+        "fewer_than_two_ev_improved_windows",
+        "drawdown_drift_too_high"
+      ],
+      "aggregate_ev_delta": 0.786046,
+      "aggregate_pnl_delta": 21322.65,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 369,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.040267,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7885,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.18437,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.124207,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "accepted_compression_comparator": {
+        "experiment_id": "exp-20260608-013",
+        "decision": "accepted_narrow_range_compression_breakout_shared_default_off_adapter",
+        "aggregate_expected_value_delta": 0.1608,
+        "aggregate_pnl_delta": 2248.98
+      },
+      "accepted_distribution_comparator": {
+        "experiment_id": "exp-20260611-007",
+        "decision": "accepted_paper_pending_forward_distribution_day_absorption_leadership_shared_adapter",
+        "aggregate_expected_value_delta": 0.5286,
+        "aggregate_pnl_delta": 10432.91
+      },
+      "accepted_comparator_protocol": {
+        "legacy_ev_comparators_excluded": [
+          "accepted_compression_ev_not_beaten",
+          "accepted_distribution_ev_not_beaten"
+        ],
+        "pnl_comparators_retained": true,
+        "current_schema_ev_comparator_required_before_acceptance": true
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.16,
+      "actual_gate4_passed": false,
+      "actual_success": false,
+      "expected_ev_delta": 0.6,
+      "actual_ev_delta": 0.786046,
+      "expected_pnl_delta": 18000.0,
+      "actual_pnl_delta": 21322.65,
+      "predicted_failure_modes": [
+        "drawdown_drift_persists",
+        "current_mtm_reveals_window_regression",
+        "accruals_relabels_momentum",
+        "current_schema_comparator_not_beaten"
+      ],
+      "predicted_failure_mode_hit": true,
+      "brier_score": 0.0256
+    },
+    "production_impact": {
+      "trade_enabled": false,
+      "alters_orders": false,
+      "adapter_status": "protocol_revalidation_no_policy_retained_unless_numeric_gate4_passes",
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": true,
+      "default_off_paper_only": true,
+      "daily_snapshot_exposed": false,
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "production_orders_changed": false,
+      "production_watchlist_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_exits": false,
+      "uses_llm": false,
+      "uses_free_sec_companyfacts": true,
+      "uses_free_ohlcv": true,
+      "live_realism_evaluated": true,
+      "live_ready": false,
+      "execution_envelope": {
+        "trade_enabled": false,
+        "target_notional_per_paper_trade": 4000.0,
+        "daily_entry_slots": 1,
+        "same_ticker_cooldown_days": 10,
+        "hold_days": 10,
+        "liquidity_source": "price >= $10 and ADV20 >= $50M from PIT OHLCV",
+        "order_semantics": "observe-only next-session-open paper entry; no broker order",
+        "portfolio_displacement": "none unless a later shared helper and activation gate pass",
+        "kill_switch": "trade_enabled remains false; no production adapter changes",
+        "failure_handling": "missing annual net_income/operating_cash_flow on a matching fiscal year end, missing assets, missing OHLCV, missing next open, or missing 10d exit rejects the paper candidate"
+      },
+      "parity_note": "The policy is unchanged and experiment-local. A numeric pass remains only a positive replay lead until a current-schema accepted comparator and the unchanged shared historical/daily helper are present."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The corrected schema-v1 daily MTM replay still rejected the unchanged accruals bundle (failed: window_ev_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high).",
+      "outcome_summary": "Schema-v1 aggregate EV delta +0.7860; PnL delta $+21,322.65; max drawdown drift +0.0403; 369 paper trades.",
+      "forbidden_near_neighbor_retry": "Do not retry accrual thresholds, cash-conversion ratios, annual freshness, price/RS/volume/volatility gates, top-N, hold, cooldown, notional, stops, or another measurement wrapper on these windows.",
+      "new_evidence_required": "Reopen only with PIT TTM/quarterly same-period accrual change, materially settled forward replacement rows, or (if numeric pass) the unchanged shared helper plus a current-schema accepted comparator."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-011.json",
+  "single_causal_variable": "unchanged_accruals_cash_conversion_quality_v1_under_schema_v1_daily_mtm",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260712-011.json",
+  "trial_family": "accruals_cash_conversion_quality_schema_v1_revalidation",
+  "trial_variant_id": "unchanged_annual_accruals_top1_10d_schema_v1",
+  "decision": "rejected_accruals_cash_conversion_schema_v1_revalidation",
+  "summary": "The corrected schema-v1 daily MTM replay still rejected the unchanged accruals bundle (failed: window_ev_regression, fewer_than_two_ev_improved_windows, drawdown_drift_too_high).",
+  "artifact": "data/experiments/exp-20260712-011/exp_20260712_011_accruals_cash_conversion_schema_v1.json",
+  "log": "experiments/logs/exp-20260712-011.json",
+  "aggregate_expected_value_delta": 0.786046,
+  "aggregate_strategy_total_pnl_delta": 21322.65,
+  "updated_at": "2026-07-12T14:23:04+00:00"
+}

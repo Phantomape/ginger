@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sqlite3
 import statistics
 import sys
 from collections import Counter, defaultdict
@@ -27,6 +28,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from data_paths import resolve_daily_artifact_path  # noqa: E402
+from ohlcv_warehouse import connect_overlay_reader, overlay_reader_status  # noqa: E402
 
 EXPERIMENT_ID = "exp-20260507-091"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
@@ -531,6 +533,99 @@ def _load_ohlcv_snapshot(path: str | Path | None) -> dict[str, list[dict[str, An
     return out
 
 
+def _load_ohlcv_warehouse(
+    path: str | Path | None,
+    *,
+    tickers: set[str] | None = None,
+    diagnostics: dict[str, Any] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    if not path:
+        return {}
+    source = _repo_path(path)
+    if not source.exists():
+        return {}
+
+    selected_tickers = None
+    if tickers is not None:
+        selected_tickers = sorted({
+            normalize_ticker(ticker)
+            for ticker in tickers
+            if ticker
+        })
+        if not selected_tickers:
+            return {}
+    out: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    base_query = (
+        "select ticker, date, open, high, low, close, volume "
+        "from ohlcv_overlay"
+    )
+    try:
+        conn = connect_overlay_reader(source)
+        try:
+            conn.row_factory = sqlite3.Row
+            if diagnostics is not None:
+                diagnostics.update(overlay_reader_status(conn))
+                diagnostics["reader"] = "ohlcv_overlay"
+            if selected_tickers:
+                for start in range(0, len(selected_tickers), 900):
+                    chunk = selected_tickers[start : start + 900]
+                    placeholders = ",".join("?" for _ in chunk)
+                    query = (
+                        f"{base_query} where ticker in ({placeholders}) "
+                        "order by ticker, date"
+                    )
+                    rows = conn.execute(query, chunk)
+                    for row in rows:
+                        ticker = normalize_ticker(row["ticker"])
+                        out[ticker].append({
+                            "date": row["date"],
+                            "open": row["open"],
+                            "high": row["high"],
+                            "low": row["low"],
+                            "close": row["close"],
+                            "volume": row["volume"],
+                        })
+            else:
+                rows = conn.execute(f"{base_query} order by ticker, date")
+                for row in rows:
+                    ticker = normalize_ticker(row["ticker"])
+                    out[ticker].append({
+                        "date": row["date"],
+                        "open": row["open"],
+                        "high": row["high"],
+                        "low": row["low"],
+                        "close": row["close"],
+                        "volume": row["volume"],
+                    })
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return {}
+    return dict(out)
+
+
+def _load_ohlcv_inputs(
+    snapshot_path: str | Path | None,
+    warehouse_path: str | Path | None,
+    *,
+    tickers: set[str] | None = None,
+    warehouse_diagnostics: dict[str, Any] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    snapshot_rows = _load_ohlcv_snapshot(snapshot_path)
+    warehouse_rows = _load_ohlcv_warehouse(
+        warehouse_path,
+        tickers=tickers,
+        diagnostics=warehouse_diagnostics,
+    )
+    if not snapshot_rows:
+        return warehouse_rows
+    if not warehouse_rows:
+        return snapshot_rows
+    combined = dict(snapshot_rows)
+    combined.update(warehouse_rows)
+    return combined
+
+
 def _close(row: dict[str, Any]) -> float | None:
     return _float(row.get("Close") if row.get("Close") is not None else row.get("close"))
 
@@ -727,6 +822,43 @@ def _collection_quality_gate(
     }
 
 
+def refresh_collection_quality_gate(
+    *,
+    chain_dir: str | Path = DEFAULT_CHAIN_DIR,
+    output_dir: str | Path = "data/non_ohlcv/options_forward",
+    min_liquidity_pass_rate: float = DEFAULT_MIN_LIQUIDITY_PASS_RATE,
+    min_liquid_tickers: int = DEFAULT_MIN_LIQUID_TICKERS,
+    min_market_rows_rate: float = DEFAULT_MIN_MARKET_ROWS_RATE,
+) -> dict[str, Any]:
+    """Rebuild only ``options_collection_quality_gate.json`` from local chain files.
+
+    The daily pipeline builds paper sleeves before the full forward-ledger
+    refresh, so the sleeve-facing quality gate must be recomputed first or the
+    current quote date is always missing at sleeve build time
+    (exp-20260725-004). Thresholds and the writer are identical to
+    ``build_ledger``; this never touches the ledger, report, or quarantine
+    artifacts, and the end-of-run full refresh rewrites the same file from the
+    same inputs.
+    """
+    chain_files = discover_chain_files(_repo_path(chain_dir), None)
+    _, option_diagnostics = load_option_rows(chain_files)
+    gate = _collection_quality_gate(
+        option_diagnostics,
+        min_liquidity_pass_rate=min_liquidity_pass_rate,
+        min_liquid_tickers=min_liquid_tickers,
+        min_market_rows_rate=min_market_rows_rate,
+    )
+    quality_gate_path = _repo_path(output_dir) / "options_collection_quality_gate.json"
+    _write_json(quality_gate_path, gate)
+    return {
+        "quality_gate_path": _repo_rel(quality_gate_path),
+        "chain_file_count": len(chain_files),
+        "quote_dates": sorted((gate.get("by_quote_date") or {}).keys()),
+        "usable_quote_dates": gate.get("usable_quote_dates", []),
+        "quarantined_quote_dates": gate.get("quarantined_quote_dates", []),
+    }
+
+
 def _liquidity_anomaly_report(option_diagnostics: dict[str, Any]) -> dict[str, Any]:
     report: dict[str, Any] = {}
     for quote_date, payload in (option_diagnostics.get("by_quote_date") or {}).items():
@@ -883,10 +1015,9 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
         min_market_rows_rate=args.min_market_rows_rate,
     )
     quote_dates = sorted({key[0] for key in option_rows_by_key})
-    ohlcv = _load_ohlcv_snapshot(args.ohlcv_snapshot)
 
-    ledger_rows: list[dict[str, Any]] = []
-    candidate_diagnostics: dict[str, Any] = {}
+    candidate_payloads: dict[str, dict[str, Any]] = {}
+    candidate_tickers: set[str] = set()
     for quote_date in quote_dates:
         candidate_join_date = _candidate_join_date_for_quote(
             quote_date,
@@ -896,6 +1027,30 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
         date_tag = candidate_join_date.replace("-", "")
         signal_file = _quant_signal_path(args.quant_signal_dir, date_tag)
         candidates, diagnostics = collect_candidates(signal_file, candidate_join_date)
+        candidate_payloads[quote_date] = {
+            "candidate_join_date": candidate_join_date,
+            "signal_file": signal_file,
+            "candidates": candidates,
+            "diagnostics": diagnostics,
+        }
+        candidate_tickers.update(candidate.get("ticker") for candidate in candidates)
+
+    ohlcv_warehouse_diagnostics: dict[str, Any] = {}
+    ohlcv = _load_ohlcv_inputs(
+        args.ohlcv_snapshot,
+        args.ohlcv_warehouse,
+        tickers=candidate_tickers,
+        warehouse_diagnostics=ohlcv_warehouse_diagnostics,
+    )
+
+    ledger_rows: list[dict[str, Any]] = []
+    candidate_diagnostics: dict[str, Any] = {}
+    for quote_date in quote_dates:
+        candidate_payload = candidate_payloads[quote_date]
+        candidate_join_date = candidate_payload["candidate_join_date"]
+        signal_file = candidate_payload["signal_file"]
+        candidates = candidate_payload["candidates"]
+        diagnostics = candidate_payload["diagnostics"]
         candidate_diagnostics[quote_date] = {
             **diagnostics,
             "options_quote_date": quote_date,
@@ -988,6 +1143,8 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
             "chain_files": option_diagnostics.get("chain_files", []),
             "quant_signal_dir": _repo_rel(args.quant_signal_dir),
             "ohlcv_snapshot": _repo_rel(args.ohlcv_snapshot) if args.ohlcv_snapshot else None,
+            "ohlcv_warehouse": _repo_rel(args.ohlcv_warehouse) if args.ohlcv_warehouse else None,
+            "ohlcv_warehouse_overlay_status": ohlcv_warehouse_diagnostics or None,
         },
         "join_policy": {
             "candidate_join_date_mode": args.candidate_join_date_mode,
@@ -1050,6 +1207,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--chain-dir", default=str(DEFAULT_CHAIN_DIR))
     parser.add_argument("--quant-signal-dir", default=str(DEFAULT_SIGNAL_DIR))
     parser.add_argument("--ohlcv-snapshot")
+    parser.add_argument(
+        "--ohlcv-warehouse",
+        help=(
+            "SQLite warehouse_main.sqlite path for settlement OHLCV. Used with "
+            "optional --ohlcv-snapshot; warehouse rows override overlapping tickers."
+        ),
+    )
     parser.add_argument(
         "--candidate-join-date-mode",
         choices=("usable_trade_date", "quote_date"),

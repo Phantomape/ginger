@@ -1,0 +1,49 @@
+{
+  "causal_components": [
+    "wrapper log identity binding",
+    "expected experiment-id write guard",
+    "manifest-hash recovery",
+    "regression test",
+    "derived-log rebuild"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260713-004 owns the repair.",
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "wrapper_experiment_log_identity_and_manifest_recovery_v1",
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "duplicate_of": "exp-20260713-004",
+  "experiment_id": "exp-20260713-005",
+  "hypothesis": "Publication fault recovery: exp-20260711-017 inherits a compact-log builder whose stale exp-20260711-002 identity overwrites the positive MOVE shard; bind wrapper log identity and restore the manifest-verified MOVE record so novelty, failure statistics, and DSR trial accounting are trustworthy without changing strategy behavior.",
+  "implementation_mode": "measurement_repair",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "duplicate_reservation_accounting",
+  "nearby_prior_experiments": [
+    "exp-20260713-004"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "next_retry_requires": [
+    "Use exp-20260713-004 as sole owner."
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement this repair under exp-20260713-005 or reserve another duplicate; exp-20260713-004 is the sole owner.",
+    "new_evidence_required": "None for this accounting ticket; follow exp-20260713-004.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The first reservation continued asynchronously after its initial novelty output; a retry reserved exp-20260713-005 before exp-20260713-004 became visible."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "duplicate_reservation_accounting",
+  "related_files": [
+    "experiments/tickets/exp-20260713-004.json"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-07-13T08:52:50+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "duplicate_of_exp_20260713_004"
+}

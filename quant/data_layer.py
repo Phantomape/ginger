@@ -310,7 +310,20 @@ def _populate_from_earnings_dates(result, dates_df, as_of_date):
         result["post_earnings_event_date"] = str(as_of_date)
 
     if "EPS Estimate" in next_row.index:
-        result["eps_estimate"] = _round_or_none(next_row.get("EPS Estimate"))
+        estimate = _round_or_none(next_row.get("EPS Estimate"))
+        if estimate is not None:
+            result["eps_estimate"] = estimate
+            # The estimate value is not meaningful without its source and the
+            # event it describes.  Persist both so a later source change (for
+            # example, earnings_dates -> info.forwardEps) cannot masquerade as
+            # an analyst revision.
+            result["eps_estimate_source"] = "yfinance.get_earnings_dates.EPS Estimate"
+            result["eps_estimate_event_date"] = str(next_date)
+            for field in ("Fiscal Quarter", "Fiscal Period", "Period Ending"):
+                raw_period = next_row.get(field)
+                if raw_period is not None and not pd.isna(raw_period):
+                    result["eps_estimate_fiscal_period"] = str(raw_period)
+                    break
 
 
 def _populate_from_calendar(result, calendar, as_of_date):
@@ -344,6 +357,10 @@ def _populate_from_info(result, info):
         value = _round_or_none(info.get(key))
         if value is not None:
             result["eps_estimate"] = value
+            result["eps_estimate_source"] = f"yfinance.info.{key}"
+            # This fallback is not event-vintaged.  The snapshot keeps the
+            # source for audit, but the revision ledger will fail closed unless
+            # an event identity is also present and stable across observations.
             return
 
 

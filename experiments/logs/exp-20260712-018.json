@@ -1,0 +1,179 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": null,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": null,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "legacy_pending_backfill_changes_paper_economics",
+      "snapshot_schema_breaks_reports",
+      "undeclared_envelope_emits_executable_size",
+      "deep_drawdown_wiring_regresses_run"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The scan found three additional snapshot schemas with pending_count but no pending_entries; these were fixed in the same repository-wide contract repair."
+  },
+  "causal_components": [
+    "shared execution-sizing schema",
+    "event pending-notional freeze",
+    "deep-drawdown output wiring",
+    "report attribution",
+    "parity tests"
+  ],
+  "change_summary": "Added a fail-closed paper-sleeve execution sizing contract across 40 daily surfaces, froze five event pending notionals at signal time, exposed three missing pending ledgers, and restored deep-drawdown output wiring.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/paper_sleeve_execution_contract.py",
+    "quant/test_paper_sleeve_execution_contract.py",
+    "quant/form4_event_sleeve.py",
+    "quant/sec_negative_event_sleeve.py",
+    "quant/sec_event_sleeve.py",
+    "quant/sec_leadership_event_sleeve.py",
+    "quant/sec_financial_report_event_sleeve.py",
+    "quant/rolling_corr_peer_shock_paper_sleeve.py",
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/sec_ftd_finra_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/experiments/exp_20260712_018_paper_sleeve_execution_sizing_contract.py",
+    "docs/production_backtest_parity.md",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "changed_variable": "default_off_paper_sleeve_execution_sizing_contract_v1",
+  "component": "quant/paper_sleeve_execution_contract.py, quant/test_paper_sleeve_execution_contract.py, quant/form4_event_sleeve.py, quant/sec_negative_event_sleeve.py, quant/sec_event_sleeve.py, quant/sec_leadership_event_sleeve.py, quant/sec_financial_report_event_sleeve.py, quant/test_form4_event_sleeve.py, quant/test_sec_negative_event_sleeve.py, quant/test_sec_event_sleeve.py, quant/test_sec_leadership_event_sleeve.py, quant/test_sec_financial_report_event_sleeve.py, quant/rolling_corr_peer_shock_paper_sleeve.py, quant/industry_relative_laggard_repair_paper_sleeve.py, quant/sec_ftd_finra_paper_sleeve.py, quant/test_rolling_corr_peer_shock_paper_sleeve.py, quant/test_industry_relative_laggard_repair_paper_sleeve.py, quant/test_sec_ftd_finra_paper_sleeve.py, quant/run.py, quant/report_generator.py, quant/experiments/exp_20260712_018_paper_sleeve_execution_sizing_contract.py, data/experiments/exp-20260712-018/exp_20260712_018_paper_sleeve_execution_sizing_contract.json, data/experiments/exp-20260712-018/before_measurement.json, data/experiments/exp-20260712-018/after_measurement.json, experiments/logs/exp-20260712-018.json, experiments/cards/exp-20260712-018.md, experiments/manifests/exp-20260712-018.json, experiments/tickets/exp-20260712-018.json, docs/production_backtest_parity.md, docs/production_backtest_parity_matrix.md, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260712-018",
+  "hypothesis": "Alpha blocker: default-off paper sleeves expose heterogeneous and sometimes late-bound paper notionals as though they were executable sizes; a shared fail-closed execution-sizing contract that freezes pending paper notional, separates paper evidence from experiment notional, and emits every built sleeve will restore trustworthy production parity without changing paper economics, core metrics, or orders.",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "passed": true
+  },
+  "gate2": {
+    "entry_date_target_price_sentinels_passed": true,
+    "paper_surface_count": 40,
+    "passed": true
+  },
+  "gate3": {
+    "minimum_survival_rate": 0.7885,
+    "passed": true
+  },
+  "gate4": {
+    "core_metrics_unchanged": true,
+    "event_pending_notional_freeze_passed": true,
+    "executable_pending_action_count": 0,
+    "passed": true
+  },
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "lean_quality_passed": true,
+  "market_regime_summary": {},
+  "mechanism_family": "default_off_paper_sleeve_execution_contract",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260612-024",
+    "exp-20260620-009"
+  ],
+  "new_evidence_type": "production_execution_contract_repair",
+  "new_evidence_axis": "New gate shape: a repository-wide fail-closed execution-sizing contract separates immutable paper evidence notional from executable experiment notional and blocks undeclared envelopes; this is not a notional threshold/scalar retune and creates no alpha exposure.",
+  "next_retry_requires": [
+    "A named sleeve with a separately tested complete execution envelope and passed forward paper gate, or a fresh contract/schema failure not covered by the 40-surface audit."
+  ],
+  "notes": "Accepted measurement repair only. Paper notionals remain evidence units; executable experiment notionals stay null unless a complete envelope, passed forward gate, and enabled trade adapter are all present. Core metrics and orders are unchanged; trade_enabled remains false.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled_false",
+      "core_order_behavior_unchanged",
+      "paper_pnl_economics_unchanged",
+      "existing_alpha_notional_rules_unchanged"
+    ],
+    "single_causal_variable": "default_off_paper_sleeve_execution_sizing_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use this repair to retune paper notionals, reinterpret paper PnL as a live amount, or activate one sleeve by merely setting trade_enabled=true.",
+    "new_evidence_required": "A sleeve may emit an executable experiment amount only after a separate Gate 1-4 activation experiment declares and measures its complete notional, capital, liquidity, slippage, displacement, order, kill-switch, and failure envelope.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The additive contract passed because it only annotates existing paper evidence, while five event adapters now freeze pending notionals before they age. The scan also found and fixed three snapshots that exposed pending_count without pending_entries."
+  },
+  "prediction": {
+    "confidence_reason": "The repair is additive and fail-closed: it preserves existing paper sizing and orders, while event pending freezes and output wiring are directly testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legacy_pending_backfill_changes_paper_economics",
+      "snapshot_schema_breaks_reports",
+      "undeclared_envelope_emits_executable_size",
+      "deep_drawdown_wiring_regresses_run"
+    ],
+    "recorded_at": "2026-07-12T23:33:17+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260712-018/before_measurement.json",
+    "data/experiments/exp-20260712-018/after_measurement.json"
+  ],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "candidate_selection_changed": false,
+    "core_metrics_changed": false,
+    "orders_changed": false,
+    "paper_notional_economics_changed": false,
+    "paper_pnl_changed": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_paper_sleeve_execution_contract.py quant\\test_form4_event_sleeve.py quant\\test_sec_negative_event_sleeve.py quant\\test_sec_event_sleeve.py quant\\test_sec_leadership_event_sleeve.py quant\\test_sec_financial_report_event_sleeve.py quant\\test_rolling_corr_peer_shock_paper_sleeve.py quant\\test_industry_relative_laggard_repair_paper_sleeve.py quant\\test_sec_ftd_finra_paper_sleeve.py quant\\test_run_daily_wiring.py quant\\test_run_intraday_wiring.py quant\\test_no_new_self_registering_runners.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_018_paper_sleeve_execution_sizing_contract.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-12T23:52:04+00:00",
+  "trial_family": "default_off_paper_sleeve_execution_contract",
+  "trial_variant_id": "fail_closed_v1"
+}

@@ -1,0 +1,351 @@
+{
+  "acceptance_rule": "Observed-only lead only if each window has >=25 unique URL events, >=3 themes overall, max theme share <=30%; pooled event-basket mean and median versus cash/SPY/QQQ are all positive; >=2/3 windows have positive means versus all three comparators; exact-URL cluster-bootstrap 95% lower bound versus cash is >0. Otherwise reject and freeze until >=50% more unique settled events or a new relation/economics source.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "data/experiments/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "experiments/logs/",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260713-002.md",
+  "causal_components": [
+    "exact-URL deduplication",
+    "unique-ticker within-event equal weighting",
+    "equal event weighting",
+    "canonical-window attribution",
+    "URL-cluster bootstrap",
+    "concentration audit"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "entity_theme_news_exact_url_event_decision_basket_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-13T05:20:43+00:00",
+  "created_at": "2026-07-13T04:47:20+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260713-002",
+  "experiment_uid": "expuid-c3eaf466b5ff4d9a",
+  "duplicate_of": "exp-20260713-001",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260713-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T04:47:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "entity_theme_news_event_decision_basket"
+  },
+  "hypothesis": "Observed-only event-decision-basket alpha: collapse settled entity_theme_news observer rows by exact URL, equal-weight each unique mapped ticker inside the URL, then equal-weight each URL event; if repeated article and multi-ticker expansion diluted a real relation edge, the fixed event basket should have positive 10-session replacement value versus cash, SPY, and QQQ across canonical windows without theme concentration.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "entity_theme_news_exact_url_event_decision_basket_v1"
+  ],
+  "mechanism_family": "production_visible_entity_theme_news_event_decision_basket",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260703-014",
+    "exp-20260705-017",
+    "exp-20260706-012",
+    "exp-20260707-013",
+    "exp-20260710-007"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "score": 0.637,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6299,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "market_state_family_replacement_value_attribution",
+        "score": 0.6286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "observed_only_attribution",
+        "score": 0.6281,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_prior_same_ticker_memory",
+        "score": 0.6226,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "a",
+        "across",
+        "alpha",
+        "article",
+        "basket",
+        "by",
+        "canonical",
+        "cash",
+        "collapse",
+        "concentration",
+        "decision",
+        "diluted",
+        "each",
+        "edge",
+        "entity",
+        "equal",
+        "event",
+        "exact",
+        "expansion",
+        "have",
+        "if",
+        "inside",
+        "mapped",
+        "multi",
+        "news",
+        "observed",
+        "observer",
+        "only",
+        "positive",
+        "qqq",
+        "real",
+        "relation",
+        "repeated",
+        "replacement",
+        "rows",
+        "session",
+        "settled",
+        "should",
+        "spy",
+        "theme",
+        "then",
+        "ticker",
+        "unique",
+        "url",
+        "value",
+        "versus",
+        "weight",
+        "windows",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "exit_lifecycle_next_open_exit_value_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows plus explicit slot-reuse/winner-collateral accounting and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.637,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6299,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "market_state_family_replacement_value_attribution",
+        "reopen_condition": null,
+        "score": 0.6286,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "observed_only_attribution",
+        "reopen_condition": "Need materially more closed forward rows after sleeve_health has longer history and real degraded/failing variation, or a separate shared-policy Gate 1-4 allocation test with a predeclared health gate.",
+        "score": 0.6281,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_prior_same_ticker_memory",
+        "reopen_condition": "Need materially more closed forward replacement rows with prior same-ticker history, or a separate shared-policy Gate 1-4 allocation test after the ledger has genuine multi-ticker prior-positive coverage.",
+        "score": 0.6226,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: event_decision_basket. Exact-URL-deduplicated event decisions equal-weight unique mapped tickers within each URL and equal-weight URLs across the portfolio; prior entity_theme_news probes evaluated expanded ledger rows/query groups and never tested this executable event-level basket structure.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: event_decision_basket. Exact-URL-deduplicated event decisions equal-weight unique mapped tickers within each URL and equal-weight URLs across the portfolio; prior entity_theme_news probes evaluated expanded ledger rows/query groups and never tested this executable event-level basket structure.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: event_decision_basket. Exact-URL-deduplicated event decisions equal-weight unique mapped tickers within each URL and equal-weight URLs across the portfolio; prior entity_theme_news probes evaluated expanded ledger rows/query groups and never tested this executable event-level basket structure.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.3,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "event_level_medians_nonpositive",
+      "window_instability",
+      "url_cluster_bootstrap_lower_bound_nonpositive",
+      "theme_concentration",
+      "current_observer_pit_caveat"
+    ],
+    "confidence_reason": "Mechanism: prior row-level means were positive, but identical Google News URLs were repeatedly observed across days and expanded across many mapped tickers; one URL should be one ex-ante event decision, so event/ticker equal weighting may recover the relation signal. Nearby evidence is five rejected entity-theme probes, making odds modest; dedup may instead reveal that prior positive means were a duplicated right tail.",
+    "recorded_at": "2026-07-13T04:46:37+00:00"
+  },
+  "prior_trial_count": 5,
+  "next_retry_requires": [
+    "Use exp-20260713-001 as the sole owner and evidence probe for this fixed event-decision-basket hypothesis; do not implement or rerun it under exp-20260713-002."
+  ],
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun the entity-theme-news exact-URL event-decision basket under exp-20260713-002 or reserve another duplicate; exp-20260713-001 is the sole owner.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened; follow the result and retry boundary recorded by exp-20260713-001.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The exp-20260713-001 reservation completed asynchronously after its first output yield, so the retry reserved exp-20260713-002 before the original ticket became visible."
+  },
+  "rejection_reason": "duplicate_reservation_accounting",
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "rejection_reason": "duplicate_reservation_accounting",
+    "before_result_file": "data/backtests/post_mtm_20260712/late_strong_exp-20260712-015.json",
+    "after_result_file": "data/backtests/post_mtm_20260712/late_strong_exp-20260712-015.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.3,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "event_level_medians_nonpositive",
+        "window_instability",
+        "url_cluster_bootstrap_lower_bound_nonpositive",
+        "theme_concentration",
+        "current_observer_pit_caveat"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "No implementation or experiment ran; this closeout only accounts for a duplicate reservation whose sole owner is exp-20260713-001."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260713-002.json",
+  "single_causal_variable": "entity_theme_news_exact_url_event_decision_basket_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260713-002.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exact_url_equal_weight_v1",
+  "updated_at": "2026-07-13T05:20:43+00:00"
+}

@@ -7,7 +7,7 @@ records before making strategy changes.
 ## Current Conclusion
 
 - Experiments: `49`
-- Accepted / rejected: `9` / `28`
+- Accepted / rejected: `9` / `40`
 - Accept rate: `18.37%`
 - Sum EV delta: `+39.8355`
 - Sum PnL delta: `$807,097.74`
@@ -50,6 +50,7 @@ records before making strategy changes.
 ## Retry Discipline
 
 - `event_source_quality_maturation` / `event_sec_governance_procedural_paper_notional_scalar`: risk `high`, guidance `freeze_nearby_retries_until_new_forward_or_field_evidence`, recent `exp-20260521-005, exp-20260521-006`.
+  Latest failure: `exp-20260521-005`
 - `event_market_state_crowding_context` / `event_crowded_leadership_context_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260522-005`.
   Latest failure: `exp-20260522-005` Best variant `crowded_leadership_context_025` changed aggregate EV by 0.4193 and PnL by 9624.57, but Gate 4 failed: EV improved/regressed windows 2/1, sample_guard_passed=True, risk_guard_passed=True.
 - `event_rotation_replacement_value_maturation` / `event_state_rank_pct_top_quartile_paper_notional_scalar`: risk `moderate`, guidance `allow_only_materially_different_discriminator`, recent `exp-20260521-004`.

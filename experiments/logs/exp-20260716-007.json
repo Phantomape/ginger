@@ -1,0 +1,123 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.1225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": 700.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "short_volume_sign_decay",
+      "source_mix_confound",
+      "one_sleeve_dominance",
+      "chronological_instability"
+    ],
+    "predicted_success_probability": 0.35,
+    "realized_failure_mode": "reopen_condition_not_met_accounting",
+    "surprise_level": "low",
+    "surprise_note": "The advisory override recognized material total-row growth, but the nearest frozen-family record exposed a stricter Q5-specific minimum that had not matured."
+  },
+  "causal_components": [
+    "fixed Q5 tag",
+    "fixed 0.75 scalar",
+    "cash hold",
+    "chronological half validation",
+    "source concentration audit"
+  ],
+  "change_summary": "Reservation accounting only: stopped before outcome access because the exact prior short-volume attribution family requires at least 20 PIT-tagged Q5 closed rows and the current ledger has only 14.",
+  "change_type": "forward_evidence_notional_scalar",
+  "changed_variable": "forward_replacement_entry_short_volume_q5_notional_075",
+  "component": "quant/experiments/exp_20260716_007_forward_short_volume_soft_tilt.py, data/experiments/exp-20260716-007/exp_20260716_007_forward_short_volume_soft_tilt.json, experiments/cards/exp-20260716-007.md, experiments/manifests/exp-20260716-007.json, experiments/tickets/exp-20260716-007.json, experiments/logs/exp-20260716-007.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-07-15",
+    "start": "2026-06-11"
+  },
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260716-007",
+  "hypothesis": "Forward-only soft short-flow notional-scalar alpha: on materially expanded settled forward rows, entry-time short-volume toxic Q5 should identify lower-quality demand; scale only Q5 decisions to 0.75 notional and hold freed capital as cash, leaving all other decisions unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "forward_short_volume_soft_tilt",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260626-018"
+  ],
+  "new_evidence_type": "materially_more_settled_forward_rows",
+  "next_retry_requires": [
+    "PIT-tagged Q5 closed rows >=20",
+    "max single-ticker share of Q5 <=40%",
+    "one frozen 0.75 cash-hold evaluation, or a genuinely new PIT borrow fee/utilization/loan-availability source"
+  ],
+  "notes": "No runner, strategy logic, soft tilt, return aggregation, or production path was executed. Generic settled-row growth (104 vs 40) did not supersede the stricter surface-specific Q5>=20 reopen condition. Reopen only when Q5 count reaches 20 and max ticker share is <=40%, then re-run one fixed 0.75 cash-hold tilt.",
+  "parameters": {
+    "locked_variables": [
+      "Q5 percentile cutoff",
+      "0.75 scalar",
+      "freed capital held as cash",
+      "104-row frozen ledger",
+      "all tagged sleeves",
+      "chronological median split"
+    ],
+    "single_causal_variable": "forward_entry_short_volume_q5_notional_075_cash_hold_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve, read outcomes, test another scalar, change the Q5 threshold, or split this same short-volume surface by source while PIT-tagged Q5 closed rows remain below 20 or one ticker exceeds 40% of Q5. Total-ledger growth alone cannot override a subtype-specific reopen condition.",
+    "new_evidence_required": "At least 20 PIT-tagged Q5 closed forward rows with max single-ticker Q5 share <=40%; then run exactly one frozen 0.75 cash-hold tilt. A genuinely new PIT borrow fee, utilization, or loan-availability source would also justify reopening.",
+    "realized_failure_mode": "reopen_condition_not_met_accounting",
+    "why_result_happened": "The advisory override recognized material total-row growth, but the nearest frozen-family record exposed a stricter Q5-specific minimum that had not matured."
+  },
+  "prediction": {
+    "confidence_reason": "The June 26 PIT tag diagnostic showed clean Q1-Q2 mean cash replacement +225 versus toxic Q5 -204 but only 37 tagged rows/Q5 n=7; the ledger now has 104 unique settled rows, 71 tagged, Q5 n=14. The main risk is nonstationary source mix rather than missing sample growth.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": 700.0,
+    "main_failure_modes": [
+      "short_volume_sign_decay",
+      "source_mix_confound",
+      "one_sleeve_dominance",
+      "chronological_instability"
+    ],
+    "recorded_at": "2026-07-16T14:10:13+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": "Exact frozen-family reopen condition was not met (PIT-tagged Q5 closed rows 14 < 20); stopped before outcome access, runner creation, or Gate 4 evaluation.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "secondary_windows": [],
+  "status": "rejected",
+  "timestamp": "2026-07-16T14:12:01+00:00",
+  "trial_family": "forward_short_volume_soft_tilt",
+  "trial_variant_id": "q5_notional_075_cash_hold_104_settled_v1"
+}

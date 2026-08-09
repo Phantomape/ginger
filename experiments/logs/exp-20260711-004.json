@@ -1,0 +1,261 @@
+{
+  "accepted": true,
+  "accepted_alpha": true,
+  "aggregate_expected_value_delta": 0.3344,
+  "aggregate_strategy_total_pnl_delta": 7548.9,
+  "artifact": "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+  "calibration": {
+    "actual_success": true,
+    "brier_score": 0.0784,
+    "predicted_failure_modes": [
+      "daily_move_data_unavailable",
+      "replay_daily_semantics_drift",
+      "baseline_identity_drift",
+      "gate4_lead_not_reproduced",
+      "run_adapter_integration_failure"
+    ],
+    "predicted_failure_modes_hit": [],
+    "predicted_success_probability": 0.72,
+    "surprise_note": "Shared promotion reproduced the private lead."
+  },
+  "causal_components": [
+    "shared MOVE rate-volatility relief helper",
+    "historical replay through shared decision functions",
+    "daily default-off state and snapshot",
+    "report and attribution wiring",
+    "focused replay/daily parity tests",
+    "declared live-realistic execution envelope"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_files": [
+    "quant/experiments/exp_20260711_004_move_rate_volatility_relief_shared_paper.py",
+    "quant/move_rate_volatility_relief_paper_sleeve.py",
+    "quant/test_move_rate_volatility_relief_paper_sleeve.py",
+    "quant/run.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/report_generator.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/paper_sleeves/move_rate_volatility_relief/**",
+    "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+    "experiments/cards/exp-20260711-004.md",
+    "experiments/manifests/exp-20260711-004.json",
+    "experiments/tickets/exp-20260711-004.json",
+    "experiments/logs/exp-20260711-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "fixed_move20_first_cross_below_rate_volatility_relief_stock_leadership_shared_default_off_v1",
+  "decision": "accepted_paper_pending_forward",
+  "experiment_id": "exp-20260711-004",
+  "full_stack_verdict": {
+    "anti_js": "No JavaScript was used.",
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.32,
+      "max_concurrent": 8,
+      "max_displacement": 0,
+      "min_dollar_volume": 50000000.0,
+      "missing": [],
+      "notes": "Top-2/day, 10-session close, 10-session ticker cooldown; activation remains disabled.",
+      "order_semantics": "default_off_next_session_open_observation_only",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 10.0
+    },
+    "gate4": {
+      "aggregate_ev_delta": 0.3344,
+      "aggregate_pnl_delta": 7548.9,
+      "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+      "failed_reasons": [],
+      "max_drawdown_worse": 0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": true,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 0.227918,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": true,
+        "positive_pnl_hhi": 0.098849,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 49,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "gate4_passed": true,
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "live_ready": false,
+    "next_step": "Accept as a default-off paper sleeve now. No new experiment is needed to reach live -- only resolve the remaining Gate-5 items as forward evidence matures: forward_rows_immature:0/30, forward_pnl_not_positive, replacement_value_not_passed, kill_switch_parity_not_passed.",
+    "verdict": "accepted_paper_pending_forward"
+  },
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "ICE BofA MOVE daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.3344,
+    "aggregate_pnl_delta": 7548.9,
+    "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+    "failed_reasons": [],
+    "max_drawdown_worse": 0.0021,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.227918,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.098849,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 49,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "Promote the fixed exp-20260711-002 MOVE rate-volatility relief stock-leadership lead into one shared default-off paper helper used identically by historical replay and the daily snapshot; the unchanged MOVE20 first-cross-below event and frozen selector should preserve the three-window after-cost EV/PnL improvement while exposing prospective forward rows without changing live orders.",
+  "implementation_mode": "shared_paper_first_promotion",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "production_visible_rate_volatility_relief_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260711-002",
+    "exp-20260607-018",
+    "exp-20260607-019"
+  ],
+  "new_evidence_axis": "New gate shape: the fixed positive private MOVE replay is now one shared-paper-first candidate source with historical replay, daily default-off state, report/attribution wiring, parity tests, execution envelope, and forward rows.",
+  "new_evidence_type": "new_gate_shape_shared_paper_first",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold, cooldown, notional, windows, or response shape.",
+    "new_evidence_required": "Live review requires at least 30 closed prospective rows, positive cash/SPY/QQQ replacement value, concentration control, and kill-switch parity; routine daily materialization uses run.py and needs no new experiment ID.",
+    "why_result_happened": "The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off."
+  },
+  "prediction": {
+    "confidence_reason": "The fixed private replay in exp-20260711-002 improved EV and PnL in all three canonical windows with 49 trades and acceptable drawdown/concentration; promotion risk is implementation and point-in-time MOVE availability rather than threshold discovery, and VIX9D plus HYG/JNK failures warn that macro-relief labels can still overlap beta.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "daily_move_data_unavailable",
+      "replay_daily_semantics_drift",
+      "baseline_identity_drift",
+      "gate4_lead_not_reproduced",
+      "run_adapter_integration_failure"
+    ],
+    "recorded_at": "2026-07-11T03:03:57+00:00",
+    "success_probability": 0.72
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "shared_default_off_move_rate_volatility_relief_paper_attribution",
+    "shared_policy_changed": true,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_move_rate_volatility_relief_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_004_move_rate_volatility_relief_shared_paper.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "fixed_move20_first_cross_below_rate_volatility_relief_stock_leadership_shared_default_off_v1",
+  "status": "accepted",
+  "timestamp": "2026-07-11T03:26:49Z",
+  "trial_family": "move_rate_volatility_relief_shared_paper_candidate_pool",
+  "trial_variant_id": "move20_cross_below_rate_volatility_relief_stock_leadership_v1"
+}

@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
+import datetime
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from us_market_calendar import is_us_equity_session, nyse_holidays
+from us_market_calendar import (
+    is_us_equity_session,
+    latest_completed_us_equity_session,
+    nyse_holidays,
+)
 
 
 def test_weekends_are_not_sessions():
@@ -54,3 +61,44 @@ def test_audit_phantom_row_dates_are_rejected():
 def test_holiday_sets_have_expected_size():
     assert len(nyse_holidays(2026)) == 10
     assert len(nyse_holidays(2025)) == 10
+
+
+def test_latest_completed_session_keeps_normal_late_evening_session():
+    as_of = datetime.datetime.fromisoformat("2026-07-30T21:00:00-04:00")
+    assert latest_completed_us_equity_session(as_of) == datetime.date(2026, 7, 30)
+
+
+def test_latest_completed_session_does_not_use_new_york_date_before_open():
+    # The failing production boundary: 04:08 UTC is already July 31 in New
+    # York, but the July 31 market session has not happened yet.
+    as_of = datetime.datetime.fromisoformat("2026-07-31T04:08:00+00:00")
+    assert latest_completed_us_equity_session(as_of) == datetime.date(2026, 7, 30)
+
+
+def test_latest_completed_session_switches_at_buffered_close():
+    before = datetime.datetime.fromisoformat("2026-08-03T16:14:59-04:00")
+    after = datetime.datetime.fromisoformat("2026-08-03T16:15:00-04:00")
+    assert latest_completed_us_equity_session(before) == datetime.date(2026, 7, 31)
+    assert latest_completed_us_equity_session(after) == datetime.date(2026, 8, 3)
+
+
+def test_latest_completed_session_walks_back_across_weekend():
+    as_of = datetime.datetime.fromisoformat("2026-08-02T20:00:00-04:00")
+    assert latest_completed_us_equity_session(as_of) == datetime.date(2026, 7, 31)
+
+
+def test_latest_completed_session_walks_back_across_observed_independence_day():
+    as_of = datetime.datetime.fromisoformat("2026-07-03T20:00:00-04:00")
+    assert latest_completed_us_equity_session(as_of) == datetime.date(2026, 7, 2)
+
+
+def test_latest_completed_session_rejects_naive_datetime():
+    with pytest.raises(ValueError, match="timezone-aware"):
+        latest_completed_us_equity_session(datetime.datetime(2026, 7, 31, 4, 8))
+
+
+def test_latest_completed_session_is_deterministic_across_restart():
+    as_of = datetime.datetime.fromisoformat("2026-07-31T04:08:00+00:00")
+    first_run = latest_completed_us_equity_session(as_of)
+    restarted_run = latest_completed_us_equity_session(as_of)
+    assert restarted_run == first_run == datetime.date(2026, 7, 30)

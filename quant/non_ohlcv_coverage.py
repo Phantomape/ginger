@@ -23,6 +23,7 @@ DEFAULT_DATA_ROOT = REPO_ROOT / "data"
 DEFAULT_NON_OHLCV_DIR = DEFAULT_DATA_ROOT / "non_ohlcv"
 MANIFEST_FILENAME = "coverage_manifest.jsonl"
 VALID_RECORD_STATUSES = {"complete", "partial", "failed"}
+FINRA_LATEST_COHORT_MIN_FRACTION = 0.5
 
 
 @dataclass(frozen=True)
@@ -254,6 +255,31 @@ def build_finra_source_coverage_record(
     setts = sorted(str(r.get("settlement_date"))[:10] for r in rows if isinstance(r, dict) and r.get("settlement_date"))
     tickers = {str(r.get("ticker")).upper() for r in rows if isinstance(r, dict) and r.get("ticker")}
     row_count = len(rows)
+    latest_settlement = setts[-1] if setts else None
+    latest_publication = pubs[-1] if pubs else None
+    latest_settlement_tickers = {
+        str(r.get("ticker")).upper()
+        for r in rows
+        if isinstance(r, dict)
+        and r.get("ticker")
+        and latest_settlement
+        and str(r.get("settlement_date"))[:10] == latest_settlement
+    }
+    latest_publication_tickers = {
+        str(r.get("ticker")).upper()
+        for r in rows
+        if isinstance(r, dict)
+        and r.get("ticker")
+        and latest_publication
+        and str(r.get("publication_date"))[:10] == latest_publication
+    }
+    latest_settlement_fraction = (
+        len(latest_settlement_tickers) / len(tickers) if tickers else 0.0
+    )
+    latest_settlement_dense = (
+        bool(tickers)
+        and latest_settlement_fraction >= FINRA_LATEST_COHORT_MIN_FRACTION
+    )
 
     trade = parse_trade_date(trade_date)
     fresh = False
@@ -263,7 +289,11 @@ def build_finra_source_coverage_record(
             fresh = (trade - newest).days <= int(max_staleness_days)
         except ValueError:
             fresh = False
-    status = "complete" if (row_count and fresh) else ("partial" if row_count else "failed")
+    status = (
+        "complete"
+        if (row_count and fresh and latest_settlement_dense)
+        else ("partial" if row_count else "failed")
+    )
 
     return {
         "schema_version": 2,
@@ -295,13 +325,35 @@ def build_finra_source_coverage_record(
             "finra_short_interest_rows": row_count,
             "finra_source_file_records": len(file_records),
             "finra_ticker_count": len(tickers),
+            "finra_latest_settlement_ticker_count": len(latest_settlement_tickers),
+            "finra_latest_publication_ticker_count": len(latest_publication_tickers),
+        },
+        "cohort_density": {
+            "latest_settlement_date": latest_settlement,
+            "latest_settlement_ticker_count": len(latest_settlement_tickers),
+            "latest_publication_date": latest_publication,
+            "latest_publication_ticker_count": len(latest_publication_tickers),
+            "archive_ticker_count": len(tickers),
+            "latest_settlement_fraction_of_archive": round(
+                latest_settlement_fraction, 6
+            ),
+            "minimum_fraction_required": FINRA_LATEST_COHORT_MIN_FRACTION,
+            "status": "dense" if latest_settlement_dense else "sparse",
         },
         "source_watermarks": {
-            "publication_date_max": pubs[-1] if pubs else None,
-            "settlement_date_max": setts[-1] if setts else None,
+            "publication_date_max": latest_publication,
+            "settlement_date_max": latest_settlement,
         },
         "pit_status": {
-            "overall": "finra_archive_fresh" if fresh else "finra_archive_stale",
+            "overall": (
+                "finra_archive_stale"
+                if not fresh
+                else (
+                    "finra_latest_cohort_sparse"
+                    if not latest_settlement_dense
+                    else "finra_archive_fresh"
+                )
+            ),
             "pit_safe": True,
             "publication_date_min": pubs[0] if pubs else None,
             "settlement_date_min": setts[0] if setts else None,

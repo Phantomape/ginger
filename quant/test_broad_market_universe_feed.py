@@ -4,6 +4,7 @@ import pandas as pd
 
 from quant.broad_market_paper_sleeve import load_broad_market_candidate_universe
 from quant.broad_market_universe_feed import generate_broad_market_paper_universe
+from quant.entry_universe_ledger import load_membership_snapshots
 from quant.industry_relative_laggard_repair_paper_sleeve import _resolve_sector_entries
 from quant.ohlcv_warehouse import upsert_ohlcv_frames
 
@@ -54,12 +55,15 @@ def _seed_warehouse(tmp_path):
 def test_feed_includes_only_fresh_sector_covered_tickers(tmp_path) -> None:
     db = _seed_warehouse(tmp_path)
     out = tmp_path / "universe.json"
+    ledger = tmp_path / "universe_membership.jsonl"
 
     payload = generate_broad_market_paper_universe(
         db_path=db,
         as_of=AS_OF,
         sector_entries=_sector_entries(),
         out_path=out,
+        ledger_path=ledger,
+        clean_cutoff=AS_OF,
     )
 
     assert payload["status"] == "generated"
@@ -73,22 +77,32 @@ def test_feed_includes_only_fresh_sector_covered_tickers(tmp_path) -> None:
     assert record["sector"] == "Technology"
     assert record["sector_coverage_status"] == "ok"
     assert record["last_ohlcv_date"] == AS_OF
+    assert payload["membership_as_of"] == AS_OF
+    assert payload["membership_hash"]
+    assert payload["membership_ledger_status"] == "appended"
+    assert load_membership_snapshots(ledger)[0]["tickers"] == ["FRESH"]
     assert out.exists()
 
 
 def test_feed_round_trips_through_loader_and_sector_resolution(tmp_path) -> None:
     db = _seed_warehouse(tmp_path)
     out = tmp_path / "universe.json"
+    ledger = tmp_path / "universe_membership.jsonl"
     generate_broad_market_paper_universe(
         db_path=db,
         as_of=AS_OF,
         sector_entries=_sector_entries(),
         out_path=out,
+        ledger_path=ledger,
+        clean_cutoff=AS_OF,
     )
 
     loaded = load_broad_market_candidate_universe(out)
     assert loaded["status"] == "loaded"
     assert loaded["tickers"] == ["FRESH"]
+    assert loaded["membership_as_of"] == AS_OF
+    assert loaded["membership_hash"]
+    assert loaded["forward_generation"] == "broad_market_clean_forward_v1"
 
     rows_by_ticker = {"FRESH": [{"date": AS_OF, "close": 10.0}]}
     resolved = _resolve_sector_entries(
@@ -108,12 +122,57 @@ def test_feed_round_trips_through_loader_and_sector_resolution(tmp_path) -> None
 def test_feed_dry_run_does_not_write(tmp_path) -> None:
     db = _seed_warehouse(tmp_path)
     out = tmp_path / "universe.json"
+    ledger = tmp_path / "universe_membership.jsonl"
     payload = generate_broad_market_paper_universe(
         db_path=db,
         as_of=AS_OF,
         sector_entries=_sector_entries(),
         out_path=out,
+        ledger_path=ledger,
+        clean_cutoff=AS_OF,
         write=False,
     )
     assert payload["tickers"] == ["FRESH"]
+    assert payload["membership_hash"]
+    assert payload["membership_ledger_status"] == "dry_run_not_persisted"
     assert not out.exists()
+    assert not ledger.exists()
+
+
+def test_feed_membership_append_is_idempotent_and_never_backfills_pre_clean(
+    tmp_path,
+) -> None:
+    db = _seed_warehouse(tmp_path)
+    ledger = tmp_path / "universe_membership.jsonl"
+    common = {
+        "db_path": db,
+        "as_of": AS_OF,
+        "sector_entries": _sector_entries(),
+        "ledger_path": ledger,
+        "clean_cutoff": AS_OF,
+    }
+
+    first = generate_broad_market_paper_universe(
+        **common,
+        out_path=tmp_path / "universe_first.json",
+    )
+    second = generate_broad_market_paper_universe(
+        **common,
+        out_path=tmp_path / "universe_second.json",
+    )
+
+    assert first["membership_ledger_status"] == "appended"
+    assert second["membership_ledger_status"] == "duplicate"
+    assert len(load_membership_snapshots(ledger)) == 1
+
+    pre_clean_ledger = tmp_path / "pre_clean_membership.jsonl"
+    pre_clean = generate_broad_market_paper_universe(
+        db_path=db,
+        as_of=AS_OF,
+        sector_entries=_sector_entries(),
+        out_path=tmp_path / "pre_clean_universe.json",
+        ledger_path=pre_clean_ledger,
+        clean_cutoff="2026-06-11",
+    )
+    assert pre_clean["membership_ledger_status"] == "pre_clean_not_persisted"
+    assert not pre_clean_ledger.exists()

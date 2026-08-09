@@ -1,0 +1,198 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.0001,
+    "max_drawdown_pct": 0.0967,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.678947,
+    "total_pnl": 236785.49,
+    "total_return_pct": 2.3679,
+    "trade_count": 304,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.2698,
+    "max_drawdown_pct": 0.0975,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.27,
+    "total_return_pct": 2.3785,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.2697,
+    "actual_pnl_delta": -1066.78,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.5697,
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "pnl_prediction_error": -5066.78,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "weekly_release_delay_erases_drift",
+      "routine_clearances_are_immaterial",
+      "parent_mapping_survivorship",
+      "ticker_concentration",
+      "accepted_comparator_not_beaten"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "routine_clearances_are_immaterial",
+    "surprise_level": "very_low",
+    "surprise_note": "Low surprise: the conservative fourteen-day public-release envelope and routine nature of 510(k) clearances left no durable risk-adjusted continuation edge."
+  },
+  "causal_components": [
+    "official releasable 510(k) records",
+    "exact public-parent mapping",
+    "Traditional clearance eligibility",
+    "14-calendar-day weekly-release envelope",
+    "one issuer-day event",
+    "10-session ticker cooldown",
+    "next-open entry",
+    "10-session close",
+    "$4k paper notional",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity test",
+    "execution envelope",
+    "Gate1-4 and DSR evidence"
+  ],
+  "change_summary": "Tested the preregistered shared FDA Traditional 510(k) clearance candidate pool; Gate 4 rejected it and no production daily wiring was added.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_510k_traditional_clearance_14d_nextopen_10d_v1",
+  "component": "quant/fda_510k_clearance_paper_sleeve.py, quant/test_fda_510k_clearance_paper_sleeve.py, quant/experiments/exp_20260714_009_fda_510k_traditional_clearance_14d_nextopen_10d_v1.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/non_ohlcv/fda_510k_clearance/, data/experiments/exp-20260714-009/, experiments/tickets/exp-20260714-009.json, experiments/cards/exp-20260714-009.md, experiments/manifests/exp-20260714-009.json, experiments/logs/exp-20260714-009.json, experiments/artifacts/exp-20260714-009_fda_510k_clearance.md, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.2697,
+    "max_drawdown_pct": -0.0008,
+    "survival_rate": -0.109553,
+    "total_pnl": -1066.78,
+    "total_return_pct": -0.0106,
+    "trade_count": 242
+  },
+  "experiment_id": "exp-20260714-009",
+  "hypothesis": "Shared-paper-first candidate_pool: a Traditional FDA 510(k) clearance removes a listed medical-device issuer's commercialization constraint; after a conservative 14-calendar-day envelope for FDA's weekly public database inclusion, the issuer should retain positive drift from the next open through the tenth session close.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_fda_510k_clearance_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260713-010",
+    "exp-20260713-008"
+  ],
+  "new_evidence_type": "official_fda_releasable_510k_traditional_clearance",
+  "next_retry_requires": [
+    "A materially different official device-commercialization source with an audited per-record publication timestamp and issuer-level materiality field",
+    "or at least 30 closed forward replacement-value rows from a fixed prospective 510(k) observer; no alias, subtype, availability-lag, cooldown, hold, notional, cost, or window retune"
+  ],
+  "notes": "Frozen 4,344 official raw records into 415 exact-mapped events. The fixed policy produced 242 trades across 31 tickers and all three windows, but aggregate EV fell 0.2697 and PnL fell 1,066.78; all three window EVs regressed, old_thin lost 1,645.81, top-five positive contribution was 68.86 percent, and both accepted comparators failed. DSR was not computable because the expected-maximum approximation was negative; it did not affect Gate 4.",
+  "parameters": {
+    "locked_variables": [
+      "Traditional-only",
+      "exact issuer mapping",
+      "decision_date plus 14 calendar days",
+      "one issuer-day event",
+      "10-session ticker cooldown",
+      "next-open entry",
+      "10-session close",
+      "$4,000 notional",
+      "35bps cost",
+      "no threshold or subtype sweep"
+    ],
+    "single_causal_variable": "fda_510k_traditional_clearance_14d_nextopen_10d_v1"
+  },
+  "production_impact": {
+    "changes_live_orders": false,
+    "changes_default_ranking": false,
+    "changes_default_sizing": false,
+    "changes_default_exits": false,
+    "daily_wiring_retained": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "shared_helper_retained_for_reproducibility": true
+  },
+  "gate_evidence": {
+    "gate2_passed": true,
+    "signals_generated": 380,
+    "signals_survived": 258,
+    "survival_rate": 0.678947,
+    "target_trade_count": 242,
+    "target_ticker_count": 31,
+    "target_window_count": 3,
+    "aggregate_ev_delta": -0.2697,
+    "aggregate_pnl_delta": -1066.78,
+    "old_thin_ev_delta": -0.1287,
+    "old_thin_pnl_delta": -1645.81,
+    "single_ticker_positive_share": 0.212987,
+    "top_5_contribution_pct": 0.688616,
+    "accepted_comparator_ev_delta": 0.5286,
+    "accepted_comparator_pnl_delta": 10432.91,
+    "dsr_status": "not_computable",
+    "dsr_reason": "expected_maximum_approximation_negative"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the exact applicant whitelist, 510(k) subtype, 14-day availability envelope, issuer-day dedupe, cooldown, hold, notional, costs, or window slices on this frozen response.",
+    "new_evidence_required": "A materially different official device-commercialization source with audited per-record publication timing and issuer-level materiality, or at least 30 closed prospective replacement-value rows from a fixed observer.",
+    "realized_failure_mode": "routine_clearances_are_immaterial",
+    "why_result_happened": "Routine Traditional clearances produced 242 broadly distributed trades, but the two-week public-release envelope left aggregate PnL negative, all three window EVs lower, old_thin materially negative, and positive contribution still too concentrated."
+  },
+  "prediction": {
+    "confidence_reason": "A genuinely new official source passes conservative Traditional-clearance density in every window (92/75/79 mapped rows, 18/15/16 tickers, top1 14-17%) and warehouse OHLCV covers 33 mapped tickers, but the 14-day public-release envelope can remove immediate catalyst alpha.",
+    "expected_ev_delta": 0.3,
+    "expected_pnl_delta": 4000.0,
+    "main_failure_modes": [
+      "weekly_release_delay_erases_drift",
+      "routine_clearances_are_immaterial",
+      "parent_mapping_survivorship",
+      "ticker_concentration",
+      "accepted_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-07-14T19:16:45+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Gate 4 failed aggregate EV and PnL, all three window EVs regressed, old_thin EV/PnL were negative, top-five contribution exceeded 60 percent, and both accepted-distribution comparators were missed.",
+  "reopen_condition": "Reopen only with an official per-record publication timestamp plus issuer-level materiality evidence, or after a fixed prospective observer has at least 30 closed replacement-value rows. Threshold, alias, subtype, lag, hold, cooldown, notional, cost, and window retunes are forbidden.",
+  "related_files": [
+    "quant/fda_510k_clearance_paper_sleeve.py",
+    "quant/experiments/exp_20260714_009_fda_510k_traditional_clearance_14d_nextopen_10d_v1.py",
+    "data/non_ohlcv/fda_510k_clearance/events.json",
+    "data/non_ohlcv/fda_510k_clearance/raw/openfda_fetch_manifest.json",
+    "data/experiments/exp-20260714-009/before.json",
+    "data/experiments/exp-20260714-009/after.json",
+    "data/experiments/exp-20260714-009/fda_510k_clearance_replay.json",
+    "data/experiments/exp-20260714-009/deflated_sharpe_report.json",
+    "experiments/artifacts/exp-20260714-009_fda_510k_clearance.md"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260714_009_fda_510k_traditional_clearance_14d_nextopen_10d_v1.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_fda_510k_clearance_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_deflated_sharpe_cli.py quant\\test_full_stack_candidate_pool.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-14T19:47:10+00:00",
+  "trial_family": "fda_510k_traditional_clearance_candidate_pool",
+  "trial_variant_id": "traditional_14d_nextopen_10d_v1"
+}

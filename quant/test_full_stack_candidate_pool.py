@@ -2,17 +2,35 @@
 
 Covers the execution envelope completeness checklist, the AGENTS.md scout
 materiality floor, the Gate-4 composition over evaluate_experiment_promotion_gate,
-the codified Gate-5 live-readiness check, and the three-rung verdict ladder
+the codified Gate-5 live-readiness check, and the tiered verdict ladder
 (including the two operator-confirmed decisions: forward-immature Gate-4 pass
 lands at accepted_paper_pending_forward, and an incomplete envelope blocks
-live_eligible only).
+live_eligible only). Gate 5 also fails closed for missing, incomplete, or
+sub-threshold Deflated-Sharpe evidence without changing Gate 4 or paper status.
 
 No JavaScript was used.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
+import sys
+from datetime import date, timedelta
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+import deflated_sharpe  # noqa: E402
+
 from quant.full_stack_candidate_pool import (
+    EVALUATION_MODE_CHAMPION_REPLACEMENT,
+    EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
     ExecutionEnvelope,
     evaluate_gate4,
     evaluate_live_readiness,
@@ -56,6 +74,79 @@ def _full_envelope():
         kill_switch_drawdown_pct=0.08,
         sleeve_drawdown_stop_pct=0.12,
     )
+
+
+def _dsr_trial(config_id, values, dates):
+    rows = [
+        {"date": date_label, "return": value}
+        for date_label, value in zip(dates, values)
+    ]
+    return {
+        "config_id": config_id,
+        "config": {"variant": config_id},
+        "attempted": True,
+        "selection_scope": "canonical-core-selection-v1",
+        "window": {"start": dates[0], "end": dates[-1]},
+        "frequency": "daily",
+        "return_basis": "strategy_equity_return",
+        "risk_free_assumption": "zero",
+        "protocol": "canonical-backtest-v1",
+        "data": "snapshot-sha256:abc",
+        "cost": {"model": "round-trip-v2"},
+        "return_series": rows,
+        "return_series_sha256": hashlib.sha256(
+            json.dumps(
+                {"schema": "dated_periodic_return_series_v1", "rows": rows},
+                ensure_ascii=False,
+                allow_nan=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+        "return_series_source": f"data/backtests/{config_id}.json#sharpe_inference",
+    }
+
+
+def _dsr_payload(*, high_probability=True):
+    if high_probability:
+        dates = [
+            (date(2026, 1, 1) + timedelta(days=index)).isoformat()
+            for index in range(80)
+        ]
+        values = [
+            [0.012 if index % 2 == 0 else -0.002 for index in range(80)],
+            [0.009 if index % 3 else -0.003 for index in range(80)],
+            [0.008 if index % 4 in (0, 1) else -0.002 for index in range(80)],
+        ]
+    else:
+        dates = [f"2026-01-{day:02d}" for day in range(2, 8)]
+        values = [
+            [0.010, -0.004, 0.006, -0.002, 0.008, 0.001],
+            [-0.003, 0.009, -0.001, 0.007, -0.004, 0.005],
+            [0.006, -0.002, 0.009, -0.005, 0.004, 0.003],
+        ]
+    trials = [
+        _dsr_trial(f"config-{index}", trial_values, dates)
+        for index, trial_values in enumerate(values)
+    ]
+    return {
+        "selected_config_id": "config-0",
+        "expected_attempt_count": 3,
+        "selection_pool_complete": True,
+        "expected_return_dates": dates,
+        "periods_per_year": 252,
+        "trials": trials,
+    }
+
+
+def _computed_dsr(**overrides):
+    report = deflated_sharpe.build_report(_dsr_payload())
+    report["gate5_dsr_report"].update(overrides)
+    return report
+
+
+def _low_dsr_report():
+    return deflated_sharpe.build_report(_dsr_payload(high_probability=False))
 
 
 # --- envelope ---------------------------------------------------------------
@@ -111,6 +202,7 @@ def test_gate4_passes_on_clean_metrics():
     g = evaluate_gate4(_pass_metrics())
     assert g["passed"] is True
     assert g["hard_failures"] == []
+    assert g["evaluation_mode"] == EVALUATION_MODE_CHAMPION_REPLACEMENT
 
 
 def test_gate4_fails_on_regressed_window():
@@ -131,6 +223,44 @@ def test_gate4_fails_on_immaterial_effect():
     )
     assert g["passed"] is False
     assert "immaterial_effect" in g["hard_failures"]
+
+
+def test_gate4_portfolio_mode_routes_to_portfolio_evaluator(monkeypatch):
+    expected = {
+        "passed": False,
+        "status": "watch",
+        "portfolio_verdict": "portfolio_forward_watch",
+        "hard_failures": [],
+        "evidence_blockers": ["selection_panel_incomplete"],
+    }
+    observed = {}
+
+    def fake_portfolio_gate(metrics, *, thresholds):
+        observed["metrics"] = metrics
+        observed["thresholds"] = thresholds
+        return expected
+
+    monkeypatch.setattr(
+        "quant.full_stack_candidate_pool.evaluate_portfolio_contribution_gate",
+        fake_portfolio_gate,
+    )
+    metrics = {"capital_neutral": True, "candidate_weight": 0.10}
+    g = evaluate_gate4(
+        metrics,
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+
+    assert observed["metrics"] is metrics
+    assert g["portfolio_verdict"] == "portfolio_forward_watch"
+    assert g["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert g["portfolio_contribution_gate"] == expected
+    assert g["promotion_gate"] is None
+    assert g["materiality"] is None
+
+
+def test_gate4_rejects_unknown_evaluation_mode():
+    with pytest.raises(ValueError, match="unsupported evaluation_mode"):
+        evaluate_gate4(_pass_metrics(), evaluation_mode="unknown")
 
 
 # --- gate 5 live readiness --------------------------------------------------
@@ -154,9 +284,141 @@ def test_live_readiness_ready_when_all_satisfied():
         forward_pnl=4200.0,
         replacement_value_passed=True,
         kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(),
     )
     assert lr["ready"] is True
     assert lr["blockers"] == []
+    assert lr["dsr_gate"]["passed"] is True
+    assert lr["dsr_gate"]["panel_recomputed"] is True
+
+
+def test_live_readiness_old_call_without_dsr_fails_closed_for_live_only():
+    """The old call shape remains valid but cannot silently reach live."""
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+    )
+    assert lr["ready"] is False
+    assert lr["blockers"] == ["dsr_report_missing"]
+    assert lr["dsr_gate"]["reason"] == "dsr_report_missing"
+
+
+@pytest.mark.parametrize(
+    ("overrides", "expected_field"),
+    [
+        ({"status": "pending"}, "status"),
+        ({"selection_pool_complete": False}, "selection_pool_complete"),
+        ({"panel_hash": "   "}, "panel_hash_recomputation_mismatch"),
+        ({"selection_scope_id": ""}, "selection_scope_recomputation_mismatch"),
+        ({"dsr_probability": None}, "dsr_probability_recomputation_mismatch"),
+    ],
+)
+def test_live_readiness_blocks_incomplete_dsr_report(overrides, expected_field):
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(**overrides),
+    )
+    assert lr["ready"] is False
+    assert lr["blockers"] == ["dsr_report_incomplete"]
+    assert lr["dsr_gate"]["reason"] == "dsr_report_incomplete"
+    assert expected_field in lr["dsr_gate"]["incomplete_fields"]
+
+
+@pytest.mark.parametrize("invalid_probability", [True, float("nan"), -0.01, 1.01])
+def test_live_readiness_treats_invalid_dsr_probability_as_incomplete(
+    invalid_probability,
+):
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(dsr_probability=invalid_probability),
+    )
+    assert lr["ready"] is False
+    assert lr["dsr_gate"]["reason"] == "dsr_report_incomplete"
+    assert "dsr_probability_recomputation_mismatch" in lr["dsr_gate"]["incomplete_fields"]
+
+
+def test_live_readiness_blocks_complete_dsr_below_probability_threshold():
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=_low_dsr_report(),
+    )
+    assert lr["ready"] is False
+    assert lr["blockers"] == ["dsr_probability_below_threshold"]
+    assert lr["dsr_gate"]["reason"] == "dsr_probability_below_threshold"
+    assert lr["dsr_gate"]["required_probability"] == 0.95
+
+
+def test_live_readiness_rejects_five_field_summary_without_recomputable_panel():
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report={
+            "status": "computed",
+            "selection_pool_complete": True,
+            "panel_hash": "x",
+            "selection_scope_id": "x",
+            "dsr_probability": 0.99,
+        },
+    )
+    assert lr["ready"] is False
+    assert lr["dsr_gate"]["reason"] == "dsr_report_incomplete"
+    assert "panel_input" in lr["dsr_gate"]["incomplete_fields"]
+
+
+def test_live_readiness_rejects_panel_tampering_after_report_generation():
+    report = _computed_dsr()
+    report["panel_input"]["trials"][0]["return_series"][0]["return"] += 0.5
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=report,
+    )
+    assert lr["ready"] is False
+    assert lr["dsr_gate"]["reason"] == "dsr_report_incomplete"
+    assert "panel_recomputation" in lr["dsr_gate"]["incomplete_fields"]
+    assert any(
+        "return_series_hash_mismatch" in reason
+        for reason in lr["dsr_gate"]["recomputation_reason_codes"]
+    )
+
+
+def test_live_readiness_rejects_tampered_nested_panel_result():
+    report = _computed_dsr()
+    report["panel_result"]["panel_sha256"] = "0" * 64
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=report,
+    )
+    assert lr["ready"] is False
+    assert lr["dsr_gate"]["reason"] == "dsr_report_incomplete"
+    assert "panel_result_hash_recomputation_mismatch" in lr["dsr_gate"][
+        "incomplete_fields"
+    ]
 
 
 # --- verdict ladder ---------------------------------------------------------
@@ -192,6 +454,7 @@ def test_verdict_live_eligible_when_gate4_and_gate5_pass():
         forward_pnl=4200.0,
         replacement_value_passed=True,
         kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(),
     )
     v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=_full_envelope())
     assert v["verdict"] == "live_eligible"
@@ -209,8 +472,235 @@ def test_incomplete_envelope_blocks_live_only():
         forward_pnl=4200.0,
         replacement_value_passed=True,
         kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(),
     )
     assert lr["ready"] is False
     assert "execution_envelope_incomplete" in lr["blockers"]
     v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=env)
     assert v["verdict"] == "accepted_paper_pending_forward"
+
+
+def test_missing_dsr_blocks_live_but_preserves_gate4_and_paper_acceptance():
+    g = evaluate_gate4(_pass_metrics())
+    lr = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+    )
+    v = full_stack_verdict(gate4=g, live_readiness=lr, envelope=_full_envelope())
+    assert g["passed"] is True
+    assert v["gate4_passed"] is True
+    assert v["verdict"] == "accepted_paper_pending_forward"
+    assert v["live_readiness"]["blockers"] == ["dsr_report_missing"]
+
+
+@pytest.mark.parametrize(
+    ("portfolio_verdict", "passed"),
+    [
+        ("portfolio_reject", False),
+        ("portfolio_forward_watch", False),
+        ("accepted_portfolio_paper", True),
+    ],
+)
+def test_portfolio_verdict_maps_directly_and_never_reaches_live(
+    portfolio_verdict,
+    passed,
+):
+    hard_failures = (
+        ["non_positive_aggregate_pnl"]
+        if portfolio_verdict == "portfolio_reject"
+        else []
+    )
+    evidence_blockers = (
+        ["selection_panel_incomplete"]
+        if portfolio_verdict == "portfolio_forward_watch"
+        else []
+    )
+    gate4 = {
+        "passed": passed,
+        "portfolio_verdict": portfolio_verdict,
+        "hard_failures": hard_failures,
+        "evidence_blockers": evidence_blockers,
+    }
+    # Deliberately claim live readiness to prove that portfolio mode ignores it.
+    live_readiness = {"ready": True, "blockers": []}
+    v = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        envelope=_full_envelope(),
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+
+    assert v["verdict"] == portfolio_verdict
+    assert v["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert v["live_ready"] is False
+    assert v["verdict"] != "live_eligible"
+
+
+def test_portfolio_verdict_fails_closed_without_explicit_portfolio_verdict():
+    v = full_stack_verdict(
+        gate4={"passed": True},
+        live_readiness={"ready": True, "blockers": []},
+        evaluation_mode=EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+    )
+    assert v["verdict"] == "portfolio_reject"
+    assert v["live_ready"] is False
+
+
+def test_portfolio_gate_mode_is_inherited_and_never_reaches_live():
+    v = full_stack_verdict(
+        gate4={
+            "passed": True,
+            "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+            "portfolio_verdict": "accepted_portfolio_paper",
+        },
+        live_readiness={"ready": True, "blockers": []},
+    )
+
+    assert v["evaluation_mode"] == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
+    assert v["verdict"] == "accepted_portfolio_paper"
+    assert v["live_ready"] is False
+
+
+def test_full_stack_verdict_rejects_mode_mismatch():
+    with pytest.raises(ValueError, match="conflicts with gate4 evaluation_mode"):
+        full_stack_verdict(
+            gate4={
+                "passed": True,
+                "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+                "portfolio_verdict": "accepted_portfolio_paper",
+            },
+            live_readiness={"ready": True, "blockers": []},
+            evaluation_mode=EVALUATION_MODE_CHAMPION_REPLACEMENT,
+        )
+
+
+def test_contradictory_portfolio_acceptance_fails_closed():
+    v = full_stack_verdict(
+        gate4={
+            "passed": False,
+            "evaluation_mode": EVALUATION_MODE_PORTFOLIO_CONTRIBUTION,
+            "portfolio_verdict": "accepted_portfolio_paper",
+            "hard_failures": ["non_positive_aggregate_pnl"],
+            "evidence_blockers": [],
+        },
+        live_readiness={"ready": True, "blockers": []},
+    )
+
+    assert v["verdict"] == "portfolio_reject"
+    assert v["live_ready"] is False
+    assert v["gate_report_consistent"] is False
+
+
+def test_full_stack_verdict_rejects_unknown_evaluation_mode():
+    with pytest.raises(ValueError, match="unsupported evaluation_mode"):
+        full_stack_verdict(
+            gate4={"passed": True},
+            live_readiness={"ready": True},
+            evaluation_mode="unknown",
+        )
+
+
+def test_research_pit_gate4_pass_is_research_only_even_when_gate5_ready():
+    gate4 = evaluate_gate4(_pass_metrics())
+    live_readiness = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(),
+    )
+
+    verdict = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        envelope=_full_envelope(),
+        pit_evidence={
+            "tier": "research_pit",
+            "known_future_leakage": False,
+        },
+    )
+
+    assert verdict["verdict"] == "research_only"
+    assert verdict["gate4_passed"] is True
+    assert verdict["live_ready"] is False
+    assert verdict["paper_live_eligible"] is False
+    assert verdict["pit_evidence"]["authority"] == "research_only"
+
+
+@pytest.mark.parametrize(
+    ("gate4", "live_readiness", "message"),
+    [
+        ({"passed": 1}, {"ready": True}, "gate4.passed"),
+        ({"passed": True}, {"ready": 1}, "live_readiness.ready"),
+    ],
+)
+def test_verdict_requires_explicit_boolean_gate_authority(
+    gate4, live_readiness, message
+):
+    with pytest.raises(ValueError, match=message):
+        full_stack_verdict(
+            gate4=gate4,
+            live_readiness=live_readiness,
+            pit_evidence={
+                "tier": "research_pit",
+                "known_future_leakage": False,
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    "pit_evidence",
+    [
+        {"tier": "canonical_pit", "known_future_leakage": True},
+        {"tier": "canonical_pit"},
+        {"known_future_leakage": False},
+        {"tier": "unknown", "known_future_leakage": False},
+    ],
+)
+def test_known_leakage_or_unknown_temporal_evidence_cannot_reach_paper_or_live(
+    pit_evidence,
+):
+    verdict = full_stack_verdict(
+        gate4={"passed": True},
+        live_readiness={"ready": True, "blockers": []},
+        pit_evidence=pit_evidence,
+    )
+
+    assert verdict["verdict"] == "reject"
+    assert verdict["live_ready"] is False
+    assert verdict["paper_live_eligible"] is False
+    assert verdict["pit_evidence"]["authority"] == "invalid"
+
+
+def test_canonical_pit_retains_existing_live_ladder_and_omission_is_legacy_shape():
+    gate4 = {"passed": True}
+    live_readiness = {"ready": True, "blockers": []}
+    legacy = full_stack_verdict(gate4=gate4, live_readiness=live_readiness)
+    canonical = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        pit_evidence={
+            "tier": "canonical_pit",
+            "known_future_leakage": False,
+        },
+    )
+
+    assert legacy["verdict"] == "live_eligible"
+    assert "pit_evidence" not in legacy
+    assert "paper_live_eligible" not in legacy
+    assert canonical["verdict"] == "live_eligible"
+    assert canonical["paper_live_eligible"] is True
+
+
+def test_new_full_stack_template_requires_explicit_pit_evidence():
+    template = (
+        ROOT / "quant" / "experiments" / "_templates" /
+        "candidate_pool_full_stack_template.py"
+    ).read_text(encoding="utf-8")
+
+    assert "def declare_pit_evidence()" in template
+    assert "pit_evidence=pit_evidence" in template

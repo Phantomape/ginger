@@ -1,0 +1,154 @@
+{
+  "after_metrics": {
+    "expected_value_score": 12.9658,
+    "max_drawdown_pct": 0.0887,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.75836431,
+    "total_pnl": 257458.93,
+    "total_return_pct": 2.5746,
+    "trade_count": 266,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 13.1229,
+    "max_drawdown_pct": 0.1173,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 1.0,
+    "total_pnl": 263039.18,
+    "total_return_pct": 2.6303,
+    "trade_count": 331,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.1571,
+    "actual_pnl_delta": -5580.25,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.4071,
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "pnl_prediction_error": -10580.25,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "insufficient_affected_rows",
+      "source_state_rarely_triggers",
+      "overquarantine_removes_good_sources",
+      "window_regression",
+      "shadow_book_temporal_leakage"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "window_regression",
+    "surprise_level": "low",
+    "surprise_note": "The gate was highly material and improved drawdown in two windows, but it removed or displaced enough profitable trades to reduce PnL in all three windows and EV in two."
+  },
+  "causal_components": [
+    "shared_source_health_state",
+    "daily_default_off_snapshot",
+    "historical_pit_replay",
+    "pre_top1_entry_admission",
+    "shadow_recovery",
+    "post_mtm_gate4",
+    "parity_tests"
+  ],
+  "change_summary": "Implemented and evaluated a shared source-relative SPY-and-QQQ shadow-quarantine gate, then restored all seven tracked shared strategy and test files after Gate 4 rejection; frozen inputs, runner, full evidence, and replay patches are retained.",
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "source_relative_21_session_underwater_quarantine_with_dual_hwm_shadow_recovery_v1",
+  "component": "quant/accepted_helper_source_priority_allocator_paper_sleeve.py, quant/run.py, quant/rolling_corr_peer_shock_paper_sleeve.py, quant/industry_relative_laggard_repair_paper_sleeve.py, quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py, quant/test_allocator_execution_envelope.py, quant/test_rolling_corr_peer_shock_paper_sleeve.py, quant/test_industry_relative_laggard_repair_paper_sleeve.py, quant/experiments/exp_20260715_001_accepted_allocator_source_relative_shadow_quarantine.py, data/experiments/exp-20260715-001, experiments/cards/exp-20260715-001.md, experiments/manifests/exp-20260715-001.json, experiments/tickets/exp-20260715-001.json, experiments/logs/exp-20260715-001.json, docs/experiment_registry.json, docs/frozen_families.jsonl, docs/production_backtest_parity_matrix.md, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.1571,
+    "max_drawdown_pct": -0.0286,
+    "survival_rate": -0.241636,
+    "total_pnl": -5580.25,
+    "total_return_pct": -0.0557,
+    "trade_count": -65
+  },
+  "experiment_id": "exp-20260715-001",
+  "hypothesis": "Capital-allocation/entry-admission alpha: within the accepted-helper source-priority allocator, maintain an independent fixed-$4k raw-source shadow book against SPY and QQQ. When both benchmark-relative equity curves remain strictly below their own high-water marks for 21 consecutive observable trading sessions, quarantine only that source's new entries before daily top1 selection so healthy lower-priority sources can backfill; continue the shadow book and re-enable only when both curves recover the high-water marks frozen at quarantine. Keep source priority, ranking, five accepted 1.25x scalars, hold, cooldown, costs, execution envelope, exits, and core behavior fixed.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "accepted_allocator_source_relative_shadow_quarantine",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260610-021",
+    "exp-20260612-024",
+    "exp-20260614-010",
+    "exp-20260708-017",
+    "exp-20260708-018"
+  ],
+  "new_evidence_type": "new_gate_shape_shared_source_relative_shadow_quarantine",
+  "next_retry_requires": [
+    "A genuinely new independent signal or data source, or at least 58 newly settled forward allocator source decisions under the unchanged frozen policy accumulated without outcome inspection."
+  ],
+  "notes": "Blind preflight passed with 115 affected settled decisions across 7 source families, 22 triggers, 59.55 percent minimum survival, and zero contract or benchmark gaps. Full-system aggregate EV fell from 13.1229 to 12.9658, incremental PnL was negative 5580.25, and no window passed both EV and PnL improvement. Drawdown improved in mid_weak and old_thin but late_strong EV, PnL, and drawdown regressed. DSR was not computable in all windows; historical allocator selection risk is high and live_eligible is false. Rejected policy wiring was rolled back; replay patches and hashes are in data/experiments/exp-20260715-001/reproduction.json.",
+  "parameters": {
+    "locked_variables": [
+      "source_priority",
+      "source_notional_scalars",
+      "daily_entry_slots",
+      "hold_days",
+      "same_ticker_cooldown_days",
+      "round_trip_cost_pct",
+      "execution_envelope",
+      "core_signal_policy",
+      "live_orders"
+    ],
+    "single_causal_variable": "source_relative_21_session_underwater_quarantine_with_dual_hwm_shadow_recovery_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 21-session threshold, swap SPY or QQQ, alter HWM recovery, or change hard quarantine into a weight or scalar on this frozen sample.",
+    "new_evidence_required": "A genuinely new independent signal or data source, or at least 58 newly settled forward allocator source decisions under the unchanged frozen policy accumulated without outcome inspection.",
+    "realized_failure_mode": "window_regression",
+    "why_result_happened": "The gate was highly material and improved drawdown in two windows, but it removed or displaced enough profitable trades to reduce PnL in all three windows and EV in two."
+  },
+  "prediction": {
+    "confidence_reason": "The mechanism is independently predeclared and exp-20260708-018 explicitly allows a shared Gate1-4 policy with an independently specified source-risk state, but prior allocator filters often failed across windows and the fixed 21-session gate may rarely bind.",
+    "expected_ev_delta": 0.25,
+    "expected_pnl_delta": 5000.0,
+    "main_failure_modes": [
+      "insufficient_affected_rows",
+      "source_state_rarely_triggers",
+      "overquarantine_removes_good_sources",
+      "window_regression",
+      "shadow_book_temporal_leakage"
+    ],
+    "recorded_at": "2026-07-15T00:27:40+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 21,
+  "fingerprint_caveat": "The automated novelty preflight reported zero trials for the new stateful fingerprint, but the actual allocator policy cell had 21 prior trials and 1 acceptance.",
+  "production_impact": "All seven tracked shared strategy and test files were restored. No default paper gate, live order, allocator state migration, source-quarantine state, ranking, sizing, or exit change remains enabled.",
+  "rejection_reason": "Gate 4 failed: full-system aggregate EV fell 1.1971 percent, incremental PnL was negative 5580.25, and no window improved both EV and PnL. Drawdown improvement alone is not an acceptance condition.",
+  "related_files": [
+    "data/experiments/exp-20260715-001/before.json",
+    "data/experiments/exp-20260715-001/after.json",
+    "data/experiments/exp-20260715-001/preflight.json",
+    "data/experiments/exp-20260715-001/full.json",
+    "data/experiments/exp-20260715-001/reproduction.json",
+    "quant/experiments/exp_20260715_001_accepted_allocator_source_relative_shadow_quarantine.py"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T01:23:47+00:00",
+  "trial_family": "accepted_allocator_source_relative_shadow_quarantine",
+  "trial_variant_id": "dual_spy_qqq_21_session_hwm_recovery_v1"
+}

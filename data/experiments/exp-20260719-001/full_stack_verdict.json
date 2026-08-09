@@ -1,0 +1,917 @@
+{
+  "accepted_alpha": false,
+  "decision": "rejected_deps_dev_maven_release_acceleration",
+  "experiment_id": "exp-20260719-001",
+  "full_stack_verdict": {
+    "anti_js": "No JavaScript was used.",
+    "evaluation_mode": "champion_replacement",
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.24,
+      "max_concurrent": 6,
+      "max_displacement": 0,
+      "min_dollar_volume": 0.0,
+      "missing": [],
+      "notes": "One active position per ticker; six positions x $4,000 = $24,000. Formal Gate4 is a 24% funded sleeve replacing core capital. Frozen deps.dev bytes are reproducible, but prospective rows and execution parity remain required before any live eligibility.",
+      "order_semantics": "default_off_next_regular_open_then_session10_close",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 10.0
+    },
+    "gate4": {
+      "accepted_candidate_comparator": {
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      },
+      "canonical_candidate_pool_gate": {
+        "evaluation_mode": "champion_replacement",
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "materiality": null,
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": false,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": true,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": true
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.388951
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 0.989812
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.276796
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "drawdown_worse_guardrail"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 105,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "aggregate_ev_delta": -2.6854,
+            "aggregate_pnl_delta": -42790.69,
+            "max_drawdown_worse": 0.0051,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 1e-12,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 1.0,
+            "max_single_ticker_positive_share": 1.0,
+            "max_top_5_contribution_pct": 1.0,
+            "min_adjusted_trades": 60,
+            "min_adjusted_windows": 3,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 3,
+            "require_tail_concentration_evidence": false,
+            "require_tail_concentration_not_worse": false
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "capital_accounting": {
+        "core_weight": 0.76,
+        "paper_pnl_overlay_on_full_core": false,
+        "passed": true,
+        "sleeve_capital_usd": 24000.0,
+        "sleeve_weight": 0.24
+      },
+      "fingerprint_contract": {
+        "actual": {
+          "data_source": "deps_dev_maven_package_releases",
+          "field_tags": [
+            "a",
+            "above",
+            "acceleration",
+            "coordinate",
+            "current",
+            "deps",
+            "dev",
+            "exact",
+            "ge2",
+            "h10",
+            "issuers",
+            "liquid",
+            "maven",
+            "median",
+            "prior8w",
+            "ranks",
+            "release",
+            "session",
+            "ten",
+            "three",
+            "top",
+            "top3"
+          ],
+          "gate_shape": "candidate_pool_top3_10d"
+        },
+        "expected": {
+          "data_source": "deps_dev_maven_package_releases",
+          "gate_shape": "candidate_pool_top3_10d"
+        },
+        "hard_failures": [],
+        "passed": true
+      },
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail",
+        "window_pnl_not_improved:old_thin",
+        "window_pnl_not_improved:mid_weak",
+        "window_pnl_not_improved:late_strong",
+        "cash_spy_qqq_replacement_failed:late_strong",
+        "accepted_candidate_pool_ev_comparator_not_beaten",
+        "accepted_candidate_pool_pnl_comparator_not_beaten",
+        "top5_positive_pnl_concentration"
+      ],
+      "metrics": {
+        "adjusted_trade_count": 105,
+        "adjusted_window_count": 3,
+        "adjusted_windows": [
+          "old_thin",
+          "mid_weak",
+          "late_strong"
+        ],
+        "aggregate_ev_delta": -2.6854,
+        "aggregate_pnl_delta": -42790.69,
+        "avg_pnl_per_trade_delta": -407.530380952381,
+        "hhi_concentration": 0.276796,
+        "max_drawdown_worse_max": 0.0051,
+        "single_ticker_positive_share": 0.388951,
+        "top_5_contribution_pct": 0.989812,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3
+      },
+      "outcome_blind_source_density_preflight": {
+        "by_window": {
+          "late_strong": {
+            "by_ticker": {
+              "ADBE": 4,
+              "AMZN": 8,
+              "DDOG": 2,
+              "ESTC": 10,
+              "GOOGL": 1,
+              "IBM": 9,
+              "MDB": 1,
+              "META": 7,
+              "NFLX": 1,
+              "ORCL": 1,
+              "PLTR": 6,
+              "SHOP": 1
+            },
+            "checks": {
+              "issuer_week_count_at_least_20": true,
+              "ticker_count_at_least_10": true,
+              "top1_count_share_at_most_30pct": true
+            },
+            "eligible_issuer_week_count": 51,
+            "ticker_count": 12,
+            "top1_count_share": 0.196078,
+            "top1_ticker": "ESTC"
+          },
+          "mid_weak": {
+            "by_ticker": {
+              "ADBE": 3,
+              "AKAM": 1,
+              "AMZN": 6,
+              "BABA": 1,
+              "ESTC": 9,
+              "GOOGL": 2,
+              "IBM": 12,
+              "MDB": 1,
+              "META": 9,
+              "NFLX": 1,
+              "PLTR": 3,
+              "SNOW": 2
+            },
+            "checks": {
+              "issuer_week_count_at_least_20": true,
+              "ticker_count_at_least_10": true,
+              "top1_count_share_at_most_30pct": true
+            },
+            "eligible_issuer_week_count": 50,
+            "ticker_count": 12,
+            "top1_count_share": 0.24,
+            "top1_ticker": "IBM"
+          },
+          "old_thin": {
+            "by_ticker": {
+              "ADBE": 2,
+              "AKAM": 2,
+              "AMZN": 8,
+              "BABA": 1,
+              "DDOG": 5,
+              "ESTC": 7,
+              "IBM": 11,
+              "META": 14,
+              "NFLX": 3,
+              "ORCL": 3,
+              "PLTR": 1,
+              "TWLO": 2
+            },
+            "checks": {
+              "issuer_week_count_at_least_20": true,
+              "ticker_count_at_least_10": true,
+              "top1_count_share_at_most_30pct": true
+            },
+            "eligible_issuer_week_count": 59,
+            "ticker_count": 12,
+            "top1_count_share": 0.237288,
+            "top1_ticker": "META"
+          }
+        },
+        "canonical_release_event_set_sha256": "8a3e33dd703f7d3633ae5bd4843b38d26b68c32ee4639f68854ac761cd25d570",
+        "contract": {
+          "maximum_top1_count_share": 0.3,
+          "minimum_current_release_count": 2,
+          "minimum_eligible_issuer_weeks_per_window": 20,
+          "minimum_tickers_per_window": 10,
+          "price_or_outcome_fields_read": false,
+          "prior_complete_weeks": 8,
+          "strictly_above_prior_median": true
+        },
+        "eligible_issuer_week_count": 160,
+        "hard_failures": [],
+        "passed": true
+      },
+      "passed": false,
+      "source_contract": {
+        "canonical_release_event_count": 1298,
+        "canonical_release_event_set_sha256": "8a3e33dd703f7d3633ae5bd4843b38d26b68c32ee4639f68854ac761cd25d570",
+        "deps_dev_current_index_revision_risk": true,
+        "forward_append_only_evidence_preferred": true,
+        "hard_failures": [],
+        "manifest": "data/non_ohlcv/deps_dev_maven_release_acceleration/source_manifest.json",
+        "manifest_sha256": "8f360865eaddf41a4e9e759c1b2ad9864ad3e5e3600883b1f366538ebf6cd8b8",
+        "maven_central_component_immutability": true,
+        "passed": true,
+        "release_events": "data/non_ohlcv/deps_dev_maven_release_acceleration/release_events.jsonl",
+        "release_events_sha256": "a1d2d8774e5e8b4a294d07db39daf2830f5bacdd5041e8eaae1ee49cc0e4a9fb"
+      },
+      "status": "blocked",
+      "strict_materiality_diagnostic_nonbinding": {
+        "evaluation_mode": "champion_replacement",
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail",
+          "immaterial_effect"
+        ],
+        "materiality": {
+          "avg_pnl_per_trade_delta": -407.530380952381,
+          "avg_return_delta_pp": null,
+          "material": false,
+          "min_avg_pnl_per_trade_delta": 500.0,
+          "min_avg_return_delta_pp": 5.0,
+          "warnings": []
+        },
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": false,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": true,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": true
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.388951
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 0.989812
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.276796
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "drawdown_worse_guardrail"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 105,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "aggregate_ev_delta": -2.6854,
+            "aggregate_pnl_delta": -42790.69,
+            "max_drawdown_worse": 0.0051,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 1e-12,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 1.0,
+            "max_single_ticker_positive_share": 1.0,
+            "max_top_5_contribution_pct": 1.0,
+            "min_adjusted_trades": 60,
+            "min_adjusted_windows": 3,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 3,
+            "require_tail_concentration_evidence": false,
+            "require_tail_concentration_not_worse": false
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      }
+    },
+    "gate4_passed": false,
+    "gate_report_consistent": true,
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed",
+        "dsr_report_missing"
+      ],
+      "closed_forward_trades": 0,
+      "dsr_gate": {
+        "dsr_probability": null,
+        "incomplete_fields": [],
+        "panel_hash": null,
+        "panel_recomputed": false,
+        "passed": false,
+        "reason": "dsr_report_missing",
+        "recomputation_reason_codes": [],
+        "required_probability": 0.95,
+        "selection_pool_complete": false,
+        "selection_scope_id": null,
+        "status": null
+      },
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "live_ready": false,
+    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+    "verdict": "reject"
+  },
+  "gate2": {
+    "hard_failures": [],
+    "missing_sentinel_decision_ids": [],
+    "orders": [],
+    "passed": true,
+    "sentinel_fields": [
+      "entry_date",
+      "target_price",
+      "entry_price",
+      "exit_date",
+      "exit_price"
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 160,
+    "signals_survived": 117,
+    "survival_rate": 0.73125,
+    "unit": "eligible Maven-release-acceleration issuer-week"
+  },
+  "gate4": {
+    "accepted_candidate_comparator": {
+      "expected_value_score_delta_sum": 0.5286,
+      "experiment_id": "exp-20260611-007",
+      "total_pnl_delta_sum": 10432.91
+    },
+    "canonical_candidate_pool_gate": {
+      "evaluation_mode": "champion_replacement",
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail"
+      ],
+      "materiality": null,
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": false,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.388951
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.989812
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.276796
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 105,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "aggregate_ev_delta": -2.6854,
+          "aggregate_pnl_delta": -42790.69,
+          "max_drawdown_worse": 0.0051,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 1.0,
+          "max_single_ticker_positive_share": 1.0,
+          "max_top_5_contribution_pct": 1.0,
+          "min_adjusted_trades": 60,
+          "min_adjusted_windows": 3,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 3,
+          "require_tail_concentration_evidence": false,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "capital_accounting": {
+      "core_weight": 0.76,
+      "paper_pnl_overlay_on_full_core": false,
+      "passed": true,
+      "sleeve_capital_usd": 24000.0,
+      "sleeve_weight": 0.24
+    },
+    "fingerprint_contract": {
+      "actual": {
+        "data_source": "deps_dev_maven_package_releases",
+        "field_tags": [
+          "a",
+          "above",
+          "acceleration",
+          "coordinate",
+          "current",
+          "deps",
+          "dev",
+          "exact",
+          "ge2",
+          "h10",
+          "issuers",
+          "liquid",
+          "maven",
+          "median",
+          "prior8w",
+          "ranks",
+          "release",
+          "session",
+          "ten",
+          "three",
+          "top",
+          "top3"
+        ],
+        "gate_shape": "candidate_pool_top3_10d"
+      },
+      "expected": {
+        "data_source": "deps_dev_maven_package_releases",
+        "gate_shape": "candidate_pool_top3_10d"
+      },
+      "hard_failures": [],
+      "passed": true
+    },
+    "hard_failures": [
+      "non_positive_aggregate_ev",
+      "non_positive_aggregate_pnl",
+      "insufficient_ev_improved_windows",
+      "ev_regressed_windows",
+      "drawdown_worse_guardrail",
+      "window_pnl_not_improved:old_thin",
+      "window_pnl_not_improved:mid_weak",
+      "window_pnl_not_improved:late_strong",
+      "cash_spy_qqq_replacement_failed:late_strong",
+      "accepted_candidate_pool_ev_comparator_not_beaten",
+      "accepted_candidate_pool_pnl_comparator_not_beaten",
+      "top5_positive_pnl_concentration"
+    ],
+    "metrics": {
+      "adjusted_trade_count": 105,
+      "adjusted_window_count": 3,
+      "adjusted_windows": [
+        "old_thin",
+        "mid_weak",
+        "late_strong"
+      ],
+      "aggregate_ev_delta": -2.6854,
+      "aggregate_pnl_delta": -42790.69,
+      "avg_pnl_per_trade_delta": -407.530380952381,
+      "hhi_concentration": 0.276796,
+      "max_drawdown_worse_max": 0.0051,
+      "single_ticker_positive_share": 0.388951,
+      "top_5_contribution_pct": 0.989812,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3
+    },
+    "outcome_blind_source_density_preflight": {
+      "by_window": {
+        "late_strong": {
+          "by_ticker": {
+            "ADBE": 4,
+            "AMZN": 8,
+            "DDOG": 2,
+            "ESTC": 10,
+            "GOOGL": 1,
+            "IBM": 9,
+            "MDB": 1,
+            "META": 7,
+            "NFLX": 1,
+            "ORCL": 1,
+            "PLTR": 6,
+            "SHOP": 1
+          },
+          "checks": {
+            "issuer_week_count_at_least_20": true,
+            "ticker_count_at_least_10": true,
+            "top1_count_share_at_most_30pct": true
+          },
+          "eligible_issuer_week_count": 51,
+          "ticker_count": 12,
+          "top1_count_share": 0.196078,
+          "top1_ticker": "ESTC"
+        },
+        "mid_weak": {
+          "by_ticker": {
+            "ADBE": 3,
+            "AKAM": 1,
+            "AMZN": 6,
+            "BABA": 1,
+            "ESTC": 9,
+            "GOOGL": 2,
+            "IBM": 12,
+            "MDB": 1,
+            "META": 9,
+            "NFLX": 1,
+            "PLTR": 3,
+            "SNOW": 2
+          },
+          "checks": {
+            "issuer_week_count_at_least_20": true,
+            "ticker_count_at_least_10": true,
+            "top1_count_share_at_most_30pct": true
+          },
+          "eligible_issuer_week_count": 50,
+          "ticker_count": 12,
+          "top1_count_share": 0.24,
+          "top1_ticker": "IBM"
+        },
+        "old_thin": {
+          "by_ticker": {
+            "ADBE": 2,
+            "AKAM": 2,
+            "AMZN": 8,
+            "BABA": 1,
+            "DDOG": 5,
+            "ESTC": 7,
+            "IBM": 11,
+            "META": 14,
+            "NFLX": 3,
+            "ORCL": 3,
+            "PLTR": 1,
+            "TWLO": 2
+          },
+          "checks": {
+            "issuer_week_count_at_least_20": true,
+            "ticker_count_at_least_10": true,
+            "top1_count_share_at_most_30pct": true
+          },
+          "eligible_issuer_week_count": 59,
+          "ticker_count": 12,
+          "top1_count_share": 0.237288,
+          "top1_ticker": "META"
+        }
+      },
+      "canonical_release_event_set_sha256": "8a3e33dd703f7d3633ae5bd4843b38d26b68c32ee4639f68854ac761cd25d570",
+      "contract": {
+        "maximum_top1_count_share": 0.3,
+        "minimum_current_release_count": 2,
+        "minimum_eligible_issuer_weeks_per_window": 20,
+        "minimum_tickers_per_window": 10,
+        "price_or_outcome_fields_read": false,
+        "prior_complete_weeks": 8,
+        "strictly_above_prior_median": true
+      },
+      "eligible_issuer_week_count": 160,
+      "hard_failures": [],
+      "passed": true
+    },
+    "passed": false,
+    "source_contract": {
+      "canonical_release_event_count": 1298,
+      "canonical_release_event_set_sha256": "8a3e33dd703f7d3633ae5bd4843b38d26b68c32ee4639f68854ac761cd25d570",
+      "deps_dev_current_index_revision_risk": true,
+      "forward_append_only_evidence_preferred": true,
+      "hard_failures": [],
+      "manifest": "data/non_ohlcv/deps_dev_maven_release_acceleration/source_manifest.json",
+      "manifest_sha256": "8f360865eaddf41a4e9e759c1b2ad9864ad3e5e3600883b1f366538ebf6cd8b8",
+      "maven_central_component_immutability": true,
+      "passed": true,
+      "release_events": "data/non_ohlcv/deps_dev_maven_release_acceleration/release_events.jsonl",
+      "release_events_sha256": "a1d2d8774e5e8b4a294d07db39daf2830f5bacdd5041e8eaae1ee49cc0e4a9fb"
+    },
+    "status": "blocked",
+    "strict_materiality_diagnostic_nonbinding": {
+      "evaluation_mode": "champion_replacement",
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail",
+        "immaterial_effect"
+      ],
+      "materiality": {
+        "avg_pnl_per_trade_delta": -407.530380952381,
+        "avg_return_delta_pp": null,
+        "material": false,
+        "min_avg_pnl_per_trade_delta": 500.0,
+        "min_avg_return_delta_pp": 5.0,
+        "warnings": []
+      },
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": false,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.388951
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.989812
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.276796
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 105,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "aggregate_ev_delta": -2.6854,
+          "aggregate_pnl_delta": -42790.69,
+          "max_drawdown_worse": 0.0051,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 1.0,
+          "max_single_ticker_positive_share": 1.0,
+          "max_top_5_contribution_pct": 1.0,
+          "min_adjusted_trades": 60,
+          "min_adjusted_windows": 3,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 3,
+          "require_tail_concentration_evidence": false,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    }
+  },
+  "gate5": {
+    "blockers": [
+      "forward_rows_immature:0/30",
+      "forward_pnl_not_positive",
+      "replacement_value_not_passed",
+      "kill_switch_parity_not_passed",
+      "dsr_report_missing"
+    ],
+    "closed_forward_trades": 0,
+    "dsr_gate": {
+      "dsr_probability": null,
+      "incomplete_fields": [],
+      "panel_hash": null,
+      "panel_recomputed": false,
+      "passed": false,
+      "reason": "dsr_report_missing",
+      "recomputation_reason_codes": [],
+      "required_probability": 0.95,
+      "selection_pool_complete": false,
+      "selection_scope_id": null,
+      "status": null
+    },
+    "envelope_missing": [],
+    "forward_pnl": null,
+    "kill_switch_parity_passed": false,
+    "min_closed_forward_trades": 30,
+    "ready": false,
+    "replacement_value_passed": false
+  },
+  "status": "rejected"
+}

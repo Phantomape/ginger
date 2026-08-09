@@ -1,0 +1,70 @@
+{
+  "after": {
+    "basis": "current-quantity anchored newest fills",
+    "entry_date": "2026-07-10"
+  },
+  "before": {
+    "basis": "stale position-id ledger fallback",
+    "entry_date": "2026-07-02"
+  },
+  "broker_evidence": {
+    "current_avg_cost": 28.06,
+    "current_qty": 50.0,
+    "fills": [
+      {
+        "date": "2026-07-02",
+        "qty": 200.0,
+        "side": "BUY",
+        "ticker": "US.SNXX"
+      },
+      {
+        "date": "2026-07-08",
+        "qty": 200.0,
+        "side": "SELL",
+        "ticker": "US.SNXX"
+      },
+      {
+        "date": "2026-07-10",
+        "qty": 50.0,
+        "side": "BUY",
+        "ticker": "US.SNXX"
+      }
+    ]
+  },
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "moomoo_current_lot_backward_fill_reconstruction_v1",
+  "checks": {
+    "average_cost_preserved": true,
+    "broker_history_full_close_on_2026_07_08": true,
+    "broker_history_rebuy_on_2026_07_10": true,
+    "current_qty_anchored_reconstruction": true,
+    "current_snapshot_corrected": true,
+    "shares_preserved": true,
+    "target_preserved": true
+  },
+  "decision": "accepted_measurement_repair_current_lot_backward_fill_reconstruction",
+  "experiment_id": "exp-20260711-009",
+  "hypothesis": "Correct the invalid position-id entry-date fallback from exp-20260711-006: when broker deal history is incomplete and a ticker was fully closed then reopened, reconstruct the current long lot backward from current quantity and newest fills so SNXX resolves to its 2026-07-10 rebuy rather than the stale 2026-07-02 lot; this changes metadata only, never orders, prices, sizing, or exits.",
+  "invalidates_experiment": "exp-20260711-006",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not recover entry_date from position_id or ticker history without current-quantity and intervening-fill reconciliation.",
+    "new_evidence_required": "A future repair needs a concrete corporate-action, transfer, or incomplete-fill case that the current-quantity backward reconstruction cannot resolve.",
+    "why_result_happened": "Moomoo reused the same position_id after the 200-share lot was fully sold on July 8 and a new 50-share lot was bought July 10; a stale position-id ledger is therefore not lot identity."
+  },
+  "production_impact": {
+    "exits_changed": false,
+    "measurement_only": true,
+    "orders_changed": false,
+    "prices_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_moomoo_open_positions.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_009_moomoo_current_lot_entry_date_reconstruction.py"
+  ],
+  "single_causal_variable": "moomoo_current_lot_backward_fill_reconstruction_v1",
+  "status": "accepted"
+}

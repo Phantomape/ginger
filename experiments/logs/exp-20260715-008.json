@@ -1,0 +1,124 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.16,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "cash_scaling_changes_champion_materially",
+      "addon_partial_reduce_basis_drift",
+      "frozen_input_identity_break"
+    ],
+    "predicted_success_probability": 0.6,
+    "realized_failure_mode": "none_all_acceptance_checks_passed",
+    "surprise_level": "medium",
+    "surprise_note": "The inline ledger shows peak overdrafts of -188k, roughly 8x deeper than exp-20260715-005's closed-rows reconstruction (-23k), because add-on fills and marked-value position sizing compound: the champion books up to 189k more basis than settled cash at peaks; old_thin EV nearly vanishes (1.31->0.11) under enforcement."
+  },
+  "causal_components": [
+    "cash_ledger_state",
+    "entry_admission_scaling",
+    "addon_admission_scaling",
+    "exit_and_partial_reduce_cash_release",
+    "audit_and_conservation_reporting",
+    "frozen_input_before_after_replay"
+  ],
+  "change_summary": "Added an execution-date cash ledger to quant/backtester.py behind CASH_LEDGER_ENFORCED (default False, byte-identical baselines): core entries/add-ons debit booked basis and are deterministically scaled/skipped when enforced; exits and partial reduces release basis plus pnl; every result now carries a cash_ledger audit with exact conservation checks. Frozen-input replay proved Gate-1 identity with the flag off, zero negative-cash events with it on, and quantified the champion's overdraft: 17-18 negative-cash events per window, peak overdrafts -166.6k/-188.6k/-188.5k on 100k initial, honest re-measurement EV 12.2698->6.2057 (-49.4%), PnL 237,852->130,992.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "execution_date_cash_constrained_core_order_admission",
+  "component": "quant/experiments/exp_20260715_008_cash_constrained_core_admission.py, data/experiments/exp-20260715-008/exp_20260715_008_cash_constrained_core_admission.json, experiments/cards/exp-20260715-008.md, experiments/manifests/exp-20260715-008.json, experiments/tickets/exp-20260715-008.json, experiments/logs/exp-20260715-008.json, docs/experiment_log.jsonl, docs/experiment_registry.json, quant/backtester.py, quant/test_backtester_cash_ledger.py, experiments/artifacts/exp-20260715-008_cash_constrained_core_admission.md, data/experiments/exp-20260715-008, docs/backtesting.md, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted_measurement_repair",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260715-008",
+  "hypothesis": "The canonical core backtester books entry and add-on fills with no execution-date cash constraint, producing 18-20 negative-cash events per canonical window and up to -23,234 USD reconstructed overdraft on 100,000 USD initial capital (exp-20260715-005 dated-ledger audit); enforcing an execution-date cash ledger with deterministic scale-down or rejection of unaffordable core entries and add-ons, and cash release on exits and partial reduces, repairs this production/backtest parity defect and re-baselines the canonical windows on executable capital only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260715-005",
+    "exp-20260715-003",
+    "exp-20260712-015"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Measurement repair accepted on its own acceptance rule (all six machine checks passed); status recorded via override because the EV/PnL delta is the honest de-leveraged re-measurement, not a strategy regression. Default flip + canonical re-baseline is an explicit follow-up ticket. Unenforced champion comparisons (exp-20260715-002/005 style displacement tests) are biased against challengers.",
+  "parameters": {
+    "locked_variables": [
+      "execution_date_cash_constrained_core_order_admission"
+    ],
+    "single_causal_variable": "execution_date_cash_constrained_core_order_admission"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-tune the enforcement (partial-fill vs reject policy, cash buffer thresholds, per-order caps) and do not reserve another audit-only quantification of the same overdraft surface; the phenomenon is now measured and machine-checked in-engine on every run.",
+    "new_evidence_required": "Follow-up ticket for the canonical decision: flip CASH_LEDGER_ENFORCED to True by default, republish a frozen-input post-cash-ledger Gate-1 anchor (exp-20260712-015 pattern), and re-open the parked capital-allocation lanes (low_deployment ETF overlay, portfolio covariance) whose displacement math was biased by the unenforced champion. Any live claim additionally needs the production runner's actual cash/sizing semantics compared against the backtest scale-down rule.",
+    "realized_failure_mode": "none_all_acceptance_checks_passed",
+    "why_result_happened": "The inline ledger sees add-on fills and marked-value position sizing compounding: the champion books up to ~189k more entry basis than settled cash at peaks (8x deeper than exp-20260715-005's closed-rows reconstruction), so enforcing executable cash removes roughly half the canonical PnL; old_thin EV nearly vanishes (1.31->0.11)."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260715-005 dated ledger already quantified the overdraft with zero NAV reconciliation errors; the repair is deterministic bookkeeping at four known mutation points in backtester.py; main risk is magnitude of champion re-baselining, not correctness.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "cash_scaling_changes_champion_materially",
+      "addon_partial_reduce_basis_drift",
+      "frozen_input_identity_break"
+    ],
+    "recorded_at": "2026-07-15T16:25:32+00:00",
+    "success_probability": 0.6
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260715-008/before.json",
+    "data/experiments/exp-20260715-008/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-15T16:44:00+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260715-008"
+}

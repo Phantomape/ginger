@@ -25,6 +25,7 @@ from experiment_registry import (  # noqa: E402
     load_registry,
     persist_self_registered_result,
 )
+import experiment_registry as experiment_registry_module  # noqa: E402
 
 
 def _setup_registry(tmp_path: Path) -> Path:
@@ -133,3 +134,248 @@ def test_allow_missing_prediction_escape_hatch(tmp_path):
         allow_missing_prediction=True,
     )
     assert exp["status"] == "observed_only"
+
+
+def test_post_enforcement_alpha_cannot_bypass_promotion_by_self_registering(
+    tmp_path, monkeypatch
+):
+    reg = _setup_registry(tmp_path)
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_alpha_promotion_gate_enabled",
+        lambda registry: True,
+    )
+
+    with pytest.raises(ValueError, match="reserve and claim a promotion-anchored ticket"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-901",
+            lane="alpha_search",
+            prediction=_prediction(),
+            result={"decision": "accepted"},
+            status="accepted",
+        )
+
+    assert load_registry(reg)["experiments"] == []
+
+
+def test_new_alpha_self_registration_cannot_backdate_promotion_enforcement(
+    tmp_path, monkeypatch
+):
+    reg = _setup_registry(tmp_path)
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_alpha_promotion_gate_enabled",
+        lambda registry: True,
+    )
+
+    with pytest.raises(ValueError, match="reserve and claim a promotion-anchored ticket"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-907",
+            lane="alpha_search",
+            prediction=_prediction(),
+            result={"decision": "accepted", "verdict": "live_eligible"},
+            status="accepted",
+            fields={
+                "created_at": "2020-01-01T00:00:00+00:00",
+                "alpha_promotion": {},
+            },
+        )
+
+    assert load_registry(reg)["experiments"] == []
+
+
+@pytest.mark.parametrize(
+    ("status", "result"),
+    [
+        ("accepted", {"decision": "accepted"}),
+        ("accepted_paper_pending_forward", {"verdict": "accepted_paper_pending_forward"}),
+        ("observed_only", {"decision": "observed_only", "verdict": "live_eligible"}),
+    ],
+)
+def test_research_replay_self_registration_blocks_accepted_paper_and_live(
+    tmp_path, monkeypatch, status, result
+):
+    reg = _setup_registry(tmp_path)
+    registry = load_registry(reg)
+    registry["experiments"] = [
+        {
+            "experiment_id": "exp-20990101-902",
+            "lane": "alpha_search",
+            "created_at": "2099-01-01T00:00:00+00:00",
+            "prediction": _prediction(),
+            "alpha_promotion": {
+                "admission_class": "research_replay",
+                "selected_evidence_grade": "lead",
+                "result_ceiling": "observed_only",
+                "paper_live_eligible": False,
+                "source_readiness_bindings": [{"surface_id": "fixture"}],
+            },
+        }
+    ]
+    reg.write_text(json.dumps(registry), encoding="utf-8")
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_revalidate_alpha_promotion_for_claim",
+        lambda registry, ticket: ticket["alpha_promotion"],
+    )
+
+    with pytest.raises(ValueError, match="research_replay"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-902",
+            lane="alpha_search",
+            prediction=_prediction(),
+            result=result,
+            status=status,
+        )
+
+
+def test_research_replay_self_registration_allows_observed_only(tmp_path, monkeypatch):
+    reg = _setup_registry(tmp_path)
+    registry = load_registry(reg)
+    registry["experiments"] = [
+        {
+            "experiment_id": "exp-20990101-903",
+            "lane": "alpha_search",
+            "created_at": "2099-01-01T00:00:00+00:00",
+            "prediction": _prediction(),
+            "alpha_promotion": {
+                "admission_class": "research_replay",
+                "selected_evidence_grade": "lead",
+                "result_ceiling": "observed_only",
+                "paper_live_eligible": False,
+                "source_readiness_bindings": [{"surface_id": "fixture"}],
+            },
+        }
+    ]
+    reg.write_text(json.dumps(registry), encoding="utf-8")
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_revalidate_alpha_promotion_for_claim",
+        lambda registry, ticket: ticket["alpha_promotion"],
+    )
+
+    exp = persist_self_registered_result(
+        reg,
+        experiment_id="exp-20990101-903",
+        lane="alpha_search",
+        prediction=_prediction(),
+        result={"decision": "observed_only", "verdict": "research_only"},
+        status="observed_only",
+    )
+    assert exp["status"] == "observed_only"
+    assert exp["result"]["paper_live_eligible"] is False
+
+
+def test_research_replay_self_registration_cannot_demote_lane_and_remove_anchor(
+    tmp_path, monkeypatch
+):
+    reg = _setup_registry(tmp_path)
+    registry = load_registry(reg)
+    registry["experiments"] = [
+        {
+            "experiment_id": "exp-20990101-904",
+            "lane": "alpha_search",
+            "created_at": "2099-01-01T00:00:00+00:00",
+            "prediction": _prediction(),
+            "alpha_promotion": {
+                "admission_class": "research_replay",
+                "selected_evidence_grade": "lead",
+                "result_ceiling": "observed_only",
+                "paper_live_eligible": False,
+                "source_readiness_bindings": [{"surface_id": "fixture"}],
+            },
+        }
+    ]
+    reg.write_text(json.dumps(registry), encoding="utf-8")
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_revalidate_alpha_promotion_for_claim",
+        lambda registry, ticket: ticket.get("alpha_promotion"),
+    )
+
+    with pytest.raises(ValueError, match="cannot change lane"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-904",
+            lane="measurement_repair",
+            prediction=_prediction(),
+            result={"decision": "accepted", "verdict": "live_eligible"},
+            status="accepted",
+            fields={"alpha_promotion": {}},
+        )
+
+
+def test_research_replay_self_registration_blocks_nested_live_verdict(
+    tmp_path, monkeypatch
+):
+    reg = _setup_registry(tmp_path)
+    registry = load_registry(reg)
+    registry["experiments"] = [
+        {
+            "experiment_id": "exp-20990101-905",
+            "lane": "alpha_search",
+            "created_at": "2099-01-01T00:00:00+00:00",
+            "prediction": _prediction(),
+            "alpha_promotion": {
+                "admission_class": "research_replay",
+                "selected_evidence_grade": "lead",
+                "result_ceiling": "observed_only",
+                "paper_live_eligible": False,
+                "source_readiness_bindings": [{"surface_id": "fixture"}],
+            },
+        }
+    ]
+    reg.write_text(json.dumps(registry), encoding="utf-8")
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "_revalidate_alpha_promotion_for_claim",
+        lambda registry, ticket: ticket["alpha_promotion"],
+    )
+
+    with pytest.raises(ValueError, match="result.full_stack.verdict"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-905",
+            lane="alpha_search",
+            prediction=_prediction(),
+            result={
+                "decision": "observed_only",
+                "full_stack": {
+                    "verdict": "live_eligible",
+                    "live_ready": True,
+                },
+            },
+            status="observed_only",
+        )
+
+
+def test_canonical_self_registration_cannot_backdate_and_remove_anchor(tmp_path):
+    reg = _setup_registry(tmp_path)
+    registry = load_registry(reg)
+    registry["experiments"] = [
+        {
+            "experiment_id": "exp-20990101-906",
+            "lane": "alpha_search",
+            "created_at": "2099-01-01T00:00:00+00:00",
+            "prediction": _prediction(),
+            "alpha_promotion": {"promotion_hash": "a" * 64},
+        }
+    ]
+    reg.write_text(json.dumps(registry), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="immutable existing ticket field"):
+        persist_self_registered_result(
+            reg,
+            experiment_id="exp-20990101-906",
+            lane="alpha_search",
+            prediction=_prediction(),
+            result={"decision": "accepted"},
+            status="accepted",
+            fields={
+                "created_at": "2020-01-01T00:00:00+00:00",
+                "alpha_promotion": {},
+            },
+        )

@@ -15,8 +15,9 @@ No JavaScript was used.
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
+
+from git_index import GitIndexError, index_text, staged_paths
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS_DIR = REPO_ROOT / "quant" / "experiments"
@@ -81,18 +82,12 @@ def staged_new_offenders() -> list[str]:
     not everyone. Returns [] on any git error (fail-open).
     """
     try:
-        out = subprocess.run(
-            ["git", "diff", "--cached", "--name-only", "--diff-filter=AM"],
-            cwd=str(REPO_ROOT),
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    except (OSError, subprocess.CalledProcessError):
+        paths = staged_paths(REPO_ROOT, diff_filter="AM")
+    except GitIndexError:
         return []
     allow = load_allowlist()
     flagged: list[str] = []
-    for rel in out.splitlines():
+    for rel in paths:
         rel = rel.strip()
         if not rel:
             continue
@@ -103,8 +98,8 @@ def staged_new_offenders() -> list[str]:
         if name in allow:
             continue
         try:
-            text = path.read_text(encoding="utf-8")
-        except OSError:
+            text = index_text(REPO_ROOT, rel.replace("\\", "/"))
+        except GitIndexError:
             continue
         if self_registers(text):
             flagged.append(name)

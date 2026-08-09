@@ -1,0 +1,143 @@
+{
+  "after_metrics": {
+    "expected_value_score": 7.2115,
+    "max_drawdown_pct": 0.0594,
+    "sharpe": 7.17,
+    "sharpe_daily": 6.16,
+    "survival_rate": 0.8039,
+    "total_pnl": 117072.92,
+    "total_return_pct": 1.1707,
+    "trade_count": 18,
+    "win_rate": 0.8333
+  },
+  "before_metrics": {
+    "expected_value_score": 7.2115,
+    "max_drawdown_pct": 0.0594,
+    "sharpe": 7.17,
+    "sharpe_daily": 6.16,
+    "survival_rate": 0.8039,
+    "total_pnl": 117072.92,
+    "total_return_pct": 1.1707,
+    "trade_count": 18,
+    "win_rate": 0.8333
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "event_level_medians_nonpositive",
+      "window_instability",
+      "url_cluster_bootstrap_lower_bound_nonpositive",
+      "theme_concentration",
+      "current_observer_pit_caveat"
+    ],
+    "predicted_success_probability": 0.3,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "not_scored",
+    "surprise_note": "No implementation or experiment ran; this closeout only accounts for a duplicate reservation whose sole owner is exp-20260713-001."
+  },
+  "causal_components": [
+    "exact-URL deduplication",
+    "unique-ticker within-event equal weighting",
+    "equal event weighting",
+    "canonical-window attribution",
+    "URL-cluster bootstrap",
+    "concentration audit"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260713-001 owns the identical event-decision-basket hypothesis.",
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "entity_theme_news_exact_url_event_decision_basket_v1",
+  "component": "experiments/cards/exp-20260713-002.md, experiments/manifests/exp-20260713-002.json, experiments/tickets/exp-20260713-002.json, experiments/logs/exp-20260713-002.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "duplicate_of": "exp-20260713-001",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260713-002",
+  "hypothesis": "Observed-only event-decision-basket alpha: collapse settled entity_theme_news observer rows by exact URL, equal-weight each unique mapped ticker inside the URL, then equal-weight each URL event; if repeated article and multi-ticker expansion diluted a real relation edge, the fixed event basket should have positive 10-session replacement value versus cash, SPY, and QQQ across canonical windows without theme concentration.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_entity_theme_news_event_decision_basket",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260703-014",
+    "exp-20260705-017",
+    "exp-20260706-012",
+    "exp-20260707-013",
+    "exp-20260710-007"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "next_retry_requires": [
+    "Use exp-20260713-001 as the sole owner and evidence probe for this fixed event-decision-basket hypothesis; do not implement or rerun it under exp-20260713-002."
+  ],
+  "notes": "No implementation or alpha measurement ran under exp-20260713-002. Before and after point to the same artifact, all deltas are zero, and exp-20260713-001 is the sole owner of the hypothesis.",
+  "parameters": {
+    "locked_variables": [
+      "entity_theme_news_exact_url_event_decision_basket_v1"
+    ],
+    "single_causal_variable": "entity_theme_news_exact_url_event_decision_basket_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun the entity-theme-news exact-URL event-decision basket under exp-20260713-002 or reserve another duplicate; exp-20260713-001 is the sole owner.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened; follow the result and retry boundary recorded by exp-20260713-001.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The exp-20260713-001 reservation completed asynchronously after its first output yield, so the retry reserved exp-20260713-002 before the original ticket became visible."
+  },
+  "prediction": {
+    "confidence_reason": "Mechanism: prior row-level means were positive, but identical Google News URLs were repeatedly observed across days and expanded across many mapped tickers; one URL should be one ex-ante event decision, so event/ticker equal weighting may recover the relation signal. Nearby evidence is five rejected entity-theme probes, making odds modest; dedup may instead reveal that prior positive means were a duplicated right tail.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "event_level_medians_nonpositive",
+      "window_instability",
+      "url_cluster_bootstrap_lower_bound_nonpositive",
+      "theme_concentration",
+      "current_observer_pit_caveat"
+    ],
+    "recorded_at": "2026-07-13T04:46:37+00:00",
+    "success_probability": 0.3
+  },
+  "prior_trial_count": 5,
+  "rejection_reason": "duplicate_reservation_accounting",
+  "related_files": [
+    "data/backtests/post_mtm_20260712/late_strong_exp-20260712-015.json",
+    "data/backtests/post_mtm_20260712/late_strong_exp-20260712-015.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-07-13T04:48:29+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exact_url_equal_weight_v1"
+}

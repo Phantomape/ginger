@@ -1,0 +1,183 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "artifact_decision": "accepted_measurement_repair",
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair_historical_current_contract_reassessment",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "historical artifact schema heterogeneity",
+      "duplicate strategy surfaces",
+      "warehouse snapshot size",
+      "bootstrap runtime",
+      "selection panel incompleteness",
+      "dirty worktree overlap"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "selection panel incompleteness",
+    "surprise_level": "very_low",
+    "surprise_note": "Preflight counted 506 mechanically complete surfaces; canonical normalization removed 25 empty surfaces and one unsupported inverse-short proxy, leaving 480 unique eligible long paths. Six forward-watch leads survived hard gates, but none survived simultaneous inference."
+  },
+  "causal_components": [
+    "historical artifact manifest and hashes",
+    "current EV rescoring",
+    "comparator compatibility classification",
+    "cash-feasible Gate 4-P full recoverable panel",
+    "max-T family correction"
+  ],
+  "change_summary": "Froze the recoverable historical experiment evidence surface, migrated direct metrics to sign-preserving EV, and replayed every unique eligible long three-window trade surface against the active cash-feasible core under one capital-neutral Gate 4-P/max-T panel.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "historical_metric_and_comparator_contract",
+  "component": "quant/convergence.py, quant/historical_current_contract_reassessment.py, quant/test_historical_current_contract_reassessment.py, quant/experiments/exp_20260716_011_historical_current_contract_reassessment.py, data/experiments/exp-20260716-011, experiments/artifacts/exp-20260716-011_historical_current_contract_reassessment.md, experiments/cards/exp-20260716-011.md, experiments/manifests/exp-20260716-011.json, experiments/tickets/exp-20260716-011.json, experiments/logs/exp-20260716-011.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl, docs/alpha_context_pack.md, docs/current_state_snapshot.md, docs/alpha-optimization-playbook.md, docs/portfolio_covariance_lane.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted_measurement_repair_historical_current_contract_reassessment",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260716-011",
+  "hypothesis": "Freeze an exhaustive manifest of recoverable closed historical strategy artifacts, recompute every recoverable metric under the exp-20260716-003 sign-preserving EV contract, and evaluate every deterministic complete three-window separable sleeve surface against the exp-20260715-010 cash-feasible core with capital-neutral Gate 4-P; this can identify legacy measurement false negatives as portfolio_forward_watch leads without rewriting historical verdicts or production behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "historical_evidence_contract_migration",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260706-022",
+    "exp-20260715-002",
+    "exp-20260715-010",
+    "exp-20260716-003",
+    "exp-20260716-009",
+    "exp-20260716-010"
+  ],
+  "new_evidence_type": "historical_metric_and_comparator_migration_after_exp-20260715-010_and_exp-20260716-003",
+  "next_retry_requires": [
+    "a pre-frozen prospective ledger outside the reused windows, preferably for exp-20260611-010",
+    "or a genuinely new candidate family/data source or owner-authorized portfolio gate shape"
+  ],
+  "notes": "Accepted measurement repair, not alpha. 480 unique eligible long surfaces were evaluated; 21 had positive formal EV and PnL, six were portfolio_forward_watch, 474 rejected, and zero had a positive simultaneous 90% lower bound. Five watch surfaces had only 6-9 trades; exp-20260611-010 had 108 trades but only +0.05401 EV / +$942.54 PnL and LCB -1.48652. Historical verdicts and production behavior are unchanged.",
+  "parameters": {
+    "gate4p": {
+      "block_length": 20,
+      "bootstrap_replicates": 10000,
+      "candidate_cash_usd": 10000,
+      "candidate_weight": 0.1,
+      "core_weight": 0.9,
+      "round_trip_cost_bp": 45
+    },
+    "locked_variables": [
+      "90/10 capital-neutral weights; 10000 USD candidate cash; 45bp round trip; three canonical windows; 10000 bootstrap draws; block length 20; current cash-feasible core; historical verdicts"
+    ],
+    "single_causal_variable": "historical_current_contract_reassessment_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun these 480 surfaces with threshold, response, weight, alias, or bootstrap-seed tweaks; do not promote the 21 positive point estimates around hard risk failures.",
+    "new_evidence_required": "A prospective pre-frozen ledger outside the reused windows, preferably exp-20260611-010, or a genuinely new candidate family/data source or authorized gate shape.",
+    "realized_failure_mode": "selection panel incompleteness",
+    "why_result_happened": "The cash-feasible core is strong enough that 474/480 surfaces hit an economic/risk hard failure. The six non-hard-fail paths are either underpowered (five have 6-9 trades) or statistically unconfirmed after the full max-T panel (exp-20260611-010 has 108 trades but LCB -1.48652)."
+  },
+  "prediction": {
+    "confidence_reason": "A read-only preflight found 506 unique complete three-window strategy surfaces, all 101593 required OHLCV pairs are present, and the existing Gate 4-P cash-ledger primitives can be reused without changing strategy behavior.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "historical artifact schema heterogeneity",
+      "duplicate strategy surfaces",
+      "warehouse snapshot size",
+      "bootstrap runtime",
+      "selection panel incompleteness",
+      "dirty worktree overlap"
+    ],
+    "recorded_at": "2026-07-16T19:37:30+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 5,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "live_ready": false,
+    "parity_note": "Historical measurement/audit only; live/default behavior and the active core are unchanged.",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260716-011/historical_current_contract_reassessment_summary.json",
+    "experiments/artifacts/exp-20260716-011_historical_current_contract_reassessment.md",
+    "data/experiments/exp-20260716-011/historical_evidence_manifest.json",
+    "data/experiments/exp-20260716-011/historical_gate4p_panel.json",
+    "data/experiments/exp-20260716-011/frozen_replay_verification.json",
+    "quant/historical_current_contract_reassessment.py",
+    "quant/experiments/exp_20260716_011_historical_current_contract_reassessment.py",
+    "quant/test_historical_current_contract_reassessment.py",
+    "quant/convergence.py"
+  ],
+  "reproduction": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260716_011_historical_current_contract_reassessment.py --output-dir data\\experiments\\exp-20260716-011\\frozen_replay --evidence-manifest data\\experiments\\exp-20260716-011\\historical_evidence_manifest.json --evidence-manifest-sha256 ab1fceea636e1d3624c7ddbbd8ab40eb9b190760707ced313603932a80bf2007 --ohlcv-snapshot data\\experiments\\exp-20260716-011\\candidate_ohlcv_rowset.json.gz --ohlcv-snapshot-sha256 b432672340b7dc2fdc05a08d561d6229c0c85827b05618cc9eeff3efb8ef4048"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-16T20:27:33+00:00",
+  "trial_family": "historical_current_contract_reassessment",
+  "trial_variant_id": "current_ev_cash_feasible_gate4p_full_recoverable_panel_v1",
+  "verification": {
+    "economic_projection_sha256": "8b4298de27e7eca7dba061e8dcd706ecd24e51be4405679a871a4c4e6aa30eb6",
+    "focused_pytest": "51 passed",
+    "gate_projection_sha256": "08c21e7e0af0ad52d5fd3f5ce290dc569354f4f2298e65f207950a6ffc4bc71d",
+    "independent_frozen_replay_exact": true,
+    "manifest_sha256": "ab1fceea636e1d3624c7ddbbd8ab40eb9b190760707ced313603932a80bf2007",
+    "measurement_contract_passed": true,
+    "ohlcv_gzip_sha256": "b432672340b7dc2fdc05a08d561d6229c0c85827b05618cc9eeff3efb8ef4048"
+  }
+}

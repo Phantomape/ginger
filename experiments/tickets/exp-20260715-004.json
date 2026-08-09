@@ -1,0 +1,368 @@
+{
+  "acceptance_rule": "Gate2 hash-bound PDF publication clock and runtime entry_date/target_price pass; every window has at least 20 eligible issuer-release legs, at least 10 tickers, top1 share at most 30%, and survival at least 5%; same-run core plus sleeve aggregate EV and PnL deltas beat the accepted candidate-pool comparator +0.5286 and +10432.91 USD; old_thin EV/PnL deltas are nonnegative; drawdown worsening is at most 0.5pp; top5 positive contribution at most 60% and one ticker at most 50%; otherwise remove daily wiring and reject.",
+  "allowed_write_scope": [
+    "quant/orange_book_newa_release_basket_paper_sleeve.py",
+    "quant/test_orange_book_newa_release_basket_paper_sleeve.py",
+    "quant/experiments/exp_20260715_004_fda_orange_book_newa_release_basket.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/non_ohlcv/fda_orange_book_newa/",
+    "data/paper_sleeves/fda_orange_book_newa/",
+    "data/experiments/exp-20260715-004/",
+    "experiments/tickets/exp-20260715-004.json",
+    "experiments/cards/exp-20260715-004.md",
+    "experiments/manifests/exp-20260715-004.json",
+    "experiments/logs/exp-20260715-004.json",
+    "experiments/artifacts/exp-20260715-004_fda_orange_book_newa_release_basket.md",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260715-004.md",
+  "causal_components": [
+    "official historical monthly PDF and hash manifest",
+    "first-public Last-Modified UTC clock",
+    "addition plus NEWA only",
+    "approval freshness 0 to 45 calendar days",
+    "exact event-date issuer mapping",
+    "one issuer-release leg with distinct-application dedupe",
+    "equal-weight 16000 USD release budget",
+    "next-open entry",
+    "10-session close",
+    "35bps round-trip cost",
+    "shared helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "forward lifecycle state",
+    "parity tests",
+    "execution envelope",
+    "Gate1-4 and DSR evidence"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
+  "claimed_at": "2026-07-15T06:26:13+00:00",
+  "completed_at": "2026-07-15T07:27:33+00:00",
+  "created_at": "2026-07-15T06:21:39+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260715-004",
+  "experiment_uid": "expuid-109e37fb69ff4516",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260715-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-15T06:21:39+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1"
+  },
+  "hypothesis": "Shared-paper-first candidate_pool: when an official FDA Orange Book monthly Additions/Deletions PDF first publishes fresh NEWA product additions, an equal-weight basket of every exact-mapped listed issuer should capture underappreciated commercial product-expansion drift from the next open through the tenth session close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "addition plus NEWA only",
+    "approval freshness 0 to 45 calendar days",
+    "PDF first-public clock",
+    "exact issuer mapping",
+    "distinct application dedupe",
+    "every eligible issuer per release",
+    "equal-weight 16000 USD release budget",
+    "next-open entry",
+    "10-session close",
+    "35bps round-trip cost",
+    "no threshold subtype or top-N sweep"
+  ],
+  "mechanism_family": "production_visible_fda_orange_book_newa_release_basket",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "quant/backtester.py",
+    "quant/run_backtest.py",
+    "live/default orders",
+    "core ranking",
+    "core sizing",
+    "core exits"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-006",
+    "exp-20260714-009"
+  ],
+  "new_evidence_type": "official_historical_monthly_fda_orange_book_additions_deletions_pdf",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "score": 0.6098,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "product_warranty_reserve_relief_candidate_pool",
+        "score": 0.6098,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "companyfacts_product_service_revenue_mix_shift_candidate_pool",
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "companyfacts_ratio",
+      "field_tags": [
+        "additions",
+        "an",
+        "basket",
+        "book",
+        "capture",
+        "close",
+        "commercial",
+        "deletions",
+        "drift",
+        "equal",
+        "every",
+        "exact",
+        "expansion",
+        "fda",
+        "first",
+        "fresh",
+        "from",
+        "issuer",
+        "listed",
+        "mapped",
+        "monthly",
+        "newa",
+        "nextopen",
+        "of",
+        "official",
+        "orange",
+        "pdf",
+        "product",
+        "publishes",
+        "release",
+        "session",
+        "should",
+        "tenth",
+        "through",
+        "underappreciated",
+        "weight",
+        "when"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_fresh_underreaction_filing_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_peer_confirmed_filing_drift_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6098,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "product_warranty_reserve_relief_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT product-quality evidence such as warranty-claims issued/payments decomposition, industry-normalized field-failure rates, product recall text joined to reserves, or closed forward replacement-value rows. Do not sweep warranty tag lists, reserve/revenue thresholds, fact freshness, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen window",
+        "score": 0.6098,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_eps_dilution_freshness_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "companyfacts_product_service_revenue_mix_shift_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer current product/service or segment revenue provenance such as parsed segment/product revenue and profit mix from filings, current selected-taxonomy coverage, closed forward replacement-value rows, or a shared daily selected-Companyfacts surface. Do not sweep product/service tags, mix growth, service/revenue, current dollars, fact age, prior gap, RS/close/volum",
+        "score": 0.6095,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "new_data_source_and_gate_shape: official versioned historical FDA Orange Book monthly Additions/Deletions PDFs with hash-bound Last-Modified publication clocks have never been evaluated, and the response is a fixed-capital equal-weight release basket rather than the current-snapshot Drugs@FDA observer or the rejected per-record 510(k) sleeve",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "companyfacts_ratio",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "new_data_source_and_gate_shape: official versioned historical FDA Orange Book monthly Additions/Deletions PDFs with hash-bound Last-Modified publication clocks have never been evaluated, and the response is a fixed-capital equal-weight release basket rather than the current-snapshot Drugs@FDA observer or the rejected per-record 510(k) sleeve",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "new_data_source_and_gate_shape: official versioned historical FDA Orange Book monthly Additions/Deletions PDFs with hash-bound Last-Modified publication clocks have never been evaluated, and the response is a fixed-capital equal-weight release basket rather than the current-snapshot Drugs@FDA observer or the rejected per-record 510(k) sleeve",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": true,
+    "source_saturation": {
+      "accept_rate": 0.0326,
+      "accepts": 3,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": true,
+      "source": "companyfacts_ratio",
+      "trials": 92
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore-004",
+  "prediction": {
+    "confidence_reason": "NEWA additions are economically more material than the rejected routine 510(k) clearance face, and the hash-bound monthly archive passes all three density and concentration windows (27/28/25 executable issuer releases across 12/15/12 tickers). The main risk is that FDA publication occurs after approval information is already priced and generic additions have little issuer-level materiality.",
+    "expected_ev_delta": 0.65,
+    "expected_pnl_delta": 12000.0,
+    "main_failure_modes": [
+      "monthly_publication_lag_erases_drift",
+      "generic_product_additions_are_immaterial",
+      "event_date_parent_mapping_survivorship",
+      "release_basket_capital_concentration",
+      "accepted_candidate_comparator_not_beaten"
+    ],
+    "recorded_at": "2026-07-15T06:21:19+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260715-004/before.json",
+    "after_result_file": "data/experiments/exp-20260715-004/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.124,
+      "total_return_pct": 0.0165,
+      "max_drawdown_pct": -0.0002,
+      "trade_count": 53,
+      "survival_rate": 0.2115,
+      "total_pnl": 1648.4
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.65,
+      "actual_ev_delta": 0.124,
+      "ev_prediction_error": -0.526,
+      "expected_pnl_delta": 12000.0,
+      "actual_pnl_delta": 1648.4,
+      "pnl_prediction_error": -10351.6,
+      "predicted_failure_modes": [
+        "monthly_publication_lag_erases_drift",
+        "generic_product_additions_are_immaterial",
+        "event_date_parent_mapping_survivorship",
+        "release_basket_capital_concentration",
+        "accepted_candidate_comparator_not_beaten"
+      ],
+      "realized_failure_mode": "release_basket_capital_concentration",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The fixed basket added modest aggregate PnL and improved drawdown, but the gain was too concentrated and almost entirely mid-window; old-thin EV and late PnL did not hold."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260715-004.json",
+  "single_causal_variable": "fda_orange_book_fresh_newa_equal_weight_release_basket_nextopen_10d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260715-004.json",
+  "trial_family": "fda_orange_book_monthly_newa_candidate_pool",
+  "trial_variant_id": "fresh45d_equal_weight_release_basket_nextopen_10d_v1"
+}

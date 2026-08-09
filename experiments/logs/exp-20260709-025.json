@@ -1,0 +1,1021 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "complete_10d_rows_examined": 130,
+    "expected_value_score_sum": 7.8941,
+    "lead_cohort_count": 0,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "candidate_meta_label_v1 observed-only alpha: the exp-20260709-024 leak-free candidate training ledger may reveal a fixed entry-decision cohort, such as slot_sliced or no_shares, with stable positive 10d cash/SPY/QQQ outcomes that current entry planning is missing; if no cohort beats entered candidates across windows, model/admission work remains blocked.",
+  "alpha_ready": false,
+  "before_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected_no_stable_candidate_decision_missed_alpha_cohort",
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "sample_too_thin",
+      "cohort_window_instability",
+      "entered_candidates_already_best",
+      "negative_labels_insufficient"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "cohort_window_instability",
+      "entered_candidates_already_best_or_no_unselected_cohort_passed"
+    ]
+  },
+  "causal_components": [
+    "exp024_candidate_training_ledger",
+    "fixed_decision_cohorts",
+    "10d_cash_spy_qqq_labels",
+    "no_model_training",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_files": [
+    "quant/experiments/exp_20260709_025_candidate_decision_cohort_attribution.py",
+    "data/experiments/exp-20260709-025/exp_20260709_025_candidate_decision_cohort_attribution.json",
+    "experiments/logs/exp-20260709-025.json",
+    "experiments/cards/exp-20260709-025.md",
+    "experiments/manifests/exp-20260709-025.json",
+    "experiments/tickets/exp-20260709-025.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "candidate_meta_label_v1_entry_decision_cohort_attribution",
+  "decision": "observed_only_rejected_no_stable_candidate_decision_missed_alpha_cohort",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "observed_only_lead_cohort_count": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "evaluation": {
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "cohort_gate": {
+      "max_ticker_share": 0.4,
+      "min_beats_entered_cash_windows": 2,
+      "min_cohort_rows": 8,
+      "min_positive_cash_windows": 2,
+      "requires_cash_win_rate_gte_50pct": true,
+      "requires_positive_cash_spy_qqq_avg": true,
+      "requires_unselected_cohort": true
+    },
+    "cohorts": {
+      "adverse_gap_down_cancel": {
+        "avg_cash_minus_entered": -350.148063,
+        "beats_entered_cash_windows": 1,
+        "by_window": {
+          "late_strong": {
+            "avg_cash": -58.398,
+            "beats_entered_cash": false,
+            "count": 5,
+            "entered_avg_cash": 582.47,
+            "positive_cash": false
+          },
+          "mid_weak": {
+            "avg_cash": 621.9,
+            "beats_entered_cash": true,
+            "count": 1,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": true
+          },
+          "old_thin": {
+            "avg_cash": -334.45,
+            "beats_entered_cash": false,
+            "count": 1,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": false
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": -0.648571,
+            "count": 7,
+            "max": 1970.76,
+            "median": -77.86,
+            "min": -1450.97,
+            "positive_count": 2,
+            "win_rate": 0.285714
+          },
+          "qqq": {
+            "avg": 145.657143,
+            "count": 7,
+            "max": 1871.74,
+            "median": 137.48,
+            "min": -1151.13,
+            "positive_count": 5,
+            "win_rate": 0.714286
+          },
+          "spy": {
+            "avg": 35.005714,
+            "count": 7,
+            "max": 1880.14,
+            "median": 67.28,
+            "min": -1318.02,
+            "positive_count": 4,
+            "win_rate": 0.571429
+          }
+        },
+        "concentration": {
+          "top_ticker": "SLV",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.285714,
+          "unique_tickers": 6
+        },
+        "count": 7,
+        "criteria": {
+          "avg_cash_positive": false,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": false,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": false,
+          "positive_cash_windows_gte_2": false,
+          "unselected_cohort": true
+        },
+        "decision": "adverse_gap_down_cancel",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 1,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -1450.97,
+            "intended_entry_date": "2025-11-07",
+            "qqq_rv_usd": -1151.13,
+            "signal_date": "2025-11-06",
+            "spy_rv_usd": -1318.02,
+            "strategy": "trend_long",
+            "ticker": "DDOG",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 1970.76,
+            "intended_entry_date": "2025-12-29",
+            "qqq_rv_usd": 1871.74,
+            "signal_date": "2025-12-26",
+            "spy_rv_usd": 1880.14,
+            "strategy": "trend_long",
+            "ticker": "SLV",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -656.43,
+            "intended_entry_date": "2026-01-15",
+            "qqq_rv_usd": -580.94,
+            "signal_date": "2026-01-14",
+            "spy_rv_usd": -618.99,
+            "strategy": "trend_long",
+            "ticker": "SLV",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -77.86,
+            "intended_entry_date": "2026-01-30",
+            "qqq_rv_usd": 302.35,
+            "signal_date": "2026-01-29",
+            "spy_rv_usd": 67.28,
+            "strategy": "trend_long",
+            "ticker": "GLD",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -77.49,
+            "intended_entry_date": "2026-01-30",
+            "qqq_rv_usd": 302.71,
+            "signal_date": "2026-01-29",
+            "spy_rv_usd": 67.64,
+            "strategy": "trend_long",
+            "ticker": "IAU",
+            "window": "late_strong"
+          }
+        ]
+      },
+      "entered": {
+        "avg_cash_minus_entered": 0.0,
+        "beats_entered_cash_windows": 0,
+        "by_window": {
+          "late_strong": {
+            "avg_cash": 582.47,
+            "beats_entered_cash": false,
+            "count": 16,
+            "entered_avg_cash": 582.47,
+            "positive_cash": true
+          },
+          "mid_weak": {
+            "avg_cash": 195.6805,
+            "beats_entered_cash": false,
+            "count": 20,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": true
+          },
+          "old_thin": {
+            "avg_cash": 321.188696,
+            "beats_entered_cash": false,
+            "count": 23,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": true
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": 349.499492,
+            "count": 59,
+            "max": 3381.11,
+            "median": 267.24,
+            "min": -2523.32,
+            "positive_count": 40,
+            "win_rate": 0.677966
+          },
+          "qqq": {
+            "avg": 323.525254,
+            "count": 59,
+            "max": 3522.42,
+            "median": 115.89,
+            "min": -2559.08,
+            "positive_count": 40,
+            "win_rate": 0.677966
+          },
+          "spy": {
+            "avg": 321.820508,
+            "count": 59,
+            "max": 3392.18,
+            "median": 135.48,
+            "min": -2561.49,
+            "positive_count": 42,
+            "win_rate": 0.711864
+          }
+        },
+        "concentration": {
+          "top_ticker": "SLV",
+          "top_ticker_rows": 5,
+          "top_ticker_share": 0.084746,
+          "unique_tickers": 30
+        },
+        "count": 59,
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "positive_cash_windows_gte_2": true,
+          "unselected_cohort": false
+        },
+        "decision": "entered",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 3,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -219.8,
+            "intended_entry_date": "2025-10-31",
+            "qqq_rv_usd": 179.3,
+            "signal_date": "2025-10-30",
+            "spy_rv_usd": -28.43,
+            "strategy": "trend_long",
+            "ticker": "GOOG",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 1572.26,
+            "intended_entry_date": "2025-11-04",
+            "qqq_rv_usd": 2004.97,
+            "signal_date": "2025-11-03",
+            "spy_rv_usd": 1809.35,
+            "strategy": "breakout_long",
+            "ticker": "LLY",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 927.5,
+            "intended_entry_date": "2025-12-02",
+            "qqq_rv_usd": 1051.97,
+            "signal_date": "2025-12-01",
+            "spy_rv_usd": 972.23,
+            "strategy": "trend_long",
+            "ticker": "SLV",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 30.69,
+            "intended_entry_date": "2025-12-15",
+            "qqq_rv_usd": 0.64,
+            "signal_date": "2025-12-12",
+            "spy_rv_usd": -17.43,
+            "strategy": "breakout_long",
+            "ticker": "IAU",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 28.41,
+            "intended_entry_date": "2025-12-15",
+            "qqq_rv_usd": -1.64,
+            "signal_date": "2025-12-12",
+            "spy_rv_usd": -19.72,
+            "strategy": "breakout_long",
+            "ticker": "GLD",
+            "window": "late_strong"
+          }
+        ]
+      },
+      "gap_cancel": {
+        "avg_cash_minus_entered": -39.651992,
+        "beats_entered_cash_windows": 1,
+        "by_window": {
+          "late_strong": {
+            "avg_cash": 231.306667,
+            "beats_entered_cash": false,
+            "count": 3,
+            "entered_avg_cash": 582.47,
+            "positive_cash": true
+          },
+          "mid_weak": {
+            "avg_cash": 857.735,
+            "beats_entered_cash": true,
+            "count": 4,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": true
+          },
+          "old_thin": {
+            "avg_cash": -81.338,
+            "beats_entered_cash": false,
+            "count": 5,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": false
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": 309.8475,
+            "count": 12,
+            "max": 2256.44,
+            "median": 179.05,
+            "min": -880.72,
+            "positive_count": 7,
+            "win_rate": 0.583333
+          },
+          "qqq": {
+            "avg": 332.968333,
+            "count": 12,
+            "max": 2213.47,
+            "median": 71.22,
+            "min": -709.53,
+            "positive_count": 6,
+            "win_rate": 0.5
+          },
+          "spy": {
+            "avg": 325.405833,
+            "count": 12,
+            "max": 2173.97,
+            "median": 167.51,
+            "min": -604.26,
+            "positive_count": 7,
+            "win_rate": 0.583333
+          }
+        },
+        "concentration": {
+          "top_ticker": "CRDO",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.166667,
+          "unique_tickers": 11
+        },
+        "count": 12,
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "positive_cash_windows_gte_2": true,
+          "unselected_cohort": true
+        },
+        "decision": "gap_cancel",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 2,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -681.8,
+            "intended_entry_date": "2025-10-29",
+            "qqq_rv_usd": -453.5,
+            "signal_date": "2025-10-28",
+            "spy_rv_usd": -604.26,
+            "strategy": "breakout_long",
+            "ticker": "NVDA",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -880.72,
+            "intended_entry_date": "2025-11-03",
+            "qqq_rv_usd": -385.53,
+            "signal_date": "2025-10-31",
+            "spy_rv_usd": -589.03,
+            "strategy": "trend_long",
+            "ticker": "AMZN",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 2256.44,
+            "intended_entry_date": "2025-12-22",
+            "qqq_rv_usd": 2213.47,
+            "signal_date": "2025-12-19",
+            "spy_rv_usd": 2173.97,
+            "strategy": "trend_long",
+            "ticker": "MU",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 1719.84,
+            "intended_entry_date": "2025-06-04",
+            "qqq_rv_usd": 1701.28,
+            "signal_date": "2025-06-03",
+            "spy_rv_usd": 1711.8,
+            "strategy": "breakout_long",
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 786.47,
+            "intended_entry_date": "2025-06-25",
+            "qqq_rv_usd": 539.44,
+            "signal_date": "2025-06-24",
+            "spy_rv_usd": 491.85,
+            "strategy": "trend_long",
+            "ticker": "COIN",
+            "window": "mid_weak"
+          }
+        ]
+      },
+      "no_shares": {
+        "avg_cash_minus_entered": -510.081277,
+        "beats_entered_cash_windows": 0,
+        "by_window": {
+          "late_strong": {
+            "avg_cash": -202.23,
+            "beats_entered_cash": false,
+            "count": 10,
+            "entered_avg_cash": 582.47,
+            "positive_cash": false
+          },
+          "mid_weak": {
+            "avg_cash": -62.31125,
+            "beats_entered_cash": false,
+            "count": 8,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": false
+          },
+          "old_thin": {
+            "avg_cash": -197.55,
+            "beats_entered_cash": false,
+            "count": 10,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": false
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": -160.581786,
+            "count": 28,
+            "max": 1749.82,
+            "median": -151.175,
+            "min": -1647.29,
+            "positive_count": 10,
+            "win_rate": 0.357143
+          },
+          "qqq": {
+            "avg": -214.634643,
+            "count": 28,
+            "max": 1606.54,
+            "median": -159.65,
+            "min": -1745.4,
+            "positive_count": 6,
+            "win_rate": 0.214286
+          },
+          "spy": {
+            "avg": -196.728929,
+            "count": 28,
+            "max": 1625.14,
+            "median": -108.275,
+            "min": -1765.27,
+            "positive_count": 10,
+            "win_rate": 0.357143
+          }
+        },
+        "concentration": {
+          "top_ticker": "DE",
+          "top_ticker_rows": 5,
+          "top_ticker_share": 0.178571,
+          "unique_tickers": 16
+        },
+        "count": 28,
+        "criteria": {
+          "avg_cash_positive": false,
+          "avg_qqq_positive": false,
+          "avg_spy_positive": false,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": false,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "positive_cash_windows_gte_2": false,
+          "unselected_cohort": true
+        },
+        "decision": "no_shares",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 0,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -421.19,
+            "intended_entry_date": "2025-10-30",
+            "qqq_rv_usd": -45.18,
+            "signal_date": "2025-10-29",
+            "spy_rv_usd": -247.77,
+            "strategy": "trend_long",
+            "ticker": "CAT",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 310.29,
+            "intended_entry_date": "2025-12-11",
+            "qqq_rv_usd": 296.28,
+            "signal_date": "2025-12-10",
+            "spy_rv_usd": 205.06,
+            "strategy": "breakout_long",
+            "ticker": "BKNG",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 189.94,
+            "intended_entry_date": "2025-12-12",
+            "qqq_rv_usd": 196.53,
+            "signal_date": "2025-12-11",
+            "spy_rv_usd": 165.06,
+            "strategy": "breakout_long",
+            "ticker": "V",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -1131.41,
+            "intended_entry_date": "2026-01-07",
+            "qqq_rv_usd": -1094.81,
+            "signal_date": "2026-01-06",
+            "spy_rv_usd": -1085.03,
+            "strategy": "breakout_long",
+            "ticker": "ISRG",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -148.63,
+            "intended_entry_date": "2026-01-16",
+            "qqq_rv_usd": -158.86,
+            "signal_date": "2026-01-15",
+            "spy_rv_usd": -173.85,
+            "strategy": "trend_long",
+            "ticker": "TSM",
+            "window": "late_strong"
+          }
+        ]
+      },
+      "scarce_slot_breakout_deferred": {
+        "avg_cash_minus_entered": -352.61838,
+        "beats_entered_cash_windows": 0,
+        "by_window": {
+          "mid_weak": {
+            "avg_cash": -148.75,
+            "beats_entered_cash": false,
+            "count": 3,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": false
+          },
+          "old_thin": {
+            "avg_cash": 69.696667,
+            "beats_entered_cash": false,
+            "count": 6,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": true
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": -3.118889,
+            "count": 9,
+            "max": 516.77,
+            "median": 72.89,
+            "min": -627.74,
+            "positive_count": 6,
+            "win_rate": 0.666667
+          },
+          "qqq": {
+            "avg": -93.388889,
+            "count": 9,
+            "max": 266.61,
+            "median": -84.78,
+            "min": -820.15,
+            "positive_count": 4,
+            "win_rate": 0.444444
+          },
+          "spy": {
+            "avg": -67.124444,
+            "count": 9,
+            "max": 317.32,
+            "median": 19.15,
+            "min": -714.53,
+            "positive_count": 5,
+            "win_rate": 0.555556
+          }
+        },
+        "concentration": {
+          "top_ticker": "DDOG",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.222222,
+          "unique_tickers": 8
+        },
+        "count": 9,
+        "criteria": {
+          "avg_cash_positive": false,
+          "avg_qqq_positive": false,
+          "avg_spy_positive": false,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "positive_cash_windows_gte_2": false,
+          "unselected_cohort": true
+        },
+        "decision": "scarce_slot_breakout_deferred",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 1,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -627.74,
+            "intended_entry_date": "2025-07-07",
+            "qqq_rv_usd": -820.15,
+            "signal_date": "2025-07-03",
+            "spy_rv_usd": -714.53,
+            "strategy": "breakout_long",
+            "ticker": "DDOG",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 280.09,
+            "intended_entry_date": "2025-09-03",
+            "qqq_rv_usd": -84.78,
+            "signal_date": "2025-09-02",
+            "spy_rv_usd": 23.2,
+            "strategy": "breakout_long",
+            "ticker": "IAU",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": -98.6,
+            "intended_entry_date": "2025-09-08",
+            "qqq_rv_usd": -522.69,
+            "signal_date": "2025-09-05",
+            "spy_rv_usd": -408.01,
+            "strategy": "breakout_long",
+            "ticker": "AVGO",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 242.45,
+            "intended_entry_date": "2024-10-22",
+            "qqq_rv_usd": 253.0,
+            "signal_date": "2024-10-21",
+            "spy_rv_usd": 317.32,
+            "strategy": "breakout_long",
+            "ticker": "APP",
+            "window": "old_thin"
+          },
+          {
+            "cash_rv_usd": 150.53,
+            "intended_entry_date": "2024-10-31",
+            "qqq_rv_usd": -180.72,
+            "signal_date": "2024-10-30",
+            "spy_rv_usd": -158.56,
+            "strategy": "breakout_long",
+            "ticker": "GOOG",
+            "window": "old_thin"
+          }
+        ]
+      },
+      "slot_sliced": {
+        "avg_cash_minus_entered": -220.304825,
+        "beats_entered_cash_windows": 1,
+        "by_window": {
+          "late_strong": {
+            "avg_cash": -1359.426667,
+            "beats_entered_cash": false,
+            "count": 3,
+            "entered_avg_cash": 582.47,
+            "positive_cash": false
+          },
+          "mid_weak": {
+            "avg_cash": 151.42,
+            "beats_entered_cash": false,
+            "count": 1,
+            "entered_avg_cash": 195.6805,
+            "positive_cash": true
+          },
+          "old_thin": {
+            "avg_cash": 533.161818,
+            "beats_entered_cash": true,
+            "count": 11,
+            "entered_avg_cash": 321.188696,
+            "positive_cash": true
+          }
+        },
+        "comparators": {
+          "cash": {
+            "avg": 129.194667,
+            "count": 15,
+            "max": 1756.72,
+            "median": 151.42,
+            "min": -2353.53,
+            "positive_count": 11,
+            "win_rate": 0.733333
+          },
+          "qqq": {
+            "avg": 159.612,
+            "count": 15,
+            "max": 1823.99,
+            "median": 77.9,
+            "min": -1946.68,
+            "positive_count": 8,
+            "win_rate": 0.533333
+          },
+          "spy": {
+            "avg": 132.818,
+            "count": 15,
+            "max": 1746.78,
+            "median": 93.61,
+            "min": -2176.24,
+            "positive_count": 10,
+            "win_rate": 0.666667
+          }
+        },
+        "concentration": {
+          "top_ticker": "IWM",
+          "top_ticker_rows": 2,
+          "top_ticker_share": 0.133333,
+          "unique_tickers": 11
+        },
+        "count": 15,
+        "criteria": {
+          "avg_cash_positive": true,
+          "avg_qqq_positive": true,
+          "avg_spy_positive": true,
+          "beats_entered_cash_windows_gte_2": false,
+          "beats_entered_overall_cash": false,
+          "cash_win_rate_gte_50pct": true,
+          "max_ticker_share_lte_40pct": true,
+          "min_rows": true,
+          "positive_cash_windows_gte_2": true,
+          "unselected_cohort": true
+        },
+        "decision": "slot_sliced",
+        "passed_missed_alpha_lead": false,
+        "positive_cash_windows": 2,
+        "sample_rows": [
+          {
+            "cash_rv_usd": -518.84,
+            "intended_entry_date": "2026-01-22",
+            "qqq_rv_usd": -112.0,
+            "signal_date": "2026-01-21",
+            "spy_rv_usd": -341.56,
+            "strategy": "breakout_long",
+            "ticker": "IWM",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -2353.53,
+            "intended_entry_date": "2026-01-22",
+            "qqq_rv_usd": -1946.68,
+            "signal_date": "2026-01-21",
+            "spy_rv_usd": -2176.24,
+            "strategy": "breakout_long",
+            "ticker": "AMD",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": -1205.91,
+            "intended_entry_date": "2026-01-30",
+            "qqq_rv_usd": -825.7,
+            "signal_date": "2026-01-29",
+            "spy_rv_usd": -1060.78,
+            "strategy": "trend_long",
+            "ticker": "META",
+            "window": "late_strong"
+          },
+          {
+            "cash_rv_usd": 151.42,
+            "intended_entry_date": "2025-10-09",
+            "qqq_rv_usd": 166.14,
+            "signal_date": "2025-10-08",
+            "spy_rv_usd": 177.7,
+            "strategy": "trend_long",
+            "ticker": "GLD",
+            "window": "mid_weak"
+          },
+          {
+            "cash_rv_usd": 103.56,
+            "intended_entry_date": "2024-11-07",
+            "qqq_rv_usd": 170.83,
+            "signal_date": "2024-11-06",
+            "spy_rv_usd": 93.61,
+            "strategy": "trend_long",
+            "ticker": "GS",
+            "window": "old_thin"
+          }
+        ]
+      }
+    },
+    "complete_10d_rows": 130,
+    "decision": "observed_only_rejected_no_stable_candidate_decision_missed_alpha_cohort",
+    "decision_counts": {
+      "adverse_gap_down_cancel": 7,
+      "entered": 59,
+      "gap_cancel": 12,
+      "no_shares": 28,
+      "scarce_slot_breakout_deferred": 9,
+      "slot_sliced": 15
+    },
+    "entered_complete_10d_rows": 59,
+    "lead_cohorts": [],
+    "source_artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json",
+    "source_experiment_id": "exp-20260709-024",
+    "source_readiness": {
+      "complete_10d_candidate_rows": 130,
+      "complete_20d_candidate_rows": 123,
+      "negative_10d_cash_labels": 54,
+      "positive_10d_cash_labels": 76,
+      "readiness_failed_criteria": [
+        "complete_candidate_rows_gte_300",
+        "negative_labels_gte_75",
+        "each_fold_has_at_least_50_test_rows"
+      ],
+      "readiness_gate_passed": false,
+      "rejected_or_unselected_complete_10d_rows": 71,
+      "selected_complete_10d_rows": 59,
+      "strategy_behavior_changed": false,
+      "training_ledger_rows": 138
+    },
+    "source_rows": 138
+  },
+  "experiment_id": "exp-20260709-025",
+  "gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "passed": true,
+    "source_artifact": "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  },
+  "gate2": {
+    "complete_10d_rows": 130,
+    "passed": true,
+    "required_fields_checked": [
+      "ticker",
+      "window",
+      "decision",
+      "intended_entry_date",
+      "target_price",
+      "horizons.10d.replacement_value_vs_cash_usd",
+      "horizons.10d.replacement_value_vs_spy_usd",
+      "horizons.10d.replacement_value_vs_qqq_usd"
+    ],
+    "target_price_contract_changed": false
+  },
+  "gate3": {
+    "adds_filter": false,
+    "baseline_survival_rate": 0.823171,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "decision": "observed_only_rejected_no_stable_candidate_decision_missed_alpha_cohort",
+    "evaluation_type": "observed_only_attribution_no_strategy_change",
+    "passed": false,
+    "reason": "No fixed unselected decision cohort passed the predeclared missed-alpha gate."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "candidate_meta_label_v1 observed-only alpha: the exp-20260709-024 leak-free candidate training ledger may reveal a fixed entry-decision cohort, such as slot_sliced or no_shares, with stable positive 10d cash/SPY/QQQ outcomes that current entry planning is missing; if no cohort beats entered candidates across windows, model/admission work remains blocked.",
+    "2_history_check": "exp-20260709-023 blocked model fitting; exp-20260709-024 materialized the first leak-free candidate ledger but left model readiness blocked.",
+    "3_single_causal_variable": "candidate_meta_label_v1_entry_decision_cohort_attribution",
+    "4_acceptance_standard": "Observed-only lead only if a fixed unselected decision cohort passes the predeclared cash/SPY/QQQ, window, entered-comparison, and concentration gates. No alpha can be accepted here.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_025_candidate_decision_cohort_attribution.py"
+  },
+  "headline_metrics": {
+    "complete_10d_rows": 130,
+    "decision_counts": {
+      "adverse_gap_down_cancel": 7,
+      "entered": 59,
+      "gap_cancel": 12,
+      "no_shares": 28,
+      "scarce_slot_breakout_deferred": 9,
+      "slot_sliced": 15
+    },
+    "entered_complete_10d_rows": 59,
+    "lead_cohort_count": 0,
+    "lead_cohorts": []
+  },
+  "hypothesis": "candidate_meta_label_v1 observed-only alpha: the exp-20260709-024 leak-free candidate training ledger may reveal a fixed entry-decision cohort, such as slot_sliced or no_shares, with stable positive 10d cash/SPY/QQQ outcomes that current entry planning is missing; if no cohort beats entered candidates across windows, model/admission work remains blocked.",
+  "implementation_mode": "candidate_meta_label_observed_only_cohort_attribution",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "candidate_meta_label",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260709-023",
+    "exp-20260709-024"
+  ],
+  "new_evidence_axis": "New evidence axis from exp-20260709-024: first leak-free candidate_meta_label training ledger with selected and unselected canonical-window candidate decisions. This run performs one fixed batch cohort attribution and does not fit a model, tune thresholds, or change entry planning.",
+  "new_evidence_type": "new_training_rows_attribution",
+  "owner": "alpha-explore",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rerun this ledger by changing min cohort rows, cash/SPY/QQQ comparator set, window-count guards, ticker-share guard, decision names, model class, probability scalar, or response curve. Do not train a candidate_meta_label model until the exp024 readiness gate passes.",
+    "new_evidence_required": "A valid retry needs at least 300 complete candidate rows with 75 positive and 75 negative labels, new settled candidate rows from pipeline wiring, or a genuinely new non-oracle decision-time field.",
+    "why_result_happened": "The new exp024 ledger allowed a fixed batch read of entered and unselected entry-decision cohorts. Passing would require a cohort to beat entered candidates across windows without model fitting or threshold tuning."
+  },
+  "prediction": {
+    "confidence_reason": "The exp024 ledger is a genuinely new candidate_meta_label surface with 130 complete 10d non-oracle labels and both selected/unselected rows, but the model-readiness gate still fails; a fixed cohort attribution may expose a missed-alpha cohort without tuning thresholds or fitting a model.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "cohort_window_instability",
+      "entered_candidates_already_best",
+      "negative_labels_insufficient"
+    ],
+    "recorded_at": "2026-07-09T23:06:55+00:00",
+    "success_probability": 0.24
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "llm_change_scope": "none",
+    "model_trained": false,
+    "observed_only_attribution": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "No unselected entry-decision cohort passed min rows, positive cash/SPY/QQQ averages, window stability, entered-candidate comparison, and concentration guards.",
+  "related_files": [
+    "quant/experiments/exp_20260709_025_candidate_decision_cohort_attribution.py",
+    "data/experiments/exp-20260709-025/exp_20260709_025_candidate_decision_cohort_attribution.json",
+    "experiments/logs/exp-20260709-025.json",
+    "experiments/cards/exp-20260709-025.md",
+    "experiments/manifests/exp-20260709-025.json",
+    "experiments/tickets/exp-20260709-025.json",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260709-024/exp_20260709_024_candidate_training_ledger_materialization.json"
+  ],
+  "single_causal_variable": "candidate_meta_label_v1_entry_decision_cohort_attribution",
+  "status": "observed_only_rejected_no_stable_candidate_decision_missed_alpha_cohort",
+  "timestamp": "2026-07-09T23:10:57Z",
+  "trial_family": "candidate_meta_label_entry_decision_cohort_attribution",
+  "trial_variant_id": "candidate_decision_cohort_10d_v1"
+}

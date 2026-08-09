@@ -1,0 +1,126 @@
+{
+  "experiment_id": "exp-20260716-004",
+  "timestamp": "2026-07-16T08:32:14.098500+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "artifact_decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "trial_family": "cash_conflict_oldest_incumbent_rotation",
+  "trial_variant_id": "v1_oldest_full_exit_fresh_core",
+  "mechanism_family": "execution_cash_opportunity_cost_rotation",
+  "single_causal_variable": "cash_conflict_oldest_incumbent_full_rotation_funds_fresh_core_entry_v1",
+  "changed_variable": "cash_conflict_oldest_incumbent_full_rotation_v1",
+  "hypothesis": "When a fully qualified fresh core entry would be scaled or skipped by settled-cash admission, exiting the oldest active core position at the same next open and using the released cash for the fresh entry should improve capital freshness and cash-feasible expected value without changing signal generation or ordinary exits.",
+  "new_evidence_type": "new_gate_shape",
+  "fingerprint": {
+    "data_source": "cash_feasible_core_book",
+    "gate_shape": "incumbent_rotation"
+  },
+  "fingerprint_caveat": "Reservation-time inference was over-matched to companyfacts_ratio/other because the cash-feasible core-book surface lacked dedicated keywords. This experiment adds the narrow source/gate mapping and rebuilds docs/frozen_families.jsonl before closeout.",
+  "nearby_prior_experiments": [
+    "exp-20260630-020",
+    "exp-20260715-002",
+    "exp-20260716-001"
+  ],
+  "prediction": {
+    "confidence_reason": "The new cash-feasible anchor exposes 11/21/14 eligible conflict dates, but prior active-core displacement and early exits usually lost value; the zero-parameter freshness mechanism is plausible yet deliberately low-probability.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "premature_winner_eviction",
+      "rotation_cost_churn",
+      "mid_old_eviction_concentration",
+      "too_few_effective_cash_conflicts"
+    ],
+    "recorded_at": "2026-07-16T08:10:54+00:00",
+    "success_probability": 0.12
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "max_drawdown_pct": 0.0889,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116
+  },
+  "after_metrics": {
+    "expected_value_score": 3.0293,
+    "total_pnl": 68418.26999999999,
+    "max_drawdown_pct": 0.0886,
+    "trade_count": 73,
+    "minimum_survival_rate": 0.8519
+  },
+  "delta_metrics": {
+    "minimum_survival_rate": 0.0403,
+    "total_pnl": -62574.09000000001,
+    "expected_value_score": -3.1764,
+    "trade_count": 24.0,
+    "max_drawdown_pct": -0.0003000000000000086
+  },
+  "parameters": {
+    "config_key": "CASH_CONFLICT_OLDEST_ROTATION_ENABLED",
+    "before": false,
+    "after": true,
+    "locked_variables": [
+      "all signals and ranking",
+      "requested fresh-entry sizing",
+      "normal stop and target rules",
+      "add-ons",
+      "sector and position caps",
+      "cost model",
+      "three frozen windows"
+    ],
+    "pre_registered_gate4": {
+      "aggregate_expected_value_score_strictly_above": 6.8263,
+      "aggregate_total_pnl_strictly_above": 130992.36,
+      "minimum_ev_improved_windows": 2,
+      "maximum_single_window_ev_regression_fraction": 0.05,
+      "maximum_worst_drawdown_drift": 0.01,
+      "minimum_survival_rate_per_window": 0.05,
+      "minimum_trades_per_window": 10,
+      "minimum_aggregate_trade_retention": 0.8,
+      "maximum_eviction_ticker_share": 0.5,
+      "cash_conservation_required": true
+    }
+  },
+  "causal_components": [
+    "cash-shortfall trigger",
+    "oldest-core selection",
+    "same-open full exit",
+    "unchanged fresh-entry sizing"
+  ],
+  "change_summary": "Evaluated the fixed same-open oldest-core eviction gate only on cash-conflicted qualified fresh entries; no default or live behavior was changed.",
+  "notes": "Gate 1 exact=True; aggregate EV 6.2057 to 3.0293; aggregate PnL 130992.36 to 68418.27; rotations=20.",
+  "rejection_reason": "One or more pre-registered Gate-4 checks failed.",
+  "post_run_reflection": {
+    "why_result_happened": "Position age was a poor opportunity-cost proxy: twenty rotations crystallized still-productive incumbents and added turnover, so twenty-four extra closed trades coincided with lower EV in every window despite nearly flat drawdown.",
+    "forbidden_near_neighbor_retry": "Do not retune oldest selection, age thresholds, partial eviction, cash-shortfall thresholds, or rotation sizing on these outcomes.",
+    "new_evidence_required": "A new data source, genuinely different gate shape, or materially more settled forward cash-conflict decisions is required for a near-neighbor retry."
+  },
+  "production_impact": {
+    "explicit_after_flag_only": true,
+    "default_flag_changed": false,
+    "live_or_paper_orders_changed": false,
+    "signal_generation_or_ranking_changed": false,
+    "trade_enabled": false,
+    "live_ready": false
+  },
+  "reproduction": ".\\.venv\\Scripts\\python.exe -u -B quant\\experiments\\exp_20260716_004_cash_conflict_oldest_rotation.py",
+  "related_files": [
+    "data/experiments/exp-20260716-004/before.json",
+    "data/experiments/exp-20260716-004/after.json",
+    "data/experiments/exp-20260716-004/exp_20260716_004_cash_conflict_oldest_rotation.json",
+    "experiments/artifacts/exp-20260716-004.json",
+    "quant/backtester.py",
+    "quant/cash_conflict_oldest_rotation.py",
+    "quant/test_cash_conflict_oldest_rotation.py",
+    "quant/experiments/exp_20260716_004_cash_conflict_oldest_rotation.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "component": "quant/experiments/exp_20260716_004_cash_conflict_oldest_rotation.py",
+  "llm_metrics": {
+    "used_llm": false
+  }
+}

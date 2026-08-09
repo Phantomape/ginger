@@ -192,6 +192,8 @@
 | `change_summary` | 是 | 一句话描述改动 |
 | `change_type` | 是 | 如 `threshold` / `filter` / `llm_prompt` / `data_fix` / `parity_fix` |
 | `implementation_mode` | alpha 推荐 | `shared_paper_first` / `private_replay_scout` / `observed_only_attribution` / `measurement_repair` / `activation_envelope` / `live_release` |
+| `pit_evidence` | 新 alpha 必填 | `tier`、`known_future_leakage`、decision/availability clock、revision/vintage limitation、artifact hashes、canonical blockers、requested use、maximum disposition |
+| `alpha_promotion.admission_class` | alpha 必填 | 无需模型辩论；由 hash-bound D0-D3 panel 生成 `canonical_promotion` 或 `research_replay`，后者必须同时记录 `result_ceiling=observed_only` 与 `paper_live_eligible=false` |
 | `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
 | `trial_family` | alpha 推荐 | 用于 trial accounting 的近邻实验族；工具可默认，只有在能提升 meta-learning 时才需要精细填写 |
 | `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
@@ -266,9 +268,11 @@
 `run_adapter_changed=false` 仍默认视为 backtester-only 结果，除非
 `replay_only=true` 且差异已记录在 `docs/production_backtest_parity.md`。
 
-`private_replay_scout` 的正向结果只能记录为 lead，不能写成 accepted alpha；
+`private_replay_scout` 的正向结果只能记录为 lead，ticket/log 状态上限为
+`observed_only`，不能写成 accepted 或任何 `accepted_*` alpha；
 accepted default-off paper alpha 必须有 shared replay/daily semantics 或明确的
-measurement-repair 例外。
+measurement-repair 例外，并且底层数据必须为 `canonical_pit`。完整口径见
+[`research_pit_policy.md`](research_pit_policy.md)。
 
 `changed_variable` 不应被理解成“只能改一个文件/参数”。它是归因边界：
 一个实验可以包含评估同一 policy bundle 所需的 helper、adapter、daily

@@ -1,0 +1,46 @@
+{
+  "schema": "sec_nport_compact_source_manifest_v1",
+  "experiment_id": "exp-20260715-009",
+  "official_page": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets",
+  "official_readme": "https://www.sec.gov/files/nport_readme.pdf",
+  "availability_contract": {
+    "historical_backfill": "Only Commission-disseminated public filings are present in the official quarterly packages.",
+    "signal_clock": "A filing is eligible only when FILING_DATE is strictly before the opening execution date; no same-date use is allowed because the bulk set omits Accepted time.",
+    "production_contract": "A daily observer must ingest disseminated EDGAR filings by accession. A quarterly-ZIP-only production reader may not backdate rows to FILING_DATE.",
+    "amendments": "For each SERIES_ID and REPORT_DATE, use the latest filed accession available at the action cutoff; never rewrite an earlier decision with a later amendment."
+  },
+  "source_files": [
+    {"quarter":"2024q2","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2024q2_nport.zip","bytes":506739574,"sha256":"960EE7685EE0DA352B0E59C1E34CE7EC383A04D90F7D1A877C891B2B31AA4332"},
+    {"quarter":"2024q3","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2024q3_nport.zip","bytes":478076657,"sha256":"E2C4D7E7CBF346338476E65231918917D327776F348065B3329D55274EC35F74"},
+    {"quarter":"2024q4","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2024q4_nport.zip","bytes":406008057,"sha256":"449963CD187FC40774DD947C6302863C9D958369F747B196D957EAB999501465"},
+    {"quarter":"2025q1","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q1_nport.zip","bytes":462120659,"sha256":"7593DC6F6EAED347BA21BF0E95BB1C1FB14701DE98BDF09410A1E975871D2F1B"},
+    {"quarter":"2025q2","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q2_nport.zip","bytes":435156377,"sha256":"08B90E310DA506AE46E8A5B276022861808D61D56CE434CE310F52F31F608CA7"},
+    {"quarter":"2025q3","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q3_nport.zip","bytes":468940747,"sha256":"4CC5C2431BF8997EF0AF1CB7B69568255A1D6A1840E41499D9FFD1FC42E030F6"},
+    {"quarter":"2025q4","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q4_nport.zip","bytes":417802295,"sha256":"4EBB169E6CC0745B4CC65DE4E83EA4916C7AD39146C383007E078B6223AF8DEA"},
+    {"quarter":"2026q1","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q1_nport.zip","bytes":463076167,"sha256":"7626E33D21AB48169DB412F7370190A9BA8D6A2C921718E59A445B333B23694C"},
+    {"quarter":"2026q2","url":"https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q2_nport.zip","bytes":440699889,"sha256":"077CC836A978A593B29012219395FBE9C303D5E930F5BE3B5F4353C3B02296FC"}
+  ],
+  "extraction_contract": {
+    "holding_filters": {"UNIT":"NS","ASSET_CAT":"EC","PAYOFF_PROFILE":"Long","balance_nonnegative":true,"currency_value_positive":true},
+    "identity": "Strict unambiguous CUSIP-to-core-ticker pairs from the SEC FTD identity surface; ETFs and commodity trusts are excluded before extraction.",
+    "company_exclusions": ["GLD","IAU","IWM","QQQ","SLV","SNXX","SPY","TQQQ"],
+    "holding_group": ["ACCESSION_NUMBER","SERIES_ID","ticker","ISSUER_CUSIP","FILING_DATE","REPORT_DATE","SUB_TYPE","CURRENCY_CODE"],
+    "continuous_report_gap_days": [70,110],
+    "matched_series_minimum": 20,
+    "split_rule": "For each ticker/report date with at least 20 USD observations, compare reported implied raw price (CURRENCY_VALUE/BALANCE) with the frozen split-adjusted close. Apply an integer 2..50 factor only when the cross-sectional median is within 5 percent of that integer; reciprocal factors follow the same rule. Otherwise use 1.0."
+  },
+  "compact_files": [
+    {"name":"core_holdings_2024q2.json.gz","bytes":745759,"sha256":"BF153DE4B224D6000534109010988C9887AA9DB6DC64E4C15FA66F6E0DBD45D7"},
+    {"name":"core_holdings_2024q3.json.gz","bytes":795583,"sha256":"66BFE06947CAC85B436F9D2897B78A663C455A62D5B3F5830CCDCE940361624F"},
+    {"name":"core_holdings_2024q4.json.gz","bytes":731058,"sha256":"10367A422D241FE8D3FDB73742DF6E3A29E38B7E8D1C8AECA1A470EDFEA6F8E7"},
+    {"name":"core_holdings_2025q1.json.gz","bytes":766068,"sha256":"4311607E3003FAACF77EAE0A9A899AA55DA220CA494620DF2C3AE45175059168"},
+    {"name":"core_holdings_2025q2.json.gz","bytes":827518,"sha256":"3E6E4AD2B95F7812F9F3ADAC259F41CC468551588C92B45B4DD47EF150652E9D"},
+    {"name":"core_holdings_2025q3.json.gz","bytes":811120,"sha256":"1B9905F713BE9CC8B6C4034FBE5C055522247142B93CDFBDC97229923A3D4926"},
+    {"name":"core_holdings_2025q4.json.gz","bytes":843284,"sha256":"F42F1CCD29D8F48EB17BE109EDCD246920D4FB5A144CEA95046F8ED78C9CF6FA"},
+    {"name":"core_holdings_2026q1.json.gz","bytes":808129,"sha256":"3D65B17607B00A3D7658B7FBC05D63C1ED5F02446CB7A75B8C4BB6206B55B15E"},
+    {"name":"core_holdings_2026q2.json.gz","bytes":828652,"sha256":"282300549774441893EC110C173DF313088717B22D304E77DE14A2414BF983AB"},
+    {"name":"series_reports.json.gz","bytes":777722,"sha256":"1B895E6D8A958AC83296D08C22B4D0C7944623581B06F7BDDA37E4FF562FF598"}
+  ],
+  "extraction_script": {"name":"extract_nport_quarter.py","bytes":6354,"sha256":"5420D4F814533026E8008C0C0C8DCA7C88CEABFF24967D405ECDE5D7748F9BAD"},
+  "known_identity_caveat": "Current CUSIP mappings must not be generalized to renamed securities outside the fixed core universe. Direct N-PORT ticker is sparse and is used only as a diagnostic cross-check."
+}

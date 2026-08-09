@@ -1,0 +1,28 @@
+{
+  "accepted": false,
+  "change_type": "duplicate_reservation_accounting",
+  "decision": "rejected_duplicate_no_new_evidence_axis",
+  "experiment_id": "exp-20260711-007",
+  "hypothesis": "Repair the moomoo open-position entry-date contract so a currently held position whose recent deal reconstruction and prior snapshot both miss entry_date deterministically recovers the last known entry_date from the append-only live-drift ledger by position_id/ticker; this unblocks Gate 2 without changing trades, levels, sizing, or orders.",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "mechanism_family": "identity_or_measurement_repair",
+  "nearby_prior_experiments": [
+    "exp-20260711-006"
+  ],
+  "notes": "Duplicate of exp-20260711-006; no work ran.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another moomoo entry-date fallback repair for this incident.",
+    "new_evidence_required": "A new repair requires a different position-identity failure after the exp-20260711-006 fallback is in production.",
+    "why_result_happened": "The reservation duplicated the already claimed exp-20260711-006 repair for the identical locked variable before its ticket became visible. No second implementation or measurement ran."
+  },
+  "production_impact": {
+    "measurement_only": true,
+    "orders_changed": false
+  },
+  "single_causal_variable": "moomoo_entry_date_live_drift_fallback_v1",
+  "status": "rejected",
+  "timestamp": "2026-07-11T03:29:30Z",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exp-20260711-007"
+}

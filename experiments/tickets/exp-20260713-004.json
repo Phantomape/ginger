@@ -1,0 +1,316 @@
+{
+  "acceptance_rule": "Restore experiments/logs/exp-20260711-002.json to manifest SHA256 61e23ae5bfab926464a5705409fb2d6f3394b5d9fd29eeb0748eacdd4d3395d3; exp-20260711-017 log generation must bind ID 017 and reject cross-ID writes; focused tests and lean audit pass; no strategy or metric changes.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260713_004_experiment_log_wrapper_identity_repair.py",
+    "scripts/experiment_registry.py",
+    "quant/test_experiment_registry.py",
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "experiments/logs/exp-20260711-002.json",
+    "data/experiments/exp-20260713-004/",
+    "experiments/cards/exp-20260713-004.md",
+    "experiments/manifests/exp-20260713-004.json",
+    "experiments/tickets/exp-20260713-004.json",
+    "experiments/logs/exp-20260713-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260713-004.md",
+  "causal_components": [
+    "wrapper log identity binding",
+    "expected experiment-id write guard",
+    "manifest-hash recovery",
+    "regression test",
+    "derived-log rebuild"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "wrapper_experiment_log_identity_and_manifest_recovery_v1",
+  "claimed_at": "2026-07-13T08:55:40+00:00",
+  "completed_at": "2026-07-13T09:00:47+00:00",
+  "created_at": "2026-07-13T08:51:03+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260713-004",
+  "experiment_uid": "expuid-5dbb05e4e96148d8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260713-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T08:51:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "experiment_log_wrapper_identity_repair"
+  },
+  "hypothesis": "Publication fault recovery: exp-20260711-017 inherited a compact-log builder whose stale exp-20260711-002 identity overwrote the positive MOVE shard; binding wrapper identity and restoring the manifest-verified MOVE record makes novelty, failure statistics, and DSR trial accounting trustworthy without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entry",
+    "exit",
+    "ranking",
+    "sizing",
+    "risk_budget",
+    "orders",
+    "live_policy",
+    "baseline_metrics"
+  ],
+  "mechanism_family": "experiment_log_identity_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260711-002",
+    "exp-20260711-017"
+  ],
+  "new_evidence_type": "genuine_publication_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accounting",
+        "are",
+        "behavior",
+        "bind",
+        "builder",
+        "changing",
+        "compact",
+        "dsr",
+        "exp",
+        "experiment",
+        "failure",
+        "fault",
+        "identity",
+        "inherits",
+        "integrity",
+        "log",
+        "manifest",
+        "move",
+        "novelty",
+        "overwrites",
+        "positive",
+        "publication",
+        "record",
+        "recovery",
+        "repair",
+        "restore",
+        "shard",
+        "so",
+        "stale",
+        "statistics",
+        "strategy",
+        "trial",
+        "trustworthy",
+        "verified",
+        "whose",
+        "without",
+        "wrapper"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_log_json_parse_repair",
+        "reopen_condition": "A retry requires a newly detected malformed log shard, a parser/audit failure attributable to exp-20260628-020, or a repository-wide encoding contract change.",
+        "score": 0.0465,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_triage_counterfactual_price_source_fault_recovery",
+        "reopen_condition": "Allow routine forward settlement to accumulate. Review without a new implementation ID at 20/50 settled primary next-close decisions; reserve a separate alpha hypothesis only at 100 or with a genuinely new execution/counterfactual source.",
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "production_capacity_accounting_repair",
+        "reopen_condition": null,
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "data_ingestion_coverage_repair",
+        "reopen_condition": "TODO",
+        "score": 0.0186,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "rolling_lead_lag_peer_underreaction_candidate_pool",
+        "reopen_condition": "Need supplier/customer/product-line/event-source relation provenance or closed forward replacement-value rows before revisiting lead-lag relation alpha.",
+        "score": 0.0186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuine publication fault recovery: a manifest-proven cross-ID overwrite corrupted an existing source-of-truth shard; this restores recorded evidence rather than reslicing an alpha surface.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuine publication fault recovery: a manifest-proven cross-ID overwrite corrupted an existing source-of-truth shard; this restores recorded evidence rather than reslicing an alpha surface.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_experiment_log_identity_recovery",
+    "artifact": "data/experiments/exp-20260713-004/exp_20260713_004_experiment_log_wrapper_identity_repair.json",
+    "verification": {
+      "passed": true,
+      "checks": {
+        "move_manifest_expected_hash_matches_locked_value": true,
+        "move_log_hash_restored": true,
+        "move_ticket_is_positive_lead": true,
+        "move_log_is_positive_lead": true,
+        "move_log_identity_is_move": true,
+        "mortgage_rebuilt_identity_is_mortgage": true,
+        "mortgage_rebuilt_log_matches_source_of_truth": true,
+        "mortgage_log_hash_unchanged": true
+      },
+      "hashes": {
+        "corrupted_move_log_sha256_observed_before_repair": "9a6628dc58629ef93064f262577744ac3ec887b984f1e21c9d5463525f6fc37a",
+        "move_manifest_expected_sha256": "61e23ae5bfab926464a5705409fb2d6f3394b5d9fd29eeb0748eacdd4d3395d3",
+        "move_log_actual_sha256_after_repair": "61e23ae5bfab926464a5705409fb2d6f3394b5d9fd29eeb0748eacdd4d3395d3",
+        "mortgage_log_actual_sha256": "6d4f4b244a472e50066985416b35acc7b35cef88159ea185c496b2d30572eb76"
+      },
+      "identities": {
+        "move_log_experiment_id": "exp-20260711-002",
+        "move_log_decision": "positive_replay_lead_not_promoted_move_rate_volatility_relief",
+        "mortgage_rebuilt_experiment_id": "exp-20260711-017",
+        "mortgage_log_decision": "observed_only_rejected_mortgage_rate_residential_leadership"
+      }
+    },
+    "acceptance_basis": "MOVE log exactly matches its pre-corruption manifest hash; the mortgage wrapper reproduces its own existing log and the generic writer rejects an explicitly mismatched expected ID."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260713-004.json",
+  "single_causal_variable": "wrapper_experiment_log_identity_and_manifest_recovery_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260713-004.json",
+  "trial_family": "experiment_log_wrapper_identity_repair",
+  "trial_variant_id": "inherited_compact_log_cross_id_overwrite_recovery_v1",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "Manifest-proven cross-ID overwrite recovery; no alpha surface was resliced and no strategy metrics changed.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "strategy_behavior_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "risk_budget_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "experiment_metadata_publication_fault_recovery"
+  },
+  "decision": "accepted_measurement_repair_experiment_log_identity_recovery",
+  "acceptance_basis": "MOVE log exactly matches its pre-corruption manifest hash; the mortgage wrapper reproduces its own existing log and the generic writer rejects an explicitly mismatched expected ID.",
+  "post_run_reflection": {
+    "why_result_happened": "The mortgage runner delegated replay construction to a MOVE-derived module, then called the base compact-log function. That function closed over MOVE identity constants, so its first shard write targeted exp-20260711-002 even though later ticket persistence used exp-20260711-017.",
+    "forbidden_near_neighbor_retry": "Do not repair future shard mismatches by editing decisions from memory. Require a manifest-verified artifact/runner reconstruction and bind wrapper writes to an expected experiment ID.",
+    "new_evidence_required": "No retry is needed unless another manifest hash mismatch or cross-ID wrapper write is detected."
+  },
+  "next_retry_requires": [
+    "No retry is needed unless another manifest hash mismatch or cross-ID wrapper write is detected."
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260713_004_experiment_log_wrapper_identity_repair.py",
+    "scripts/experiment_registry.py",
+    "quant/test_experiment_registry.py",
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "experiments/logs/exp-20260711-002.json",
+    "data/experiments/exp-20260713-004/",
+    "experiments/cards/exp-20260713-004.md",
+    "experiments/manifests/exp-20260713-004.json",
+    "experiments/tickets/exp-20260713-004.json",
+    "experiments/logs/exp-20260713-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "related_files": [
+    "experiments/manifests/exp-20260711-002.json",
+    "experiments/logs/exp-20260711-002.json",
+    "experiments/logs/exp-20260711-017.json",
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "scripts/experiment_registry.py",
+    "quant/test_experiment_registry.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_registry.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260713_004_experiment_log_wrapper_identity_repair.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py rebuild-log",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "artifact": "data/experiments/exp-20260713-004/exp_20260713_004_experiment_log_wrapper_identity_repair.json",
+  "log": "experiments/logs/exp-20260713-004.json",
+  "updated_at": "2026-07-13T09:00:47+00:00"
+}

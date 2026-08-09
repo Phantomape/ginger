@@ -1,0 +1,99 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "staleness threshold misanchored to wall clock instead of data calendar; catch-up wiring runs after consumers; alert flaps on weekends/holidays"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "very_low",
+    "surprise_note": "The settlement chain ran daily with status=ok for 8 runs while its only price input was frozen; the observer content-identity rule (exp-20260803-001) covered the dividends fetch but nobody owned bar freshness because the backfill was a research CLI with no daily owner."
+  },
+  "causal_components": [],
+  "change_summary": "Recovered the 12-day frozen massive grouped-daily warehouse (6 sessions, 74,634 rows, bars to 2026-08-04), wired a bounded idempotent incremental catch-up into both daily paths ahead of the dividend-restart observer/settlement, and made the settlement fail closed (alert=true stale_bars_input) when bars lag the latest completed US-equity session by >=2 sessions, with the staleness fields bound into the coverage manifest.",
+  "change_type": "measurement_repair",
+  "changed_variable": "run.py daily wiring + massive_dividend_restart_forward_settlement staleness fail-closed",
+  "component": "quant/run.py, quant/massive_ohlcv_backfill.py, quant/massive_dividend_restart_forward_settlement.py, quant/massive_dividend_restart_forward_observer.py, quant/test_massive_dividend_restart_forward_settlement.py, quant/test_run_daily_wiring.py, quant/test_massive_ohlcv_backfill.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260805-004",
+  "hypothesis": "Massive grouped-daily bar freshness is a silent single point of failure for the dividend-restart forward settlement chain: the warehouse froze at 2026-07-24 for 12 days while the daily observer/settlement kept reporting status=ok alert=false, because (1) no bounded incremental grouped-daily catch-up is wired into the daily run before the observer/settlement consumers and (2) the settlement/observer have no fail-closed staleness check anchored to the data calendar (canonical OHLCV latest completed session). Repair: wire a bounded incremental massive catch-up into run.py ahead of the observer, and make the settlement degrade to alert=true stale status when bars lag the latest completed session by >=2 sessions. Fault recovery of a starving forward face per AGENTS.md section 6; does not count toward saturation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Synthesis pass (no-ID): baseline_universe=core~47+massive full market; opportunity_cost_winner=null (no user ticker this round); evidence_surfaces_used=[canonical OHLCV hot(08-04), massive daily_bars/dividends/instrument_master, reopen_readiness 13 lanes, research digest(stale 07-27, ledger noted), form4 lane state]; evidence_surfaces_missing=[massive instrument_master.list_date - checked, absent at source API, axis dead at source-contract preflight, no ID burned; joins illegal per 2.4]; hypothesis_candidates=[IPO-lockup-proxy drift (died at list_date preflight), massive breadth regime (frozen near-neighbor, dead response shape), this repair]; selected=measurement repair (fault recovery); economic_mechanism=forward settlement lanes are calendar-bound, a starving bar warehouse permanently loses reopen-counter days; falsifier=stale scenario must alert and fresh must not (tested both); pit_tier=research_pit surface unchanged; evidence_grade=measurement; result_ceiling=n/a. All 13 reopen lanes not_ready; alpha blocked this round by absence of a legal new evidence axis - named blockers: digest stale, list_date dead, enumeration/join lanes closed. Zero-decision audit: 199 candidates, 194 initiation-variant, 161 insufficient_pre_declaration_bars, 1 eligible restart (late-discovery excluded) - natural base rate, not starvation. Form4 STALLED flag likewise natural slow accrual (producer healthy, 1 eligible decision since 07-28 effective date).",
+  "parameters": {
+    "locked_variables": [
+      "massive_warehouse_daily_freshness_failclosed_and_incremental_wiring"
+    ],
+    "single_causal_variable": "massive_warehouse_daily_freshness_failclosed_and_incremental_wiring"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further per-observer freshness/staleness repair IDs for surfaces already covered by this pattern; the remaining legacy-observer fail-closed audit stays ONE pooled batch measurement repair per AGENTS.md section 6. Do not re-tune the 2-session threshold or the 15-session bound without a demonstrated false-alert/false-quiet case.",
+    "new_evidence_required": "A reopen probe on massive_dividend_restart_forward still requires >=30 settled restart decisions (calendar-bound, now accruing with daily bars); any new massive-source alpha ID requires a genuine section 2.4 axis - instrument_master.list_date was verified absent at the source API on 2026-08-05 and is dead as an axis.",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The settlement chain ran daily with status=ok for 8 runs while its only price input was frozen; the observer content-identity rule (exp-20260803-001) covered the dividends fetch but nobody owned bar freshness because the backfill was a research CLI with no daily owner."
+  },
+  "prediction": {
+    "confidence_reason": "Root cause directly observed today: 12-day frozen bars with ok/alert-false settlement summaries; repair is the standard section 6 fail-closed freshness pattern already applied to five prior observers",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "staleness threshold misanchored to wall clock instead of data calendar; catch-up wiring runs after consumers; alert flaps on weekends/holidays"
+    ],
+    "recorded_at": "2026-08-05T16:19:07+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260805-004/before.json",
+    "data/experiments/exp-20260805-004/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-05T16:47:23+00:00",
+  "trial_family": "massive_full_market_ohlcv_freshness",
+  "trial_variant_id": "exp-20260805-004"
+}

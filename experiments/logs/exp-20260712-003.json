@@ -1,0 +1,123 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "warehouse_coverage_incomplete",
+      "discretionary_trade_mix_not_strategy_attributable",
+      "actual_exits_truncate_winners",
+      "calendar_cohort_instability",
+      "single_ticker_concentration"
+    ],
+    "predicted_success_probability": 0.35,
+    "realized_failure_mode": "duplicate_reservation_no_new_evidence",
+    "surprise_level": "not_scored",
+    "surprise_note": "No experiment ran; duplicate accounting only."
+  },
+  "causal_components": [
+    "latest-effective broker fills",
+    "strict trusted lifecycle links",
+    "five-session warehouse settlement",
+    "lifecycle-level aggregation",
+    "three chronological cohorts",
+    "no strategy behavior change"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260712-002 owns the unchanged broker exit-fill H5 avoidance hypothesis.",
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "broker_exit_fill_h5_avoidance_value_v1",
+  "component": "quant/experiments/exp_20260712_003_broker_exit_fill_h5_avoidance.py, data/experiments/exp-20260712-003/exp_20260712_003_broker_exit_fill_h5_avoidance.json, experiments/cards/exp-20260712-003.md, experiments/manifests/exp-20260712-003.json, experiments/tickets/exp-20260712-003.json, experiments/logs/exp-20260712-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-07-10",
+    "start": "2024-07-12"
+  },
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260712-003",
+  "hypothesis": "Observed-only exit alpha: broker-authoritative reduce and close fills across the 87 trusted closed lifecycles should show positive five-session cash, SPY, and QQQ exit-avoidance value versus continuing the exited shares if realized production exits add value rather than truncate winners.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "broker_execution_exit_quality",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260712-002"
+  ],
+  "new_evidence_type": "new_broker_authoritative_settled_lifecycles",
+  "next_retry_requires": [
+    "Use exp-20260712-002 as the sole evidence probe for this fixed hypothesis."
+  ],
+  "notes": "No runner or evidence probe executed. The first reserve completed after the tool's initial output window; exp-20260712-003 is a duplicate of exp-20260712-002.",
+  "parameters": {
+    "locked_variables": [
+      "horizon=5 trading sessions",
+      "comparators=cash+SPY+QQQ",
+      "aggregation=lifecycle",
+      "latest-effective lifecycle rule",
+      "all trusted closed lifecycles"
+    ],
+    "single_causal_variable": "broker_exit_fill_h5_avoidance_value_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not repeat the same broker-execution H5 attribution under another experiment ID.",
+    "new_evidence_required": "Follow exp-20260712-002's closeout boundary; this ticket added no evidence.",
+    "realized_failure_mode": "duplicate_reservation_no_new_evidence",
+    "why_result_happened": "The original reservation finished after the first tool window, so the retry created an unnecessary duplicate before the ticket became visible."
+  },
+  "prediction": {
+    "confidence_reason": "This is the first broker-authoritative closed-lifecycle surface and it supplies 87 quantity-anchored real exits across three calendar cohorts, so it can reveal whether production exits preserve capital. The account mixes discretionary and strategy trades and prior shadow-advisory severity was unstable, making a robust positive result uncertain.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "warehouse_coverage_incomplete",
+      "discretionary_trade_mix_not_strategy_attributable",
+      "actual_exits_truncate_winners",
+      "calendar_cohort_instability",
+      "single_ticker_concentration"
+    ],
+    "recorded_at": "2026-07-12T02:10:26+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-07-12T02:12:01+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "h5_cash_spy_qqq_lifecycle_aggregate_v1"
+}

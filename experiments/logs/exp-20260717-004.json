@@ -1,0 +1,345 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "after_metrics": {
+    "expected_value_score": 6.0646,
+    "max_drawdown_pct": 0.0907,
+    "survival_rate": 0.8116,
+    "total_pnl": 128903.31,
+    "trade_count": 127
+  },
+  "aggregate": {
+    "after_expected_value_score_sum": 6.0646,
+    "after_total_pnl_sum": 128903.31,
+    "before_expected_value_score_sum": 6.2057,
+    "before_total_pnl_sum": 130992.36,
+    "expected_value_score_delta_sum": -0.1411,
+    "pair_expected_value_score_sum": -0.1285,
+    "pair_gross_pnl": 94.96212515466418,
+    "pair_net_pnl": -2089.0378748453354,
+    "pair_protocol_return": -0.007,
+    "pair_round_trip_cost": 2184.0,
+    "positive_pair_windows": 0,
+    "settled_pair_count": 78,
+    "total_pnl_delta_sum": -2089.05
+  },
+  "anti_js": {
+    "evidence": "Python shared helper, evaluator, tests, and frozen JSON artifacts only.",
+    "used_javascript": false
+  },
+  "artifact": "data/experiments/exp-20260717-004/fed_h8_bank_size_relative_value_replay.json",
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "trade_count": 49
+  },
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0484,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 1200.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_success_probability": 0.22,
+    "realized_ev_delta": -0.1411,
+    "realized_ev_error": -0.2911,
+    "realized_failure_mode": "transaction_cost_drag",
+    "realized_pnl_delta": -2089.05,
+    "realized_pnl_error": -3289.05,
+    "surprise_note": "The preregistered cost-drag risk materialized: gross directional PnL was only +$94.96 across 78 weekly pairs, while fixed costs were $2,184.00. Public rounded after-before PnL is -$2,089.05 and the standalone pair total is -$2,089.04; their full-precision identity is exact."
+  },
+  "causal_components": [
+    "shared pure H.8 parser and policy helper",
+    "official dated H.8 archive manifest",
+    "cross-client semantic source identity",
+    "historical PIT replay",
+    "strict next-open weekly pair ledger",
+    "adjusted four-ETF price panel",
+    "Gate-2 ATR target sentinel",
+    "one-shot daily default-off seed",
+    "execution envelope",
+    "full-stack verdict",
+    "fingerprint coverage"
+  ],
+  "change_type": "capital_allocation_full_stack",
+  "changed_variable": "fed_h8_weekly_kre_kbe_pair_direction",
+  "concentration": {
+    "positive_week_count": 8,
+    "positive_week_pnl_total": 80.67495929593977,
+    "top_five_positive_week_contribution": 0.9269596242122815,
+    "top_five_positive_week_contribution_cap": 0.6,
+    "week_count": 78
+  },
+  "decision": "rejected_fed_h8_weekly_bank_size_relative_value",
+  "delta_metrics": {
+    "expected_value_score": -0.1411,
+    "max_drawdown_pct": 0.0018,
+    "survival_rate": 0.0,
+    "total_pnl": -2089.05,
+    "trade_count": 78
+  },
+  "experiment_id": "exp-20260717-004",
+  "fingerprint": {
+    "audit_passed": true,
+    "data_source": "fed_h8_weekly_release_vintages",
+    "gate_shape": "weekly_relative_value_allocator"
+  },
+  "fingerprint_caveat": "Reservation initially inferred companyfacts_ratio/other because the new H.8 population was absent from scripts/experiment_fingerprint.py. Dedicated compound keywords were added in the same experiment; the final ticket text now re-infers fed_h8_weekly_release_vintages/weekly_relative_value_allocator without capturing generic Companyfacts or bank-ETF text.",
+  "gate1": {
+    "baseline": "data/experiments/exp-20260715-010/after_measurement.json",
+    "baseline_bytes": 19435,
+    "baseline_experiment_id": "exp-20260715-010",
+    "baseline_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "expected_value_score_sum": 6.2057,
+    "passed": true,
+    "public_metrics_and_daily_curves_rebuilt_exactly": true,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49
+  },
+  "gate2": {
+    "actual_exit_policy": "first regular-session open strictly after the next H.8 release",
+    "entry_date_present_count": 78,
+    "hard_failures": [],
+    "passed": true,
+    "scalar_target_price_present_count": 78,
+    "target_price_execution_enabled": false,
+    "target_price_role": "Gate-2 signal-contract sentinel only; adjusted long-leg entry open plus 3.5 times ATR14 using data only through the prior session"
+  },
+  "gate3": {
+    "by_window": {
+      "late_strong": {
+        "signals_generated": 26,
+        "signals_survived": 25,
+        "survival_rate": 0.9615384615384616
+      },
+      "mid_weak": {
+        "signals_generated": 26,
+        "signals_survived": 25,
+        "survival_rate": 0.9615384615384616
+      },
+      "old_thin": {
+        "signals_generated": 29,
+        "signals_survived": 28,
+        "survival_rate": 0.9655172413793104
+      }
+    },
+    "market_data_contract_rejects": [],
+    "passed": true,
+    "signals_generated": 81,
+    "signals_survived": 78,
+    "statistical_unit": "one lag4-eligible H.8 release pair-week",
+    "survival_rate": 0.9629629629629629
+  },
+  "gate4": {
+    "combined_drawdown_worse_max": 0.0018,
+    "hard_failures": [
+      "aggregate_pair_net_pnl_not_positive",
+      "aggregate_pair_ev_not_positive",
+      "fewer_than_two_positive_pair_windows",
+      "combined_aggregate_pnl_not_improved",
+      "combined_aggregate_ev_not_improved",
+      "top_five_positive_week_contribution_over_60pct",
+      "matched_replacement_comparator_not_beaten"
+    ],
+    "matched_replacement_pnl": {
+      "CASH": 0.0,
+      "KBE": -479.0272150932837,
+      "KRE": -274.19813847381306,
+      "QQQ": -326.65779711275724,
+      "SPY": -740.261228238696,
+      "TARGET": -2089.037874845335
+    },
+    "max_pair_drawdown_pct": 0.0076,
+    "passed": false,
+    "required_comparators": [
+      "CASH",
+      "SPY",
+      "QQQ",
+      "KRE",
+      "KBE"
+    ],
+    "static_pair_diagnostics": {
+      "binding": false,
+      "long_kbe_short_kre": -2286.4145383097357,
+      "long_kre_short_kbe": -2081.5854616902648
+    }
+  },
+  "gate5": {
+    "blockers": [
+      "fewer_than_30_prospective_closed_pairs",
+      "deflated_sharpe_not_computable",
+      "capital_margin_borrow_policy_unproven",
+      "kill_switch_parity_not_proven"
+    ],
+    "closed_forward_pairs": 0,
+    "dsr_status": "not_computable_single_preregistered_trial",
+    "live_ready": false,
+    "passed": false
+  },
+  "generated_at": "2026-07-17T11:33:19.927725+00:00",
+  "hypothesis": "The sum of small-minus-large-bank four-release log-growth spreads in Other deposits and Commercial and industrial loans from each official Federal Reserve H.8 dated release predicts the next-week KRE versus KBE relative return; positive signals hold long KRE/short KBE and negative signals reverse the pair until the first open after the next release.",
+  "implementation_mode": "shared_paper_first",
+  "lane": "alpha_search",
+  "market_data": {
+    "action_semantics": "adjusted OHLC incorporates splits and distributions; no separate dividend cashflows",
+    "canonical_rowset_sha256": "ecb34fc17cffdde61dc7cb78c40b173dd75a72270f265660c94c71c3aab9640a",
+    "file": "data/experiments/exp-20260717-004/auxiliary_ohlcv.json",
+    "file_sha256": "933904a2ca73efd657fc0dad96dacc6e592c727e4fecb87840359c7b6aead6fb",
+    "row_counts": {
+      "KBE": 412,
+      "KRE": 412,
+      "QQQ": 412,
+      "SPY": 412
+    },
+    "yfinance_version": "1.2.0"
+  },
+  "mechanism_family": "official_bank_balance_sheet_transmission_relative_value",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260714-003",
+    "exp-20260712-010",
+    "exp-20260716-009"
+  ],
+  "new_evidence_axis": "A genuinely new official data source and gate shape: 81 dated Federal Reserve H.8 release vintages plus four lag anchors were parsed into a weekly market-neutral KRE/KBE relative-value allocator.",
+  "new_evidence_type": "new_data_source_and_gate_shape",
+  "observed_only_lead": false,
+  "owner": "codex-alpha",
+  "parameters": {
+    "entry": "first regular-session open strictly after publication",
+    "exit": "first regular-session open strictly after the next publication",
+    "lag_releases": 4,
+    "large_bank_table": 6,
+    "max_concurrent_pairs": 1,
+    "neutral_band": null,
+    "notional_usd_per_leg": 4000.0,
+    "positive_signal": "long KRE / short KBE",
+    "required_rows": [
+      "line 10 Commercial and industrial loans",
+      "line 36 Other deposits"
+    ],
+    "round_trip_cost_pct_per_leg": 0.0035,
+    "round_trip_cost_usd_pair": 28.0,
+    "rule_version": "fed_h8_large_small_deposit_ci_lag4_kre_kbe_v1",
+    "signal": "sum_field[log(small_i/small_i_minus_4)-log(large_i/large_i_minus_4)]",
+    "small_bank_table": 8,
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not invert the sign, sweep lag lengths, substitute nearby H.8 rows, add a threshold or neutral band, change the response function, alter notional/costs, switch entry or exit clocks, replace KRE/KBE with neighboring bank ETFs, or slice the same 85 frozen releases. Those are same-signal retunes after a Gate-4 rejection.",
+    "new_evidence_required": "Park this H.8 deposit/C&I lag4 pair family. Reopen only with a genuinely new data source or a substantively new economic signal, or with materially more prospectively settled unchanged-policy rows meeting the repository forward-row threshold and positive replacement value; a same-day recount or parameter sweep is insufficient.",
+    "realized_failure_mode": "transaction_cost_drag",
+    "why_result_happened": "The bank-size signal had essentially no gross directional edge: 39 of 78 weeks were gross winners but aggregate gross PnL was only +$94.96. Fixed $28 pair costs consumed $2,184, leaving only 8 net-positive weeks, three negative windows, -$2,089.04 net PnL, negative EV, 92.70% top-five positive-week concentration, and losses versus every required matched comparator."
+  },
+  "pre_run_questions": {
+    "1_alpha_hypothesis": "Small-versus-large bank four-release deposit and C&I growth should reveal funding and credit transmission that appears first in KRE versus KBE relative returns.",
+    "2_history_check": "The novelty gate found no prior H.8 dated-vintage weekly pair family; the final dedicated fingerprint has no blocking near neighbor.",
+    "3_single_policy_bundle": "One fixed lag4 two-row signal, direction mapping, strict weekly clock, equal gross notional, and cost contract; helper, replay, source freeze, sentinel fields, and seed only make that policy measurable and reproducible.",
+    "4_success_failure_standard": "The preregistered Gate 1-4 rule required at least 20 settled pairs per window, positive aggregate pair PnL/EV, at least two positive windows, combined PnL/EV improvement, drawdown and concentration limits, and wins over cash/SPY/QQQ/KRE/KBE.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_004_fed_h8_bank_size_relative_value.py --offline"
+  },
+  "production_impact": {
+    "backtester_changed": false,
+    "backtest_replay_implemented": true,
+    "core_exits_changed": false,
+    "core_ranking_changed": false,
+    "core_sizing_changed": false,
+    "daily_default_off_seed_written": true,
+    "daily_wiring_retained": false,
+    "historical_and_daily_selection_share_helper": true,
+    "live_orders_changed": false,
+    "live_ready": false,
+    "paper_orders_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_retained_for_reproducibility_only": true,
+    "trade_enabled": false
+  },
+  "reproduction": {
+    "commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_004_fed_h8_bank_size_relative_value.py --source-only",
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_004_fed_h8_bank_size_relative_value.py --source-only --offline",
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_004_fed_h8_bank_size_relative_value.py --ohlcv-only",
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_004_fed_h8_bank_size_relative_value.py --offline",
+      ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_fed_h8_bank_size_relative_value_paper_sleeve.py quant\\test_experiment_fingerprint.py quant\\test_sharpe_inference.py quant\\test_full_stack_candidate_pool.py quant\\test_paper_sleeve_execution_contract.py -q",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py close --experiment-id exp-20260717-004 --before data\\experiments\\exp-20260717-004\\before.json --after data\\experiments\\exp-20260717-004\\after.json --write-registry --status-override rejected --realized-failure-mode transaction_cost_drag",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+      ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+    ],
+    "deterministic_offline_replay": "The frozen source and OHLCV rebuilt the in-memory result exactly after removing only the stored output_bundle wrapper; all four child canonical payload hashes matched.",
+    "first_full_attempt": "Failed closed before evaluation artifacts on a diagnostic-only static-comparator accumulator KeyError; the accumulator was repaired without changing binding comparators or viewing/retuning policy outcomes, and one inspected offline retry completed.",
+    "independent_outcome_audit": "356 source, timing, price, fixed-share, cost, comparator, PIT, and output-identity checks passed with no P0/P1 finding.",
+    "tests": "283 passed"
+  },
+  "residual_unknowns": [
+    "Historical ETF association cannot prove that the H.8 balance-sheet split caused the relative return.",
+    "The baseline has less than $12 minimum cash in every window, so the combined curve is an external-capital diagnostic rather than a cash-conserving allocation.",
+    "Historical short availability, borrow fees, margin, displacement, and kill-switch parity were not modeled; these block live eligibility independently of the Gate-4 rejection.",
+    "No prospectively settled unchanged-policy pair rows or complete selection pool exist, so DSR is not computable."
+  ],
+  "schema": "experiment_log_entry_v3",
+  "single_causal_variable": "fed_h8_small_large_bank_deposit_c_and_i_lag4_weekly_kre_kbe_pair_v1",
+  "source": {
+    "canonical_release_count": 81,
+    "canonical_semantic_bytes": 10611,
+    "canonical_semantic_sha256": "2e4038ad501bb44a8d1d51d85347b8a2e9016b30ed05f49e2e1d9392db85e545",
+    "cross_client_raw_page_difference_count": 85,
+    "cross_client_semantic_mismatch_count": 0,
+    "lag_anchor_count": 4,
+    "release_dates_bytes": 79228,
+    "release_dates_sha256": "c9caa76a2f69a13e93cfc8aafb94e5ef17f368f18294239575241ce8eef51d6b",
+    "semantic_all_bytes": 11135,
+    "semantic_all_sha256": "cb8508c1509d674d41e441b007ee9f8826cd1f73bc933051c492fac9c29c7820",
+    "semantic_anchor_bytes": 524,
+    "semantic_anchor_sha256": "c71451dccc2cfb71740d665f4bffa34d31ddba44f002ced01173e4144ced312a",
+    "semantic_schema": "fed_h8_locked_table_values_v1",
+    "source_contract_passed": true,
+    "source_identity_caveat": "The official Fed full-page HTML contains client-dependent dynamic bytes: two independent clients differed on all 85 raw bodies even though Table 6/8 line 10/36 values matched exactly. Raw page hashes are archived as retrieval provenance but are explicitly non-comparable; the cross-client-stable semantic table-value hashes are the binding source identity.",
+    "source_manifest": "data/experiments/exp-20260717-004/source_manifest.json",
+    "source_manifest_sha256": "05ca5523c9668d2d68e297b65b97383dd2f54813bf8572b4c7cacb3123acfec4",
+    "total_release_count": 85
+  },
+  "status": "rejected",
+  "trial_family": "fed_h8_weekly_release_bank_size_pair",
+  "trial_variant_id": "two_row_sum_lag4_weekly_pair_v1",
+  "windows": {
+    "late_strong": {
+      "after_ev": 4.0275,
+      "after_pnl": 69316.74,
+      "before_ev": 4.1067,
+      "before_pnl": 70075.18,
+      "delta_ev": -0.0792,
+      "delta_max_drawdown_pct": 0.0004,
+      "delta_pnl": -758.44,
+      "pair_ev": -0.0541,
+      "pair_gross_pnl": -58.42890433183888,
+      "pair_net_pnl": -758.4289043318388,
+      "settled_pairs": 25
+    },
+    "mid_weak": {
+      "after_ev": 1.9454,
+      "after_pnl": 51330.98,
+      "before_ev": 1.9908,
+      "before_pnl": 51976.41,
+      "delta_ev": -0.0454,
+      "delta_max_drawdown_pct": 0.0001,
+      "delta_pnl": -645.43,
+      "pair_ev": -0.0401,
+      "pair_gross_pnl": 54.556243525534356,
+      "pair_net_pnl": -645.4437564744658,
+      "settled_pairs": 25
+    },
+    "old_thin": {
+      "after_ev": 0.0917,
+      "after_pnl": 8255.59,
+      "before_ev": 0.1082,
+      "before_pnl": 8940.77,
+      "delta_ev": -0.0165,
+      "delta_max_drawdown_pct": 0.0018,
+      "delta_pnl": -685.18,
+      "pair_ev": -0.0343,
+      "pair_gross_pnl": 98.83478596096877,
+      "pair_net_pnl": -685.1652140390311,
+      "settled_pairs": 28
+    }
+  }
+}

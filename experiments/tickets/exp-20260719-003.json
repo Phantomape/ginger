@@ -1,0 +1,353 @@
+{
+  "acceptance_rule": "Gate 2 complete target/accepted_at/entry_date/target_price/terms/outcome provenance; Gate 3 survival >=5%; >=15 eligible trades and >=4 per window; include every eligible failure and right-censor open deals by window-end MTM; standalone after 35bp plus 20 USD event fee and 5pct annual carry has positive aggregate PnL/EV with at least 2 positive windows, no single deal >25pct PnL, drawdown <=8pct; 10pct cash-constrained blend improves aggregate baseline EV and PnL without >0.5pp drawdown degradation; otherwise reject and revert strategy behavior.",
+  "allowed_write_scope": [
+    "quant/sec_cash_tender_lifecycle.py",
+    "quant/test_sec_cash_tender_lifecycle.py",
+    "quant/sec_cash_tender_spread_paper_sleeve.py",
+    "quant/test_sec_cash_tender_spread_paper_sleeve.py",
+    "quant/sec_tender_price_history.py",
+    "quant/test_sec_tender_price_history.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "quant/experiments/exp_20260719_003_sec_cash_tender_spread.py",
+    "quant/test_exp_20260719_003_sec_cash_tender_spread.py",
+    "data/experiments/exp-20260719-003/exp_20260719_003_sec_cash_tender_spread.json",
+    "data/experiments/exp-20260719-003/sec_cash_tender_contracts.json",
+    "data/experiments/exp-20260719-003/ortex_price_cache.json",
+    "data/experiments/exp-20260719-003/ortex_price_cache_no_data_supplement.json",
+    "data/experiments/exp-20260719-003/before_measurement.json",
+    "data/experiments/exp-20260719-003/after_measurement.json",
+    "data/experiments/exp-20260719-003/daily_default_off_snapshot.json",
+    "experiments/cards/exp-20260719-003.md",
+    "experiments/manifests/exp-20260719-003.json",
+    "experiments/tickets/exp-20260719-003.json",
+    "experiments/logs/exp-20260719-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260715-010/after_measurement.json",
+  "card_file": "experiments/cards/exp-20260719-003.md",
+  "causal_components": [
+    "shared SEC tender lifecycle helper",
+    "immutable source URLs hashes and evidence spans",
+    "ORTEX ticker-as-of delisted OHLCV",
+    "Moomoo current execution feasibility",
+    "historical three-window lifecycle replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "loss-budget sizing and execution envelope",
+    "standalone and cash-constrained blend Gate 4"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fully_financed_board_recommended_cash_tender_spread_over_carry_policy_v1",
+  "claimed_at": "2026-07-19T17:56:13+00:00",
+  "completed_at": "2026-07-19T19:29:19+00:00",
+  "created_at": "2026-07-19T17:54:52+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260719-003",
+  "experiment_uid": "expuid-bfa9104d32ee4f41",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260719-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-19T17:54:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_cash_tender_spread"
+  },
+  "hypothesis": "Shared-paper-first target-side merger-arbitrage alpha: SEC submissions and immutable SC TO-T primary filing text identify board-recommended, fully financed, all-cash offers for all listed common shares; buying only when contract cash value exceeds ORTEX/Moomoo executable target price, fixed carry and costs, then following the actual completion, higher-bid, termination or window-end mark-to-market lifecycle earns positive after-cost standalone and cash-constrained portfolio PnL independent of trend/big-winner continuation.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "Initial SC TO-T only; target listed common shares; all outstanding fixed cash offer above 1 USD; definitive agreement; target board recommendation; no financing condition and binding committed funds; exclude CVR stock exchange partial mini-tender OTC bankrupt and hostile offers; enter first regular-session open strictly after SEC filing date; 20-session preannouncement break value; 5pct annual carry; implied completion probability >=70pct; net spread after 35bp round-trip cost and 20 USD event fee >0; report 0/20/40 USD fee sensitivity; max 5pct NAV per deal 50bp NAV predicted-break loss 1pct ADV and 20pct sleeve; actual cash acceptance payout",
+    "public higher-bid or termination next-open exit",
+    "amendment recheck",
+    "one-year timeout and window-end MTM; timestamped SEC/ORTEX inputs only; LLM has extraction-only no trade authority"
+  ],
+  "mechanism_family": "contractual_corporate_action_cash_conversion",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260618-002",
+    "exp-20260618-015",
+    "exp-20260702-018",
+    "exp-20260710-011",
+    "exp-20260718-007"
+  ],
+  "new_evidence_type": "new_gate_shape_contractual_target_cash_settlement_lifecycle",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ortex_borrow",
+      "field_tags": [
+        "action",
+        "actual",
+        "after",
+        "all",
+        "alpha",
+        "arbitrage",
+        "bid",
+        "big",
+        "board",
+        "buying",
+        "carry",
+        "cash",
+        "common",
+        "completion",
+        "constrained",
+        "continuation",
+        "contract",
+        "contractual",
+        "conversion",
+        "corporate",
+        "cost",
+        "costs",
+        "earns",
+        "end",
+        "exceeds",
+        "executable",
+        "filing",
+        "financed",
+        "first",
+        "following",
+        "fully",
+        "higher",
+        "identify",
+        "immutable",
+        "independent",
+        "lifecycle",
+        "listed",
+        "mark",
+        "market",
+        "merger",
+        "moomoo",
+        "of",
+        "offers",
+        "only",
+        "or",
+        "ortex",
+        "over",
+        "pnl",
+        "policy",
+        "portfolio",
+        "positive",
+        "price",
+        "primary",
+        "recommended",
+        "sc",
+        "settlement",
+        "shares",
+        "side",
+        "spread",
+        "standalone",
+        "submissions",
+        "t",
+        "target",
+        "tender",
+        "termination",
+        "text",
+        "then",
+        "to",
+        "trend",
+        "value",
+        "when",
+        "window",
+        "winner"
+      ],
+      "gate_shape": "portfolio_daily_equity_overlay"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_moomoo_borrow_pressure_pair_spread",
+        "reopen_condition": "A genuinely new gate shape or signal family, a sustainable same-day cross-sectional feed with materially more prospectively settled rows, or new PIT borrow/availability/utilization plus broker locate evidence. Threshold or response retuning alone is not valid.",
+        "score": 0.4693,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_fixed_borrow_stress_core_entry_admission",
+        "reopen_condition": "Reopen only with populated PIT availability/utilization that activates the frozen compound branch, or materially more PIT rows satisfying the repository growth rule and at least five actual fresh-core candidate touches in every canonical window (15 aggregate) before price access.",
+        "score": 0.4595,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ortex_borrow",
+        "family_key": "borrow_availability_ortex_fingerprint_coverage",
+        "reopen_condition": "Borrow/ORTEX alpha remains parked until populated PIT borrow-fee, utilization, loan-availability, or short-availability rows meet the prior forward-date floors and have closed cash/SPY/QQQ replacement-value attribution.",
+        "score": 0.4552,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_borrow_fee_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 borrow-fee tickers over 20 decision dates, then closed forward replacement-value rows versus cash, SPY, QQQ, and accepted comparators.",
+        "score": 0.4549,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ortex_borrow",
+        "family_key": "ortex_short_interest_sidecar_readiness_gate",
+        "reopen_condition": "A valid retry needs an append-only ORTEX daily sidecar with provider publication_date or usable_trade_date, at least 20 tickers over 20 decision dates, populated borrow fee/utilization/loan availability or days-to-cover fields, then closed forward replacement-value rows.",
+        "score": 0.4549,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuinely new gate shape: target-side corporate_action_cash_conversion evaluates offer-price convergence through tender acceptance/cash payout, higher-bid/termination branches and window-end MTM with cash occupancy and break-loss sizing; it is not another SEC form subtype with a fixed 10-day candidate response.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ortex_borrow",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Genuinely new gate shape: target-side corporate_action_cash_conversion evaluates offer-price convergence through tender acceptance/cash payout, higher-bid/termination branches and window-end MTM with cash occupancy and break-loss sizing; it is not another SEC form subtype with a fixed 10-day candidate response.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuinely new gate shape: target-side corporate_action_cash_conversion evaluates offer-price convergence through tender acceptance/cash payout, higher-bid/termination branches and window-end MTM with cash occupancy and break-loss sizing; it is not another SEC form subtype with a fixed 10-day candidate response.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "portfolio_daily_equity_overlay",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ortex_borrow",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The mechanism is a contractual cash anchor rather than the rejected fixed-horizon SEC momentum response: 81 initial SC TO-T offers span the three windows 30/28/23, sampled initial/final filings expose cash price plus completion and termination, and ORTEX successfully returned delisted LBPH OHLCV at 0.35 credits. Academic evidence finds small positive cost-sensitive merger-arb premia, while crowding, fees, rare crash-like deal breaks, and parser/outcome survivorship make a full Gate-4 pass uncertain.",
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "contract_parser_coverage_below_gate",
+      "too_few_fully_financed_board_recommended_deals",
+      "spread_consumed_by_carry_fee_and_slippage",
+      "eligible_sample_has_no_breaks_or_is_biotech_concentrated",
+      "ORTEX_credit_or_delisted_price_coverage_insufficient",
+      "cash_occupancy_displaces_core"
+    ],
+    "recorded_at": "2026-07-19T17:54:12+00:00",
+    "success_probability": 0.32
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260719-003/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260719-003/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": -0.748,
+      "total_return_pct": -0.1547,
+      "max_drawdown_pct": -0.0085,
+      "trade_count": 1,
+      "survival_rate": -0.752776,
+      "total_pnl": -15474.47
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.32,
+      "brier_score": 0.1024,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.15,
+      "actual_ev_delta": -0.748,
+      "ev_prediction_error": -0.898,
+      "expected_pnl_delta": 2000.0,
+      "actual_pnl_delta": -15474.47,
+      "pnl_prediction_error": -17474.47,
+      "predicted_failure_modes": [
+        "contract_parser_coverage_below_gate",
+        "too_few_fully_financed_board_recommended_deals",
+        "spread_consumed_by_carry_fee_and_slippage",
+        "eligible_sample_has_no_breaks_or_is_biotech_concentrated",
+        "ORTEX_credit_or_delisted_price_coverage_insufficient",
+        "cash_occupancy_displaces_core"
+      ],
+      "realized_failure_mode": "spread_consumed_by_carry_fee_and_slippage",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Only one of 17 contracts cleared carry, 35 bp cost and the corporate-action fee; HEES was profitable, but total concentration and the opportunity cost of replacing a strong core allocation caused portfolio rejection."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260719-003.json",
+  "single_causal_variable": "fully_financed_board_recommended_sc_to_t_target_cash_conversion_spread_over_carry_policy_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260719-003.json",
+  "trial_family": "sec_sc_to_t_target_cash_settlement_spread",
+  "trial_variant_id": "fully_financed_cash_tender_spread_over_carry_v1"
+}

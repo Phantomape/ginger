@@ -1,0 +1,136 @@
+{
+  "after_metrics": {
+    "expected_value_score": 5.9413,
+    "max_drawdown_pct": 0.0805,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.806,
+    "total_pnl": 125255.69,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.2644,
+    "actual_pnl_delta": -5736.67,
+    "actual_success": 0,
+    "brier_score": 0.0484,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.9644,
+    "expected_ev_delta": 0.7,
+    "expected_pnl_delta": 8000.0,
+    "pnl_prediction_error": -13736.67,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "positive covariance also clips winners",
+      "thin old window",
+      "capital released cannot be reused under fixed ordering",
+      "drawdown improves without enough EV"
+    ],
+    "predicted_success_probability": 0.22,
+    "realized_failure_mode": "positive covariance also clips winners",
+    "surprise_level": "very_low",
+    "surprise_note": "The drawdown thesis worked in every window, but the same shrinkage clipped enough winners that EV and PnL regressed in all three despite eight additional trades."
+  },
+  "causal_components": [
+    "60_return_covariance",
+    "active_book_market_value_weights",
+    "positive_cross_covariance_only",
+    "closed_form_variance_neutral_scalar"
+  ],
+  "change_summary": "Evaluated a fixed post-selection, pre-cash-admission raw active-book marginal-variance requested-risk scalar on the active cash-feasible three-window anchor; it reduced drawdown but regressed EV and PnL in all windows, so no trading behavior was retained.",
+  "change_type": "risk_allocation",
+  "changed_variable": "initial_position_risk_scalar_after_selection_before_capital_admission",
+  "component": "quant/active_book_marginal_variance.py, quant/test_active_book_marginal_variance.py, quant/experiments/exp_20260716_001_active_book_marginal_variance.py, data/experiments/exp-20260716-001, experiments/artifacts/exp-20260716-001_active_book_marginal_variance.md, experiments/logs/exp-20260716-001.json, experiments/cards/exp-20260716-001.md, experiments/manifests/exp-20260716-001.json, experiments/tickets/exp-20260716-001.json, docs/experiment_registry.json, docs/experiment_log.jsonl, docs/frozen_families.jsonl, docs/alpha-optimization-playbook.md",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.2644,
+    "max_drawdown_pct": -0.0084,
+    "survival_rate": -0.0056,
+    "total_pnl": -5736.67
+  },
+  "experiment_id": "exp-20260716-001",
+  "hypothesis": "Risk-allocation alpha: after candidate selection and before executable-capital admission, scale only a new position's initial risk by the positive marginal covariance it adds to the actual active book; diversifying covariance remains unpenalized, so scarce capital should retain idiosyncratic winners while reducing synchronized loss tails.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "active_book_marginal_variance_budget",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260524-023",
+    "exp-20260613-033",
+    "exp-20260623-026",
+    "exp-20260714-006"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [],
+  "notes": "Gate 1 reproduced exp-20260715-010 exactly. Aggregate EV 6.2057 to 5.9413 (-0.2644), PnL 130992.36 to 125255.69 (-5736.67), worst MDD 8.89% to 8.05%, trades 49 to 57, 38 entries changed final executed shares. Cash integrity passed, and Gate 2 used actual replay signal annotations plus executed trade rows: 150 executable signals had entry_date/target_price and all 57 trades matched. Fingerprint caveat: classifier mislabeled the true active-book covariance surface as companyfacts_ratio/candidate_pool_top1_10d. DSR remains not_computable and live_ready=false. See experiments/artifacts/exp-20260716-001_active_book_marginal_variance.md.",
+  "parameters": {
+    "locked_variables": [
+      "candidate set",
+      "ranking",
+      "entry timing",
+      "exit policy",
+      "capital admission",
+      "60-session covariance lookback",
+      "positive-cross-only closed-form scalar"
+    ],
+    "single_causal_variable": "joint_active_book_marginal_variance_budget_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry this same active-book raw-covariance marginal-variance gate on the canonical outcomes by sweeping lookback length, covariance floors, positive-cross thresholds, scalar caps or floors, active-position subsets, market-residual covariance, or requested-versus-cash-scaled notional variants.",
+    "new_evidence_required": "Reopen only with an unseen out-of-sample window and an independently predeclared gate, at least +50% and +10 materially new settled forward active-book decisions, or a genuinely new non-price dependence source; otherwise switch evidence surfaces.",
+    "realized_failure_mode": "positive covariance also clips winners",
+    "why_result_happened": "The raw covariance cross term reduced overlapping book risk as designed, so maximum drawdown improved in all three windows, but it treated profitable common exposure as harmful too. The gate changed final executed shares on 38 entries, with median material scalars of about 0.763 late, 0.619 mid, and 0.598 old; released cash added 8 trades, yet clipped winner contribution exceeded avoided losses and those added trades, leaving every window lower on both EV and PnL."
+  },
+  "prediction": {
+    "confidence_reason": "38 of 49 cash-feasible entries overlap an active book with complete 60-return covariance history, but covariance sizing has mixed historical priors and the >10% EV hurdle is strict.",
+    "expected_ev_delta": 0.7,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "positive covariance also clips winners",
+      "thin old window",
+      "capital released cannot be reused under fixed ordering",
+      "drawdown improves without enough EV"
+    ],
+    "recorded_at": "2026-07-16T00:06:23+00:00",
+    "success_probability": 0.22
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260716-001/before.json",
+    "data/experiments/exp-20260716-001/after.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-16T00:40:06+00:00",
+  "trial_family": "joint_active_book_marginal_variance_budget",
+  "trial_variant_id": "closed_form_positive_cross_term_v1"
+}

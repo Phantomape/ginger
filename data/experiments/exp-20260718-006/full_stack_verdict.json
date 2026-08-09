@@ -1,0 +1,741 @@
+{
+  "accepted_alpha": false,
+  "decision": "rejected_hacker_news_owned_domain_attention",
+  "experiment_id": "exp-20260718-006",
+  "full_stack_verdict": {
+    "anti_js": "No JavaScript was used.",
+    "evaluation_mode": "champion_replacement",
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "complete": true,
+      "kill_switch_drawdown_pct": 0.08,
+      "max_capital_pct": 0.24,
+      "max_concurrent": 6,
+      "max_displacement": 0,
+      "min_dollar_volume": 0.0,
+      "missing": [],
+      "notes": "One active position per ticker; six positions x $4,000 = $24,000. Formal Gate4 is a 24% funded sleeve replacing core capital. Algolia historical revision risk and prospective rows block live eligibility.",
+      "order_semantics": "default_off_next_regular_open_then_session10_close",
+      "sleeve_drawdown_stop_pct": 0.05,
+      "slippage_bps": 10.0
+    },
+    "gate4": {
+      "accepted_candidate_comparator": {
+        "expected_value_score_delta_sum": 0.5286,
+        "experiment_id": "exp-20260611-007",
+        "total_pnl_delta_sum": 10432.91
+      },
+      "canonical_candidate_pool_gate": {
+        "evaluation_mode": "champion_replacement",
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "materiality": null,
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": false,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": true,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": true
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.219165
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 0.737239
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.138492
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "drawdown_worse_guardrail"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 158,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "aggregate_ev_delta": -2.1771,
+            "aggregate_pnl_delta": -39611.22,
+            "max_drawdown_worse": 0.0295,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 1e-12,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 1.0,
+            "max_single_ticker_positive_share": 1.0,
+            "max_top_5_contribution_pct": 1.0,
+            "min_adjusted_trades": 60,
+            "min_adjusted_windows": 3,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 3,
+            "require_tail_concentration_evidence": false,
+            "require_tail_concentration_not_worse": false
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "capital_accounting": {
+        "core_weight": 0.76,
+        "paper_pnl_overlay_on_full_core": false,
+        "passed": true,
+        "sleeve_capital_usd": 24000.0,
+        "sleeve_weight": 0.24
+      },
+      "fingerprint_contract": {
+        "actual": {
+          "data_source": "hacker_news_owned_domain_attention",
+          "field_tags": [
+            "a",
+            "above",
+            "acceleration",
+            "attention",
+            "by",
+            "count",
+            "current",
+            "domain",
+            "exact",
+            "ge2",
+            "h10",
+            "hacker",
+            "hn",
+            "host",
+            "issuers",
+            "liquid",
+            "news",
+            "owned",
+            "prior4w",
+            "ranks",
+            "session",
+            "ten",
+            "three",
+            "top",
+            "top3",
+            "weekly"
+          ],
+          "gate_shape": "candidate_pool_top3_10d"
+        },
+        "expected": {
+          "data_source": "hacker_news_owned_domain_attention",
+          "gate_shape": "candidate_pool_top3_10d"
+        },
+        "hard_failures": [],
+        "passed": true
+      },
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail",
+        "window_pnl_not_improved:old_thin",
+        "cash_spy_qqq_replacement_failed:old_thin",
+        "window_pnl_not_improved:mid_weak",
+        "window_pnl_not_improved:late_strong",
+        "cash_spy_qqq_replacement_failed:late_strong",
+        "accepted_candidate_pool_ev_comparator_not_beaten",
+        "accepted_candidate_pool_pnl_comparator_not_beaten",
+        "top5_positive_pnl_concentration"
+      ],
+      "metrics": {
+        "adjusted_trade_count": 158,
+        "adjusted_window_count": 3,
+        "adjusted_windows": [
+          "old_thin",
+          "mid_weak",
+          "late_strong"
+        ],
+        "aggregate_ev_delta": -2.1771,
+        "aggregate_pnl_delta": -39611.22,
+        "avg_pnl_per_trade_delta": -250.7039240506329,
+        "hhi_concentration": 0.138492,
+        "max_drawdown_worse_max": 0.0295,
+        "single_ticker_positive_share": 0.219165,
+        "top_5_contribution_pct": 0.737239,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3
+      },
+      "passed": false,
+      "source_contract": {
+        "canonical_story_count": 67647,
+        "canonical_story_set_sha256": "edfc023e41fdb206cab656287657d455abb91287a8044dbaa823fbd7f5353da6",
+        "forward_append_only_evidence_preferred": true,
+        "hard_failures": [],
+        "historical_index_revision_risk": true,
+        "manifest": "data/non_ohlcv/hacker_news_attention/source_manifest.json",
+        "manifest_sha256": "0d2615ec546c123435714c9b592597d1a592dba5fbfa6ada20459c1dfacd8b73",
+        "passed": true,
+        "stories": "data/non_ohlcv/hacker_news_attention/stories.jsonl",
+        "stories_sha256": "6e5a0f6b4b627fb37ae71426d15d303ef0336736f2fa2ab1c048583c2e38c70a"
+      },
+      "status": "blocked",
+      "strict_materiality_diagnostic_nonbinding": {
+        "evaluation_mode": "champion_replacement",
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail",
+          "immaterial_effect"
+        ],
+        "materiality": {
+          "avg_pnl_per_trade_delta": -250.7039240506329,
+          "avg_return_delta_pp": null,
+          "material": false,
+          "min_avg_pnl_per_trade_delta": 500.0,
+          "min_avg_return_delta_pp": 5.0,
+          "warnings": []
+        },
+        "passed": false,
+        "promotion_gate": {
+          "checks": {
+            "adjusted_trade_sample": true,
+            "adjusted_window_coverage": true,
+            "drawdown_worse_guard": false,
+            "ev_improved_window_coverage": false,
+            "no_ev_regressed_windows": false,
+            "positive_aggregate_ev": false,
+            "positive_aggregate_pnl": false,
+            "tail_concentration_cap": true,
+            "tail_concentration_evidence": true,
+            "tail_concentration_not_worse": true
+          },
+          "concentration_checks": [
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "single_ticker_positive_share",
+              "not_worse": null,
+              "value": 0.219165
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "top_5_contribution_pct",
+              "not_worse": null,
+              "value": 0.737239
+            },
+            {
+              "baseline": null,
+              "cap_passed": true,
+              "delta": null,
+              "max_allowed": 1.0,
+              "name": "hhi_concentration",
+              "not_worse": null,
+              "value": 0.138492
+            }
+          ],
+          "hard_failures": [
+            "non_positive_aggregate_ev",
+            "non_positive_aggregate_pnl",
+            "insufficient_ev_improved_windows",
+            "ev_regressed_windows",
+            "drawdown_worse_guardrail"
+          ],
+          "metrics": {
+            "adjusted_trade_count": 158,
+            "adjusted_window_count": 3,
+            "adjusted_windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ],
+            "aggregate_ev_delta": -2.1771,
+            "aggregate_pnl_delta": -39611.22,
+            "max_drawdown_worse": 0.0295,
+            "windows_ev_improved": 0.0,
+            "windows_ev_regressed": 3.0
+          },
+          "passed": false,
+          "status": "blocked",
+          "thresholds": {
+            "concentration_tolerance": 1e-12,
+            "max_drawdown_worse": 0.005,
+            "max_ev_regressed_windows": 0,
+            "max_hhi_concentration": 1.0,
+            "max_single_ticker_positive_share": 1.0,
+            "max_top_5_contribution_pct": 1.0,
+            "min_adjusted_trades": 60,
+            "min_adjusted_windows": 3,
+            "min_aggregate_ev_delta": 0.0,
+            "min_aggregate_pnl_delta": 0.0,
+            "min_ev_improved_windows": 3,
+            "require_tail_concentration_evidence": false,
+            "require_tail_concentration_not_worse": false
+          },
+          "warnings": [
+            "missing_single_ticker_positive_share_baseline",
+            "missing_top_5_contribution_pct_baseline",
+            "missing_hhi_concentration_baseline"
+          ]
+        },
+        "status": "blocked",
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      }
+    },
+    "gate4_passed": false,
+    "gate_report_consistent": true,
+    "live_readiness": {
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed",
+        "dsr_report_missing"
+      ],
+      "closed_forward_trades": 0,
+      "dsr_gate": {
+        "dsr_probability": null,
+        "incomplete_fields": [],
+        "panel_hash": null,
+        "panel_recomputed": false,
+        "passed": false,
+        "reason": "dsr_report_missing",
+        "recomputation_reason_codes": [],
+        "required_probability": 0.95,
+        "selection_pool_complete": false,
+        "selection_scope_id": null,
+        "status": null
+      },
+      "envelope_missing": [],
+      "forward_pnl": null,
+      "kill_switch_parity_passed": false,
+      "min_closed_forward_trades": 30,
+      "ready": false,
+      "replacement_value_passed": false
+    },
+    "live_ready": false,
+    "next_step": "Roll back the sleeve change and log the failure. Gate 4 did not pass; do not retune on the frozen sample.",
+    "verdict": "reject"
+  },
+  "gate2": {
+    "hard_failures": [],
+    "missing_sentinel_decision_ids": [],
+    "orders": [],
+    "passed": true,
+    "sentinel_fields": [
+      "entry_date",
+      "target_price",
+      "entry_price",
+      "exit_date",
+      "exit_price"
+    ]
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 460,
+    "signals_survived": 170,
+    "survival_rate": 0.369565,
+    "unit": "eligible positive-attention-acceleration issuer-week"
+  },
+  "gate4": {
+    "accepted_candidate_comparator": {
+      "expected_value_score_delta_sum": 0.5286,
+      "experiment_id": "exp-20260611-007",
+      "total_pnl_delta_sum": 10432.91
+    },
+    "canonical_candidate_pool_gate": {
+      "evaluation_mode": "champion_replacement",
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail"
+      ],
+      "materiality": null,
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": false,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.219165
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.737239
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.138492
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 158,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "aggregate_ev_delta": -2.1771,
+          "aggregate_pnl_delta": -39611.22,
+          "max_drawdown_worse": 0.0295,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 1.0,
+          "max_single_ticker_positive_share": 1.0,
+          "max_top_5_contribution_pct": 1.0,
+          "min_adjusted_trades": 60,
+          "min_adjusted_windows": 3,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 3,
+          "require_tail_concentration_evidence": false,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    },
+    "capital_accounting": {
+      "core_weight": 0.76,
+      "paper_pnl_overlay_on_full_core": false,
+      "passed": true,
+      "sleeve_capital_usd": 24000.0,
+      "sleeve_weight": 0.24
+    },
+    "fingerprint_contract": {
+      "actual": {
+        "data_source": "hacker_news_owned_domain_attention",
+        "field_tags": [
+          "a",
+          "above",
+          "acceleration",
+          "attention",
+          "by",
+          "count",
+          "current",
+          "domain",
+          "exact",
+          "ge2",
+          "h10",
+          "hacker",
+          "hn",
+          "host",
+          "issuers",
+          "liquid",
+          "news",
+          "owned",
+          "prior4w",
+          "ranks",
+          "session",
+          "ten",
+          "three",
+          "top",
+          "top3",
+          "weekly"
+        ],
+        "gate_shape": "candidate_pool_top3_10d"
+      },
+      "expected": {
+        "data_source": "hacker_news_owned_domain_attention",
+        "gate_shape": "candidate_pool_top3_10d"
+      },
+      "hard_failures": [],
+      "passed": true
+    },
+    "hard_failures": [
+      "non_positive_aggregate_ev",
+      "non_positive_aggregate_pnl",
+      "insufficient_ev_improved_windows",
+      "ev_regressed_windows",
+      "drawdown_worse_guardrail",
+      "window_pnl_not_improved:old_thin",
+      "cash_spy_qqq_replacement_failed:old_thin",
+      "window_pnl_not_improved:mid_weak",
+      "window_pnl_not_improved:late_strong",
+      "cash_spy_qqq_replacement_failed:late_strong",
+      "accepted_candidate_pool_ev_comparator_not_beaten",
+      "accepted_candidate_pool_pnl_comparator_not_beaten",
+      "top5_positive_pnl_concentration"
+    ],
+    "metrics": {
+      "adjusted_trade_count": 158,
+      "adjusted_window_count": 3,
+      "adjusted_windows": [
+        "old_thin",
+        "mid_weak",
+        "late_strong"
+      ],
+      "aggregate_ev_delta": -2.1771,
+      "aggregate_pnl_delta": -39611.22,
+      "avg_pnl_per_trade_delta": -250.7039240506329,
+      "hhi_concentration": 0.138492,
+      "max_drawdown_worse_max": 0.0295,
+      "single_ticker_positive_share": 0.219165,
+      "top_5_contribution_pct": 0.737239,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3
+    },
+    "passed": false,
+    "source_contract": {
+      "canonical_story_count": 67647,
+      "canonical_story_set_sha256": "edfc023e41fdb206cab656287657d455abb91287a8044dbaa823fbd7f5353da6",
+      "forward_append_only_evidence_preferred": true,
+      "hard_failures": [],
+      "historical_index_revision_risk": true,
+      "manifest": "data/non_ohlcv/hacker_news_attention/source_manifest.json",
+      "manifest_sha256": "0d2615ec546c123435714c9b592597d1a592dba5fbfa6ada20459c1dfacd8b73",
+      "passed": true,
+      "stories": "data/non_ohlcv/hacker_news_attention/stories.jsonl",
+      "stories_sha256": "6e5a0f6b4b627fb37ae71426d15d303ef0336736f2fa2ab1c048583c2e38c70a"
+    },
+    "status": "blocked",
+    "strict_materiality_diagnostic_nonbinding": {
+      "evaluation_mode": "champion_replacement",
+      "hard_failures": [
+        "non_positive_aggregate_ev",
+        "non_positive_aggregate_pnl",
+        "insufficient_ev_improved_windows",
+        "ev_regressed_windows",
+        "drawdown_worse_guardrail",
+        "immaterial_effect"
+      ],
+      "materiality": {
+        "avg_pnl_per_trade_delta": -250.7039240506329,
+        "avg_return_delta_pp": null,
+        "material": false,
+        "min_avg_pnl_per_trade_delta": 500.0,
+        "min_avg_return_delta_pp": 5.0,
+        "warnings": []
+      },
+      "passed": false,
+      "promotion_gate": {
+        "checks": {
+          "adjusted_trade_sample": true,
+          "adjusted_window_coverage": true,
+          "drawdown_worse_guard": false,
+          "ev_improved_window_coverage": false,
+          "no_ev_regressed_windows": false,
+          "positive_aggregate_ev": false,
+          "positive_aggregate_pnl": false,
+          "tail_concentration_cap": true,
+          "tail_concentration_evidence": true,
+          "tail_concentration_not_worse": true
+        },
+        "concentration_checks": [
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "single_ticker_positive_share",
+            "not_worse": null,
+            "value": 0.219165
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "top_5_contribution_pct",
+            "not_worse": null,
+            "value": 0.737239
+          },
+          {
+            "baseline": null,
+            "cap_passed": true,
+            "delta": null,
+            "max_allowed": 1.0,
+            "name": "hhi_concentration",
+            "not_worse": null,
+            "value": 0.138492
+          }
+        ],
+        "hard_failures": [
+          "non_positive_aggregate_ev",
+          "non_positive_aggregate_pnl",
+          "insufficient_ev_improved_windows",
+          "ev_regressed_windows",
+          "drawdown_worse_guardrail"
+        ],
+        "metrics": {
+          "adjusted_trade_count": 158,
+          "adjusted_window_count": 3,
+          "adjusted_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "aggregate_ev_delta": -2.1771,
+          "aggregate_pnl_delta": -39611.22,
+          "max_drawdown_worse": 0.0295,
+          "windows_ev_improved": 0.0,
+          "windows_ev_regressed": 3.0
+        },
+        "passed": false,
+        "status": "blocked",
+        "thresholds": {
+          "concentration_tolerance": 1e-12,
+          "max_drawdown_worse": 0.005,
+          "max_ev_regressed_windows": 0,
+          "max_hhi_concentration": 1.0,
+          "max_single_ticker_positive_share": 1.0,
+          "max_top_5_contribution_pct": 1.0,
+          "min_adjusted_trades": 60,
+          "min_adjusted_windows": 3,
+          "min_aggregate_ev_delta": 0.0,
+          "min_aggregate_pnl_delta": 0.0,
+          "min_ev_improved_windows": 3,
+          "require_tail_concentration_evidence": false,
+          "require_tail_concentration_not_worse": false
+        },
+        "warnings": [
+          "missing_single_ticker_positive_share_baseline",
+          "missing_top_5_contribution_pct_baseline",
+          "missing_hhi_concentration_baseline"
+        ]
+      },
+      "status": "blocked",
+      "warnings": [
+        "missing_single_ticker_positive_share_baseline",
+        "missing_top_5_contribution_pct_baseline",
+        "missing_hhi_concentration_baseline"
+      ]
+    }
+  },
+  "gate5": {
+    "blockers": [
+      "forward_rows_immature:0/30",
+      "forward_pnl_not_positive",
+      "replacement_value_not_passed",
+      "kill_switch_parity_not_passed",
+      "dsr_report_missing"
+    ],
+    "closed_forward_trades": 0,
+    "dsr_gate": {
+      "dsr_probability": null,
+      "incomplete_fields": [],
+      "panel_hash": null,
+      "panel_recomputed": false,
+      "passed": false,
+      "reason": "dsr_report_missing",
+      "recomputation_reason_codes": [],
+      "required_probability": 0.95,
+      "selection_pool_complete": false,
+      "selection_scope_id": null,
+      "status": null
+    },
+    "envelope_missing": [],
+    "forward_pnl": null,
+    "kill_switch_parity_passed": false,
+    "min_closed_forward_trades": 30,
+    "ready": false,
+    "replacement_value_passed": false
+  },
+  "status": "rejected"
+}

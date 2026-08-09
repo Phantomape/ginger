@@ -17,6 +17,7 @@ from data_paths import data_artifact_path
 
 try:
     from constants import ROUND_TRIP_COST_PCT
+    from paper_sleeve_execution_contract import freeze_paper_notional
     from price_asof_guard import filter_prices_for_asof
     from sec_event_queue import (
         FINANCIAL_REPORT_T1_RULE_VERSION,
@@ -24,6 +25,7 @@ try:
     )
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
+    from quant.paper_sleeve_execution_contract import freeze_paper_notional
     from quant.price_asof_guard import filter_prices_for_asof
     from quant.sec_event_queue import (
         FINANCIAL_REPORT_T1_RULE_VERSION,
@@ -155,6 +157,7 @@ def build_sec_financial_report_event_sleeve_snapshot(
         else load_sec_financial_report_event_sleeve_state(state_path)
     )
     _normalise_state(working_state)
+    _freeze_financial_pending_notionals(working_state, cfg)
 
     as_of_date = str(as_of)[:10]
     opens = filter_prices_for_asof(
@@ -357,10 +360,15 @@ def _fill_pending_entries(
 
         candidate = entry.get("candidate") or {}
         fact_tone_gap_attribution = candidate.get("fact_tone_gap_attribution") or {}
-        notional, notional_scalar, notional_rule = _candidate_event_notional(
+        derived_notional, derived_scalar, derived_rule = _candidate_event_notional(
             candidate,
             config,
         )
+        notional = float(entry.get("paper_notional_usd") or derived_notional)
+        notional_scalar = float(
+            entry.get("paper_notional_scalar") or derived_scalar
+        )
+        notional_rule = str(entry.get("paper_notional_rule") or derived_rule)
         position = {
             "decision_id": entry["decision_id"],
             "sleeve": SLEEVE_NAME,
@@ -369,7 +377,13 @@ def _fill_pending_entries(
             "entry_date": as_of,
             "entry_price": entry_open,
             "notional": notional,
-            "base_event_notional_usd": float(config["event_notional_usd"]),
+            "paper_notional_usd": notional,
+            "paper_notional_frozen": True,
+            "paper_notional_source": entry.get("paper_notional_source"),
+            "base_event_notional_usd": float(
+                entry.get("paper_base_event_notional_usd")
+                or config["event_notional_usd"]
+            ),
             "event_notional_scalar": notional_scalar,
             "event_notional_rule": notional_rule,
             "fact_tone_gap_bucket": fact_tone_gap_attribution.get(
@@ -444,6 +458,31 @@ def _candidate_event_notional(
             rule = f"{rule}+rs20_leader_notional_scalar"
 
     return base * scalar, scalar, rule
+
+
+def _freeze_financial_pending_notionals(
+    state: dict[str, Any],
+    config: dict[str, Any],
+) -> None:
+    """Freeze amount and attribution before a pending signal can age."""
+    for entry in state.get("pending_entries") or []:
+        if not isinstance(entry, dict):
+            continue
+        notional, scalar, rule = _candidate_event_notional(
+            entry.get("candidate") or {},
+            config,
+        )
+        freeze_paper_notional(
+            entry,
+            fallback_notional_usd=notional,
+            fallback_source="legacy_pending_config_backfill",
+        )
+        entry.setdefault(
+            "paper_base_event_notional_usd",
+            float(config["event_notional_usd"]),
+        )
+        entry.setdefault("paper_notional_scalar", scalar)
+        entry.setdefault("paper_notional_rule", rule)
 
 
 def _candidate_neutral_underreaction(
@@ -652,6 +691,17 @@ def _add_queue_candidates(
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
+        notional, scalar, rule = _candidate_event_notional(candidate, config)
+        freeze_paper_notional(
+            entry,
+            fallback_notional_usd=notional,
+            fallback_source="signal_time_event_policy",
+        )
+        entry["paper_base_event_notional_usd"] = float(
+            config["event_notional_usd"]
+        )
+        entry["paper_notional_scalar"] = scalar
+        entry["paper_notional_rule"] = rule
         state["pending_entries"].append(entry)
         new_entries.append(entry)
         existing_ids.add(decision_id)

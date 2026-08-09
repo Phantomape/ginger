@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import io
 import json
+import urllib.error
 from datetime import date
 from pathlib import Path
 
@@ -124,9 +126,174 @@ def test_persist_daily_options_snapshot_marks_forward_rows_pit_safe(tmp_path):
     assert summary["status"] == "ok"
     assert summary["rows_written"] == 4
     assert summary["pit_safe_rows"] == 4
+    assert summary["recovery"]["second_attempt_used"] is False
     rows_path = Path(summary["output_path"])
     if not rows_path.is_absolute():
         rows_path = options.REPO_ROOT / rows_path
     rows = [json.loads(line) for line in rows_path.read_text(encoding="utf-8").splitlines()]
     assert all(row["collection_mode"] == "forward_daily" for row in rows)
     assert all(row["pit_safe"] is True for row in rows)
+
+
+def _http_error(code: int, msg: str = "<none>") -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://api.onclickmedia.com/options/", code, msg, None, io.BytesIO(b""))
+
+
+def test_fetch_retries_transient_5xx_then_succeeds(monkeypatch, tmp_path):
+    sleeps: list[float] = []
+    monkeypatch.setattr(options, "_retry_sleep", lambda seconds: sleeps.append(seconds))
+    calls = {"count": 0}
+
+    class _Response(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    def _fake_urlopen(request, timeout=None):
+        calls["count"] += 1
+        if calls["count"] < 3:
+            raise _http_error(530)
+        return _Response(json.dumps({"ok": True}).encode("utf-8"))
+
+    monkeypatch.setattr(options.urllib.request, "urlopen", _fake_urlopen)
+    payload = options.fetch_onclickmedia_json(
+        params={"ticker": "TSLA", "list": "expiration"},
+        cache_dir=tmp_path / "cache",
+        sleep_seconds=0.0,
+    )
+
+    assert payload == {"ok": True}
+    assert calls["count"] == 3
+    assert sleeps == list(options.DEFAULT_FETCH_RETRY_BACKOFF_SECONDS)
+
+
+def test_fetch_does_not_retry_non_transient_4xx(monkeypatch, tmp_path):
+    calls = {"count": 0}
+
+    def _fake_urlopen(request, timeout=None):
+        calls["count"] += 1
+        raise _http_error(404, "Not Found")
+
+    monkeypatch.setattr(options.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(options, "_retry_sleep", lambda seconds: None)
+    try:
+        options.fetch_onclickmedia_json(
+            params={"ticker": "TSLA", "list": "expiration"},
+            cache_dir=tmp_path / "cache",
+            sleep_seconds=0.0,
+        )
+    except urllib.error.HTTPError as exc:
+        assert exc.code == 404
+    else:
+        raise AssertionError("expected HTTPError 404")
+    assert calls["count"] == 1
+
+
+def test_persist_second_attempt_recovers_whole_run_transient_outage(monkeypatch, tmp_path):
+    sleeps: list[float] = []
+    monkeypatch.setattr(options, "_retry_sleep", lambda seconds: sleeps.append(seconds))
+    state = {"passes": 0}
+
+    def _flaky_fetch_json(*, params, **kwargs):
+        if state["passes"] < 1:
+            raise _http_error(530)
+        return _fake_fetch_json(params=params, **kwargs)
+
+    original_attempt = options.run_options_backfill
+
+    def _tracking_backfill(**kwargs):
+        result = original_attempt(**kwargs)
+        state["passes"] += 1
+        return result
+
+    monkeypatch.setattr(options, "run_options_backfill", _tracking_backfill)
+    summary = options.persist_daily_options_snapshot(
+        as_of="2025-01-13",
+        tickers=["TSLA"],
+        underlying_prices={"TSLA": 300.0},
+        data_dir=tmp_path,
+        max_expirations=1,
+        max_strikes_per_side=0,
+        fetch_json=_flaky_fetch_json,
+        second_attempt_delay_seconds=7.0,
+    )
+
+    assert summary["status"] == "ok"
+    assert summary["rows_written"] == 4
+    assert summary["recovery"]["second_attempt_used"] is True
+    assert summary["recovery"]["first_attempt_rows_written"] == 0
+    assert summary["recovery"]["first_attempt_all_transient"] is True
+    assert summary["recovery"]["second_attempt_delay_seconds"] == 7.0
+    assert 7.0 in sleeps
+    assert state["passes"] == 2
+    rows_path = Path(summary["output_path"])
+    if not rows_path.is_absolute():
+        rows_path = options.REPO_ROOT / rows_path
+    assert rows_path.stat().st_size > 0
+    persisted = json.loads(
+        (tmp_path / "options_onclickmedia_summary_20250113.json").read_text(encoding="utf-8")
+    )
+    assert persisted["status"] == "ok"
+    assert persisted["recovery"]["second_attempt_used"] is True
+
+
+def test_persist_gives_up_after_exactly_one_second_attempt(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_retry_sleep", lambda seconds: None)
+    state = {"passes": 0}
+    original_attempt = options.run_options_backfill
+
+    def _tracking_backfill(**kwargs):
+        state["passes"] += 1
+        return original_attempt(**kwargs)
+
+    def _always_530(*, params, **kwargs):
+        raise _http_error(530)
+
+    monkeypatch.setattr(options, "run_options_backfill", _tracking_backfill)
+    summary = options.persist_daily_options_snapshot(
+        as_of="2025-01-13",
+        tickers=["TSLA"],
+        underlying_prices={"TSLA": 300.0},
+        data_dir=tmp_path,
+        max_expirations=1,
+        max_strikes_per_side=0,
+        fetch_json=_always_530,
+        second_attempt_delay_seconds=0.0,
+    )
+
+    assert summary["status"] == "failed"
+    assert summary["rows_written"] == 0
+    assert summary["recovery"]["second_attempt_used"] is True
+    assert state["passes"] == 2
+
+
+def test_persist_no_second_attempt_on_non_transient_failure(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_retry_sleep", lambda seconds: None)
+    state = {"passes": 0}
+    original_attempt = options.run_options_backfill
+
+    def _tracking_backfill(**kwargs):
+        state["passes"] += 1
+        return original_attempt(**kwargs)
+
+    def _schema_error(*, params, **kwargs):
+        raise ValueError("unexpected payload schema")
+
+    monkeypatch.setattr(options, "run_options_backfill", _tracking_backfill)
+    summary = options.persist_daily_options_snapshot(
+        as_of="2025-01-13",
+        tickers=["TSLA"],
+        underlying_prices={"TSLA": 300.0},
+        data_dir=tmp_path,
+        max_expirations=1,
+        max_strikes_per_side=0,
+        fetch_json=_schema_error,
+        second_attempt_delay_seconds=0.0,
+    )
+
+    assert summary["status"] == "failed"
+    assert summary["recovery"]["second_attempt_used"] is False
+    assert summary["recovery"]["first_attempt_all_transient"] is False
+    assert state["passes"] == 1

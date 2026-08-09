@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260709-017",
+  "lane": "measurement_repair",
+  "decision": "accepted",
+  "hypothesis": "Repair options_forward daily settlement wiring so default-off options candidate rows can accumulate closed OHLCV outcomes without requiring a manual OPTIONS_FORWARD_OHLCV_SNAPSHOT env var.",
+  "alpha_hypothesis_context": "Options structure tags may eventually explain candidate quality or slot conflicts, but prior options alpha was rejected and this run only repaired the forward-row settlement blocker.",
+  "single_causal_variable": "options_forward_daily_ohlcv_settlement_autowire_v1",
+  "before": {
+    "artifact": "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+    "candidate_count": 175,
+    "outcome_status_counts": {
+      "ohlcv_snapshot_missing": 175
+    },
+    "all_scoring_allowed": {
+      "count": 26,
+      "closed_5d_count": 0,
+      "closed_10d_count": 0,
+      "closed_20d_count": 0,
+      "closed_60d_count": 0,
+      "forward_5d_mean": null,
+      "forward_10d_mean": null,
+      "forward_20d_mean": null
+    }
+  },
+  "after": {
+    "artifact": "data/experiments/exp-20260709-017/options_forward/options_forward_candidate_ledger_report.json",
+    "candidate_count": 175,
+    "ohlcv_warehouse": "data/warehouse/warehouse_main.sqlite",
+    "outcome_status_counts": {
+      "partial_or_pending": 116,
+      "signal_date_missing_in_ohlcv": 59
+    },
+    "all_scoring_allowed": {
+      "count": 26,
+      "closed_5d_count": 14,
+      "closed_10d_count": 12,
+      "closed_20d_count": 9,
+      "closed_60d_count": 0,
+      "forward_5d_mean": -0.018297,
+      "forward_10d_mean": 0.020745,
+      "forward_20d_mean": 0.017907,
+      "forward_20d_win_rate": 0.666667
+    },
+    "overlay_observed_only_leads": {
+      "squeeze_minus_no_squeeze_forward_20d": 0.028868,
+      "downside_minus_no_downside_forward_20d": 0.055927
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "alters_signal_generation": false,
+    "alters_orders": false,
+    "default_off_shadow_only": true
+  },
+  "validation": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\run_options_forward_ledger.py quant\\run.py quant\\test_run_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\run_options_forward_ledger.py --experiment-id exp-20260709-017 --output-dir data/experiments/exp-20260709-017/options_forward --chain-dir data/non_ohlcv --quant-signal-dir data --ohlcv-warehouse data/warehouse/warehouse_main.sqlite"
+  ],
+  "reflection": {
+    "why_result_happened": "The daily runner had already wired the options forward ledger, but the builder only accepted a JSON OHLCV snapshot. The current local snapshots stop before most May-July 2026 option-chain rows, while warehouse_main.sqlite has PIT OHLCV through 2026-06-15. Adding a warehouse loader and daily fallback converts the ledger from all missing outcomes to partially settled forward rows.",
+    "forbidden_near_neighbor_retry": "Do not retune squeeze/downside options overlays or promote them from these 9-14 closed scoring-allowed outcomes. This is a measurement repair, not an alpha acceptance.",
+    "new_evidence_required": "Next options alpha requires materially more settled forward rows, ideally after warehouse OHLCV extends beyond 2026-06-15, then a shared-paper-first Gate 1-4 evaluation against the accepted baseline."
+  }
+}

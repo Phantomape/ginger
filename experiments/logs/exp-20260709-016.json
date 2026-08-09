@@ -1,0 +1,1416 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "after_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_016_broad_dispersion_source_state_router.py",
+    "data/experiments/exp-20260709-016/exp_20260709_016_broad_dispersion_source_state_router.json",
+    "experiments/cards/exp-20260709-016.md",
+    "experiments/manifests/exp-20260709-016.json",
+    "experiments/tickets/exp-20260709-016.json",
+    "experiments/logs/exp-20260709-016.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_hypothesis": "Observed-only alpha validation: broad dispersion/correlation stock-picker state should be deployable only if it identifies default-off sleeve/source cohorts whose later closed forward replacement value beats dead-chop rows versus cash, SPY, and QQQ under a fixed chronological source-state router.",
+  "artifact": "data/experiments/exp-20260709-016/exp_20260709_016_broad_dispersion_source_state_router.json",
+  "before_metrics": {
+    "available": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_decision": "observed_only_rejected_no_train_selected_source_state_router",
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "training_selects_no_source",
+      "validation_sample_too_thin",
+      "state_effect_not_source_stable",
+      "forward_lead_overfit"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_modes": [
+      "training_selects_no_source"
+    ],
+    "surprise_note": "Low surprise: source-conditioned chronological validation is much stricter than the global forward-row lead."
+  },
+  "causal_components": [
+    "forward_replacement_value_ledger",
+    "broad_dispersion_corr_state_tag",
+    "source_conditioned_train_validate_router",
+    "no_strategy_behavior_change"
+  ],
+  "change_type": "observed_only_forward_source_state_validation",
+  "changed_files": [
+    "quant/experiments/exp_20260709_016_broad_dispersion_source_state_router.py",
+    "data/experiments/exp-20260709-016/exp_20260709_016_broad_dispersion_source_state_router.json",
+    "experiments/logs/exp-20260709-016.json",
+    "experiments/cards/exp-20260709-016.md",
+    "experiments/manifests/exp-20260709-016.json",
+    "experiments/tickets/exp-20260709-016.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "broad_dispersion_source_state_router_forward_validation_v1",
+  "decision": "observed_only_rejected_no_train_selected_source_state_router",
+  "delta_metrics": {
+    "covered_forward_rows": 24,
+    "expected_value_score_sum_delta": 0.0,
+    "failed_reasons": [
+      "training_selects_no_source"
+    ],
+    "holdout_rows": 7,
+    "selected_sources_from_train": [],
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "train_rows": 17
+  },
+  "experiment_id": "exp-20260709-016",
+  "gate1": {
+    "baseline_metrics": {
+      "available": true,
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "complete_enriched_forward_rows": 77,
+    "entry_date_target_price_note": "Observed-only closed forward rows carry entry_date and realized replacement values. target_price is not an executable signal dependency for this runner.",
+    "feature_coverage": {
+      "coverage_rate": 0.311688,
+      "covered_rows": 24,
+      "raw_complete_rows": 77,
+      "uncovered_examples": [
+        {
+          "entry_date": "2026-06-12",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "ticker": "CRDO"
+        },
+        {
+          "entry_date": "2026-06-22",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "ticker": "SBUX"
+        },
+        {
+          "entry_date": "2026-06-18",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "ticker": "DDOG"
+        },
+        {
+          "entry_date": "2026-06-22",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "ticker": "MU"
+        },
+        {
+          "entry_date": "2026-06-23",
+          "reason": "missing_dispersion_or_correlation",
+          "sleeve_key": "accepted_helper_source_priority_allocator",
+          "ticker": "INTC"
+        },
+        {
+          "entry_date": "2026-06-16",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_source_consensus",
+          "ticker": "WDC"
+        },
+        {
+          "entry_date": "2026-06-22",
+          "reason": "low_eligible_count",
+          "sleeve_key": "accepted_source_consensus",
+          "ticker": "BE"
+        },
+        {
+          "entry_date": "2026-06-10",
+          "reason": "low_eligible_count",
+          "sleeve_key": "alpha_score_market_regime",
+          "ticker": "SNOW"
+        },
+        {
+          "entry_date": "2026-06-10",
+          "reason": "low_eligible_count",
+          "sleeve_key": "alpha_score_market_regime",
+          "ticker": "UNH"
+        },
+        {
+          "entry_date": "2026-06-11",
+          "reason": "low_eligible_count",
+          "sleeve_key": "alpha_score_market_regime",
+          "ticker": "MRVL"
+        },
+        {
+          "entry_date": "2026-06-12",
+          "reason": "low_eligible_count",
+          "sleeve_key": "alpha_score_market_regime",
+          "ticker": "CRDO"
+        },
+        {
+          "entry_date": "2026-06-12",
+          "reason": "low_eligible_count",
+          "sleeve_key": "alpha_score_market_regime",
+          "ticker": "GE"
+        }
+      ],
+      "uncovered_reason_counts": {
+        "low_eligible_count": 45,
+        "missing_dispersion_or_correlation": 6,
+        "missing_feature_date": 2
+      }
+    },
+    "fields_checked": [
+      "entry_date",
+      "ticker",
+      "sleeve_key",
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd",
+      "broad_dispersion",
+      "avg_pairwise_correlation"
+    ],
+    "panel_metadata": {
+      "date_counts": {
+        "2026-03-02": 8158,
+        "2026-03-03": 8155,
+        "2026-03-04": 8152,
+        "2026-03-05": 8157,
+        "2026-03-06": 8322,
+        "2026-03-09": 8325,
+        "2026-03-10": 8334,
+        "2026-03-11": 8327,
+        "2026-03-12": 8328,
+        "2026-03-13": 8336,
+        "2026-03-16": 8334,
+        "2026-03-17": 8339,
+        "2026-03-18": 8338,
+        "2026-03-19": 8341,
+        "2026-03-20": 8352,
+        "2026-03-23": 8359,
+        "2026-03-24": 8358,
+        "2026-03-25": 8359,
+        "2026-03-26": 8349,
+        "2026-03-27": 8359,
+        "2026-03-30": 8363,
+        "2026-03-31": 8378,
+        "2026-04-01": 8366,
+        "2026-04-02": 8373,
+        "2026-04-06": 8380,
+        "2026-04-07": 8394,
+        "2026-04-08": 8400,
+        "2026-04-09": 8390,
+        "2026-04-10": 8389,
+        "2026-04-13": 8393,
+        "2026-04-14": 8394,
+        "2026-04-15": 8398,
+        "2026-04-16": 8408,
+        "2026-04-17": 8409,
+        "2026-04-20": 8405,
+        "2026-04-21": 8400,
+        "2026-04-22": 8405,
+        "2026-04-23": 8405,
+        "2026-04-24": 8405,
+        "2026-04-27": 1336,
+        "2026-04-28": 1336,
+        "2026-04-29": 1336,
+        "2026-04-30": 1335,
+        "2026-05-01": 1335,
+        "2026-05-04": 1335,
+        "2026-05-05": 1335,
+        "2026-05-06": 1336,
+        "2026-05-07": 1337,
+        "2026-05-08": 1335,
+        "2026-05-11": 1335,
+        "2026-05-12": 1335,
+        "2026-05-13": 1335,
+        "2026-05-14": 1334,
+        "2026-05-15": 1334,
+        "2026-05-18": 1333,
+        "2026-05-19": 1332,
+        "2026-05-20": 1332,
+        "2026-05-21": 1338,
+        "2026-05-22": 1338,
+        "2026-05-25": 1,
+        "2026-05-26": 1338,
+        "2026-05-27": 1338,
+        "2026-05-28": 1338,
+        "2026-05-29": 1338,
+        "2026-06-01": 1338,
+        "2026-06-02": 1338,
+        "2026-06-03": 1338,
+        "2026-06-04": 1338,
+        "2026-06-05": 1338,
+        "2026-06-08": 1338,
+        "2026-06-09": 1338,
+        "2026-06-10": 1338,
+        "2026-06-11": 1338,
+        "2026-06-12": 1339,
+        "2026-06-15": 1338,
+        "2026-06-16": 1338,
+        "2026-06-17": 1338,
+        "2026-06-18": 1338,
+        "2026-06-22": 1337,
+        "2026-06-23": 1337,
+        "2026-06-24": 1337,
+        "2026-06-25": 1336,
+        "2026-06-26": 1336,
+        "2026-06-29": 1336,
+        "2026-06-30": 1336,
+        "2026-07-01": 1336,
+        "2026-07-02": 1336,
+        "2026-07-06": 1330,
+        "2026-07-07": 1330,
+        "2026-07-08": 1329
+      },
+      "panel_shape": [
+        90,
+        8491
+      ],
+      "source_by_date": {
+        "2026-03-02": "warehouse_main",
+        "2026-03-03": "warehouse_main",
+        "2026-03-04": "warehouse_main",
+        "2026-03-05": "warehouse_main",
+        "2026-03-06": "warehouse_main",
+        "2026-03-09": "warehouse_main",
+        "2026-03-10": "warehouse_main",
+        "2026-03-11": "warehouse_main",
+        "2026-03-12": "warehouse_main",
+        "2026-03-13": "warehouse_main",
+        "2026-03-16": "warehouse_main",
+        "2026-03-17": "warehouse_main",
+        "2026-03-18": "warehouse_main",
+        "2026-03-19": "warehouse_main",
+        "2026-03-20": "warehouse_main",
+        "2026-03-23": "warehouse_main",
+        "2026-03-24": "warehouse_main",
+        "2026-03-25": "warehouse_main",
+        "2026-03-26": "warehouse_main",
+        "2026-03-27": "warehouse_main",
+        "2026-03-30": "warehouse_main",
+        "2026-03-31": "warehouse_main",
+        "2026-04-01": "warehouse_main",
+        "2026-04-02": "warehouse_main",
+        "2026-04-06": "warehouse_main",
+        "2026-04-07": "warehouse_main",
+        "2026-04-08": "warehouse_main",
+        "2026-04-09": "warehouse_main",
+        "2026-04-10": "warehouse_main",
+        "2026-04-13": "warehouse_main",
+        "2026-04-14": "warehouse_main",
+        "2026-04-15": "warehouse_main",
+        "2026-04-16": "warehouse_main",
+        "2026-04-17": "warehouse_main",
+        "2026-04-20": "warehouse_main",
+        "2026-04-21": "warehouse_main",
+        "2026-04-22": "warehouse_main",
+        "2026-04-23": "warehouse_main",
+        "2026-04-24": "warehouse_main",
+        "2026-04-27": "warehouse_main",
+        "2026-04-28": "warehouse_main",
+        "2026-04-29": "warehouse_main",
+        "2026-04-30": "warehouse_main",
+        "2026-05-01": "warehouse_main",
+        "2026-05-04": "warehouse_main",
+        "2026-05-05": "warehouse_main",
+        "2026-05-06": "warehouse_main",
+        "2026-05-07": "warehouse_main",
+        "2026-05-08": "warehouse_main",
+        "2026-05-11": "warehouse_main",
+        "2026-05-12": "warehouse_main",
+        "2026-05-13": "warehouse_main",
+        "2026-05-14": "warehouse_main",
+        "2026-05-15": "warehouse_main",
+        "2026-05-18": "warehouse_main",
+        "2026-05-19": "warehouse_main",
+        "2026-05-20": "warehouse_main",
+        "2026-05-21": "warehouse_main_hot",
+        "2026-05-22": "warehouse_main_hot",
+        "2026-05-25": "warehouse_main_hot",
+        "2026-05-26": "warehouse_main_hot",
+        "2026-05-27": "warehouse_main_hot",
+        "2026-05-28": "warehouse_main_hot",
+        "2026-05-29": "warehouse_main_hot",
+        "2026-06-01": "warehouse_main_hot",
+        "2026-06-02": "warehouse_main_hot",
+        "2026-06-03": "warehouse_main_hot",
+        "2026-06-04": "warehouse_main_hot",
+        "2026-06-05": "warehouse_main_hot",
+        "2026-06-08": "warehouse_main_hot",
+        "2026-06-09": "warehouse_main_hot",
+        "2026-06-10": "warehouse_main_hot",
+        "2026-06-11": "warehouse_main_hot",
+        "2026-06-12": "warehouse_main_hot",
+        "2026-06-15": "warehouse_main_hot",
+        "2026-06-16": "warehouse_main_hot",
+        "2026-06-17": "warehouse_main_hot",
+        "2026-06-18": "warehouse_main_hot",
+        "2026-06-22": "warehouse_main_hot",
+        "2026-06-23": "warehouse_main_hot",
+        "2026-06-24": "warehouse_main_hot",
+        "2026-06-25": "warehouse_main_hot",
+        "2026-06-26": "warehouse_main_hot",
+        "2026-06-29": "warehouse_main_hot",
+        "2026-06-30": "warehouse_main_hot",
+        "2026-07-01": "warehouse_main_hot",
+        "2026-07-02": "warehouse_main_hot",
+        "2026-07-06": "warehouse_main_hot",
+        "2026-07-07": "warehouse_main_hot",
+        "2026-07-08": "warehouse_main_hot"
+      },
+      "source_dates": {
+        "warehouse_main": 57,
+        "warehouse_main_hot": 33
+      }
+    },
+    "passed": true,
+    "raw_forward_rows": 77
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No executable filter or survival-changing policy was added.",
+    "passed": true,
+    "signals_generated": 77,
+    "signals_survived": 77,
+    "survival_rate": 1.0
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "binding_acceptance_note": "Observed-only validation only. A source-state router cannot affect entry, ranking, sizing, orders, or live/paper capital until it is implemented as a shared production/backtest policy and passes Gate 1-4 with an execution envelope.",
+    "failed_reasons": [
+      "training_selects_no_source"
+    ],
+    "mode": "observed_only_source_conditioned_chronological_router_validation",
+    "observed_only_lead": false,
+    "passed": false,
+    "selected_sources_from_train": []
+  },
+  "hypothesis": "Observed-only alpha validation: broad dispersion/correlation stock-picker state should be deployable only if it identifies default-off sleeve/source cohorts whose later closed forward replacement value beats dead-chop rows versus cash, SPY, and QQQ under a fixed chronological source-state router.",
+  "implementation_mode": "read_only_observed_forward_source_state_validation",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260709-016.json",
+  "mechanism_family": "production_visible_default_off_forward_regime_state_attribution",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260709-005",
+    "exp-20260709-013",
+    "exp-20260708-017",
+    "exp-20260708-018"
+  ],
+  "new_evidence_axis": "New gate shape: fixed source-conditioned chronological train/validate router on closed forward replacement rows, distinct from global state attribution in exp-20260709-005 and historical core-entry admission in exp-20260709-013; no threshold or comparator retune.",
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [
+    "materially_more_closed_forward_replacement_rows_with_broad_state_coverage",
+    "or_shared_policy_gate_1_4_with_independent_source_state_router",
+    "no_split_quartile_source_key_min_rows_concentration_comparator_or_response_retune"
+  ],
+  "observed_only_lead": false,
+  "owner": "alpha-explore",
+  "parameters": {
+    "features_rule_version": "broad_dispersion_corr_v1",
+    "holdout_entry_date_on_or_after": "2026-06-01",
+    "max_single_ticker_share": 0.6,
+    "min_covered_rows": 20,
+    "min_eligible_names": 300,
+    "min_holdout_rows": 6,
+    "min_holdout_selected_rows": 3,
+    "min_holdout_selected_top_rows": 1,
+    "min_train_bottom_rows_per_source": 1,
+    "min_train_rows": 12,
+    "min_train_rows_per_source": 3,
+    "min_train_top_rows_per_source": 1,
+    "outcome_fields": [
+      "replacement_value_vs_cash_usd",
+      "replacement_value_vs_spy_usd",
+      "replacement_value_vs_qqq_usd"
+    ],
+    "panel_end": "2026-07-08",
+    "panel_start": "2026-03-01",
+    "source_key": "sleeve_key",
+    "state_rule": "quartiles of z(broad_dispersion) - z(avg_pairwise_correlation)",
+    "train_entry_date_before": "2026-06-01"
+  },
+  "post_run_reflection": {
+    "fingerprint_caveat": "The reservation fingerprint classified the text as chop_forward_observer because the hypothesis contains dead-chop, but the actual data surface here is forward_replacement_value. The log records the real surface explicitly.",
+    "forbidden_near_neighbor_retry": "Do not rerun broad dispersion/correlation source-state validation on the same forward rows by changing split date, quartile definition, source key, min rows, concentration, comparator set, or response curve.",
+    "new_evidence_required": "A valid retry needs materially more closed forward replacement rows with broad-state coverage, or a full shared production/backtest policy with an independently specified source-state router and Gate 1-4 evidence.",
+    "why_result_happened": "The global stock-picker forward lead was not source-stable. The train segment had enough covered rows, but no sleeve/source passed the fixed requirements of both stock-picker support and dead-chop contrast across cash, SPY, and QQQ."
+  },
+  "prediction": {
+    "confidence_reason": "exp-20260709-005 showed a global forward-row stock-picker lead, but exp-20260709-013 failed historical core-entry transfer; this tests a stricter source-conditioned chronological gate rather than another threshold slice.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "training_selects_no_source",
+      "validation_sample_too_thin",
+      "state_effect_not_source_stable",
+      "forward_lead_overfit"
+    ],
+    "recorded_at": "2026-07-09T13:04:11+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "paper_state_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_forward_replacement_source_state_validation",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "training_selects_no_source",
+  "related_files": [
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "quant/broad_dispersion_features.py",
+    "experiments/logs/exp-20260709-005.json",
+    "experiments/logs/exp-20260709-013.json",
+    "experiments/logs/exp-20260708-017.json",
+    "experiments/logs/exp-20260708-018.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260709_016_broad_dispersion_source_state_router.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260709_016_broad_dispersion_source_state_router.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_broad_dispersion_features.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "broad_dispersion_source_state_router_forward_validation_v1",
+  "status": "observed_only_rejected",
+  "temporal_validation": {
+    "failed_reasons": [
+      "training_selects_no_source"
+    ],
+    "holdout": {
+      "label": "holdout",
+      "max_single_ticker_share": 0.428571,
+      "outcomes": {
+        "replacement_value_vs_cash_usd": {
+          "count": 7,
+          "max_usd": 1745.06,
+          "mean_usd": -524.3629,
+          "median_usd": -341.29,
+          "min_usd": -2502.28,
+          "sum_usd": -3670.54,
+          "win_rate": 0.142857
+        },
+        "replacement_value_vs_qqq_usd": {
+          "count": 7,
+          "max_usd": 1760.98,
+          "mean_usd": -469.0971,
+          "median_usd": -304.8,
+          "min_usd": -2396.06,
+          "sum_usd": -3283.68,
+          "win_rate": 0.142857
+        },
+        "replacement_value_vs_spy_usd": {
+          "count": 7,
+          "max_usd": 1474.97,
+          "mean_usd": -621.4543,
+          "median_usd": -346.79,
+          "min_usd": -2650.87,
+          "sum_usd": -4350.18,
+          "win_rate": 0.142857
+        }
+      },
+      "rows": 7,
+      "source_counts": {
+        "free_data_cross_source_consensus": 1,
+        "fundamental_growth_rs": 3,
+        "supplier_financing_debt_relief": 3
+      },
+      "state_quartile_counts": {
+        "dead_chop_q1": 6,
+        "low_mid_q2": 1
+      },
+      "ticker_counts": {
+        "COHR": 1,
+        "CRDO": 1,
+        "CSCO": 1,
+        "DDOG": 1,
+        "MU": 3
+      }
+    },
+    "holdout_selected_dead_chop_q1": {
+      "label": "holdout_selected_dead_chop_q1",
+      "max_single_ticker_share": null,
+      "outcomes": {
+        "replacement_value_vs_cash_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_qqq_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_spy_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        }
+      },
+      "rows": 0,
+      "source_counts": {},
+      "state_quartile_counts": {},
+      "ticker_counts": {}
+    },
+    "holdout_selected_sources": {
+      "label": "holdout_selected_sources",
+      "max_single_ticker_share": null,
+      "outcomes": {
+        "replacement_value_vs_cash_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_qqq_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_spy_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        }
+      },
+      "rows": 0,
+      "source_counts": {},
+      "state_quartile_counts": {},
+      "ticker_counts": {}
+    },
+    "holdout_selected_stock_picker_q4": {
+      "label": "holdout_selected_stock_picker_q4",
+      "max_single_ticker_share": null,
+      "outcomes": {
+        "replacement_value_vs_cash_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_qqq_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        },
+        "replacement_value_vs_spy_usd": {
+          "count": 0,
+          "max_usd": null,
+          "mean_usd": null,
+          "median_usd": null,
+          "min_usd": null,
+          "sum_usd": null,
+          "win_rate": null
+        }
+      },
+      "rows": 0,
+      "source_counts": {},
+      "state_quartile_counts": {},
+      "ticker_counts": {}
+    },
+    "holdout_state_diffs": {
+      "replacement_value_vs_cash_usd": {
+        "stock_picker_beats_dead_chop": false,
+        "stock_picker_mean_positive": false,
+        "stock_picker_minus_dead_chop_mean_usd": null
+      },
+      "replacement_value_vs_qqq_usd": {
+        "stock_picker_beats_dead_chop": false,
+        "stock_picker_mean_positive": false,
+        "stock_picker_minus_dead_chop_mean_usd": null
+      },
+      "replacement_value_vs_spy_usd": {
+        "stock_picker_beats_dead_chop": false,
+        "stock_picker_mean_positive": false,
+        "stock_picker_minus_dead_chop_mean_usd": null
+      }
+    },
+    "selected_sources_from_train": [],
+    "train": {
+      "label": "train",
+      "max_single_ticker_share": 0.529412,
+      "outcomes": {
+        "replacement_value_vs_cash_usd": {
+          "count": 17,
+          "max_usd": 2772.28,
+          "mean_usd": -21.2735,
+          "median_usd": 245.8,
+          "min_usd": -6327.17,
+          "sum_usd": -361.65,
+          "win_rate": 0.529412
+        },
+        "replacement_value_vs_qqq_usd": {
+          "count": 17,
+          "max_usd": 2704.37,
+          "mean_usd": -141.7271,
+          "median_usd": 449.88,
+          "min_usd": -7244.11,
+          "sum_usd": -2409.36,
+          "win_rate": 0.705882
+        },
+        "replacement_value_vs_spy_usd": {
+          "count": 17,
+          "max_usd": 2788.46,
+          "mean_usd": 0.1147,
+          "median_usd": 566.24,
+          "min_usd": -6806.63,
+          "sum_usd": 1.95,
+          "win_rate": 0.705882
+        }
+      },
+      "rows": 17,
+      "source_counts": {
+        "low_deployment_etf": 9,
+        "sec_financial_report": 3,
+        "sec_governance": 1,
+        "sec_negative": 1,
+        "state_surface": 3
+      },
+      "state_quartile_counts": {
+        "high_mid_q3": 6,
+        "low_mid_q2": 5,
+        "stock_picker_q4": 6
+      },
+      "ticker_counts": {
+        "AMD": 1,
+        "COIN": 2,
+        "CRDO": 1,
+        "CVX": 1,
+        "GS": 1,
+        "LITE": 1,
+        "QQQ": 9,
+        "SNXX": 1
+      }
+    },
+    "train_sources": [
+      {
+        "all": {
+          "replacement_value_vs_cash_usd": {
+            "count": 3,
+            "max_usd": 2772.28,
+            "mean_usd": 2413.41,
+            "median_usd": 2303.04,
+            "min_usd": 2164.91,
+            "sum_usd": 7240.23,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 3,
+            "max_usd": 2704.37,
+            "mean_usd": 2055.4733,
+            "median_usd": 1800.09,
+            "min_usd": 1661.96,
+            "sum_usd": 6166.42,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 3,
+            "max_usd": 2788.46,
+            "mean_usd": 2253.51,
+            "median_usd": 2055.1,
+            "min_usd": 1916.97,
+            "sum_usd": 6760.53,
+            "win_rate": 1.0
+          }
+        },
+        "dead_chop_q1": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "dead_chop_rows": 0,
+        "entry_dates": [
+          "2026-05-08"
+        ],
+        "failed_reasons": [
+          "dead_chop_rows_below_min:0/1",
+          "replacement_value_vs_cash_usd_top_not_above_bottom",
+          "replacement_value_vs_spy_usd_top_not_above_bottom",
+          "replacement_value_vs_qqq_usd_top_not_above_bottom"
+        ],
+        "max_single_ticker_share": 0.333333,
+        "passes_train_gate": false,
+        "rows": 3,
+        "source": "state_surface",
+        "state_diffs": {
+          "replacement_value_vs_cash_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": true,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": true,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": true,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          }
+        },
+        "stock_picker_q4": {
+          "replacement_value_vs_cash_usd": {
+            "count": 3,
+            "max_usd": 2772.28,
+            "mean_usd": 2413.41,
+            "median_usd": 2303.04,
+            "min_usd": 2164.91,
+            "sum_usd": 7240.23,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 3,
+            "max_usd": 2704.37,
+            "mean_usd": 2055.4733,
+            "median_usd": 1800.09,
+            "min_usd": 1661.96,
+            "sum_usd": 6166.42,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 3,
+            "max_usd": 2788.46,
+            "mean_usd": 2253.51,
+            "median_usd": 2055.1,
+            "min_usd": 1916.97,
+            "sum_usd": 6760.53,
+            "win_rate": 1.0
+          }
+        },
+        "stock_picker_rows": 3,
+        "ticker_counts": {
+          "AMD": 1,
+          "CRDO": 1,
+          "SNXX": 1
+        }
+      },
+      {
+        "all": {
+          "replacement_value_vs_cash_usd": {
+            "count": 9,
+            "max_usd": 1114.41,
+            "mean_usd": 261.4778,
+            "median_usd": 245.8,
+            "min_usd": -795.5,
+            "sum_usd": 2353.3,
+            "win_rate": 0.555556
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 9,
+            "max_usd": 451.04,
+            "mean_usd": 450.21,
+            "median_usd": 450.2,
+            "min_usd": 449.1,
+            "sum_usd": 4051.89,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 9,
+            "max_usd": 838.51,
+            "mean_usd": 503.6089,
+            "median_usd": 599.57,
+            "min_usd": -186.22,
+            "sum_usd": 4532.48,
+            "win_rate": 0.888889
+          }
+        },
+        "dead_chop_q1": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "dead_chop_rows": 0,
+        "entry_dates": [
+          "2026-05-12",
+          "2026-05-13",
+          "2026-05-14",
+          "2026-05-15",
+          "2026-05-18",
+          "2026-05-19",
+          "2026-05-20",
+          "2026-05-21",
+          "2026-05-22"
+        ],
+        "failed_reasons": [
+          "dead_chop_rows_below_min:0/1",
+          "single_ticker_share:1.0>0.6",
+          "replacement_value_vs_cash_usd_top_not_above_bottom",
+          "replacement_value_vs_cash_usd_top_not_positive",
+          "replacement_value_vs_spy_usd_top_not_above_bottom",
+          "replacement_value_vs_qqq_usd_top_not_above_bottom"
+        ],
+        "max_single_ticker_share": 1.0,
+        "passes_train_gate": false,
+        "rows": 9,
+        "source": "low_deployment_etf",
+        "state_diffs": {
+          "replacement_value_vs_cash_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": true,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": true,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          }
+        },
+        "stock_picker_q4": {
+          "replacement_value_vs_cash_usd": {
+            "count": 2,
+            "max_usd": 669.09,
+            "mean_usd": -63.205,
+            "median_usd": -63.205,
+            "min_usd": -795.5,
+            "sum_usd": -126.41,
+            "win_rate": 0.5
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 2,
+            "max_usd": 450.65,
+            "mean_usd": 449.875,
+            "median_usd": 449.875,
+            "min_usd": 449.1,
+            "sum_usd": 899.75,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 2,
+            "max_usd": 599.57,
+            "mean_usd": 206.675,
+            "median_usd": 206.675,
+            "min_usd": -186.22,
+            "sum_usd": 413.35,
+            "win_rate": 0.5
+          }
+        },
+        "stock_picker_rows": 2,
+        "ticker_counts": {
+          "QQQ": 9
+        }
+      },
+      {
+        "all": {
+          "replacement_value_vs_cash_usd": {
+            "count": 1,
+            "max_usd": -359.49,
+            "mean_usd": -359.49,
+            "median_usd": -359.49,
+            "min_usd": -359.49,
+            "sum_usd": -359.49,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 1,
+            "max_usd": -447.87,
+            "mean_usd": -447.87,
+            "median_usd": -447.87,
+            "min_usd": -447.87,
+            "sum_usd": -447.87,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 1,
+            "max_usd": -363.42,
+            "mean_usd": -363.42,
+            "median_usd": -363.42,
+            "min_usd": -363.42,
+            "sum_usd": -363.42,
+            "win_rate": 0.0
+          }
+        },
+        "dead_chop_q1": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "dead_chop_rows": 0,
+        "entry_dates": [
+          "2026-05-07"
+        ],
+        "failed_reasons": [
+          "source_rows_below_min:1/3",
+          "dead_chop_rows_below_min:0/1",
+          "single_ticker_share:1.0>0.6",
+          "replacement_value_vs_cash_usd_top_not_above_bottom",
+          "replacement_value_vs_cash_usd_top_not_positive",
+          "replacement_value_vs_spy_usd_top_not_above_bottom",
+          "replacement_value_vs_spy_usd_top_not_positive",
+          "replacement_value_vs_qqq_usd_top_not_above_bottom",
+          "replacement_value_vs_qqq_usd_top_not_positive"
+        ],
+        "max_single_ticker_share": 1.0,
+        "passes_train_gate": false,
+        "rows": 1,
+        "source": "sec_negative",
+        "state_diffs": {
+          "replacement_value_vs_cash_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          }
+        },
+        "stock_picker_q4": {
+          "replacement_value_vs_cash_usd": {
+            "count": 1,
+            "max_usd": -359.49,
+            "mean_usd": -359.49,
+            "median_usd": -359.49,
+            "min_usd": -359.49,
+            "sum_usd": -359.49,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 1,
+            "max_usd": -447.87,
+            "mean_usd": -447.87,
+            "median_usd": -447.87,
+            "min_usd": -447.87,
+            "sum_usd": -447.87,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 1,
+            "max_usd": -363.42,
+            "mean_usd": -363.42,
+            "median_usd": -363.42,
+            "min_usd": -363.42,
+            "sum_usd": -363.42,
+            "win_rate": 0.0
+          }
+        },
+        "stock_picker_rows": 1,
+        "ticker_counts": {
+          "LITE": 1
+        }
+      },
+      {
+        "all": {
+          "replacement_value_vs_cash_usd": {
+            "count": 3,
+            "max_usd": -495.78,
+            "mean_usd": -3328.8433,
+            "median_usd": -3163.58,
+            "min_usd": -6327.17,
+            "sum_usd": -9986.53,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 3,
+            "max_usd": -1293.12,
+            "mean_usd": -4053.0933,
+            "median_usd": -3622.05,
+            "min_usd": -7244.11,
+            "sum_usd": -12159.28,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 3,
+            "max_usd": -912.7,
+            "mean_usd": -3707.5467,
+            "median_usd": -3403.31,
+            "min_usd": -6806.63,
+            "sum_usd": -11122.64,
+            "win_rate": 0.0
+          }
+        },
+        "dead_chop_q1": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "dead_chop_rows": 0,
+        "entry_dates": [
+          "2026-05-12"
+        ],
+        "failed_reasons": [
+          "stock_picker_rows_below_min:0/1",
+          "dead_chop_rows_below_min:0/1",
+          "single_ticker_share:0.666667>0.6",
+          "replacement_value_vs_cash_usd_top_not_above_bottom",
+          "replacement_value_vs_cash_usd_top_not_positive",
+          "replacement_value_vs_spy_usd_top_not_above_bottom",
+          "replacement_value_vs_spy_usd_top_not_positive",
+          "replacement_value_vs_qqq_usd_top_not_above_bottom",
+          "replacement_value_vs_qqq_usd_top_not_positive"
+        ],
+        "max_single_ticker_share": 0.666667,
+        "passes_train_gate": false,
+        "rows": 3,
+        "source": "sec_financial_report",
+        "state_diffs": {
+          "replacement_value_vs_cash_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          }
+        },
+        "stock_picker_q4": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "stock_picker_rows": 0,
+        "ticker_counts": {
+          "COIN": 2,
+          "CVX": 1
+        }
+      },
+      {
+        "all": {
+          "replacement_value_vs_cash_usd": {
+            "count": 1,
+            "max_usd": 390.84,
+            "mean_usd": 390.84,
+            "median_usd": 390.84,
+            "min_usd": 390.84,
+            "sum_usd": 390.84,
+            "win_rate": 1.0
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 1,
+            "max_usd": -20.52,
+            "mean_usd": -20.52,
+            "median_usd": -20.52,
+            "min_usd": -20.52,
+            "sum_usd": -20.52,
+            "win_rate": 0.0
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 1,
+            "max_usd": 195.0,
+            "mean_usd": 195.0,
+            "median_usd": 195.0,
+            "min_usd": 195.0,
+            "sum_usd": 195.0,
+            "win_rate": 1.0
+          }
+        },
+        "dead_chop_q1": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "dead_chop_rows": 0,
+        "entry_dates": [
+          "2026-05-05"
+        ],
+        "failed_reasons": [
+          "source_rows_below_min:1/3",
+          "stock_picker_rows_below_min:0/1",
+          "dead_chop_rows_below_min:0/1",
+          "single_ticker_share:1.0>0.6",
+          "replacement_value_vs_cash_usd_top_not_above_bottom",
+          "replacement_value_vs_cash_usd_top_not_positive",
+          "replacement_value_vs_spy_usd_top_not_above_bottom",
+          "replacement_value_vs_spy_usd_top_not_positive",
+          "replacement_value_vs_qqq_usd_top_not_above_bottom",
+          "replacement_value_vs_qqq_usd_top_not_positive"
+        ],
+        "max_single_ticker_share": 1.0,
+        "passes_train_gate": false,
+        "rows": 1,
+        "source": "sec_governance",
+        "state_diffs": {
+          "replacement_value_vs_cash_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "stock_picker_beats_dead_chop": false,
+            "stock_picker_mean_positive": false,
+            "stock_picker_minus_dead_chop_mean_usd": null
+          }
+        },
+        "stock_picker_q4": {
+          "replacement_value_vs_cash_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_qqq_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          },
+          "replacement_value_vs_spy_usd": {
+            "count": 0,
+            "max_usd": null,
+            "mean_usd": null,
+            "median_usd": null,
+            "min_usd": null,
+            "sum_usd": null,
+            "win_rate": null
+          }
+        },
+        "stock_picker_rows": 0,
+        "ticker_counts": {
+          "GS": 1
+        }
+      }
+    ],
+    "validation_passed": false
+  },
+  "timestamp": "2026-07-09T13:09:50Z",
+  "trial_family": "broad_dispersion_source_state_router_forward_validation",
+  "trial_variant_id": "source_state_chronological_validation_v1"
+}

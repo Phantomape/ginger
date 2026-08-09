@@ -1,0 +1,589 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_004_move_rate_volatility_relief_shared_paper.py",
+    "quant/move_rate_volatility_relief_paper_sleeve.py",
+    "quant/test_move_rate_volatility_relief_paper_sleeve.py",
+    "quant/run.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/report_generator.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/paper_sleeves/move_rate_volatility_relief/**",
+    "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+    "experiments/cards/exp-20260711-004.md",
+    "experiments/manifests/exp-20260711-004.json",
+    "experiments/tickets/exp-20260711-004.json",
+    "experiments/logs/exp-20260711-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260711-004.md",
+  "causal_components": [
+    "shared MOVE rate-volatility relief helper",
+    "historical replay through shared decision functions",
+    "daily default-off state and snapshot",
+    "report and attribution wiring",
+    "focused replay/daily parity tests",
+    "declared live-realistic execution envelope"
+  ],
+  "change_type": "candidate_pool_full_stack",
+  "changed_variable": "fixed_move20_first_cross_below_rate_volatility_relief_stock_leadership_shared_default_off_v1",
+  "claimed_at": "2026-07-11T03:06:14+00:00",
+  "completed_at": "2026-07-11T03:26:49+00:00",
+  "created_at": "2026-07-11T03:04:42+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-004",
+  "experiment_uid": "expuid-692d2e844a5e459b",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T03:04:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "move_rate_volatility_relief_shared_paper"
+  },
+  "hypothesis": "Promote the fixed exp-20260711-002 MOVE rate-volatility relief stock-leadership lead into one shared default-off paper helper used identically by historical replay and the daily snapshot; the unchanged MOVE20 first-cross-below event and frozen selector should preserve the three-window after-cost EV/PnL improvement while exposing prospective forward rows without changing live orders.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "fixed_move20_first_cross_below_rate_volatility_relief_stock_leadership_shared_default_off_v1"
+  ],
+  "mechanism_family": "production_visible_rate_volatility_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "live orders",
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM decisions"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-002",
+    "exp-20260607-018",
+    "exp-20260607-019"
+  ],
+  "new_evidence_type": "new_gate_shape_shared_paper_first",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "move_rate_volatility",
+      "field_tags": [
+        "after",
+        "below",
+        "by",
+        "changing",
+        "cost",
+        "cross",
+        "daily",
+        "ev",
+        "event",
+        "exp",
+        "exposing",
+        "first",
+        "forward",
+        "frozen",
+        "helper",
+        "historical",
+        "identically",
+        "into",
+        "lead",
+        "leadership",
+        "live",
+        "move",
+        "move20",
+        "one",
+        "orders",
+        "pnl",
+        "preserve",
+        "promote",
+        "prospective",
+        "rate",
+        "rows",
+        "selector",
+        "should",
+        "snapshot",
+        "stock",
+        "three",
+        "unchanged",
+        "used",
+        "volatility",
+        "while",
+        "window",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "Reopen only with materially settled forward rows from a fixed shared helper or a genuinely different rate-volatility source such as publication-timed swaption/term-premium data.",
+        "score": 0.5262,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "production_parity_repair",
+        "reopen_condition": "Only revisit trailing with a genuinely different mechanism: e.g. regime-conditional trailing (trail only in chop/old_thin where giveback bites, static in trends), a percent-of-MFE giveback stop rather than ATR-offset, or forward live giveback data. A flat ATR trail is closed.",
+        "score": 0.0369,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.034,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0333,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_structured_news",
+        "family_key": "intraday_structured_event_forward_observer_wiring",
+        "reopen_condition": "Closed replacement-value outcomes from this fixed observer, or a PIT LLM scorer writing the same evidence-span schema.",
+        "score": 0.0333,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: promote the positive private MOVE replay into a shared-paper-first candidate source with one helper, historical replay, daily default-off snapshot, parity test, report wiring, forward ledger, and unchanged fixed policy.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "move_rate_volatility",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: promote the positive private MOVE replay into a shared-paper-first candidate source with one helper, historical replay, daily default-off snapshot, parity test, report wiring, forward ledger, and unchanged fixed policy.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: promote the positive private MOVE replay into a shared-paper-first candidate source with one helper, historical replay, daily default-off snapshot, parity test, report wiring, forward ledger, and unchanged fixed policy.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "move_rate_volatility",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.72,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "daily_move_data_unavailable",
+      "replay_daily_semantics_drift",
+      "baseline_identity_drift",
+      "gate4_lead_not_reproduced",
+      "run_adapter_integration_failure"
+    ],
+    "confidence_reason": "The fixed private replay in exp-20260711-002 improved EV and PnL in all three canonical windows with 49 trades and acceptable drawdown/concentration; promotion risk is implementation and point-in-time MOVE availability rather than threshold discovery, and VIX9D plus HYG/JNK failures warn that macro-relief labels can still overlap beta.",
+    "recorded_at": "2026-07-11T03:03:57+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": true,
+    "decision": "accepted_paper_pending_forward",
+    "artifact": "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+    "gate4": {
+      "passed": true,
+      "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+      "failed_reasons": [],
+      "aggregate_ev_delta": 0.3344,
+      "aggregate_pnl_delta": 7548.9,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 49,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.227918,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.098849,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "full_stack_verdict": {
+      "anti_js": "No JavaScript was used.",
+      "verdict": "accepted_paper_pending_forward",
+      "gate4_passed": true,
+      "live_ready": false,
+      "next_step": "Accept as a default-off paper sleeve now. No new experiment is needed to reach live -- only resolve the remaining Gate-5 items as forward evidence matures: forward_rows_immature:0/30, forward_pnl_not_positive, replacement_value_not_passed, kill_switch_parity_not_passed.",
+      "gate4": {
+        "passed": true,
+        "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+        "failed_reasons": [],
+        "aggregate_ev_delta": 0.3344,
+        "aggregate_pnl_delta": 7548.9,
+        "windows_ev_improved": 3,
+        "windows_ev_regressed": 0,
+        "windows_pnl_improved": 3,
+        "windows_pnl_regressed": 0,
+        "target_trade_count": 49,
+        "target_trade_count_min": 20,
+        "target_windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ],
+        "target_window_count_min": 3,
+        "max_drawdown_worse": 0.0021,
+        "max_drawdown_worse_guardrail": 0.005,
+        "minimum_core_survival_rate": 0.7925,
+        "survival_guard_passed": true,
+        "target_concentration": {
+          "passed": true,
+          "max_single_positive_pnl_share": 0.227918,
+          "max_single_positive_pnl_share_guardrail": 0.5,
+          "positive_pnl_hhi": 0.098849,
+          "positive_pnl_hhi_guardrail": 0.35
+        }
+      },
+      "live_readiness": {
+        "ready": false,
+        "blockers": [
+          "forward_rows_immature:0/30",
+          "forward_pnl_not_positive",
+          "replacement_value_not_passed",
+          "kill_switch_parity_not_passed"
+        ],
+        "closed_forward_trades": 0,
+        "min_closed_forward_trades": 30,
+        "forward_pnl": null,
+        "replacement_value_passed": false,
+        "kill_switch_parity_passed": false,
+        "envelope_missing": []
+      },
+      "execution_envelope": {
+        "base_notional": 4000.0,
+        "max_capital_pct": 0.32,
+        "min_dollar_volume": 50000000.0,
+        "slippage_bps": 10.0,
+        "max_displacement": 0,
+        "max_concurrent": 8,
+        "order_semantics": "default_off_next_session_open_observation_only",
+        "kill_switch_drawdown_pct": 0.08,
+        "sleeve_drawdown_stop_pct": 0.05,
+        "notes": "Top-2/day, 10-session close, 10-session ticker cooldown; activation remains disabled.",
+        "missing": [],
+        "complete": true
+      }
+    },
+    "calibration": {
+      "predicted_success_probability": 0.72,
+      "actual_success": true,
+      "brier_score": 0.0784,
+      "predicted_failure_modes": [
+        "daily_move_data_unavailable",
+        "replay_daily_semantics_drift",
+        "baseline_identity_drift",
+        "gate4_lead_not_reproduced",
+        "run_adapter_integration_failure"
+      ],
+      "predicted_failure_modes_hit": [],
+      "surprise_note": "Shared promotion reproduced the private lead."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-004.json",
+  "single_causal_variable": "fixed_move20_first_cross_below_rate_volatility_relief_stock_leadership_shared_default_off_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260711-004.json",
+  "trial_family": "move_rate_volatility_relief_shared_paper_candidate_pool",
+  "trial_variant_id": "move20_cross_below_rate_volatility_relief_stock_leadership_v1",
+  "timestamp": "2026-07-11T03:26:49Z",
+  "decision": "accepted_paper_pending_forward",
+  "accepted": true,
+  "accepted_alpha": true,
+  "implementation_mode": "shared_paper_first_promotion",
+  "new_evidence_axis": "New gate shape: the fixed positive private MOVE replay is now one shared-paper-first candidate source with historical replay, daily default-off state, report/attribution wiring, parity tests, execution envelope, and forward rows.",
+  "artifact": "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+  "aggregate_expected_value_delta": 0.3344,
+  "aggregate_strategy_total_pnl_delta": 7548.9,
+  "gate1": {
+    "passed": true,
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "pnl_drift": 0.0,
+        "passed": true
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11,
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": []
+    },
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "ICE BofA MOVE daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ],
+    "passed": true
+  },
+  "gate3": {
+    "new_core_filter_added": false,
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": true,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+    "failed_reasons": [],
+    "aggregate_ev_delta": 0.3344,
+    "aggregate_pnl_delta": 7548.9,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0,
+    "target_trade_count": 49,
+    "target_trade_count_min": 20,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "target_window_count_min": 3,
+    "max_drawdown_worse": 0.0021,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "passed": true,
+      "max_single_positive_pnl_share": 0.227918,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "positive_pnl_hhi": 0.098849,
+      "positive_pnl_hhi_guardrail": 0.35
+    }
+  },
+  "full_stack_verdict": {
+    "anti_js": "No JavaScript was used.",
+    "verdict": "accepted_paper_pending_forward",
+    "gate4_passed": true,
+    "live_ready": false,
+    "next_step": "Accept as a default-off paper sleeve now. No new experiment is needed to reach live -- only resolve the remaining Gate-5 items as forward evidence matures: forward_rows_immature:0/30, forward_pnl_not_positive, replacement_value_not_passed, kill_switch_parity_not_passed.",
+    "gate4": {
+      "passed": true,
+      "decision": "positive_replay_lead_not_promoted_volatility_relief_stock_leadership",
+      "failed_reasons": [],
+      "aggregate_ev_delta": 0.3344,
+      "aggregate_pnl_delta": 7548.9,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0,
+      "target_trade_count": 49,
+      "target_trade_count_min": 20,
+      "target_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "target_window_count_min": 3,
+      "max_drawdown_worse": 0.0021,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "passed": true,
+        "max_single_positive_pnl_share": 0.227918,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "positive_pnl_hhi": 0.098849,
+        "positive_pnl_hhi_guardrail": 0.35
+      }
+    },
+    "live_readiness": {
+      "ready": false,
+      "blockers": [
+        "forward_rows_immature:0/30",
+        "forward_pnl_not_positive",
+        "replacement_value_not_passed",
+        "kill_switch_parity_not_passed"
+      ],
+      "closed_forward_trades": 0,
+      "min_closed_forward_trades": 30,
+      "forward_pnl": null,
+      "replacement_value_passed": false,
+      "kill_switch_parity_passed": false,
+      "envelope_missing": []
+    },
+    "execution_envelope": {
+      "base_notional": 4000.0,
+      "max_capital_pct": 0.32,
+      "min_dollar_volume": 50000000.0,
+      "slippage_bps": 10.0,
+      "max_displacement": 0,
+      "max_concurrent": 8,
+      "order_semantics": "default_off_next_session_open_observation_only",
+      "kill_switch_drawdown_pct": 0.08,
+      "sleeve_drawdown_stop_pct": 0.05,
+      "notes": "Top-2/day, 10-session close, 10-session ticker cooldown; activation remains disabled.",
+      "missing": [],
+      "complete": true
+    }
+  },
+  "calibration": {
+    "predicted_success_probability": 0.72,
+    "actual_success": true,
+    "brier_score": 0.0784,
+    "predicted_failure_modes": [
+      "daily_move_data_unavailable",
+      "replay_daily_semantics_drift",
+      "baseline_identity_drift",
+      "gate4_lead_not_reproduced",
+      "run_adapter_integration_failure"
+    ],
+    "predicted_failure_modes_hit": [],
+    "surprise_note": "Shared promotion reproduced the private lead."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "shared_default_off_move_rate_volatility_relief_paper_attribution"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The shared helper reproduced the fixed private MOVE replay while daily, report, and attribution paths expose the identical rule default-off.",
+    "forbidden_near_neighbor_retry": "Do not retune MOVE spans, levels, persistence, selector fields, top-N, hold, cooldown, notional, windows, or response shape.",
+    "new_evidence_required": "Live review requires at least 30 closed prospective rows, positive cash/SPY/QQQ replacement value, concentration control, and kill-switch parity; routine daily materialization uses run.py and needs no new experiment ID."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260711_004_move_rate_volatility_relief_shared_paper.py",
+    "quant/move_rate_volatility_relief_paper_sleeve.py",
+    "quant/test_move_rate_volatility_relief_paper_sleeve.py",
+    "quant/run.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/report_generator.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/paper_sleeves/move_rate_volatility_relief/**",
+    "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+    "experiments/cards/exp-20260711-004.md",
+    "experiments/manifests/exp-20260711-004.json",
+    "experiments/tickets/exp-20260711-004.json",
+    "experiments/logs/exp-20260711-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_move_rate_volatility_relief_paper_sleeve.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_004_move_rate_volatility_relief_shared_paper.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T03:26:49+00:00"
+}

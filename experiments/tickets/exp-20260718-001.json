@@ -1,0 +1,331 @@
+{
+  "acceptance_rule": "Aggregate EV must exceed 6.8263 (>10% over 6.2057), aggregate PnL must exceed 130992.36, at least two windows improve both EV and PnL, no window EV regresses more than 5%, max drawdown drift <=1pp, survival >=5%, at least 10 trades per window, aggregate trade retention >=80%, at least 10 quality-gated rotations across >=8 candidate tickers with top1 <=30%, and cash conservation must remain exact.",
+  "allowed_write_scope": [
+    "quant\\backtester.py",
+    "quant\\cash_conflict_remaining_rr_rotation.py",
+    "quant\\test_cash_conflict_remaining_rr_rotation.py",
+    "quant\\experiments",
+    "data\\experiments",
+    "experiments\\artifacts",
+    "experiments\\logs",
+    "experiments\\cards",
+    "experiments\\tickets",
+    "experiments\\manifests",
+    "docs\\alpha-optimization-playbook.md",
+    "docs\\production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260718-001.md",
+  "causal_components": [
+    "shared pairwise quality policy",
+    "backtester adapter",
+    "frozen three-window replay",
+    "focused parity test",
+    "execution envelope",
+    "Gate 1-4 verdict"
+  ],
+  "change_type": "capital_allocation_pairwise_quality_gate",
+  "changed_variable": "cash_conflict_pairwise_remaining_reward_risk_rotation_v1",
+  "claimed_at": "2026-07-18T10:17:58+00:00",
+  "completed_at": "2026-07-18T10:24:53+00:00",
+  "created_at": "2026-07-18T10:16:02+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260718-001",
+  "experiment_uid": "expuid-d6d0de84ec7349be",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260718-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-18T10:16:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cash_conflict_remaining_rr_rotation"
+  },
+  "hypothesis": "Capital-allocation alpha: when a fully qualified fresh core entry would be scaled or skipped only by settled-cash admission, compare production-visible remaining target headroom to stop distance at the same next open; rotate the weakest active core incumbent only when its remaining reward-to-risk is at most 2.0 and the fresh candidate reward-to-risk is at least 1.5 times higher, otherwise retain the incumbent.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "exp-20260712-015 frozen behavior inputs",
+    "exp-20260715-010 cash-feasible baseline",
+    "signal generation",
+    "ordinary exits",
+    "ranking",
+    "requested sizing",
+    "cost model",
+    "three canonical windows",
+    "incumbent RR ceiling 2.0",
+    "candidate/incumbent RR ratio 1.5",
+    "same-next-open full rotation",
+    "max one rotation per fill date"
+  ],
+  "mechanism_family": "cash_feasible_pairwise_opportunity_cost",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant\\run.py",
+    "live orders",
+    "default orders",
+    "USPTO surface",
+    "borrow surface",
+    "NVD surface"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260716-001",
+    "exp-20260716-004",
+    "exp-20260716-008"
+  ],
+  "new_evidence_type": "preflight_rejection_no_valid_new_evidence_axis",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "cash_feasible_core_book",
+      "field_tags": [
+        "a",
+        "active",
+        "admission",
+        "allocation",
+        "alpha",
+        "at",
+        "be",
+        "by",
+        "capital",
+        "cash",
+        "compare",
+        "conflict",
+        "core",
+        "cost",
+        "distance",
+        "entry",
+        "feasible",
+        "fresh",
+        "fully",
+        "headroom",
+        "higher",
+        "incumbent",
+        "is",
+        "its",
+        "least",
+        "most",
+        "only",
+        "opportunity",
+        "or",
+        "otherwise",
+        "pairwise",
+        "qualified",
+        "remaining",
+        "retain",
+        "reward",
+        "risk",
+        "rotate",
+        "rotation",
+        "rr",
+        "same",
+        "scaled",
+        "settled",
+        "skipped",
+        "stop",
+        "target",
+        "times",
+        "to",
+        "weakest",
+        "when",
+        "would"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "cash_feasible_core_book",
+        "family_key": "cash_conflict_oldest_incumbent_rotation",
+        "reopen_condition": "A new data source, genuinely different gate shape, or materially more settled forward cash-conflict decisions is required for a near-neighbor retry.",
+        "score": 0.4953,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "cash_feasible_core_book",
+        "family_key": "cash_conflict_persistent_order_queue",
+        "reopen_condition": "A new data source, genuinely different gate shape, or materially more settled forward cash-conflict decisions is required.",
+        "score": 0.4697,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "event_rotation_plus_state_surface_candidate_pool_allocation",
+        "reopen_condition": null,
+        "score": 0.1648,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_first_hit_leadership_decay",
+        "reopen_condition": null,
+        "score": 0.1645,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_cost_liquidity",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score cost/liquidity thresholds on the same frozen replay.",
+        "score": 0.1645,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "A genuinely different conditional pairwise quality gate: production-visible remaining target-headroom/stop-distance chooses and gates the weakest incumbent, unlike unconditional oldest eviction, raw covariance scaling, FIFO delay, or common-mode network centrality.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "cash_feasible_core_book",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "A genuinely different conditional pairwise quality gate: production-visible remaining target-headroom/stop-distance chooses and gates the weakest incumbent, unlike unconditional oldest eviction, raw covariance scaling, FIFO delay, or common-mode network centrality.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "A genuinely different conditional pairwise quality gate: production-visible remaining target-headroom/stop-distance chooses and gates the weakest incumbent, unlike unconditional oldest eviction, raw covariance scaling, FIFO delay, or common-mode network centrality.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "cash_feasible_core_book",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "manual_post_reservation_review": {
+    "authoritative_artifact": "data/experiments/exp-20260718-001/preflight.json",
+    "automated_classifier_caveat": "Reservation-time gate_shape candidate_pool_top1_10d was incorrect for this weakest-incumbent cash rotation.",
+    "honest_data_source": "cash_feasible_core_book",
+    "honest_gate_shape": "incumbent_rotation",
+    "nearest_experiment_id": "exp-20260716-004",
+    "nearest_score": 0.6737,
+    "valid_new_evidence_axis": false,
+    "strategy_changes_applied": false,
+    "gate4_run": false
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The cash-feasible playbook explicitly says opportunity cost needs an ex-ante incumbent-versus-candidate quality signal; target headroom and stop distance are shared production-visible lifecycle fields, and an outcome-blind preflight yielded 3/3/4 actions across the windows. Confidence remains low because only ten actions are expected, target geometry may be mostly static at entry, and prior unconditional rotation/covariance/queue policies clipped winners.",
+    "expected_ev_delta": 0.8,
+    "expected_pnl_delta": 8000.0,
+    "main_failure_modes": [
+      "quality_gate_too_sparse",
+      "target_headroom_clips_winners",
+      "candidate_rr_static_or_uninformative",
+      "window_regression",
+      "insufficient_release_or_cash_interaction"
+    ],
+    "recorded_at": "2026-07-18T10:15:10+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260716-004/before.json",
+    "after_result_file": "data/experiments/exp-20260716-004/before.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.8,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": -0.8,
+      "expected_pnl_delta": 8000.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": -8000.0,
+      "predicted_failure_modes": [
+        "quality_gate_too_sparse",
+        "target_headroom_clips_winners",
+        "candidate_rr_static_or_uninformative",
+        "window_regression",
+        "insufficient_release_or_cash_interaction"
+      ],
+      "realized_failure_mode": "quality_gate_too_sparse",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Manual fingerprint and execution-clock review invalidated the claimed new gate before any replay."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260718-001.json",
+  "single_causal_variable": "cash_conflict_pairwise_remaining_reward_risk_rotation_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260718-001.json",
+  "trial_family": "cash_conflict_remaining_reward_risk_rotation",
+  "trial_variant_id": "rr2_candidate_1p5x_same_open_v1"
+}

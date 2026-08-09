@@ -1,0 +1,522 @@
+{
+  "acceptance_rule": "Gate 1 core identity exact; Gate 2 entry_date/target_price/sector coverage; Gate 3 survival >=5%; challenger has >=20 trades across all 3 windows, no window EV or PnL regression versus accepted MOVE v1, aggregate EV improvement >=0.03344 and PnL improvement >=754.89 versus MOVE v1, drawdown worsening <=0.5pp, concentration passes, and shared historical/daily parity passes.",
+  "allowed_write_scope": [
+    "quant/move_rate_volatility_relief_duration_priority_paper_sleeve.py",
+    "quant/test_move_rate_volatility_relief_duration_priority_paper_sleeve.py",
+    "quant/experiments/exp_20260711_015_move_rate_volatility_relief_duration_priority.py",
+    "data/experiments/exp-20260711-015/**",
+    "experiments/tickets/exp-20260711-015.json",
+    "experiments/cards/exp-20260711-015.md",
+    "experiments/manifests/exp-20260711-015.json",
+    "experiments/logs/exp-20260711-015.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/default_off_alpha_attribution.py",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+  "card_file": "experiments/cards/exp-20260711-015.md",
+  "causal_components": [
+    "shared duration-priority ranking helper",
+    "historical replay",
+    "daily default-off snapshot",
+    "parity tests",
+    "accepted MOVE v1 champion comparator"
+  ],
+  "change_type": "ranking_full_stack",
+  "changed_variable": "move_relief_rate_sensitive_sector_priority_ranking_v1",
+  "claimed_at": "2026-07-11T10:08:29+00:00",
+  "completed_at": "2026-07-11T10:16:09+00:00",
+  "created_at": "2026-07-11T10:07:46+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260711-015",
+  "experiment_uid": "expuid-20bc9cee9c544cdd",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-015",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T10:07:46+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "move_rate_volatility_relief_duration_priority"
+  },
+  "hypothesis": "ranking/full_stack: within the accepted MOVE rate-volatility relief shared paper source, prioritize economically rate-sensitive long-duration sectors (Technology, Communication Services, Consumer Cyclical, Real Estate) ahead of other qualified leaders while preserving the frozen selector, top-2 budget, next-open entry, 10-session exit, costs, cooldown, and notional; the challenger must beat the accepted MOVE v1 helper without any window regression.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "MOVE first-cross-below SMA20 trigger",
+    "stock eligibility thresholds",
+    "top-2/day",
+    "4000 USD notional",
+    "next-open entry",
+    "10-session close",
+    "10-session cooldown",
+    "costs",
+    "canonical windows"
+  ],
+  "mechanism_family": "production_visible_rate_volatility_relief_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "live orders",
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM decision boundary",
+    "accepted MOVE v1 helper semantics"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-002",
+    "exp-20260711-004",
+    "exp-20260711-008",
+    "exp-20260711-011",
+    "exp-20260711-013"
+  ],
+  "new_evidence_type": "new_gate_shape_ranking",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "move_rate_volatility",
+      "field_tags": [
+        "accepted",
+        "ahead",
+        "any",
+        "beat",
+        "budget",
+        "challenger",
+        "communication",
+        "consumer",
+        "cooldown",
+        "costs",
+        "cyclical",
+        "duration",
+        "economically",
+        "entry",
+        "estate",
+        "exit",
+        "frozen",
+        "full",
+        "helper",
+        "leaders",
+        "long",
+        "move",
+        "must",
+        "notional",
+        "of",
+        "other",
+        "preserving",
+        "prioritize",
+        "priority",
+        "qualified",
+        "ranking",
+        "rate",
+        "real",
+        "regression",
+        "sector",
+        "sectors",
+        "selector",
+        "sensitive",
+        "services",
+        "session",
+        "stack",
+        "technology",
+        "top",
+        "volatility",
+        "while",
+        "window",
+        "within",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_stock_leadership_candidate_pool",
+        "reopen_condition": "Reopen only with materially settled forward rows from a fixed shared helper or a genuinely different rate-volatility source such as publication-timed swaption/term-premium data.",
+        "score": 0.4726,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "move_rate_volatility",
+        "family_key": "move_rate_volatility_relief_shared_paper_candidate_pool",
+        "reopen_condition": "Live review requires at least 30 closed prospective rows, positive cash/SPY/QQQ replacement value, concentration control, and kill-switch parity; routine daily materialization uses run.py and needs no new experiment ID.",
+        "score": 0.4722,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "accepted_helper_source_priority_allocator_source_extension",
+        "reopen_condition": "Retry only with closed forward allocator displacement rows, per-share SBC burden net buybacks, or grant-value normalization evidence that changes the underlying data edge.",
+        "score": 0.1726,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "data_source": "allocator",
+        "family_key": "accepted_default_off_helper_source_priority_allocation",
+        "reopen_condition": "Closed forward replacement-value rows for rejected second-slot candidates, or a materially new PIT field that predicts which second slot should displace idle allocator capacity.",
+        "score": 0.1722,
+        "status": "has_accepted",
+        "trials": 24
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_helper_source_priority_allocator_tail_state_routing",
+        "reopen_condition": "A retry needs closed forward allocator replacement rows, a shared daily tail-state field collected before routing, or a materially different PIT displacement field.",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: deterministic rate-sensitive-sector priority ranking inside the accepted MOVE shared paper candidate source, with the MOVE trigger and all eligibility/execution variables locked; prior MOVE experiments tested source admission, shared promotion, core overlap, and exit continuation, not candidate ranking.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "move_rate_volatility",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: deterministic rate-sensitive-sector priority ranking inside the accepted MOVE shared paper candidate source, with the MOVE trigger and all eligibility/execution variables locked; prior MOVE experiments tested source admission, shared promotion, core overlap, and exit continuation, not candidate ranking.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: deterministic rate-sensitive-sector priority ranking inside the accepted MOVE shared paper candidate source, with the MOVE trigger and all eligibility/execution variables locked; prior MOVE experiments tested source admission, shared promotion, core overlap, and exit continuation, not candidate ranking.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "move_rate_volatility",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.12,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "sector_priority_relabels_existing_momentum",
+      "old_thin_regression",
+      "trade_count_starvation",
+      "accepted_move_v1_not_beaten",
+      "drawdown_drift",
+      "shared_parity_failure"
+    ],
+    "confidence_reason": "MOVE v1 is accepted across all three windows and the ranking uses a predeclared economic duration prior with hundreds of qualified candidates, but the champion threshold is high and sector priority may discard stronger idiosyncratic leaders.",
+    "recorded_at": "2026-07-11T10:06:52+00:00"
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260711-004/exp_20260711_004_move_rate_volatility_relief_shared_paper.json",
+    "after_result_file": "data/experiments/exp-20260711-015/exp_20260711_015_move_rate_volatility_relief_duration_priority.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.12,
+      "brier_score": 0.0144,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.05,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 1000.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "sector_priority_relabels_existing_momentum",
+        "old_thin_regression",
+        "trade_count_starvation",
+        "accepted_move_v1_not_beaten",
+        "drawdown_drift",
+        "shared_parity_failure"
+      ],
+      "realized_failure_mode": "accepted_move_v1_not_beaten",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The economically plausible duration-sector priority underperformed the unconstrained idiosyncratic leadership ranking in all three windows."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-015.json",
+  "single_causal_variable": "move_relief_rate_sensitive_sector_priority_ranking_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260711-015.json",
+  "trial_family": "move_rate_volatility_relief_sector_priority_ranking",
+  "trial_variant_id": "move_relief_rate_sensitive_sector_priority_ranking_v1",
+  "timestamp": "2026-07-11T10:15:43Z",
+  "decision": "rejected_move_duration_priority_ranking",
+  "accepted": false,
+  "accepted_alpha": false,
+  "implementation_mode": "shared_paper_first_conditional_on_champion_gate",
+  "new_evidence_axis": "New gate shape: deterministic rate-sensitive-sector priority ranking inside the accepted MOVE shared paper candidate source, with the MOVE trigger and all eligibility/execution variables locked; prior MOVE experiments tested source admission, shared promotion, core overlap, and exit continuation, not candidate ranking.",
+  "artifact": "data/experiments/exp-20260711-015/exp_20260711_015_move_rate_volatility_relief_duration_priority.json",
+  "champion_gate": {
+    "aggregate_ev_delta_vs_champion": -0.3195,
+    "aggregate_pnl_delta_vs_champion": -7009.57,
+    "by_window": {
+      "late_strong": {
+        "challenger_ev": 5.2079,
+        "challenger_pnl": 117560.73,
+        "champion_ev": 5.249,
+        "champion_pnl": 118218.95,
+        "ev_delta": -0.0411,
+        "passed": false,
+        "pnl_delta": -658.22
+      },
+      "mid_weak": {
+        "challenger_ev": 2.0825,
+        "challenger_pnl": 77127.25,
+        "champion_ev": 2.3036,
+        "champion_pnl": 81404.22,
+        "ev_delta": -0.2211,
+        "passed": false,
+        "pnl_delta": -4276.97
+      },
+      "old_thin": {
+        "challenger_ev": 0.6186,
+        "challenger_pnl": 40702.34,
+        "champion_ev": 0.6759,
+        "champion_pnl": 42776.72,
+        "ev_delta": -0.0573,
+        "passed": false,
+        "pnl_delta": -2074.38
+      }
+    },
+    "challenger_aggregate": {
+      "expected_value_score": 7.909,
+      "max_drawdown_pct": 0.1118,
+      "total_pnl": 235390.32
+    },
+    "champion_aggregate": {
+      "expected_value_score": 8.2285,
+      "max_drawdown_pct": 0.111,
+      "total_pnl": 242399.89
+    },
+    "champion_experiment_id": "exp-20260711-004",
+    "concentration_passed": true,
+    "decision": "rejected_move_duration_priority_ranking",
+    "drawdown_worse_vs_champion": 0.0008,
+    "failed_reasons": [
+      "accepted_move_v1_window_regression",
+      "accepted_move_v1_material_ev_not_beaten",
+      "accepted_move_v1_material_pnl_not_beaten"
+    ],
+    "max_drawdown_worse": 0.005,
+    "minimum_ev_improvement": 0.03344,
+    "minimum_pnl_improvement": 754.89,
+    "passed": false,
+    "target_trade_count": 49,
+    "target_window_count": 3
+  },
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "ICE BofA MOVE daily Close with 20-session history",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": 0.0149,
+    "aggregate_pnl_delta": 539.33,
+    "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "window_ev_regression",
+      "window_pnl_regression"
+    ],
+    "max_drawdown_worse": 0.0015,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.326018,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.148331,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 49,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1
+  },
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0144,
+    "predicted_failure_modes": [
+      "sector_priority_relabels_existing_momentum",
+      "old_thin_regression",
+      "trade_count_starvation",
+      "accepted_move_v1_not_beaten",
+      "drawdown_drift",
+      "shared_parity_failure"
+    ],
+    "predicted_failure_modes_hit": [
+      "accepted_move_v1_window_regression",
+      "accepted_move_v1_material_ev_not_beaten",
+      "accepted_move_v1_material_pnl_not_beaten"
+    ],
+    "predicted_success_probability": 0.12
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "scope": "default_off_move_rate_volatility_relief_duration_priority_paper",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry MOVE sector lists, sector tiers, score bonuses, thresholds, top-N, hold, cooldown, notional, or response functions on the same canonical rows.",
+    "new_evidence_required": "A retry requires at least 30 closed prospective MOVE rows with sector-aware replacement value, a genuinely new issuer-duration field, or a different ranking gate justified before observing outcomes.",
+    "why_result_happened": "The duration-sensitive sector priority did not materially and consistently beat the accepted MOVE v1 helper."
+  },
+  "changed_files": [
+    "quant/experiments/exp_20260711_015_move_rate_volatility_relief_duration_priority.py",
+    "data/experiments/exp-20260711-015/exp_20260711_015_move_rate_volatility_relief_duration_priority.json",
+    "experiments/tickets/exp-20260711-015.json",
+    "experiments/cards/exp-20260711-015.md",
+    "experiments/manifests/exp-20260711-015.json",
+    "experiments/logs/exp-20260711-015.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_015_move_rate_volatility_relief_duration_priority.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T10:15:43+00:00"
+}

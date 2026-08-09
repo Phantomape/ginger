@@ -9,9 +9,14 @@
 > 头对头误拒率不可忽略。
 >
 > 核心命题："打不过冠军" ≠ "加进组合没价值"。与冠军相关性低、standalone EV
-> 略逊的信号，组合意义上可能提高有效前沿。系统目前完全没有这条评估车道。
+> 略逊的信号，组合意义上可能提高有效前沿。立项时系统没有这条评估车道；当前正式口径见
+> 下文 Gate 4-P v1。
 
-## 车道定义（未实现——本文档先固定口径，防止各实验自造标准）
+## 车道定义（历史立项口径；正式合同见下文 Gate 4-P v1）
+
+本节保留 2026-07-06 的立项语境；2026-07-14 owner 已授权独立的
+portfolio-contribution Gate，正式判定一律以下文 **Gate 4-P v1** 为准。该授权只修订
+组合贡献车道，不修改原 champion-replacement Gate 4。
 
 **准入对象**：被拒但满足全部三条的历史实验/信号——
 1. 聚合 EV 与 PnL 非负（`aggregate_ev_not_positive`、`aggregate_pnl_not_positive` 均未命中）；
@@ -88,6 +93,134 @@ overlay、不调任何源），结论是**执行 park，且不建议再花批量
 3. 某个已有 default-off forward ledger 的排名候选（如 rank-23
    finra_otc_internalization_retreat）积累实质数量的已结算 forward
    replacement-value 行，走本文档 observed-only forward 条款评估。
+
+## 2026-07-14 owner 授权：Gate 4-P v1（exp-20260715-002）
+
+Owner 于 2026-07-14 明确授权按本节合同重开组合车道；本次授权由
+`exp-20260715-002` 持有，并且只允许一次 31-family 完整批量判定。它满足上节
+reopen 条件 1，但不是对既有 Gate 4 的放宽，也不授权逐项 retune 或恢复“一名一 ID”。
+
+### 1. 两种问题、两道互不替代的门
+
+- **Champion-replacement Gate 4 保持原样**：继续回答“挑战者能否替换当前冠军”，其
+  before/after、窗口和通过条件仍只以 `docs/backtesting.md` 为准。
+- **Portfolio-contribution Gate（简称 Gate 4-P）独立判定**：只回答“把候选以小权重、
+  资金守恒地加入 core，是否改善组合”。Gate 4-P 的通过不能反向改写 Gate 4 结论，
+  Gate 4 的拒绝也不能代替 Gate 4-P 的组合级测量。
+
+### 2. 锁定的资金与比较合同
+
+每个候选在同一交易日历上构造 `90% core + 10% candidate` 的 constant-mix 组合；
+两条腿权重合计必须等于 100%，不得把 candidate 当成额外杠杆叠在完整 core 上。候选权重
+上限锁定为 10%，正式判定的唯一比较器是 **100% core**：
+
+```text
+formal_delta = metric(90% core + 10% candidate) - metric(100% core)
+```
+
+批次还必须同时披露相对 `90% core + 10% cash` 的诊断 delta，用于区分“候选 sleeve
+本身贡献为正”和“候选足以覆盖挤出 10% core 的机会成本”。该诊断值**不参与正式判定**；
+即使相对 cash 为正，也不能挽救相对 100% core 的正式硬失败。
+
+候选腿的单位资本合同同样锁定，避免把源行的 `$4,000` notional 先除以 `$100,000`、
+再乘 10% 而二次缩成约 `$400`：每个窗口从 `$10,000` candidate cash 开始，入场本金与
+entry fee 只能使用当时现金；同日多个 entry 按含 entry fee 的请求额 pro-rata，同日收盘
+exit 的回款不能供当天早盘 entry 使用。退出按实际 shares、有效 exit price 与 exit fee
+回款，已实现盈亏会改变后续可用现金；禁止负现金或隐含杠杆。candidate return 以该
+`$10,000` NAV 为分母，再进入 `90/10` constant-mix。source entry/normal-exit fill 已各含
+5bp slippage，窗口末强平也按 raw close 扣 5bp sell slippage；此外交易费按 funded
+notional 双边各 17.5bp，因此 all-in round trip 为 45bp。
+
+### 3. 固定批次与路径构造
+
+- 输入锁定为 exp-20260706-022 ranking 的 **全部 31 个 frozen-family
+  representatives**，在 `exp-20260715-002` 内一次跑完并输出完整 per-family 表；不得只挑
+  已有 overlay、前若干名或“看起来最好”的代表。
+- 三个标准窗口保持固定、互不延长；同一窗口内 core 与 candidate 使用完全相同的日期轴。
+- 入场日晚于窗口末日的交易不进入该窗口；在窗口末日仍未退出的持仓按末日可得收盘价强平，
+  不允许为等待原 exit date 而把窗口向后延伸或把收益泄漏进下一窗口。
+- 价格行、交易成本、强平数量、缺失/排除行及输入 hash 必须随 artifact 保存，使 31 个候选
+  能从同一冻结输入重放。
+
+### 4. 联合统计合同
+
+31 个候选必须共用一次 **paired、window-stratified circular block bootstrap**：各候选与
+core 在每个窗口使用同一组重采样索引，窗口之间分别抽样后再聚合；block length 固定为
+20 个交易日，重复 10,000 次，并把随机 seed 写入 artifact。候选之间用同一批 bootstrap
+draw，以 max-T 构造 aggregate EV delta 的单侧 90% simultaneous lower bound。
+
+`multiple_testing_passed` 只在候选的 simultaneous lower bound `> 0` 时成立。不得把逐候选
+未校正 p-value、普通 bootstrap 区间或事后挑选最佳候选当成联合通过证据。
+
+### 5. 经济/风险硬失败与证据阻塞必须分开
+
+**硬失败（hard failure）**表示候选按已观测路径没有组合价值；命中任一条，结论直接为
+`portfolio_reject`：
+
+1. 相对 100% core 的 aggregate EV delta `<= 0`；
+2. 相对 100% core 的 aggregate PnL delta `<= 0`；
+3. 超过一个窗口发生 material regression；material regression 仅在该窗口
+   `EV delta < -1% * abs(core window EV)` **且** `PnL delta < 0` 时成立；
+4. max drawdown 恶化超过 0.5 个百分点，或 95% expected shortfall 恶化超过 5%；
+5. 候选权重超过 10%，或组合集中度超过 single-name 50%、top-5 60%、HHI 0.35 中的任一帽。
+
+**证据阻塞（evidence blocker）**表示经济路径尚未被充分证明，不等同于负 alpha。包括但
+不限于：无法证明资金守恒；受影响交易少于 20 笔或覆盖少于两个窗口；风险/集中度字段缺失；
+31-family 批次不完整；多重检验未通过或其输入 selection panel 不完整。证据 blocker 不得
+伪装成 hard failure，也不得被普通点估计覆盖。
+
+### 6. 三态 verdict 与权限边界
+
+Gate 4-P 只能输出以下三态：
+
+- `portfolio_reject`：至少命中一个 hard failure；
+- `portfolio_forward_watch`：没有 hard failure，但存在一个或多个 evidence blocker；
+- `accepted_portfolio_paper`：没有 hard failure、没有 evidence blocker，并且
+  `multiple_testing_passed=true`。
+
+`accepted_portfolio_paper` 的最高权限仍只是 **default-off paper**：不得据此改变 live/default
+orders、core ranking、sizing、exit 或真钱风险预算，更不等于 live-ready。进入真钱前仍需独立的
+prospective ledger、生产/回测 parity、live-realistic execution envelope、kill switch 和后续
+live gate；这些证据不能由历史 Gate 4-P 回放替代。
+
+### 7. 本批次已知的 selection-panel 上限
+
+31 个代表构成 exp-20260706-022 已保存 ranking 的完整 family-representative 批次，但并不构成
+历史搜索选择面的完整统计 panel：原始约 264 个 rejected-positive selection candidates 的完整
+逐候选选择记录没有被保存，现有文件无法无损恢复。因此 `exp-20260715-002` 必须固定记录
+`panel_complete=false`，把该缺口列为 evidence blocker。
+
+这意味着本批次即使经济/风险硬条件与 31-family max-T 都通过，verdict 上限仍为
+`portfolio_forward_watch`；若任何 hard failure 命中，则仍为 `portfolio_reject`，不能用
+panel 不完整把负结果降格成“未知”。只有未来拿到预先冻结且完整的 selection panel，或积累不受
+这段历史选择污染的 prospective ledger，才可能解除该 blocker 并获得
+`accepted_portfolio_paper`。
+
+### 8. exp-20260715-002 实测结论
+
+完整批次已在 31/31 family representatives、三个固定窗口和同一 `$10,000` cash-ledger
+sleeve 合同上跑完。2,230 个源交易中，1,030 个全额成交、625 个部分成交、559 个因当时
+无可用现金而不成交，另有 16 个入场日晚于固定窗口末日而排除；所有 93 个
+family-window cash ledger 均保持非负并与末日 MTM equity 对账。冻结 OHLCV replay 使用
+13,590 行 potential-row superset，其中 10,319 个 ticker-date 行被实际 funded paths 消费，
+缺失为 0。
+
+正式比较的结果是 **31/31 `portfolio_reject`**：没有一个候选同时取得相对 100% core 的
+正 aggregate EV delta 与正 aggregate PnL delta，也没有一个 90% simultaneous EV lower
+bound 大于 0。最佳候选是 `exp-20260626-003`
+`companyfacts_purchase_obligation_maturity_ladder_candidate_pool`：
+
+- 相对 100% core：aggregate EV delta `-0.94934`，PnL delta `-$19,348.24`；
+- 相对 `90% core + 10% cash` 的诊断：EV delta `+0.64143`，PnL delta `+$11,059.52`；
+- 最坏窗口 drawdown 漂移 `+0.4718pp`，仍在 0.5pp 帽内；ES95 恶化 `+5.71%`，超过 5% 帽；
+- simultaneous 90% EV lower bound `-2.49485`。
+
+全 panel 中有 18/31 个候选相对 cash 的 EV 与 PnL 同时为正、28/31 的 PnL 为正，但这些
+贡献都不足以覆盖被挤出的 10% 当前 core。结论因此不是“分散化不存在”，而是“在当前
+强 core 和锁定资金成本下，这批历史候选还不值得获得 10% funded replacement budget”。
+不得据此把诊断正值升级成 paper/live acceptance，也不得在这 31 个 frozen representatives
+上逐项 retune；重开需要新的 prospective ledger、完整预冻结 selection panel，或真正新的
+候选/风险预算 gate shape。
 
 **observed-only forward 关注名单**（本文档验收节本就允许低相关信号
 observed-only 并入 forward 观察；仅记录，不新建 sleeve、不给权重）：

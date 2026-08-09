@@ -1,0 +1,908 @@
+{
+  "aggregate": {
+    "after_ev": 12.4887,
+    "before_ev": 12.2698,
+    "ev_delta": 0.2189,
+    "ev_delta_pct": 0.017841,
+    "ev_improved_windows": 3,
+    "overlay_trade_count": 19,
+    "pnl_delta": 4430.71,
+    "pnl_improved_windows": 3,
+    "worst_drawdown_drift": 0.005633
+  },
+  "concentration": {
+    "hhi": 0.301384,
+    "max_single_ticker_share": 0.353435,
+    "positive_pnl_by_ticker": {
+      "GLD": 2058.2,
+      "IWM": 1406.48,
+      "QQQ": 171.47,
+      "SLV": 2110.8599999999997,
+      "SPY": 225.41
+    }
+  },
+  "decision": "rejected_cash_only_low_deployment_etf_10pct",
+  "experiment_id": "exp-20260715-003",
+  "gate1": {
+    "baseline": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "passed": true
+  },
+  "gate2": {
+    "daily_cash_proxy": "failed: the current core backtester has no explicit cash debit/reservation ledger, and reconstructed active entry basis plus overlay notional exceeds contemporaneous equity on some dates",
+    "entry_date": "present",
+    "passed": false,
+    "target_price": "core baseline present"
+  },
+  "gate3": {
+    "passed": true
+  },
+  "gate4": {
+    "acceptance_rule": "Gate 1 must reuse the active post-MTM frozen-input identity. Gate 2 requires entry_date/target_price plus real daily cash and active-core-position fields. Gate 3 core survival must remain at least 5%. Accept only if aggregate EV improves by more than 10%, aggregate PnL is positive, at least two windows improve with no window EV or PnL regression, max-drawdown worsening is at most 0.5 percentage points, overlay uses no leverage and never displaces a core entry, and concentration remains within 50% single ticker and 0.35 HHI. Otherwise reject and leave default behavior off.",
+    "failed_reasons": [
+      "aggregate_ev_improvement_not_above_10pct",
+      "drawdown_drift_too_high",
+      "cash_only_no_displacement_failed"
+    ],
+    "passed": false
+  },
+  "hypothesis": "Capital-allocation alpha: integrate the already accepted low-deployment ETF cash-substitute shared helper into the core post-MTM backtest as a cash-only 10%-of-initial-equity sleeve when active core positions are at most one; keep the frozen QQQ/SPY/IWM/GLD/SLV selector, SMA200, positive 20-session momentum, next-open entry, 10-session close exit, one overlay position, and costs unchanged, while forbidding leverage or displacement of core entries.",
+  "parameters": {
+    "capital_fraction": 0.1,
+    "initial_capital_usd": 100000.0,
+    "overlay_notional_usd": 10000.0
+  },
+  "production_impact": "experiment-only; no live orders, run.py, core policy, or paper ledger changed",
+  "reproduction": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260715_003_low_deployment_etf_cash_integrated.py",
+  "status": "rejected",
+  "windows": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 7.3123,
+        "max_drawdown_pct": 0.065033,
+        "sharpe_daily": 6.12,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.194163,
+        "survival_rate": 0.8039,
+        "total_pnl": 119416.34,
+        "trade_count": 25
+      },
+      "before": {
+        "expected_value_score": 7.2115,
+        "max_drawdown_pct": 0.0594,
+        "sharpe_daily": 6.16,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 1.1707,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "trade_count": 18
+      },
+      "cash_audit": {
+        "cash_violations": [
+          {
+            "core_entry_basis": 107221.84,
+            "core_equity": 99933.74,
+            "date": "2025-11-04"
+          },
+          {
+            "core_entry_basis": 107221.84,
+            "core_equity": 102211.93,
+            "date": "2025-11-05"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 118687.01,
+            "date": "2025-12-15"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 118316.54,
+            "date": "2025-12-16"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 121993.08,
+            "date": "2025-12-17"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 120815.95,
+            "date": "2025-12-18"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 122587.45,
+            "date": "2025-12-19"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 127189.59,
+            "date": "2025-12-22"
+          },
+          {
+            "core_entry_basis": 185196.94,
+            "core_equity": 129932.86,
+            "date": "2025-12-23"
+          },
+          {
+            "core_entry_basis": 131596.9,
+            "core_equity": 129375.64,
+            "date": "2025-12-24"
+          },
+          {
+            "core_entry_basis": 131596.9,
+            "core_equity": 130978.29,
+            "date": "2025-12-26"
+          },
+          {
+            "core_entry_basis": 221511.57,
+            "core_equity": 216104.4,
+            "date": "2026-04-17"
+          }
+        ],
+        "no_leverage_no_displacement_passed": false,
+        "overlay_pnl": 2343.42,
+        "overlay_trade_count": 7
+      },
+      "delta": {
+        "expected_value_score": 0.1008,
+        "max_drawdown_pct": 0.005633,
+        "sharpe_daily": -0.04,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.023463,
+        "survival_rate": 0.0,
+        "total_pnl": 2343.42,
+        "trade_count": 7
+      },
+      "gate1_identity_passed": true,
+      "overlay_trades": [
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-10-23",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-10-23:GLD",
+          "entry_date": "2025-10-24",
+          "entry_price": 378.6993,
+          "entry_raw_open": 378.51,
+          "exit_date": "2025-11-06",
+          "exit_price": 365.887,
+          "exit_raw_close": 366.07,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -373.32,
+          "pnl_pct_net": -0.037332,
+          "selector_state": {
+            "momentum20": 0.098738,
+            "signal_close": 378.79,
+            "sma200": 303.3913
+          },
+          "signal_date": "2025-10-23",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-11-13",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-13:SPY",
+          "entry_date": "2025-11-14",
+          "entry_price": 661.9436,
+          "entry_raw_open": 661.6128,
+          "exit_date": "2025-11-28",
+          "exit_price": 679.1811,
+          "exit_raw_close": 679.5208,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 225.41,
+          "pnl_pct_net": 0.022541,
+          "selector_state": {
+            "momentum20": 0.017256,
+            "signal_close": 668.235,
+            "sma200": 606.9125
+          },
+          "signal_date": "2025-11-13",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SPY",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-11-28",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-11-28:SLV",
+          "entry_date": "2025-12-01",
+          "entry_price": 52.016,
+          "entry_raw_open": 51.99,
+          "exit_date": "2025-12-12",
+          "exit_price": 56.0719,
+          "exit_raw_close": 56.1,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 744.74,
+          "pnl_pct_net": 0.074474,
+          "selector_state": {
+            "momentum20": 0.154939,
+            "signal_close": 51.21,
+            "sma200": 35.274
+          },
+          "signal_date": "2025-11-28",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SLV",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-12-12",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-12-12:SLV",
+          "entry_date": "2025-12-15",
+          "entry_price": 57.8689,
+          "entry_raw_open": 57.84,
+          "exit_date": "2025-12-29",
+          "exit_price": 65.977,
+          "exit_raw_close": 66.01,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 1366.12,
+          "pnl_pct_net": 0.136612,
+          "selector_state": {
+            "momentum20": 0.183045,
+            "signal_close": 56.1,
+            "sma200": 36.5113
+          },
+          "signal_date": "2025-12-12",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SLV",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2026-03-03",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-03:GLD",
+          "entry_date": "2026-03-04",
+          "entry_price": 475.0574,
+          "entry_raw_open": 474.82,
+          "exit_date": "2026-03-17",
+          "exit_price": 459.0404,
+          "exit_raw_close": 459.27,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -372.16,
+          "pnl_pct_net": -0.037216,
+          "selector_state": {
+            "momentum20": 0.096013,
+            "signal_close": 468.14,
+            "sma200": 364.039
+          },
+          "signal_date": "2026-03-03",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2026-03-17",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-03-17:SLV",
+          "entry_date": "2026-03-18",
+          "entry_price": 69.5448,
+          "entry_raw_open": 69.51,
+          "exit_date": "2026-03-31",
+          "exit_price": 68.1059,
+          "exit_raw_close": 68.14,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -241.9,
+          "pnl_pct_net": -0.02419,
+          "selector_state": {
+            "momentum20": 0.079705,
+            "signal_close": 71.66,
+            "sma200": 50.8997
+          },
+          "signal_date": "2026-03-17",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SLV",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2026-04-06",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2026-04-06:IWM",
+          "entry_date": "2026-04-07",
+          "entry_price": 251.3356,
+          "entry_raw_open": 251.21,
+          "exit_date": "2026-04-20",
+          "exit_price": 277.2113,
+          "exit_raw_close": 277.35,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 994.53,
+          "pnl_pct_net": 0.099453,
+          "selector_state": {
+            "momentum20": 0.007648,
+            "signal_close": 252.36,
+            "sma200": 241.9735
+          },
+          "signal_date": "2026-04-06",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "IWM",
+          "trade_enabled": false
+        }
+      ],
+      "replay_audit": {
+        "low_deployment_day_count": 61,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 7,
+        "skipped": {
+          "core_above_low_deployment_threshold": 62,
+          "no_etf_passing_signal_close_state": 3,
+          "overlay_position_cap_full": 51
+        }
+      }
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 3.7665,
+        "max_drawdown_pct": 0.049317,
+        "sharpe_daily": 4.82,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.781424,
+        "survival_rate": 0.7885,
+        "total_pnl": 78142.35,
+        "trade_count": 26
+      },
+      "before": {
+        "expected_value_score": 3.7446,
+        "max_drawdown_pct": 0.0502,
+        "sharpe_daily": 4.81,
+        "signals_generated": 52,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.7785,
+        "survival_rate": 0.7885,
+        "total_pnl": 77845.53,
+        "trade_count": 21
+      },
+      "cash_audit": {
+        "cash_violations": [
+          {
+            "core_entry_basis": 110035.06,
+            "core_equity": 100431.1,
+            "date": "2025-06-03"
+          },
+          {
+            "core_entry_basis": 110035.06,
+            "core_equity": 99679.26,
+            "date": "2025-06-04"
+          },
+          {
+            "core_entry_basis": 167451.98,
+            "core_equity": 140112.61,
+            "date": "2025-08-25"
+          },
+          {
+            "core_entry_basis": 167451.98,
+            "core_equity": 141584.91,
+            "date": "2025-08-26"
+          },
+          {
+            "core_entry_basis": 167451.98,
+            "core_equity": 142611.89,
+            "date": "2025-08-27"
+          },
+          {
+            "core_entry_basis": 167451.98,
+            "core_equity": 143462.99,
+            "date": "2025-08-28"
+          },
+          {
+            "core_entry_basis": 174326.43,
+            "core_equity": 142978.33,
+            "date": "2025-08-29"
+          },
+          {
+            "core_entry_basis": 245867.23,
+            "core_equity": 142472.19,
+            "date": "2025-09-02"
+          },
+          {
+            "core_entry_basis": 327519.31,
+            "core_equity": 145861.17,
+            "date": "2025-09-03"
+          },
+          {
+            "core_entry_basis": 327519.31,
+            "core_equity": 146007.57,
+            "date": "2025-09-04"
+          }
+        ],
+        "no_leverage_no_displacement_passed": false,
+        "overlay_pnl": 296.82,
+        "overlay_trade_count": 5
+      },
+      "delta": {
+        "expected_value_score": 0.0219,
+        "max_drawdown_pct": -0.000883,
+        "sharpe_daily": 0.01,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.002924,
+        "survival_rate": 0.0,
+        "total_pnl": 296.82,
+        "trade_count": 5
+      },
+      "gate1_identity_passed": true,
+      "overlay_trades": [
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-04-23",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-23:GLD",
+          "entry_date": "2025-04-24",
+          "entry_price": 307.1335,
+          "entry_raw_open": 306.98,
+          "exit_date": "2025-05-07",
+          "exit_price": 310.5946,
+          "exit_raw_close": 310.75,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 77.69,
+          "pnl_pct_net": 0.007769,
+          "selector_state": {
+            "momentum20": 0.090423,
+            "signal_close": 303.65,
+            "sma200": 250.4244
+          },
+          "signal_date": "2025-04-23",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-05-07",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-07:GLD",
+          "entry_date": "2025-05-08",
+          "entry_price": 309.9149,
+          "entry_raw_open": 309.76,
+          "exit_date": "2025-05-21",
+          "exit_price": 305.6671,
+          "exit_raw_close": 305.82,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -172.06,
+          "pnl_pct_net": -0.017206,
+          "selector_state": {
+            "momentum20": 0.129179,
+            "signal_close": 310.75,
+            "sma200": 254.5791
+          },
+          "signal_date": "2025-05-07",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-05-21",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-05-21:QQQ",
+          "entry_date": "2025-05-22",
+          "entry_price": 511.4412,
+          "entry_raw_open": 511.1856,
+          "exit_date": "2025-06-05",
+          "exit_price": 522.0009,
+          "exit_raw_close": 522.262,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 171.47,
+          "pnl_pct_net": 0.017147,
+          "selector_state": {
+            "momentum20": 0.128652,
+            "signal_close": 510.5686,
+            "sma200": 489.9796
+          },
+          "signal_date": "2025-05-21",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "QQQ",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-07-24",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-07-24:SLV",
+          "entry_date": "2025-07-25",
+          "entry_price": 35.2976,
+          "entry_raw_open": 35.28,
+          "exit_date": "2025-08-07",
+          "exit_price": 34.7426,
+          "exit_raw_close": 34.76,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -192.23,
+          "pnl_pct_net": -0.019223,
+          "selector_state": {
+            "momentum20": 0.075129,
+            "signal_close": 35.49,
+            "sma200": 29.8201
+          },
+          "signal_date": "2025-07-24",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SLV",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-08-21",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-08-21:IWM",
+          "entry_date": "2025-08-22",
+          "entry_price": 225.6807,
+          "entry_raw_open": 225.5679,
+          "exit_date": "2025-09-05",
+          "exit_price": 235.7675,
+          "exit_raw_close": 235.8855,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 411.95,
+          "pnl_pct_net": 0.041195,
+          "selector_state": {
+            "momentum20": 0.010825,
+            "signal_close": 224.179,
+            "sma200": 213.7946
+          },
+          "signal_date": "2025-08-21",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "IWM",
+          "trade_enabled": false
+        }
+      ],
+      "replay_audit": {
+        "low_deployment_day_count": 39,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 10,
+        "skipped": {
+          "core_above_low_deployment_threshold": 88,
+          "missing_entry_or_exit_price": 5,
+          "overlay_position_cap_full": 29
+        }
+      }
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 1.4099,
+        "max_drawdown_pct": 0.097778,
+        "sharpe_daily": 3.15,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.447243,
+        "survival_rate": 0.9032,
+        "total_pnl": 44724.29,
+        "trade_count": 30
+      },
+      "before": {
+        "expected_value_score": 1.3137,
+        "max_drawdown_pct": 0.0975,
+        "sharpe_daily": 3.06,
+        "signals_generated": 62,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.4293,
+        "survival_rate": 0.9032,
+        "total_pnl": 42933.82,
+        "trade_count": 23
+      },
+      "cash_audit": {
+        "cash_violations": [
+          {
+            "core_entry_basis": 107600.3,
+            "core_equity": 99212.98,
+            "date": "2024-10-14"
+          },
+          {
+            "core_entry_basis": 107600.3,
+            "core_equity": 98535.33,
+            "date": "2024-10-15"
+          },
+          {
+            "core_entry_basis": 120994.47,
+            "core_equity": 98100.59,
+            "date": "2024-10-21"
+          },
+          {
+            "core_entry_basis": 120994.47,
+            "core_equity": 97788.15,
+            "date": "2024-10-22"
+          },
+          {
+            "core_entry_basis": 120994.47,
+            "core_equity": 96510.85,
+            "date": "2024-10-23"
+          },
+          {
+            "core_entry_basis": 120994.47,
+            "core_equity": 97203.96,
+            "date": "2024-10-24"
+          },
+          {
+            "core_entry_basis": 128848.02,
+            "core_equity": 96535.74,
+            "date": "2024-10-25"
+          },
+          {
+            "core_entry_basis": 128848.02,
+            "core_equity": 96816.98,
+            "date": "2024-10-28"
+          },
+          {
+            "core_entry_basis": 127029.12,
+            "core_equity": 97064.01,
+            "date": "2024-10-29"
+          },
+          {
+            "core_entry_basis": 127029.12,
+            "core_equity": 96968.22,
+            "date": "2024-10-30"
+          },
+          {
+            "core_entry_basis": 169450.25,
+            "core_equity": 132407.16,
+            "date": "2025-01-16"
+          },
+          {
+            "core_entry_basis": 169450.25,
+            "core_equity": 135596.23,
+            "date": "2025-01-17"
+          },
+          {
+            "core_entry_basis": 169450.25,
+            "core_equity": 137963.34,
+            "date": "2025-01-21"
+          },
+          {
+            "core_entry_basis": 169450.25,
+            "core_equity": 137659.03,
+            "date": "2025-01-22"
+          },
+          {
+            "core_entry_basis": 234327.16,
+            "core_equity": 141438.94,
+            "date": "2025-01-23"
+          },
+          {
+            "core_entry_basis": 234327.16,
+            "core_equity": 140216.49,
+            "date": "2025-01-24"
+          },
+          {
+            "core_entry_basis": 234327.16,
+            "core_equity": 139748.13,
+            "date": "2025-01-27"
+          },
+          {
+            "core_entry_basis": 244366.19,
+            "core_equity": 140942.73,
+            "date": "2025-01-28"
+          },
+          {
+            "core_entry_basis": 244366.19,
+            "core_equity": 141217.86,
+            "date": "2025-01-29"
+          }
+        ],
+        "no_leverage_no_displacement_passed": false,
+        "overlay_pnl": 1790.47,
+        "overlay_trade_count": 7
+      },
+      "delta": {
+        "expected_value_score": 0.0962,
+        "max_drawdown_pct": 0.000278,
+        "sharpe_daily": 0.09,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "strategy_total_return_pct": 0.017943,
+        "survival_rate": 0.0,
+        "total_pnl": 1790.47,
+        "trade_count": 7
+      },
+      "gate1_identity_passed": true,
+      "overlay_trades": [
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2024-10-02",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-02:SLV",
+          "entry_date": "2024-10-03",
+          "entry_price": 28.9245,
+          "entry_raw_open": 28.91,
+          "exit_date": "2024-10-16",
+          "exit_price": 28.8955,
+          "exit_raw_close": 28.91,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -45.03,
+          "pnl_pct_net": -0.004503,
+          "selector_state": {
+            "momentum20": 0.129283,
+            "signal_close": 29.0,
+            "sma200": 24.7884
+          },
+          "signal_date": "2024-10-02",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "SLV",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2024-10-17",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-10-17:GLD",
+          "entry_date": "2024-10-18",
+          "entry_price": 250.125,
+          "entry_raw_open": 250.0,
+          "exit_date": "2024-10-31",
+          "exit_price": 253.3832,
+          "exit_raw_close": 253.51,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 95.26,
+          "pnl_pct_net": 0.009526,
+          "selector_state": {
+            "momentum20": 0.039553,
+            "signal_close": 248.63,
+            "sma200": 214.9169
+          },
+          "signal_date": "2024-10-17",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2024-12-20",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2024-12-20:QQQ",
+          "entry_date": "2024-12-23",
+          "entry_price": 516.5355,
+          "entry_raw_open": 516.2773,
+          "exit_date": "2025-01-07",
+          "exit_price": 511.6789,
+          "exit_raw_close": 511.9348,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -129.02,
+          "pnl_pct_net": -0.012902,
+          "selector_state": {
+            "momentum20": 0.02709,
+            "signal_close": 514.5632,
+            "sma200": 467.9756
+          },
+          "signal_date": "2024-12-20",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "QQQ",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-01-15",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-01-15:GLD",
+          "entry_date": "2025-01-16",
+          "entry_price": 250.6853,
+          "entry_raw_open": 250.56,
+          "exit_date": "2025-01-30",
+          "exit_price": 257.921,
+          "exit_raw_close": 258.05,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 253.64,
+          "pnl_pct_net": 0.025364,
+          "selector_state": {
+            "momentum20": 0.018789,
+            "signal_close": 248.88,
+            "sma200": 231.1101
+          },
+          "signal_date": "2025-01-15",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-03-07",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-07:GLD",
+          "entry_date": "2025-03-10",
+          "entry_price": 267.7538,
+          "entry_raw_open": 267.62,
+          "exit_date": "2025-03-21",
+          "exit_price": 278.3507,
+          "exit_raw_close": 278.49,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 360.77,
+          "pnl_pct_net": 0.036077,
+          "selector_state": {
+            "momentum20": 0.018829,
+            "signal_close": 268.39,
+            "sma200": 239.3224
+          },
+          "signal_date": "2025-03-07",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 1,
+          "alters_orders": false,
+          "date": "2025-03-21",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-03-21:GLD",
+          "entry_date": "2025-03-24",
+          "entry_price": 279.0495,
+          "entry_raw_open": 278.91,
+          "exit_date": "2025-04-04",
+          "exit_price": 279.5801,
+          "exit_raw_close": 279.72,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": -15.99,
+          "pnl_pct_net": -0.001599,
+          "selector_state": {
+            "momentum20": 0.028625,
+            "signal_close": 278.49,
+            "sma200": 242.1672
+          },
+          "signal_date": "2025-03-21",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        },
+        {
+          "active_core_positions_on_signal": 0,
+          "alters_orders": false,
+          "date": "2025-04-04",
+          "decision_id": "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER:low_deployment_etf_cash_substitute_v1:2025-04-04:GLD",
+          "entry_date": "2025-04-07",
+          "entry_price": 278.9994,
+          "entry_raw_open": 278.86,
+          "exit_date": "2025-04-21",
+          "exit_price": 315.4322,
+          "exit_raw_close": 315.59,
+          "hold_days": 10,
+          "paper_notional_usd": 10000.0,
+          "pnl": 1270.84,
+          "pnl_pct_net": 0.127084,
+          "selector_state": {
+            "momentum20": 0.042215,
+            "signal_close": 279.72,
+            "sma200": 245.568
+          },
+          "signal_date": "2025-04-04",
+          "source": "low_deployment_etf_cash_substitute",
+          "ticker": "GLD",
+          "trade_enabled": false
+        }
+      ],
+      "replay_audit": {
+        "low_deployment_day_count": 52,
+        "max_active_core_positions": 1,
+        "max_overlay_open_positions": 1,
+        "selectable_day_count_before_position_cap": 9,
+        "skipped": {
+          "core_above_low_deployment_threshold": 86,
+          "missing_entry_or_exit_price": 2,
+          "no_etf_passing_signal_close_state": 3,
+          "overlay_position_cap_full": 40
+        }
+      }
+    }
+  }
+}

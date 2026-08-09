@@ -1,0 +1,55 @@
+{
+ "schema_version": 1,
+ "record_type": "alpha_synthesis_pass",
+ "as_of": "2026-08-04",
+ "author": "claude-scheduled-alpha",
+ "consumes_experiment_id": false,
+ "baseline_universe": [
+  "massive full-market active common stocks (instrument_master CS active=1, ~9850 tickers)",
+  "cash-feasible core stack (~47 megacaps) as opportunity-cost context"
+ ],
+ "opportunity_cost_winner": "No user-named ticker this round; systematic search. Cross-section is the full-market liquid CS pool vs cash/SPY/QQQ same-interval holds.",
+ "evidence_surfaces_used": [
+  "massive_full_market_ohlcv daily_bars (2024-07-29..2026-07-24, 5.67M rows) including the never-consumed vwap and transactions columns (99.29% populated)",
+  "instrument_master + reference_asof_pages monthly PIT membership",
+  "stock_splits for split normalization",
+  "cash-feasible core Gate-1 anchor (exp-20260715-010) as frozen opportunity-cost context"
+ ],
+ "evidence_surfaces_missing": [
+  "PIT intraday spread/depth (named by exp-20260707-002/010 as the legal microstructure upgrade; not available)",
+  "split announcement decision clock (stock_splits has execution_date only; axis unavailable)",
+  "canonical as-published Massive vintages (bars are research_pit; ceiling observed_only)",
+  "warehouse bars past 2026-07-24 (grouped-daily catch-up is a codex lane; blocks dividend-restart settlements, not this replay)"
+ ],
+ "research_digest_check": "data/research_digest/latest_digest.md unchanged since 2026-07-27; all 9 shown entries carry prior [declined no_expectation_proxy] adjudications in data/research_digest/ledger.jsonl; no fresh entries to consume this round.",
+ "reopen_readiness_check": "All 13 lanes not_ready (data/reopen_readiness.json rebuilt 2026-08-04). move_relief_forward STALLED is natural sleeve fire-rate starvation (snapshot_asof 2026-08-03 fresh, pending_count 0), not a fault; no reopen probe is legal today.",
+ "hypothesis_candidates": [
+  {
+   "name": "block_print_absorption_h10",
+   "mechanism": "transactions+vwap give average dollar size per trade. A session where a liquid stock's average trade size is an extreme outlier vs its own trailing 126-session distribution, with confirming dollar volume and close>=open, indicates block-dominated absorption (institutional/informed accumulation) rather than retail churn; positive 10-session drift should follow.",
+   "new_evidence_axis": "Section 2.4 axis (d): unprecedented field (transactions/vwap -> average trade size) on the unsaturated massive_full_market_ohlcv source. Ingested by quant/massive_ohlcv_backfill.py but never consumed by any experiment (verified by grep over quant/ scouts 2026-08-04).",
+   "selected": true
+  },
+  {
+   "name": "retail_churn_avoidance_overlay",
+   "mechanism": "Collapsing average trade size (retail-dominated tape) as a negative context overlay on core entries; Barber-Odean attention crowding.",
+   "selected": false,
+   "why_not": "Entry-admission/downweight overlays on the core stack have a long rejected lineage (iBorrowDesk gate, short-volume clean-flow both ways); touch-density preflight would likely fail on ~47 names. Keep as follow-up only if the primary field shows any cross-sectional signal."
+  },
+  {
+   "name": "vwap_close_dislocation",
+   "mechanism": "Close far above session vwap = late-day aggressive buying; momentum continuation.",
+   "selected": false,
+   "why_not": "Close-vs-vwap is heavily arbitraged intraday-reversal territory and overlaps existing price-only compression/breakout families; weaker novelty than the trade-size axis."
+  }
+ ],
+ "selected_hypothesis": "block_print_absorption_h10",
+ "economic_mechanism": "Average-trade-size outliers separate block-dominated absorption from retail churn; blocks reveal informed accumulation that diffuses into price over ~10 sessions.",
+ "falsifier": "Frozen roster; aggregate after-cost replacement value vs cash must be positive, must also exceed same-interval SPY and QQQ values, double-cost aggregate positive, >=2 of 3 chronological windows positive with >=5 touches each, max single-ticker positive share <=40%, top-5 <=60%, contribution HHI <=0.25; cluster block bootstrap CI90 excluding zero required for a positive (non-descriptive) lead. Any failure rejects; no retune of z-cut, windows, hold, top-N, cooldown, notional, costs, or floors on the consumed roster.",
+ "pit_tier": "research_pit",
+ "pit_basis": "Bars are historical aggregates fetched after the fact (no as-published vintage proof); decision clock is session close, entry next regular-session open; known_future_leakage=false; membership is monthly as-of snapshots (research-grade).",
+ "evidence_grade": "lead",
+ "result_ceiling": "observed_only",
+ "signal_execution_separation": "Underlying-stock H10 replacement value only; no instrument mapping, no leverage, no live/paper/order change; trade_enabled=false.",
+ "next_machine_action": "Build outcome-blind roster, run D0-D3 (validate-candidate, preflight, build-scope, build-panel, build-promotion), reserve one alpha_search ID with the promotion request, run the private replay scout as first outcome access."
+}

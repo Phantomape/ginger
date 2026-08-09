@@ -1,0 +1,252 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260714_008_in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1.py",
+    "data/experiments/exp-20260714-008/exp_20260714_008_in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1.json",
+    "experiments/cards/exp-20260714-008.md",
+    "experiments/manifests/exp-20260714-008.json",
+    "experiments/tickets/exp-20260714-008.json",
+    "experiments/logs/exp-20260714-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260714-008.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-14T16:27:54+00:00",
+  "created_at": "2026-07-14T16:23:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260714-008",
+  "experiment_uid": "expuid-e97e1d3e8eae45f6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260714-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-14T16:23:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1"
+  },
+  "hypothesis": "Machine-enforce the AGENTS.md section 7 in-flight duplicate rule: experiment.py new only checks fingerprint near-neighbors against closed experiments in docs/frozen_families.jsonl, so concurrent agents reserve duplicate hypotheses; add a recency-windowed fingerprint near-neighbor guard over open proposed and claimed tickets at reservation time.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "filing_timeliness",
+      "field_tags": [
+        "a",
+        "add",
+        "against",
+        "agents",
+        "at",
+        "checks",
+        "claimed",
+        "closed",
+        "concurrent",
+        "docs",
+        "duplicate",
+        "enforce",
+        "experiment",
+        "experiments",
+        "families",
+        "fingerprint",
+        "flight",
+        "frozen",
+        "guard",
+        "hypotheses",
+        "in",
+        "jsonl",
+        "machine",
+        "md",
+        "near",
+        "neighbor",
+        "neighbors",
+        "new",
+        "only",
+        "over",
+        "proposed",
+        "py",
+        "recency",
+        "reservation",
+        "reserve",
+        "rule",
+        "section",
+        "so",
+        "ticket",
+        "tickets",
+        "time",
+        "windowed"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.75). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.75,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "filing_timeliness",
+        "family_key": "estimate_revision_rs_placebo_control",
+        "reopen_condition": "A future alpha run must add materially new closed forward rows, a new production-visible data field, or a shared default-off candidate-pool helper, and must report incremental performance versus these recency buckets under the same PIT envelope.",
+        "score": 0.458,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "filing_timeliness",
+        "family_key": "fundamental_growth_rs_quality_gated_candidate_selection",
+        "reopen_condition": "A useful retry needs materially new PIT source evidence or forward closed replacement-value rows, not another liabilities/assets or filing-age threshold sweep.",
+        "score": 0.458,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "filing_timeliness",
+        "family_key": "fundamental_growth_rs_filing_recency_support",
+        "reopen_condition": "If accepted, move the same scalar into the shared default-off fundamental_growth_rs paper adapter with production metadata and focused parity tests, then collect forward replacement-value rows before any live activation.",
+        "score": 0.4578,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "filing_timeliness",
+        "family_key": "companyfacts_filing_timeliness_quality_support",
+        "reopen_condition": null,
+        "score": 0.45,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "filing_timeliness",
+        "family_key": "free_sec_companyfacts_filing_timeliness_broad_candidate_pool",
+        "reopen_condition": "The broad-universe scope caveat has now been tested. If this fixed bundle fails, do not retry by sweeping earliness-days, current-lag cap, prior-filing-count, event-age, price/ADV liquidity floors, FY duration, top-N, hold days, cooldown, notional, or broad/core scope. A valid retry needs a materially different disclosure-timing field (quarterly 10-Q timeliness, accelerated-filer-status change, NT",
+        "score": 0.45,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "filing_timeliness",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "filing_timeliness",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": null,
+  "prediction": {
+    "confidence_reason": "duplicate-block end-to-end verification attempt; must be blocked",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "test"
+    ],
+    "recorded_at": "2026-07-14T16:22:56+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.8,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "test"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "This ticket was created during the first end-to-end verification of the exp-20260714-007 in-flight duplicate guard: the guard's initial 0.75 threshold missed a rephrased duplicate because trial/mechanism family default-fill happens at reserve time, so the reservation went through and became a live specimen; the threshold was recalibrated to 0.65 and the identical retry was then blocked before ticket creation."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260714-008.json",
+  "single_causal_variable": "in_flight_open_ticket_fingerprint_duplicate_guard_at_reservation_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260714-008.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260714-008"
+}

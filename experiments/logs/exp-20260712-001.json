@@ -1,0 +1,130 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "SDK partial query failure",
+      "fee currency ambiguity",
+      "cashflow rate limit",
+      "history-window position mismatch",
+      "concurrent ledger writer",
+      "existing dirty-file overlap"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "history-window position mismatch",
+    "surprise_level": "very_low",
+    "surprise_note": "Live history contained one CANCELLED deal and six baseline mismatches; versioned latest-effective projection and strict baseline quarantine were required, while trusted closed evidence still reached 87."
+  },
+  "causal_components": [
+    "same-session full broker collection",
+    "hash-chained immutable ledgers",
+    "idempotent versioned facts",
+    "account and position exposure snapshots",
+    "flat-account correctness",
+    "run.py daily Moomoo refresh wiring",
+    "fingerprint coverage"
+  ],
+  "change_summary": "Wire the existing daily Moomoo refresh to local gitignored hash-chained broker deal/order/fee/cash/account/position ledgers with latest-effective corrections, strict lifecycle anchoring, collection health, and flat/account failure semantics.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_authoritative_execution_fact_ledger_v1",
+  "component": ".gitignore, quant/broker_execution_ledger.py, quant/test_broker_execution_ledger.py, quant/moomoo_open_positions.py, quant/test_moomoo_open_positions.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/broker_execution_ledger.md, data/live_pilot/broker_execution, data/experiments/exp-20260712-001, experiments/cards/exp-20260712-001.md, experiments/manifests/exp-20260712-001.json, experiments/tickets/exp-20260712-001.json, experiments/logs/exp-20260712-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260712-001",
+  "hypothesis": "One-time daily pipeline wiring: materialize broker-authoritative Moomoo fills, order-state versions, order-level fees, daily cash flows, and account/position snapshots into a hash-chained append-only ledger inside the existing quant/run.py Moomoo refresh, so all future routine rows land automatically without experiment IDs. This removes the live execution and closed-trade audit blind spot while preserving strategy and order behavior; live OpenD already exposes at least 120 recent fills, satisfying the exp-20260706-019 v2 evidence threshold.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "broker_execution_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260706-019",
+    "exp-20260711-006",
+    "exp-20260711-009",
+    "exp-20260711-026"
+  ],
+  "new_evidence_type": "daily_pipeline_wiring",
+  "next_retry_requires": [
+    "Use the 87 trusted closed lifecycles in a separately reserved exit-side consumer experiment.",
+    "For lifecycle identity upgrades, add verified broker timezone or push-event semantics, corporate-action/transfer records, or a demonstrated cross-zero allocation contract.",
+    "For ledger durability upgrades, prove every fact collection_id belongs to a committed manifest and add cursor-based cash-flow backfill beyond the rolling seven-day window."
+  ],
+  "notes": "Accepted measurement repair only: 589 distinct deals -> 588 effective + 1 cancelled/void; 554/554 effective orders fee-covered and fill/order matched; 87 trusted closed lifecycles; 6 quantity mismatches remain explicit; 213 related plus 310 core tests; no strategy, orders, ranking, or sizing changes.",
+  "parameters": {
+    "locked_variables": [
+      "broker_authoritative_execution_fact_ledger_v1"
+    ],
+    "single_causal_variable": "broker_authoritative_execution_fact_ledger_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve new experiment IDs for routine ledger refreshes, duplicate an order-level fee onto every fill, fabricate historical cash snapshots, use position_id as lot identity, or synthesize fills merely to force quantity reconciliation.",
+    "new_evidence_required": "A separate consumer experiment may evaluate exit-side live drift on the 87 trusted closed lifecycles. A ledger/lifecycle revision requires verified broker timezone or push-event semantics, corporate-action/transfer records, a demonstrated cross-zero allocation contract, per-collection commit/visibility proof, or cursor-based cash-flow backfill evidence.",
+    "realized_failure_mode": "history-window position mismatch",
+    "why_result_happened": "The broker SDK already exposed stable identifiers, prices, fees and full timestamps; the adapter discarded them after each run. Reusing the existing daily session made persistence low-risk. Live history then exposed one CANCELLED deal and six baseline mismatches, requiring versioned latest-effective projection and strict baseline quarantine; the reconciled subset still yielded 87 trusted closed lifecycles."
+  },
+  "prediction": {
+    "confidence_reason": "The installed SDK and live OpenD were read-only verified: 120 deals, 111 orders, 105 fee rows, 11 positions and a usable per-clearing-date cashflow endpoint; remaining work is deterministic persistence and reconciliation.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "SDK partial query failure",
+      "fee currency ambiguity",
+      "cashflow rate limit",
+      "history-window position mismatch",
+      "concurrent ledger writer",
+      "existing dirty-file overlap"
+    ],
+    "recorded_at": "2026-07-12T01:12:19+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260712-001/before_measurement.json",
+    "data/experiments/exp-20260712-001/after_measurement.json"
+  ],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-12T01:52:09+00:00",
+  "trial_family": "broker_execution_measurement",
+  "trial_variant_id": "exp-20260712-001"
+}

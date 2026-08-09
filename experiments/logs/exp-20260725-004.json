@@ -1,0 +1,102 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "double-refresh race with the end-of-run full ledger rebuild; accidental loosening of fail-closed semantics; recomputing gate over all chain files adds latency"
+    ],
+    "predicted_success_probability": null,
+    "realized_failure_mode": "none",
+    "surprise_level": "not_scored",
+    "surprise_note": "The quality row itself was never unhealthy - the fault was pure pipeline ordering, invisible because the sleeve's fail-closed semantics made starvation look like a legitimate data-quality block."
+  },
+  "causal_components": [],
+  "change_summary": "Pre-sleeve options collection quality gate refresh: added refresh_collection_quality_gate() to scripts/run_options_forward_ledger.py (identical thresholds/writer as build_ledger) and call it in quant/run.py immediately before the core drawdown flow-put stabilization sleeve build, because the full forward-ledger refresh only runs after all sleeves and therefore the sleeve's own asof quote-date quality row was always missing at build time (missing_quality_row, options_scoring_allowed=false, daily_options_complete_signals structurally 0). Verified before/after with persist=False builds on asof 2026-07-24: before reproduces missing_quality_row; after shows usable_for_shadow, options_complete=1, candidate_count=1. Recovered the lost 2026-07-24 decision day against real state before its 2026-07-27 next-open entry would price: ISRG admitted pending_next_open (decision_id-idempotent; readiness builder canonicalizes snapshot retries by last-row-per-asof, verified daily_price_stabilized_signals stayed 5 while options_complete and selected became 1). Two new tests: AST wiring-order guard (pre-refresh < sleeve build < post-ledger refresh) and functional quality-gate refresh test (healthy date usable_for_shadow, sparse date quarantined). 69 affected tests pass. No production order, ranking, or sizing path changes; sleeve remains default-off paper.",
+  "change_type": "measurement_repair",
+  "changed_variable": "pre-sleeve options collection quality gate refresh ordering in the daily pipeline",
+  "component": "scripts/run_options_forward_ledger.py, quant/run.py, quant/test_run_daily_wiring.py, quant/test_core_drawdown_flow_put_stabilization_paper_sleeve.py, data/non_ohlcv/options_forward/options_collection_quality_gate.json, data/paper_sleeves/core_drawdown_flow_put_stabilization/",
+  "date_range": {
+    "end": "2026-07-25",
+    "start": "2026-07-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260725-004",
+  "hypothesis": "Fault/wiring repair: the core drawdown flow-put stabilization observer reads data/non_ohlcv/options_forward/options_collection_quality_gate.json at sleeve build time, but quant/run.py only rebuilds that quality gate in _refresh_options_forward_ledger_after_quant_signals AFTER all sleeves are built, so the sleeve's own asof quote-date row is always absent when the sleeve runs (07-24 evidence: chain written 03:07Z with 5902 rows/60 tickers, sleeve ran 03:33:59Z and recorded options_quality_status=missing_quality_row with options_scoring_allowed=false, quality row for 2026-07-24 written 03:34:54Z with scoring_allowed=true). daily_options_complete_signals is therefore structurally pinned at 0 and the lane's 20-independent-closed-decisions reopen counter can never accumulate. Repair: add a reusable quality-gate-only refresh entrypoint to scripts/run_options_forward_ledger.py (same _collection_quality_gate thresholds and writer) and call it in quant/run.py after the non-OHLCV snapshot/chain fetch and before sleeve builds, keeping fail-closed semantics when the chain or quality row is genuinely bad.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_repair_daily_wiring",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Root cause evidence: chain options_onclickmedia_chain_20260724.jsonl written 03:07:27Z (5902 rows/60 tickers), sleeve snapshot generated 03:33:59Z recording options_quality_status=missing_quality_row + options_scoring_allowed=false, quality gate file rewritten 03:34:54Z with 2026-07-24 scoring_allowed=true and reasons=[] - the row was healthy, only the ordering was wrong. Every forward day since the observer's first build (exp-20260723-004) hit this: 07-23 was the 5xx outage day (exp-20260724-002, permanently non-forward) and 07-24 was suppressed purely by ordering. Without repair the lane's 20-independent-closed-decisions reopen counter could never accumulate despite a healthy collector, a healthy quality gate, and status=ok everywhere - same silent-starvation shape as the prediction-market Gamma search-param fault (exp-20260718-002). Fingerprint caveat: novelty fingerprint classified this ticket as source=other/gate=other; the true evidence face is the core_drawdown_flow_put_stabilization observer wiring. Artifacts: data/experiments/exp-20260725-004/before_after_quality_gate_ordering.json, recovered_asof_snapshot.json, stale_quality_gate_reproduction.json, refreshed_options_forward/options_collection_quality_gate.json. Repro: .venv/Scripts/python.exe -B quant/experiments/exp_20260725_004_options_quality_gate_pre_sleeve_refresh.py (--recover only before next session open after a faulted close).",
+  "parameters": {
+    "locked_variables": [
+      "pre-sleeve options collection quality gate refresh ordering in the daily pipeline"
+    ],
+    "single_causal_variable": "pre-sleeve options collection quality gate refresh ordering in the daily pipeline"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to re-tune the quality-gate thresholds, move the refresh call elsewhere, add caching/incremental variants of the gate rebuild, or re-materialize additional historical asof days for this sleeve (07-23 stays permanently non-forward per exp-20260723-007 and exp-20260724-002; 07-24 is now recovered). Routine daily options_complete accumulation consumes no IDs.",
+    "new_evidence_required": "A future daily snapshot again showing options_quality_status=missing_quality_row while the same-date chain file exists and passes thresholds would indicate a new ordering or loader fault and justify a follow-up; otherwise the next action on this lane is the frozen reopen contract itself (20 independent closed decisions with both-halves positive replacement value, exp-20260723-004).",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The quality row itself was never unhealthy - the fault was pure pipeline ordering, invisible because the sleeve's fail-closed semantics made starvation look like a legitimate data-quality block."
+  },
+  "prediction": {
+    "confidence_reason": "Root cause verified directly from file mtimes and snapshot payloads; repair reuses the existing gate computation verbatim",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "double-refresh race with the end-of-run full ledger rebuild; accidental loosening of fail-closed semantics; recomputing gate over all chain files adds latency"
+    ],
+    "recorded_at": "2026-07-25T16:16:17+00:00",
+    "success_probability": null
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-25T16:25:15+00:00",
+  "trial_family": "options_quality_gate_pre_sleeve_refresh",
+  "trial_variant_id": "exp-20260725-004"
+}

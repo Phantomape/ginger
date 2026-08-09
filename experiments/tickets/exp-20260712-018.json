@@ -1,0 +1,303 @@
+{
+  "acceptance_rule": "Accept only if all event pending rows freeze paper_notional_usd, every daily paper surface exposes a fail-closed execution-sizing contract, undeclared envelopes produce null experiment_notional_usd, deep-drawdown is emitted, paper PnL/candidate selection/core Gate-1 metrics remain unchanged, and focused parity tests pass.",
+  "allowed_write_scope": [
+    "quant/paper_sleeve_execution_contract.py",
+    "quant/test_paper_sleeve_execution_contract.py",
+    "quant/form4_event_sleeve.py",
+    "quant/sec_negative_event_sleeve.py",
+    "quant/sec_event_sleeve.py",
+    "quant/sec_leadership_event_sleeve.py",
+    "quant/sec_financial_report_event_sleeve.py",
+    "quant/test_form4_event_sleeve.py",
+    "quant/test_sec_negative_event_sleeve.py",
+    "quant/test_sec_event_sleeve.py",
+    "quant/test_sec_leadership_event_sleeve.py",
+    "quant/test_sec_financial_report_event_sleeve.py",
+    "quant/rolling_corr_peer_shock_paper_sleeve.py",
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/sec_ftd_finra_paper_sleeve.py",
+    "quant/test_rolling_corr_peer_shock_paper_sleeve.py",
+    "quant/test_industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/test_sec_ftd_finra_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/experiments/exp_20260712_018_paper_sleeve_execution_sizing_contract.py",
+    "data/experiments/exp-20260712-018/exp_20260712_018_paper_sleeve_execution_sizing_contract.json",
+    "data/experiments/exp-20260712-018/before_measurement.json",
+    "data/experiments/exp-20260712-018/after_measurement.json",
+    "experiments/logs/exp-20260712-018.json",
+    "experiments/cards/exp-20260712-018.md",
+    "experiments/manifests/exp-20260712-018.json",
+    "experiments/tickets/exp-20260712-018.json",
+    "docs/production_backtest_parity.md",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260712-018.md",
+  "causal_components": [
+    "shared execution-sizing schema",
+    "event pending-notional freeze",
+    "deep-drawdown output wiring",
+    "report attribution",
+    "parity tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "default_off_paper_sleeve_execution_sizing_contract_v1",
+  "claimed_at": "2026-07-12T23:34:43+00:00",
+  "completed_at": "2026-07-12T23:52:03+00:00",
+  "created_at": "2026-07-12T23:34:02+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260712-018",
+  "experiment_uid": "expuid-331c87b3f31642c8",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-018",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T23:34:02+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "paper_sleeve_execution_sizing_contract"
+  },
+  "hypothesis": "Alpha blocker: default-off paper sleeves expose heterogeneous and sometimes late-bound paper notionals as though they were executable sizes; a shared fail-closed execution-sizing contract that freezes pending paper notional, separates paper evidence from experiment notional, and emits every built sleeve will restore trustworthy production parity without changing paper economics, core metrics, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled_false",
+    "core_order_behavior_unchanged",
+    "paper_pnl_economics_unchanged",
+    "existing_alpha_notional_rules_unchanged"
+  ],
+  "mechanism_family": "default_off_paper_sleeve_execution_contract",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/pending_actions.json",
+    "data/paper_sleeves"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260612-024",
+    "exp-20260620-009"
+  ],
+  "new_evidence_type": "production_execution_contract_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "as",
+        "blocker",
+        "bound",
+        "built",
+        "changing",
+        "closed",
+        "contract",
+        "core",
+        "economics",
+        "emits",
+        "every",
+        "evidence",
+        "executable",
+        "execution",
+        "experiment",
+        "expose",
+        "fail",
+        "freezes",
+        "from",
+        "heterogeneous",
+        "late",
+        "metrics",
+        "notional",
+        "notionals",
+        "or",
+        "orders",
+        "parity",
+        "pending",
+        "restore",
+        "separates",
+        "sizes",
+        "sizing",
+        "sleeve",
+        "sleeves",
+        "sometimes",
+        "that",
+        "they",
+        "though",
+        "trustworthy",
+        "were",
+        "will",
+        "without"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "core_mid_alpha_mid_breadth_interaction_topup",
+        "reopen_condition": null,
+        "score": 0.174,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_bucket_top_quartile_topup",
+        "reopen_condition": null,
+        "score": 0.1731,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.1703,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "inside_day_compression_breakout_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use a materially new discriminator such as source/event confirmation, market-state confirmation, or forward paper rows; do not just retune the same inside-range/relative-strength thresholds on this frozen sample.",
+        "score": 0.167,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "opening_range_continuation_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use a materially new discriminator such as source/event confirmation or forward paper rows; do not just retune the same OHLCV thresholds on this frozen sample.",
+        "score": 0.167,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: a repository-wide fail-closed execution-sizing contract separates immutable paper evidence notional from executable experiment notional and blocks undeclared envelopes; this is not a notional threshold/scalar retune and creates no alpha exposure.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: a repository-wide fail-closed execution-sizing contract separates immutable paper evidence notional from executable experiment notional and blocks undeclared envelopes; this is not a notional threshold/scalar retune and creates no alpha exposure.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-paper-sizing-contract",
+  "prediction": {
+    "confidence_reason": "The repair is additive and fail-closed: it preserves existing paper sizing and orders, while event pending freezes and output wiring are directly testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legacy_pending_backfill_changes_paper_economics",
+      "snapshot_schema_breaks_reports",
+      "undeclared_envelope_emits_executable_size",
+      "deep_drawdown_wiring_regresses_run"
+    ],
+    "recorded_at": "2026-07-12T23:33:17+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260712-018/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260712-018/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "legacy_pending_backfill_changes_paper_economics",
+        "snapshot_schema_breaks_reports",
+        "undeclared_envelope_emits_executable_size",
+        "deep_drawdown_wiring_regresses_run"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The scan found three additional snapshot schemas with pending_count but no pending_entries; these were fixed in the same repository-wide contract repair."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-018.json",
+  "single_causal_variable": "default_off_paper_sleeve_execution_sizing_contract_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260712-018.json",
+  "trial_family": "default_off_paper_sleeve_execution_contract",
+  "trial_variant_id": "fail_closed_v1"
+}

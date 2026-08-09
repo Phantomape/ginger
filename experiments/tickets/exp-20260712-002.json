@@ -1,0 +1,789 @@
+{
+  "acceptance_rule": "Observed-only lead only if at least 60 trusted closed lifecycles and 70 percent H5 settlement survive, mean and median lifecycle exit-avoidance values are positive versus cash/SPY/QQQ, at least two of three calendar cohorts have positive mean cash avoidance, and positive-value concentration has max ticker share at most 50 percent. No policy promotion in this ID.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_002_broker_exit_fill_h5_avoidance.py",
+    "data/experiments/exp-20260712-002/exp_20260712_002_broker_exit_fill_h5_avoidance.json",
+    "experiments/cards/exp-20260712-002.md",
+    "experiments/manifests/exp-20260712-002.json",
+    "experiments/tickets/exp-20260712-002.json",
+    "experiments/logs/exp-20260712-002.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260712-002.md",
+  "causal_components": [
+    "latest-effective broker fills pinned to the lifecycle mapping observation",
+    "strict trusted closed lifecycle links",
+    "five-session warehouse settlement through a fixed cutoff",
+    "cash, SPY, and QQQ exit-avoidance comparators",
+    "lifecycle-level aggregation and three calendar cohorts",
+    "no strategy behavior change"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "broker_exit_fill_h5_avoidance_value_v1",
+  "claimed_at": "2026-07-12T02:12:50+00:00",
+  "completed_at": "2026-07-12T02:22:38+00:00",
+  "created_at": "2026-07-12T02:10:21+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-07-10",
+      "start": "2024-07-12"
+    }
+  ],
+  "experiment_id": "exp-20260712-002",
+  "experiment_uid": "expuid-fd0b12cbd96b471f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T02:10:21+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broker_exit_fill_h5_avoidance"
+  },
+  "hypothesis": "Observed-only exit alpha: broker-authoritative reduce and close fills across the 87 trusted closed lifecycles should show positive five-session cash, SPY, and QQQ exit-avoidance value versus continuing the exited shares if realized production exits add value rather than truncate winners.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "horizon=5 trading sessions",
+    "comparators=cash+SPY+QQQ",
+    "aggregation=lifecycle",
+    "latest-effective lifecycle rule",
+    "all trusted closed lifecycles"
+  ],
+  "mechanism_family": "broker_execution_exit_quality",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "live orders",
+    "paper orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260712-001",
+    "exp-20260710-016"
+  ],
+  "new_evidence_type": "new_broker_authoritative_settled_lifecycles",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "across",
+        "add",
+        "alpha",
+        "authoritative",
+        "avoidance",
+        "broker",
+        "cash",
+        "close",
+        "closed",
+        "continuing",
+        "execution",
+        "exit",
+        "exited",
+        "exits",
+        "fill",
+        "fills",
+        "five",
+        "h5",
+        "if",
+        "lifecycles",
+        "observed",
+        "only",
+        "positive",
+        "qqq",
+        "rather",
+        "realized",
+        "reduce",
+        "session",
+        "shares",
+        "should",
+        "show",
+        "spy",
+        "than",
+        "truncate",
+        "trusted",
+        "value",
+        "versus",
+        "winners"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_monotonicity_audit",
+        "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "event_benchmark_momentum_context",
+        "reopen_condition": null,
+        "score": 0.4674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool",
+        "reopen_condition": "If revisited, use forward replacement-value rows, a full shared production/replay alpha_score adapter, or a materially richer ranking component; do not just mine alpha_score thresholds.",
+        "score": 0.4598,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "spy_relative_leader_winner_capture",
+        "reopen_condition": null,
+        "score": 0.4595,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_cost_liquidity",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score cost/liquidity thresholds on the same frozen replay.",
+        "score": 0.4591,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": true,
+      "override_axis_categories": [
+        "new_data_source"
+      ],
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 3,
+      "streak_experiments": [
+        "exp-20260708-024",
+        "exp-20260708-027",
+        "exp-20260711-025"
+      ]
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "warehouse_coverage_incomplete",
+      "discretionary_trade_mix_not_strategy_attributable",
+      "actual_exits_truncate_winners",
+      "calendar_cohort_instability",
+      "single_ticker_concentration"
+    ],
+    "confidence_reason": "This is the first broker-authoritative closed-lifecycle surface and it supplies 87 quantity-anchored real exits across three calendar cohorts, so it can reveal whether production exits preserve capital. The account mixes discretionary and strategy trades and prior shadow-advisory severity was unstable, making a robust positive result uncertain.",
+    "recorded_at": "2026-07-12T02:09:40+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "decision": "observed_only_rejected_broker_exit_h5_avoidance",
+    "artifact": "data/experiments/exp-20260712-002/exp_20260712_002_broker_exit_fill_h5_avoidance.json",
+    "log": "experiments/logs/exp-20260712-002.json",
+    "summary": {
+      "status": "observed_only_rejected",
+      "trusted_lifecycles": 87,
+      "settled_lifecycles": 66,
+      "cash_mean": -25.89,
+      "failed_reasons": [
+        "cash_mean_not_positive",
+        "cash_median_not_positive",
+        "spy_mean_not_positive",
+        "qqq_mean_not_positive",
+        "cash_not_positive_in_two_of_three_cohorts"
+      ]
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-002.json",
+  "single_causal_variable": "broker_exit_fill_h5_avoidance_value_v1",
+  "status": "observed_only_rejected",
+  "ticket_file": "experiments/tickets/exp-20260712-002.json",
+  "trial_family": "broker_authoritative_exit_fill_h5_avoidance",
+  "trial_variant_id": "h5_cash_spy_qqq_lifecycle_aggregate_v1",
+  "timestamp": "2026-07-12T02:22:38+00:00",
+  "accepted": false,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": false,
+  "alpha_ready": false,
+  "observed_only_lead": false,
+  "decision": "observed_only_rejected_broker_exit_h5_avoidance",
+  "alpha_hypothesis": "Observed-only exit alpha: broker-authoritative reduce and close fills across the 87 trusted closed lifecycles should show positive five-session cash, SPY, and QQQ exit-avoidance value versus continuing the exited shares if realized production exits add value rather than truncate winners.",
+  "implementation_mode": "broker_execution_ledger_exit_attribution",
+  "new_evidence_axis": "New data source: the broker execution ledger contains 87 trusted closed Moomoo lifecycles with actual fills and quantities. Prior exit studies used modeled backtest trades or shadow advisory rows, not broker facts.",
+  "fingerprint_caveat": "Reservation over-matched the ohlcv_momentum population because the hypothesis mentioned winner continuation. The real source is moomoo_execution_history / broker execution ledger; the observed-only override was justified by this genuinely new source.",
+  "parameters": {
+    "hold_sessions": 5,
+    "settlement_cutoff": "2026-07-10",
+    "comparators": [
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "aggregation": "sum exit-fill avoidance within trusted lifecycle",
+    "ticker_continuation": "actual exit price to fifth later-session close",
+    "benchmark_replacement": "next-session open to fifth later-session close",
+    "acceptance_rule": ">=60 trusted lifecycles, >=70% fully settled, positive mean and median cash/SPY/QQQ avoidance, positive cash mean in >=2 calendar cohorts, and max positive ticker share <=50%"
+  },
+  "calibration": {
+    "actual_success": false,
+    "predicted_success_probability": 0.35,
+    "brier_score": 0.1225,
+    "realized_failure_modes": [
+      "cash_mean_not_positive",
+      "cash_median_not_positive",
+      "spy_mean_not_positive",
+      "qqq_mean_not_positive",
+      "cash_not_positive_in_two_of_three_cohorts"
+    ],
+    "predicted_failure_mode_hit": true
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl_sum": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "minimum_survival_rate": 0.7925,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ]
+  },
+  "gate2": {
+    "passed": true,
+    "dependencies_validated": true,
+    "broker_fields": [
+      "event_time_raw",
+      "event_role",
+      "lifecycle_direction",
+      "running_qty_after",
+      "qty",
+      "price"
+    ],
+    "entry_date_contract": "lifecycle open event date present for every loaded lifecycle",
+    "target_price_contract": "not applicable: this consumes actual broker exits and changes no signal generation or target exit rule",
+    "event_time_timezone_caveat": "raw broker-local timezone is unspecified; settlement starts strictly after the raw calendar date"
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 87,
+    "signals_survived": 66,
+    "survival_rate": 0.758621,
+    "skipped_reasons": {
+      "h5_not_settled": 8,
+      "ticker_ohlcv_missing": 13
+    }
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_broker_exit_h5_avoidance",
+    "acceptance_checks": {
+      "trusted_lifecycle_count_at_least_60": true,
+      "settlement_rate_at_least_70pct": true,
+      "cash_mean_positive": false,
+      "cash_median_positive": false,
+      "spy_mean_positive": false,
+      "spy_median_positive": true,
+      "qqq_mean_positive": false,
+      "qqq_median_positive": true,
+      "cash_positive_in_two_of_three_cohorts": false,
+      "positive_value_concentration_passed": true
+    },
+    "failed_reasons": [
+      "cash_mean_not_positive",
+      "cash_median_not_positive",
+      "spy_mean_not_positive",
+      "qqq_mean_not_positive",
+      "cash_not_positive_in_two_of_three_cohorts"
+    ],
+    "note": "No strategy behavior changed. Even a positive result is only an actual-execution attribution lead because the account mixes discretionary and strategy trades; promotion requires a shared policy cohort and full Gate 1-4."
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl_sum": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "minimum_survival_rate": 0.7925,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ]
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl_sum": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "minimum_survival_rate": 0.7925,
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_late_strong_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "expected_value_score": 5.1628,
+        "sharpe_daily": 4.41,
+        "total_pnl": 117072.92,
+        "max_drawdown_pct": 0.0665,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_mid_weak_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "expected_value_score": 2.1402,
+        "sharpe_daily": 2.74,
+        "total_pnl": 78110.11,
+        "max_drawdown_pct": 0.1119,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "path": "data\\backtests\\backtest_results_warehouse_snapshot_old_thin_20260604.json",
+        "source": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "expected_value_score": 0.5911,
+        "sharpe_daily": 1.49,
+        "total_pnl": 39667.96,
+        "max_drawdown_pct": 0.1001,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667
+      }
+    ]
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false
+  },
+  "attribution": {
+    "source_audit": {
+      "source_root": "data/live_pilot/broker_execution",
+      "rule_version": "broker_fill_lifecycle_replay_v3_strict_baseline",
+      "mapping_input_hash": "cde7629649b54515bee45317cc5da43d33a193f3dfc049d3268fe1addd6c9285",
+      "mapping_observed_at_utc": "2026-07-12T01:49:26.218408Z",
+      "active_mapping_link_count": 589,
+      "trusted_closed_lifecycle_count_state": 87,
+      "trusted_closed_lifecycle_count_loaded": 87,
+      "missing_fill_count": 0,
+      "broker_event_time_timezone_status": "broker_local_unspecified"
+    },
+    "warehouse": {
+      "path": "data/warehouse/warehouse_main.sqlite",
+      "settlement_cutoff": "2026-07-10",
+      "requested_ticker_count": 67,
+      "loaded_ticker_count": 59
+    },
+    "trusted_lifecycle_count": 87,
+    "settled_lifecycle_count": 66,
+    "settlement_rate": 0.758621,
+    "exit_fill_count": 136,
+    "aggregate": {
+      "cash": {
+        "count": 66,
+        "sum": -1708.46,
+        "mean": -25.89,
+        "median": -0.83,
+        "positive_rate": 0.5
+      },
+      "spy": {
+        "count": 66,
+        "sum": -2062.36,
+        "mean": -31.25,
+        "median": 0.02,
+        "positive_rate": 0.5
+      },
+      "qqq": {
+        "count": 66,
+        "sum": -2264.1,
+        "mean": -34.3,
+        "median": 2.31,
+        "positive_rate": 0.5
+      },
+      "exit_notional": {
+        "count": 66,
+        "sum": 167660.25,
+        "mean": 2540.31,
+        "median": 1358.1,
+        "positive_rate": 1.0
+      }
+    },
+    "by_calendar_cohort": {
+      "2024": {
+        "lifecycle_count": 7,
+        "cash": {
+          "count": 7,
+          "sum": -167.38,
+          "mean": -23.91,
+          "median": -13.5,
+          "positive_rate": 0.428571
+        },
+        "spy": {
+          "count": 7,
+          "sum": -155.69,
+          "mean": -22.24,
+          "median": -26.2,
+          "positive_rate": 0.428571
+        },
+        "qqq": {
+          "count": 7,
+          "sum": -219.29,
+          "mean": -31.33,
+          "median": -32.67,
+          "positive_rate": 0.428571
+        }
+      },
+      "2025": {
+        "lifecycle_count": 36,
+        "cash": {
+          "count": 36,
+          "sum": -2699.89,
+          "mean": -75.0,
+          "median": 3.51,
+          "positive_rate": 0.555556
+        },
+        "spy": {
+          "count": 36,
+          "sum": -3167.27,
+          "mean": -87.98,
+          "median": 3.06,
+          "positive_rate": 0.527778
+        },
+        "qqq": {
+          "count": 36,
+          "sum": -3363.68,
+          "mean": -93.44,
+          "median": 2.31,
+          "positive_rate": 0.5
+        }
+      },
+      "2026": {
+        "lifecycle_count": 23,
+        "cash": {
+          "count": 23,
+          "sum": 1158.81,
+          "mean": 50.38,
+          "median": -14.88,
+          "positive_rate": 0.434783
+        },
+        "spy": {
+          "count": 23,
+          "sum": 1260.59,
+          "mean": 54.81,
+          "median": -0.07,
+          "positive_rate": 0.478261
+        },
+        "qqq": {
+          "count": 23,
+          "sum": 1318.87,
+          "mean": 57.34,
+          "median": 12.71,
+          "positive_rate": 0.521739
+        }
+      }
+    },
+    "positive_cash_cohorts": [
+      "2026"
+    ],
+    "positive_value_concentration": {
+      "positive_cash_avoidance": 7316.81,
+      "max_ticker_share": 0.135633,
+      "hhi": 0.080889,
+      "top_tickers": [
+        {
+          "ticker": "APP",
+          "value": 992.4,
+          "share": 0.135633
+        },
+        {
+          "ticker": "DJT",
+          "value": 827.99,
+          "share": 0.113163
+        },
+        {
+          "ticker": "CRWD",
+          "value": 815.32,
+          "share": 0.111431
+        },
+        {
+          "ticker": "MRVL",
+          "value": 801.84,
+          "share": 0.109589
+        },
+        {
+          "ticker": "MSFT",
+          "value": 743.0,
+          "share": 0.101547
+        },
+        {
+          "ticker": "RKLB",
+          "value": 436.54,
+          "share": 0.059663
+        },
+        {
+          "ticker": "FIG",
+          "value": 369.8,
+          "share": 0.050541
+        },
+        {
+          "ticker": "IAU",
+          "value": 346.9,
+          "share": 0.047411
+        }
+      ]
+    },
+    "direction_counts": {
+      "long": 56,
+      "short": 10
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "read_only_broker_execution_attribution"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Actual exits did not preserve a robust positive five-session avoidance relationship across cash, benchmark replacement, time cohorts, and concentration controls. The mixed discretionary/strategy population is not a promotable policy cohort.",
+    "forbidden_near_neighbor_retry": "Do not retry by changing the H5 horizon, benchmark subset, year cuts, event-role subset, direction, ticker exclusions, or response shape on these 87 lifecycles.",
+    "new_evidence_required": "A rejected result needs materially more trusted closed broker lifecycles (>=+50% and +10) or a new strategy-tagged execution cohort. A positive lead still requires a shared policy and full Gate 1-4 before any exit behavior changes."
+  },
+  "rejection_reason": "cash_mean_not_positive;cash_median_not_positive;spy_mean_not_positive;qqq_mean_not_positive;cash_not_positive_in_two_of_three_cohorts",
+  "next_retry_requires": [
+    "materially more trusted closed broker lifecycles or a strategy-tagged execution cohort",
+    "shared production/backtest policy plus full Gate 1-4 if positive",
+    "no horizon, comparator, cohort, ticker, direction, or response retune"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260712_002_broker_exit_fill_h5_avoidance.py",
+    "data/experiments/exp-20260712-002/exp_20260712_002_broker_exit_fill_h5_avoidance.json",
+    "experiments/logs/exp-20260712-002.json",
+    "experiments/cards/exp-20260712-002.md",
+    "experiments/manifests/exp-20260712-002.json",
+    "experiments/tickets/exp-20260712-002.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/live_pilot/broker_execution/state.json",
+    "data/live_pilot/broker_execution/fills.jsonl",
+    "data/live_pilot/broker_execution/fill_lifecycle_links.jsonl",
+    "docs/broker_execution_ledger.md",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260712_002_broker_exit_fill_h5_avoidance.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_002_broker_exit_fill_h5_avoidance.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "updated_at": "2026-07-12T02:22:38+00:00"
+}

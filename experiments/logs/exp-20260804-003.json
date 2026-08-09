@@ -1,0 +1,157 @@
+{
+ "admission_class": "research_replay",
+ "after_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "alpha_promotion": {
+  "admission_class": "research_replay",
+  "candidate_id": "cand-46f8c0461f9275d37527",
+  "candidate_snapshot_hash": "f0f36c663f0d64e1dab3a0eca3c97181acd431da45f02ab5f5171ea365053cf4",
+  "panel_hash": "149bbb157c1e010c28f631c1954c2be50c745fe918dd6f16c943484f53a8e1fb",
+  "panel_path": "data/alpha_search/massive_block_print_panel_v2_20260804.json",
+  "panel_sha256": "7a2aa4e4d503499e0ebd698c241efc0e51fee3cee8bbb99edb10574eb4e56e73",
+  "paper_live_eligible": false,
+  "preflight_hash": "986598dee11508ea617ff92b9f0dc5f2c5581cc18ba898fbccb081fe6dde40b4",
+  "promotion_hash": "bf2ec8f5d36c49a8dc96d25199d914dbd424fe4a401d62b9c736bef572913d52",
+  "promotion_request_path": "data/alpha_search/promotions/massive_block_print_scout_v2_20260804.json",
+  "promotion_request_sha256": "11d047634328c8798518131874b69b8f11ba482019e0e00b7f8ea4523c1d083b",
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "selected_evidence_grade": "lead",
+  "selection_scope_id": "scope-1fa6f02ab66fa14826311e35",
+  "source_readiness_bindings": [
+   {
+    "pit_status": "canonical_pit",
+    "readiness_hash": "2e2812915e65197f71c6e6e223a6281a697d365d0079f74f1e20444a6e5c6fb1",
+    "source_contract_hash": "fc59e51da44def80db18e55f60dc2ef2cbfb708301be4b22e6361d79ac115c38",
+    "surface_id": "cash_feasible_core_price_prior_20260715"
+   },
+   {
+    "pit_status": "research_pit",
+    "readiness_hash": "9dbc5c61b4f18f621ae678be74084c277fe0e20482f43a17a8d85edeb80af53d",
+    "source_contract_hash": "8a8095e70bed88180ca7807def4bd73b87574910ca81df9085bf235b0c926eb9",
+    "surface_id": "massive_reference_asof_identity_research_pit_20260728"
+   },
+   {
+    "pit_status": "research_pit",
+    "readiness_hash": "634cb36db3068381f3ab2c423dadaeca82cf0c7e549326203dc91be4e1f493d5",
+    "source_contract_hash": "648a04c59aa501169af8a104e4c28c5b33a228123fb1484777b5abafae3da3ac",
+    "surface_id": "massive_trade_size_microstructure_research_pit_20260804"
+   }
+  ]
+ },
+ "before_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "calibration": {
+  "actual_decision": "rejected",
+  "actual_ev_delta": null,
+  "actual_pnl_delta": null,
+  "actual_success": 0,
+  "brier_score": 0.04,
+  "calibration_direction": "directionally_calibrated",
+  "ev_prediction_error": null,
+  "expected_ev_delta": null,
+  "expected_pnl_delta": null,
+  "pnl_prediction_error": null,
+  "predicted_failure_mode_hit": true,
+  "predicted_failure_modes": [
+   "order_splitting_erases_block_signal",
+   "chronological_window_instability",
+   "spy_qqq_secondary_hurdle_not_beaten",
+   "double_cost_stress_failure",
+   "event_heterogeneity_buybacks_index_flows",
+   "vendor_aggregate_vintage_contract_failure"
+  ],
+  "predicted_success_probability": 0.2,
+  "realized_failure_mode": "order_splitting_erases_block_signal",
+  "surprise_level": "very_low",
+  "surprise_note": "Predicted failure mode was cost/hurdle shortfall; the realized failure is a strongly negative gross drift, i.e. block-dominated up-tape sessions behave like distribution/liquidity events (crosses, rebalances, exits), the inverse of the accumulation mechanism."
+ },
+ "causal_components": [
+  "evidence axis: section 2.4 axis (d) unprecedented field on the unsaturated massive_full_market_ohlcv source - daily_bars.transactions and daily_bars.vwap (average dollar trade size) are ingested by quant/massive_ohlcv_backfill.py but consumed by no prior experiment; 99.29% field coverage frozen in massive_trade_size_field_readiness_20260804.json",
+  "comparator: zero-return cash primary per-row hurdle at identical notional and costs; SPY and QQQ identical next-open-to-H10 costed holds are secondary aggregate hurdles the treatment aggregate must also exceed; no core slot map is consumed and no paper or live capital is claimed",
+  "overlapping-hold cluster block bootstrap interval on aggregate replacement value reported descriptively; a positive result whose interval includes zero closes as a descriptive lead only",
+  "decision clock: signal-date session close with next-regular-session-open entry; roster frozen outcome-blind (massive_block_print_roster_20260804.json sha256 d83352818dbdc5d818a880e0c06ba1983bff03bcc3c3e91403404c7d1a94029d) before any post-signal price access; rows with missing entry or exit bars are voided at scout time and reported",
+  "double-cost stress must stay positive; max single-ticker positive contribution <= 40%; top-five positive share <= 60%; contribution HHI <= 0.25; frozen roster must remain exactly 241/242/242 across old_third/mid_third/late_third with >= 5 executed touches per window",
+  "identity: research-PIT monthly as-of active common-stock membership (as_of; ticker; type; active only); descriptive fields; FIGIs; current reference rows and future vendor revisions quarantined",
+  "no strategy; shared-policy; order; sizing; or exit-rule change; trade_enabled=false; result ceiling observed_only per docs/research_pit_policy.md"
+ ],
+ "change_summary": "Research-PIT private replay scout REJECTED decisively: on the frozen 725-row outcome-blind roster (681 executed, 44 voided missing-bar rows), block-print absorption produced aggregate H10 replacement value of -43498.69 USD (-53032.69 double-cost) versus cash, while identical-interval SPY was +5422.50 and QQQ +11367.57; only mid_third was positive (+1499.21; old_third -30283.11, late_third -14714.79). Concentration caps all passed, so the loss is broad, not idiosyncratic: extreme average-trade-size sessions with close>=open predict NEGATIVE ten-session drift on the full market. No strategy, policy, order, sizing or exit was changed; trade_enabled=false throughout.",
+ "change_type": "private_replay_scout",
+ "changed_variable": "private_replay_scout_block_print_absorption_replacement_value_v1",
+ "component": "quant/experiments/exp_20260804_003_massive_block_print_absorption_h10_v1.py, data/experiments/exp-20260804-003/exp_20260804_003_massive_block_print_absorption_h10_v1.json, experiments/cards/exp-20260804-003.md, experiments/manifests/exp-20260804-003.json, experiments/tickets/exp-20260804-003.json, experiments/logs/exp-20260804-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+ "date_range": {},
+ "decision": "rejected",
+ "delta_metrics": {},
+ "experiment_id": "exp-20260804-003",
+ "hypothesis": "Research-PIT private replay scout: buying liquid active common stocks at the next regular-session open after a block-dominated tape session (average dollar trade size from the never-consumed massive_full_market_ohlcv daily_bars transactions/vwap fields at z >= 3 versus the stock's own trailing 126-session distribution; signal-day dollar volume >= trailing-20 median; close >= open; PIT monthly membership; trailing-20 median dollar volume >= $1,000,000; close >= $3; z-ranked top-2 per signal date with 10-session per-ticker cooldown; frozen 725-row roster 241/242/242 across chronological thirds; fixed next-open-to-10-session hold; round-trip costs on $4,000 research notional) produces positive after-cost replacement value versus zero-return cash and above identical-interval SPY and QQQ holds; result ceiling observed_only, descriptive lead only.",
+ "llm_metrics": {
+  "used_llm": false
+ },
+ "market_regime_summary": {},
+ "mechanism_family": "block_dominated_tape_absorption",
+ "multiple_testing_risk_bucket": "minimal",
+ "nearby_prior_experiments": [],
+ "new_evidence_type": "not_declared",
+ "next_retry_requires": [],
+ "notes": "First outcome access happened inside quant/experiments/exp_20260804_003_massive_block_print_absorption_scout.py after the v2 promotion (cand-46f8c0461f9275d37527). Bootstrap CI90 is degenerate because daily signal density merges all overlapping holds into one cluster (cluster_count=1); the rejection rests on point falsifier failures, not the interval. Section 2.4 axis consumed: axis (d) unprecedented field transactions/vwap on massive_full_market_ohlcv.",
+ "paper_live_eligible": false,
+ "parameters": {
+  "locked_variables": [
+   "massive_block_print_absorption_h10_v1"
+  ],
+  "single_causal_variable": "massive_block_print_absorption_h10_v1"
+ },
+ "post_run_reflection": {
+  "forbidden_near_neighbor_retry": "Do not retune the z-cut, 126-session baseline, liquidity floors, volume/pressure confirms, top-2 rule, cooldown, hold length, notional, costs, or comparator on the same frozen 725-row roster; do not re-run the same predicate on H5/H20 horizons, other z thresholds, or down-close days (sign flip) - the sample is consumed and any such rerun is loop unrolling. Do not convert the observed negative drift into a short-side or avoidance overlay without a genuinely new gate shape and its own D0-D3 admission; entry-gate overlays on the core stack are a separately dead lane.",
+  "new_evidence_required": "Legal axes only: (1) PIT intraday spread/depth or trade-level block attribution data that can separate crosses/rebalances/buybacks from directional blocks; (2) immutable as-published Massive bar vintages proving the transactions/vwap aggregates as-known; (3) a materially different economic mechanism on this field (e.g. persistent multi-session trade-size regime shifts rather than one-day outliers) declared as a new gate shape. The one-day extreme block-print + up-close predicate is falsified on 681 executed full-market rows and must not be re-entered without one of these.",
+  "realized_failure_mode": "order_splitting_erases_block_signal",
+  "why_result_happened": "Extreme average-trade-size sessions on confirming volume with close>=open are dominated by liquidity events (closing crosses, index rebalances, secondary blocks, buyback prints) that mark distribution or supply absorption by intermediaries, not informed accumulation; the subsequent ten sessions mean-revert or bleed, producing -1.6 percent average costed ten-session return while SPY/QQQ were positive over identical intervals. Machine caveats recorded: (a) observed-only streak on massive_full_market_ohlcv machine-counts exp-20260804-002 (accounting close) alongside real probes; (b) exp-20260804-002 remains proposed because claim-receipt enforcement rejects its oversized surface binding and close requires a claim receipt - unclaimable-reservation accounting close path is a tooling backlog item."
+ },
+ "prediction": {
+  "confidence_reason": "The field is genuinely unconsumed and all windows clear the touch floor by two orders of magnitude, but modern order-splitting plausibly destroys the classic block-trade information channel, so survival past costs plus SPY/QQQ hurdles is set below one in four.",
+  "expected_ev_delta": null,
+  "expected_pnl_delta": null,
+  "main_failure_modes": [
+   "order_splitting_erases_block_signal",
+   "chronological_window_instability",
+   "spy_qqq_secondary_hurdle_not_beaten",
+   "double_cost_stress_failure",
+   "event_heterogeneity_buybacks_index_flows",
+   "vendor_aggregate_vintage_contract_failure"
+  ],
+  "recorded_at": "2026-08-04T16:43:36+00:00",
+  "success_probability": 0.2
+ },
+ "prior_trial_count": 0,
+ "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+ "related_files": [
+  "data/experiments/exp-20260804-003/scout_before.json",
+  "data/experiments/exp-20260804-003/scout_after.json"
+ ],
+ "research_refs": [],
+ "result_ceiling": "observed_only",
+ "secondary_windows": [],
+ "selected_evidence_grade": "lead",
+ "status": "rejected",
+ "timestamp": "2026-08-04T16:47:33+00:00",
+ "trial_family": "massive_block_print_absorption_research_replay",
+ "trial_variant_id": "exp-20260804-003"
+}

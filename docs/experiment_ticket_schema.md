@@ -40,6 +40,26 @@ large shared JSON document.
 - `universe_scout`: new ticker universe, candidate source, or external alpha source.
 - `measurement_repair`: replay, attribution, data snapshot, or production/backtest parity work.
 
+## PIT Admission and Result Ceiling
+
+New alpha/scout tickets carry a hash-bound `alpha_promotion` anchor. Current
+schema-v2 anchors bind the outcome-blind D0-D3 panel, proposal, source/PIT
+readiness and artifact hashes directly; they do not require a debate lock or
+model launcher receipts. Legacy schema-v1 debated anchors remain readable for
+historical reproducibility. The anchor has two admission classes:
+
+- `canonical_promotion`: selected `gate_candidate`, `canonical_pit`, normal
+  Gate result authority;
+- `research_replay`: selected `lead` supported only by registered
+  `research_pit|canonical_pit` surfaces (at least one research surface), with
+  `change_type=private_replay_scout`, `result_ceiling=observed_only`, and
+  `paper_live_eligible=false`.
+
+The registry revalidates the ceiling at claim, close, self-registration, and
+audit. A research replay cannot persist `accepted` or any `accepted_*` status.
+The source definition and upgrade rules are in
+[`research_pit_policy.md`](research_pit_policy.md).
+
 ## Required Ticket Fields
 
 ```json
@@ -127,7 +147,7 @@ automatically. The experiment card is the human-readable summary; the revision
 manifest records git revision, dirty status, and file hashes available at
 reservation time.
 
-Trial accounting fields help `quant/meta_research_engine.py` count nearby
+Trial accounting fields help `quant/experiment_history.py` count nearby
 research attempts without changing strategy behavior. Use them when they add
 real meta-learning value; do not delay a good alpha test just to over-specify
 labels that the tooling can default.

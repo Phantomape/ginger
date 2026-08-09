@@ -23,6 +23,7 @@ No JavaScript was used.
 
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -37,6 +38,7 @@ from self_registration_guard import (  # noqa: E402
     new_offenders as _new_offenders,
     self_registers as _self_registers,
 )
+import self_registration_guard as _guard_module  # noqa: E402
 
 
 def test_no_new_self_registering_runners():
@@ -98,3 +100,39 @@ def test_current_offenders_are_all_grandfathered():
     # Sanity: the allowlist is a superset of current offenders (the guard only
     # fails on NEW ones). Equivalent to test_no_new_... but explicit.
     assert _current_offenders() <= _load_allowlist() | set(_new_offenders())
+
+
+def test_staged_detector_reads_index_instead_of_worktree(monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    experiments = repo / "quant" / "experiments"
+    experiments.mkdir(parents=True)
+    subprocess.run(
+        ["git", "init", "-q"],
+        cwd=str(repo),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    runner = experiments / "exp_20990101_001_staged_bad.py"
+    runner.write_text(
+        'registry.setdefault("experiments", []).append(result)\n',
+        encoding="utf-8",
+    )
+    subprocess.run(
+        ["git", "add", runner.relative_to(repo).as_posix()],
+        cwd=str(repo),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    runner.write_text("print('worktree fixed but not staged')\n", encoding="utf-8")
+
+    monkeypatch.setattr(_guard_module, "REPO_ROOT", repo)
+    monkeypatch.setattr(_guard_module, "EXPERIMENTS_DIR", experiments)
+    monkeypatch.setattr(
+        _guard_module,
+        "ALLOWLIST_PATH",
+        experiments / "_self_register_legacy_allowlist.txt",
+    )
+    assert _guard_module.staged_new_offenders() == [runner.name]

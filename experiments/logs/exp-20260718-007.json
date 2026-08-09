@@ -1,0 +1,216 @@
+{
+  "experiment_id": "exp-20260718-007",
+  "timestamp": "2026-07-18T21:38:20+00:00",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "decision": "rejected_same_issuer_dual_class_spread_economics",
+  "hypothesis": "For an outcome-blind, official-SEC same-CIK whitelist of economically equivalent dual-class common shares, extreme class-premium deviations from a strictly-prior robust anchor should converge after complete two-leg costs.",
+  "single_causal_variable": "sec_same_cik_dual_class_robust_premium_spread_v1",
+  "changed_variable": "sec_same_cik_dual_class_robust_premium_spread_v1",
+  "change_type": "candidate_pool_full_stack",
+  "mechanism_family": "same_issuer_dual_class_relative_value",
+  "trial_family": "sec_same_issuer_dual_class_spread_convergence",
+  "trial_variant_id": "robust120_z250_abs100bp_nextopen_converge25bp_stop300bp_timeout10_v1",
+  "new_evidence_type": "new_official_sec_same_cik_non_price_pair_linkage_source",
+  "nearby_prior_experiments": [
+    "exp-20260708-025",
+    "exp-20260718-004"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "implementation_mode": "shared_helper_historical_replay_and_daily_default_off_api_then_rejected_without_run_py_wiring",
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "worst_max_drawdown_pct": 0.0889,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116
+  },
+  "after_metrics": {
+    "expected_value_score": 5.3236,
+    "total_pnl": 113458.64,
+    "worst_max_drawdown_pct": 0.0822,
+    "core_trade_count": 49,
+    "candidate_funded_pair_count": 23,
+    "candidate_survival_rate": 0.9583333333333334
+  },
+  "delta_metrics": {
+    "expected_value_score": -0.8821,
+    "total_pnl_vs_recomputed_core": -17533.71,
+    "total_pnl_vs_published_baseline": -17533.72,
+    "worst_max_drawdown_pct": -0.0067,
+    "material_regressed_window_count": 3
+  },
+  "candidate_metrics": {
+    "expected_value_score": -0.4463,
+    "total_pnl": -1454.49,
+    "gross_pnl": -248.04409758464772,
+    "trade_cost": 1001.0249908084979,
+    "short_carry": 205.4185694185324,
+    "signals_generated": 24,
+    "signals_survived": 23,
+    "survival_rate": 0.9583333333333334,
+    "raw_threshold_signals": 294,
+    "funded_pair_count": 23,
+    "pair_identity_count": 5,
+    "winning_trade_count": 4,
+    "win_rate": 0.17391304347826086,
+    "worst_max_drawdown_pct": 0.0777,
+    "spy_beta": 0.010454678658053737,
+    "spy_correlation": 0.05490405838343121,
+    "maximum_pair_share": 0.21739130434782608,
+    "pair_hhi": 0.20226843100189035,
+    "window_ev": {
+      "old_thin": -0.2634,
+      "mid_weak": -0.1175,
+      "late_strong": -0.0654
+    },
+    "window_pnl": {
+      "old_thin": -711.55,
+      "mid_weak": -421.21,
+      "late_strong": -321.73
+    },
+    "exit_reason_counts": {
+      "max_hold_timeout": 20,
+      "adverse_spread_stop": 2,
+      "window_end_force_close": 1,
+      "spread_converged": 0
+    }
+  },
+  "gate1": {
+    "passed": true,
+    "active_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36
+  },
+  "gate2": {
+    "passed": true,
+    "identity_candidates_audited": 6,
+    "economic_pairs_admitted": 5,
+    "GOOG_GOOGL_outcome_blind_excluded": true,
+    "GOOG_GOOGL_funded_count": 0,
+    "cold_only_panel": true,
+    "hot_overlay_used": false,
+    "entry_date_and_pair_target_sentinel_checked": true,
+    "all_windows_settled": true,
+    "cash_cost_carry_and_gross_identities_passed": true,
+    "missing_exact_open_pair_marks": 0
+  },
+  "gate3": {
+    "passed": true,
+    "signals_generated": 24,
+    "signals_survived": 23,
+    "survival_rate": 0.9583333333333334,
+    "minimum_survival_rate": 0.05
+  },
+  "standalone_acceptance": {
+    "passed": false,
+    "hard_failures": [
+      "funded_closed_pairs_23_lt_30",
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "zero_of_three_nonnegative_ev_and_pnl_windows",
+      "standalone_drawdown_7_77pct_gt_5pct"
+    ],
+    "passed_checks": [
+      "gate2_and_gate3",
+      "five_pair_identities",
+      "absolute_spy_beta_lte_0_10",
+      "pair_concentration_and_hhi",
+      "cash_entry_gross_and_concurrency"
+    ]
+  },
+  "portfolio_promotion": {
+    "passed": false,
+    "hard_failures": [
+      "standalone_candidate_not_accepted",
+      "aggregate_ev_not_improved",
+      "aggregate_pnl_not_improved",
+      "three_material_window_regressions"
+    ],
+    "passed_checks": [
+      "drawdown_did_not_worsen"
+    ],
+    "weight_contract": "90pct_core_plus_10pct_candidate_constant_mix"
+  },
+  "production_impact": {
+    "shared_helper_retained_for_reproducibility": true,
+    "daily_default_off_api_implemented_and_tested": true,
+    "run_py_wiring_retained": false,
+    "trade_enabled": false,
+    "alters_core_orders_ranking_sizing_or_exits": false,
+    "live_ready": false,
+    "effective_dated_sec_identity_verified": false,
+    "broker_locate_and_size_verified": false,
+    "cold_panel_path": "data/experiments/exp-20260718-007/cold_ohlcv_panel.json",
+    "cold_panel_sha256": "d63c8d1cac9f44de0e2049c09c04ca76cdebf7d6d8c377150588fc257d4c3e6c",
+    "cold_panel_row_count": 8619
+  },
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "dual_class_premium_is_persistent_not_transitory",
+      "two_leg_costs_and_short_carry_consume_gross_edge",
+      "too_few_extreme_spreads",
+      "one_pair_concentration",
+      "current_sec_identity_not_effective_dated",
+      "core_opportunity_cost_not_covered"
+    ],
+    "recorded_at": "2026-07-18T21:02:40+00:00"
+  },
+  "calibration": {
+    "actual_success": 0,
+    "predicted_success_probability": 0.25,
+    "brier_score": 0.0625,
+    "expected_ev_delta": 0.1,
+    "actual_ev_delta": -0.8821,
+    "ev_prediction_error": -0.9821,
+    "expected_pnl_delta": 500.0,
+    "actual_pnl_delta": -17533.71,
+    "pnl_prediction_error": -18033.71,
+    "realized_failure_mode": "persistent_premium_no_convergence_plus_two_leg_cost_drag",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "No funded trade reached the convergence exit; gross PnL was already negative before more than $1,200 of trade cost and carry. Concentration was not the failure."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The structural issuer link was real, but voting-class premia did not mean-revert on the frozen ten-session horizon: 20 of 23 trades timed out, two stopped, one was boundary-settled, and zero reached the convergence band. Gross PnL was -$248 before $1,001 of trading cost and $205 of short carry, so lower fees or low beta cannot rescue the tested policy.",
+    "alpha_interpretation": "A non-price pair linkage and near-zero SPY beta are not sufficient alpha. The candidate lost money in every fixed window and displaced a much stronger core, so it is not a new PnL engine and receives no daily or capital wiring.",
+    "forbidden_near_neighbor_retry": "Do not sweep the 120-session lookback, z threshold, 1% admission distance, convergence band, stop, hold, cooldown, pair subset, costs, direction, or 10% weight on this same cold panel; do not consume the five pairs one by one as separate experiments.",
+    "new_evidence_required": "Reopen only for a genuinely different economic anchor/gate shape, or a pre-frozen prospective panel with at least 35 new settled pairs across at least five identities plus effective-dated identity and broker locate/size. A same-batch GOOG/GOOGL refreeze repairs that pair's provenance but by itself does not reopen this rejected policy."
+  },
+  "changed_files": [
+    "docs/alpha_engine_strategy.md",
+    "quant/sec_same_issuer_dual_class_spread_paper_sleeve.py",
+    "quant/test_sec_same_issuer_dual_class_spread_paper_sleeve.py",
+    "quant/experiments/exp_20260718_007_sec_same_issuer_dual_class_spread.py",
+    "data/experiments/exp-20260718-007/cold_ohlcv_panel.json",
+    "data/experiments/exp-20260718-007/exp_20260718_007_sec_same_issuer_dual_class_spread.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/production_backtest_parity_matrix.md",
+    "experiments/cards/exp-20260718-007.md",
+    "experiments/logs/exp-20260718-007.json",
+    "experiments/manifests/exp-20260718-007.json",
+    "experiments/tickets/exp-20260718-007.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/reference/sec_company_tickers.json",
+    "data/experiments/exp-20260718-007/exp_20260718_007_sec_same_issuer_dual_class_spread.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260718_007_sec_same_issuer_dual_class_spread.py evaluate",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_same_issuer_dual_class_spread_paper_sleeve.py quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "artifact_sha256": "ef90bf2a16b90a64e5c64b3c91ceb395b972d6cd123ccc0ca108b4db89936802",
+  "rejection_reason": "Standalone EV/PnL were negative in all three windows with only 23 funded pairs and 7.77% drawdown; the 90/10 blend reduced EV by 0.8821 and PnL by about $17,533.7 with three material window regressions.",
+  "next_retry_requires": [
+    "A genuinely different economic anchor or gate shape, not a threshold retune.",
+    "Or at least 35 new pre-frozen prospective settled pairs across five identities with effective-dated identity and broker locate/size.",
+    "GOOG/GOOGL requires same-batch two-leg acquisition before use, but that repair alone does not reopen the rejected policy."
+  ]
+}

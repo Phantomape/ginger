@@ -1,0 +1,186 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.4366,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.4366,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.1,
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 2000.0,
+    "pnl_prediction_error": -2000.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "air-travel demand already priced",
+      "broad market beta dominates",
+      "correlated basket pseudo-replication",
+      "window sign instability",
+      "PDF versus annual-table mismatch",
+      "transaction costs erase edge"
+    ],
+    "predicted_success_probability": 0.18,
+    "realized_failure_mode": "historical_source_mutability_and_publication_clock_failure",
+    "surprise_level": "very_low",
+    "surprise_note": "The official weekly PDF is not an immutable initial vintage: its daily totals differ from the current annual table and its modification timestamp is three weeks after the cover date."
+  },
+  "causal_components": [
+    "official FOIA weekly report manifest",
+    "weekly national total yoy positive",
+    "weekly yoy acceleration positive",
+    "fixed 14-ticker all-window-liquid travel basket",
+    "first strictly later open",
+    "5-session time exit",
+    "14000 USD equal notional",
+    "35 bps round trip",
+    "default-off shared helper and daily snapshot"
+  ],
+  "change_summary": "Outcome-blind TSA PIT source preflight rejected the fixed travel-demand policy before price access: the annual table disagrees with a hash-bound weekly report, late reports were batch-modified after their covers, and an exact-364-day raw comparator is unparseable. The pure default-off helper is retained without daily wiring.",
+  "change_type": "shared_default_off_paper_candidate_pool",
+  "changed_variable": "tsa_weekly_travel_demand_acceleration_candidate_pool_v1",
+  "component": "quant/tsa_checkpoint_throughput_paper_sleeve.py, quant/test_tsa_checkpoint_throughput_paper_sleeve.py, quant/experiments/exp_20260717_005_tsa_checkpoint_throughput_travel_basket.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected_tsa_historical_source_contract",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0
+  },
+  "experiment_id": "exp-20260717-005",
+  "hypothesis": "Shared-paper-first candidate-pool alpha: when an official TSA FOIA weekly checkpoint-throughput report shows national passenger volume remains above the same weekdays 52 weeks earlier and that year-over-year growth accelerates versus the preceding week, a fixed all-window-liquid air-travel revenue basket should continue from the first strictly later regular-session open through the fifth-session close.",
+  "fingerprint": {
+    "data_source": "tsa_checkpoint_throughput",
+    "gate_shape": "candidate_pool_top1_10d"
+  },
+  "fingerprint_caveat": "The reservation-time ticket classified this new source as other. Dedicated TSA fingerprint keywords and positive/negative regression tests were added before close; frozen-family rebuild must classify the closed family as tsa_checkpoint_throughput.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_tsa_checkpoint_travel_demand_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260608-002"
+  ],
+  "new_evidence_type": "new_official_tsa_foia_weekly_throughput_source",
+  "next_retry_requires": [
+    "An authorized immutable or versioned TSA weekly release archive with original bytes and exact publication timestamps.",
+    "Enough current, preceding-week, and exact-364-day reports to yield at least 10 locked signal events in each canonical window before any price access."
+  ],
+  "notes": "Hash-bound weekly PDF differs 3.070% from the mutable annual table. Four missing late-window files were recovered through official filename exceptions, but all were batch-modified on 2025-11-17 and therefore cannot be backdated to their covers. The exact 2023-09-24 to 2023-09-30 364-day comparator remains unparseable; TSA FOIA request 2024-TSFO-00003 independently records that exact file as corrupted. No OHLCV, return, or PnL was read.",
+  "parameters": {
+    "locked_variables": [
+      "source",
+      "feature signs",
+      "basket membership",
+      "entry",
+      "hold",
+      "notional",
+      "cost",
+      "cooldown",
+      "windows",
+      "baseline"
+    ],
+    "single_causal_variable": "tsa_weekly_positive_yoy_acceleration_equal_travel_basket_next_open_5d_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not infer historical PIT values from the mutable annual passenger-volume table, use the current post-modified weekly PDFs as initial vintages, guess publication from the period end or cover date, retry the same reading-room count, or read prices under this fixed policy.",
+    "new_evidence_required": "Reopen only when an authorized immutable or versioned TSA weekly release archive supplies original bytes and publication timestamps for enough current, preceding-week, and exact-364-day reports to produce at least 10 locked signal events in every canonical window.",
+    "realized_failure_mode": "historical_source_mutability_and_publication_clock_failure",
+    "why_result_happened": "The official weekly PDF is not an auditable initial vintage: its seven daily totals differ from the current annual table by 532684 passengers (3.070%), and its modification/HTTP Last-Modified date is three weeks after the cover. Filename exceptions recover the apparent missing weeks, but four late files share a 2025-11-17 modification batch and must be treated as stale missed discoveries. A required 2023 exact-364-day raw comparator is also unparseable and is documented as corrupted in TSA's FOIA log."
+  },
+  "prediction": {
+    "confidence_reason": "The new official source has 26/24/26 immutable weekly reports and the locked outcome-blind sign rule yields 10/10/13 independent events across a 14-name liquid basket, but macro travel demand may be contemporaneous and correlated.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "air-travel demand already priced",
+      "broad market beta dominates",
+      "correlated basket pseudo-replication",
+      "window sign instability",
+      "PDF versus annual-table mismatch",
+      "transaction costs erase edge"
+    ],
+    "recorded_at": "2026-07-17T14:01:36+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "orders_created": false,
+    "parity_test_added": true,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "replay_only": true,
+    "note": "The pure source-injected default-off helper and tests are retained for reproducibility. No daily wiring, paper ledger, backtester behavior, live/default order path, ranking, sizing, or exits changed."
+  },
+  "measurement_scope": {
+    "pit_source_contract_passed": false,
+    "price_or_return_data_read": false,
+    "gate1_anchor_read": true,
+    "gate2_to_gate4_run": false,
+    "decision_boundary": "rejected_before_price_read"
+  },
+  "rejection_reason": "The preregistered PIT source contract failed before Gate 2-4: the annual table is a revised surface, the current weekly files do not establish their initial bytes or historical publication clock, four late reports were batch-modified after their covers, and an exact-364-day raw comparator is unparseable. No OHLCV, return, or PnL was read.",
+  "related_files": [
+    "data/experiments/exp-20260717-005/before.json",
+    "data/experiments/exp-20260717-005/after.json",
+    "data/experiments/exp-20260717-005/preflight.json",
+    "data/non_ohlcv/tsa_checkpoint_throughput/preflight.json",
+    "experiments/artifacts/exp-20260717-005_tsa_checkpoint_throughput_preflight.md",
+    "quant/tsa_checkpoint_throughput_paper_sleeve.py",
+    "quant/test_tsa_checkpoint_throughput_paper_sleeve.py",
+    "quant/experiments/exp_20260717_005_tsa_checkpoint_throughput_travel_basket.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "reproduction": {
+    "source_preflight": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260717_005_tsa_checkpoint_throughput_travel_basket.py",
+    "focused_tests": ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_tsa_checkpoint_throughput_paper_sleeve.py quant\\test_experiment_fingerprint.py"
+  },
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-17T16:09:44+00:00",
+  "trial_family": "tsa_weekly_checkpoint_throughput_travel_demand_basket",
+  "trial_variant_id": "sign_yoy_accel_14ticker_equal_5d_v1"
+}

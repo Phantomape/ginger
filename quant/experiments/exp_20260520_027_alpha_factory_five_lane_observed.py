@@ -31,7 +31,7 @@ from core_misfit_paper_sleeve import (  # noqa: E402
     build_core_misfit_no_trade_alpha_report,
     load_core_misfit_paper_state,
 )
-from meta_research_engine import build_meta_report  # noqa: E402
+from experiment_history import build_history_report  # noqa: E402
 from sec_financial_report_event_sleeve import (  # noqa: E402
     build_fact_tone_gap_attribution,
     load_sec_financial_report_event_sleeve_state,
@@ -515,7 +515,7 @@ def _append_experiment_log(records: list[dict[str, Any]]) -> None:
 
 def run() -> list[dict[str, Any]]:
     now = datetime.now(timezone.utc).isoformat()
-    meta_report = build_meta_report(ROOT)
+    meta_report = build_history_report(ROOT)
     return [
         _record_for_lane(
             lane,

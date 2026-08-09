@@ -1,0 +1,364 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    "data/experiments/exp-20260710-009/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.json",
+    "experiments/cards/exp-20260710-009.md",
+    "experiments/manifests/exp-20260710-009.json",
+    "experiments/tickets/exp-20260710-009.json",
+    "experiments/logs/exp-20260710-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260710-009.md",
+  "causal_components": [
+    "exit_lifecycle_outcome_helper",
+    "daily_run_py_snapshot_wiring",
+    "outcome_contract_tests",
+    "no_strategy_or_order_change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "exit_lifecycle_forward_outcome_settlement_daily_wiring_v1",
+  "claimed_at": "2026-07-10T08:06:15+00:00",
+  "completed_at": "2026-07-10T08:21:12+00:00",
+  "created_at": "2026-07-10T08:06:05+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260710-009",
+  "experiment_uid": "expuid-f8792c8fbecc4e67",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260710-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-10T08:06:05+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_outcome_settlement_daily_wiring"
+  },
+  "hypothesis": "Alpha blocker: exit lifecycle and advisory shadow rows cannot support future exit scoring, replacement-value gates, or risk allocation while forward outcome settlement remains trapped in one-off experiment scripts; wire a default-off daily outcome ledger without changing live exits, orders, ranking, sizing, or core signal generation.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "exit_lifecycle_forward_outcome_settlement_daily_wiring_v1"
+  ],
+  "mechanism_family": "exit_lifecycle_advisory_outcome",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-011",
+    "exp-20260623-018",
+    "exp-20260701-012",
+    "exp-20260710-008"
+  ],
+  "new_evidence_type": "measurement_repair_pipeline_wiring",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "exit_lifecycle",
+      "field_tags": [
+        "a",
+        "advisory",
+        "allocation",
+        "alpha",
+        "blocker",
+        "cannot",
+        "changing",
+        "daily",
+        "exit",
+        "exits",
+        "experiment",
+        "forward",
+        "future",
+        "in",
+        "ledger",
+        "lifecycle",
+        "manual",
+        "or",
+        "orders",
+        "outcome",
+        "remains",
+        "risk",
+        "rows",
+        "runners",
+        "scoring",
+        "settlement",
+        "shadow",
+        "summary",
+        "support",
+        "trapped",
+        "while",
+        "wire",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_open_crowding_paper_allocation",
+        "reopen_condition": "If rejected, do not retry adjacent same-sector support scalars without new forward closed outcomes. Next broad-market data edge should use a distinct field such as industry-level leadership breadth or cost-adjusted replacement value.",
+        "score": 0.1705,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "post_earnings_continuation_risk_support",
+        "reopen_condition": null,
+        "score": 0.1705,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "alpha_score_market_regime_source_consensus_support",
+        "reopen_condition": "If positive, add a shared default-off source-consensus adapter and collect forward replacement-value rows. If rejected, do not retune the scalar on these frozen windows.",
+        "score": 0.17,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "broad_market_sector_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.17,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "risk_on_breakout_risk_allocation",
+        "reopen_condition": null,
+        "score": 0.1695,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "exit_lifecycle",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "exit_lifecycle",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_exit_lifecycle_outcome_settlement_daily_wired",
+    "artifact": "data/experiments/exp-20260710-009/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.json",
+    "log": "experiments/logs/exp-20260710-009.json",
+    "runner": "quant/experiments/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    "gate4": {
+      "passed": true,
+      "decision": "accepted_measurement_repair_exit_lifecycle_outcome_settlement_daily_wired",
+      "accepted_alpha": false,
+      "measurement_repair_only": true,
+      "strategy_behavior_changed": false,
+      "before_after_strategy_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "signals_generated_delta": 0,
+        "signals_survived_delta": 0
+      },
+      "failed_reasons": [],
+      "acceptance_rule": "Accepted measurement repair if the helper writes closed and pending default-off outcome snapshots, run.py exposes the summary after the existing exit lifecycle shadow log, current source rows retain entry_date and target_price, tests pass, and production impact flags show no strategy or live-order behavior changed."
+    },
+    "headline_metrics": {
+      "proof_candidate_rows": 2,
+      "proof_settled_count": 2,
+      "proof_unsettled_count": 0,
+      "current_source_rows": 520,
+      "current_source_files": 40,
+      "entry_date_coverage": 1.0,
+      "target_price_coverage": 1.0,
+      "failed_checks": [],
+      "strategy_behavior_delta": 0
+    },
+    "summary": "measurement_repair_exit_lifecycle_outcome_daily_wiring"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260710-009.json",
+  "single_causal_variable": "exit_lifecycle_forward_outcome_settlement_daily_wiring_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260710-009.json",
+  "trial_family": "exit_lifecycle_outcome_settlement",
+  "trial_variant_id": "exit_lifecycle_daily_outcome_ledger_v1",
+  "alpha_hypothesis": "Exit lifecycle rows may later support LLM exit scoring or risk allocation once automatically settled forward replacement-value evidence accumulates.",
+  "implementation_mode": "shared_default_off_outcome_ledger_daily_wiring",
+  "new_evidence_axis": "Routine-materialization guard legal exit: wire the exit_lifecycle observer to daily outcome settlement so future materially new settled forward rows accumulate without manual experiment IDs.",
+  "decision": "accepted_measurement_repair_exit_lifecycle_outcome_settlement_daily_wired",
+  "artifact": "data/experiments/exp-20260710-009/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.json",
+  "log": "experiments/logs/exp-20260710-009.json",
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair only; no before/after strategy replay."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "entry_date",
+      "target_price",
+      "market_value_usd",
+      "ticker",
+      "as_of_date"
+    ],
+    "current_source_stats": {
+      "source_dir": "data/exit_lifecycle",
+      "source_file_count": 40,
+      "source_row_count": 520,
+      "latest_source_tag": "20260709",
+      "rows_with_entry_date": 520,
+      "rows_with_target_price": 520,
+      "rows_with_market_value_usd": 520,
+      "malformed_rows": 0,
+      "entry_date_coverage": 1.0,
+      "target_price_coverage": 1.0
+    },
+    "entry_date_target_price_applicability": "Required for future forward outcome attribution; current exit_lifecycle source rows retain both sentinel fields."
+  },
+  "gate3": {
+    "passed": true,
+    "new_core_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "note": "No buy/sell/filter/ranking behavior changed."
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair_exit_lifecycle_outcome_settlement_daily_wired",
+    "accepted_alpha": false,
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "signals_generated_delta": 0,
+      "signals_survived_delta": 0
+    },
+    "failed_reasons": [],
+    "acceptance_rule": "Accepted measurement repair if the helper writes closed and pending default-off outcome snapshots, run.py exposes the summary after the existing exit lifecycle shadow log, current source rows retain entry_date and target_price, tests pass, and production impact flags show no strategy or live-order behavior changed."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "daily_snapshot_exposed": true,
+    "trade_enabled_changed": false,
+    "live_orders_changed": false,
+    "ranking_sizing_exits_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "trade_enabled": false,
+    "live_ready": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The helper can now settle read-only exit lifecycle observations into fixed-horizon replacement-value rows and run.py exposes the latest summary after the existing shadow log. This repairs evidence accumulation, not strategy edge.",
+    "forbidden_near_neighbor_retry": "Do not run exit lifecycle threshold, response-curve, LLM scoring, or replacement-value alpha experiments until the daily ledger has materially more newly settled rows versus exp-20260701-012, or a separate legal evidence axis exists.",
+    "new_evidence_required": "A future alpha iteration needs automatically accumulated settled forward rows, a distinct gate shape, or a new data source; this measurement repair alone is not alpha evidence."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    "quant/exit_lifecycle_outcomes.py",
+    "quant/test_exit_lifecycle_outcomes.py",
+    "quant/run.py",
+    "data/experiments/exp-20260710-009/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.json",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/exit_lifecycle_20260702.jsonl",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/outcome_ledgers/exit_lifecycle_outcomes_20260713.jsonl",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/outcome_summaries/exit_lifecycle_outcome_summary_20260713.json",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/latest_outcome_summary.json",
+    "experiments/logs/exp-20260710-009.json",
+    "experiments/cards/exp-20260710-009.md",
+    "experiments/manifests/exp-20260710-009.json",
+    "experiments/tickets/exp-20260710-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    "quant/exit_lifecycle_outcomes.py",
+    "quant/test_exit_lifecycle_outcomes.py",
+    "quant/run.py",
+    "data/experiments/exp-20260710-009/exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.json",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/exit_lifecycle_20260702.jsonl",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/outcome_ledgers/exit_lifecycle_outcomes_20260713.jsonl",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/outcome_summaries/exit_lifecycle_outcome_summary_20260713.json",
+    "data/experiments/exp-20260710-009/proof_data/exit_lifecycle/latest_outcome_summary.json",
+    "experiments/logs/exp-20260710-009.json",
+    "experiments/cards/exp-20260710-009.md",
+    "experiments/manifests/exp-20260710-009.json",
+    "experiments/tickets/exp-20260710-009.json",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\exit_lifecycle_outcomes.py quant\\test_exit_lifecycle_outcomes.py quant\\run.py quant\\experiments\\exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_exit_lifecycle_outcomes.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260710_009_exit_lifecycle_outcome_settlement_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-10T08:21:12+00:00"
+}

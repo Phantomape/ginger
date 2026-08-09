@@ -1,0 +1,327 @@
+{
+  "acceptance_rule": "Run Gate 1-4 against the active cash-feasible anchor. Require immutable/hash-bound official source lineage, required entry_date and target_price contract, >=10 independent target events per window, survival >=5%, positive aggregate EV and PnL deltas, EV and PnL improvement in at least two windows, no unacceptable drawdown/tail/concentration regression, and target top-five contribution <=60%. Strong retention must also beat the accepted distribution comparator (+0.5286 aggregate EV and +10432.91 USD PnL); otherwise reject, roll back strategy/daily wiring, and freeze this fixed policy.",
+  "allowed_write_scope": [
+    "quant/tsa_checkpoint_throughput_paper_sleeve.py",
+    "quant/test_tsa_checkpoint_throughput_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/",
+    "data/non_ohlcv/tsa_checkpoint_throughput/",
+    "data/paper_sleeves/tsa_checkpoint_throughput/",
+    "data/experiments/",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/frozen_families.jsonl",
+    "experiments/"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260717-005.md",
+  "causal_components": [
+    "official FOIA weekly report manifest",
+    "weekly national total yoy positive",
+    "weekly yoy acceleration positive",
+    "fixed 14-ticker all-window-liquid travel basket",
+    "first strictly later open",
+    "5-session time exit",
+    "14000 USD equal notional",
+    "35 bps round trip",
+    "default-off shared helper and daily snapshot"
+  ],
+  "change_type": "shared_default_off_paper_candidate_pool",
+  "changed_variable": "tsa_weekly_travel_demand_acceleration_candidate_pool_v1",
+  "claimed_at": "2026-07-17T14:04:01+00:00",
+  "completed_at": "2026-07-17T16:19:38+00:00",
+  "created_at": "2026-07-17T14:02:20+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260717-005",
+  "experiment_uid": "expuid-b7991e322f494f92",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260717-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-17T14:02:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "tsa_checkpoint_throughput_travel_basket"
+  },
+  "hypothesis": "Shared-paper-first candidate-pool alpha: when an official TSA FOIA weekly checkpoint-throughput report shows national passenger volume remains above the same weekdays 52 weeks earlier and that year-over-year growth accelerates versus the preceding week, a fixed all-window-liquid air-travel revenue basket should continue from the first strictly later regular-session open through the fifth-session close.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "source",
+    "feature signs",
+    "basket membership",
+    "entry",
+    "hold",
+    "notional",
+    "cost",
+    "cooldown",
+    "windows",
+    "baseline"
+  ],
+  "mechanism_family": "production_visible_tsa_checkpoint_travel_demand_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "live/default orders or ranking or sizing or exits",
+    "existing paper-sleeve ledgers",
+    "unrelated dirty files"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260608-002"
+  ],
+  "new_evidence_type": "new_official_tsa_foia_weekly_throughput_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "5d",
+        "a",
+        "above",
+        "accelerates",
+        "acceleration",
+        "air",
+        "all",
+        "alpha",
+        "an",
+        "basket",
+        "checkpoint",
+        "close",
+        "continue",
+        "demand",
+        "earlier",
+        "equal",
+        "fifth",
+        "first",
+        "foia",
+        "from",
+        "growth",
+        "later",
+        "liquid",
+        "national",
+        "official",
+        "over",
+        "passenger",
+        "positive",
+        "preceding",
+        "regular",
+        "remains",
+        "report",
+        "revenue",
+        "same",
+        "session",
+        "should",
+        "shows",
+        "strictly",
+        "that",
+        "through",
+        "throughput",
+        "travel",
+        "tsa",
+        "versus",
+        "volume",
+        "week",
+        "weekdays",
+        "weekly",
+        "weeks",
+        "when",
+        "window",
+        "year",
+        "yoy"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "deferred_revenue_demand_acceleration_candidate_pool",
+        "reopen_condition": "A valid follow-up needs a selected PIT Companyfacts daily demand surface, structured contract-economics text linked to the same ticker/date, or closed forward replacement-value rows.",
+        "score": 0.1707,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_market_confirmed_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field such as breadth/changepoint persistence, cost-adjusted replacement rows, or forward replacement-value evidence; do not simply retune broad OHLCV momentum thresholds on these windows.",
+        "score": 0.1697,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "broad_companyfacts_growth_acceleration_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1645,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "opex_week_liquid_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new evidence that identifies true OPEX flow beneficiaries, such as point-in-time options open interest, dealer gamma proxies, index/ETF rebalance rows, or forward daily-snapshot replacement value. Pure threshold retunes stay frozen.",
+        "score": 0.1645,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_earnings_liquid_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new pre-event evidence such as point-in-time analyst-count/estimate-trajectory breadth, option-implied move where three-window data exists, verified event-time before/after close semantics, or closed forward replacement rows. Pure DTE/RS threshold tuning stays frozen.",
+        "score": 0.1643,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New official data source: TSA FOIA weekly checkpoint-level throughput PDFs plus official national daily tables; outcome-blind preflight found 26/24/26 reports and 10/10/13 locked signal weeks, with no prior TSA surface.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New official data source: TSA FOIA weekly checkpoint-level throughput PDFs plus official national daily tables; outcome-blind preflight found 26/24/26 reports and 10/10/13 locked signal weeks, with no prior TSA surface.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New official data source: TSA FOIA weekly checkpoint-level throughput PDFs plus official national daily tables; outcome-blind preflight found 26/24/26 reports and 10/10/13 locked signal weeks, with no prior TSA surface.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-automation",
+  "prediction": {
+    "confidence_reason": "The new official source has 26/24/26 immutable weekly reports and the locked outcome-blind sign rule yields 10/10/13 independent events across a 14-name liquid basket, but macro travel demand may be contemporaneous and correlated.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 2000.0,
+    "main_failure_modes": [
+      "air-travel demand already priced",
+      "broad market beta dominates",
+      "correlated basket pseudo-replication",
+      "window sign instability",
+      "PDF versus annual-table mismatch",
+      "transaction costs erase edge"
+    ],
+    "recorded_at": "2026-07-17T14:01:36+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260717-005/before.json",
+    "after_result_file": "data/experiments/exp-20260717-005/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.18,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.1,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": -0.1,
+      "expected_pnl_delta": 2000.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": -2000.0,
+      "predicted_failure_modes": [
+        "air-travel demand already priced",
+        "broad market beta dominates",
+        "correlated basket pseudo-replication",
+        "window sign instability",
+        "PDF versus annual-table mismatch",
+        "transaction costs erase edge"
+      ],
+      "realized_failure_mode": "historical_source_mutability_and_publication_clock_failure",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The preregistered PDF-versus-annual mismatch risk materialized before price access: the same week differs by 3.070%, four late files were batch-modified on 2025-11-17, and an exact-364-day comparator remains unparseable."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260717-005.json",
+  "single_causal_variable": "tsa_weekly_positive_yoy_acceleration_equal_travel_basket_next_open_5d_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260717-005.json",
+  "trial_family": "tsa_weekly_checkpoint_throughput_travel_demand_basket",
+  "trial_variant_id": "sign_yoy_accel_14ticker_equal_5d_v1"
+}

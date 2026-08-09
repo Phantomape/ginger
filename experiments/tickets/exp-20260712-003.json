@@ -1,0 +1,287 @@
+{
+  "acceptance_rule": "Observed-only lead only if at least 60 trusted closed lifecycles and 70 percent H5 settlement survive, mean and median lifecycle exit-avoidance values are positive versus cash/SPY/QQQ, at least two of three calendar cohorts have positive mean cash avoidance, and positive-value concentration has max ticker share at most 50 percent. No policy promotion in this ID.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260712_003_broker_exit_fill_h5_avoidance.py",
+    "data/experiments/exp-20260712-003/exp_20260712_003_broker_exit_fill_h5_avoidance.json",
+    "experiments/cards/exp-20260712-003.md",
+    "experiments/manifests/exp-20260712-003.json",
+    "experiments/tickets/exp-20260712-003.json",
+    "experiments/logs/exp-20260712-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260712-003.md",
+  "causal_components": [
+    "latest-effective broker fills",
+    "strict trusted lifecycle links",
+    "five-session warehouse settlement",
+    "lifecycle-level aggregation",
+    "three chronological cohorts",
+    "no strategy behavior change"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "broker_exit_fill_h5_avoidance_value_v1",
+  "claimed_at": "2026-07-12T02:11:58+00:00",
+  "completed_at": "2026-07-12T02:12:00+00:00",
+  "created_at": "2026-07-12T02:11:06+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-07-10",
+      "start": "2024-07-12"
+    }
+  ],
+  "experiment_id": "exp-20260712-003",
+  "experiment_uid": "expuid-021ef72597b6496f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T02:11:06+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broker_exit_fill_h5_avoidance"
+  },
+  "hypothesis": "Observed-only exit alpha: broker-authoritative reduce and close fills across the 87 trusted closed lifecycles should show positive five-session cash, SPY, and QQQ exit-avoidance value versus continuing the exited shares if realized production exits add value rather than truncate winners.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "horizon=5 trading sessions",
+    "comparators=cash+SPY+QQQ",
+    "aggregation=lifecycle",
+    "latest-effective lifecycle rule",
+    "all trusted closed lifecycles"
+  ],
+  "mechanism_family": "broker_execution_exit_quality",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "live orders",
+    "paper orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260712-001",
+    "exp-20260710-016"
+  ],
+  "new_evidence_type": "new_broker_authoritative_settled_lifecycles",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "across",
+        "add",
+        "alpha",
+        "authoritative",
+        "avoidance",
+        "broker",
+        "cash",
+        "close",
+        "closed",
+        "continuing",
+        "execution",
+        "exit",
+        "exited",
+        "exits",
+        "fill",
+        "fills",
+        "five",
+        "h5",
+        "if",
+        "lifecycles",
+        "observed",
+        "only",
+        "positive",
+        "qqq",
+        "rather",
+        "realized",
+        "reduce",
+        "session",
+        "shares",
+        "should",
+        "show",
+        "spy",
+        "than",
+        "truncate",
+        "trusted",
+        "value",
+        "versus",
+        "winners"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_monotonicity_audit",
+        "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+        "score": 0.4767,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "event_benchmark_momentum_context",
+        "reopen_condition": null,
+        "score": 0.4674,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool",
+        "reopen_condition": "If revisited, use forward replacement-value rows, a full shared production/replay alpha_score adapter, or a materially richer ranking component; do not just mine alpha_score thresholds.",
+        "score": 0.4598,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "spy_relative_leader_winner_capture",
+        "reopen_condition": null,
+        "score": 0.4595,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_cost_liquidity",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer component-level ranking field. Do not just mine alpha_score cost/liquidity thresholds on the same frozen replay.",
+        "score": 0.4591,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": true,
+      "override_axis_categories": [
+        "new_data_source"
+      ],
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 3,
+      "streak_experiments": [
+        "exp-20260708-024",
+        "exp-20260708-027",
+        "exp-20260711-025"
+      ]
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+        "categories": [
+          "new_data_source"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New data source: broker-authoritative Moomoo execution history with 87 trusted closed lifecycles materialized by exp-20260712-001. Prior exit studies used modeled backtest trades or shadow advisory rows, not actual broker fills and quantities.",
+      "categories": [
+        "new_data_source"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "confidence_reason": "This is the first broker-authoritative closed-lifecycle surface and it supplies 87 quantity-anchored real exits across three calendar cohorts, so it can reveal whether production exits preserve capital. The account mixes discretionary and strategy trades and prior shadow-advisory severity was unstable, making a robust positive result uncertain.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "warehouse_coverage_incomplete",
+      "discretionary_trade_mix_not_strategy_attributable",
+      "actual_exits_truncate_winners",
+      "calendar_cohort_instability",
+      "single_ticker_concentration"
+    ],
+    "recorded_at": "2026-07-12T02:10:26+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.35,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "warehouse_coverage_incomplete",
+        "discretionary_trade_mix_not_strategy_attributable",
+        "actual_exits_truncate_winners",
+        "calendar_cohort_instability",
+        "single_ticker_concentration"
+      ],
+      "realized_failure_mode": "duplicate_reservation_no_new_evidence",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "No experiment ran; duplicate accounting only."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-003.json",
+  "single_causal_variable": "broker_exit_fill_h5_avoidance_value_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260712-003.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "h5_cash_spy_qqq_lifecycle_aggregate_v1"
+}

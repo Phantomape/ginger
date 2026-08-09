@@ -1,0 +1,1061 @@
+{
+  "schema": "cash_feasible_policy_stack_ablation_v1",
+  "experiment_id": "exp-20260716-010",
+  "generated_at": "2026-07-16T17:00:27.304944+00:00",
+  "started_at": "2026-07-16T16:51:38.317630+00:00",
+  "anchor_summary": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "anchor_aggregate": {
+    "ev": 6.2057,
+    "pnl": 130992.36,
+    "trades": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "predeclared_rules": {
+    "removal_gain_min": 0.1,
+    "deadweight_band": 0.02,
+    "drawdown_tolerance_pp": 1.0,
+    "windows_improved_min": 2,
+    "note": "removal_candidate_nominated requires a dedicated follow-up confirmation ticket; 11 simultaneous arms are a multiple-comparison surface and no removal is accepted inside this ID."
+  },
+  "gate1": {
+    "late_strong": {
+      "trade_rows_sha256_match": true,
+      "daily_return_series_sha256_match": true,
+      "expected_value_score_match": true,
+      "total_pnl_match": true,
+      "trade_count_match": true,
+      "all_match": true
+    },
+    "mid_weak": {
+      "trade_rows_sha256_match": true,
+      "daily_return_series_sha256_match": true,
+      "expected_value_score_match": true,
+      "total_pnl_match": true,
+      "trade_count_match": true,
+      "all_match": true
+    },
+    "old_thin": {
+      "trade_rows_sha256_match": true,
+      "daily_return_series_sha256_match": true,
+      "expected_value_score_match": true,
+      "total_pnl_match": true,
+      "trade_count_match": true,
+      "all_match": true
+    },
+    "all_windows_match": true
+  },
+  "gate2": {
+    "late_strong": {
+      "trade_count": 13,
+      "entry_date_missing": [],
+      "stop_price_missing": [],
+      "target_mult_present": true,
+      "passed": true
+    },
+    "mid_weak": {
+      "trade_count": 13,
+      "entry_date_missing": [],
+      "stop_price_missing": [],
+      "target_mult_present": true,
+      "passed": true
+    },
+    "old_thin": {
+      "trade_count": 23,
+      "entry_date_missing": [],
+      "stop_price_missing": [],
+      "target_mult_present": true,
+      "passed": true
+    }
+  },
+  "gate3_note": "no filters added; survival identical to anchor by construction of the baseline pass",
+  "arms": {
+    "riskon_leader_boosts_off": {
+      "accepted_by": "exp-20260501-024 lineage (risk-on regime boosts + SPY-relative leader 2.0x/0.50 cap)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "RISK_ON_UNMODIFIED_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT",
+          0.4
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 3.8591,
+          "total_pnl": 61445.77,
+          "sharpe_daily": 6.28,
+          "max_drawdown_pct": 0.0317,
+          "win_rate": 0.7895,
+          "signals_generated": 54,
+          "signals_survived": 43,
+          "survival_rate": 0.7963,
+          "trade_count": 19,
+          "negative_cash_event_count": 0,
+          "min_cash": 25.5,
+          "ev_delta": -0.24759999999999982,
+          "pnl_delta": -8629.409999999996,
+          "trade_count_delta": 6,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.7135,
+          "total_pnl": 48541.06,
+          "sharpe_daily": 3.53,
+          "max_drawdown_pct": 0.0661,
+          "win_rate": 0.4444,
+          "signals_generated": 69,
+          "signals_survived": 55,
+          "survival_rate": 0.7971,
+          "trade_count": 18,
+          "negative_cash_event_count": 0,
+          "min_cash": 14.39,
+          "ev_delta": -0.2772999999999999,
+          "pnl_delta": -3435.350000000006,
+          "trade_count_delta": 5,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.2072,
+          "total_pnl": 13025.72,
+          "sharpe_daily": 1.59,
+          "max_drawdown_pct": 0.0656,
+          "win_rate": 0.3182,
+          "signals_generated": 66,
+          "signals_survived": 61,
+          "survival_rate": 0.9242,
+          "trade_count": 22,
+          "negative_cash_event_count": 0,
+          "min_cash": 6.69,
+          "ev_delta": 0.09899999999999999,
+          "pnl_delta": 4084.949999999999,
+          "trade_count_delta": -1,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 5.779800000000001,
+      "aggregate_pnl": 123012.54999999999,
+      "aggregate_trades": 59,
+      "worst_max_drawdown_pct": 0.0661,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 58,
+      "aggregate_ev_delta": -0.4258999999999995,
+      "aggregate_ev_gain_pct": -0.06863045264837157,
+      "aggregate_pnl_delta": -7979.810000000012,
+      "verdict": "pays_its_way"
+    },
+    "clean_spy_leader_family_off": {
+      "accepted_by": "exp-20260513-036 lineage (clean SPY leader signal-day 1.10x + 0.525/0.60/0.70 caps)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT",
+          0.4
+        ],
+        [
+          "portfolio_engine",
+          "CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT",
+          0.4
+        ],
+        [
+          "portfolio_engine",
+          "CLEAN_SPY_CAP_ONLY_RS20_LEADER_MAX_POSITION_PCT",
+          0.4
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.1568,
+          "total_pnl": 69279.8,
+          "sharpe_daily": 6.0,
+          "max_drawdown_pct": 0.038,
+          "win_rate": 0.7778,
+          "signals_generated": 54,
+          "signals_survived": 43,
+          "survival_rate": 0.7963,
+          "trade_count": 18,
+          "negative_cash_event_count": 0,
+          "min_cash": 33.69,
+          "ev_delta": 0.05009999999999959,
+          "pnl_delta": -795.3799999999901,
+          "trade_count_delta": 5,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.9532,
+          "total_pnl": 51399.46,
+          "sharpe_daily": 3.8,
+          "max_drawdown_pct": 0.0661,
+          "win_rate": 0.4667,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 15,
+          "negative_cash_event_count": 0,
+          "min_cash": 3.1,
+          "ev_delta": -0.037599999999999856,
+          "pnl_delta": -576.9500000000044,
+          "trade_count_delta": 2,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1335,
+          "total_pnl": 9960.57,
+          "sharpe_daily": 1.34,
+          "max_drawdown_pct": 0.0844,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 4.11,
+          "ev_delta": 0.025300000000000003,
+          "pnl_delta": 1019.7999999999993,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.243499999999999,
+      "aggregate_pnl": 130639.83000000002,
+      "aggregate_trades": 56,
+      "worst_max_drawdown_pct": 0.0844,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 96,
+      "aggregate_ev_delta": 0.037799999999998946,
+      "aggregate_ev_gain_pct": 0.006091174243034459,
+      "aggregate_pnl_delta": -352.5299999999843,
+      "verdict": "simplification_candidate"
+    },
+    "rs_topups_off": {
+      "accepted_by": "rs20 entry-state 1.10x + rs60 top-quintile 1.15x lineages",
+      "patches": [
+        [
+          "portfolio_engine",
+          "RS20_ENTRY_STATE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "RS60_TOP_QUINTILE_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 3.7992,
+          "total_pnl": 65389.53,
+          "sharpe_daily": 5.81,
+          "max_drawdown_pct": 0.0356,
+          "win_rate": 0.8667,
+          "signals_generated": 54,
+          "signals_survived": 46,
+          "survival_rate": 0.8519,
+          "trade_count": 15,
+          "negative_cash_event_count": 0,
+          "min_cash": 15.69,
+          "ev_delta": -0.3075000000000001,
+          "pnl_delta": -4685.649999999994,
+          "trade_count_delta": 2,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.8592,
+          "total_pnl": 47550.06,
+          "sharpe_daily": 3.91,
+          "max_drawdown_pct": 0.0562,
+          "win_rate": 0.5385,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 7.98,
+          "ev_delta": -0.13159999999999994,
+          "pnl_delta": -4426.350000000006,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1372,
+          "total_pnl": 9935.34,
+          "sharpe_daily": 1.38,
+          "max_drawdown_pct": 0.0771,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 20.9,
+          "ev_delta": 0.028999999999999984,
+          "pnl_delta": 994.5699999999997,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 5.7956,
+      "aggregate_pnl": 122874.93,
+      "aggregate_trades": 51,
+      "worst_max_drawdown_pct": 0.0771,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 96,
+      "aggregate_ev_delta": -0.4100999999999999,
+      "aggregate_ev_gain_pct": -0.06608440627165346,
+      "aggregate_pnl_delta": -8117.430000000008,
+      "verdict": "pays_its_way"
+    },
+    "signal_day_green_off": {
+      "accepted_by": "exp-20260513-007 (signal-day ticker green candle 1.05x)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.0494,
+          "total_pnl": 69219.3,
+          "sharpe_daily": 5.85,
+          "max_drawdown_pct": 0.0384,
+          "win_rate": 0.9231,
+          "signals_generated": 54,
+          "signals_survived": 46,
+          "survival_rate": 0.8519,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 19.57,
+          "ev_delta": -0.057299999999999685,
+          "pnl_delta": -855.8799999999901,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 2.0123,
+          "total_pnl": 51734.93,
+          "sharpe_daily": 3.89,
+          "max_drawdown_pct": 0.066,
+          "win_rate": 0.5,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 12,
+          "negative_cash_event_count": 0,
+          "min_cash": 1.64,
+          "ev_delta": 0.021500000000000297,
+          "pnl_delta": -241.4800000000032,
+          "trade_count_delta": -1,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1126,
+          "total_pnl": 9082.95,
+          "sharpe_daily": 1.24,
+          "max_drawdown_pct": 0.0863,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 5.12,
+          "ev_delta": 0.004400000000000001,
+          "pnl_delta": 142.1800000000003,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.1743,
+      "aggregate_pnl": 130037.18000000001,
+      "aggregate_trades": 48,
+      "worst_max_drawdown_pct": 0.0863,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 47,
+      "aggregate_ev_delta": -0.03140000000000054,
+      "aggregate_ev_gain_pct": -0.005059864318288112,
+      "aggregate_pnl_delta": -955.179999999993,
+      "verdict": "simplification_candidate"
+    },
+    "mid_sector_dispersion_off": {
+      "accepted_by": "exp-20260506-032 (trend mid-sector-dispersion 1.25x)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 3.9811,
+          "total_pnl": 68174.8,
+          "sharpe_daily": 5.84,
+          "max_drawdown_pct": 0.0365,
+          "win_rate": 0.9231,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 12.57,
+          "ev_delta": -0.12559999999999993,
+          "pnl_delta": -1900.37999999999,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.787,
+          "total_pnl": 47909.46,
+          "sharpe_daily": 3.73,
+          "max_drawdown_pct": 0.0563,
+          "win_rate": 0.5385,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 7.61,
+          "ev_delta": -0.20379999999999998,
+          "pnl_delta": -4066.9500000000044,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1161,
+          "total_pnl": 9287.07,
+          "sharpe_daily": 1.25,
+          "max_drawdown_pct": 0.0876,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 11.34,
+          "ev_delta": 0.00789999999999999,
+          "pnl_delta": 346.2999999999993,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 5.884200000000001,
+      "aggregate_pnl": 125371.33000000002,
+      "aggregate_trades": 49,
+      "worst_max_drawdown_pct": 0.0876,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 64,
+      "aggregate_ev_delta": -0.32149999999999945,
+      "aggregate_ev_gain_pct": -0.05180720950094259,
+      "aggregate_pnl_delta": -5621.029999999984,
+      "verdict": "pays_its_way"
+    },
+    "financials_boosts_off": {
+      "accepted_by": "exp-20260501-006 lineage (financials 1.5x / sector-leader 2.5x + 0.50/0.55 caps)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "TREND_FINANCIALS_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT",
+          0.4
+        ],
+        [
+          "portfolio_engine",
+          "TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT",
+          0.4
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.1067,
+          "total_pnl": 70075.18,
+          "sharpe_daily": 5.86,
+          "max_drawdown_pct": 0.0394,
+          "win_rate": 0.8462,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 11.95,
+          "ev_delta": 0.0,
+          "pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "trade_rows_changed": false
+        },
+        "mid_weak": {
+          "expected_value_score": 1.8845,
+          "total_pnl": 47346.88,
+          "sharpe_daily": 3.98,
+          "max_drawdown_pct": 0.0567,
+          "win_rate": 0.5,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 14,
+          "negative_cash_event_count": 0,
+          "min_cash": 16.63,
+          "ev_delta": -0.10629999999999984,
+          "pnl_delta": -4629.530000000006,
+          "trade_count_delta": 1,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.0527,
+          "total_pnl": 6128.43,
+          "sharpe_daily": 0.86,
+          "max_drawdown_pct": 0.0844,
+          "win_rate": 0.2609,
+          "signals_generated": 75,
+          "signals_survived": 70,
+          "survival_rate": 0.9333,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 5.12,
+          "ev_delta": -0.05550000000000001,
+          "pnl_delta": -2812.34,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.0439,
+      "aggregate_pnl": 123550.48999999999,
+      "aggregate_trades": 50,
+      "worst_max_drawdown_pct": 0.0844,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 20,
+      "aggregate_ev_delta": -0.1618000000000004,
+      "aggregate_ev_gain_pct": -0.026072804035000143,
+      "aggregate_pnl_delta": -7441.87000000001,
+      "verdict": "pays_its_way"
+    },
+    "commodities_gold_boosts_off": {
+      "accepted_by": "commodities/gold near-high boost + cap lineages",
+      "patches": [
+        [
+          "portfolio_engine",
+          "TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT",
+          0.4
+        ],
+        [
+          "portfolio_engine",
+          "TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT",
+          0.4
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_COMMODITIES_MAX_POSITION_PCT",
+          0.4
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.2761,
+          "total_pnl": 74106.34,
+          "sharpe_daily": 5.77,
+          "max_drawdown_pct": 0.0436,
+          "win_rate": 0.8571,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 14,
+          "negative_cash_event_count": 0,
+          "min_cash": 2.72,
+          "ev_delta": 0.16939999999999955,
+          "pnl_delta": 4031.1600000000035,
+          "trade_count_delta": 1,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.9908,
+          "total_pnl": 51976.41,
+          "sharpe_daily": 3.83,
+          "max_drawdown_pct": 0.0661,
+          "win_rate": 0.5385,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 0.44,
+          "ev_delta": 0.0,
+          "pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1082,
+          "total_pnl": 8940.77,
+          "sharpe_daily": 1.21,
+          "max_drawdown_pct": 0.0889,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 5.12,
+          "ev_delta": 0.0,
+          "pnl_delta": 0.0,
+          "trade_count_delta": 0,
+          "trade_rows_changed": false
+        }
+      },
+      "aggregate_ev": 6.3751,
+      "aggregate_pnl": 135023.52,
+      "aggregate_trades": 50,
+      "worst_max_drawdown_pct": 0.0889,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 36,
+      "aggregate_ev_delta": 0.16939999999999955,
+      "aggregate_ev_gain_pct": 0.0272974845706366,
+      "aggregate_pnl_delta": 4031.159999999989,
+      "verdict": "mixed_inconclusive"
+    },
+    "quality_slot_topups_off": {
+      "accepted_by": "exp-20260517-004/-009 + quality top-up lineages (1.075/1.025/1.075/1.05)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "GREEN_DECEL_QUALITY_NONCONSUMER_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "production_parity",
+          "SCARCE_SLOT_RANK1_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "production_parity",
+          "AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.0005,
+          "total_pnl": 68616.45,
+          "sharpe_daily": 5.83,
+          "max_drawdown_pct": 0.0378,
+          "win_rate": 0.9231,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 8.11,
+          "ev_delta": -0.1062000000000003,
+          "pnl_delta": -1458.729999999996,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.9962,
+          "total_pnl": 49775.9,
+          "sharpe_daily": 4.01,
+          "max_drawdown_pct": 0.063,
+          "win_rate": 0.5385,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 3.25,
+          "ev_delta": 0.005400000000000071,
+          "pnl_delta": -2200.510000000002,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1102,
+          "total_pnl": 9025.12,
+          "sharpe_daily": 1.22,
+          "max_drawdown_pct": 0.0884,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 5.12,
+          "ev_delta": 0.0020000000000000018,
+          "pnl_delta": 84.35000000000036,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.1068999999999996,
+      "aggregate_pnl": 127417.47,
+      "aggregate_trades": 49,
+      "worst_max_drawdown_pct": 0.0884,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 34,
+      "aggregate_ev_delta": -0.09880000000000067,
+      "aggregate_ev_gain_pct": -0.015920846963275805,
+      "aggregate_pnl_delta": -3574.8899999999994,
+      "verdict": "simplification_candidate"
+    },
+    "ma200_extension_topups_off": {
+      "accepted_by": "price-vs-200MA extension top-ups (1.025x / trend 1.125x)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.0769,
+          "total_pnl": 69690.56,
+          "sharpe_daily": 5.85,
+          "max_drawdown_pct": 0.039,
+          "win_rate": 0.8571,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 14,
+          "negative_cash_event_count": 0,
+          "min_cash": 11.95,
+          "ev_delta": -0.029799999999999827,
+          "pnl_delta": -384.61999999999534,
+          "trade_count_delta": 1,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.8943,
+          "total_pnl": 49848.56,
+          "sharpe_daily": 3.8,
+          "max_drawdown_pct": 0.0605,
+          "win_rate": 0.5385,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 3.1,
+          "ev_delta": -0.09649999999999981,
+          "pnl_delta": -2127.850000000006,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1093,
+          "total_pnl": 9029.68,
+          "sharpe_daily": 1.21,
+          "max_drawdown_pct": 0.0901,
+          "win_rate": 0.3182,
+          "signals_generated": 66,
+          "signals_survived": 61,
+          "survival_rate": 0.9242,
+          "trade_count": 22,
+          "negative_cash_event_count": 0,
+          "min_cash": 0.45,
+          "ev_delta": 0.0010999999999999899,
+          "pnl_delta": 88.90999999999985,
+          "trade_count_delta": -1,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.080500000000001,
+      "aggregate_pnl": 128568.79999999999,
+      "aggregate_trades": 49,
+      "worst_max_drawdown_pct": 0.0901,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 37,
+      "aggregate_ev_delta": -0.12519999999999953,
+      "aggregate_ev_gain_pct": -0.020175000402855362,
+      "aggregate_pnl_delta": -2423.560000000012,
+      "verdict": "pays_its_way"
+    },
+    "defensive_haircuts_off": {
+      "accepted_by": "accepted defensive haircut stack (TQS, sector/strategy DTE/gap zero-or-quarter, TSM/ISRG 0.25x)",
+      "patches": [
+        [
+          "portfolio_engine",
+          "LOW_TQS_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_INDUSTRIALS_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_TECH_GAP_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_TECH_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_INDUSTRIALS_GAP_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_COMMS_GAP_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_TECH_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_HEALTHCARE_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "TSM_CORE_RISK_MULTIPLIER",
+          1.0
+        ],
+        [
+          "portfolio_engine",
+          "ISRG_CORE_RISK_MULTIPLIER",
+          1.0
+        ]
+      ],
+      "config_overrides": {},
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 2.4712,
+          "total_pnl": 53033.28,
+          "sharpe_daily": 4.66,
+          "max_drawdown_pct": 0.0546,
+          "win_rate": 0.5909,
+          "signals_generated": 54,
+          "signals_survived": 44,
+          "survival_rate": 0.8148,
+          "trade_count": 22,
+          "negative_cash_event_count": 0,
+          "min_cash": 6.16,
+          "ev_delta": -1.6355,
+          "pnl_delta": -17041.899999999994,
+          "trade_count_delta": 9,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0995,
+          "total_pnl": 10810.46,
+          "sharpe_daily": 0.92,
+          "max_drawdown_pct": 0.1022,
+          "win_rate": 0.381,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "trade_count": 21,
+          "negative_cash_event_count": 0,
+          "min_cash": 2.76,
+          "ev_delta": -1.8913,
+          "pnl_delta": -41165.950000000004,
+          "trade_count_delta": 8,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": -0.2835,
+          "total_pnl": -17500.12,
+          "sharpe_daily": -1.62,
+          "max_drawdown_pct": 0.1801,
+          "win_rate": 0.2174,
+          "signals_generated": 75,
+          "signals_survived": 70,
+          "survival_rate": 0.9333,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 11.34,
+          "ev_delta": -0.3917,
+          "pnl_delta": -26440.89,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 2.2872,
+      "aggregate_pnl": 46343.619999999995,
+      "aggregate_trades": 66,
+      "worst_max_drawdown_pct": 0.1801,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 101,
+      "aggregate_ev_delta": -3.9185000000000003,
+      "aggregate_ev_gain_pct": -0.6314356156436824,
+      "aggregate_pnl_delta": -84648.74,
+      "verdict": "pays_its_way"
+    },
+    "addon_stack_off": {
+      "accepted_by": "exp-20260428-005 lineage (add-on fraction 0.50 + follow-through caps)",
+      "patches": [],
+      "config_overrides": {
+        "ADDON_ENABLED": false
+      },
+      "windows": {
+        "late_strong": {
+          "expected_value_score": 4.1038,
+          "total_pnl": 70152.9,
+          "sharpe_daily": 5.85,
+          "max_drawdown_pct": 0.0394,
+          "win_rate": 0.8462,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "trade_count": 13,
+          "negative_cash_event_count": 0,
+          "min_cash": 11.95,
+          "ev_delta": -0.0029000000000003467,
+          "pnl_delta": 77.72000000000116,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        },
+        "mid_weak": {
+          "expected_value_score": 1.897,
+          "total_pnl": 44528.34,
+          "sharpe_daily": 4.26,
+          "max_drawdown_pct": 0.0495,
+          "win_rate": 0.5625,
+          "signals_generated": 67,
+          "signals_survived": 55,
+          "survival_rate": 0.8209,
+          "trade_count": 16,
+          "negative_cash_event_count": 0,
+          "min_cash": 20.04,
+          "ev_delta": -0.09379999999999988,
+          "pnl_delta": -7448.070000000007,
+          "trade_count_delta": 3,
+          "trade_rows_changed": true
+        },
+        "old_thin": {
+          "expected_value_score": 0.1125,
+          "total_pnl": 9152.94,
+          "sharpe_daily": 1.23,
+          "max_drawdown_pct": 0.0891,
+          "win_rate": 0.3043,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "trade_count": 23,
+          "negative_cash_event_count": 0,
+          "min_cash": 5.12,
+          "ev_delta": 0.004299999999999998,
+          "pnl_delta": 212.17000000000007,
+          "trade_count_delta": 0,
+          "trade_rows_changed": true
+        }
+      },
+      "aggregate_ev": 6.1133,
+      "aggregate_pnl": 123834.18,
+      "aggregate_trades": 52,
+      "worst_max_drawdown_pct": 0.0891,
+      "negative_cash_events_total": 0,
+      "baseline_family_signal_touch_count": 4,
+      "aggregate_ev_delta": -0.09240000000000048,
+      "aggregate_ev_gain_pct": -0.01488953703852917,
+      "aggregate_pnl_delta": -7158.180000000008,
+      "verdict": "simplification_candidate"
+    }
+  },
+  "removal_candidates_nominated": [],
+  "simplification_candidates": [
+    "clean_spy_leader_family_off",
+    "signal_day_green_off",
+    "quality_slot_topups_off",
+    "addon_stack_off"
+  ],
+  "production_impact": "none; no default, constant, order path, or ledger changed; all patches were reverted in-process"
+}

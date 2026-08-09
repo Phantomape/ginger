@@ -11,16 +11,17 @@ rules.
 from __future__ import annotations
 
 import json
-import os
+import math
 from datetime import datetime
 from typing import Any
 
-from data_paths import daily_artifact_glob, data_artifact_path
-from open_position_schema import account_positions
+from data_paths import atomic_write_json, data_artifact_path
+from open_position_schema import ACCOUNT_POSITION_GROUPS, account_positions
 
 PENDING_ACTIONS_FILENAME = "pending_actions.json"
 ACTIONABLE = {"ADD", "REDUCE", "EXIT"}
 POSITION_ACTIONABLE = {"REDUCE", "EXIT"}
+ACTIVE_IDENTITY_STATUSES = {"bound_at_creation", "matched", "legacy_migrated"}
 
 
 def _today_yyyymmdd() -> str:
@@ -35,17 +36,123 @@ def _load_json(path: str) -> Any:
         return None
 
 
-def _position_shares(open_positions: dict | None) -> dict[str, float]:
-    shares: dict[str, float] = {}
+def _normalize_entry_date(value: Any) -> str | None:
+    text = str(value or "").strip()[:10]
+    if len(text) == 10 and text[4] == "-" and text[7] == "-":
+        compact = text.replace("-", "")
+        return text if compact.isdigit() else None
+    if len(text) == 8 and text.isdigit():
+        return f"{text[:4]}-{text[4:6]}-{text[6:]}"
+    return None
+
+
+def _compact_date(value: Any) -> str | None:
+    date_text = _normalize_entry_date(value)
+    return date_text.replace("-", "") if date_text else None
+
+
+def _position_lifecycle_id(
+    account: Any,
+    ticker: Any,
+    direction: Any,
+    entry_date: Any,
+) -> str | None:
+    account_text = str(account or "").strip().lower()
+    ticker_text = str(ticker or "").strip().upper()
+    direction_text = str(direction or "").strip().lower()
+    entry_date_text = _normalize_entry_date(entry_date)
+    if not all((account_text, ticker_text, direction_text, entry_date_text)):
+        return None
+    return (
+        f"v1:{account_text}:{ticker_text}:{direction_text}:"
+        f"{entry_date_text}"
+    )
+
+
+def _position_snapshot_available(open_positions: dict | None) -> bool:
+    if not isinstance(open_positions, dict) or not open_positions.get("account"):
+        return False
+    present_groups = [
+        open_positions.get(group)
+        for group in ACCOUNT_POSITION_GROUPS
+        if group in open_positions
+    ]
+    if not present_groups or not all(
+        isinstance(rows, list) for rows in present_groups
+    ):
+        return False
+    for rows in present_groups:
+        for row in rows:
+            if not isinstance(row, dict):
+                return False
+            if not str(row.get("ticker") or "").strip():
+                return False
+            if not str(row.get("direction") or "").strip():
+                return False
+            if not _normalize_entry_date(row.get("entry_date")):
+                return False
+            try:
+                shares = float(row.get("shares"))
+            except (TypeError, ValueError):
+                return False
+            if not math.isfinite(shares) or shares < 0:
+                return False
+    return True
+
+
+def _position_states(open_positions: dict | None) -> dict[str, dict]:
+    """Build current-lot identity rows keyed by ticker.
+
+    Moomoo can reuse ``position_id`` after a full exit and re-entry, so the
+    broker id is audit context only.  The lifecycle boundary is the verified
+    current-lot ``entry_date`` reconstructed by ``moomoo_open_positions``.
+    Multiple rows for one ticker are deliberately treated as ambiguous rather
+    than guessed across account-position groups.
+    """
+    payload_account = (
+        str((open_positions or {}).get("account") or "").strip().lower()
+        if isinstance(open_positions, dict)
+        else ""
+    )
+    states: dict[str, dict] = {}
     for pos in account_positions(open_positions):
-        ticker = str(pos.get("ticker", "")).upper().strip()
+        ticker = str(pos.get("ticker") or "").upper().strip()
         if not ticker:
             continue
+        account = str(pos.get("account") or payload_account).strip().lower()
+        direction = str(pos.get("direction") or "").strip().lower()
+        entry_date = _normalize_entry_date(pos.get("entry_date"))
         try:
-            shares[ticker] = float(pos.get("shares") or 0)
+            shares = float(pos.get("shares") or 0)
         except (TypeError, ValueError):
-            shares[ticker] = 0.0
-    return shares
+            shares = 0.0
+        broker_position_id = pos.get("position_id")
+        lifecycle_id = _position_lifecycle_id(
+            account,
+            ticker,
+            direction,
+            entry_date,
+        )
+        state = {
+            "account": account or None,
+            "ticker": ticker,
+            "direction": direction or None,
+            "entry_date": entry_date,
+            "shares": shares,
+            "broker_position_id": (
+                str(broker_position_id)
+                if broker_position_id not in (None, "")
+                else None
+            ),
+            "position_lifecycle_id": lifecycle_id,
+            "ambiguous": False,
+        }
+        if ticker in states:
+            states[ticker]["ambiguous"] = True
+            states[ticker]["position_lifecycle_id"] = None
+            continue
+        states[ticker] = state
+    return states
 
 
 def _normalize_date(date_str: str | None) -> str:
@@ -55,16 +162,6 @@ def _normalize_date(date_str: str | None) -> str:
     if len(compact) == 8 and compact.isdigit():
         return compact
     return _today_yyyymmdd()
-
-
-def _advice_path_date(path: str) -> str | None:
-    name = os.path.basename(path)
-    for prefix in ("investment_advice_", "llm_prompt_resp_"):
-        if name.startswith(prefix) and name.endswith(".json"):
-            date_str = name[len(prefix):-len(".json")]
-            if len(date_str) == 8 and date_str.isdigit():
-                return date_str
-    return None
 
 
 def _unwrap_advice(payload: Any) -> dict | None:
@@ -92,14 +189,13 @@ def save_pending_actions(actions: list[dict], data_dir: str = "data") -> str:
         "updated_at": datetime.now().isoformat(),
         "pending_actions": actions,
     }
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+    atomic_write_json(payload, path, indent=2, ensure_ascii=False)
     return str(path)
 
 
 def _make_pending_record(
     action: dict,
-    current_shares: dict[str, float],
+    current_positions: dict[str, dict],
     date_str: str,
     *,
     source_file: str | None = None,
@@ -108,7 +204,24 @@ def _make_pending_record(
     action_name = str(action.get("action", "")).upper().strip()
     if not ticker or action_name not in ACTIONABLE:
         return None
-    if ticker not in current_shares:
+    if (
+        str(action.get("decision_mode") or "").strip().lower()
+        == "pending_unexecuted_action"
+        or action.get("pending_action_id")
+    ):
+        # An execution-memory reminder is not fresh advice.  Re-registering it
+        # would launder an old action into today's position lifecycle.
+        return None
+    position = current_positions.get(ticker)
+    if not position or position.get("ambiguous"):
+        return None
+    lifecycle_id = position.get("position_lifecycle_id")
+    entry_date = position.get("entry_date")
+    if not lifecycle_id or not entry_date:
+        return None
+    if (_compact_date(entry_date) or "") > date_str:
+        # Archive bootstrap must never bind historical advice to a lot that
+        # opened later merely because the ticker is held today.
         return None
 
     raw_shares_to_sell = action.get("shares_to_sell")
@@ -132,7 +245,7 @@ def _make_pending_record(
         if shares_to_sell <= 0:
             return None
 
-    original_shares = current_shares[ticker]
+    original_shares = float(position.get("shares") or 0)
     if action_name == "EXIT":
         expected_remaining = 0.0
     elif action_name == "ADD":
@@ -145,7 +258,7 @@ def _make_pending_record(
         or ("ADD_ON" if action_name == "ADD" else "UNKNOWN")
     )
     return {
-        "id": f"{date_str}:{ticker}:{action_name}:{trigger}",
+        "id": f"{date_str}:{ticker}:{action_name}:{trigger}:{lifecycle_id}",
         "status": "open",
         "first_advice_date": date_str,
         "last_seen_date": date_str,
@@ -160,6 +273,12 @@ def _make_pending_record(
         "decision_mode": action.get("decision_mode") or "forced_rule",
         "fill_timing": action.get("fill_timing"),
         "source_file": source_file,
+        "account": position.get("account"),
+        "direction": position.get("direction"),
+        "position_entry_date": entry_date,
+        "position_lifecycle_id": lifecycle_id,
+        "broker_position_id": position.get("broker_position_id"),
+        "position_identity_status": "bound_at_creation",
     }
 
 
@@ -177,23 +296,161 @@ def _is_executed(record: dict, current_shares: dict[str, float]) -> bool:
     return now <= expected_remaining
 
 
+def _close_record(
+    record: dict,
+    *,
+    status: str,
+    close_reason: str,
+    date_str: str,
+) -> dict:
+    record["status"] = status
+    record["closed_date"] = date_str
+    record["close_reason"] = close_reason
+    return record
+
+
+def _active_open_action(record: dict) -> bool:
+    return (
+        record.get("status", "open") == "open"
+        and bool(record.get("position_lifecycle_id"))
+        and record.get("position_identity_status") in ACTIVE_IDENTITY_STATUSES
+    )
+
+
 def reconcile_pending_actions(
     actions: list[dict],
     open_positions: dict | None,
     as_of_date: str | None = None,
 ) -> list[dict]:
-    """Mark open actions executed when open_positions shows shares were reduced."""
-    current_shares = _position_shares(open_positions)
+    """Reconcile actions against the exact current position lifecycle."""
+    current_positions = _position_states(open_positions)
+    snapshot_available = _position_snapshot_available(open_positions)
     date_str = _normalize_date(as_of_date)
     reconciled: list[dict] = []
     for record in actions:
         if not isinstance(record, dict):
             continue
         updated = dict(record)
-        if updated.get("status", "open") == "open" and _is_executed(updated, current_shares):
-            updated["status"] = "executed"
-            updated["closed_date"] = date_str
-            updated["close_reason"] = "open_positions_shares_reconciled"
+        if updated.get("status", "open") != "open":
+            reconciled.append(updated)
+            continue
+        first_advice_date = _compact_date(updated.get("first_advice_date"))
+        if first_advice_date and first_advice_date > date_str:
+            # Historical/as-of reads must not close or migrate an action before
+            # the action existed.  Keep the stored row byte-semantically
+            # unchanged; the query layer below also hides future rows.
+            reconciled.append(updated)
+            continue
+        if not snapshot_available:
+            # Never reconcile from a partially valid subset.  One malformed
+            # sibling row means the account snapshot may be truncated, so even
+            # an otherwise valid target row cannot safely close an action.
+            updated["position_identity_status"] = "snapshot_unavailable"
+            updated["identity_blocked_reason"] = (
+                "open_position_snapshot_unavailable_or_malformed"
+            )
+            reconciled.append(updated)
+            continue
+
+        ticker = str(updated.get("ticker") or "").upper().strip()
+        current = current_positions.get(ticker)
+        if current is None:
+            if str(updated.get("action") or "").upper() == "ADD":
+                _close_record(
+                    updated,
+                    status="superseded",
+                    close_reason="position_lifecycle_missing_before_add",
+                    date_str=date_str,
+                )
+            else:
+                _close_record(
+                    updated,
+                    status="executed",
+                    close_reason="position_absent_from_valid_snapshot",
+                    date_str=date_str,
+                )
+            reconciled.append(updated)
+            continue
+
+        current_lifecycle_id = current.get("position_lifecycle_id")
+        if current.get("ambiguous") or not current_lifecycle_id:
+            updated["position_identity_status"] = "quarantined_identity_unknown"
+            updated["identity_blocked_reason"] = (
+                "multiple_rows_for_ticker"
+                if current.get("ambiguous")
+                else "current_position_identity_incomplete"
+            )
+            reconciled.append(updated)
+            continue
+
+        bound_lifecycle_id = str(
+            updated.get("position_lifecycle_id") or ""
+        ).strip()
+        if bound_lifecycle_id:
+            if bound_lifecycle_id != current_lifecycle_id:
+                updated["position_identity_status"] = "lifecycle_mismatch"
+                updated["current_position_lifecycle_id"] = current_lifecycle_id
+                updated["current_position_entry_date"] = current.get("entry_date")
+                _close_record(
+                    updated,
+                    status="superseded",
+                    close_reason="position_lifecycle_changed",
+                    date_str=date_str,
+                )
+                reconciled.append(updated)
+                continue
+            updated["position_identity_status"] = "matched"
+        else:
+            advice_date = _compact_date(updated.get("first_advice_date"))
+            current_entry_date = _compact_date(current.get("entry_date"))
+            if not advice_date or not current_entry_date:
+                updated["position_identity_status"] = (
+                    "quarantined_identity_unknown"
+                )
+                updated["identity_blocked_reason"] = (
+                    "legacy_action_missing_identity_evidence"
+                )
+                reconciled.append(updated)
+                continue
+            if current_entry_date > advice_date:
+                updated["position_identity_status"] = "lifecycle_mismatch"
+                updated["current_position_lifecycle_id"] = current_lifecycle_id
+                updated["current_position_entry_date"] = current.get("entry_date")
+                _close_record(
+                    updated,
+                    status="superseded",
+                    close_reason="legacy_action_predates_current_lifecycle",
+                    date_str=date_str,
+                )
+                reconciled.append(updated)
+                continue
+            if current_entry_date == advice_date:
+                updated["position_identity_status"] = (
+                    "quarantined_same_day_identity_ambiguous"
+                )
+                updated["identity_blocked_reason"] = (
+                    "legacy_action_and_current_entry_share_day_granularity"
+                )
+                reconciled.append(updated)
+                continue
+            updated.update({
+                "account": current.get("account"),
+                "direction": current.get("direction"),
+                "position_entry_date": current.get("entry_date"),
+                "position_lifecycle_id": current_lifecycle_id,
+                "broker_position_id": current.get("broker_position_id"),
+                "position_identity_status": "legacy_migrated",
+                "identity_migrated_at": date_str,
+            })
+
+        current_shares = {ticker: float(current.get("shares") or 0)}
+        if _is_executed(updated, current_shares):
+            _close_record(
+                updated,
+                status="executed",
+                close_reason="open_positions_shares_reconciled",
+                date_str=date_str,
+            )
         reconciled.append(updated)
     return reconciled
 
@@ -208,7 +465,7 @@ def register_pending_actions_from_advice(
 ) -> list[dict]:
     """Add new REDUCE/EXIT advice entries and reconcile existing ones."""
     date_str = _normalize_date(as_of_date)
-    current_shares = _position_shares(open_positions)
+    current_positions = _position_states(open_positions)
     actions = reconcile_pending_actions(existing_actions or [], open_positions, date_str)
     open_ids = {a.get("id") for a in actions if a.get("status", "open") == "open"}
 
@@ -217,7 +474,12 @@ def register_pending_actions_from_advice(
         for action in parsed.get(section_name, []) or []:
             if not isinstance(action, dict):
                 continue
-            record = _make_pending_record(action, current_shares, date_str, source_file=source_file)
+            record = _make_pending_record(
+                action,
+                current_positions,
+                date_str,
+                source_file=source_file,
+            )
             if record and record["id"] not in open_ids:
                 actions.append(record)
                 open_ids.add(record["id"])
@@ -229,37 +491,15 @@ def bootstrap_pending_actions_from_archives(
     open_positions: dict | None,
     through_date: str | None = None,
 ) -> list[dict]:
-    """Reconstruct pending actions from saved advice files if no ledger exists yet."""
-    through = _normalize_date(through_date)
-    paths = []
-    paths.extend(str(path) for path in daily_artifact_glob("investment_advice", data_dir))
-    paths.extend(str(path) for path in daily_artifact_glob("llm_prompt_resp", data_dir))
-    dated_paths = []
-    for path in paths:
-        date_str = _advice_path_date(path)
-        if date_str and date_str <= through:
-            dated_paths.append((date_str, path))
-    dated_paths.sort()
+    """Return no rows until point-in-time position snapshots are available.
 
-    actions: list[dict] = []
-    seen_sources: set[tuple[str, str]] = set()
-    for date_str, path in dated_paths:
-        payload = _load_json(path)
-        parsed = _unwrap_advice(payload)
-        if not parsed:
-            continue
-        source_key = (date_str, os.path.basename(path).split("_", 1)[0])
-        if source_key in seen_sources:
-            continue
-        seen_sources.add(source_key)
-        actions = register_pending_actions_from_advice(
-            parsed,
-            open_positions,
-            existing_actions=actions,
-            as_of_date=date_str,
-            source_file=os.path.basename(path),
-        )
-    return reconcile_pending_actions(actions, open_positions, through)
+    Historical advice plus today's open positions cannot reconstruct which lot
+    an action belonged to or its then-current share count.  The old bootstrap
+    path could therefore attach months-old exits to a current reopened lot.
+    Keep the API for callers, but fail closed instead of fabricating identity.
+    """
+    del data_dir, open_positions, through_date
+    return []
 
 
 def get_open_pending_actions(
@@ -269,11 +509,23 @@ def get_open_pending_actions(
     as_of_date: str | None = None,
     bootstrap_if_empty: bool = False,
 ) -> list[dict]:
-    actions = load_pending_actions(data_dir)
-    if not actions and bootstrap_if_empty:
+    stored_actions = load_pending_actions(data_dir)
+    actions = stored_actions
+    if not stored_actions and bootstrap_if_empty:
         actions = bootstrap_pending_actions_from_archives(data_dir, open_positions, as_of_date)
     actions = reconcile_pending_actions(actions, open_positions, as_of_date)
-    return [a for a in actions if a.get("status", "open") == "open"]
+    if actions != stored_actions:
+        # Persist terminal lifecycle decisions.  Otherwise an action marked
+        # executed while flat can resurrect when the ticker is bought again.
+        save_pending_actions(actions, data_dir)
+    query_date = _normalize_date(as_of_date)
+    return [
+        action
+        for action in actions
+        if _active_open_action(action)
+        and (_compact_date(action.get("first_advice_date")) or "99999999")
+        <= query_date
+    ]
 
 
 def apply_pending_action_overrides(
@@ -326,6 +578,10 @@ def apply_pending_action_overrides(
         patched["shares_to_sell"] = pending_record.get("shares_to_sell")
         patched["exit_rule_triggered"] = pending_record.get("exit_rule_triggered") or "PENDING_ACTION"
         patched["decision_mode"] = "pending_unexecuted_action"
+        patched["pending_action_id"] = pending_record.get("id")
+        patched["position_lifecycle_id"] = pending_record.get(
+            "position_lifecycle_id"
+        )
         patched["reason"] = (
             f"Previous {pending_record['action']} from "
             f"{pending_record.get('first_advice_date')} was not reflected in "
@@ -355,6 +611,10 @@ def apply_pending_action_overrides(
             "shares_to_buy": pending_record.get("shares_to_buy"),
             "fill_timing": pending_record.get("fill_timing") or "next_session_open",
             "decision_mode": "pending_unexecuted_action",
+            "pending_action_id": pending_record.get("id"),
+            "position_lifecycle_id": pending_record.get(
+                "position_lifecycle_id"
+            ),
             "reason": (
                 f"Previous ADD from {pending_record.get('first_advice_date')} "
                 "was not reflected in open_positions; repeating until shares reconcile. "

@@ -1,0 +1,26 @@
+{
+  "experiment_id": "exp-20260805-004",
+  "role": "before",
+  "captured_at": "2026-08-05T16:38:00Z",
+  "defect": "massive grouped-daily bar warehouse silently frozen while consumers reported ok",
+  "evidence": {
+    "warehouse_bars_max_trade_date": "2026-07-24",
+    "latest_completed_us_equity_session": "2026-08-04",
+    "stale_completed_sessions_undetected": 7,
+    "calendar_days_frozen": 12,
+    "settlement_summary_run_20260804": {
+      "path_snapshot": "data/experiments/exp-20260805-004/before_stale_ok_settlement_summary_20260804.json",
+      "status": "ok",
+      "alert": false,
+      "bars_max_trade_date": "2026-07-24",
+      "settled_restart_decision_count": 0,
+      "decision_count_total": 0
+    },
+    "daily_wiring": "no grouped-daily catch-up call exists in quant/run.py; observer fetches dividends and settlement only reads bars, so nothing advances daily_bars",
+    "fetch_checkpoint_last_updated": "2026-07-28T23:22:03Z",
+    "reopen_lane_blocked": "massive_dividend_restart_forward settled_restart_decisions 0/30; decision resolution requires bars covering entry anchors"
+  },
+  "agents_md_rule": "section 6 forward-face output health: status=ok must not merely mean the process did not crash; required-input staleness must fail closed",
+  "observer_only": true,
+  "trade_enabled": false
+}

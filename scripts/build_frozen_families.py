@@ -1,8 +1,8 @@
 """Generate docs/frozen_families.jsonl from experiment logs (source of truth).
 
-Turns the prose anti-repeat wall in docs/alpha-optimization-playbook.md into a
-machine-readable registry the reservation-time novelty check can query. Pure
-read-only over experiments/logs/*.json plus the meta-research freeze list;
+Builds the reservation-time novelty registry directly from canonical,
+deduplicated experiment history. The human alpha playbook and stale meta-report
+artifacts are not inputs. Pure read-only over experiment logs;
 writes one JSONL row per trial-family. Advisory artifact; changes no strategy
 behavior.
 
@@ -14,15 +14,25 @@ from __future__ import annotations
 
 import io
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = Path(__file__).resolve().parent
+for import_root in (REPO_ROOT, SCRIPTS_DIR):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root))
+
 import experiment_fingerprint as fp
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-LOGS_DIR = REPO_ROOT / "experiments" / "logs"
-META_REPORT = REPO_ROOT / "data" / "meta_research_report_latest.json"
+from quant.experiment_history import (
+    _dedupe_records_by_experiment_id,
+    decision_bucket,
+    load_experiment_logs,
+)
+
 OUT_PATH = REPO_ROOT / "docs" / "frozen_families.jsonl"
 
 
@@ -33,64 +43,74 @@ def _load_json(path: Path) -> Any:
         return None
 
 
-def _meta_freeze_keys() -> set[str]:
-    """Best-effort set of family tokens the meta-research engine flagged frozen."""
-    report = _load_json(META_REPORT)
-    keys: set[str] = set()
-    if not isinstance(report, dict):
-        return keys
-    for fc in report.get("freeze_candidates", []) or []:
-        if isinstance(fc, str):
-            keys.add(fc)
-        elif isinstance(fc, dict):
-            for k in ("family", "trial_family", "mechanism_family", "family_key", "key"):
-                if fc.get(k):
-                    keys.add(str(fc[k]))
-    for rec in report.get("recommendations", []) or []:
-        if isinstance(rec, dict) and "freeze" in str(rec.get("type", "")):
-            if rec.get("family"):
-                keys.add(str(rec["family"]))
-    return keys
-
-
-def _decision_bucket(rec: dict[str, Any]) -> str:
-    if rec.get("accepted") is True or rec.get("accepted_alpha") is True:
-        return "accepted"
-    status = str(rec.get("status") or "").lower()
-    decision = str(rec.get("decision") or "").lower()
-    if status.startswith("accept") or decision.startswith("accept") or "positive_replay_lead" in decision:
-        # positive replay lead is a non-promoted lead, not a rejection
-        return "accepted" if status.startswith("accept") else "lead"
-    if status.startswith("block") or "blocked" in decision:
-        return "blocked"
-    return "rejected"
-
-
 def _reopen_condition(rec: dict[str, Any]) -> str | None:
     refl = rec.get("post_run_reflection")
     if isinstance(refl, dict):
         for k in ("new_evidence_required", "new_evidence_needed"):
             if refl.get(k):
                 return str(refl[k])[:400]
-    for k in ("next_evidence_needed", "new_evidence_required"):
+    for k in ("next_evidence_needed", "new_evidence_required", "next_retry_requires"):
         if rec.get(k):
             return str(rec[k])[:400]
     return None
 
 
-def main() -> int:
-    meta_freeze = _meta_freeze_keys()
+def _realized_failure_mode(rec: dict[str, Any]) -> str | None:
+    """Return the canonical realized failure label when a record declares one.
+
+    Closeout records have used three locations over time.  Reading all of them
+    keeps the guard compatible with both the flat experiment log and the
+    nested ticket/result representation without treating an absent label as a
+    duplicate.
+    """
+
+    candidates: list[Any] = [rec.get("realized_failure_mode")]
+    for mapping in (
+        rec.get("post_run_reflection"),
+        rec.get("calibration"),
+        (rec.get("result") or {}).get("calibration")
+        if isinstance(rec.get("result"), dict)
+        else None,
+    ):
+        if isinstance(mapping, dict):
+            candidates.append(mapping.get("realized_failure_mode"))
+    normalized = [
+        str(value).strip().lower().replace("-", "_").replace(" ", "_")
+        for value in candidates
+        if value is not None and str(value).strip()
+    ]
+    # Duplicate accounting is an ownership fact.  Prefer it if a legacy copy
+    # also carries a stale generic label such as ``none``.
+    if "duplicate_reservation_accounting" in normalized:
+        return "duplicate_reservation_accounting"
+    return normalized[0] if normalized else None
+
+
+def _is_duplicate_reservation_accounting(rec: dict[str, Any]) -> bool:
+    return _realized_failure_mode(rec) == "duplicate_reservation_accounting"
+
+
+def build_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Aggregate substantive experiment records into frozen-family rows.
+
+    ``duplicate_reservation_accounting`` is bookkeeping for an already-owned
+    trial, not another test of the mechanism.  Counting it would inflate the
+    denominator and, when its ID is later, replace the owner's quantitative
+    reopen contract with duplicate-closeout text.
+    """
+
     families: dict[str, dict[str, Any]] = defaultdict(
         lambda: {"trials": 0, "accepted": 0, "rejected": 0, "blocked": 0, "lead": 0, "exps": [], "latest": None}
     )
-    for path in sorted(LOGS_DIR.glob("*.json")):
-        rec = _load_json(path)
+    for rec in records:
         if not isinstance(rec, dict):
+            continue
+        if _is_duplicate_reservation_accounting(rec):
             continue
         family = str(rec.get("trial_family") or rec.get("mechanism_family") or "").strip()
         if not family:
             continue
-        bucket = _decision_bucket(rec)
+        bucket = decision_bucket(rec)
         agg = families[family]
         agg["trials"] += 1
         agg[bucket] = agg.get(bucket, 0) + 1
@@ -107,8 +127,7 @@ def main() -> int:
         accepted = agg["accepted"]
         rejected = agg["rejected"]
         accept_rate = round(accepted / trials, 4) if trials else 0.0
-        is_meta_frozen = any(tok and tok in family for tok in meta_freeze) or family in meta_freeze
-        if is_meta_frozen:
+        if trials >= 3 and accept_rate <= 0.2:
             status = "frozen"
         elif accepted == 0 and (rejected + agg.get("blocked", 0)) >= 2:
             status = "frozen_rejected"
@@ -140,6 +159,13 @@ def main() -> int:
             }
         )
 
+    return rows
+
+
+def main() -> int:
+    records = _dedupe_records_by_experiment_id(load_experiment_logs(REPO_ROOT))
+    rows = build_rows(records)
+
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with io.open(OUT_PATH, "w", encoding="utf-8") as handle:
         for row in rows:
@@ -148,7 +174,7 @@ def main() -> int:
     frozen = sum(1 for r in rows if r["status"] in ("frozen", "frozen_rejected"))
     has_acc = sum(1 for r in rows if r["status"] == "has_accepted")
     print(f"wrote {len(rows)} families to {OUT_PATH.relative_to(REPO_ROOT)}")
-    print(f"  frozen/frozen_rejected: {frozen} | has_accepted: {has_acc} | meta_freeze_keys: {len(meta_freeze)}")
+    print(f"  frozen/frozen_rejected: {frozen} | has_accepted: {has_acc}")
     print("  top frozen-rejected families by trials:")
     for r in sorted([r for r in rows if r["status"] == "frozen_rejected"], key=lambda x: -x["trials"])[:8]:
         print(f"    {r['trials']:>2} trials  {r['family_key']}  ({r['fingerprint']['data_source']})")

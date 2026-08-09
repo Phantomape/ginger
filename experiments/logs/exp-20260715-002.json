@@ -1,0 +1,151 @@
+{
+  "after_metrics": {
+    "expected_value_score": 11.314064249772,
+    "max_drawdown_pct": 0.10219464804,
+    "sharpe": null,
+    "sharpe_daily": 5.177965719825265,
+    "survival_rate": 0.7885,
+    "total_pnl": 218504.03926887678,
+    "total_return_pct": 2.185040392688,
+    "trade_count": 158,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 12.263404092341627,
+    "max_drawdown_pct": 0.09747658226716387,
+    "sharpe": null,
+    "sharpe_daily": 5.155890913613114,
+    "survival_rate": 0.7885,
+    "total_pnl": 237852.28000000006,
+    "total_return_pct": 2.3785228000000007,
+    "trade_count": 62,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -0.94934,
+    "actual_pnl_delta": -19348.240731,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -0.99934,
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 500.0,
+    "pnl_prediction_error": -19848.24,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "capital_conservation_erases_incremental_ev",
+      "multiple_testing_evidence_incomplete_or_nonpositive",
+      "incomplete_31_family_paths",
+      "drawdown_or_tail_risk_failed",
+      "concentration_failed"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "capital_conservation_erases_incremental_ev",
+    "surprise_level": "low",
+    "surprise_note": "Cash-relative sleeve value was common, but no candidate covered the opportunity cost of displacing 10 percent of the active core; the best formal EV and PnL deltas remained negative."
+  },
+  "causal_components": [
+    "owner-authorized gate split",
+    "fixed 90/10 capital-conserving overlay",
+    "complete 31-family batch",
+    "active post-MTM daily-MTM protocol",
+    "material-window rule",
+    "drawdown-tail-concentration gates",
+    "complete selection-panel significance",
+    "three-state verdict"
+  ],
+  "change_summary": "Added an independent fail-closed Gate 4-P and one complete 31-family funded portfolio batch; champion Gate 4 and all strategy behavior remain unchanged.",
+  "change_type": "portfolio_contribution_gate_batch",
+  "changed_variable": "capital_conserving_portfolio_contribution_gate_v1",
+  "component": "quant/evaluator_gates.py, quant/full_stack_candidate_pool.py, quant/portfolio_contribution_batch.py, quant/test_portfolio_contribution_gate.py, quant/test_full_stack_candidate_pool.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, docs/portfolio_covariance_lane.md, docs/alpha-optimization-playbook.md, docs/alpha_context_pack.md, docs/current_state_snapshot.md, data/experiments/exp-20260715-002/, experiments/artifacts/exp-20260715-002_portfolio_contribution_gate_complete_panel.md, experiments/cards/exp-20260715-002.md, experiments/manifests/exp-20260715-002.json, experiments/tickets/exp-20260715-002.json, experiments/logs/exp-20260715-002.json, docs/frozen_families.jsonl, docs/experiment_registry.json, docs/experiment_log.jsonl",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -0.94934,
+    "max_drawdown_pct": 0.004718,
+    "sharpe_daily": 0.022075,
+    "survival_rate": 0.0,
+    "total_pnl": -19348.240731,
+    "total_return_pct": -0.193482,
+    "trade_count": 96
+  },
+  "experiment_id": "exp-20260715-002",
+  "hypothesis": "Owner-authorized portfolio-contribution alpha gate: evaluate the complete 31-family frozen rejected-positive panel in one capital-conserving daily-MTM batch at fixed 90% core plus 10% candidate, while leaving champion-replacement Gate 4 unchanged; sleeves should improve aggregate EV and PnL with bounded material-window regression, drawdown, tail risk and concentration, and only trial-adjusted survivors may advance beyond forward watch.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "portfolio_covariance_lane",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260706-022",
+    "exp-20260707-017",
+    "exp-20260714-006"
+  ],
+  "new_evidence_type": "new_gate_shape_owner_authorized_portfolio_contribution",
+  "next_retry_requires": [
+    "a prospective first-seen portfolio ledger",
+    "a complete pre-frozen historical selection panel",
+    "a genuinely new candidate family or data source",
+    "or a separately authorized risk-budget gate that explicitly permits return sacrifice for tail-risk reduction"
+  ],
+  "notes": "Corrected 10000-dollar no-leverage sleeve; fixed-window force close; frozen OHLCV replay; 10000-draw max-T; 31 of 31 formal rejects; evaluation infrastructure retained only.",
+  "parameters": {
+    "locked_variables": [
+      "capital_conserving_portfolio_contribution_gate_v1"
+    ],
+    "single_causal_variable": "capital-conserving portfolio-contribution Gate 4-P and complete 31-family batch verdict"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not change weight, thresholds, hold, notional, subtype, ordering, or response shape and rerun the same 31 representatives. Do not restore additive exposure or the discarded double-scaled candidate path.",
+    "new_evidence_required": "A prospective first-seen ledger, a complete pre-frozen selection panel, a genuinely new candidate family/data source, or an independently authorized risk-budget gate with an explicit return-sacrifice objective.",
+    "realized_failure_mode": "capital_conservation_erases_incremental_ev",
+    "why_result_happened": "Cash-relative sleeve value was common, but no candidate covered the opportunity cost of displacing 10 percent of the active core; the best formal EV and PnL deltas remained negative."
+  },
+  "prediction": {
+    "confidence_reason": "Ten of eleven prior additive overlays had positive aggregate EV and all eleven had positive PnL, but those tests added and double-scaled exposure and the 31 representatives were historically selected; fixed capital conservation and complete-panel trial adjustment may erase the apparent edge, so success odds are deliberately low.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 500.0,
+    "main_failure_modes": [
+      "capital_conservation_erases_incremental_ev",
+      "multiple_testing_evidence_incomplete_or_nonpositive",
+      "incomplete_31_family_paths",
+      "drawdown_or_tail_risk_failed",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-07-15T05:57:22+00:00",
+    "success_probability": 0.25
+  },
+  "production_impact": "None. Gate 4-P is evaluation-only and fail-closed; champion Gate 4, live/default orders, paper orders, core ranking, sizing, exits, and risk budgets are unchanged.",
+  "prior_trial_count": 14,
+  "rejection_reason": "All 31 candidates had negative formal aggregate EV and PnL deltas versus 100% core. The best candidate was -0.94934 EV and -$19,348.24 PnL, materially regressed in two windows, worsened ES95 by 5.71%, and had a -2.49485 simultaneous 90% EV lower bound. Historical selection_panel_complete also remains false.",
+  "related_files": [
+    "data/experiments/exp-20260715-002/portfolio_contribution_core_close_summary.json",
+    "data/experiments/exp-20260715-002/portfolio_contribution_complete_panel_summary.json",
+    "data/experiments/exp-20260715-002/portfolio_contribution_complete_panel.json",
+    "data/experiments/exp-20260715-002/candidate_ohlcv_rowset.json.gz",
+    "experiments/artifacts/exp-20260715-002_portfolio_contribution_gate_complete_panel.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\portfolio_contribution_batch.py --ohlcv-snapshot data\\experiments\\exp-20260715-002\\candidate_ohlcv_rowset.json.gz --ohlcv-snapshot-sha256 27148fd7c0eac5023f9acfadc543e81f16d7edb0ac9617dd669df96e33b2714f",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_portfolio_contribution_batch.py quant\\test_portfolio_contribution_gate.py quant\\test_full_stack_candidate_pool.py quant\\test_experiment_fingerprint.py -q"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-15T07:06:02+00:00",
+  "trial_family": "portfolio_contribution_gate_complete_panel_v1",
+  "trial_variant_id": "owner_authorized_capital_conserving_complete31_v1"
+}

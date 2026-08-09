@@ -1,8 +1,29 @@
 ﻿# Backtesting Commands
 
-This file defines the single canonical deterministic backtest command used by
-alpha experiments. Other ad hoc runs may be useful for debugging, but they are
-not acceptance evidence.
+This file defines the canonical backtest command shape and the frozen-input
+identity contract used by alpha experiments. Other ad hoc runs may be useful
+for debugging, but they are not acceptance evidence.
+
+## PIT Tier and Result Authority
+
+“Canonical command” describes the metric/window protocol; it does not by itself
+make every input `canonical_pit`. Every new alpha artifact must record a
+`pit_evidence` block with `tier`, `known_future_leakage`, decision/availability
+clock, revision or vintage limitation, artifact hashes, requested use, and
+maximum disposition. Full definitions live in
+[`research_pit_policy.md`](research_pit_policy.md).
+
+- `research_pit` may run the same frozen windows and costs to estimate gross
+  historical edge, but before/after must use the same PIT tier and provenance.
+  A positive result is research-only and may close only as `observed_only`; it
+  cannot replace the canonical Gate-1 anchor or become default-off paper/live.
+- `canonical_pit` is required for an accepted strategy result, an accepted
+  default-off helper, activation, and `live_eligible`.
+- Known decision-time leakage invalidates EV, PnL, Sharpe, and Gate evidence.
+  It is not a “known bias” that can be disclosed and accepted.
+- Future return, MFE/MAE, and settlement labels may be computed after the
+  candidate, rule, threshold, and decision clock are frozen. Feeding them back
+  into candidate generation or selection is leakage.
 
 ## Canonical Command
 
@@ -27,6 +48,25 @@ cd D:\Github\ginger
 above loads the warehouse `ohlcv_snapshot_versions` table, so standard
 fixed-window baselines stay bit-exact to the organized snapshot files while
 new work reads through the same SQLite warehouse surface.
+
+The command shape alone is not an immutable Gate-1 identity: `get_universe()`
+also reads current open positions, and the backtester normally resolves the
+yfinance earnings calendar at run time. `exp-20260712-015` froze the exact
+universe, earnings calendar, earnings-snapshot map, cost model, and warehouse
+rowsets; `exp-20260715-010` reused those inputs and promoted the accepted
+execution-date cash constraint to the canonical default. Reproduce the active
+cash-feasible reference with:
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\experiments\exp_20260715_010_cash_feasible_gate1_rebaseline.py
+```
+
+The active summary is immutable. A new Gate-4 challenger must reuse the same
+frozen behavior inputs from
+`data/experiments/exp-20260712-015/frozen_behavior_inputs.json` with
+`CASH_LEDGER_ENFORCED=True`, or run before and after against one newly frozen
+context under a new experiment ID. Explicit `False` exists only to reproduce
+the historical unenforced upper bound; it is not an acceptance comparator.
 
 For new broad/full-universe work, use the broad warehouse `ohlcv` table:
 
@@ -134,13 +174,102 @@ window is unavailable, missing, stale, too short, or contradictory, record the
 observation and continue using only the three fixed canonical windows for
 Gate 1-4.
 
-Current accepted fixed-window metrics use the production-faithful PIT earnings
-snapshot `days_to_earnings` replay accepted in `exp-20260601-025` plus the
-explicit same-day post-earnings continuation semantics accepted in
-`exp-20260602-003`. The strategy stack keeps the core `exp-20260517-009`
-(`ample_slot_stock_rank1_topup`) promotion on top of the accepted scarce-slot
-rank-1 top-up, and now treats a same-day earnings row as post-event only when
-actual EPS is already known and a later future earnings date exists.
+### Active cash-feasible Gate-1 reference
+
+`exp-20260715-010` is the active fixed-window comparison anchor. It changed
+only the default of the already accepted `exp-20260715-008` cash-admission
+policy from audit-only to enforced; the scale/skip/release semantics, frozen
+behavior inputs, cost model, snapshots, entry/exit/ranking/sizing rules, and
+warehouse rowsets stayed fixed. An explicit-True replay and a default replay
+matched exactly in full metrics, trade rows, dated returns, and cash-ledger
+hashes; an explicit-False replay still reproduced the prior anchor exactly.
+
+| Label | EV score | Sharpe daily (display / full) | Total PnL | Max DD | Win rate | Trades | Survival | Min cash | PSR | DSR |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `late_strong` | 4.1067 | 5.86 / 5.8560 | $70,075.18 | 3.94% | 84.62% | 13 | 88.89% | $11.95 | 99.9998% | not computable |
+| `mid_weak` | 1.9908 | 3.83 / 3.8281 | $51,976.41 | 6.61% | 53.85% | 13 | 81.16% | $0.44 | 99.8535% | not computable |
+| `old_thin` | 0.1082 | 1.21 / 1.2051 | $8,940.77 | 8.89% | 30.43% | 23 | 92.31% | $5.12 | 82.1581% | not computable |
+
+Aggregate EV is `6.2057`, aggregate PnL is `$130,992.36`, and total trades
+are `49`. All three windows have zero negative-cash events and exact cash
+conservation. The active summary is
+`data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json`;
+its window rows point to the raw results and cash-aware identity manifests.
+This is an accepted measurement repair, not alpha gain, and remains
+`live_ready=false` until the production runner shares the same settled-cash
+reservation/admission contract.
+
+### Historical unenforced post-MTM reference
+
+`exp-20260712-015` was the prior fixed-window comparison anchor. It froze the
+current 47-ticker universe, the 100%-covered captured earnings calendar, the
+earnings-snapshot map, resolved config/costs, source bundle, snapshot files,
+and warehouse behavior rows. All three windows were then replayed twice; the
+full-precision metric projection, complete trade rows, and dated daily-return
+hashes matched exactly in both passes. The source and input hashes also stayed
+unchanged from pre-run through post-run.
+
+| Label | EV score | Sharpe daily (display / full) | Total PnL | Return | Max DD | Win rate | Trades | Survival | PSR | DSR |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `late_strong` | 7.2115 | 6.16 / 6.1564 | $117,072.92 | 117.07% | 5.94% | 83.33% | 18 | 80.39% | 99.9998% | not computable |
+| `mid_weak` | 3.7446 | 4.81 / 4.8077 | $77,845.53 | 77.85% | 5.02% | 52.38% | 21 | 78.85% | 99.9913% | not computable |
+| `old_thin` | 1.3137 | 3.06 / 3.0589 | $42,933.82 | 42.93% | 9.75% | 43.48% | 23 | 90.32% | 99.8192% | not computable |
+
+Aggregate EV is `12.2698`, aggregate PnL is `$237,852.27`, and total trades
+are `62`. The historical summary is
+`data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json`;
+its per-window `path` values point to raw backtest results and its
+`manifest_path` values point to the code/data/config identity wrappers.
+
+This is a source-bundle-pinned working-tree reference, not a clean Git release:
+`clean_release_ready=false`. The exact behavior source is
+recoverable from `data/experiments/exp-20260712-015/source_bundle.zip`, but the
+MTM/inference stack is not represented by a clean committed tree. That release
+label does not change its role as an explicit-False historical reproduction
+and leverage-inflated upper bound; it is no longer the Gate-4 comparator.
+
+### Execution-date cash ledger (exp-20260715-008)
+
+The canonical engine historically booked core entries and add-ons with no
+execution-date cash constraint. `exp-20260715-008` added a cash ledger to
+`quant/backtester.py` behind `CASH_LEDGER_ENFORCED`; it was initially default
+`False` for validation, and `exp-20260715-010` changed the default to `True`
+without changing its policy. The ledger is attached to
+`result["cash_ledger"]` on every run. Under the exp-20260712-015 frozen
+inputs, the audit-only replay reproduced the post-MTM baseline identity
+exactly while recording 17-18 negative-cash events per window with peak
+overdrafts of -$166,598 / -$188,621 / -$188,512 on $100,000 initial capital —
+at those moments the champion had booked ~$167k-$189k more entry basis than
+its settled cash could fund. With
+`CASH_LEDGER_ENFORCED=True` (unaffordable entries deterministically scaled
+down or skipped, exits release basis plus pnl, exact cash conservation):
+
+| Label | EV score | Total PnL | Max DD | Trades | Survival |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `late_strong` | 4.1067 | $70,075 | 3.94% | 13 | 88.89% |
+| `mid_weak` | 1.9908 | $51,976 | 6.61% | 13 | 81.16% |
+| `old_thin` | 0.1082 | $8,941 | 8.89% | 23 | 92.31% |
+
+Aggregate EV `6.2057` (-49.4% vs the unenforced champion), aggregate PnL
+`$130,992` (-$106,860). Artifact:
+`data/experiments/exp-20260715-008/exp_20260715_008_cash_constrained_core_admission.json`.
+
+`exp-20260715-010` completed the explicit follow-up decision: the enforced
+table is now the active Gate-1 anchor and the backtester default is `True`.
+Treat unenforced EV/PnL levels as leverage-inflated historical upper bounds.
+Capital-allocation comparisons against the old champion (including prior
+sleeve displacement/opportunity-cost tests such as exp-20260715-002/-005) are
+biased against the challenger and must be rerun only under a genuinely new,
+predeclared capital-allocation hypothesis—not by retuning cash enforcement.
+
+### Archived pre-MTM baseline
+
+The table below is the archived pre-repair baseline. Its `sharpe_daily`,
+`expected_value_score`, and `max_drawdown_pct` were computed from an equity
+curve that could skip open-position mark-to-market on full-slot days and omit
+final-liquidation costs. The current strategy/data identity also does not
+exactly reproduce all of its trades. Keep it for historical provenance only;
+do not interpret the difference from the active post-MTM table as alpha gain.
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -148,10 +277,11 @@ actual EPS is already known and a later future earnings date exists.
 | `mid_weak` | 2.1402 | 2.74 | $78,110.11 | 78.11% | 11.19% | 52.38% | 21 | 79.25% |
 | `old_thin` | 0.5911 | 1.49 | $39,667.96 | 39.67% | 10.01% | 40.91% | 22 | 86.67% |
 
-Artifact note:
+Archived artifact note:
 `data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json`
-records the current canonical core baseline version. Aggregate accepted-stack
-EV is `7.8941`; aggregate PnL is `$234,850.99`. The prior PIT-DTE control
+records the historical pre-MTM core baseline version. Its aggregate EV was
+`7.8941` and aggregate PnL was `$234,850.99`; neither is the active Gate-1
+pointer. The prior PIT-DTE control
 artifact is
 `data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json`
 with aggregate EV `6.3596` and PnL `$192,538.61`; use it only as the before
@@ -163,11 +293,33 @@ The backtester emits these extra measurement fields for alpha experiments:
 
 | Field | Why it matters |
 | --- | --- |
+| `expected_value_score` | North-star score: `strategy_total_return_pct * abs(sharpe_daily)`. Total return determines direction, preventing a negative-return/negative-Sharpe strategy from receiving a positive score. |
 | `capital_efficiency` | Shows return/PnL per trade and per calendar slot-day, so a strategy that ties up capital for too long is visible even if total return looks fine. |
 | `sizing_rule_signal_attribution` | Counts how often each risk multiplier touched candidate signals, including zero-risk signals that never became trades. |
 | `sizing_rule_trade_attribution` | Shows observed trade outcomes for positions that carried non-neutral sizing multipliers. This is attribution, not a counterfactual PnL claim. |
 | `single_window_quality` | Summarizes whether the current window is positive on EV, return, daily Sharpe, and drawdown guardrails. |
 | `multi_window_robustness` | Added to cross-window diagnostics; summarizes positive windows, EV spread, worst drawdown, and an observation-only robustness score. |
+| `sharpe_inference` | Persists full-precision dated daily returns, their hash, return moments, PSR, and an honest DSR state. See `docs/deflated_sharpe_protocol.md`; rounded `sharpe_daily` alone is not DSR evidence. |
+
+`exp-20260716-003` changed only the sign contract of
+`expected_value_score`. Positive-return/positive-Sharpe results are numerically
+unchanged. Historical artifacts are not rewritten; when reproducing a closed
+legacy runner that embedded the old multiplication directly, its stored score
+remains historical evidence rather than a current acceptance comparator.
+
+### Trial-adjusted Sharpe and Gate 5
+
+Gate 1-4 still use the canonical metrics and windows in this document. They do
+not require DSR and must not be silently re-judged by it. In the codified
+`full_stack_candidate_pool` verdict, Gate 5 additionally requires a complete,
+comparable selection panel and a computed Deflated Sharpe Ratio of at least
+`0.95`. Missing evidence fails closed for that `live_eligible` verdict while
+leaving default-off paper acceptance unchanged. Legacy/manual activation paths
+do not yet share one central Gate-5 function and must not claim DSR enforcement
+until they explicitly adopt the same recomputation contract.
+
+The formula, daily-return evidence schema, panel completeness rules, and limits
+are defined in `docs/deflated_sharpe_protocol.md`.
 
 ## Diagnostic / Oracle Analysis
 

@@ -43,6 +43,7 @@ EXPERIMENT_ID_RE = re.compile(
     re.IGNORECASE,
 )
 ACTIVE_STATUSES = {"claimed", "running"}
+RESERVATION_INTENT_OPEN_STATUSES = {"proposed", "claimed", "running"}
 FINAL_STATUSES = {"accepted", "rejected", "observed_only"}
 SHARED_COORDINATION_SCOPES = {
     "docs/experiment_log.jsonl",
@@ -68,6 +69,352 @@ PREDICTION_REQUIRED_LANES = {
 }
 PREDICTION_ENFORCEMENT_STARTED_AT = "2026-05-29T21:33:00+00:00"
 LEAN_QUALITY_ENFORCEMENT_STARTED_AT = "2026-06-07T01:44:00+00:00"
+ALPHA_PROMOTION_ENFORCEMENT_STARTED_AT = "2026-07-22T06:34:58+00:00"
+RESEARCH_REPLAY_ADMISSION_CLASS = "research_replay"
+RESEARCH_REPLAY_RESULT_CEILING = "observed_only"
+RESEARCH_REPLAY_FINAL_STATUSES = {"observed_only", "rejected"}
+SETTLED_FORWARD_ADMISSION_CLASS = "settled_forward_attribution"
+# Both research-boundary admission classes share the observed_only ceiling;
+# they differ only in the evidence grade frozen at promotion time.
+_RESEARCH_ADMISSION_EXPECTED_GRADES = {
+    RESEARCH_REPLAY_ADMISSION_CLASS: "lead",
+    SETTLED_FORWARD_ADMISSION_CLASS: "observed_only",
+}
+_SELF_REGISTER_IMMUTABLE_EXISTING_FIELDS = frozenset(
+    {
+        "experiment_id",
+        "experiment_uid",
+        "created_at",
+        "claimed_at",
+        "owner",
+        "lane",
+        "alpha_promotion",
+        "alpha_promotion_claim_receipt",
+        "hub_identity",
+        "ticket_file",
+    }
+)
+
+
+def _alpha_promotion_api():
+    """Import the deterministic discovery-promotion contract lazily.
+
+    ``experiment_registry`` is also imported by old runners and isolated unit
+    fixtures.  Keeping this import lazy avoids making those legacy read/close
+    paths depend on the research-only alpha-search stack.
+    """
+
+    import alpha_debate
+
+    return alpha_debate
+
+
+def _alpha_promotion_gate_enabled(registry):
+    """Return True for this checkout (or an explicit isolated test context)."""
+
+    if registry.get("_enforce_alpha_promotion") is True:
+        return True
+    repo_root = _registry_repo_root(registry)
+    if repo_root is None:
+        return False
+    try:
+        return repo_root.resolve() == REPO_ROOT.resolve()
+    except OSError:
+        return False
+
+
+def _alpha_promotion_required_for_lane(lane):
+    try:
+        api = _alpha_promotion_api()
+        required = getattr(
+            api,
+            "PROMOTION_REQUIRED_LANES",
+            api.DEBATE_REQUIRED_LANES,
+        )
+    except (ImportError, AttributeError):
+        required = PREDICTION_REQUIRED_LANES
+    return lane in required
+
+
+def _ticket_proposal_payload(
+    *, lane, hypothesis, change_type, single_causal_variable,
+    causal_components, mechanism_family, trial_family, changed_variable,
+    prediction,
+):
+    payload = {
+        "lane": lane,
+        "hypothesis": hypothesis,
+        "change_type": change_type,
+        "single_causal_variable": single_causal_variable,
+        "causal_components": list(causal_components or []),
+        "mechanism_family": mechanism_family,
+        "trial_family": trial_family,
+        "changed_variable": changed_variable,
+        "prediction": dict(prediction or {}),
+    }
+    # recorded_at is deliberately volatile reservation metadata; the promotion
+    # binds the probability/reasons, not the microsecond at which CLI parsing
+    # normalized them.
+    payload["prediction"].pop("recorded_at", None)
+    try:
+        return _alpha_promotion_api().normalize_ticket_proposal(payload)
+    except (ImportError, AttributeError):
+        return payload
+
+
+def _validate_alpha_promotion_for_creation(
+    registry, *, lane, promotion_request, proposal,
+):
+    required = _alpha_promotion_required_for_lane(lane)
+    enforced = _alpha_promotion_gate_enabled(registry)
+    if required and enforced and not promotion_request:
+        raise ValueError(
+            f"{lane} requires --promotion-request after outcome-blind D0-D3 "
+            "panel verification; no experiment ID was reserved"
+        )
+    if not promotion_request:
+        return None
+    repo_root = _registry_repo_root(registry) or REPO_ROOT
+    return _alpha_promotion_api().validate_promotion_request(
+        promotion_request,
+        expected_proposal=proposal,
+        repo_root=repo_root,
+    )
+
+
+def _ticket_is_post_alpha_promotion_enforcement(ticket):
+    cutoff = datetime.fromisoformat(ALPHA_PROMOTION_ENFORCEMENT_STARTED_AT)
+    values = [ticket.get("created_at")]
+    hub_identity = ticket.get("hub_identity")
+    if isinstance(hub_identity, dict):
+        values.append(hub_identity.get("reserved_at"))
+    valid_timestamp_seen = False
+    for value in values:
+        if not value:
+            continue
+        try:
+            observed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            continue
+        valid_timestamp_seen = True
+        if observed.tzinfo is None:
+            observed = observed.replace(tzinfo=timezone.utc)
+        if observed.astimezone(timezone.utc) >= cutoff.astimezone(timezone.utc):
+            return True
+    normalized = normalize_experiment_id(ticket.get("experiment_id"))
+    if not normalized:
+        return False
+    experiment_day = normalized[4:12]
+    cutoff_day = cutoff.date().strftime("%Y%m%d")
+    return experiment_day > cutoff_day or (
+        experiment_day == cutoff_day and not valid_timestamp_seen
+    )
+
+
+def _revalidate_alpha_promotion_for_claim(registry, ticket):
+    if not _alpha_promotion_required_for_lane(ticket.get("lane")):
+        return None
+    anchor = ticket.get("alpha_promotion")
+    enforced = _alpha_promotion_gate_enabled(registry)
+    if not anchor:
+        if enforced and _ticket_is_post_alpha_promotion_enforcement(ticket):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} cannot be claimed: missing "
+                "hash-bound outcome-blind alpha promotion proof"
+            )
+        return None
+    repo_root = _registry_repo_root(registry) or REPO_ROOT
+    return _alpha_promotion_api().revalidate_ticket_promotion(
+        ticket,
+        repo_root=repo_root,
+    )
+
+
+def _build_alpha_promotion_claim_receipt(
+    registry, ticket, *, claimed_validation_at=None
+):
+    """Snapshot claim-time research bytes when the promotion API supports v1 receipts.
+
+    The feature check preserves isolated legacy/fake promotion APIs.  The real
+    repository API always exposes the builder, so production alpha claims cannot
+    silently skip receipt creation.
+    """
+
+    if not _alpha_promotion_required_for_lane(ticket.get("lane")):
+        return None
+    if not ticket.get("alpha_promotion"):
+        return None
+    api = _alpha_promotion_api()
+    builder = getattr(api, "build_ticket_promotion_claim_receipt", None)
+    if builder is None:
+        return None
+    repo_root = _registry_repo_root(registry) or REPO_ROOT
+    return builder(
+        ticket,
+        claimed_validation_at=claimed_validation_at,
+        repo_root=repo_root,
+    )
+
+
+def _require_alpha_promotion_claim_receipt_for_close(registry, ticket):
+    """Block post-rollout proposed-to-terminal alpha closeout bypasses."""
+
+    if not _alpha_promotion_required_for_lane(ticket.get("lane")):
+        return
+    # Isolated/legacy registry users predate promotion admission and do not have
+    # a repository root at which the receipt's content-addressed bytes can be
+    # verified.  The production checkout (and explicit enforcement fixtures)
+    # always take the guarded path.
+    if not _alpha_promotion_gate_enabled(registry):
+        return
+    api = _alpha_promotion_api()
+    required = getattr(api, "claim_receipt_required_for_ticket", None)
+    if required is None:
+        return
+    if required(ticket) and not ticket.get("alpha_promotion_claim_receipt"):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} cannot close without a successful "
+            "claim and alpha_promotion_claim_receipt"
+        )
+
+
+def _research_replay_metadata(experiment):
+    anchor = experiment.get("alpha_promotion")
+    if not isinstance(anchor, dict):
+        return None
+    admission_class = anchor.get("admission_class")
+    expected_grade = _RESEARCH_ADMISSION_EXPECTED_GRADES.get(admission_class)
+    if expected_grade is None:
+        return None
+    expected = {
+        "admission_class": admission_class,
+        "selected_evidence_grade": expected_grade,
+        "result_ceiling": RESEARCH_REPLAY_RESULT_CEILING,
+        "paper_live_eligible": False,
+    }
+    mismatches = [
+        f"{key}={anchor.get(key)!r}"
+        for key, expected_value in expected.items()
+        if anchor.get(key) != expected_value
+    ]
+    bindings = anchor.get("source_readiness_bindings")
+    if not isinstance(bindings, list) or not bindings:
+        mismatches.append("source_readiness_bindings=missing")
+    if mismatches:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} has an invalid research_replay "
+            "admission boundary: " + ", ".join(mismatches)
+        )
+    return expected
+
+
+def _enforce_research_replay_result_ceiling(experiment, decision, result=None):
+    """Prevent a research replay from acquiring paper/live authority.
+
+    Only the two terminal registry dispositions permitted by the policy are
+    accepted.  This deliberately rejects every ``accepted_*`` spelling and
+    paper/live verdict even if a caller bypasses ``final_decision`` and writes
+    a custom result object through the self-registration API.
+    """
+
+    metadata = _research_replay_metadata(experiment)
+    if metadata is None:
+        return None
+    normalized_decision = str(decision or "").strip().lower()
+    if normalized_decision not in RESEARCH_REPLAY_FINAL_STATUSES:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} research_replay has "
+            f"result_ceiling={RESEARCH_REPLAY_RESULT_CEILING}; cannot close as "
+            f"{decision!r}. Only observed_only or rejected is permitted"
+        )
+    if isinstance(result, dict):
+        for field_name in ("decision", "status"):
+            value = result.get(field_name)
+            if value is None:
+                continue
+            normalized = str(value).strip().lower()
+            if normalized not in RESEARCH_REPLAY_FINAL_STATUSES:
+                raise ValueError(
+                    f"{experiment.get('experiment_id')} research_replay result "
+                    f"cannot record {field_name}={value!r} above its observed_only ceiling"
+                )
+        verdict = result.get("verdict")
+        if verdict is not None and str(verdict).strip().lower() not in {
+            "research_only",
+            "reject",
+            "rejected",
+            "observed_only",
+        }:
+            raise ValueError(
+                f"{experiment.get('experiment_id')} research_replay cannot record "
+                f"paper/live verdict {verdict!r}"
+            )
+        for field_name in ("paper_live_eligible", "live_ready", "live_eligible"):
+            if (
+                field_name in result
+                and result[field_name] is not False
+                and result[field_name] is not None
+            ):
+                raise ValueError(
+                    f"{experiment.get('experiment_id')} research_replay requires "
+                    f"{field_name}=false"
+                )
+        _reject_nested_research_replay_authority(
+            experiment.get("experiment_id"), result
+        )
+    return metadata
+
+
+def _reject_nested_research_replay_authority(experiment_id, value, path="result"):
+    """Reject paper/live authority hidden inside nested runner artifacts."""
+
+    if isinstance(value, dict):
+        for raw_key, item in value.items():
+            key = str(raw_key).strip().lower()
+            item_path = f"{path}.{raw_key}"
+            if key in {
+                "paper_live_eligible",
+                "paper_eligible",
+                "live_ready",
+                "live_eligible",
+                "trade_enabled",
+                "orders_enabled",
+            } and item is not False and item is not None:
+                raise ValueError(
+                    f"{experiment_id} research_replay cannot persist "
+                    f"{item_path}=true"
+                )
+            if key in {
+                "decision",
+                "status",
+                "verdict",
+                "full_stack_verdict",
+                "final_decision",
+                "disposition",
+            } and isinstance(item, str):
+                normalized = item.strip().lower()
+                if (
+                    normalized == "accepted"
+                    or normalized.startswith("accepted_")
+                    or normalized
+                    in {
+                        "live_eligible",
+                        "paper_eligible",
+                        "paper_live_eligible",
+                    }
+                ):
+                    raise ValueError(
+                        f"{experiment_id} research_replay cannot persist "
+                        f"{item_path}={item!r}"
+                    )
+            _reject_nested_research_replay_authority(
+                experiment_id, item, item_path
+            )
+    elif isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            _reject_nested_research_replay_authority(
+                experiment_id, item, f"{path}[{index}]"
+            )
 
 
 def utc_now_iso():
@@ -229,6 +576,122 @@ def load_ticket(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
         return None
     with path.open(encoding="utf-8-sig") as f:
         return json.load(f)
+
+
+def reservation_intents_dir(registry):
+    if registry.get("_tickets_dir"):
+        return Path(registry["_tickets_dir"]).parent / "reservation_intents"
+    return DEFAULT_EXPERIMENTS_DIR / "reservation_intents"
+
+
+def _canonical_json_hash(value):
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _reservation_intent_payload(ticket_kwargs):
+    """Return the stable reservation identity for retry/concurrency de-duping.
+
+    This key intentionally excludes the eventual experiment id and volatile
+    timestamps. It is stricter than the fuzzy in-flight duplicate guard: only an
+    effectively identical reserve request maps to the same intent.
+    """
+    keys = (
+        "lane",
+        "hypothesis",
+        "change_type",
+        "single_causal_variable",
+        "causal_components",
+        "mechanism_family",
+        "trial_family",
+        "trial_variant_id",
+        "changed_variable",
+        "prior_trial_count",
+        "nearby_prior_experiments",
+        "multiple_testing_risk_bucket",
+        "new_evidence_type",
+        "baseline_result_file",
+        "allowed_write_scope",
+        "must_not_touch",
+        "locked_variables",
+        "evaluation_windows",
+        "acceptance_rule",
+        "file_slug",
+        "exclusive_scope_ok",
+        "promotion_request",
+    )
+    payload = {key: ticket_kwargs.get(key) for key in keys if key in ticket_kwargs}
+    prediction = normalize_prediction(ticket_kwargs.get("prediction"))
+    if prediction:
+        prediction = dict(prediction)
+        prediction.pop("recorded_at", None)
+        payload["prediction"] = prediction
+    return payload
+
+
+def reservation_intent_for(ticket_kwargs):
+    payload = _reservation_intent_payload(ticket_kwargs)
+    key = _canonical_json_hash(payload)
+    return {
+        "schema_version": 1,
+        "key": key,
+        "payload_hash": key,
+        "payload": payload,
+    }
+
+
+def reservation_intent_path(registry, intent):
+    return reservation_intents_dir(registry) / f"{intent['key']}.json"
+
+
+def _ticket_matches_reservation_intent(ticket, intent_key):
+    return (ticket.get("reservation_intent") or {}).get("key") == intent_key
+
+
+def _open_ticket_for_reservation_intent(registry, intent):
+    intent_key = intent["key"]
+    tickets_dir = _registry_tickets_dir(registry)
+    path = reservation_intent_path(registry, intent)
+    payload = _load_json_file(path)
+    experiment_id = payload.get("experiment_id") if isinstance(payload, dict) else None
+    if experiment_id:
+        ticket = load_ticket(experiment_id, tickets_dir)
+        if (
+            isinstance(ticket, dict)
+            and ticket.get("status") in RESERVATION_INTENT_OPEN_STATUSES
+            and _ticket_matches_reservation_intent(ticket, intent_key)
+        ):
+            return ticket
+
+    if tickets_dir.exists():
+        for ticket_path_candidate in sorted(tickets_dir.glob("exp-*.json")):
+            ticket = _load_json_file(ticket_path_candidate)
+            if not isinstance(ticket, dict):
+                continue
+            if ticket.get("status") not in RESERVATION_INTENT_OPEN_STATUSES:
+                continue
+            if _ticket_matches_reservation_intent(ticket, intent_key):
+                return ticket
+    return None
+
+
+def save_reservation_intent(registry, intent, ticket):
+    path = reservation_intent_path(registry, intent)
+    payload = {
+        "schema_version": 1,
+        "key": intent["key"],
+        "payload_hash": intent["payload_hash"],
+        "experiment_id": ticket["experiment_id"],
+        "experiment_uid": ticket.get("experiment_uid"),
+        "status_at_write": ticket.get("status"),
+        "ticket_file": ticket.get("ticket_file"),
+        "created_at": utc_now_iso(),
+    }
+    _atomic_write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+        path,
+    )
+    return path
 
 
 def _ticket_index_entry(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
@@ -554,6 +1017,74 @@ def parse_csv(value):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def _research_digest_status(decision):
+    value = str(decision or "").lower()
+    if value == "proposed":
+        return "proposed"
+    if value.startswith("accepted"):
+        return "accepted"
+    if value.startswith("rejected") or value in {"rolled_back", "duplicate_reservation_accounting"}:
+        return "rejected"
+    if value.startswith("observed_only") or value in {"blocked", "parked"}:
+        return "parked"
+    return None
+
+
+def _append_research_digest_transition(ticket, decision, *, repo_root=None, reason=None):
+    """Best-effort, idempotent backlink from an experiment to digest entries."""
+
+    refs = sorted(set(ticket.get("research_refs") or []))
+    status = _research_digest_status(decision)
+    if not refs or status is None:
+        return {"appended": 0, "status": status}
+    root = Path(repo_root or REPO_ROOT)
+    ledger = root / "data" / "research_digest" / "ledger.jsonl"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    latest = {}
+    with file_lock(ledger):
+        if ledger.exists():
+            for raw in ledger.read_text(encoding="utf-8-sig").splitlines():
+                try:
+                    row = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if row.get("entry_id"):
+                    latest[row["entry_id"]] = row
+        rows = []
+        for entry_id in refs:
+            prior = latest.get(entry_id) or {}
+            if prior.get("status") == status and prior.get("exp_id") == ticket.get("experiment_id"):
+                continue
+            rows.append({
+                "entry_id": entry_id,
+                "status": status,
+                "exp_id": ticket.get("experiment_id"),
+                "reason": reason or f"experiment {status}: {ticket.get('hypothesis')}",
+                "actor": ticket.get("owner") or "experiment_protocol",
+                "ts": utc_now_iso().replace("+00:00", "Z"),
+            })
+        if rows:
+            with ledger.open("a", encoding="utf-8") as handle:
+                for row in rows:
+                    handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+    return {"appended": len(rows), "status": status}
+
+
+def _sync_research_digest_quietly(ticket, decision, *, repo_root=None, reason=None):
+    try:
+        return _append_research_digest_transition(
+            ticket, decision, repo_root=repo_root, reason=reason
+        )
+    except Exception as exc:
+        print(
+            f"[research-digest] backlink pending for {ticket.get('experiment_id')}: {exc}",
+            file=sys.stderr,
+        )
+        return {"appended": 0, "error": str(exc)}
+
+
 def _optional_float(value, field_name):
     if value in (None, ""):
         return None
@@ -868,6 +1399,14 @@ def build_experiment_card_markdown(ticket):
         lines.append(f"- `{scope}`")
     lines.extend([
         "",
+        "## Alpha Discovery Promotion",
+        "",
+        "```json",
+        json.dumps(ticket.get("alpha_promotion") or {}, indent=2, ensure_ascii=False, sort_keys=True),
+        "```",
+        "",
+        f"- Research refs: `{', '.join(ticket.get('research_refs') or []) or 'none'}`",
+        "",
         "## Pre-Run Prediction",
         "",
         "```json",
@@ -967,6 +1506,15 @@ def build_revision_manifest(ticket, *, repo_root=None, ticket_file=None, card_fi
         "card": _file_manifest_entry(card_file or ticket.get("card_file"), root=repo_root),
         "baseline_result": _file_manifest_entry(ticket.get("baseline_result_file"), root=repo_root),
     }
+    promotion = ticket.get("alpha_promotion") or {}
+    for label, keys in {
+        "alpha_promotion": ("promotion_request_path", "artifact_path"),
+        "alpha_debate": ("debate_artifact_path",),
+        "alpha_selection_panel": ("panel_path",),
+    }.items():
+        value = next((promotion.get(key) for key in keys if promotion.get(key)), None)
+        if value:
+            files[label] = _file_manifest_entry(value, root=repo_root)
     return {
         "schema_version": 1,
         "manifest_type": "ginger_experiment_revision_manifest",
@@ -1111,6 +1659,8 @@ def create_ticket(
     file_slug=None,
     exclusive_scope_ok=False,
     prediction=None,
+    promotion_request=None,
+    reservation_intent=None,
 ):
     if lane not in VALID_LANES:
         raise ValueError(f"lane must be one of {sorted(VALID_LANES)}")
@@ -1153,6 +1703,25 @@ def create_ticket(
             "prediction": normalized_prediction,
         }
     )
+    promotion_anchor = None
+    if _alpha_promotion_required_for_lane(lane) or promotion_request:
+        proposal_payload = _ticket_proposal_payload(
+            lane=lane,
+            hypothesis=hypothesis,
+            change_type=change_type,
+            single_causal_variable=single_causal_variable,
+            causal_components=causal_components or [],
+            mechanism_family=mechanism_family,
+            trial_family=trial_family,
+            changed_variable=changed_variable,
+            prediction=normalized_prediction,
+        )
+        promotion_anchor = _validate_alpha_promotion_for_creation(
+            registry,
+            lane=lane,
+            promotion_request=promotion_request,
+            proposal=proposal_payload,
+        )
     ticket = {
         "experiment_id": experiment_id,
         "experiment_uid": new_experiment_uid(),
@@ -1198,6 +1767,15 @@ def create_ticket(
         "completed_at": None,
         "result": None,
     }
+    if reservation_intent:
+        ticket["reservation_intent"] = {
+            "schema_version": 1,
+            "key": reservation_intent["key"],
+            "payload_hash": reservation_intent["payload_hash"],
+        }
+    if promotion_anchor:
+        ticket["alpha_promotion"] = promotion_anchor
+        ticket["research_refs"] = list(promotion_anchor.get("research_refs") or [])
     if "_tickets_dir" in registry:
         workspace_root = _registry_repo_root(registry)
         ticket_file = ticket_path(experiment_id, _registry_tickets_dir(registry))
@@ -1230,6 +1808,12 @@ def create_ticket(
         except FileExistsError as exc:
             raise ValueError(f"experiment identity artifact already exists: {exc}") from exc
         _sync_index_entry(registry, ticket)
+        _sync_research_digest_quietly(
+            ticket,
+            "proposed",
+            repo_root=workspace_root,
+            reason="promotion request reserved as an experiment ticket",
+        )
     else:
         registry.setdefault("experiments", []).append(ticket)
     return ticket
@@ -1269,14 +1853,41 @@ def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SE
     never fails an already-durable reservation.
     """
     explicit = ticket_kwargs.get("experiment_id") is not None
+    intent = None if explicit else reservation_intent_for(ticket_kwargs)
     last_exc = None
+    context = _file_backed_registry_context(registry_path)
+
+    if intent:
+        lock_target = reservation_intent_path(context, intent)
+        with file_lock(lock_target, timeout_seconds=timeout_seconds):
+            existing = _open_ticket_for_reservation_intent(context, intent)
+            if existing:
+                save_reservation_intent(context, intent, existing)
+                _best_effort_cache_upsert(registry_path, existing, timeout_seconds)
+                return existing
+            ticket_kwargs = {**ticket_kwargs, "reservation_intent": intent}
+
+            for _ in range(max_attempts):
+                context = _file_backed_registry_context(registry_path)
+                try:
+                    ticket = create_ticket(context, **ticket_kwargs)
+                except ValueError as exc:
+                    # Auto-allocated ids retry the next sequence number on collision;
+                    # non-collision validation errors propagate.
+                    if "already exists" not in str(exc):
+                        raise
+                    last_exc = exc
+                    continue
+                save_reservation_intent(context, intent, ticket)
+                _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
+                return ticket
+        raise last_exc or RuntimeError("failed to reserve an available experiment id")
+
     for _ in range(max_attempts):
         context = _file_backed_registry_context(registry_path)
         try:
             ticket = create_ticket(context, **ticket_kwargs)
         except ValueError as exc:
-            # Auto-allocated ids retry the next sequence number on collision;
-            # explicit ids and non-collision validation errors propagate.
             if explicit or "already exists" not in str(exc):
                 raise
             last_exc = exc
@@ -1341,12 +1952,76 @@ def claim_ticket(registry, experiment_id, owner, force=False):
     exp = get_experiment(registry, experiment_id)
     if not exp:
         raise ValueError(f"unknown experiment_id: {experiment_id}")
+    status = str(exp.get("status") or "").strip().lower()
+    current_owner = exp.get("owner")
+    if status == "claimed":
+        if current_owner != owner:
+            raise ValueError(
+                f"{experiment_id} is already claimed by {current_owner!r}; "
+                f"owner takeover by {owner!r} is forbidden"
+            )
+        _revalidate_alpha_promotion_for_claim(registry, exp)
+        return exp, []
+    if status != "proposed":
+        raise ValueError(
+            f"{experiment_id} cannot transition from {status!r} to claimed"
+        )
+    if exp.get("claimed_at"):
+        raise ValueError(
+            f"{experiment_id} proposed ticket cannot carry claimed_at before claim"
+        )
+    if current_owner not in (None, "", owner):
+        raise ValueError(
+            f"{experiment_id} proposed ticket is assigned to {current_owner!r}; "
+            f"claim by {owner!r} is forbidden"
+        )
+    # This is an admission proof, not a contention override.  It is checked
+    # before conflicts so --force can never turn a missing/tampered debate or
+    # D0-D3 promotion artifact into a valid alpha claim.
+    _revalidate_alpha_promotion_for_claim(registry, exp)
     conflicts = find_conflicts(registry, exp)
     if conflicts and not force:
         return exp, conflicts
+    existing_receipt = exp.get("alpha_promotion_claim_receipt")
+    if existing_receipt is not None and exp.get("status") == "proposed":
+        raise ValueError(
+            f"{experiment_id} proposed ticket cannot carry a pre-claim "
+            "alpha_promotion_claim_receipt"
+        )
+    receipt = _build_alpha_promotion_claim_receipt(registry, exp)
+    claimed_at = (
+        receipt.get("claimed_validation_at")
+        if isinstance(receipt, dict)
+        else utc_now_iso()
+    )
+    claim_candidate = dict(exp)
+    claim_candidate.update(
+        {
+            "owner": owner,
+            "status": "claimed",
+            "claimed_at": claimed_at,
+        }
+    )
+    if receipt is not None:
+        claim_candidate["alpha_promotion_claim_receipt"] = receipt
+    required = getattr(
+        _alpha_promotion_api(), "claim_receipt_required_for_ticket", None
+    )
+    if (
+        _alpha_promotion_gate_enabled(registry)
+        and required is not None
+        and required(claim_candidate)
+        and receipt is None
+    ):
+        raise ValueError(
+            f"{experiment_id} cannot be claimed after receipt enforcement "
+            "without a promotion anchor and alpha_promotion_claim_receipt"
+        )
     exp["owner"] = owner
     exp["status"] = "claimed"
-    exp["claimed_at"] = utc_now_iso()
+    exp["claimed_at"] = claimed_at
+    if receipt is not None:
+        exp["alpha_promotion_claim_receipt"] = receipt
     if "_tickets_dir" in registry:
         save_ticket(exp, _registry_tickets_dir(registry))
         _sync_index_entry(registry, exp)
@@ -1438,11 +2113,21 @@ def judge_results(before_path, after_path):
     }
 
 
-def final_decision(judgement, status_override=None):
+def final_decision(judgement, status_override=None, *, experiment=None):
     if status_override is None:
         return judgement["decision"]
     if status_override not in FINAL_STATUSES:
         raise ValueError(f"status_override must be one of {sorted(FINAL_STATUSES)}")
+    if (
+        status_override == "accepted"
+        and isinstance(experiment, dict)
+        and prediction_required_for_lane(experiment.get("lane"))
+        and not str(judgement.get("decision") or "").startswith("accepted")
+    ):
+        raise ValueError(
+            "alpha status_override cannot promote a non-accepted Gate decision "
+            "to accepted"
+        )
     return status_override
 
 
@@ -1548,7 +2233,15 @@ def build_log_draft(
     surprise_note=None,
     allow_missing_prediction=False,
 ):
-    decision = final_decision(judgement, status_override)
+    decision = final_decision(
+        judgement,
+        status_override,
+        experiment=experiment,
+    )
+    research_replay = _enforce_research_replay_result_ceiling(
+        experiment,
+        decision,
+    )
     require_pre_run_prediction(
         experiment,
         allow_missing_prediction=allow_missing_prediction,
@@ -1571,6 +2264,8 @@ def build_log_draft(
         "nearby_prior_experiments": experiment.get("nearby_prior_experiments") or [],
         "multiple_testing_risk_bucket": experiment.get("multiple_testing_risk_bucket"),
         "new_evidence_type": experiment.get("new_evidence_type"),
+        "research_refs": experiment.get("research_refs") or [],
+        "alpha_promotion": experiment.get("alpha_promotion"),
         "component": ", ".join(experiment.get("allowed_write_scope") or []),
         "parameters": {
             "single_causal_variable": experiment.get("single_causal_variable"),
@@ -1592,6 +2287,8 @@ def build_log_draft(
         "related_files": [_repo_relative(before_path), _repo_relative(after_path)],
         "notes": notes if notes is not None else "; ".join(judgement.get("acceptance_reasons") or []),
     }
+    if research_replay:
+        row.update(research_replay)
     prediction = normalize_prediction(experiment.get("prediction"))
     if prediction:
         row["prediction"] = prediction
@@ -1626,7 +2323,24 @@ def update_result(
     exp = get_experiment(registry, experiment_id)
     if not exp:
         raise ValueError(f"unknown experiment_id: {experiment_id}")
-    decision = final_decision(judgement, status_override)
+    if str(exp.get("status") or "") in FINAL_STATUSES or str(
+        exp.get("status") or ""
+    ).startswith(("accepted", "rejected", "observed_only")):
+        raise ValueError(
+            f"{experiment_id} is already terminal ({exp.get('status')}); "
+            "terminal results are immutable"
+        )
+    # Close-time validation is independent from claim-time validation.  A
+    # promotion artifact changed after claim must not retain authority merely
+    # because the ticket was valid earlier.
+    _revalidate_alpha_promotion_for_claim(registry, exp)
+    _require_alpha_promotion_claim_receipt_for_close(registry, exp)
+    decision = final_decision(
+        judgement,
+        status_override,
+        experiment=exp,
+    )
+    research_replay = _enforce_research_replay_result_ceiling(exp, decision)
     require_pre_run_prediction(
         exp,
         allow_missing_prediction=allow_missing_prediction,
@@ -1639,7 +2353,10 @@ def update_result(
         "before_result_file": _repo_relative(before_path),
         "after_result_file": _repo_relative(after_path),
         "delta_metrics": judgement.get("delta_metrics") or {},
+        "research_refs": exp.get("research_refs") or [],
     }
+    if research_replay:
+        exp["result"].update(research_replay)
     prediction = normalize_prediction(exp.get("prediction"))
     if prediction:
         exp["result"]["calibration"] = build_prediction_calibration(
@@ -1746,6 +2463,12 @@ def update_result_decontended(registry_path, experiment_id, judgement, before_pa
             allow_missing_prediction=allow_missing_prediction,
         )
     _best_effort_cache_upsert(registry_path, exp, timeout_seconds)
+    _sync_research_digest_quietly(
+        exp,
+        exp.get("status"),
+        repo_root=Path(registry_path).resolve().parent.parent,
+        reason="experiment closeout propagated by experiment.py close",
+    )
     return exp
 
 
@@ -1790,7 +2513,48 @@ def persist_self_registered_result(
 
     def _mutator(registry):
         now = utc_now_iso()
-        exp = get_experiment(registry, experiment_id) or {"experiment_id": experiment_id}
+        existing = get_experiment(registry, experiment_id)
+        existing_lane = existing.get("lane") if existing is not None else None
+        existing_research_replay = (
+            _research_replay_metadata(existing) if existing is not None else None
+        )
+        if existing is not None:
+            _require_alpha_promotion_claim_receipt_for_close(registry, existing)
+            if existing_lane is not None and lane != existing_lane:
+                raise ValueError(
+                    f"{experiment_id} cannot change lane during self-registered closeout: "
+                    f"{existing_lane!r} -> {lane!r}"
+                )
+            if isinstance(fields, dict):
+                for key in sorted(_SELF_REGISTER_IMMUTABLE_EXISTING_FIELDS):
+                    if (
+                        key in fields
+                        and fields[key] is not None
+                        and fields[key] != existing.get(key)
+                    ):
+                        raise ValueError(
+                            f"{experiment_id} cannot overwrite immutable existing "
+                            f"ticket field {key!r} during closeout"
+                        )
+        if (
+            _alpha_promotion_gate_enabled(registry)
+            and _alpha_promotion_required_for_lane(lane)
+        ):
+            if existing is None:
+                probe = {
+                    "experiment_id": experiment_id,
+                    "lane": lane,
+                    # A missing ticket is being created now. Caller-supplied
+                    # historical metadata must not backdate it across the
+                    # promotion-enforcement boundary.
+                    "created_at": now,
+                }
+                if _ticket_is_post_alpha_promotion_enforcement(probe):
+                    raise ValueError(
+                        f"{experiment_id} cannot self-register new alpha work: "
+                        "reserve and claim a promotion-anchored ticket first"
+                    )
+        exp = existing or {"experiment_id": experiment_id}
         exp.setdefault("experiment_id", experiment_id)
         exp.setdefault("created_at", now)
         if isinstance(fields, dict):
@@ -1798,10 +2562,30 @@ def persist_self_registered_result(
                 if value is not None:
                     exp[key] = value
         exp["lane"] = lane
+        if existing_research_replay is not None and _research_replay_metadata(exp) is None:
+            raise ValueError(
+                f"{experiment_id} cannot remove its research_replay admission during closeout"
+            )
+        if existing is not None and (
+            _alpha_promotion_required_for_lane(existing_lane)
+            or _alpha_promotion_required_for_lane(lane)
+        ):
+            # Revalidate after applying caller-supplied fields so a runner
+            # cannot replace the admitted proposal/anchor or demote the lane
+            # during closeout.
+            _revalidate_alpha_promotion_for_claim(registry, exp)
+        research_replay = _enforce_research_replay_result_ceiling(
+            exp,
+            status,
+            result=result,
+        )
         exp["status"] = status
         if normalized:
             exp["prediction"] = normalized
-        exp["result"] = result
+        stored_result = dict(result) if isinstance(result, dict) else result
+        if research_replay and isinstance(stored_result, dict):
+            stored_result.update(research_replay)
+        exp["result"] = stored_result
         exp["updated_at"] = now
         exp["completed_at"] = now
         experiments = registry.setdefault("experiments", [])
@@ -1972,6 +2756,16 @@ def audit_experiment_process(
     post_weak_prediction_quality = []
     closed_weak_reflection = []
     closed_post_weak_reflection = []
+    post_promotion_alpha_count = 0
+    missing_alpha_promotion = []
+    invalid_alpha_promotion = []
+    research_replay_count = 0
+    research_result_ceiling_violations = []
+    audit_repo_root = Path(tickets_dir).resolve().parent.parent
+    audit_promotion_enabled = (
+        registry.get("_enforce_alpha_promotion") is True
+        or audit_repo_root.resolve() == REPO_ROOT.resolve()
+    )
 
     for experiment_id, ticket in sorted(tickets.items()):
         if not prediction_required_for_lane(ticket.get("lane")):
@@ -1985,6 +2779,51 @@ def audit_experiment_process(
         reasons = prediction_missing_reasons(ticket)
         status = ticket.get("status")
         is_closed = _closed_status(status)
+        if audit_promotion_enabled and _alpha_promotion_required_for_lane(
+            ticket.get("lane")
+        ):
+            promotion_api = _alpha_promotion_api()
+            post_promotion_ticket = _ticket_is_post_alpha_promotion_enforcement(
+                ticket
+            )
+            if post_promotion_ticket:
+                post_promotion_alpha_count += 1
+            receipt_present = "alpha_promotion_claim_receipt" in ticket
+            receipt_required = False
+            receipt_predicate = getattr(
+                promotion_api, "claim_receipt_required_for_ticket", None
+            )
+            if (
+                receipt_predicate is not None
+                and (status in ACTIVE_STATUSES or is_closed)
+            ):
+                receipt_required = receipt_predicate(ticket)
+            # Promotion-era tickets retain the original full validation.  In
+            # addition, audit every explicit receipt and every claimed/closed
+            # ticket governed by the later receipt rollout, even when its
+            # reservation predates promotion enforcement.
+            should_validate = (
+                post_promotion_ticket or receipt_present or receipt_required
+            )
+            if should_validate and not ticket.get("alpha_promotion"):
+                missing_alpha_promotion.append({
+                    "experiment_id": experiment_id,
+                    "lane": ticket.get("lane"),
+                    "status": status,
+                })
+            elif should_validate:
+                try:
+                    promotion_api.revalidate_ticket_promotion(
+                        ticket,
+                        repo_root=audit_repo_root,
+                    )
+                except Exception as exc:
+                    invalid_alpha_promotion.append({
+                        "experiment_id": experiment_id,
+                        "lane": ticket.get("lane"),
+                        "status": status,
+                        "error": str(exc),
+                    })
         if is_closed:
             closed_alpha_count += 1
             if bucket == "post_enforcement":
@@ -2015,6 +2854,44 @@ def audit_experiment_process(
         result = ticket.get("result") or {}
         if not isinstance(result, dict):
             result = {}
+        anchor = ticket.get("alpha_promotion")
+        if (
+            isinstance(anchor, dict)
+            and anchor.get("admission_class") == RESEARCH_REPLAY_ADMISSION_CLASS
+        ):
+            research_replay_count += 1
+            violation_reasons = []
+            try:
+                _research_replay_metadata(ticket)
+            except ValueError as exc:
+                violation_reasons.append(str(exc))
+            if is_closed:
+                try:
+                    _enforce_research_replay_result_ceiling(
+                        ticket,
+                        status,
+                        result=result,
+                    )
+                except ValueError as exc:
+                    violation_reasons.append(str(exc))
+                if log_row:
+                    try:
+                        _enforce_research_replay_result_ceiling(
+                            ticket,
+                            log_row.get("status") or log_row.get("decision"),
+                            result=log_row,
+                        )
+                    except ValueError as exc:
+                        violation_reasons.append(str(exc))
+            if violation_reasons:
+                research_result_ceiling_violations.append(
+                    {
+                        "experiment_id": experiment_id,
+                        "lane": ticket.get("lane"),
+                        "status": status,
+                        "violations": sorted(set(violation_reasons)),
+                    }
+                )
         has_calibration = bool(log_row.get("calibration") or result.get("calibration"))
         if is_closed and not has_calibration:
             item = {
@@ -2064,6 +2941,9 @@ def audit_experiment_process(
     passed = (
         not post_missing_prediction
         and not closed_post_missing_calibration
+        and not missing_alpha_promotion
+        and not invalid_alpha_promotion
+        and not research_result_ceiling_violations
         and (lean_passed if lean else True)
     )
     return {
@@ -2074,6 +2954,7 @@ def audit_experiment_process(
         "lean_quality_enforcement_started_at": (
             LEAN_QUALITY_ENFORCEMENT_STARTED_AT if lean else None
         ),
+        "alpha_promotion_enforcement_started_at": ALPHA_PROMOTION_ENFORCEMENT_STARTED_AT,
         "tickets_checked": len(tickets),
         "logs_checked": len(logs),
         "alpha_ticket_count": alpha_ticket_count,
@@ -2106,6 +2987,13 @@ def audit_experiment_process(
         "closed_weak_reflection_count": len(closed_weak_reflection),
         "closed_post_enforcement_weak_reflection_count": len(
             closed_post_weak_reflection
+        ),
+        "post_promotion_alpha_count": post_promotion_alpha_count,
+        "missing_alpha_promotion_count": len(missing_alpha_promotion),
+        "invalid_alpha_promotion_count": len(invalid_alpha_promotion),
+        "research_replay_count": research_replay_count,
+        "research_result_ceiling_violation_count": len(
+            research_result_ceiling_violations
         ),
         "prediction_coverage": (
             round((alpha_ticket_count - len(missing_prediction)) / alpha_ticket_count, 4)
@@ -2187,6 +3075,11 @@ def audit_experiment_process(
         "closed_post_enforcement_weak_reflection_examples": (
             closed_post_weak_reflection[:25]
         ),
+        "missing_alpha_promotion_examples": missing_alpha_promotion[:25],
+        "invalid_alpha_promotion_examples": invalid_alpha_promotion[:25],
+        "research_result_ceiling_violation_examples": (
+            research_result_ceiling_violations[:25]
+        ),
         "lean_quality_passed": lean_passed if lean else None,
         "passed": passed,
         "strict_blocks_only_post_enforcement_gaps": True,
@@ -2232,11 +3125,24 @@ def strip_oversized_fields(row, *, max_field_bytes=LOG_FIELD_MAX_BYTES):
 
 
 def save_experiment_log_entry(row, *, allow_duplicate=False,
+                              expected_experiment_id=None,
                               logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
                               timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
+    if expected_experiment_id is not None:
+        expected = normalize_experiment_id(expected_experiment_id)
+        actual = normalize_experiment_id(experiment_id)
+        if expected is None:
+            raise ValueError(
+                f"invalid expected_experiment_id: {expected_experiment_id}"
+            )
+        if actual != expected:
+            raise ValueError(
+                "experiment log identity mismatch: "
+                f"expected {expected}, got {experiment_id}"
+            )
     row = strip_oversized_fields(row)
     path = experiment_log_path(experiment_id, logs_dir)
     path.parent.mkdir(parents=True, exist_ok=True)

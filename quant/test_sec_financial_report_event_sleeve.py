@@ -128,6 +128,8 @@ def test_financial_report_sleeve_freezes_pending_then_paper_fills_and_closes():
     assert first["pending_count"] == 1
     assert first["open_position_count"] == 0
     assert first["production_impact"]["alters_orders"] is False
+    assert first["pending_entries"][0]["paper_notional_usd"] == 15_000.0
+    assert first["pending_entries"][0]["paper_notional_frozen"] is True
 
     second = build_sec_financial_report_event_sleeve_snapshot(
         sec_financial_report_t1_queue=_queue(),
@@ -135,12 +137,13 @@ def test_financial_report_sleeve_freezes_pending_then_paper_fills_and_closes():
         open_prices={"FRPT": 100.0},
         current_prices={"FRPT": 101.0},
         state=_state_from_snapshot(first),
-        config={"hold_days": 1},
+        config={"hold_days": 1, "event_notional_usd": 2_500.0},
         persist=False,
     )
 
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
+    assert second["open_positions"][0]["notional"] == 15_000.0
     assert second["open_positions"][0]["trade_enabled"] is False
 
     third = build_sec_financial_report_event_sleeve_snapshot(
@@ -556,6 +559,7 @@ def test_financial_report_sleeve_can_disable_rs20_leader_scalar():
         ),
         as_of="2026-05-05",
         state=empty_sec_financial_report_event_sleeve_state(),
+        config={"rs20_leader_notional_enabled": False},
         persist=False,
     )
     second = build_sec_financial_report_event_sleeve_snapshot(
@@ -585,6 +589,7 @@ def test_financial_report_sleeve_can_disable_neutral_underreaction_scalar():
         ),
         as_of="2026-05-05",
         state=empty_sec_financial_report_event_sleeve_state(),
+        config={"neutral_underreaction_notional_enabled": False},
         persist=False,
     )
     second = build_sec_financial_report_event_sleeve_snapshot(

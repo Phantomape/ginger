@@ -8,6 +8,7 @@ signals, or place paper/live orders.
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import sqlite3
 from collections import Counter, defaultdict
@@ -15,16 +16,253 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from statistics import mean, median
 from typing import Any, Sequence
+from zoneinfo import ZoneInfo
 
 from constants import ROUND_TRIP_COST_PCT
 from data_paths import atomic_write_text
 from fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
+from us_market_calendar import is_us_equity_session
 
 
-SCHEMA_VERSION = 1
-DEFAULT_HORIZONS = (0, 1, 3, 5, 10)
+SCHEMA_VERSION = 2
+DEFAULT_HORIZONS = (0, 1, 3, 5, 10, 20)
 COMPARATORS = ("SPY", "QQQ")
 PROXY_NOTIONAL_USD = 4000.0
+MARKET_TIMEZONE = ZoneInfo("America/New_York")
+MARKET_OPEN_HOUR = 9
+MARKET_OPEN_MINUTE = 30
+INSTRUMENT_MAP_SCHEMA_VERSION = 1
+READINESS_SCHEMA_VERSION = 1
+
+# Explicit mappings and qualified clocks are intentionally fail-closed.
+
+
+def materialize_estimate_revision_instrument_map(
+    *,
+    as_of: str | date,
+    ledger_path: str | Path,
+    data_dir: str | Path = "data",
+    output_path: str | Path | None = None,
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    """Append explicit ticker mappings backed by the tracked SEC CIK file."""
+
+    generated_at = generated_at or datetime.now(timezone.utc)
+    if generated_at.tzinfo is None or generated_at.utcoffset() is None:
+        raise ValueError("generated_at must be timezone-aware")
+    generated_at = generated_at.astimezone(timezone.utc)
+    as_of_date = _coerce_date(as_of)
+    effective_from = max(as_of_date, generated_at.date()).isoformat()
+    source_path = Path(data_dir) / "reference" / "sec_company_tickers.json"
+    target = (
+        Path(output_path)
+        if output_path is not None
+        else Path(data_dir) / "reference" / "estimate_revision_instrument_map.jsonl"
+    )
+    ledger = Path(ledger_path)
+    ledger_rows = _read_jsonl(ledger)
+    source_payload = _read_json(source_path, default={})
+    source_hash = (
+        hashlib.sha256(source_path.read_bytes()).hexdigest() if source_path.exists() else None
+    )
+
+    by_ticker: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
+    for item in source_payload.values():
+        if not isinstance(item, dict):
+            continue
+        ticker = str(item.get("ticker") or "").strip().upper()
+        cik = str(item.get("cik_str") or "").strip()
+        if ticker and cik:
+            by_ticker[ticker][cik.zfill(10)].add(str(item.get("title") or ""))
+
+    requested_tickers = sorted(
+        {
+            str(row.get("ticker") or "").strip().upper()
+            for row in ledger_rows
+            if str(row.get("ticker") or "").strip()
+        }
+    )
+    existing = _read_jsonl(target)
+    valid_existing = load_effective_instrument_mappings(target)
+    added: list[dict[str, Any]] = []
+    ambiguous: list[str] = []
+    supersession_ambiguous: list[str] = []
+    missing: list[str] = []
+    superseded_mapping_count = 0
+    for ticker in requested_tickers:
+        matches = by_ticker.get(ticker, {})
+        if len(matches) != 1:
+            (missing if not matches else ambiguous).append(ticker)
+            continue
+        cik, titles = next(iter(matches.items()))
+        title = sorted(titles)[0] if titles else ""
+        active_prior = _active_effective_instrument_mappings(
+            ticker=ticker,
+            decision_clock=generated_at,
+            mappings=valid_existing,
+        )
+        active_identities = {
+            (
+                str(item.get("instrument_ticker") or "").strip().upper(),
+                str(item.get("cik") or ""),
+            )
+            for item in active_prior
+        }
+        if len(active_identities) > 1 or len(active_prior) > 1:
+            supersession_ambiguous.append(ticker)
+            continue
+        if active_identities == {(ticker, cik)}:
+            continue
+        superseded_ids = sorted(
+            {
+                str(item.get("mapping_id") or "").strip()
+                for item in active_prior
+                if str(item.get("mapping_id") or "").strip()
+            }
+        )
+        payload = {
+            "schema_version": INSTRUMENT_MAP_SCHEMA_VERSION,
+            "source_ticker": ticker,
+            "instrument_ticker": ticker,
+            "cik": cik,
+            "issuer_name": title,
+            "effective_from": effective_from,
+            "effective_to": None,
+            "observed_at": generated_at.isoformat(timespec="seconds"),
+            "supersedes_mapping_id": (
+                superseded_ids[-1] if superseded_ids else None
+            ),
+            "provenance": {
+                "source_path": _path_text(source_path),
+                "source_sha256": source_hash,
+                "match_rule": "exact_ticker_unique_cik",
+            },
+        }
+        payload["mapping_id"] = "estimate-map:" + hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()[:24]
+        added.append(payload)
+        superseded_mapping_count += len(superseded_ids)
+
+    if added or not target.exists():
+        _write_jsonl(target, [*existing, *added])
+    return {
+        "status": "ok" if source_hash else "missing_sec_reference",
+        "schema_version": INSTRUMENT_MAP_SCHEMA_VERSION,
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "effective_from": effective_from,
+        "source_path": _path_text(source_path),
+        "source_sha256": source_hash,
+        "ledger_path": _path_text(ledger),
+        "output_path": _path_text(target),
+        "requested_ticker_count": len(requested_tickers),
+        "added_mapping_count": len(added),
+        "superseded_mapping_count": superseded_mapping_count,
+        "total_mapping_count": len(existing) + len(added),
+        "ambiguous_tickers": ambiguous,
+        "supersession_ambiguous_tickers": supersession_ambiguous,
+        "missing_tickers": missing,
+    }
+
+
+def load_effective_instrument_mappings(path: str | Path) -> list[dict[str, Any]]:
+    """Load only structurally valid, explicitly observed mapping rows."""
+
+    valid: list[dict[str, Any]] = []
+    for row in _read_jsonl(Path(path)):
+        if int(row.get("schema_version") or 0) != INSTRUMENT_MAP_SCHEMA_VERSION:
+            continue
+        if not row.get("source_ticker") or not row.get("instrument_ticker") or not row.get("cik"):
+            continue
+        if _parse_aware_datetime(row.get("observed_at")) is None:
+            continue
+        try:
+            _coerce_date(row.get("effective_from"))
+            if row.get("effective_to"):
+                _coerce_date(row.get("effective_to"))
+        except (TypeError, ValueError):
+            continue
+        valid.append(dict(row))
+    return valid
+
+
+def _active_effective_instrument_mappings(
+    *,
+    ticker: str,
+    decision_clock: datetime,
+    mappings: Sequence[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return mappings active under the append-only supersession graph."""
+
+    decision_date = decision_clock.date()
+    known: list[dict[str, Any]] = []
+    active: list[dict[str, Any]] = []
+    for mapping in mappings:
+        if str(mapping.get("source_ticker") or "").strip().upper() != ticker:
+            continue
+        observed_at = _parse_aware_datetime(mapping.get("observed_at"))
+        if observed_at is None or observed_at > decision_clock:
+            continue
+        try:
+            start = _coerce_date(mapping["effective_from"])
+            end = (
+                _coerce_date(mapping["effective_to"])
+                if mapping.get("effective_to")
+                else None
+            )
+        except (KeyError, TypeError, ValueError):
+            continue
+        known.append(mapping)
+        if decision_date >= start and (end is None or decision_date <= end):
+            active.append(mapping)
+
+    # Supersession is effective only once the new mapping was both observed
+    # and effective. The old append-only row therefore remains resolvable for
+    # earlier decision clocks, but never reactivates after a successor ends.
+    superseded_ids: set[str] = set()
+    for mapping in known:
+        try:
+            start = _coerce_date(mapping["effective_from"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        superseded_id = str(mapping.get("supersedes_mapping_id") or "").strip()
+        if superseded_id and decision_date >= start:
+            superseded_ids.add(superseded_id)
+    return [
+        mapping
+        for mapping in active
+        if str(mapping.get("mapping_id") or "").strip() not in superseded_ids
+    ]
+
+
+def resolve_effective_instrument_mapping(
+    row: dict[str, Any],
+    mappings: Sequence[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Resolve one unambiguous mapping that was known by the decision clock."""
+
+    ticker = str(row.get("ticker") or "").strip().upper()
+    decision_clock = _parse_aware_datetime(row.get("decision_clock"))
+    if not ticker or decision_clock is None:
+        return None
+    active = _active_effective_instrument_mappings(
+        ticker=ticker,
+        decision_clock=decision_clock,
+        mappings=mappings,
+    )
+    identities = {
+        (str(item.get("instrument_ticker")).upper(), str(item.get("cik"))) for item in active
+    }
+    if len(identities) != 1:
+        return None
+    active.sort(
+        key=lambda item: (
+            _parse_aware_datetime(item.get("observed_at"))
+            or datetime.min.replace(tzinfo=timezone.utc),
+            str(item.get("mapping_id") or ""),
+        )
+    )
+    return dict(active[-1])
 
 
 def persist_estimate_revision_outcomes(
@@ -35,6 +273,7 @@ def persist_estimate_revision_outcomes(
     ledger_path: str | Path | None = None,
     source_summary_path: str | Path | None = None,
     warehouse_path: str | Path | None = None,
+    instrument_map_path: str | Path | None = None,
     horizons: Sequence[int] = DEFAULT_HORIZONS,
     notional_usd: float = PROXY_NOTIONAL_USD,
     generated_at: datetime | None = None,
@@ -62,6 +301,11 @@ def persist_estimate_revision_outcomes(
         if warehouse_path is not None
         else Path(data_dir) / "warehouse" / "warehouse_main_hot.sqlite"
     )
+    instrument_map = (
+        Path(instrument_map_path)
+        if instrument_map_path is not None
+        else Path(data_dir) / "reference" / "estimate_revision_instrument_map.jsonl"
+    )
     outcome_path = output_root / f"estimate_revision_outcomes_{tag}.jsonl"
     summary_path = output_root / f"estimate_revision_outcome_summary_{tag}.json"
     normalized_horizons = tuple(sorted({int(horizon) for horizon in horizons}))
@@ -81,11 +325,18 @@ def persist_estimate_revision_outcomes(
     )
 
     warehouse_range = _warehouse_date_range(warehouse)
-    latest_complete = warehouse_range.get("max_date")
-    tickers = {
-        str(row.get("ticker") or "").upper()
+    latest_complete = _latest_completed_warehouse_date(
+        warehouse_range.get("max_date"), generated_at
+    )
+    mappings = load_effective_instrument_mappings(instrument_map)
+    mapped_rows = [
+        (row, resolve_effective_instrument_mapping(row, mappings))
         for row in matched_rows
-        if str(row.get("ticker") or "").strip()
+    ]
+    tickers = {
+        str(mapping.get("instrument_ticker") or "").upper()
+        for _, mapping in mapped_rows
+        if mapping
     }
     tickers.update(COMPARATORS)
     bars = _load_bars(warehouse, tickers, as_of_date.isoformat(), latest_complete)
@@ -93,6 +344,7 @@ def persist_estimate_revision_outcomes(
     outcome_rows = [
         _build_outcome_row(
             row=row,
+            instrument_mapping=mapping,
             as_of_date=as_of_date,
             source_ledger=source_ledger,
             source_summary=source_summary,
@@ -101,7 +353,7 @@ def persist_estimate_revision_outcomes(
             horizons=normalized_horizons,
             notional_usd=notional_usd,
         )
-        for row in matched_rows
+        for row, mapping in mapped_rows
     ]
     summary = _summarize(
         as_of_date=as_of_date,
@@ -111,6 +363,7 @@ def persist_estimate_revision_outcomes(
         source_summary_payload=source_summary_payload,
         source_ledger=source_ledger,
         source_summary=source_summary,
+        instrument_map=instrument_map,
         outcome_rows=outcome_rows,
         warehouse=warehouse,
         warehouse_range=warehouse_range,
@@ -133,11 +386,12 @@ def persist_recent_estimate_revision_outcome_catchup(
     data_dir: str | Path = "data",
     output_dir: str | Path = "data/non_ohlcv",
     warehouse_path: str | Path | None = None,
+    instrument_map_path: str | Path | None = None,
     horizons: Sequence[int] = DEFAULT_HORIZONS,
     notional_usd: float = PROXY_NOTIONAL_USD,
     generated_at: datetime | None = None,
     run_adapter_changed: bool = True,
-    lookback_days: int = 10,
+    lookback_days: int = 45,
     exclude_dates: Sequence[str | date] = (),
     max_ledgers: int | None = None,
 ) -> dict[str, Any]:
@@ -187,6 +441,7 @@ def persist_recent_estimate_revision_outcome_catchup(
                 ledger_path=ledger_path,
                 source_summary_path=output_root / f"estimate_revision_ledger_summary_{tag}.json",
                 warehouse_path=warehouse,
+                instrument_map_path=instrument_map_path,
                 horizons=horizons,
                 notional_usd=notional_usd,
                 generated_at=generated_at,
@@ -249,9 +504,400 @@ def persist_recent_estimate_revision_outcome_catchup(
     }
 
 
+def persist_estimate_revision_readiness(
+    *,
+    as_of: str | date,
+    data_dir: str | Path = "data",
+    output_dir: str | Path = "data/non_ohlcv",
+    instrument_map_path: str | Path | None = None,
+    output_path: str | Path | None = None,
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    """Persist a cross-file, decision-deduped readiness view.
+
+    Legacy rows, flat observations, duplicate ledgers, rollbacks, source
+    switches and missing mappings remain countable as raw evidence but cannot
+    contribute to independent or settled readiness.
+    """
+
+    summary = build_estimate_revision_readiness(
+        as_of=as_of,
+        data_dir=data_dir,
+        output_dir=output_dir,
+        instrument_map_path=instrument_map_path,
+        generated_at=generated_at,
+    )
+    target = (
+        Path(output_path)
+        if output_path is not None
+        else Path(data_dir) / "non_ohlcv" / "estimate_revision_readiness_latest.json"
+    )
+    summary["readiness_path"] = _path_text(target)
+    _write_json(target, summary)
+    return summary
+
+
+def build_estimate_revision_readiness(
+    *,
+    as_of: str | date,
+    data_dir: str | Path = "data",
+    output_dir: str | Path = "data/non_ohlcv",
+    instrument_map_path: str | Path | None = None,
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    generated_at = generated_at or datetime.now(timezone.utc)
+    if generated_at.tzinfo is None or generated_at.utcoffset() is None:
+        raise ValueError("generated_at must be timezone-aware")
+    generated_at = generated_at.astimezone(timezone.utc)
+    as_of_date = _coerce_date(as_of)
+    output_root = Path(output_dir)
+    map_path = (
+        Path(instrument_map_path)
+        if instrument_map_path is not None
+        else Path(data_dir) / "reference" / "estimate_revision_instrument_map.jsonl"
+    )
+    mappings = load_effective_instrument_mappings(map_path)
+
+    ledger_files, excluded_ledger_files = _dated_artifact_files(
+        output_root,
+        prefix="estimate_revision_ledger",
+        as_of_date=as_of_date,
+    )
+    ledger_rows: list[dict[str, Any]] = []
+    for path in ledger_files:
+        for raw in _read_jsonl(path):
+            row = dict(raw)
+            row["_ledger_path"] = _path_text(path)
+            ledger_rows.append(row)
+
+    raw_rows = len(ledger_rows)
+    candidate_rows = sum(
+        bool(row.get("matched_candidate_today") or row.get("matched_candidate_count"))
+        for row in ledger_rows
+    )
+    preliminary = [
+        (
+            row,
+            resolve_effective_instrument_mapping(row, mappings),
+        )
+        for row in ledger_rows
+    ]
+    semantic_usable = [
+        row
+        for row, _ in preliminary
+        if _raw_unqualified_reason(row) is None
+    ]
+    raw_unqualified_reasons: Counter[str] = Counter(
+        reason
+        for row, _ in preliminary
+        if (reason := _raw_unqualified_reason(row)) is not None
+    )
+    nonflat_rows = [
+        row
+        for row, _ in preliminary
+        if row.get("decision_id")
+        and _revision_direction(row) in {"up", "down"}
+    ]
+    rollback_ids = _rollback_chain_decision_ids(nonflat_rows)
+    quarantine_reasons: Counter[str] = Counter()
+    qualified_by_id: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
+    annotations_by_id: dict[str, dict[str, bool]] = {}
+    quarantined_ids: set[str] = set()
+    for row, mapping in preliminary:
+        decision_id = str(row.get("decision_id") or "")
+        reason = _revision_decision_disqualification_reason(
+            row,
+            instrument_mapping=mapping,
+            as_of_date=as_of_date,
+            additional_quarantine_reason=(
+                "rollback_chain" if decision_id in rollback_ids else None
+            ),
+        )
+        if reason is not None:
+            if not decision_id:
+                continue
+            quarantined_ids.add(decision_id)
+            quarantine_reasons[str(reason)] += 1
+            qualified_by_id.pop(decision_id, None)
+            annotations_by_id.pop(decision_id, None)
+            continue
+        if decision_id in quarantined_ids:
+            continue
+        if decision_id not in qualified_by_id:
+            # Identity is canonical-first. Later duplicate ledger rows may add
+            # execution annotations, but cannot rewrite the decision clock,
+            # ticker, source/event identity, or effective instrument mapping.
+            qualified_by_id[decision_id] = (row, mapping)
+            annotations_by_id[decision_id] = {
+                "candidate_overlap": False,
+                "selected_signal_overlap": False,
+                "cash_conflict": False,
+            }
+        annotations = annotations_by_id[decision_id]
+        annotations["candidate_overlap"] = bool(
+            annotations["candidate_overlap"]
+            or row.get("matched_candidate_today")
+            or row.get("matched_candidate_count")
+        )
+        annotations["selected_signal_overlap"] = bool(
+            annotations["selected_signal_overlap"]
+            or row.get("matched_selected_signal_today")
+            or row.get("matched_selected_signal_count")
+        )
+        annotations["cash_conflict"] = bool(
+            annotations["cash_conflict"] or _has_explicit_cash_conflict(row)
+        )
+
+    mapped_tickers = sorted(
+        {
+            str(mapping.get("instrument_ticker") or "").upper()
+            for _, mapping in qualified_by_id.values()
+        }
+    )
+    overlap_ids = {
+        decision_id
+        for decision_id, annotations in annotations_by_id.items()
+        if annotations["candidate_overlap"]
+    }
+    selected_overlap_ids = {
+        decision_id
+        for decision_id, annotations in annotations_by_id.items()
+        if annotations["selected_signal_overlap"]
+    }
+    cash_conflict_ids = {
+        decision_id
+        for decision_id, annotations in annotations_by_id.items()
+        if annotations["cash_conflict"]
+    }
+
+    outcome_files, excluded_outcome_files = _dated_artifact_files(
+        output_root,
+        prefix="estimate_revision_outcomes",
+        as_of_date=as_of_date,
+    )
+    outcome_rows: list[dict[str, Any]] = []
+    for path in outcome_files:
+        outcome_rows.extend(_read_jsonl(path))
+    required_horizons = (5, 10, 20)
+    settled_ids = {
+        f"h{horizon}": {
+            str(row.get("decision_id"))
+            for row in outcome_rows
+            if row.get("decision_id") in qualified_by_id
+            and row.get("settlement_qualified") is True
+            and _horizon_closed_by_as_of(row, horizon, as_of_date)
+        }
+        for horizon in required_horizons
+    }
+    settled_counts = {key: len(value) for key, value in settled_ids.items()}
+    conservative_settled = min(settled_counts.values(), default=0)
+    independent_count = len(qualified_by_id)
+    gate_ready = bool(
+        independent_count >= 30
+        and len(mapped_tickers) >= 10
+        and len(cash_conflict_ids) >= 10
+        and all(settled_counts[f"h{horizon}"] >= 30 for horizon in required_horizons)
+    )
+
+    return {
+        "schema_version": READINESS_SCHEMA_VERSION,
+        "surface_id": "analyst_estimate_revision_forward_decisions",
+        "status": "gate_candidate" if gate_ready else "parked",
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "as_of_date": as_of_date.isoformat(),
+        "raw_count": raw_rows,
+        "candidate_count": candidate_rows,
+        "independent_count": independent_count,
+        "settled_count": conservative_settled,
+        "raw_rows": raw_rows,
+        "usable_rows": len(semantic_usable),
+        "nonflat_decision_rows": len(nonflat_rows),
+        "independent_decisions": independent_count,
+        "quarantined_rows": sum(raw_unqualified_reasons.values()),
+        "raw_unqualified_reason_counts": dict(sorted(raw_unqualified_reasons.items())),
+        "quarantined_decisions": len(quarantined_ids),
+        "quarantine_reason_counts": dict(sorted(quarantine_reasons.items())),
+        "mapped_ticker_count": len(mapped_tickers),
+        "mapped_tickers": mapped_tickers,
+        "candidate_overlap_decisions": len(overlap_ids),
+        "selected_signal_overlap_decisions": len(selected_overlap_ids),
+        "actual_cash_conflict_decisions": len(cash_conflict_ids),
+        "settled_independent_decisions_by_horizon": settled_counts,
+        "settled_independent_decisions": conservative_settled,
+        "ledger_file_count": len(ledger_files),
+        "excluded_ledger_files": [_path_text(path) for path in excluded_ledger_files],
+        "outcome_file_count": len(outcome_files),
+        "excluded_outcome_files": [_path_text(path) for path in excluded_outcome_files],
+        "outcome_row_count": len(outcome_rows),
+        "instrument_map_path": _path_text(map_path),
+        "instrument_map_exists": map_path.exists(),
+        "instrument_map_row_count": len(mappings),
+        "artifact_commitments": {
+            "ledger_set_sha256": _file_set_hash(ledger_files),
+            "outcome_set_sha256": _file_set_hash(outcome_files),
+            "instrument_map_sha256": (
+                hashlib.sha256(map_path.read_bytes()).hexdigest() if map_path.exists() else None
+            ),
+        },
+        "gate_ready": gate_ready,
+        "reopen_condition": None
+        if gate_ready
+        else {
+            "independent_decisions_gte": 30,
+            "mapped_tickers_gte": 10,
+            "actual_cash_conflict_decisions_gte": 10,
+            "settled_h5_h10_h20_each_gte": 30,
+        },
+        "production_impact": {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": True,
+            "replay_only": False,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "scope": "default_off_estimate_revision_semantic_readiness",
+        },
+    }
+
+
+def _rollback_chain_decision_ids(rows: Sequence[dict[str, Any]]) -> set[str]:
+    grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        grouped[
+            (
+                str(row.get("ticker") or "").upper(),
+                str(row.get("estimate_event_identity") or ""),
+                str(row.get("estimate_source") or ""),
+            )
+        ].append(row)
+    quarantined: set[str] = set()
+    for chain in grouped.values():
+        chain.sort(key=lambda row: str(row.get("decision_clock") or ""))
+        for previous, current in zip(chain, chain[1:]):
+            if (
+                _same_number(previous.get("prior_snapshot_eps_estimate"), current.get("eps_estimate"))
+                and _same_number(previous.get("eps_estimate"), current.get("prior_snapshot_eps_estimate"))
+            ):
+                quarantined.update(
+                    str(row.get("decision_id"))
+                    for row in (previous, current)
+                    if row.get("decision_id")
+                )
+    return quarantined
+
+
+def _raw_unqualified_reason(row: dict[str, Any]) -> str | None:
+    if int(row.get("schema_version") or 0) < 3:
+        return "legacy_snapshot_or_ledger_schema"
+    if row.get("revision_quarantine_reason"):
+        return str(row["revision_quarantine_reason"])
+    if row.get("estimate_revision_usable") is not True:
+        return "unqualified_revision_observation"
+    if _parse_aware_datetime(row.get("decision_clock")) is None:
+        return "naive_or_missing_decision_clock"
+    return None
+
+
+def _revision_direction(row: dict[str, Any]) -> str:
+    return str(
+        row.get("revision_direction_prev") or row.get("revision_direction") or ""
+    ).strip().lower()
+
+
+def _revision_decision_disqualification_reason(
+    row: dict[str, Any],
+    *,
+    instrument_mapping: dict[str, Any] | None,
+    additional_quarantine_reason: str | None = None,
+    as_of_date: date | None = None,
+) -> str | None:
+    """Return the single fail-closed qualification result for one decision."""
+
+    if additional_quarantine_reason:
+        return additional_quarantine_reason
+    intrinsic_reason = _raw_unqualified_reason(row)
+    if intrinsic_reason is not None:
+        return intrinsic_reason
+    decision_clock = _parse_aware_datetime(row.get("decision_clock"))
+    if (
+        as_of_date is not None
+        and decision_clock
+        and decision_clock.astimezone(MARKET_TIMEZONE).date() > as_of_date
+    ):
+        return "decision_clock_after_as_of"
+    if _revision_direction(row) not in {"up", "down"}:
+        return "flat_or_missing_revision_direction"
+    if not row.get("decision_id"):
+        return "missing_decision_id"
+    if instrument_mapping is None:
+        return "missing_effective_instrument_mapping"
+    return None
+
+
+def _horizon_closed_by_as_of(
+    row: dict[str, Any], horizon: int, as_of_date: date
+) -> bool:
+    if row.get(f"h{horizon}_status") != "closed":
+        return False
+    exit_date = row.get(f"h{horizon}_exit_date")
+    if not exit_date:
+        return False
+    try:
+        return _coerce_date(exit_date) <= as_of_date
+    except (TypeError, ValueError):
+        return False
+
+
+def _same_number(left: Any, right: Any) -> bool:
+    left_number = _safe_float(left)
+    right_number = _safe_float(right)
+    return bool(
+        left_number is not None
+        and right_number is not None
+        and abs(left_number - right_number) <= 1e-9
+    )
+
+
+def _file_set_hash(paths: Sequence[Path]) -> str:
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(_path_text(path).encode("utf-8"))
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
+
+
+def _dated_artifact_files(
+    root: Path,
+    *,
+    prefix: str,
+    as_of_date: date,
+) -> tuple[list[Path], list[Path]]:
+    """Select canonical YYYYMMDD JSONL artifacts at or before ``as_of``."""
+
+    included: list[Path] = []
+    excluded: list[Path] = []
+    marker = f"{prefix}_"
+    for path in sorted(root.glob(f"{prefix}_*.jsonl")):
+        stem = path.stem
+        tag = stem[len(marker) :] if stem.startswith(marker) else ""
+        if len(tag) != 8 or not tag.isascii() or not tag.isdigit():
+            excluded.append(path)
+            continue
+        try:
+            artifact_date = datetime.strptime(tag, "%Y%m%d").date()
+        except ValueError:
+            excluded.append(path)
+            continue
+        (included if artifact_date <= as_of_date else excluded).append(path)
+    return included, excluded
+
+
 def _build_outcome_row(
     *,
     row: dict[str, Any],
+    instrument_mapping: dict[str, Any] | None,
     as_of_date: date,
     source_ledger: Path,
     source_summary: Path,
@@ -260,19 +906,46 @@ def _build_outcome_row(
     horizons: Sequence[int],
     notional_usd: float,
 ) -> dict[str, Any]:
-    ticker = str(row.get("ticker") or "").upper()
+    source_ticker = str(row.get("ticker") or "").upper()
+    ticker = (
+        str(instrument_mapping.get("instrument_ticker") or "").upper()
+        if instrument_mapping
+        else source_ticker
+    )
     entry_date = _entry_date(row, as_of_date)
-    direction = row.get("revision_direction_prev") or row.get("revision_direction")
+    direction = _revision_direction(row)
+    quarantine_reason = _revision_decision_disqualification_reason(
+        row,
+        instrument_mapping=instrument_mapping,
+        as_of_date=as_of_date,
+    )
+    decision_qualified = quarantine_reason is None
+    settlement_qualified = bool(decision_qualified and entry_date)
+    if not quarantine_reason and not entry_date:
+        quarantine_reason = "invalid_decision_clock"
     return {
         "schema_version": SCHEMA_VERSION,
         "source_revision_ledger": _path_text(source_ledger),
         "source_revision_summary": _path_text(source_summary),
+        "source_ticker": source_ticker,
         "ticker": ticker,
+        "instrument_ticker": ticker if instrument_mapping else None,
+        "instrument_cik": instrument_mapping.get("cik") if instrument_mapping else None,
+        "instrument_mapping_id": instrument_mapping.get("mapping_id") if instrument_mapping else None,
+        "instrument_mapping_qualified": instrument_mapping is not None,
         "as_of_date": str(row.get("as_of_date") or as_of_date.isoformat()),
         "usable_entry_date": entry_date,
         "target_price": None,
         "target_price_scope": "not_applicable_fixed_horizon_replacement_value",
         "revision_direction": direction,
+        "decision_id": row.get("decision_id"),
+        "decision_clock": row.get("decision_clock"),
+        "first_seen_at": row.get("first_seen_at"),
+        "estimate_source": row.get("estimate_source"),
+        "estimate_event_identity": row.get("estimate_event_identity"),
+        "decision_qualified": decision_qualified,
+        "settlement_qualified": settlement_qualified,
+        "settlement_quarantine_reason": quarantine_reason,
         "estimate_revision_usable": bool(row.get("estimate_revision_usable")),
         "matched_candidate_today": bool(
             row.get("matched_candidate_today") or row.get("matched_candidate_count")
@@ -296,11 +969,12 @@ def _build_outcome_row(
         "paper_notional_usd": float(notional_usd),
         **_settle_horizons(
             ticker=ticker,
-            requested_entry_date=entry_date,
+            requested_entry_date=entry_date or as_of_date.isoformat(),
             bars=bars,
             latest_complete=latest_complete,
             horizons=horizons,
             notional_usd=notional_usd,
+            qualified=settlement_qualified,
         ),
     }
 
@@ -313,7 +987,17 @@ def _settle_horizons(
     latest_complete: str | None,
     horizons: Sequence[int],
     notional_usd: float,
+    qualified: bool = True,
 ) -> dict[str, Any]:
+    if not qualified:
+        result: dict[str, Any] = {
+            "requested_entry_date": requested_entry_date,
+            "entry_date": requested_entry_date,
+            "actual_entry_date": None,
+        }
+        for horizon in horizons:
+            result.update(_empty_horizon(f"h{horizon}", "unqualified_decision"))
+        return result
     ticker_rows = bars.get(ticker, [])
     entry_index = _first_index_on_or_after(ticker_rows, requested_entry_date)
     actual_entry_date: str | None = None
@@ -393,6 +1077,7 @@ def _summarize(
     source_summary_payload: dict[str, Any],
     source_ledger: Path,
     source_summary: Path,
+    instrument_map: Path,
     outcome_rows: list[dict[str, Any]],
     warehouse: Path,
     warehouse_range: dict[str, Any],
@@ -404,6 +1089,7 @@ def _summarize(
     run_adapter_changed: bool,
 ) -> dict[str, Any]:
     matched_tickers = sorted({row["ticker"] for row in outcome_rows if row.get("ticker")})
+    qualified_rows = [row for row in outcome_rows if row.get("settlement_qualified")]
     missing_tickers = sorted(ticker for ticker in matched_tickers if not bars.get(ticker))
     source_status = "ok"
     if not source_ledger.exists():
@@ -412,6 +1098,8 @@ def _summarize(
         source_status = "missing_warehouse"
     elif not outcome_rows:
         source_status = "no_matched_candidate_rows"
+    elif not qualified_rows:
+        source_status = "no_qualified_mapped_decisions"
 
     closed_counts = {
         f"h{horizon}": sum(1 for row in outcome_rows if row.get(f"h{horizon}_status") == "closed")
@@ -462,6 +1150,13 @@ def _summarize(
         "source_revision_summary": _path_text(source_summary),
         "source_revision_summary_exists": source_summary.exists(),
         "source_revision_summary_payload": source_summary_payload,
+        "instrument_map_path": _path_text(instrument_map),
+        "instrument_map_exists": instrument_map.exists(),
+        "instrument_map_sha256": (
+            hashlib.sha256(instrument_map.read_bytes()).hexdigest()
+            if instrument_map.exists()
+            else None
+        ),
         "warehouse_path": _path_text(warehouse),
         "warehouse_exists": warehouse.exists(),
         "warehouse_date_range": warehouse_range,
@@ -475,6 +1170,23 @@ def _summarize(
         "slippage_bps_target": SLIPPAGE_BPS_TARGET,
         "source_ledger_row_count": len(source_rows),
         "matched_candidate_rows": len(outcome_rows),
+        "mapped_matched_candidate_rows": sum(
+            1 for row in outcome_rows if row.get("instrument_mapping_qualified")
+        ),
+        "qualified_matched_decision_rows": len(qualified_rows),
+        "qualified_independent_decision_count": len(
+            {row.get("decision_id") for row in qualified_rows if row.get("decision_id")}
+        ),
+        "quarantined_matched_rows": sum(
+            1 for row in outcome_rows if not row.get("settlement_qualified")
+        ),
+        "actual_cash_conflict_decisions": len(
+            {
+                row.get("decision_id")
+                for row in qualified_rows
+                if row.get("decision_id") and _has_explicit_cash_conflict(row)
+            }
+        ),
         "matched_candidate_tickers": matched_tickers,
         "usable_matched_candidate_rows": sum(
             1 for row in outcome_rows if row.get("estimate_revision_usable")
@@ -568,6 +1280,8 @@ def _load_bars(
     rows_by_ticker: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with sqlite3.connect(_sqlite_readonly_uri(warehouse), uri=True) as con:
         for ticker, day, open_, close in con.execute(query, params):
+            if not is_us_equity_session(str(day)):
+                continue
             rows_by_ticker[str(ticker).upper()].append(
                 {
                     "date": str(day),
@@ -586,6 +1300,27 @@ def _warehouse_date_range(warehouse: Path) -> dict[str, Any]:
             "select min(date), max(date), count(*) from ohlcv"
         ).fetchone()
     return {"min_date": min_date, "max_date": max_date, "rows": int(rows or 0)}
+
+
+def _latest_completed_warehouse_date(
+    warehouse_max_date: str | None, generated_at: datetime
+) -> str | None:
+    """Cap daily bars at a completed regular U.S. equity session."""
+    if not warehouse_max_date:
+        return None
+    try:
+        candidate = _coerce_date(warehouse_max_date)
+    except (TypeError, ValueError):
+        return None
+    market_now = generated_at.astimezone(MARKET_TIMEZONE)
+    today = market_now.date()
+    if candidate > today:
+        candidate = today
+    if candidate == today and (market_now.hour, market_now.minute) < (16, 15):
+        candidate -= timedelta(days=1)
+    while not is_us_equity_session(candidate):
+        candidate -= timedelta(days=1)
+    return candidate.isoformat()
 
 
 def _pnl_for_dates(
@@ -625,12 +1360,53 @@ def _first_index_on_or_after(rows: list[dict[str, Any]], day: str) -> int | None
     return None
 
 
-def _entry_date(row: dict[str, Any], fallback: date) -> str:
-    raw = row.get("entry_date") or row.get("as_of_date") or fallback.isoformat()
-    return _coerce_date(raw).isoformat()
+def _entry_date(row: dict[str, Any], fallback: date) -> str | None:
+    """Return the first possible U.S. market open strictly after evidence."""
+
+    del fallback  # legacy as-of dates are intentionally not decision clocks
+    decision_clock = _parse_aware_datetime(
+        row.get("decision_clock") or row.get("first_seen_at")
+    )
+    if decision_clock is None:
+        return None
+    local = decision_clock.astimezone(MARKET_TIMEZONE)
+    market_open = local.replace(
+        hour=MARKET_OPEN_HOUR,
+        minute=MARKET_OPEN_MINUTE,
+        second=0,
+        microsecond=0,
+    )
+    candidate = local.date() if local < market_open else local.date() + timedelta(days=1)
+    return candidate.isoformat()
+
+
+def _parse_aware_datetime(value: Any) -> datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        text = str(value).strip()
+        if text.endswith("Z"):
+            text = text[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _has_explicit_cash_conflict(row: dict[str, Any]) -> bool:
+    for match in row.get("matched_signal_records") or []:
+        if not isinstance(match, dict):
+            continue
+        if match.get("cash_conflict") is True:
+            return True
+    return False
 
 
 def _coerce_date(value: str | date) -> date:
+    if isinstance(value, datetime):
+        return value.date()
     if isinstance(value, date):
         return value
     return datetime.strptime(str(value), "%Y-%m-%d").date()

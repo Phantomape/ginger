@@ -26,6 +26,10 @@ SCHEMA_VERSION = 1
 OBSERVER_NAME = "prediction_market_event_observer"
 ARTIFACT_ROOT = Path("non_ohlcv") / OBSERVER_NAME
 POLYMARKET_EVENTS_ENDPOINT = "https://gamma-api.polymarket.com/events"
+# exp-20260718-002: the /events endpoint silently ignores its `search` param,
+# so every query received the same generic first page and relevance rejected
+# nearly everything. /public-search?q= is the endpoint that actually filters.
+POLYMARKET_PUBLIC_SEARCH_ENDPOINT = "https://gamma-api.polymarket.com/public-search"
 OUTCOME_RULE_VERSION = "prediction_market_event_forward_outcome_ledger_v1"
 
 
@@ -258,12 +262,11 @@ def get_prediction_market_observer_sources() -> list[dict[str, Any]]:
         }
         sources.append(
             {
-                "url": POLYMARKET_EVENTS_ENDPOINT,
+                "url": POLYMARKET_PUBLIC_SEARCH_ENDPOINT,
                 "params": {
-                    "search": spec["query"],
-                    "active": "true",
-                    "closed": "false",
-                    "limit": 100,
+                    "q": spec["query"],
+                    "events_status": "active",
+                    "limit_per_type": 100,
                 },
                 "source_type": "polymarket_prediction_market_event",
                 "metadata": metadata,

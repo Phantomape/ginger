@@ -1,12 +1,13 @@
-"""Manual small-live PILOT tracker (read-only over data/paper_sleeves/*/state.json).
+"""Paper-shadow PILOT tracker (read-only over data/paper_sleeves/*/state.json).
 
 Operating model (owner decision 2026-06-15, see memory incremental-sleeve-capital):
 the default-off paper-maturation pipeline does not accumulate enough true-trigger
 forward rows to ever clear the >=20 gate, so promising sleeves are promoted
-straight to a small MANUAL live book ($10k) from day one. The owner executes
-fills by hand and is the kill switch. This module does NOT trade and does NOT
-recompute signals; it reads the existing sleeve state the daily pipeline already
-writes and produces the two things a manual operator needs:
+straight to a proposed small manual book ($10k) from day one. The owner may
+execute fills by hand and is the kill switch. This module does NOT trade,
+recompute signals, or know which recommendations were actually executed; it
+reads the existing paper-sleeve state the daily pipeline already writes and
+produces two paper-shadow surfaces for operator review:
 
   1. a daily RECOMMENDATION SHEET per pilot - today's held + to-enter picks,
      logged point-in-time (the sleeve state is already PIT);
@@ -48,8 +49,14 @@ except ImportError:  # pragma: no cover - package-style import
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SLEEVE_DIR = REPO_ROOT / "data" / "paper_sleeves"
 OUT_DIR = REPO_ROOT / "data" / "pilots"
+BROKER_POSITION_SNAPSHOTS = (
+    REPO_ROOT / "data" / "live_pilot" / "broker_execution" / "position_snapshots.jsonl"
+)
 
-# Per-position live book size. The owner allocates $10k per pilot position.
+PAPER_SCORECARD_BASIS = "paper_sleeve_shadow_scaled_to_fixed_pilot_notional"
+PAPER_VERDICT_SCOPE = "paper_shadow_risk_stop_and_graduation_only"
+
+# Per-position shadow notional. Actual broker fills are not inferred from it.
 PILOT_NOTIONAL_USD = 10_000.0
 
 PILOTS: list[dict[str, Any]] = [
@@ -151,6 +158,120 @@ def _load_state(sleeve: str) -> dict[str, Any]:
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception as exc:  # noqa: BLE001
         return {"_error": str(exc)}
+
+
+def _load_latest_broker_position_snapshot(
+    path: Path = BROKER_POSITION_SNAPSHOTS,
+) -> dict[str, Any]:
+    """Load only non-sensitive current-position provenance from the broker ledger.
+
+    A ticker present in the broker account is not enough to attribute the lot to
+    a pilot.  The snapshot therefore supports overlap auditing only; it never
+    upgrades a paper row to broker-confirmed execution evidence.
+    """
+    if not path.exists():
+        return {
+            "status": "unavailable",
+            "observed_at_utc": None,
+            "position_count": 0,
+            "tickers": [],
+            "reason": "broker_position_snapshot_missing",
+        }
+    latest: dict[str, Any] | None = None
+    try:
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            if raw.strip():
+                row = json.loads(raw)
+                if isinstance(row, dict):
+                    latest = row
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "status": "error",
+            "observed_at_utc": None,
+            "position_count": 0,
+            "tickers": [],
+            "reason": f"broker_position_snapshot_unreadable:{type(exc).__name__}",
+        }
+    fact = (latest or {}).get("fact")
+    positions = fact.get("positions") if isinstance(fact, dict) else None
+    if not isinstance(positions, list):
+        return {
+            "status": "error",
+            "observed_at_utc": (latest or {}).get("observed_at_utc"),
+            "position_count": 0,
+            "tickers": [],
+            "reason": "latest_broker_snapshot_has_no_positions_list",
+        }
+    tickers = sorted({
+        str(row.get("code") or "").upper().removeprefix("US.")
+        for row in positions
+        if isinstance(row, dict) and row.get("code")
+    })
+    return {
+        "status": "available",
+        "observed_at_utc": (latest or {}).get("observed_at_utc"),
+        "position_count": len(positions),
+        "tickers": tickers,
+        "reason": None,
+    }
+
+
+def _attach_execution_provenance(
+    recs: list[dict[str, Any]],
+    cards: list[dict[str, Any]],
+    broker_snapshot: dict[str, Any],
+) -> dict[str, Any]:
+    """Mark the pilot surface as paper-shadow and audit current ticker overlap."""
+    broker_tickers = set(broker_snapshot.get("tickers") or [])
+    actionable_tickers: set[str] = set()
+    overlap_tickers: set[str] = set()
+    for rec in recs:
+        rec["measurement_basis"] = PAPER_SCORECARD_BASIS
+        rec["verdict_scope"] = PAPER_VERDICT_SCOPE
+        rec["live_verdict_eligible"] = False
+        rec_overlap: set[str] = set()
+        for bucket in ("actionable", "exits_executed_today", "skipped"):
+            for row in rec.get(bucket) or []:
+                ticker = str(row.get("ticker") or "").upper()
+                present = bool(ticker and ticker in broker_tickers)
+                if bucket == "actionable" and ticker:
+                    actionable_tickers.add(ticker)
+                    if present:
+                        overlap_tickers.add(ticker)
+                        rec_overlap.add(ticker)
+                row["broker_current_ticker_present"] = present
+                row["execution_provenance_status"] = (
+                    "ticker_present_but_pilot_unattributed"
+                    if present
+                    else "not_broker_confirmed"
+                )
+                row["operator_must_verify_execution"] = True
+        rec["broker_current_ticker_overlap"] = sorted(rec_overlap)
+        rec["broker_current_ticker_overlap_count"] = len(rec_overlap)
+    for card in cards:
+        card["measurement_basis"] = PAPER_SCORECARD_BASIS
+        card["verdict_scope"] = PAPER_VERDICT_SCOPE
+        card["broker_confirmed_closed_trades"] = None
+        card["live_verdict_eligible"] = False
+    return {
+        "scorecard_basis": PAPER_SCORECARD_BASIS,
+        "paper_verdict_scope": PAPER_VERDICT_SCOPE,
+        "broker_snapshot_status": broker_snapshot.get("status"),
+        "broker_snapshot_observed_at_utc": broker_snapshot.get("observed_at_utc"),
+        "broker_current_position_count": broker_snapshot.get("position_count", 0),
+        "paper_actionable_ticker_count": len(actionable_tickers),
+        "broker_current_ticker_overlap_count": len(overlap_tickers),
+        "broker_current_ticker_overlap": sorted(overlap_tickers),
+        "historical_closed_trade_link_status": (
+            "unavailable_without_pilot_execution_id_or_broker_order_strategy_tag"
+        ),
+        "live_promotion_eligible": False,
+        "note": (
+            "Paper sleeve outcomes remain valid shadow evidence and retain their "
+            "precommitted stop rule. Current-ticker overlap is not lot or strategy "
+            "attribution, so no scorecard verdict is broker-confirmed live evidence."
+        ),
+    }
 
 
 def _rank_key(row: dict[str, Any]) -> tuple:
@@ -503,15 +624,26 @@ def _fmt_usd(v: Any) -> str:
 def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
                overlaps: list[dict[str, Any]], stop_alerts: list[dict[str, Any]],
                as_of: str,
-               concentration: dict[str, Any] | None = None) -> str:
-    L = [f"# Pilot tracker - as of {as_of}", "",
-         f"Per-position book: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; manual execution.",
+               concentration: dict[str, Any] | None = None,
+               execution_provenance: dict[str, Any] | None = None) -> str:
+    provenance = execution_provenance or {}
+    L = [f"# Pilot shadow tracker - as of {as_of}", "",
+         f"Per-position shadow notional: {_fmt_usd(PILOT_NOTIONAL_USD)}. Read-only; no orders.",
+         "Measurement basis: paper-sleeve outcomes scaled to the fixed pilot notional; "
+         "not broker-confirmed fills.",
+         "Paper verdicts retain the precommitted risk stop but are not eligible for "
+         "live graduation/kill attribution.",
+         "Broker current-ticker overlap: {m}/{n}; ticker presence is not lot or strategy attribution."
+         .format(
+             m=provenance.get("broker_current_ticker_overlap_count", 0),
+             n=provenance.get("paper_actionable_ticker_count", 0),
+         ),
          "Graduate/kill rule (pre-committed): >= {} closed AND sum rv_vs_SPY > 0 AND book DD < {:.0%}."
          .format(GRADUATE_MIN_CLOSED, GRADUATE_MAX_BOOK_DD_PCT),
-         "Manual stop overlay: cut a held position at -{:.0%} from entry (does not change the sleeve).".format(STOP_LOSS_PCT),
+         "Paper stop overlay: flag a shadow row at -{:.0%}; verify broker execution before acting.".format(STOP_LOSS_PCT),
          ""]
     if stop_alerts:
-        L += [f"## [!] STOP-LOSS alerts - cut by hand today (stop = -{STOP_LOSS_PCT:.0%})", ""]
+        L += [f"## [!] PAPER STOP alerts - verify broker position first (stop = -{STOP_LOSS_PCT:.0%})", ""]
         for s in stop_alerts:
             L.append("- **SELL {tk}** ({pl}): {up:+.1%} from entry {ep} -> last {lp}".format(
                 tk=s["ticker"], pl=s["pilot"], up=s["unrealized_pct"],
@@ -521,7 +653,7 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
     if overlaps:
         L += ["## [!] Cross-pilot overlap (stacked exposure on one name)", ""]
         for o in overlaps:
-            L.append("- **{tk}**: held by {n} pilots ({pl}) -> {ex} real exposure".format(
+            L.append("- **{tk}**: shadow-held by {n} pilots ({pl}) -> {ex} modeled exposure".format(
                 tk=o["ticker"], n=o["positions"], pl=", ".join(o["pilots"]),
                 ex=_fmt_usd(o["total_exposure_usd"])))
             for p in o.get("participant_context") or []:
@@ -535,7 +667,7 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
         L.append("")
     conc_alerts = (concentration or {}).get("alerts") or []
     if conc_alerts:
-        L += ["## [!] Cross-pilot theme concentration (one theme, stacked books)", ""]
+        L += ["## [!] Cross-pilot shadow concentration (one theme, stacked models)", ""]
         for g in conc_alerts:
             level = "sector" if "sector" in g else "industry"
             L.append("- **{key}** ({lv}): {n} positions across {np} pilot(s) "
@@ -545,7 +677,7 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
                          tk=", ".join(g["tickers"]),
                          ex=_fmt_usd(g["exposure_usd"]), sh=g["exposure_share"]))
         L.append("")
-    L += ["## Scorecard", "",
+    L += ["## Paper-shadow scorecard", "",
          "| pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |",
          "|---|--:|--:|--:|--:|--:|--:|--:|---|"]
     for c in cards:
@@ -559,7 +691,7 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
         return f"{v:.2f}" if isinstance(v, (int, float)) else "next-open"
 
     order = {"EXIT_NOW": 0, "EXIT_NEXT_SESSION": 1, "ENTER_NEXT_OPEN": 2, "HOLD": 3}
-    L += ["", "## Today's signals (BUY / HOLD / SELL)", ""]
+    L += ["", "## Today's paper-shadow signals (verify broker execution before acting)", ""]
     for r in recs:
         L.append(f"### {r['label']}  (`{r['sleeve']}`, max_concurrent={r['max_concurrent']})")
         acts = sorted(r["actionable"], key=lambda a: order.get(a["status"], 9))
@@ -570,21 +702,21 @@ def _render_md(recs: list[dict[str, Any]], cards: list[dict[str, Any]],
             L.append("- _no position / no signal today_")
         for a in acts:
             if a["status"] == "EXIT_NOW" and a.get("stop_status") == "STOP_HIT":
-                L.append("- **SELL (STOP_HIT)** {tk}: manual stop hit at {up}; entry {ep}, last {lp}".format(
+                L.append("- **SHADOW SELL (STOP_HIT; VERIFY BROKER)** {tk}: stop hit at {up}; entry {ep}, last {lp}".format(
                     tk=a["ticker"], up=f"{a['unrealized_pct']:+.1%}",
                     ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
             elif a["status"] in ("EXIT_NOW", "EXIT_NEXT_SESSION"):
-                L.append("- **SELL ({st})** {tk}: hold elapsed (day {dh}/{hd}); entry {ep}, last {lp}".format(
+                L.append("- **SHADOW SELL ({st}; VERIFY BROKER)** {tk}: hold elapsed (day {dh}/{hd}); entry {ep}, last {lp}".format(
                     st=a["status"], tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"],
                     ep=_px(a["entry_price"]), lp=_px(a["last_price"])))
             elif a["status"] == "ENTER_NEXT_OPEN":
-                L.append("- **BUY (next open)** {tk} (signal {sd}); {ex}; rank={rk} score={sc}".format(
+                L.append("- **SHADOW BUY (next open; manual confirmation required)** {tk} (signal {sd}); {ex}; rank={rk} score={sc}".format(
                     tk=a["ticker"], sd=a["signal_date"], ex=a["exit_rule"],
                     rk=a["source_priority_rank"], sc=a["candidate_score"]))
             else:  # HOLD
                 up = a.get("unrealized_pct")
                 tag = " **[STOP_HIT -> SELL]**" if a.get("stop_status") == "STOP_HIT" else ""
-                L.append("- hold {tk}: day {dh}/{hd} ({dr} left); entry {ep}, last {lp} ({up}){tag}".format(
+                L.append("- shadow hold {tk}: day {dh}/{hd} ({dr} left); entry {ep}, last {lp} ({up}){tag}".format(
                     tk=a["ticker"], dh=a["days_held"], hd=a["hold_days"], dr=a["days_remaining"],
                     ep=_px(a["entry_price"]), lp=_px(a["last_price"]),
                     up=f"{up:+.1%}" if isinstance(up, (int, float)) else "n/a", tag=tag))
@@ -626,6 +758,8 @@ def generate(write: bool = True) -> dict[str, Any]:
         cards.append(card)
         recs.append(_recommendations(pilot, state, card))
 
+    broker_snapshot = _load_latest_broker_position_snapshot()
+    execution_provenance = _attach_execution_provenance(recs, cards, broker_snapshot)
     overlaps = _cross_pilot_overlap(recs)
     concentration = _cross_pilot_concentration(recs)
     stop_alerts = _stop_alerts(recs)
@@ -635,16 +769,19 @@ def generate(write: bool = True) -> dict[str, Any]:
                           "min_rv_spy_usd": GRADUATE_MIN_RV_SPY_USD,
                           "max_book_dd_pct": GRADUATE_MAX_BOOK_DD_PCT},
         "stop_loss_pct": STOP_LOSS_PCT,
+        "execution_provenance": execution_provenance,
         "cross_pilot_overlap": overlaps,
         "cross_pilot_concentration": concentration,
         "stop_alerts": stop_alerts,
         "scorecards": cards,
     }
-    rec_payload = {"as_of": as_of, "cross_pilot_overlap": overlaps,
+    rec_payload = {"as_of": as_of, "execution_provenance": execution_provenance,
+                   "cross_pilot_overlap": overlaps,
                    "cross_pilot_concentration": concentration,
                    "stop_alerts": stop_alerts, "recommendations": recs}
     md = _render_md(recs, cards, overlaps, stop_alerts, as_of or "latest",
-                    concentration=concentration)
+                    concentration=concentration,
+                    execution_provenance=execution_provenance)
     if write:
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         (OUT_DIR / "pilot_scorecard.json").write_text(json.dumps(scorecard_payload, indent=2), encoding="utf-8")
@@ -652,6 +789,7 @@ def generate(write: bool = True) -> dict[str, Any]:
             json.dumps(rec_payload, indent=2), encoding="utf-8")
         (OUT_DIR / "pilot_tracker.md").write_text(md, encoding="utf-8")
     return {"as_of": as_of, "scorecards": cards, "recommendations": recs,
+            "execution_provenance": execution_provenance,
             "cross_pilot_overlap": overlaps,
             "cross_pilot_concentration": concentration,
             "stop_alerts": stop_alerts, "markdown": md}

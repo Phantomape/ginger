@@ -1,0 +1,241 @@
+{
+  "accepted": false,
+  "accepted_alpha": false,
+  "aggregate_expected_value_delta": -0.0217,
+  "aggregate_strategy_total_pnl_delta": -643.77,
+  "artifact": "data/experiments/exp-20260711-016/exp_20260711_016_treasury_2s10s_steepening_financial_leadership.json",
+  "calibration": {
+    "actual_success": false,
+    "brier_score": 0.0324,
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "accepted_vixy_comparator_not_beaten"
+    ],
+    "predicted_failure_modes": [
+      "term_spread_relabels_broad_beta",
+      "financial_sector_sample_too_sparse",
+      "old_thin_regression",
+      "accepted_relief_comparator_not_beaten",
+      "concentration_failed",
+      "fred_fetch_unavailable"
+    ],
+    "predicted_failure_modes_hit": [
+      "accepted_relief_comparator_not_beaten",
+      "old_thin_regression",
+      "term_spread_relabels_broad_beta"
+    ],
+    "predicted_success_probability": 0.18
+  },
+  "causal_components": [
+    "FRED T10Y2Y daily observations",
+    "fixed first cross above trailing 20-session simple mean",
+    "Financial-sector-only frozen liquid stock selector",
+    "next-open 10-session paper replay",
+    "canonical costs and Gate 1-4",
+    "accepted VIXY relief comparator",
+    "fingerprint coverage regression"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260711_016_treasury_2s10s_steepening_financial_leadership.py",
+    "data/experiments/exp-20260711-016/**",
+    "experiments/tickets/exp-20260711-016.json",
+    "experiments/cards/exp-20260711-016.md",
+    "experiments/manifests/exp-20260711-016.json",
+    "experiments/logs/exp-20260711-016.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_variable": "t10y2y20_first_cross_above_financial_leadership_v1",
+  "data_coverage": {
+    "all_canonical_windows_covered": true,
+    "candidate_sector": "Financial Services",
+    "relief_events_by_window": {
+      "late_strong": 8,
+      "mid_weak": 14,
+      "old_thin": 11
+    },
+    "row_count": 430,
+    "rows_by_window": {
+      "late_strong": 123,
+      "mid_weak": 126,
+      "old_thin": 137
+    },
+    "series_id": "T10Y2Y",
+    "source": "FRED T10Y2Y 10-Year minus 2-Year Treasury Constant Maturity Spread",
+    "steepening_events_by_window": {
+      "late_strong": 8,
+      "mid_weak": 14,
+      "old_thin": 11
+    }
+  },
+  "decision": "observed_only_rejected_treasury_curve_financial_leadership",
+  "experiment_id": "exp-20260711-016",
+  "fingerprint_caveat": "Reservation initially classified the unseen FRED source as ohlcv_relation; exp016 adds the dedicated fred_treasury_curve key before closeout.",
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "FRED T10Y2Y daily Close with 20-session history",
+      "candidate sector == Financial Services",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No new core filter or entry rule was added. The volatility-relief leadership source is additive default-off paper, so core signals generated/survived are unchanged from baseline.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": -0.0217,
+    "aggregate_pnl_delta": -643.77,
+    "decision": "rejected_volatility_relief_stock_leadership_candidate_pool",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "accepted_vixy_comparator_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0018,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.164737,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": true,
+      "positive_pnl_hhi": 0.081839,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 44,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 1,
+    "windows_pnl_regressed": 2
+  },
+  "hypothesis": "Private replay scout: first daily FRED T10Y2Y Treasury spread close above its trailing 20-session mean defines curve steepening; a Financial-sector liquid-stock leadership pool should improve next-open 10-session after-cost EV and PnL.",
+  "implementation_mode": "private_replay_scout_new_data_shape",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260711-016.json",
+  "mechanism_family": "production_visible_treasury_curve_financial_relation_candidate_pool",
+  "nearby_prior_experiments": [
+    "exp-20260711-001",
+    "exp-20260711-004",
+    "exp-20260711-013",
+    "exp-20260711-015"
+  ],
+  "new_evidence_axis": "New data source and relation: FRED T10Y2Y has not been used by prior Ginger experiments; the response is Financial-sector leadership rather than another broad risk-on selector.",
+  "new_evidence_type": "new_data_source_fred_treasury_2s10s_spread",
+  "observed_only_lead": false,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by changing the curve moving-average span, adding level or persistence gates, expanding sectors, changing Financial subindustries, stock filters, top-N, hold, cooldown, notional, windows, or response shape.",
+    "new_evidence_required": "A retry requires a shared default-off helper with materially settled forward rows if this is a lead, or a genuinely different publication-timed bank funding/loan-growth source if rejected.",
+    "why_result_happened": "The fixed 2s10s steepening / Financial relation did not add robust after-cost value; it was sparse, concentrated, window-fragile, or another beta timing label."
+  },
+  "prediction": {
+    "confidence_reason": "T10Y2Y is a new official Treasury term-spread source and Financial-only exposure has a direct banking relation; odds remain low because recent macro relief proxies were generic beta and the sector restriction may starve all-window samples.",
+    "expected_ev_delta": 0.12,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "term_spread_relabels_broad_beta",
+      "financial_sector_sample_too_sparse",
+      "old_thin_regression",
+      "accepted_relief_comparator_not_beaten",
+      "concentration_failed",
+      "fred_fetch_unavailable"
+    ],
+    "recorded_at": "2026-07-11T11:08:48Z",
+    "success_probability": 0.18
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "scope": "experiment_local_private_replay_scout",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "aggregate_ev_not_positive;aggregate_pnl_not_positive;window_ev_regression;window_pnl_regression;fewer_than_two_ev_improved_windows;accepted_vixy_comparator_not_beaten",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_016_treasury_2s10s_steepening_financial_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_016_treasury_2s10s_steepening_financial_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "single_causal_variable": "t10y2y20_first_cross_above_financial_leadership_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-11T11:19:16Z",
+  "trial_family": "treasury_2s10s_steepening_financial_leadership_candidate_pool",
+  "trial_variant_id": "t10y2y20_cross_above_financial_top2_10d_v1"
+}

@@ -1,0 +1,264 @@
+{
+  "acceptance_rule": "Restore experiments/logs/exp-20260711-002.json to manifest SHA256 61e23ae5bfab926464a5705409fb2d6f3394b5d9fd29eeb0748eacdd4d3395d3; exp-20260711-017 log generation must bind ID 017 and reject cross-ID writes; focused tests and lean audit pass; no strategy or metric changes.",
+  "allowed_write_scope": [
+    "quant/experiments/",
+    "quant/test_experiment_registry.py",
+    "scripts/experiment_registry.py",
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "experiments/logs/exp-20260711-002.json",
+    "data/experiments/exp-20260713-005/",
+    "experiments/cards/exp-20260713-005.md",
+    "experiments/manifests/exp-20260713-005.json",
+    "experiments/tickets/exp-20260713-005.json",
+    "experiments/logs/exp-20260713-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260713-005.md",
+  "causal_components": [
+    "wrapper log identity binding",
+    "expected experiment-id write guard",
+    "manifest-hash recovery",
+    "regression test",
+    "derived-log rebuild"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "wrapper_experiment_log_identity_and_manifest_recovery_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-13T08:54:13+00:00",
+  "created_at": "2026-07-13T08:52:50+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260713-005",
+  "experiment_uid": "expuid-13f27755a4cb4115",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260713-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-13T08:52:50+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "experiment_log_wrapper_identity_repair"
+  },
+  "hypothesis": "Publication fault recovery: exp-20260711-017 inherits a compact-log builder whose stale exp-20260711-002 identity overwrites the positive MOVE shard; bind wrapper log identity and restore the manifest-verified MOVE record so novelty, failure statistics, and DSR trial accounting are trustworthy without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entry",
+    "exit",
+    "ranking",
+    "sizing",
+    "risk_budget",
+    "orders",
+    "live_policy",
+    "baseline_metrics"
+  ],
+  "mechanism_family": "duplicate_reservation_accounting",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260713-004"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "accounting",
+        "are",
+        "behavior",
+        "bind",
+        "builder",
+        "changing",
+        "compact",
+        "dsr",
+        "exp",
+        "experiment",
+        "failure",
+        "fault",
+        "identity",
+        "inherits",
+        "integrity",
+        "log",
+        "manifest",
+        "move",
+        "novelty",
+        "overwrites",
+        "positive",
+        "publication",
+        "record",
+        "recovery",
+        "repair",
+        "restore",
+        "shard",
+        "so",
+        "stale",
+        "statistics",
+        "strategy",
+        "trial",
+        "trustworthy",
+        "verified",
+        "whose",
+        "without",
+        "wrapper"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_log_json_parse_repair",
+        "reopen_condition": "A retry requires a newly detected malformed log shard, a parser/audit failure attributable to exp-20260628-020, or a repository-wide encoding contract change.",
+        "score": 0.0465,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_triage_counterfactual_price_source_fault_recovery",
+        "reopen_condition": "Allow routine forward settlement to accumulate. Review without a new implementation ID at 20/50 settled primary next-close decisions; reserve a separate alpha hypothesis only at 100 or with a genuinely new execution/counterfactual source.",
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "production_capacity_accounting_repair",
+        "reopen_condition": null,
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "data_ingestion_coverage_repair",
+        "reopen_condition": "TODO",
+        "score": 0.0186,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "rolling_lead_lag_peer_underreaction_candidate_pool",
+        "reopen_condition": "Need supplier/customer/product-line/event-source relation provenance or closed forward replacement-value rows before revisiting lead-lag relation alpha.",
+        "score": 0.0186,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuine publication fault recovery: a manifest-proven cross-ID overwrite corrupted an existing source-of-truth shard; this restores recorded evidence rather than reslicing an alpha surface.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuine publication fault recovery: a manifest-proven cross-ID overwrite corrupted an existing source-of-truth shard; this restores recorded evidence rather than reslicing an alpha surface.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "rejection_reason": "duplicate_reservation_accounting",
+    "duplicate_of": "exp-20260713-004",
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "surprise_note": "No implementation ran; this ticket only accounts for an asynchronous duplicate reservation."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260713-005.json",
+  "single_causal_variable": "wrapper_experiment_log_identity_and_manifest_recovery_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260713-005.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "duplicate_of_exp_20260713_004",
+  "implementation_mode": "measurement_repair",
+  "new_evidence_axis": "No new evidence; duplicate reservation accounting only.",
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "rejection_reason": "duplicate_reservation_accounting",
+  "duplicate_of": "exp-20260713-004",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "trade_enabled": false,
+    "strategy_behavior_changed": false,
+    "replay_only": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The first reservation continued asynchronously after its initial novelty output; a retry reserved exp-20260713-005 before exp-20260713-004 became visible.",
+    "forbidden_near_neighbor_retry": "Do not implement this repair under exp-20260713-005 or reserve another duplicate; exp-20260713-004 is the sole owner.",
+    "new_evidence_required": "None for this accounting ticket; follow exp-20260713-004.",
+    "realized_failure_mode": "duplicate_reservation_accounting"
+  },
+  "related_files": [
+    "experiments/tickets/exp-20260713-004.json"
+  ],
+  "reproduction_commands": [
+    "No implementation or measurement ran under exp-20260713-005."
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-13T08:54:13+00:00"
+}

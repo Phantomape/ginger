@@ -1,0 +1,920 @@
+diff --git a/quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py b/quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py
+index 7dc20ec05..0ccff6c9d 100644
+--- a/quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py
++++ b/quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import json
+ from datetime import date, timedelta
+ 
+ from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
+@@ -7,10 +8,14 @@ from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
+     RULE_VERSION,
+     SOURCE_PRIORITY,
+     SOURCE_RULE_VERSION,
++    STATE_SCHEMA_VERSION,
++    build_historical_source_relative_shadow_quarantine_health,
+     TARGET_PRICE_STATUS,
+     build_accepted_helper_source_priority_allocator_snapshot,
+     empty_accepted_helper_source_priority_allocator_state,
++    load_accepted_helper_source_priority_allocator_state,
+     select_accepted_helper_source_priority_rows,
++    update_source_relative_shadow_quarantine_state,
+ )
+ 
+ 
+@@ -47,6 +52,89 @@ def _ohlcv(days: int = 20) -> dict[str, list[dict]]:
+     return payload
+ 
+ 
++def _shadow_ohlcv(
++    dates: list[str],
++    *,
++    source_closes: list[float],
++    spy_closes: list[float] | None = None,
++    qqq_closes: list[float] | None = None,
++) -> dict[str, list[dict]]:
++    """Build exact-date marks for deterministic source-health tests."""
++
++    assert len(source_closes) == len(dates)
++    spy_closes = spy_closes or [100.0] * len(dates)
++    qqq_closes = qqq_closes or [100.0] * len(dates)
++    assert len(spy_closes) == len(dates)
++    assert len(qqq_closes) == len(dates)
++
++    def rows(closes: list[float]) -> list[dict]:
++        return [
++            {
++                "date": day,
++                "open": 100.0,
++                "high": max(100.0, close),
++                "low": min(100.0, close),
++                "close": close,
++                "volume": 1_000_000,
++            }
++            for day, close in zip(dates, closes)
++        ]
++
++    return {
++        "TOP": rows(source_closes),
++        "ALT": rows([100.0] * len(dates)),
++        "SPY": rows(spy_closes),
++        "QQQ": rows(qqq_closes),
++    }
++
++
++def _source_shadow_snapshot(
++    *,
++    as_of: str,
++    entry_date: str,
++    source_family: str = "volatility_relief",
++    candidates: list[dict] | None = None,
++) -> dict:
++    return {
++        "asof_date": as_of,
++        "candidate_count": len(candidates or []),
++        "candidates": candidates or [],
++        "open_positions": [
++            {
++                "decision_id": f"{source_family}:TOP:{entry_date}",
++                "ticker": "TOP",
++                "entry_date": entry_date,
++            }
++        ],
++        "closed_positions": [],
++    }
++
++
++def _advance_shadow_days(
++    dates: list[str],
++    ohlcv: dict[str, list[dict]],
++    *,
++    source_family: str = "volatility_relief",
++) -> dict:
++    state = empty_accepted_helper_source_priority_allocator_state()
++    for as_of in dates:
++        update_source_relative_shadow_quarantine_state(
++            state=state,
++            as_of=as_of,
++            source_snapshots={
++                source_family: _source_shadow_snapshot(
++                    as_of=as_of,
++                    entry_date=dates[0],
++                    source_family=source_family,
++                )
++            },
++            ohlcv_by_ticker=ohlcv,
++            benchmark_ohlcv_by_ticker=ohlcv,
++            config={"source_quarantine_enabled": True},
++        )
++    return state
++
++
+ def test_selects_fixed_source_priority_top1_per_day() -> None:
+     trading_dates = _business_dates(5)
+     signal_date = trading_dates[1]
+@@ -74,6 +162,8 @@ def test_selects_fixed_source_priority_top1_per_day() -> None:
+     assert selected[0]["source_family"] == "volatility_relief"
+     assert selected[0]["rule_version"] == RULE_VERSION
+     assert selected[0]["source_rule_version"] == SOURCE_RULE_VERSION
++    assert selected[0]["target_price"] is None
++    assert selected[0]["target_price_status"] == TARGET_PRICE_STATUS
+     assert selected[0]["trade_enabled"] is False
+     assert rejected[0]["filter_reason"] == "daily_top1_source_priority_limit"
+     assert audit["selected_source_counts"] == {"volatility_relief": 1}
+@@ -316,6 +406,56 @@ def test_daily_snapshot_uses_lagged_consensus_snapshot_as_rank_one_source() -> N
+     ] == {"lagged_cross_source_consensus": 1}
+ 
+ 
++def test_daily_rerun_cannot_fill_a_second_same_date_allocator_slot() -> None:
++    ohlcv = _ohlcv()
++    signal_date = ohlcv["SPY"][5]["date"]
++    state = empty_accepted_helper_source_priority_allocator_state()
++    first = build_accepted_helper_source_priority_allocator_snapshot(
++        as_of=signal_date,
++        source_snapshots={
++            "volatility_relief": {
++                "candidate_count": 1,
++                "candidates": [
++                    {
++                        "ticker": "TOP",
++                        "date": signal_date,
++                        "source_family": "volatility_relief",
++                    }
++                ],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        state=state,
++        persist=False,
++    )
++    state["pending_entries"] = first["pending_entries"]
++
++    second = build_accepted_helper_source_priority_allocator_snapshot(
++        as_of=signal_date,
++        source_snapshots={
++            "rolling_peer_shock": {
++                "candidate_count": 1,
++                "candidates": [
++                    {
++                        "ticker": "ALT",
++                        "date": signal_date,
++                        "source_family": "rolling_peer_shock",
++                    }
++                ],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        state=state,
++        persist=False,
++    )
++
++    assert second["pending_count"] == 1
++    assert second["new_pending_count"] == 0
++    assert second["rejected_candidates"][0]["filter_reason"] == (
++        "daily_top1_source_priority_limit"
++    )
++
++
+ def test_daily_snapshot_preserves_independent_source_scaled_pending_notional() -> None:
+     ohlcv = _ohlcv()
+     signal_date = ohlcv["SPY"][5]["date"]
+@@ -466,3 +606,641 @@ def test_daily_snapshot_marks_open_allocator_position_with_last_price() -> None:
+     assert position["trade_enabled"] is False
+     assert position["unrealized_return_pct"] == round((expected_last / 100.0) - 1.0, 6)
+     assert position["unrealized_pnl"] == round(5000.0 * ((expected_last / 100.0) - 1.0), 2)
++
++
++def test_source_quarantine_triggers_on_21st_not_20th_underwater_session() -> None:
++    dates = _business_dates(22)
++    ohlcv = _shadow_ohlcv(
++        dates,
++        source_closes=[100.0] + [99.0] * 21,
++    )
++    state = empty_accepted_helper_source_priority_allocator_state()
++
++    for idx, as_of in enumerate(dates):
++        update_source_relative_shadow_quarantine_state(
++            state=state,
++            as_of=as_of,
++            source_snapshots={
++                "volatility_relief": _source_shadow_snapshot(
++                    as_of=as_of,
++                    entry_date=dates[0],
++                )
++            },
++            ohlcv_by_ticker=ohlcv,
++            benchmark_ohlcv_by_ticker=ohlcv,
++            config={"source_quarantine_enabled": True},
++        )
++        health = state["source_quarantine"]["volatility_relief"]
++        if idx == 20:
++            assert health["underwater_sessions"] == 20
++            assert health["quarantined"] is False
++
++    health = state["source_quarantine"]["volatility_relief"]
++    assert health["underwater_sessions"] == 21
++    assert health["quarantined"] is True
++    assert health["triggered_today"] is True
++
++
++def test_source_quarantine_counts_observed_sessions_not_weekend_days() -> None:
++    dates = ["2026-01-09", "2026-01-12"]  # Friday, then Monday.
++    ohlcv = _shadow_ohlcv(dates, source_closes=[100.0, 99.0])
++    state = _advance_shadow_days(dates, ohlcv)
++
++    health = state["source_quarantine"]["volatility_relief"]
++    assert health["observation_sessions"] == 2
++    assert health["underwater_sessions"] == 1
++    assert health["quarantined"] is False
++
++
++def test_source_quarantine_does_not_advance_on_an_actual_weekend_call() -> None:
++    friday = "2026-01-09"
++    saturday = "2026-01-10"
++    ohlcv = _shadow_ohlcv([friday], source_closes=[100.0])
++    state = _advance_shadow_days([friday], ohlcv)
++    before = dict(state["source_quarantine"]["volatility_relief"])
++
++    audit = update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=saturday,
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=saturday,
++                entry_date=friday,
++            )
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++
++    after = state["source_quarantine"]["volatility_relief"]
++    assert audit["observable_trading_session"] is False
++    assert audit["state_advanced"] is False
++    assert audit["missing_benchmark_sessions"] == ["SPY", "QQQ"]
++    assert after == before
++
++
++def test_daily_candidate_fails_closed_when_common_benchmark_session_is_missing() -> None:
++    friday = "2026-01-09"
++    saturday = "2026-01-10"
++    base = _shadow_ohlcv([friday], source_closes=[100.0])
++    state = _advance_shadow_days([friday], base)
++    before_sessions = state["source_quarantine"]["volatility_relief"][
++        "observation_sessions"
++    ]
++    saturday_top = {
++        "date": saturday,
++        "open": 100.0,
++        "high": 101.0,
++        "low": 99.0,
++        "close": 100.0,
++        "volume": 1_000_000,
++    }
++    source_ohlcv = {**base, "TOP": [*base["TOP"], saturday_top]}
++    candidate = {
++        "ticker": "TOP",
++        "date": saturday,
++        "source_family": "volatility_relief",
++    }
++
++    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
++        as_of=saturday,
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=saturday,
++                entry_date=friday,
++                candidates=[candidate],
++            )
++        },
++        ohlcv_by_ticker=source_ohlcv,
++        benchmark_ohlcv_by_ticker=base,
++        state=state,
++        config={"source_quarantine_enabled": True},
++        persist=False,
++    )
++
++    assert snapshot["candidate_count"] == 0
++    assert snapshot["new_pending_count"] == 0
++    assert snapshot["rejected_candidates"][0]["filter_reason"] == (
++        "source_quarantine_unavailable"
++    )
++    health = snapshot["source_priority_context"]["source_quarantine"][
++        "volatility_relief"
++    ]
++    assert health["available"] is False
++    assert health["unavailable_reason"] == "missing_common_benchmark_session"
++    assert health["observation_sessions"] == before_sessions
++
++
++def test_source_quarantine_requires_both_relative_curves_underwater() -> None:
++    dates = _business_dates(25)
++    ohlcv = _shadow_ohlcv(
++        dates,
++        source_closes=[100.0] + [99.0] * 24,
++        spy_closes=[100.0] * 25,
++        qqq_closes=[100.0] + [98.0] * 24,
++    )
++    state = _advance_shadow_days(dates, ohlcv)
++
++    health = state["source_quarantine"]["volatility_relief"]
++    assert health["first_relative_equity"] < health["first_relative_hwm"]
++    assert health["second_relative_equity"] == health["second_relative_hwm"]
++    assert health["underwater_sessions"] == 0
++    assert health["quarantined"] is False
++
++
++def test_quarantined_high_priority_source_is_filtered_before_top1_backfill() -> None:
++    trading_dates = _business_dates(3)
++    signal_date = trading_dates[1]
++    selected, rejected, audit = select_accepted_helper_source_priority_rows(
++        source_rows=[
++            {
++                "ticker": "TOP",
++                "date": signal_date,
++                "source_family": "lagged_cross_source_consensus",
++            },
++            {
++                "ticker": "ALT",
++                "date": signal_date,
++                "source_family": "volatility_relief",
++            },
++        ],
++        trading_dates=trading_dates,
++        config={"source_quarantine_enabled": True},
++        create_trades=False,
++        source_health_by_date={
++            signal_date: {
++                "lagged_cross_source_consensus": {
++                    "available": True,
++                    "quarantined": True,
++                },
++                "volatility_relief": {
++                    "available": True,
++                    "quarantined": False,
++                },
++            }
++        },
++    )
++
++    assert [(row["ticker"], row["source_family"]) for row in selected] == [
++        ("ALT", "volatility_relief")
++    ]
++    assert rejected[0]["source_family"] == "lagged_cross_source_consensus"
++    assert rejected[0]["filter_reason"] == "source_relative_shadow_quarantine"
++    assert audit["source_quarantine_filter_counts"] == {
++        "source_relative_shadow_quarantine": 1
++    }
++
++
++def test_source_quarantine_recovery_requires_both_frozen_hwms() -> None:
++    dates = _business_dates(24)
++    ohlcv = _shadow_ohlcv(
++        dates,
++        source_closes=[100.0] + [99.0] * 21 + [100.0, 102.0],
++        spy_closes=[100.0] * 22 + [99.0, 100.0],
++        qqq_closes=[100.0] * 22 + [101.0, 100.0],
++    )
++    state = empty_accepted_helper_source_priority_allocator_state()
++
++    for as_of in dates[:22]:
++        update_source_relative_shadow_quarantine_state(
++            state=state,
++            as_of=as_of,
++            source_snapshots={
++                "volatility_relief": _source_shadow_snapshot(
++                    as_of=as_of,
++                    entry_date=dates[0],
++                )
++            },
++            ohlcv_by_ticker=ohlcv,
++            benchmark_ohlcv_by_ticker=ohlcv,
++            config={"source_quarantine_enabled": True},
++        )
++    assert state["source_quarantine"]["volatility_relief"]["quarantined"] is True
++
++    partial_recovery_date = dates[22]
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=partial_recovery_date,
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=partial_recovery_date,
++                entry_date=dates[0],
++            )
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    partial = state["source_quarantine"]["volatility_relief"]
++    assert partial["first_relative_equity"] >= partial["frozen_first_relative_hwm"]
++    assert partial["second_relative_equity"] < partial["frozen_second_relative_hwm"]
++    assert partial["quarantined"] is True
++    assert partial["recovered_today"] is False
++
++    recovered_date = dates[23]
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=recovered_date,
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=recovered_date,
++                entry_date=dates[0],
++            )
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    recovered = state["source_quarantine"]["volatility_relief"]
++    assert recovered["quarantined"] is False
++    assert recovered["recovered_today"] is True
++    assert recovered["frozen_first_relative_hwm"] is None
++    assert recovered["frozen_second_relative_hwm"] is None
++
++
++def test_missing_and_stale_source_health_fail_closed_for_new_entries() -> None:
++    dates = _business_dates(2)
++    ohlcv = _shadow_ohlcv(dates, source_closes=[100.0, 99.0])
++    state = empty_accepted_helper_source_priority_allocator_state()
++    missing_audit = update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[1],
++        source_snapshots={},
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    assert missing_audit["unavailable_sources"]["volatility_relief"] == (
++        "missing_source_snapshot"
++    )
++
++    candidate = {
++        "ticker": "TOP",
++        "date": dates[1],
++        "source_family": "volatility_relief",
++    }
++    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
++        as_of=dates[1],
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=dates[0],
++                entry_date=dates[0],
++                candidates=[candidate],
++            )
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        state=empty_accepted_helper_source_priority_allocator_state(),
++        config={"source_quarantine_enabled": True},
++        persist=False,
++    )
++    health = snapshot["source_priority_context"]["source_quarantine"][
++        "volatility_relief"
++    ]
++    assert health["available"] is False
++    assert health["unavailable_reason"] == "source_snapshot_asof_mismatch"
++    assert snapshot["candidate_count"] == 0
++    assert snapshot["new_pending_count"] == 0
++    assert snapshot["rejected_candidates"][0]["filter_reason"] == (
++        "source_quarantine_unavailable"
++    )
++
++
++def test_same_day_source_shadow_update_is_idempotent_and_detects_hash_conflict() -> None:
++    dates = _business_dates(1)
++    ohlcv = _shadow_ohlcv(dates, source_closes=[100.0])
++    state = empty_accepted_helper_source_priority_allocator_state()
++    kwargs = {
++        "state": state,
++        "as_of": dates[0],
++        "source_snapshots": {
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=dates[0],
++                entry_date=dates[0],
++            )
++        },
++        "benchmark_ohlcv_by_ticker": ohlcv,
++        "config": {"source_quarantine_enabled": True},
++    }
++
++    update_source_relative_shadow_quarantine_state(
++        **kwargs,
++        ohlcv_by_ticker=ohlcv,
++    )
++    first = dict(state["source_quarantine"]["volatility_relief"])
++    update_source_relative_shadow_quarantine_state(
++        **kwargs,
++        ohlcv_by_ticker=ohlcv,
++    )
++    second = state["source_quarantine"]["volatility_relief"]
++    assert second["observation_sessions"] == first["observation_sessions"] == 1
++    assert second["last_input_hash"] == first["last_input_hash"]
++    assert second["available"] is True
++
++    changed_ohlcv = _shadow_ohlcv(dates, source_closes=[99.0])
++    update_source_relative_shadow_quarantine_state(
++        **kwargs,
++        ohlcv_by_ticker=changed_ohlcv,
++    )
++    conflict = state["source_quarantine"]["volatility_relief"]
++    assert conflict["observation_sessions"] == 1
++    assert conflict["available"] is False
++    assert conflict["unavailable_reason"] == "same_date_shadow_input_changed"
++
++    update_source_relative_shadow_quarantine_state(
++        **kwargs,
++        ohlcv_by_ticker=ohlcv,
++    )
++    latched = state["source_quarantine"]["volatility_relief"]
++    assert latched["observation_sessions"] == 1
++    assert latched["available"] is False
++    assert latched["unavailable_reason"] == "same_date_shadow_input_changed"
++    assert latched["input_conflict_date"] == dates[0]
++
++
++def test_settled_shadow_contribution_survives_rolling_history_eviction() -> None:
++    dates = _business_dates(4)
++    ohlcv = _shadow_ohlcv(
++        dates,
++        source_closes=[100.0, 101.0, 102.0, 103.0],
++    )
++    state = empty_accepted_helper_source_priority_allocator_state()
++    empty_snapshot = {
++        "asof_date": dates[0],
++        "open_positions": [],
++        "closed_positions": [],
++    }
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[0],
++        source_snapshots={"volatility_relief": empty_snapshot},
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    open_row = {
++        "decision_id": "settles-once",
++        "ticker": "TOP",
++        "entry_date": dates[1],
++    }
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[1],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[1],
++                "open_positions": [open_row],
++                "closed_positions": [],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    closed_row = {**open_row, "exit_date": dates[2]}
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[2],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[2],
++                "open_positions": [],
++                "closed_positions": [closed_row],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    settled = state["source_quarantine"]["volatility_relief"]
++    expected_equity = settled["first_relative_equity"]
++    assert "settles-once" in settled["settled_relative_contributions"]
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[2],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[2],
++                "open_positions": [],
++                "closed_positions": [closed_row],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    assert state["source_quarantine"]["volatility_relief"]["available"] is True
++
++    evicted_ohlcv = {
++        "SPY": [ohlcv["SPY"][-1]],
++        "QQQ": [ohlcv["QQQ"][-1]],
++    }
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[3],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[3],
++                "open_positions": [],
++                "closed_positions": [closed_row],
++            }
++        },
++        ohlcv_by_ticker=evicted_ohlcv,
++        benchmark_ohlcv_by_ticker=evicted_ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    after_eviction = state["source_quarantine"]["volatility_relief"]
++    assert after_eviction["available"] is True
++    assert after_eviction["first_relative_equity"] == expected_equity
++
++
++def test_open_shadow_position_cannot_disappear_without_settlement() -> None:
++    dates = _business_dates(2)
++    ohlcv = _shadow_ohlcv(dates, source_closes=[100.0, 101.0])
++    state = empty_accepted_helper_source_priority_allocator_state()
++    open_row = {
++        "decision_id": "must-settle",
++        "ticker": "TOP",
++        "entry_date": dates[0],
++    }
++    update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[0],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[0],
++                "open_positions": [open_row],
++                "closed_positions": [],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++
++    audit = update_source_relative_shadow_quarantine_state(
++        state=state,
++        as_of=dates[1],
++        source_snapshots={
++            "volatility_relief": {
++                "asof_date": dates[1],
++                "open_positions": [],
++                "closed_positions": [],
++            }
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++
++    health = state["source_quarantine"]["volatility_relief"]
++    assert health["available"] is False
++    assert health["observation_sessions"] == 1
++    assert audit["unavailable_sources"]["volatility_relief"].startswith(
++        "source_position_disappeared_without_settlement:must-settle"
++    )
++
++
++def test_v1_state_migration_preserves_position_buckets(tmp_path) -> None:
++    state_path = tmp_path / "allocator-v1-state.json"
++    payload = {
++        "schema_version": 1,
++        "sleeve": "legacy",
++        "pending_entries": [{"decision_id": "pending-1", "ticker": "TOP"}],
++        "open_positions": [{"decision_id": "open-1", "ticker": "ALT"}],
++        "closed_positions": [{"decision_id": "closed-1", "ticker": "TOP"}],
++        "skipped_days": [{"decision_id": "skip-1", "date": "2026-01-05"}],
++    }
++    state_path.write_text(json.dumps(payload), encoding="utf-8")
++
++    migrated = load_accepted_helper_source_priority_allocator_state(state_path)
++
++    assert migrated["schema_version"] == STATE_SCHEMA_VERSION == 2
++    assert [row["decision_id"] for row in migrated["pending_entries"]] == [
++        "pending-1"
++    ]
++    assert [row["decision_id"] for row in migrated["open_positions"]] == ["open-1"]
++    assert [row["decision_id"] for row in migrated["closed_positions"]] == [
++        "closed-1"
++    ]
++    assert migrated["skipped_days"] == payload["skipped_days"]
++    assert migrated["source_quarantine"] == {}
++
++
++def test_source_quarantine_never_cancels_pending_or_force_closes_open() -> None:
++    dates = _business_dates(2)
++    ohlcv = _shadow_ohlcv(dates, source_closes=[100.0, 99.0])
++    state = empty_accepted_helper_source_priority_allocator_state()
++    state["pending_entries"] = [
++        {
++            "decision_id": "existing-pending",
++            "ticker": "ALT",
++            "signal_date": dates[1],
++            "paper_notional_usd": 4000.0,
++            "notional_usd": 4000.0,
++            "paper_status": "pending_entry",
++        }
++    ]
++    state["open_positions"] = [
++        {
++            "decision_id": "existing-open",
++            "ticker": "ALT",
++            "signal_date": dates[0],
++            "entry_date": dates[0],
++            "entry_price": 100.0,
++            "paper_notional_usd": 4000.0,
++            "notional_usd": 4000.0,
++            "hold_days": 10,
++            "observed_trading_days": 1,
++            "last_observed_date": dates[0],
++            "paper_status": "open",
++        }
++    ]
++    state["source_quarantine"]["volatility_relief"] = {
++        "source_family": "volatility_relief",
++        "available": True,
++        "quarantined": True,
++        "observation_sessions": 22,
++        "underwater_sessions": 21,
++        "first_relative_hwm": 0.0,
++        "second_relative_hwm": 0.0,
++        "frozen_first_relative_hwm": 0.0,
++        "frozen_second_relative_hwm": 0.0,
++        "last_observed_date": dates[0],
++    }
++    candidate = {
++        "ticker": "TOP",
++        "date": dates[1],
++        "source_family": "volatility_relief",
++    }
++
++    snapshot = build_accepted_helper_source_priority_allocator_snapshot(
++        as_of=dates[1],
++        source_snapshots={
++            "volatility_relief": _source_shadow_snapshot(
++                as_of=dates[1],
++                entry_date=dates[0],
++                candidates=[candidate],
++            )
++        },
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        state=state,
++        config={"source_quarantine_enabled": True, "hold_days": 10},
++        persist=False,
++    )
++
++    assert snapshot["candidate_count"] == 0
++    assert snapshot["new_pending_count"] == 0
++    assert [row["decision_id"] for row in snapshot["pending_entries"]] == [
++        "existing-pending"
++    ]
++    assert [row["decision_id"] for row in snapshot["open_positions"]] == [
++        "existing-open"
++    ]
++    assert snapshot["closed_count_today"] == 0
++
++
++def test_historical_source_health_does_not_read_future_exit_price_or_pnl() -> None:
++    dates = _business_dates(8)
++    ohlcv = _shadow_ohlcv(
++        dates,
++        source_closes=[100.0, 99.0, 98.0, 97.0, 96.0, 130.0, 131.0, 132.0],
++    )
++    base_row = {
++        "decision_id": "future-outcome",
++        "source_family": "volatility_relief",
++        "ticker": "TOP",
++        "entry_date": dates[0],
++        "exit_date": dates[5],
++        "exit_price": 130.0,
++        "pnl": 1200.0,
++        "pnl_pct_net": 0.30,
++    }
++    mutated_row = {
++        **base_row,
++        "exit_price": 1.0,
++        "pnl": -9999.0,
++        "pnl_pct_net": -0.99,
++    }
++
++    base_health, _ = build_historical_source_relative_shadow_quarantine_health(
++        source_rows=[base_row],
++        trading_dates=dates,
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++    mutated_health, _ = build_historical_source_relative_shadow_quarantine_health(
++        source_rows=[mutated_row],
++        trading_dates=dates,
++        ohlcv_by_ticker=ohlcv,
++        benchmark_ohlcv_by_ticker=ohlcv,
++        config={"source_quarantine_enabled": True},
++    )
++
++    for as_of in dates[:5]:
++        assert base_health[as_of]["volatility_relief"] == mutated_health[as_of][
++            "volatility_relief"
++        ]
+diff --git a/quant/test_industry_relative_laggard_repair_paper_sleeve.py b/quant/test_industry_relative_laggard_repair_paper_sleeve.py
+index 53b6032e8..f1a612563 100644
+--- a/quant/test_industry_relative_laggard_repair_paper_sleeve.py
++++ b/quant/test_industry_relative_laggard_repair_paper_sleeve.py
+@@ -123,6 +123,43 @@ def test_snapshot_adds_industry_repair_candidate_without_orders() -> None:
+     assert candidate["paper_notional_usd"] == 4_000.0
+ 
+ 
++def test_snapshot_exposes_detached_full_position_lists_with_consistent_counts() -> None:
++    ohlcv = _ohlcv()
++    signal_day = ohlcv["SPY"][70]["date"]
++    state = empty_industry_relative_laggard_repair_paper_state()
++    state["open_positions"] = [
++        {
++            "ticker": "OPEN_SENTINEL",
++            "entry_date": signal_day,
++            "audit": {"marker": "state-open"},
++        }
++    ]
++    state["closed_positions"] = [
++        {
++            "ticker": "CLOSED_SENTINEL",
++            "decision_id": "closed-sentinel",
++            "pnl": 12.34,
++            "audit": {"marker": "state-closed"},
++        }
++    ]
++
++    snapshot = build_industry_relative_laggard_repair_paper_sleeve_snapshot(
++        as_of=signal_day,
++        ohlcv_by_ticker=ohlcv,
++        core_entries=[],
++        sector_entries=_sector_entries(),
++        state=state,
++        persist=False,
++    )
++
++    assert len(snapshot["open_positions"]) == snapshot["open_position_count"] == 1
++    assert len(snapshot["closed_positions"]) == snapshot["closed_position_count"] == 1
++    snapshot["open_positions"][0]["audit"]["marker"] = "snapshot-open"
++    snapshot["closed_positions"][0]["audit"]["marker"] = "snapshot-closed"
++    assert state["open_positions"][0]["audit"]["marker"] == "state-open"
++    assert state["closed_positions"][0]["audit"]["marker"] == "state-closed"
++
++
+ def test_historical_replay_and_daily_snapshot_share_candidate() -> None:
+     ohlcv = _ohlcv()
+     signal_day = ohlcv["SPY"][70]["date"]
+diff --git a/quant/test_rolling_corr_peer_shock_paper_sleeve.py b/quant/test_rolling_corr_peer_shock_paper_sleeve.py
+index b02789026..e1ed2af9f 100644
+--- a/quant/test_rolling_corr_peer_shock_paper_sleeve.py
++++ b/quant/test_rolling_corr_peer_shock_paper_sleeve.py
+@@ -141,6 +141,42 @@ def test_candidate_requires_same_day_core_flow_confirmation():
+     assert snapshot["trade_enabled"] is False
+ 
+ 
++def test_snapshot_exposes_detached_full_position_lists_with_consistent_counts():
++    ohlcv = _ohlcv()
++    as_of = ohlcv["SPY"][70]["date"]
++    state = empty_rolling_corr_peer_shock_paper_state()
++    state["open_positions"] = [
++        {
++            "ticker": "OPEN_SENTINEL",
++            "signal_date": as_of,
++            "audit": {"marker": "state-open"},
++        }
++    ]
++    state["closed_positions"] = [
++        {
++            "ticker": "CLOSED_SENTINEL",
++            "pnl": 12.34,
++            "audit": {"marker": "state-closed"},
++        }
++    ]
++
++    snapshot = build_rolling_corr_peer_shock_paper_sleeve_snapshot(
++        as_of=as_of,
++        ohlcv_by_ticker=ohlcv,
++        core_entries=[],
++        sector_entries=_sector_entries(),
++        state=state,
++        persist=False,
++    )
++
++    assert len(snapshot["open_positions"]) == snapshot["open_position_count"] == 1
++    assert len(snapshot["closed_positions"]) == snapshot["closed_position_count"] == 1
++    snapshot["open_positions"][0]["audit"]["marker"] = "snapshot-open"
++    snapshot["closed_positions"][0]["audit"]["marker"] = "snapshot-closed"
++    assert state["open_positions"][0]["audit"]["marker"] == "state-open"
++    assert state["closed_positions"][0]["audit"]["marker"] == "state-closed"
++
++
+ def test_historical_replay_and_daily_snapshot_share_candidate_rule_versions():
+     ohlcv = _ohlcv()
+     signal_day = ohlcv["SPY"][70]["date"]
+

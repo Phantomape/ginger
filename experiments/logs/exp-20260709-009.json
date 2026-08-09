@@ -1,0 +1,1937 @@
+{
+  "acceptance_rule": {
+    "lead_only": true,
+    "max_drawdown_extra_vs_ticker_buy_hold": 0.02,
+    "min_trade_count_per_ticker_archetype": 6,
+    "min_windows_beating_ticker_buy_hold": 2,
+    "promotion_boundary": "A passing row is only an observed-only lead. Promotion requires a shared default-off helper, daily snapshot, parity test, and Gate 1-4.",
+    "require_aggregate_ev_beats_spy_and_qqq": true,
+    "require_positive_aggregate_ev_delta_vs_ticker_buy_hold": true,
+    "require_positive_aggregate_return_delta_vs_ticker_buy_hold": true
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "alpha_hypothesis": "APP and META standalone single-name specialist timing may only add value in fixed trend/reclaim/breakout states; compare predeclared OHLCV-only archetypes against each ticker buy-and-hold plus SPY/QQQ before any production or default-off promotion.",
+  "alpha_hypothesis_category": "entry_exit_timing",
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "expected_value_score_sum": 7.8941,
+    "max_drawdown_pct_worst": 0.1119,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171,
+    "total_pnl": 234850.99,
+    "trade_count": 61,
+    "window_count": 3
+  },
+  "calibration": {
+    "actual_success": 0,
+    "brier_score": 0.0676,
+    "calibration_note": "Success means a read-only single-name timing lead passed fixed criteria; alpha acceptance still requires shared default-off implementation and Gate 1-4.",
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "fails_buy_hold_benchmark",
+      "thin_trade_count",
+      "one_ticker_concentration",
+      "ohlcv_overfit",
+      "no_window_stability"
+    ],
+    "predicted_success_probability": 0.26,
+    "realized_failure_modes": [
+      "fails_buy_hold_benchmark",
+      "no_window_stability"
+    ]
+  },
+  "causal_components": [
+    "canonical_ohlcv_snapshots",
+    "fixed_archetype_set",
+    "ticker_buy_hold_comparators",
+    "spy_qqq_comparators",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_single_name_timing_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260709_009_app_meta_single_name_timing_scout.py",
+    "data/experiments/exp-20260709-009/exp_20260709_009_app_meta_single_name_timing_scout.json",
+    "experiments/logs/exp-20260709-009.json",
+    "experiments/cards/exp-20260709-009.md",
+    "experiments/manifests/exp-20260709-009.json",
+    "experiments/tickets/exp-20260709-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "app_meta_single_name_specialist_timing_v1",
+  "decision": "observed_only_rejected_single_name_timing_scout",
+  "delta_metrics": {
+    "best_candidate": {
+      "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+      "aggregate_ev_sum": 0.4935,
+      "aggregate_qqq_ev_sum": 1.4129,
+      "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+      "aggregate_return_sum": 0.026346,
+      "aggregate_spy_ev_sum": 1.0637,
+      "aggregate_ticker_buy_hold_ev_sum": 1.052,
+      "aggregate_ticker_buy_hold_return_sum": 0.193721,
+      "archetype": "qqq_relative_55d_breakout",
+      "average_exposure_pct": 0.221041,
+      "by_window_delta": {
+        "late_strong": {
+          "ev_delta_vs_ticker_buy_hold": 0.3138,
+          "exposure_pct": 0.081301,
+          "return_delta_vs_qqq": -0.172482,
+          "return_delta_vs_spy": -0.168602,
+          "return_delta_vs_ticker_buy_hold": -0.027519,
+          "trade_count": 1
+        },
+        "mid_weak": {
+          "ev_delta_vs_ticker_buy_hold": -0.9115,
+          "exposure_pct": 0.299213,
+          "return_delta_vs_qqq": -0.268738,
+          "return_delta_vs_spy": -0.188202,
+          "return_delta_vs_ticker_buy_hold": -0.345235,
+          "trade_count": 2
+        },
+        "old_thin": {
+          "ev_delta_vs_ticker_buy_hold": 0.0392,
+          "exposure_pct": 0.282609,
+          "return_delta_vs_qqq": 0.15521,
+          "return_delta_vs_spy": 0.147571,
+          "return_delta_vs_ticker_buy_hold": 0.205379,
+          "trade_count": 3
+        }
+      },
+      "criteria": {
+        "aggregate_ev_beats_spy_and_qqq": false,
+        "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+        "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+        "trade_count_gte_min": true,
+        "windows_ev_beating_ticker_buy_hold_gte_min": true,
+        "windows_return_beating_ticker_buy_hold_gte_min": false,
+        "worst_drawdown_within_guard": true
+      },
+      "lead_passed": false,
+      "ticker": "META",
+      "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+      "trade_count": 6,
+      "windows_ev_beating_ticker_buy_hold": 2,
+      "windows_return_beating_qqq": 1,
+      "windows_return_beating_spy": 1,
+      "windows_return_beating_ticker_buy_hold": 1,
+      "worst_drawdown_pct": 0.13169
+    },
+    "expected_value_score_delta": 0.0,
+    "lead_count": 0,
+    "live_order_behavior_changed": false,
+    "max_drawdown_pct_delta": 0.0,
+    "observed_only_lead_passed": false,
+    "strategy_behavior_changed": false,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "experiment_id": "exp-20260709-009",
+  "gate1": {
+    "baseline_metrics": {
+      "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+      "expected_value_score_sum": 7.8941,
+      "max_drawdown_pct_worst": 0.1119,
+      "signals_generated": 164,
+      "signals_survived": 135,
+      "survival_rate": 0.823171,
+      "total_pnl": 234850.99,
+      "trade_count": 61,
+      "window_count": 3
+    },
+    "passed": true
+  },
+  "gate2": {
+    "dependencies_validated": true,
+    "entry_date_scope": "Synthetic scout trade entry_date is generated from next-open fills.",
+    "fields_checked": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume"
+    ],
+    "passed": true,
+    "target_price_scope": "Not applicable; this scout uses a fixed close/SMA20/ATR/max-hold exit envelope."
+  },
+  "gate3": {
+    "filter_added": false,
+    "note": "No production filter was added; scout trade counts are diagnostic sample size only.",
+    "passed": true,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "alpha_blockers": [
+      "predeclared_single_name_timing_lead_criteria_not_met"
+    ],
+    "alpha_ready": false,
+    "before_after_strategy_delta": {
+      "expected_value_score_delta": 0.0,
+      "live_order_behavior_changed": false,
+      "max_drawdown_pct_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0
+    },
+    "best_candidate": {
+      "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+      "aggregate_ev_sum": 0.4935,
+      "aggregate_qqq_ev_sum": 1.4129,
+      "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+      "aggregate_return_sum": 0.026346,
+      "aggregate_spy_ev_sum": 1.0637,
+      "aggregate_ticker_buy_hold_ev_sum": 1.052,
+      "aggregate_ticker_buy_hold_return_sum": 0.193721,
+      "archetype": "qqq_relative_55d_breakout",
+      "average_exposure_pct": 0.221041,
+      "by_window_delta": {
+        "late_strong": {
+          "ev_delta_vs_ticker_buy_hold": 0.3138,
+          "exposure_pct": 0.081301,
+          "return_delta_vs_qqq": -0.172482,
+          "return_delta_vs_spy": -0.168602,
+          "return_delta_vs_ticker_buy_hold": -0.027519,
+          "trade_count": 1
+        },
+        "mid_weak": {
+          "ev_delta_vs_ticker_buy_hold": -0.9115,
+          "exposure_pct": 0.299213,
+          "return_delta_vs_qqq": -0.268738,
+          "return_delta_vs_spy": -0.188202,
+          "return_delta_vs_ticker_buy_hold": -0.345235,
+          "trade_count": 2
+        },
+        "old_thin": {
+          "ev_delta_vs_ticker_buy_hold": 0.0392,
+          "exposure_pct": 0.282609,
+          "return_delta_vs_qqq": 0.15521,
+          "return_delta_vs_spy": 0.147571,
+          "return_delta_vs_ticker_buy_hold": 0.205379,
+          "trade_count": 3
+        }
+      },
+      "criteria": {
+        "aggregate_ev_beats_spy_and_qqq": false,
+        "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+        "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+        "trade_count_gte_min": true,
+        "windows_ev_beating_ticker_buy_hold_gte_min": true,
+        "windows_return_beating_ticker_buy_hold_gte_min": false,
+        "worst_drawdown_within_guard": true
+      },
+      "lead_passed": false,
+      "ticker": "META",
+      "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+      "trade_count": 6,
+      "windows_ev_beating_ticker_buy_hold": 2,
+      "windows_return_beating_qqq": 1,
+      "windows_return_beating_spy": 1,
+      "windows_return_beating_ticker_buy_hold": 1,
+      "worst_drawdown_pct": 0.13169
+    },
+    "decision": "observed_only_rejected_single_name_timing_scout",
+    "measurement_blockers": [],
+    "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha.",
+    "observed_only_lead_passed": false,
+    "passed": false
+  },
+  "hypothesis": "APP and META standalone single-name specialist timing may only add value in fixed trend/reclaim/breakout states; compare predeclared OHLCV-only archetypes against each ticker buy-and-hold plus SPY/QQQ before any production or default-off promotion.",
+  "implementation_mode": "read_only_private_replay_scout",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "mechanism_family": "single_name_specialist_timing",
+  "nearby_prior_experiments": [
+    "exp-20260507-008",
+    "exp-20260507-028",
+    "exp-20260507-030",
+    "exp-20260517-024"
+  ],
+  "new_evidence_axis": "New gate shape: standalone single-name specialist timing scout with own-ticker buy-and-hold, SPY, and QQQ comparators; not a candidate-level platform pullback wait, APP sizing top-up, ticker expansion, or forward-row attribution retry.",
+  "next_retry_requires": [
+    "shared default-off helper plus daily snapshot and parity if promoting a positive lead",
+    "or materially more forward single-name rows",
+    "or a genuinely different non-price PIT data source",
+    "no frozen-window threshold retunes on APP/META OHLCV only"
+  ],
+  "observed_metrics": {
+    "aggregate_ranked": [
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+        "aggregate_ev_sum": 0.4935,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+        "aggregate_return_sum": 0.026346,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "archetype": "qqq_relative_55d_breakout",
+        "average_exposure_pct": 0.221041,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": 0.3138,
+            "exposure_pct": 0.081301,
+            "return_delta_vs_qqq": -0.172482,
+            "return_delta_vs_spy": -0.168602,
+            "return_delta_vs_ticker_buy_hold": -0.027519,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.9115,
+            "exposure_pct": 0.299213,
+            "return_delta_vs_qqq": -0.268738,
+            "return_delta_vs_spy": -0.188202,
+            "return_delta_vs_ticker_buy_hold": -0.345235,
+            "trade_count": 2
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": 0.0392,
+            "exposure_pct": 0.282609,
+            "return_delta_vs_qqq": 0.15521,
+            "return_delta_vs_spy": 0.147571,
+            "return_delta_vs_ticker_buy_hold": 0.205379,
+            "trade_count": 3
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": true,
+          "windows_ev_beating_ticker_buy_hold_gte_min": true,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "META",
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "trade_count": 6,
+        "windows_ev_beating_ticker_buy_hold": 2,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.13169
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.5975,
+        "aggregate_ev_sum": 0.4545,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.231496,
+        "aggregate_return_sum": -0.037775,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "archetype": "gap_hold_continuation",
+        "average_exposure_pct": 0.092717,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": 0.3138,
+            "exposure_pct": 0.081301,
+            "return_delta_vs_qqq": -0.172482,
+            "return_delta_vs_spy": -0.168602,
+            "return_delta_vs_ticker_buy_hold": -0.027519,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.8566,
+            "exposure_pct": 0.19685,
+            "return_delta_vs_qqq": -0.25415,
+            "return_delta_vs_spy": -0.173614,
+            "return_delta_vs_ticker_buy_hold": -0.330647,
+            "trade_count": 1
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -0.0547,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": 0.076501,
+            "return_delta_vs_spy": 0.068862,
+            "return_delta_vs_ticker_buy_hold": 0.12667,
+            "trade_count": 0
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "META",
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "trade_count": 2,
+        "windows_ev_beating_ticker_buy_hold": 1,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.13169
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.6885,
+        "aggregate_ev_sum": 0.3635,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.417445,
+        "aggregate_return_sum": -0.223724,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "archetype": "orderly_pullback_resume",
+        "average_exposure_pct": 0.092348,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": 0.1176,
+            "exposure_pct": 0.02439,
+            "return_delta_vs_qqq": -0.163046,
+            "return_delta_vs_spy": -0.159166,
+            "return_delta_vs_ticker_buy_hold": -0.018083,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.8096,
+            "exposure_pct": 0.07874,
+            "return_delta_vs_qqq": -0.388721,
+            "return_delta_vs_spy": -0.308185,
+            "return_delta_vs_ticker_buy_hold": -0.465218,
+            "trade_count": 6
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": 0.0035,
+            "exposure_pct": 0.173913,
+            "return_delta_vs_qqq": 0.015687,
+            "return_delta_vs_spy": 0.008048,
+            "return_delta_vs_ticker_buy_hold": 0.065856,
+            "trade_count": 4
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": true,
+          "windows_ev_beating_ticker_buy_hold_gte_min": true,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "META",
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "trade_count": 11,
+        "windows_ev_beating_ticker_buy_hold": 2,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.131258
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -1.0413,
+        "aggregate_ev_sum": 0.0107,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.171528,
+        "aggregate_return_sum": 0.022193,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "archetype": "sma50_reclaim",
+        "average_exposure_pct": 0.036232,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": -0.0261,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": -0.056116,
+            "return_delta_vs_spy": -0.052236,
+            "return_delta_vs_ticker_buy_hold": 0.088847,
+            "trade_count": 0
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.9712,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": -0.332741,
+            "return_delta_vs_spy": -0.252205,
+            "return_delta_vs_ticker_buy_hold": -0.409238,
+            "trade_count": 0
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -0.044,
+            "exposure_pct": 0.108696,
+            "return_delta_vs_qqq": 0.098694,
+            "return_delta_vs_spy": 0.091055,
+            "return_delta_vs_ticker_buy_hold": 0.148863,
+            "trade_count": 3
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": true,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "META",
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "trade_count": 3,
+        "windows_ev_beating_ticker_buy_hold": 0,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 2,
+        "worst_drawdown_pct": 0.058574
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -1.6821,
+        "aggregate_ev_sum": 3.1503,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.689395,
+        "aggregate_return_sum": 1.152373,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 4.8324,
+        "aggregate_ticker_buy_hold_return_sum": 1.841768,
+        "archetype": "gap_hold_continuation",
+        "average_exposure_pct": 0.184374,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": -0.0337,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": -0.056116,
+            "return_delta_vs_spy": -0.052236,
+            "return_delta_vs_ticker_buy_hold": 0.198996,
+            "trade_count": 0
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.9132,
+            "exposure_pct": 0.393701,
+            "return_delta_vs_qqq": 0.509044,
+            "return_delta_vs_spy": 0.58958,
+            "return_delta_vs_ticker_buy_hold": -0.392539,
+            "trade_count": 2
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -0.7352,
+            "exposure_pct": 0.15942,
+            "return_delta_vs_qqq": 0.387089,
+            "return_delta_vs_spy": 0.37945,
+            "return_delta_vs_ticker_buy_hold": -0.495852,
+            "trade_count": 1
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": true,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "APP",
+        "ticker_buy_hold_worst_drawdown_pct": 1.325432,
+        "trade_count": 3,
+        "windows_ev_beating_ticker_buy_hold": 0,
+        "windows_return_beating_qqq": 2,
+        "windows_return_beating_spy": 2,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.250545
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -3.5903,
+        "aggregate_ev_sum": 1.2421,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -1.047207,
+        "aggregate_return_sum": 0.794561,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 4.8324,
+        "aggregate_ticker_buy_hold_return_sum": 1.841768,
+        "archetype": "qqq_relative_55d_breakout",
+        "average_exposure_pct": 0.304858,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": -0.019,
+            "exposure_pct": 0.113821,
+            "return_delta_vs_qqq": -0.092197,
+            "return_delta_vs_spy": -0.088317,
+            "return_delta_vs_ticker_buy_hold": 0.162915,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -3.2618,
+            "exposure_pct": 0.409449,
+            "return_delta_vs_qqq": -0.088448,
+            "return_delta_vs_spy": -0.007912,
+            "return_delta_vs_ticker_buy_hold": -0.990031,
+            "trade_count": 3
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -0.3095,
+            "exposure_pct": 0.391304,
+            "return_delta_vs_qqq": 0.66285,
+            "return_delta_vs_spy": 0.655211,
+            "return_delta_vs_ticker_buy_hold": -0.220091,
+            "trade_count": 3
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": true,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "APP",
+        "ticker_buy_hold_worst_drawdown_pct": 1.325432,
+        "trade_count": 7,
+        "windows_ev_beating_ticker_buy_hold": 0,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.776245
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -4.2822,
+        "aggregate_ev_sum": 0.5502,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -1.487278,
+        "aggregate_return_sum": 0.35449,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 4.8324,
+        "aggregate_ticker_buy_hold_return_sum": 1.841768,
+        "archetype": "sma50_reclaim",
+        "average_exposure_pct": 0.119817,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": 0.0657,
+            "exposure_pct": 0.162602,
+            "return_delta_vs_qqq": 0.036771,
+            "return_delta_vs_spy": 0.040651,
+            "return_delta_vs_ticker_buy_hold": 0.291883,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -3.14,
+            "exposure_pct": 0.19685,
+            "return_delta_vs_qqq": -0.071138,
+            "return_delta_vs_spy": 0.009398,
+            "return_delta_vs_ticker_buy_hold": -0.972721,
+            "trade_count": 1
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -1.2079,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": 0.076501,
+            "return_delta_vs_spy": 0.068862,
+            "return_delta_vs_ticker_buy_hold": -0.80644,
+            "trade_count": 0
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "APP",
+        "ticker_buy_hold_worst_drawdown_pct": 1.325432,
+        "trade_count": 2,
+        "windows_ev_beating_ticker_buy_hold": 1,
+        "windows_return_beating_qqq": 2,
+        "windows_return_beating_spy": 3,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.132451
+      },
+      {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -4.7028,
+        "aggregate_ev_sum": 0.1296,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -1.812556,
+        "aggregate_return_sum": 0.029212,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 4.8324,
+        "aggregate_ticker_buy_hold_return_sum": 1.841768,
+        "archetype": "orderly_pullback_resume",
+        "average_exposure_pct": 0.11151,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": -0.0337,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": -0.056116,
+            "return_delta_vs_spy": -0.052236,
+            "return_delta_vs_ticker_buy_hold": 0.198996,
+            "trade_count": 0
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -3.4775,
+            "exposure_pct": 0.19685,
+            "return_delta_vs_qqq": -0.212755,
+            "return_delta_vs_spy": -0.132219,
+            "return_delta_vs_ticker_buy_hold": -1.114338,
+            "trade_count": 1
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -1.1916,
+            "exposure_pct": 0.137681,
+            "return_delta_vs_qqq": -0.014273,
+            "return_delta_vs_spy": -0.021912,
+            "return_delta_vs_ticker_buy_hold": -0.897214,
+            "trade_count": 1
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "APP",
+        "ticker_buy_hold_worst_drawdown_pct": 1.325432,
+        "trade_count": 2,
+        "windows_ev_beating_ticker_buy_hold": 0,
+        "windows_return_beating_qqq": 0,
+        "windows_return_beating_spy": 0,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.555772
+      }
+    ],
+    "archetype_definitions": {
+      "gap_hold_continuation": {
+        "description": "3% gap up that holds the upper part of the daily range above SMA50."
+      },
+      "orderly_pullback_resume": {
+        "description": "Uptrend pullback touches near SMA50, then closes green back above SMA50."
+      },
+      "qqq_relative_55d_breakout": {
+        "description": "55-session closing breakout with 20d return at least 2pp above QQQ."
+      },
+      "sma50_reclaim": {
+        "description": "Cross back above SMA50 while above SMA100 and not materially lagging QQQ."
+      }
+    },
+    "best_by_ticker": {
+      "APP": {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -1.6821,
+        "aggregate_ev_sum": 3.1503,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.689395,
+        "aggregate_return_sum": 1.152373,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 4.8324,
+        "aggregate_ticker_buy_hold_return_sum": 1.841768,
+        "archetype": "gap_hold_continuation",
+        "average_exposure_pct": 0.184374,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": -0.0337,
+            "exposure_pct": 0.0,
+            "return_delta_vs_qqq": -0.056116,
+            "return_delta_vs_spy": -0.052236,
+            "return_delta_vs_ticker_buy_hold": 0.198996,
+            "trade_count": 0
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.9132,
+            "exposure_pct": 0.393701,
+            "return_delta_vs_qqq": 0.509044,
+            "return_delta_vs_spy": 0.58958,
+            "return_delta_vs_ticker_buy_hold": -0.392539,
+            "trade_count": 2
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": -0.7352,
+            "exposure_pct": 0.15942,
+            "return_delta_vs_qqq": 0.387089,
+            "return_delta_vs_spy": 0.37945,
+            "return_delta_vs_ticker_buy_hold": -0.495852,
+            "trade_count": 1
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": true,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": false,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "APP",
+        "ticker_buy_hold_worst_drawdown_pct": 1.325432,
+        "trade_count": 3,
+        "windows_ev_beating_ticker_buy_hold": 0,
+        "windows_return_beating_qqq": 2,
+        "windows_return_beating_spy": 2,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.250545
+      },
+      "META": {
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+        "aggregate_ev_sum": 0.4935,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+        "aggregate_return_sum": 0.026346,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "archetype": "qqq_relative_55d_breakout",
+        "average_exposure_pct": 0.221041,
+        "by_window_delta": {
+          "late_strong": {
+            "ev_delta_vs_ticker_buy_hold": 0.3138,
+            "exposure_pct": 0.081301,
+            "return_delta_vs_qqq": -0.172482,
+            "return_delta_vs_spy": -0.168602,
+            "return_delta_vs_ticker_buy_hold": -0.027519,
+            "trade_count": 1
+          },
+          "mid_weak": {
+            "ev_delta_vs_ticker_buy_hold": -0.9115,
+            "exposure_pct": 0.299213,
+            "return_delta_vs_qqq": -0.268738,
+            "return_delta_vs_spy": -0.188202,
+            "return_delta_vs_ticker_buy_hold": -0.345235,
+            "trade_count": 2
+          },
+          "old_thin": {
+            "ev_delta_vs_ticker_buy_hold": 0.0392,
+            "exposure_pct": 0.282609,
+            "return_delta_vs_qqq": 0.15521,
+            "return_delta_vs_spy": 0.147571,
+            "return_delta_vs_ticker_buy_hold": 0.205379,
+            "trade_count": 3
+          }
+        },
+        "criteria": {
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "trade_count_gte_min": true,
+          "windows_ev_beating_ticker_buy_hold_gte_min": true,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false,
+        "ticker": "META",
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "trade_count": 6,
+        "windows_ev_beating_ticker_buy_hold": 2,
+        "windows_return_beating_qqq": 1,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "worst_drawdown_pct": 0.13169
+      }
+    },
+    "comparators": {
+      "APP": {
+        "late_strong": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 603.3708,
+            "exit_date": "2026-04-21",
+            "exit_price": 644.33,
+            "expected_value_score": 0.0402,
+            "max_drawdown_pct": 0.135904,
+            "sharpe_daily": 0.7169,
+            "total_return_pct": 0.056116
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 664.3373,
+            "exit_date": "2026-04-21",
+            "exit_price": 704.08,
+            "expected_value_score": 0.0442,
+            "max_drawdown_pct": 0.097514,
+            "sharpe_daily": 0.8468,
+            "total_return_pct": 0.052236
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 560.84,
+            "exit_date": "2026-04-21",
+            "exit_price": 473.18,
+            "expected_value_score": 0.0337,
+            "max_drawdown_pct": 0.9994,
+            "sharpe_daily": -0.1692,
+            "total_return_pct": -0.198996
+          }
+        },
+        "mid_weak": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 455.9629,
+            "exit_date": "2025-10-22",
+            "exit_price": 603.9493,
+            "expected_value_score": 1.3446,
+            "max_drawdown_pct": 0.037218,
+            "sharpe_daily": 4.0409,
+            "total_return_pct": 0.332741
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 534.305,
+            "exit_date": "2025-10-22",
+            "exit_price": 664.0191,
+            "expected_value_score": 0.99,
+            "max_drawdown_pct": 0.030765,
+            "sharpe_daily": 3.9252,
+            "total_return_pct": 0.252205
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 255.505,
+            "exit_date": "2025-10-22",
+            "exit_price": 564.82,
+            "expected_value_score": 3.5908,
+            "max_drawdown_pct": 0.300195,
+            "sharpe_daily": 2.9092,
+            "total_return_pct": 1.234324
+          }
+        },
+        "old_thin": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 476.5658,
+            "exit_date": "2025-04-22",
+            "exit_price": 442.3389,
+            "expected_value_score": 0.0281,
+            "max_drawdown_pct": 0.294805,
+            "sharpe_daily": -0.3667,
+            "total_return_pct": -0.076501
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 557.7154,
+            "exit_date": "2025-04-22",
+            "exit_price": 521.2744,
+            "expected_value_score": 0.0295,
+            "max_drawdown_pct": 0.230848,
+            "sharpe_daily": -0.4281,
+            "total_return_pct": -0.068862
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 129.85,
+            "exit_date": "2025-04-22",
+            "exit_price": 237.71,
+            "expected_value_score": 1.2079,
+            "max_drawdown_pct": 1.325432,
+            "sharpe_daily": 1.4978,
+            "total_return_pct": 0.80644
+          }
+        }
+      },
+      "META": {
+        "late_strong": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 603.3708,
+            "exit_date": "2026-04-21",
+            "exit_price": 644.33,
+            "expected_value_score": 0.0402,
+            "max_drawdown_pct": 0.135904,
+            "sharpe_daily": 0.7169,
+            "total_return_pct": 0.056116
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 664.3373,
+            "exit_date": "2026-04-21",
+            "exit_price": 704.08,
+            "expected_value_score": 0.0442,
+            "max_drawdown_pct": 0.097514,
+            "sharpe_daily": 0.8468,
+            "total_return_pct": 0.052236
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 123,
+            "entry_date": "2025-10-23",
+            "entry_price": 733.4733,
+            "exit_date": "2026-04-21",
+            "exit_price": 668.84,
+            "expected_value_score": 0.0261,
+            "max_drawdown_pct": 0.427404,
+            "sharpe_daily": -0.2936,
+            "total_return_pct": -0.088847
+          }
+        },
+        "mid_weak": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 455.9629,
+            "exit_date": "2025-10-22",
+            "exit_price": 603.9493,
+            "expected_value_score": 1.3446,
+            "max_drawdown_pct": 0.037218,
+            "sharpe_daily": 4.0409,
+            "total_return_pct": 0.332741
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 534.305,
+            "exit_date": "2025-10-22",
+            "exit_price": 664.0191,
+            "expected_value_score": 0.99,
+            "max_drawdown_pct": 0.030765,
+            "sharpe_daily": 3.9252,
+            "total_return_pct": 0.252205
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 127,
+            "entry_date": "2025-04-23",
+            "entry_price": 526.8863,
+            "exit_date": "2025-10-22",
+            "exit_price": 732.1854,
+            "expected_value_score": 0.9712,
+            "max_drawdown_pct": 0.119335,
+            "sharpe_daily": 2.3732,
+            "total_return_pct": 0.409238
+          }
+        },
+        "old_thin": {
+          "QQQ_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 476.5658,
+            "exit_date": "2025-04-22",
+            "exit_price": 442.3389,
+            "expected_value_score": 0.0281,
+            "max_drawdown_pct": 0.294805,
+            "sharpe_daily": -0.3667,
+            "total_return_pct": -0.076501
+          },
+          "SPY_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 557.7154,
+            "exit_date": "2025-04-22",
+            "exit_price": 521.2744,
+            "expected_value_score": 0.0295,
+            "max_drawdown_pct": 0.230848,
+            "sharpe_daily": -0.4281,
+            "total_return_pct": -0.068862
+          },
+          "ticker_buy_hold": {
+            "available": true,
+            "daily_count": 138,
+            "entry_date": "2024-10-02",
+            "entry_price": 572.1014,
+            "exit_date": "2025-04-22",
+            "exit_price": 498.7241,
+            "expected_value_score": 0.0547,
+            "max_drawdown_pct": 0.518622,
+            "sharpe_daily": -0.4316,
+            "total_return_pct": -0.12667
+          }
+        }
+      }
+    },
+    "coverage": {
+      "late_strong": {
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "tickers_loaded": [
+          "APP",
+          "META",
+          "QQQ",
+          "SPY"
+        ]
+      },
+      "mid_weak": {
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "tickers_loaded": [
+          "APP",
+          "META",
+          "QQQ",
+          "SPY"
+        ]
+      },
+      "old_thin": {
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "tickers_loaded": [
+          "APP",
+          "META",
+          "QQQ",
+          "SPY"
+        ]
+      }
+    },
+    "leads": [],
+    "observed_only_lead_passed": false,
+    "strategy_results": {
+      "APP": {
+        "gap_hold_continuation": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 2,
+            "expected_value_score": 2.6776,
+            "exposure_pct": 0.393701,
+            "max_drawdown_pct": 0.132451,
+            "sharpe_daily": 3.1809,
+            "total_return_pct": 0.841785,
+            "trade_count": 2,
+            "trades": [
+              {
+                "entry_price": 299.19,
+                "entry_reason": "gap_hold_continuation",
+                "entry_signal_date": "2025-05-02",
+                "exit_date": "2025-06-10",
+                "exit_price": 390.0,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-05-05",
+                "trade_return_pct": 0.298961
+              },
+              {
+                "entry_price": 377.46,
+                "entry_reason": "gap_hold_continuation",
+                "entry_signal_date": "2025-07-31",
+                "exit_date": "2025-09-08",
+                "exit_price": 537.075,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-08-01",
+                "trade_return_pct": 0.41789
+              }
+            ],
+            "win_rate": 1.0
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.4727,
+            "exposure_pct": 0.15942,
+            "max_drawdown_pct": 0.250545,
+            "sharpe_daily": 1.5219,
+            "total_return_pct": 0.310588,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 249.09,
+                "entry_reason": "gap_hold_continuation",
+                "entry_signal_date": "2024-11-07",
+                "exit_date": "2024-12-11",
+                "exit_price": 327.6,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 22,
+                "ticker_entry_date": "2024-11-08",
+                "trade_return_pct": 0.310588
+              }
+            ],
+            "win_rate": 1.0
+          }
+        },
+        "orderly_pullback_resume": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.1133,
+            "exposure_pct": 0.19685,
+            "max_drawdown_pct": 0.132451,
+            "sharpe_daily": 0.9446,
+            "total_return_pct": 0.119986,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 372.59,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-07-17",
+                "exit_date": "2025-08-22",
+                "exit_price": 418.76,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-07-18",
+                "trade_return_pct": 0.119986
+              }
+            ],
+            "win_rate": 1.0
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.0163,
+            "exposure_pct": 0.137681,
+            "max_drawdown_pct": 0.555772,
+            "sharpe_daily": -0.1794,
+            "total_return_pct": -0.090774,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 360.0,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-01-28",
+                "exit_date": "2025-02-26",
+                "exit_price": 328.47,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 19,
+                "ticker_entry_date": "2025-01-29",
+                "trade_return_pct": -0.090774
+              }
+            ],
+            "win_rate": 0.0
+          }
+        },
+        "qqq_relative_55d_breakout": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.0147,
+            "exposure_pct": 0.113821,
+            "max_drawdown_pct": 0.093265,
+            "sharpe_daily": -0.4066,
+            "total_return_pct": -0.036081,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 717.16,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-12-09",
+                "exit_date": "2025-12-31",
+                "exit_price": 693.71,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 14,
+                "ticker_entry_date": "2025-12-10",
+                "trade_return_pct": -0.036081
+              }
+            ],
+            "win_rate": 0.0
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 3,
+            "expected_value_score": 0.329,
+            "exposure_pct": 0.409449,
+            "max_drawdown_pct": 0.224089,
+            "sharpe_daily": 1.3468,
+            "total_return_pct": 0.244293,
+            "trade_count": 3,
+            "trades": [
+              {
+                "entry_price": 381.38,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-05-27",
+                "exit_date": "2025-06-13",
+                "exit_price": 372.78,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 12,
+                "ticker_entry_date": "2025-05-28",
+                "trade_return_pct": -0.025968
+              },
+              {
+                "entry_price": 448.6,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-08-07",
+                "exit_date": "2025-09-15",
+                "exit_price": 578.54,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-08-08",
+                "trade_return_pct": 0.285147
+              },
+              {
+                "entry_price": 596.7,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-09-15",
+                "exit_date": "2025-10-07",
+                "exit_price": 595.215,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 15,
+                "ticker_entry_date": "2025-09-16",
+                "trade_return_pct": -0.005977
+              }
+            ],
+            "win_rate": 0.333333
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 3,
+            "expected_value_score": 0.8984,
+            "exposure_pct": 0.391304,
+            "max_drawdown_pct": 0.776245,
+            "sharpe_daily": 1.5323,
+            "total_return_pct": 0.586349,
+            "trade_count": 3,
+            "trades": [
+              {
+                "entry_price": 130.88,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2024-10-02",
+                "exit_date": "2024-11-07",
+                "exit_price": 230.0,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2024-10-03",
+                "trade_return_pct": 0.75119
+              },
+              {
+                "entry_price": 249.09,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2024-11-07",
+                "exit_date": "2024-12-11",
+                "exit_price": 327.6,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 22,
+                "ticker_entry_date": "2024-11-08",
+                "trade_return_pct": 0.310588
+              },
+              {
+                "entry_price": 473.56,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-02-13",
+                "exit_date": "2025-02-26",
+                "exit_price": 328.47,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 7,
+                "ticker_entry_date": "2025-02-14",
+                "trade_return_pct": -0.308807
+              }
+            ],
+            "win_rate": 0.666667
+          }
+        },
+        "sma50_reclaim": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.0994,
+            "exposure_pct": 0.162602,
+            "max_drawdown_pct": 0.102704,
+            "sharpe_daily": 1.0703,
+            "total_return_pct": 0.092887,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 632.53,
+                "entry_reason": "sma50_reclaim",
+                "entry_signal_date": "2025-12-01",
+                "exit_date": "2025-12-31",
+                "exit_price": 693.71,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 20,
+                "ticker_entry_date": "2025-12-02",
+                "trade_return_pct": 0.092887
+              }
+            ],
+            "win_rate": 1.0
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.4508,
+            "exposure_pct": 0.19685,
+            "max_drawdown_pct": 0.132451,
+            "sharpe_daily": 1.7233,
+            "total_return_pct": 0.261603,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 366.5,
+                "entry_reason": "sma50_reclaim",
+                "entry_signal_date": "2025-07-25",
+                "exit_date": "2025-09-02",
+                "exit_price": 464.0,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-07-28",
+                "trade_return_pct": 0.261603
+              }
+            ],
+            "win_rate": 1.0
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          }
+        }
+      },
+      "META": {
+        "gap_hold_continuation": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.3399,
+            "exposure_pct": 0.081301,
+            "max_drawdown_pct": 0.13169,
+            "sharpe_daily": -2.9213,
+            "total_return_pct": -0.116366,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 726.8777,
+                "entry_reason": "gap_hold_continuation",
+                "entry_signal_date": "2026-01-29",
+                "exit_date": "2026-02-13",
+                "exit_price": 644.5481,
+                "exit_reason": "close_below_2_5atr_stop",
+                "holding_days": 10,
+                "ticker_entry_date": "2026-01-30",
+                "trade_return_pct": -0.116366
+              }
+            ],
+            "win_rate": 0.0
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.1146,
+            "exposure_pct": 0.19685,
+            "max_drawdown_pct": 0.05151,
+            "sharpe_daily": 1.4579,
+            "total_return_pct": 0.078591,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 643.5323,
+                "entry_reason": "gap_hold_continuation",
+                "entry_signal_date": "2025-05-12",
+                "exit_date": "2025-06-18",
+                "exit_price": 696.5441,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-05-13",
+                "trade_return_pct": 0.078591
+              }
+            ],
+            "win_rate": 1.0
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          }
+        },
+        "orderly_pullback_resume": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.1437,
+            "exposure_pct": 0.02439,
+            "max_drawdown_pct": 0.131258,
+            "sharpe_daily": -1.3437,
+            "total_return_pct": -0.10693,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 751.3734,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-10-27",
+                "exit_date": "2025-10-31",
+                "exit_price": 673.3838,
+                "exit_reason": "close_below_2_5atr_stop",
+                "holding_days": 3,
+                "ticker_entry_date": "2025-10-28",
+                "trade_return_pct": -0.10693
+              }
+            ],
+            "win_rate": 0.0
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 6,
+            "expected_value_score": 0.1616,
+            "exposure_pct": 0.07874,
+            "max_drawdown_pct": 0.06962,
+            "sharpe_daily": -2.8865,
+            "total_return_pct": -0.05598,
+            "trade_count": 6,
+            "trades": [
+              {
+                "entry_price": 705.144,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-07-18",
+                "exit_date": "2025-07-22",
+                "exit_price": 714.512,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-07-21",
+                "trade_return_pct": 0.009742
+              },
+              {
+                "entry_price": 715.3699,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-07-23",
+                "exit_date": "2025-07-25",
+                "exit_price": 715.2402,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-07-24",
+                "trade_return_pct": -0.003678
+              },
+              {
+                "entry_price": 753.0514,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-08-22",
+                "exit_date": "2025-08-26",
+                "exit_price": 749.0409,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-08-25",
+                "trade_return_pct": -0.008804
+              },
+              {
+                "entry_price": 750.5374,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-08-26",
+                "exit_date": "2025-08-28",
+                "exit_price": 742.2568,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-08-27",
+                "trade_return_pct": -0.014491
+              },
+              {
+                "entry_price": 778.1625,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-09-16",
+                "exit_date": "2025-09-24",
+                "exit_price": 756.2353,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 5,
+                "ticker_entry_date": "2025-09-17",
+                "trade_return_pct": -0.031577
+              },
+              {
+                "entry_price": 752.192,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-09-24",
+                "exit_date": "2025-09-26",
+                "exit_price": 748.7477,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-09-25",
+                "trade_return_pct": -0.00806
+              }
+            ],
+            "win_rate": 0.166667
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 4,
+            "expected_value_score": 0.0582,
+            "exposure_pct": 0.173913,
+            "max_drawdown_pct": 0.114814,
+            "sharpe_daily": -0.9569,
+            "total_return_pct": -0.060814,
+            "trade_count": 4,
+            "trades": [
+              {
+                "entry_price": 588.7012,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2024-11-07",
+                "exit_date": "2024-11-15",
+                "exit_price": 568.4787,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 5,
+                "ticker_entry_date": "2024-11-08",
+                "trade_return_pct": -0.037728
+              },
+              {
+                "entry_price": 592.1446,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2024-12-02",
+                "exit_date": "2024-12-19",
+                "exit_price": 607.9507,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 12,
+                "ticker_entry_date": "2024-12-03",
+                "trade_return_pct": 0.023103
+              },
+              {
+                "entry_price": 600.3114,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2024-12-23",
+                "exit_date": "2024-12-27",
+                "exit_price": 597.0147,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 2,
+                "ticker_entry_date": "2024-12-24",
+                "trade_return_pct": -0.008969
+              },
+              {
+                "entry_price": 629.1756,
+                "entry_reason": "orderly_pullback_resume",
+                "entry_signal_date": "2025-01-06",
+                "exit_date": "2025-01-15",
+                "exit_price": 607.7716,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 5,
+                "ticker_entry_date": "2025-01-07",
+                "trade_return_pct": -0.037397
+              }
+            ],
+            "win_rate": 0.25
+          }
+        },
+        "qqq_relative_55d_breakout": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 1,
+            "expected_value_score": 0.3399,
+            "exposure_pct": 0.081301,
+            "max_drawdown_pct": 0.13169,
+            "sharpe_daily": -2.9213,
+            "total_return_pct": -0.116366,
+            "trade_count": 1,
+            "trades": [
+              {
+                "entry_price": 726.8777,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2026-01-29",
+                "exit_date": "2026-02-13",
+                "exit_price": 644.5481,
+                "exit_reason": "close_below_2_5atr_stop",
+                "holding_days": 10,
+                "ticker_entry_date": "2026-01-30",
+                "trade_return_pct": -0.116366
+              }
+            ],
+            "win_rate": 0.0
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 2,
+            "expected_value_score": 0.0597,
+            "exposure_pct": 0.299213,
+            "max_drawdown_pct": 0.05861,
+            "sharpe_daily": 0.9332,
+            "total_return_pct": 0.064003,
+            "trade_count": 2,
+            "trades": [
+              {
+                "entry_price": 669.3617,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-06-02",
+                "exit_date": "2025-07-10",
+                "exit_price": 729.8359,
+                "exit_reason": "max_25_session_hold",
+                "holding_days": 25,
+                "ticker_entry_date": "2025-06-03",
+                "trade_return_pct": 0.086533
+              },
+              {
+                "entry_price": 758.9476,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-07-31",
+                "exit_date": "2025-08-20",
+                "exit_price": 745.8185,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 13,
+                "ticker_entry_date": "2025-08-01",
+                "trade_return_pct": -0.020736
+              }
+            ],
+            "win_rate": 0.5
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 3,
+            "expected_value_score": 0.0939,
+            "exposure_pct": 0.282609,
+            "max_drawdown_pct": 0.060201,
+            "sharpe_daily": 1.1929,
+            "total_return_pct": 0.078709,
+            "trade_count": 3,
+            "trades": [
+              {
+                "entry_price": 580.9288,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2024-10-03",
+                "exit_date": "2024-10-17",
+                "exit_price": 580.5307,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 9,
+                "ticker_entry_date": "2024-10-04",
+                "trade_return_pct": -0.00418
+              },
+              {
+                "entry_price": 610.0185,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2024-12-03",
+                "exit_date": "2024-12-19",
+                "exit_price": 607.9507,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 11,
+                "ticker_entry_date": "2024-12-04",
+                "trade_return_pct": -0.006875
+              },
+              {
+                "entry_price": 633.8569,
+                "entry_reason": "qqq_relative_55d_breakout",
+                "entry_signal_date": "2025-01-23",
+                "exit_date": "2025-02-21",
+                "exit_price": 693.7964,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 19,
+                "ticker_entry_date": "2025-01-24",
+                "trade_return_pct": 0.090736
+              }
+            ],
+            "win_rate": 0.333333
+          }
+        },
+        "sma50_reclaim": {
+          "late_strong": {
+            "available": true,
+            "daily_count": 123,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          },
+          "mid_weak": {
+            "available": true,
+            "daily_count": 127,
+            "entry_signal_count": 0,
+            "expected_value_score": 0.0,
+            "exposure_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "trades": [],
+            "win_rate": null
+          },
+          "old_thin": {
+            "available": true,
+            "daily_count": 138,
+            "entry_signal_count": 3,
+            "expected_value_score": 0.0107,
+            "exposure_pct": 0.108696,
+            "max_drawdown_pct": 0.058574,
+            "sharpe_daily": 0.4803,
+            "total_return_pct": 0.022193,
+            "trade_count": 3,
+            "trades": [
+              {
+                "entry_price": 592.1446,
+                "entry_reason": "sma50_reclaim",
+                "entry_signal_date": "2024-12-02",
+                "exit_date": "2024-12-19",
+                "exit_price": 607.9507,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 12,
+                "ticker_entry_date": "2024-12-03",
+                "trade_return_pct": 0.023103
+              },
+              {
+                "entry_price": 600.3114,
+                "entry_reason": "sma50_reclaim",
+                "entry_signal_date": "2024-12-23",
+                "exit_date": "2024-12-27",
+                "exit_price": 597.0147,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 2,
+                "ticker_entry_date": "2024-12-24",
+                "trade_return_pct": -0.008969
+              },
+              {
+                "entry_price": 602.3432,
+                "entry_reason": "sma50_reclaim",
+                "entry_signal_date": "2025-01-02",
+                "exit_date": "2025-01-06",
+                "exit_price": 609.3851,
+                "exit_reason": "close_below_sma20",
+                "holding_days": 1,
+                "ticker_entry_date": "2025-01-03",
+                "trade_return_pct": 0.008153
+              }
+            ],
+            "win_rate": 0.666667
+          }
+        }
+      }
+    }
+  },
+  "owner": "alpha-explore",
+  "parameters": {
+    "archetypes": {
+      "gap_hold_continuation": {
+        "description": "3% gap up that holds the upper part of the daily range above SMA50."
+      },
+      "orderly_pullback_resume": {
+        "description": "Uptrend pullback touches near SMA50, then closes green back above SMA50."
+      },
+      "qqq_relative_55d_breakout": {
+        "description": "55-session closing breakout with 20d return at least 2pp above QQQ."
+      },
+      "sma50_reclaim": {
+        "description": "Cross back above SMA50 while above SMA100 and not materially lagging QQQ."
+      }
+    },
+    "benchmarks": [
+      "SPY",
+      "QQQ"
+    ],
+    "common_exit_envelope": {
+      "max_hold_sessions": 25,
+      "stop": "close <= entry - 2.5 * ATR14",
+      "trend_exit": "close below SMA20"
+    },
+    "entry_execution": "signal at close, next-open fill",
+    "exit_execution": "close-based exit condition, next-open fill; forced final close",
+    "initial_capital": 100000.0,
+    "round_trip_cost_pct": 0.0035,
+    "target_tickers": [
+      "APP",
+      "META"
+    ]
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune SMA lengths, breakout lookback, gap threshold, ATR stop, max-hold days, ticker subset, or comparator choice on the same frozen APP/META windows.",
+    "new_evidence_required": "A valid next step requires either a shared default-off helper using the exact passing fixed archetype, materially new forward single-name rows, or a non-price PIT source such as borrow, flow, options, or event semantics.",
+    "why_result_happened": "Best fixed row was META / qqq_relative_55d_breakout with aggregate_return_delta_vs_ticker_buy_hold=-0.167375 and aggregate_ev_delta_vs_ticker_buy_hold=-0.5585. Lead criteria passed=False."
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "scope": "read_only_private_single_name_replay",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "registry_update": {
+    "completed_at": "2026-07-09T06:59:44+00:00",
+    "status": "observed_only"
+  },
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+    "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+    "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "experiments/logs/exp-20260507-008.json",
+    "experiments/logs/exp-20260507-028.json",
+    "experiments/logs/exp-20260507-030.json",
+    "experiments/logs/exp-20260517-024.json"
+  ],
+  "single_causal_variable": "app_meta_single_name_specialist_timing_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-09T06:59:44Z",
+  "trial_family": "app_meta_single_name_specialist_timing",
+  "trial_variant_id": "fixed_ohlcv_archetype_compass_v1"
+}

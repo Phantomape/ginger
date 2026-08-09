@@ -26,6 +26,7 @@ from experiment_registry import (
     load_registry,
     print_json,
 )
+from alpha_playbook_guard import audit_repository_contract as _audit_alpha_playbook
 from self_registration_guard import new_offenders as _self_register_new_offenders
 
 
@@ -136,7 +137,18 @@ def _summarize_lean_audit(result, *, lean_strict):
             "closed_post_enforcement_missing_calibration_examples", []
         ),
     }
-    blocking = bool(sources["weak_prediction_quality"] or sources["weak_reflection"])
+    quality_failure_domains = [
+        key
+        for key in ("weak_prediction_quality", "weak_reflection")
+        if sources[key]
+    ]
+    playbook_contract = result.get(
+        "alpha_playbook_contract", {"passed": True, "violations": []}
+    )
+    failure_domains = list(quality_failure_domains)
+    if not playbook_contract.get("passed", False):
+        failure_domains.append("alpha_playbook_contract")
+    blocking = bool(failure_domains)
     actionable = {
         key: {"count": len(rows), "example_ids": _ids(rows)}
         for key, rows in sources.items()
@@ -145,8 +157,15 @@ def _summarize_lean_audit(result, *, lean_strict):
     return {
         "view": "lean_summary",
         "lean_quality_passed": result.get("lean_quality_passed"),
+        "lean_strict_passed": result.get("lean_strict_passed"),
         "lean_strict_would_block": bool(lean_strict and blocking),
-        "blocks_lean_strict": ["weak_prediction_quality", "weak_reflection"],
+        "blocks_lean_strict": [
+            "weak_prediction_quality",
+            "weak_reflection",
+            "alpha_playbook_contract",
+        ],
+        "lean_strict_failure_domains": failure_domains,
+        "alpha_playbook_contract": playbook_contract,
         "post_enforcement_alpha_ticket_count": result.get(
             "post_enforcement_alpha_ticket_count"
         ),
@@ -155,13 +174,13 @@ def _summarize_lean_audit(result, *, lean_strict):
             "legacy_pre_enforcement_alpha_ticket_count"
         ),
         "note": (
-            "lean_quality_passed is the verdict that matters: it is true unless a "
-            "post-enforcement experiment has weak prediction quality or weak "
-            "reflection. missing_prediction/missing_calibration are mostly already-"
-            "closed tickets shown for visibility (counts capped at 25 in the "
-            "report). Legacy pre-enforcement gaps are never backfilled (AGENTS.md). "
-            "Run `experiment.py audit --lean --full` for the complete report and "
-            "the top-level `passed` flag, which can be false purely from debt."
+            "lean_quality_passed remains the experiment prediction/reflection "
+            "sub-verdict. lean_strict_passed is the end-of-turn gate and also "
+            "requires the alpha playbook contract. missing_prediction/"
+            "missing_calibration are mostly already-closed tickets shown for "
+            "visibility (counts capped at 25 in the report). Legacy pre-enforcement "
+            "gaps are never backfilled (AGENTS.md). Run `experiment.py audit "
+            "--lean --full` for the complete report."
         ),
     }
 
@@ -225,15 +244,24 @@ def _audit(argv):
             "--lean-strict reports them without failing the shared audit."
         ),
     }
+    playbook_contract = _audit_alpha_playbook()
+    result["alpha_playbook_contract"] = playbook_contract
+    result["repository_contracts_passed"] = bool(playbook_contract["passed"])
+    if args.lean or args.lean_strict:
+        result["lean_strict_passed"] = bool(
+            result["lean_quality_passed"] and playbook_contract["passed"]
+        )
     if (args.lean or args.lean_strict) and not args.full:
         summary = _summarize_lean_audit(result, lean_strict=args.lean_strict)
         summary["self_registration"] = result["self_registration"]
         print_json(summary)
     else:
         print_json(result)
-    if args.lean_strict and not result["lean_quality_passed"]:
+    if args.lean_strict and not result["lean_strict_passed"]:
         raise SystemExit(2)
-    if args.strict and (not result["passed"] or sr_new):
+    if args.strict and (
+        not result["passed"] or sr_new or not playbook_contract["passed"]
+    ):
         raise SystemExit(2)
 
 

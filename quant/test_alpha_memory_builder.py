@@ -1,9 +1,28 @@
 import json
 import subprocess
+from pathlib import Path
 
 import pytest
 
 from scripts.build_alpha_memory import materialize_git_ref_logs, write_alpha_memory
+
+
+def test_checked_in_startup_memory_excludes_retired_priority_surfaces():
+    root = Path(__file__).resolve().parents[1]
+    text = "\n".join(
+        (root / relative).read_text(encoding="utf-8-sig")
+        for relative in (
+            "docs/alpha_context_pack.md",
+            "docs/current_state_snapshot.md",
+        )
+    )
+    for retired_heading in (
+        "Current Research Priorities",
+        "Highest-Signal Historical Records",
+        "Current Research Queue Pointers",
+    ):
+        assert retired_heading not in text
+    assert "History is anti-repeat memory, not a next-strategy ranking." in text
 
 
 def _write_jsonl(path, rows):
@@ -69,6 +88,10 @@ def test_alpha_memory_builder_uses_logs_without_registry(tmp_path):
     assert "Strategy records counted: `3`" in context
     assert "History fingerprint" in context
     assert "docs/current_state_snapshot.md" in context
+    assert "Historical Winner Priorities" not in context
+    assert "strategy_research_priorities" not in context
+    assert "historical winner" not in snapshot.lower()
+    assert "Research Search Contract" in snapshot
     assert "Exact State Sources" in snapshot
     assert "docs/current_state.md" in snapshot
     assert len(context.splitlines()) <= 420

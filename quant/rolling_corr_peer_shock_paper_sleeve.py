@@ -282,6 +282,8 @@ def build_rolling_corr_peer_shock_paper_sleeve_snapshot(
         ),
         "candidates": selected,
         "rejected_candidates": rejected[:50],
+        "new_pending_entries": pending,
+        "pending_entries": working_state["pending_entries"],
         "opened_positions_this_run": lifecycle["opened_this_run"],
         "closed_positions_this_run": lifecycle["closed_this_run"],
         "skipped_entries_this_run": lifecycle["skipped_this_run"],

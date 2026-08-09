@@ -1,0 +1,459 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "data/experiments/exp-20260711-017/**",
+    "experiments/tickets/exp-20260711-017.json",
+    "experiments/cards/exp-20260711-017.md",
+    "experiments/manifests/exp-20260711-017.json",
+    "experiments/logs/exp-20260711-017.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+  "card_file": "experiments/cards/exp-20260711-017.md",
+  "causal_components": [
+    "FRED MORTGAGE30US weekly observations",
+    "fixed two consecutive weekly declines",
+    "Residential Construction-only frozen liquid stock selector",
+    "next-open 10-session paper replay",
+    "canonical costs and Gate 1-4",
+    "accepted VIXY and MOVE comparators",
+    "fingerprint coverage regression"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_variable": "mortgage30us_two_consecutive_weekly_declines_residential_construction_leadership_v1",
+  "claimed_at": "2026-07-11T12:07:37+00:00",
+  "completed_at": "2026-07-11T12:15:34+00:00",
+  "created_at": "2026-07-11T12:07:11+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260711-017",
+  "experiment_uid": "expuid-6d8baca3a1244304",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260711-017",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-11T12:07:11+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "mortgage_rate_relief_residential_leadership"
+  },
+  "hypothesis": "Private replay scout: two consecutive weekly declines in FRED MORTGAGE30US define mortgage-rate demand relief; liquid Residential Construction price leaders should improve next-open 10-session after-cost EV and PnL across the canonical windows.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "mortgage30us_two_consecutive_weekly_declines_residential_construction_leadership_v1"
+  ],
+  "mechanism_family": "production_visible_mortgage_rate_residential_relation_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260711-004",
+    "exp-20260711-013",
+    "exp-20260711-016"
+  ],
+  "new_evidence_type": "new_data_source_fred_mortgage_rate",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "consecutive",
+        "construction",
+        "continuation",
+        "create",
+        "declines",
+        "demand",
+        "execution",
+        "fred",
+        "frozen",
+        "in",
+        "leaders",
+        "leadership",
+        "liquid",
+        "mortgage",
+        "mortgage30us",
+        "rate",
+        "residential",
+        "session",
+        "should",
+        "two",
+        "under",
+        "week",
+        "weekly"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "sector_leadership_trend_continuation_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use a materially new discriminator such as event/source confirmation, sector-breadth persistence, or forward paper rows; do not just retune the same sector-rank/return thresholds on this frozen sample.",
+        "score": 0.4796,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field, such as real-time breadth/changepoint persistence or cost-adjusted replacement rows; do not simply retune pressure thresholds, hold days, cooldown, or paper notional on this frozen sample.",
+        "score": 0.4776,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "opening_range_continuation_sector_leadership_paper_sleeve",
+        "reopen_condition": "Forward opening-range paper rows or a genuinely new non-price source confirmation.",
+        "score": 0.4776,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_low_deployment_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT data edge or forward replacement-value rows. Local broad OHLCV continuation retunes should stay frozen after exp-20260606-004/005/006.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "broad_full_liquid_5d_winner_market_confirmed_continuation_candidate_pool",
+        "reopen_condition": "A retry needs a materially new PIT state field such as breadth/changepoint persistence, cost-adjusted replacement rows, or forward replacement-value evidence; do not simply retune broad OHLCV momentum thresholds on these windows.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.15,
+    "expected_ev_delta": 0.15,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "housing_relation_relabels_rate_beta",
+      "industry_sample_too_sparse",
+      "window_regression",
+      "accepted_relief_comparator_not_beaten",
+      "concentration_failed",
+      "fred_fetch_unavailable"
+    ],
+    "confidence_reason": "Weekly mortgage-rate relief has a direct housing-demand transmission mechanism and the coverage-only preflight found 8/12/10 events across the three windows. Odds remain low because recent macro sources mostly relabeled beta and a narrow residential universe may be sparse.",
+    "recorded_at": "2026-07-11T12:06:33Z"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "observed_only_lead": false,
+    "decision": "observed_only_rejected_mortgage_rate_residential_leadership",
+    "artifact": "data/experiments/exp-20260711-017/exp_20260711_017_mortgage_rate_relief_residential_leadership.json",
+    "log": "experiments/logs/exp-20260711-017.json",
+    "runner": "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "gate4": {
+      "aggregate_ev_delta": -0.0383,
+      "aggregate_pnl_delta": -593.12,
+      "decision": "rejected_mortgage_rate_relief_residential_leadership",
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "accepted_vixy_comparator_not_beaten",
+        "accepted_move_comparator_not_beaten"
+      ],
+      "max_drawdown_worse": 0.0,
+      "max_drawdown_worse_guardrail": 0.005,
+      "minimum_core_survival_rate": 0.7925,
+      "passed": false,
+      "survival_guard_passed": true,
+      "target_concentration": {
+        "max_single_positive_pnl_share": 1.0,
+        "max_single_positive_pnl_share_guardrail": 0.5,
+        "passed": false,
+        "positive_pnl_hhi": 1.0,
+        "positive_pnl_hhi_guardrail": 0.35
+      },
+      "target_trade_count": 5,
+      "target_trade_count_min": 20,
+      "target_window_count_min": 3,
+      "target_windows": [
+        "late_strong",
+        "mid_weak"
+      ],
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 2,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 2
+    },
+    "calibration": {
+      "actual_success": false,
+      "brier_score": 0.0225,
+      "failed_reasons": [
+        "aggregate_ev_not_positive",
+        "aggregate_pnl_not_positive",
+        "window_ev_regression",
+        "window_pnl_regression",
+        "fewer_than_two_ev_improved_windows",
+        "target_window_coverage_too_small",
+        "target_concentration_failed",
+        "target_sample_too_small",
+        "target_window_coverage_too_small",
+        "accepted_vixy_comparator_not_beaten",
+        "accepted_move_comparator_not_beaten"
+      ],
+      "predicted_failure_modes": [
+        "housing_relation_relabels_rate_beta",
+        "industry_sample_too_sparse",
+        "window_regression",
+        "accepted_relief_comparator_not_beaten",
+        "concentration_failed",
+        "fred_fetch_unavailable"
+      ],
+      "predicted_failure_modes_hit": [
+        "accepted_relief_comparator_not_beaten",
+        "concentration_failed",
+        "housing_relation_relabels_rate_beta",
+        "industry_sample_too_sparse",
+        "window_regression"
+      ],
+      "predicted_success_probability": 0.15
+    },
+    "summary": "The fixed mortgage-rate relief / Residential Construction relation did not add robust after-cost value; it was sparse, concentrated, window-fragile, or another rate-beta timing label."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260711-017.json",
+  "single_causal_variable": "mortgage30us_two_consecutive_weekly_declines_residential_construction_leadership_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260711-017.json",
+  "trial_family": "mortgage_rate_relief_residential_leadership_candidate_pool",
+  "trial_variant_id": "mortgage30us_two_week_decline_residential_top2_10d_v1",
+  "implementation_mode": "private_replay_scout_new_data_shape",
+  "new_evidence_axis": "New data source and issuer relation: official weekly FRED MORTGAGE30US history has not been used by prior Ginger experiments, and the response is restricted to Residential Construction rather than broad risk-on beta.",
+  "decision": "observed_only_rejected_mortgage_rate_residential_leadership",
+  "artifact": "data/experiments/exp-20260711-017/exp_20260711_017_mortgage_rate_relief_residential_leadership.json",
+  "log": "experiments/logs/exp-20260711-017.json",
+  "aggregate_expected_value_delta": -0.0383,
+  "aggregate_strategy_total_pnl_delta": -593.12,
+  "gate1": {
+    "canonical_baseline": "data/experiments/exp-20260602-003/exp_20260602_003_post_earnings_explicit_continuation.json",
+    "passed": true,
+    "windows": {
+      "late_strong": {
+        "canonical_ev": 5.1628,
+        "canonical_pnl": 117072.92,
+        "ev_drift": 0.0,
+        "observed_ev": 5.1628,
+        "observed_pnl": 117072.92,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "mid_weak": {
+        "canonical_ev": 2.1402,
+        "canonical_pnl": 78110.11,
+        "ev_drift": 0.0,
+        "observed_ev": 2.1402,
+        "observed_pnl": 78110.11,
+        "passed": true,
+        "pnl_drift": 0.0
+      },
+      "old_thin": {
+        "canonical_ev": 0.5911,
+        "canonical_pnl": 39667.96,
+        "ev_drift": 0.0,
+        "observed_ev": 0.5911,
+        "observed_pnl": 39667.96,
+        "passed": true,
+        "pnl_drift": 0.0
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    },
+    "passed": true,
+    "runtime_fields": [
+      "warehouse ohlcv Date/Open/High/Low/Close/Volume",
+      "SPY daily OHLCV",
+      "QQQ daily OHLCV",
+      "FRED MORTGAGE30US weekly observation with two-row history",
+      "candidate industry == Residential Construction",
+      "VIXY daily OHLCV",
+      "data/reference/broad_market_sector_map.json sector/status",
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price"
+    ]
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "minimum_core_survival_rate": 0.7925,
+    "new_core_filter_added": false,
+    "note": "No core filter or entry rule was added. The mortgage-rate relief source is additive default-off paper, so core survival is unchanged.",
+    "passed": true
+  },
+  "gate4": {
+    "aggregate_ev_delta": -0.0383,
+    "aggregate_pnl_delta": -593.12,
+    "decision": "rejected_mortgage_rate_relief_residential_leadership",
+    "failed_reasons": [
+      "aggregate_ev_not_positive",
+      "aggregate_pnl_not_positive",
+      "window_ev_regression",
+      "window_pnl_regression",
+      "fewer_than_two_ev_improved_windows",
+      "target_window_coverage_too_small",
+      "target_concentration_failed",
+      "target_sample_too_small",
+      "target_window_coverage_too_small",
+      "accepted_vixy_comparator_not_beaten",
+      "accepted_move_comparator_not_beaten"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "minimum_core_survival_rate": 0.7925,
+    "passed": false,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 1.0,
+      "max_single_positive_pnl_share_guardrail": 0.5,
+      "passed": false,
+      "positive_pnl_hhi": 1.0,
+      "positive_pnl_hhi_guardrail": 0.35
+    },
+    "target_trade_count": 5,
+    "target_trade_count_min": 20,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak"
+    ],
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 2,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 2
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "trade_enabled": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "llm_decision_boundary_changed": false,
+    "scope": "experiment_local_private_replay_scout"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry MORTGAGE30US decline streaks, moving averages, levels, persistence, housing subindustries, ticker lists, stock filters, top-N, hold, cooldown, notional, windows, or response curves on these rows.",
+    "new_evidence_required": "A retry requires materially settled prospective rows from a fixed shared helper if this is a lead, or a genuinely different publication-timed housing demand/permit/mortgage-application source if rejected.",
+    "why_result_happened": "The fixed mortgage-rate relief / Residential Construction relation did not add robust after-cost value; it was sparse, concentrated, window-fragile, or another rate-beta timing label."
+  },
+  "related_files": [
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "quant/experiments/exp_20260607_018_volatility_relief_stock_leadership.py",
+    "data/experiments/exp-20260711-017/fred_mortgage30us_weekly.json",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "changed_files": [
+    "quant/experiments/exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    "data/experiments/exp-20260711-017/**",
+    "experiments/tickets/exp-20260711-017.json",
+    "experiments/cards/exp-20260711-017.md",
+    "experiments/manifests/exp-20260711-017.json",
+    "experiments/logs/exp-20260711-017.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py"
+  ],
+  "fingerprint_caveat": "Reservation overmatched the unseen FRED mortgage source into ohlcv_momentum; exp017 adds the dedicated fred_mortgage_rate key before closeout.",
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260711_017_mortgage_rate_relief_residential_leadership.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_experiment_fingerprint.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_frozen_families.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "updated_at": "2026-07-11T12:15:34+00:00"
+}

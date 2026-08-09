@@ -1,0 +1,126 @@
+{
+  "aggregate": {
+    "events": 194,
+    "mean_delta_bp": -91.88,
+    "median_delta_bp": -70.42,
+    "negative_share": 0.5619
+  },
+  "archive_summary": {
+    "analysis_intersection_count": 363,
+    "archived_ticker_count": 363,
+    "fee_ge_half_pct_ticker_count": 203,
+    "max_fee_seen_pct": 31.8564,
+    "not_found_count": 8,
+    "ok_count": 366
+  },
+  "artifact": "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+  "by_window": {
+    "late_strong_full": {
+      "events": 124,
+      "mean_delta_bp": -68.07,
+      "median_delta_bp": -103.84,
+      "negative_share": 0.5645
+    },
+    "mid_weak_covered_tail": {
+      "events": 70,
+      "mean_delta_bp": -134.07,
+      "median_delta_bp": -28.06,
+      "negative_share": 0.5571
+    }
+  },
+  "calibration": {
+    "predicted_success_probability": 0.2,
+    "unresolved_failure_mode": null
+  },
+  "causal_components": [
+    "iBorrowDesk daily fee/rebate/available history",
+    "resumable throttling-safe archive fetcher",
+    "warehouse fresh-universe scope",
+    "daily refresh wiring",
+    "observed-only 10-session replacement-value read on covered windows"
+  ],
+  "change_type": "candidate_pool_private_replay_scout",
+  "changed_files": [
+    "quant/experiments/exp_20260712_013_iborrowdesk_borrow_econ_surface.py",
+    "data/experiments/exp-20260712-013/exp_20260712_013_iborrowdesk_borrow_econ_surface.json",
+    "experiments/cards/exp-20260712-013.md",
+    "experiments/manifests/exp-20260712-013.json",
+    "experiments/tickets/exp-20260712-013.json",
+    "experiments/logs/exp-20260712-013.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/iborrowdesk_data_source.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "data/non_ohlcv/iborrowdesk/",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "changed_variable": "iborrowdesk_borrow_fee_availability_avoidance_context_v1",
+  "decision": "observed_only_borrow_stress_avoidance_lead",
+  "experiment_id": "exp-20260712-013",
+  "fingerprint_caveat": "experiment.py new routed this hypothesis to data_source=ortex_borrow via the 'borrow fee' keywords. That is the correct borrow-economics evidence face for streak/saturation counting, and this experiment additionally adds 'iborrowdesk'/'shortable' keywords to that population so future iborrowdesk-only wording cannot escape to 'other'.",
+  "hypothesis_inference": "PIT borrow-fee/availability economics from the free iBorrowDesk (IBKR shortable-stock mirror) daily history: liquid warehouse-universe names with elevated or rising indicative borrow fee or shrinking lendable availability underperform SPY over the next 10 sessions, giving the accepted candidate stack a new avoidance/tilt context and the first universe-wide PIT borrow-economics surface (prior ORTEX sidecar was single-ticker AAPL).",
+  "implementation_mode": "observer_first_build_plus_observed_only_read",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "log": "experiments/logs/exp-20260712-013.json",
+  "mechanism_family": "iborrowdesk_borrow_economics_surface",
+  "nearby_prior_experiments": [
+    "exp-20260628-004",
+    "exp-20260627-023",
+    "exp-20260625-018"
+  ],
+  "new_evidence_axis": "New data source: iBorrowDesk mirror of the IBKR shortable-stock feed with ~1 rolling year of per-ticker daily borrow fee, rebate, and availability. No prior family had universe-wide PIT borrow economics; ORTEX covered one AAPL sidecar and FINRA short interest is bi-monthly without fee/supply.",
+  "new_evidence_type": "new_data_source_iborrowdesk_ibkr_borrow_economics",
+  "owner": "alpha-scheduled-20260712",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry by retuning fee level, fee 5-session delta, availability ratio, lookback, hold, cooldown, or the comparator on this same archived span. The archive grows daily; the only legal reopen axes are materially more archived/settled sessions (>= 60 new sessions or >= 20 additional stressed events), a genuinely different gate shape consuming this surface, or a different borrow-economics source with deeper history.",
+    "new_evidence_required": ">=60 new archived sessions or >=20 additional stressed-transition events, or a historical borrow source covering old_thin.",
+    "why_result_happened": "194 stressed-transition events across covered windows with mean delta -91.88bp vs same-date universe mean; fee>=0.5% ever seen on 203 of 363 analysis tickers."
+  },
+  "prediction": {
+    "confidence_reason": "Mechanism: high/rising borrow fee and shrinking availability proxy informed short demand and lending-supply stress, the keystone PIT borrow economics named missing on 2026-06-24 and required by the exp-20260625-018 informed-flow lead. Disconfirmers: megacap-liquid names may sit at flat GC fee with capped availability; rolling 1y history covers late_strong fully, mid_weak partially, old_thin not at all, so any positive read is observed-only.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "flat_gc_fee_no_cross_sectional_variance",
+      "host_throttled_fetch",
+      "thin_covered_window_sample",
+      "not_incremental_vs_accepted_sources"
+    ],
+    "recorded_at": "2026-07-12T16:15:27+00:00",
+    "success_probability": 0.2
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "llm_decision_boundary_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "data-collection only: sharded iBorrowDesk archive refresh added to run.py; no order, ranking, sizing, exit, or LLM behavior changes",
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/iborrowdesk_data_source.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "data/non_ohlcv/iborrowdesk/fetch_state.json",
+    "quant/run.py",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_013_iborrowdesk_borrow_econ_surface.py materialize",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_013_iborrowdesk_borrow_econ_surface.py analyze"
+  ],
+  "single_causal_variable": "iborrowdesk_borrow_fee_availability_avoidance_context_v1",
+  "status": "observed_only",
+  "timestamp": "2026-07-12T16:50:28+00:00",
+  "trial_family": "iborrowdesk_borrow_fee_availability_avoidance_context",
+  "trial_variant_id": "iborrowdesk_stress_transition_avoidance_v1"
+}

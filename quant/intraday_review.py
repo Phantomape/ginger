@@ -58,6 +58,8 @@ _INTRADAY_OUTPUTS: dict[str, tuple[str, str, str]] = {
     "news_raw": ("daily/intraday/news", "intraday_news_raw", "json"),
     "trade_news": ("daily/intraday/news", "intraday_trade_news", "json"),
     "snapshot": ("daily/intraday/snapshots", "intraday_review", "json"),
+    "opend_context": ("daily/intraday/market_data", "intraday_opend_context", "json"),
+    "decision_template": ("daily/intraday/decisions", "intraday_decision_template", "json"),
 }
 
 
@@ -661,6 +663,44 @@ def render_intraday_report(review: dict) -> str:
         lines.append("PORTFOLIO HEAT: unavailable")
     lines.append("")
 
+    machine = review.get("machine_triage") or {}
+    machine_rows = machine.get("rows") or []
+    lines.append(thin)
+    lines.append("MACHINE TRIAGE GUARDRAILS (advisory only; no orders)")
+    lines.append(thin)
+    if machine_rows:
+        eligible = set(machine.get("add_review_eligible") or [])
+        lines.append(
+            f"  phase={machine.get('market_phase', 'UNKNOWN')} "
+            f"cash={_fmt_pct(machine.get('cash_pct'))} "
+            f"add-review-eligible={','.join(sorted(eligible)) or 'none'}"
+        )
+        for row in machine_rows:
+            allowed = ",".join(row.get("allowed_actions") or [])
+            blockers = ",".join(
+                (row.get("risk_blocks") or []) + (row.get("blockers") or [])
+            ) or "none"
+            add_cap = row.get("max_add_pct_existing_position")
+            add_cap_txt = _fmt_pct(add_cap, signed=False) if add_cap else "0.0%"
+            confirm = row.get("confirmation_level")
+            invalid = row.get("invalidation_level")
+            levels = (
+                f"confirm={confirm:.2f}" if isinstance(confirm, (int, float)) else "confirm=n/a"
+            )
+            levels += (
+                f" invalid={invalid:.2f}" if isinstance(invalid, (int, float)) else " invalid=n/a"
+            )
+            lines.append(
+                f"  {row.get('ticker', '?'):<6} {row.get('machine_state', 'UNKNOWN'):<25} "
+                f"default={row.get('default_action', 'WAIT'):<11} "
+                f"allowed={allowed} add_cap={add_cap_txt} {levels}"
+            )
+            if blockers != "none":
+                lines.append(f"         blocks: {blockers}")
+    else:
+        lines.append("  unavailable — final reviewer must not recommend adding risk")
+    lines.append("")
+
     positions = review.get("positions", [])
     breached = [p for p in positions if p["status"] == "BREACHED"]
     approaching = [p for p in positions if p["status"] == "APPROACHING"]
@@ -766,6 +806,18 @@ def render_intraday_report(review: dict) -> str:
     src_txt = " ".join(f"{k}={v}" for k, v in sorted(quote_sources.items())) or "n/a"
     lines.append(thin)
     lines.append(f"DATA QUALITY: quotes {src_txt}")
+    if "opend_status" in dq:
+        lines.append(
+            "  moomoo OpenD "
+            f"status={dq.get('opend_status')} "
+            f"available={dq.get('opend_available_tickers', 0)}/"
+            f"{dq.get('opend_requested_tickers', 0)}"
+        )
+        if dq.get("opend_errors"):
+            lines.append(
+                f"  [!] moomoo OpenD errors={len(dq['opend_errors'])}; "
+                "see JSON snapshot for details"
+            )
     if "news_sources_ok" in dq:
         lines.append(
             f"  news sources ok={dq['news_sources_ok']} failed={dq['news_sources_failed']}"
@@ -794,18 +846,18 @@ def render_intraday_report(review: dict) -> str:
 
 # ── LLM prompt ───────────────────────────────────────────────────────────────
 
-_LLM_SYSTEM = """You are an INTRADAY RISK REVIEW assistant for a daily-cadence
-long-equity system. This is a midday (10:00 PT / 13:00 ET) advisory check of
-EXISTING risk rules at intraday prices — it is NOT a trading-signal session.
+_LLM_SYSTEM = """You are the semantic-news reviewer for an advisory intraday
+position triage. Code already owns prices, technical calculations, portfolio
+risk blocks, existing exit rules, and the allowed action set.
 
-Hard constraints on your recommendations:
-- Allowed outputs per position: HOLD, or early execution of an ALREADY
-  TRIGGERED existing rule (EXIT / REDUCE per the rule's semantics), or
-  tightening override_stop_price.
-- Do NOT recommend opening new positions or adding to positions.
-- Do NOT invent new exit rules; "approaching" flags are informational only.
-- Intraday quotes are not closing prices; flag anything marked STALE or
-  QUOTE UNAVAILABLE for manual verification instead of acting on it.
+Hard constraints:
+- For each ticker choose exactly one action from that row's allowed_actions.
+- Never override a blocker, risk_block, stale quote, or existing exit breach.
+- ADD_SMALL is permitted only when code includes it in allowed_actions and
+  verified current news contains no thesis-breaking or event-risk veto.
+- max_add_pct_existing_position is a hard ceiling, not a target.
+- Do not invent prices, indicators, option direction, rules, or orders.
+- Output valid JSON only, using the requested schema.
 """
 
 
@@ -839,6 +891,14 @@ def build_intraday_llm_prompt(review: dict) -> str:
         or news.get("text_sanitation")
         or {}
     )
+    opend_tickers = (review.get("opend_context") or {}).get("tickers") or {}
+    compact_opend = {
+        ticker: {
+            "metrics": row.get("metrics"),
+            "snapshot": row.get("snapshot"),
+        }
+        for ticker, row in opend_tickers.items()
+    }
 
     sections = [
         _LLM_SYSTEM,
@@ -852,6 +912,12 @@ def build_intraday_llm_prompt(review: dict) -> str:
         "",
         "PORTFOLIO HEAT (intraday prices):",
         json.dumps(review.get("portfolio_heat"), indent=2, ensure_ascii=False),
+        "",
+        "MACHINE TRIAGE (code-owned constraints):",
+        json.dumps(review.get("machine_triage"), indent=2, ensure_ascii=False),
+        "",
+        "MOOMOO OPEND METRICS (code-derived):",
+        json.dumps(compact_opend, indent=2, ensure_ascii=False),
         "",
         "HELD POSITIONS (existing-rule re-check at intraday prices):",
         json.dumps(payload_positions, indent=2, ensure_ascii=False),
@@ -868,9 +934,11 @@ def build_intraday_llm_prompt(review: dict) -> str:
         f"INTRADAY NEWS (trade-filtered, {len(news_items)} item(s) shown):",
         json.dumps(news_items, indent=2, ensure_ascii=False),
         "",
-        "TASK: For each held position, output HOLD / EXIT / REDUCE / TIGHTEN_STOP",
-        "with a one-sentence reason. Only EXIT/REDUCE where an existing rule has",
-        "already triggered (status BREACHED). Then give a one-paragraph portfolio",
-        "risk summary for the rest of today's session.",
+        "OUTPUT JSON SCHEMA:",
+        '{"as_of_et":"...","portfolio_summary":"...","decisions":[',
+        '{"ticker":"...","action_label":"WAIT","confidence":0.0,',
+        '"news_veto":false,"news_refs":[],"reason":"..."}]}',
+        "Return one decision for every machine_triage row in the same order.",
+        "Do not emit Markdown or any text outside the JSON object.",
     ]
     return "\n".join(sections) + "\n"

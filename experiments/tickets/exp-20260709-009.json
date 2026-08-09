@@ -1,0 +1,400 @@
+{
+  "acceptance_rule": "Observed-only lead: one ticker/archetype must beat its own buy-and-hold return and EV in at least two windows, positive aggregate return/EV deltas, aggregate EV above SPY/QQQ, trade_count >= 6, and drawdown within +2pp of own buy-and-hold. No production behavior can be accepted.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260709_009_app_meta_single_name_timing_scout.py",
+    "data/experiments/exp-20260709-009/exp_20260709_009_app_meta_single_name_timing_scout.json",
+    "experiments/cards/exp-20260709-009.md",
+    "experiments/manifests/exp-20260709-009.json",
+    "experiments/tickets/exp-20260709-009.json",
+    "experiments/logs/exp-20260709-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260709-009.md",
+  "causal_components": [
+    "canonical_ohlcv_snapshots",
+    "fixed_archetype_set",
+    "ticker_buy_hold_comparators",
+    "spy_qqq_comparators",
+    "no_strategy_change"
+  ],
+  "change_type": "observed_only_single_name_timing_scout",
+  "changed_variable": "app_meta_single_name_specialist_timing_v1",
+  "claimed_at": "2026-07-09T06:53:08+00:00",
+  "completed_at": "2026-07-09T06:59:44+00:00",
+  "created_at": "2026-07-09T06:52:56+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260709-009",
+  "experiment_uid": "expuid-33cf2e37982f4dfe",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260709-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-09T06:52:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "app_meta_single_name_timing_scout"
+  },
+  "hypothesis": "APP and META standalone single-name specialist timing may only add value in fixed trend/reclaim/breakout states; compare predeclared OHLCV-only archetypes against each ticker buy-and-hold plus SPY/QQQ before any production or default-off promotion.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "app_meta_single_name_specialist_timing_v1"
+  ],
+  "mechanism_family": "single_name_specialist_timing",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260507-008",
+    "exp-20260507-028",
+    "exp-20260507-030",
+    "exp-20260517-024"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "add",
+        "against",
+        "any",
+        "app",
+        "archetypes",
+        "before",
+        "breakout",
+        "buy",
+        "compare",
+        "each",
+        "hold",
+        "in",
+        "may",
+        "meta",
+        "name",
+        "only",
+        "or",
+        "plus",
+        "predeclared",
+        "promotion",
+        "qqq",
+        "reclaim",
+        "single",
+        "specialist",
+        "spy",
+        "standalone",
+        "states",
+        "ticker",
+        "timing",
+        "trend",
+        "value"
+      ],
+      "gate_shape": "other"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "atr_extension_deallocation_attribution",
+        "reopen_condition": "A materially different PIT NON-price field predicting which extended breakouts fail (borrow/options/flow), or a sufficiently large EXACT accepted-sleeve forward sub-sample (>=8 stretched) -- low prior since the broad in-sample effect is absent.",
+        "score": 0.4793,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "ticker_accumulation_quality_breakout_candidate_pool",
+        "reopen_condition": "If revisited, use forward replacement-value rows or a materially new free-data source such as official short-interest/ownership context; do not just retune OBV or close-location thresholds.",
+        "score": 0.475,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "spy_residual_compression_breakout_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as borrow/ETF flow, options-implied idiosyncratic pressure, or forward replacement-value rows from a shared helper.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "ticker_accumulation_base_breakout_candidate_pool",
+        "reopen_condition": "Next useful evidence would be a shared default-off helper that reproduces this exact historical replay and daily snapshot semantics, closed forward replacement-value rows, or an orthogonal PIT flow/catalyst field. Live activation would need a separate activation-envelope Gate 1-4.",
+        "score": 0.4742,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_and_hold_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use forward paper outcomes or a materially different free data edge, such as verified event/sector context. Do not just retune gap, close-location, QQQ/SPY lookback, or topN thresholds on the frozen windows.",
+        "score": 0.4711,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: standalone single-name specialist timing scout with own-ticker buy-and-hold, SPY, and QQQ comparators; not a candidate-level platform pullback wait, APP sizing top-up, ticker expansion, or forward-row attribution retry.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 2,
+      "streak_experiments": [
+        "exp-20260706-022",
+        "exp-20260708-022"
+      ]
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: standalone single-name specialist timing scout with own-ticker buy-and-hold, SPY, and QQQ comparators; not a candidate-level platform pullback wait, APP sizing top-up, ticker expansion, or forward-row attribution retry.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: standalone single-name specialist timing scout with own-ticker buy-and-hold, SPY, and QQQ comparators; not a candidate-level platform pullback wait, APP sizing top-up, ticker expansion, or forward-row attribution retry.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.26,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "fails_buy_hold_benchmark",
+      "thin_trade_count",
+      "one_ticker_concentration",
+      "ohlcv_overfit",
+      "no_window_stability"
+    ],
+    "confidence_reason": "Prior platform pullback timing was rejected and APP-specific sizing was underpowered, but a standalone single-name sleeve has a different decision boundary: it can stay in cash except during fixed predeclared trend/reclaim/breakout regimes and must beat the own-ticker buy-and-hold comparator before any promotion.",
+    "recorded_at": "2026-07-09T06:52:13+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": false,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": false,
+    "alpha_ready": false,
+    "decision": "observed_only_rejected_single_name_timing_scout",
+    "artifact": "data/experiments/exp-20260709-009/exp_20260709_009_app_meta_single_name_timing_scout.json",
+    "log": "experiments/logs/exp-20260709-009.json",
+    "gate4": {
+      "passed": false,
+      "accepted_alpha": false,
+      "alpha_ready": false,
+      "decision": "observed_only_rejected_single_name_timing_scout",
+      "observed_only_lead_passed": false,
+      "best_candidate": {
+        "ticker": "META",
+        "archetype": "qqq_relative_55d_breakout",
+        "aggregate_return_sum": 0.026346,
+        "aggregate_ev_sum": 0.4935,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "trade_count": 6,
+        "average_exposure_pct": 0.221041,
+        "worst_drawdown_pct": 0.13169,
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "windows_ev_beating_ticker_buy_hold": 2,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_qqq": 1,
+        "by_window_delta": {
+          "old_thin": {
+            "return_delta_vs_ticker_buy_hold": 0.205379,
+            "ev_delta_vs_ticker_buy_hold": 0.0392,
+            "return_delta_vs_spy": 0.147571,
+            "return_delta_vs_qqq": 0.15521,
+            "trade_count": 3,
+            "exposure_pct": 0.282609
+          },
+          "mid_weak": {
+            "return_delta_vs_ticker_buy_hold": -0.345235,
+            "ev_delta_vs_ticker_buy_hold": -0.9115,
+            "return_delta_vs_spy": -0.188202,
+            "return_delta_vs_qqq": -0.268738,
+            "trade_count": 2,
+            "exposure_pct": 0.299213
+          },
+          "late_strong": {
+            "return_delta_vs_ticker_buy_hold": -0.027519,
+            "ev_delta_vs_ticker_buy_hold": 0.3138,
+            "return_delta_vs_spy": -0.168602,
+            "return_delta_vs_qqq": -0.172482,
+            "trade_count": 1,
+            "exposure_pct": 0.081301
+          }
+        },
+        "criteria": {
+          "trade_count_gte_min": true,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": true,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false
+      },
+      "measurement_blockers": [],
+      "alpha_blockers": [
+        "predeclared_single_name_timing_lead_criteria_not_met"
+      ],
+      "before_after_strategy_delta": {
+        "expected_value_score_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "trade_count_delta": 0,
+        "max_drawdown_pct_delta": 0.0,
+        "strategy_behavior_changed": false,
+        "live_order_behavior_changed": false
+      },
+      "note": "No strategy or production behavior changed; Gate 4 cannot accept alpha."
+    },
+    "delta_metrics": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "max_drawdown_pct_delta": 0.0,
+      "strategy_behavior_changed": false,
+      "live_order_behavior_changed": false,
+      "observed_only_lead_passed": false,
+      "best_candidate": {
+        "ticker": "META",
+        "archetype": "qqq_relative_55d_breakout",
+        "aggregate_return_sum": 0.026346,
+        "aggregate_ev_sum": 0.4935,
+        "aggregate_return_delta_vs_ticker_buy_hold": -0.167375,
+        "aggregate_ev_delta_vs_ticker_buy_hold": -0.5585,
+        "aggregate_ticker_buy_hold_return_sum": 0.193721,
+        "aggregate_ticker_buy_hold_ev_sum": 1.052,
+        "aggregate_spy_ev_sum": 1.0637,
+        "aggregate_qqq_ev_sum": 1.4129,
+        "trade_count": 6,
+        "average_exposure_pct": 0.221041,
+        "worst_drawdown_pct": 0.13169,
+        "ticker_buy_hold_worst_drawdown_pct": 0.518622,
+        "windows_return_beating_ticker_buy_hold": 1,
+        "windows_ev_beating_ticker_buy_hold": 2,
+        "windows_return_beating_spy": 1,
+        "windows_return_beating_qqq": 1,
+        "by_window_delta": {
+          "old_thin": {
+            "return_delta_vs_ticker_buy_hold": 0.205379,
+            "ev_delta_vs_ticker_buy_hold": 0.0392,
+            "return_delta_vs_spy": 0.147571,
+            "return_delta_vs_qqq": 0.15521,
+            "trade_count": 3,
+            "exposure_pct": 0.282609
+          },
+          "mid_weak": {
+            "return_delta_vs_ticker_buy_hold": -0.345235,
+            "ev_delta_vs_ticker_buy_hold": -0.9115,
+            "return_delta_vs_spy": -0.188202,
+            "return_delta_vs_qqq": -0.268738,
+            "trade_count": 2,
+            "exposure_pct": 0.299213
+          },
+          "late_strong": {
+            "return_delta_vs_ticker_buy_hold": -0.027519,
+            "ev_delta_vs_ticker_buy_hold": 0.3138,
+            "return_delta_vs_spy": -0.168602,
+            "return_delta_vs_qqq": -0.172482,
+            "trade_count": 1,
+            "exposure_pct": 0.081301
+          }
+        },
+        "criteria": {
+          "trade_count_gte_min": true,
+          "windows_return_beating_ticker_buy_hold_gte_min": false,
+          "windows_ev_beating_ticker_buy_hold_gte_min": true,
+          "aggregate_return_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_ev_delta_vs_ticker_buy_hold_positive": false,
+          "aggregate_ev_beats_spy_and_qqq": false,
+          "worst_drawdown_within_guard": true
+        },
+        "lead_passed": false
+      },
+      "lead_count": 0
+    },
+    "calibration": {
+      "predicted_success_probability": 0.26,
+      "actual_success": 0,
+      "brier_score": 0.0676,
+      "predicted_failure_modes": [
+        "fails_buy_hold_benchmark",
+        "thin_trade_count",
+        "one_ticker_concentration",
+        "ohlcv_overfit",
+        "no_window_stability"
+      ],
+      "realized_failure_modes": [
+        "fails_buy_hold_benchmark",
+        "no_window_stability"
+      ],
+      "predicted_failure_mode_hit": true,
+      "calibration_note": "Success means a read-only single-name timing lead passed fixed criteria; alpha acceptance still requires shared default-off implementation and Gate 1-4."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260709-009.json",
+  "single_causal_variable": "app_meta_single_name_specialist_timing_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260709-009.json",
+  "trial_family": "app_meta_single_name_specialist_timing",
+  "trial_variant_id": "fixed_ohlcv_archetype_compass_v1",
+  "new_evidence_axis": "New gate shape: standalone single-name specialist timing scout with own-ticker buy-and-hold, SPY, and QQQ comparators; not a candidate-level platform pullback wait, APP sizing top-up, ticker expansion, or forward-row attribution retry.",
+  "updated_at": "2026-07-09T06:59:44+00:00"
+}

@@ -1,0 +1,503 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_tracker.md",
+    "data/pilots/pilot_recommendations_2026-07-12.json",
+    "quant/experiments/exp_20260712_005_pilot_scorecard_execution_provenance.py",
+    "data/experiments/exp-20260712-005/exp_20260712_005_pilot_scorecard_execution_provenance.json",
+    "experiments/cards/exp-20260712-005.md",
+    "experiments/manifests/exp-20260712-005.json",
+    "experiments/tickets/exp-20260712-005.json",
+    "experiments/logs/exp-20260712-005.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+  "card_file": "experiments/cards/exp-20260712-005.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "pilot_scorecard_execution_provenance_v1",
+  "claimed_at": "2026-07-12T04:07:10+00:00",
+  "completed_at": "2026-07-12T04:11:55+00:00",
+  "created_at": "2026-07-12T04:06:51+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260712-005",
+  "experiment_uid": "expuid-b9f18716d0be4600",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260712-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-12T04:06:51+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pilot_scorecard_execution_provenance"
+  },
+  "hypothesis": "Alpha blocker: pilot scorecards labeled as manual live currently scale paper-sleeve outcomes to $10,000 without broker-confirmed execution provenance; distinguish paper-shadow verdicts from broker-confirmed live evidence so forward alpha is not graduated or killed on simulated fills, while preserving the precommitted paper drawdown stop.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "pilot_scorecard_execution_provenance_v1"
+  ],
+  "mechanism_family": "pilot_scorecard_execution_provenance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260623-006",
+    "exp-20260702-002",
+    "exp-20260706-001",
+    "exp-20260712-001"
+  ],
+  "new_evidence_type": "new_production_visible_broker_execution_source_join",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "score": 0.6279,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "score": 0.6267,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "novelty_classifier_data_source_coverage",
+        "score": 0.6174,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "pilot_recommendations_stop_hit_action_status",
+        "score": 0.6174,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "pilot_scorecard",
+      "field_tags": [
+        "alpha",
+        "as",
+        "blocker",
+        "broker",
+        "confirmed",
+        "currently",
+        "distinguish",
+        "dollars",
+        "drawdown",
+        "evidence",
+        "execution",
+        "fills",
+        "forward",
+        "from",
+        "graduated",
+        "is",
+        "killed",
+        "labeled",
+        "live",
+        "manual",
+        "not",
+        "on",
+        "or",
+        "outcomes",
+        "pilot",
+        "precommitted",
+        "preserving",
+        "provenance",
+        "scale",
+        "scorecard",
+        "scorecards",
+        "shadow",
+        "simulated",
+        "sleeve",
+        "so",
+        "stop",
+        "to",
+        "verdicts",
+        "while",
+        "without"
+      ],
+      "gate_shape": "pilot_scorecard_readiness"
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_forward_graduation_readiness",
+        "reopen_condition": "Wait for additional closed pilot trades, or move to a new production-visible data surface with PIT coverage instead of retuning current pilot readiness gates.",
+        "score": 0.6279,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_scorecard_kill_graduate_readiness",
+        "reopen_condition": "Reopen only after one active pilot has at least 20 closed rows with positive replacement value versus SPY and QQQ under the unchanged scorecard rule, or after a materially new production-visible pilot data surface creates new rows.",
+        "score": 0.6267,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "novelty_classifier_data_source_coverage",
+        "reopen_condition": "A valid retry needs a concrete new classifier miss, such as another pilot governance surface falling to other/other, or a demonstrated overbroad pilot_scorecard keyword collision.",
+        "score": 0.6174,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "pilot_scorecard",
+        "family_key": "pilot_recommendations_stop_hit_action_status",
+        "reopen_condition": "A valid retry needs a new pilot governance artifact whose machine-readable action contradicts the manual operator instruction, or a genuinely new pilot data surface.",
+        "score": 0.6174,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pilot_or_sleeve",
+        "reopen_condition": "A fundamentally different portfolio-level risk mechanism (e.g. regime-based position count cap, not notional scaling) or a much higher-frequency trade universe where sizing changes affect hundreds of entries, not single digits.",
+        "score": 0.0462,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "pilot_scorecard",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "pilot_scorecard_readiness",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "pilot_scorecard",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "alpha-explore",
+  "prediction": {
+    "success_probability": 0.95,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "broker_position_snapshot_unavailable",
+      "paper_and_broker_tickers_accidentally_identical",
+      "ticker_overlap_mistaken_for_lot_attribution",
+      "paper_kill_rule_weakened"
+    ],
+    "confidence_reason": "The new broker ledger and current pilot files deterministically show a seven-ticker paper actionable set with only DDOG/CRDO present in the broker account; the repair adds provenance labels without changing signals, thresholds, fills, orders, or the paper stop rule.",
+    "recorded_at": "2026-07-12T04:11:55+00:00"
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair_pilot_scorecard_execution_provenance",
+    "artifact": "data/experiments/exp-20260712-005/exp_20260712_005_pilot_scorecard_execution_provenance.json",
+    "log": "experiments/logs/exp-20260712-005.json",
+    "gate4": {
+      "passed_as_measurement_repair": true,
+      "applicable_to_strategy": false,
+      "accepted_alpha": false,
+      "decision": "accepted_measurement_repair_pilot_scorecard_execution_provenance",
+      "acceptance_checks": {
+        "baseline_identity_matches": true,
+        "broker_snapshot_available": true,
+        "paper_actionable_rows_present": true,
+        "execution_mismatch_is_observable": true,
+        "all_cards_marked_paper_shadow": true,
+        "no_card_live_verdict_eligible": true,
+        "all_operator_rows_require_execution_verification": true,
+        "paper_kill_rule_preserved": true,
+        "no_strategy_behavior_changed": true
+      },
+      "failed_reasons": []
+    },
+    "headline_metrics": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "trade_count_delta": 0,
+      "strategy_behavior_changed": false,
+      "paper_actionable_tickers": 7,
+      "broker_current_ticker_overlap": 2
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_changed": false,
+      "run_adapter_changed": false,
+      "pilot_reporting_changed": true,
+      "pilot_recommendation_labels_changed": true,
+      "paper_kill_rule_changed": false,
+      "entry_rules_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exit_rules_changed": false,
+      "orders_changed": false,
+      "trade_enabled": false,
+      "scope": "pilot_execution_provenance_and_operator_labeling_only"
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The pilot tracker was created before broker execution facts were persisted. It treated paper-sleeve positions as a proxy manual book and scaled their returns to $10k, but never recorded whether the operator executed the recommendation.",
+      "forbidden_near_neighbor_retry": "Do not infer pilot ownership from ticker presence, position_id, date proximity, or paper entry price. Do not change the 15% paper stop, $10k shadow notional, or graduation thresholds from this repair.",
+      "new_evidence_required": "Broker orders need an explicit pilot_execution_id or strategy tag captured at order creation; historical attribution otherwise requires an operator-confirmed execution map."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260712-005.json",
+  "single_causal_variable": "pilot_scorecard_execution_provenance_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260712-005.json",
+  "trial_family": "pilot_scorecard_execution_provenance",
+  "trial_variant_id": "exp-20260712-005",
+  "timestamp": "2026-07-12T04:11:55+00:00",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "decision": "accepted_measurement_repair_pilot_scorecard_execution_provenance",
+  "alpha_hypothesis": "The accepted pilot sleeves may retain forward alpha, but that alpha can only be evaluated from executed, strategy-attributed fills rather than scaled paper positions.",
+  "new_evidence_axis": "The new broker execution ledger exposes 11 current broker positions while the pilot recommendation surface exposes seven actionable paper tickers; only two current tickers overlap and neither has a pilot strategy tag. This is a new cross-source execution-provenance defect, not a readiness or kill-threshold retune.",
+  "calibration": {
+    "actual_success": true,
+    "predicted_success_probability": 0.95,
+    "predicted_failure_modes": [
+      "broker_position_snapshot_unavailable",
+      "paper_and_broker_tickers_accidentally_identical",
+      "ticker_overlap_mistaken_for_lot_attribution",
+      "paper_kill_rule_weakened"
+    ],
+    "failure_modes_observed": [],
+    "surprise_note": "The mismatch was exactly observable: only two of seven current paper actionable tickers appear in the broker snapshot, and no broker row carries a pilot strategy tag."
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "note": "Measurement repair; canonical strategy baseline is unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "paper_sleeve",
+      "paper_ticker",
+      "paper_entry_date",
+      "paper_verdict",
+      "broker_current_position_ticker",
+      "broker_snapshot_observed_at_utc"
+    ],
+    "sentinel_note": "entry_date remains present on scored paper rows; target_price is not an input because this repair creates no executable signal."
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "survival_rate": 0.823171
+  },
+  "gate4": {
+    "passed_as_measurement_repair": true,
+    "applicable_to_strategy": false,
+    "accepted_alpha": false,
+    "decision": "accepted_measurement_repair_pilot_scorecard_execution_provenance",
+    "acceptance_checks": {
+      "baseline_identity_matches": true,
+      "broker_snapshot_available": true,
+      "paper_actionable_rows_present": true,
+      "execution_mismatch_is_observable": true,
+      "all_cards_marked_paper_shadow": true,
+      "no_card_live_verdict_eligible": true,
+      "all_operator_rows_require_execution_verification": true,
+      "paper_kill_rule_preserved": true,
+      "no_strategy_behavior_changed": true
+    },
+    "failed_reasons": []
+  },
+  "before_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl_sum": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "minimum_survival_rate": 0.7925
+  },
+  "after_metrics": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json",
+    "window_count": 3,
+    "expected_value_score_sum": 7.8941,
+    "total_pnl_sum": 234850.99,
+    "trade_count": 61,
+    "signals_generated": 164,
+    "signals_survived": 135,
+    "minimum_survival_rate": 0.7925
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0,
+    "strategy_behavior_changed": false,
+    "paper_actionable_tickers": 7,
+    "broker_current_ticker_overlap": 2
+  },
+  "measurement": {
+    "before": {
+      "scorecard_basis": "implicit_manual_live_label_over_paper_state",
+      "execution_provenance_present": false,
+      "live_verdict_eligible_explicit": null
+    },
+    "after": {
+      "scorecard_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
+      "paper_verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
+      "broker_snapshot_status": "available",
+      "broker_snapshot_observed_at_utc": "2026-07-12T03:01:17.631630Z",
+      "broker_current_position_count": 11,
+      "paper_actionable_ticker_count": 7,
+      "broker_current_ticker_overlap_count": 2,
+      "broker_current_ticker_overlap": [
+        "CRDO",
+        "DDOG"
+      ],
+      "historical_closed_trade_link_status": "unavailable_without_pilot_execution_id_or_broker_order_strategy_tag",
+      "live_promotion_eligible": false,
+      "note": "Paper sleeve outcomes remain valid shadow evidence and retain their precommitted stop rule. Current-ticker overlap is not lot or strategy attribution, so no scorecard verdict is broker-confirmed live evidence."
+    },
+    "scorecards": [
+      {
+        "pilot": "allocator_top1",
+        "closed_trades": 7,
+        "paper_verdict": "KILL",
+        "book_max_drawdown_pct": 0.4982,
+        "live_verdict_eligible": false,
+        "verdict_scope": "paper_shadow_risk_stop_and_graduation_only"
+      },
+      {
+        "pilot": "distribution_absorption",
+        "closed_trades": 2,
+        "paper_verdict": "COLLECTING",
+        "book_max_drawdown_pct": 0.1093,
+        "live_verdict_eligible": false,
+        "verdict_scope": "paper_shadow_risk_stop_and_graduation_only"
+      },
+      {
+        "pilot": "fundamental_growth_rs",
+        "closed_trades": 12,
+        "paper_verdict": "KILL",
+        "book_max_drawdown_pct": 0.4006,
+        "live_verdict_eligible": false,
+        "verdict_scope": "paper_shadow_risk_stop_and_graduation_only"
+      }
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_changed": false,
+    "run_adapter_changed": false,
+    "pilot_reporting_changed": true,
+    "pilot_recommendation_labels_changed": true,
+    "paper_kill_rule_changed": false,
+    "entry_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_rules_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false,
+    "scope": "pilot_execution_provenance_and_operator_labeling_only"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The pilot tracker was created before broker execution facts were persisted. It treated paper-sleeve positions as a proxy manual book and scaled their returns to $10k, but never recorded whether the operator executed the recommendation.",
+    "forbidden_near_neighbor_retry": "Do not infer pilot ownership from ticker presence, position_id, date proximity, or paper entry price. Do not change the 15% paper stop, $10k shadow notional, or graduation thresholds from this repair.",
+    "new_evidence_required": "Broker orders need an explicit pilot_execution_id or strategy tag captured at order creation; historical attribution otherwise requires an operator-confirmed execution map."
+  },
+  "reopen_condition": "Reopen live pilot performance attribution only after broker orders carry pilot_execution_id/strategy tags or an operator-confirmed map.",
+  "changed_files": [
+    "quant/pilot_tracker.py",
+    "quant/test_pilot_tracker.py",
+    "data/pilots/pilot_scorecard.json",
+    "data/pilots/pilot_tracker.md",
+    "data/pilots/pilot_recommendations_2026-07-12.json",
+    "quant/experiments/exp_20260712_005_pilot_scorecard_execution_provenance.py",
+    "data/experiments/exp-20260712-005/exp_20260712_005_pilot_scorecard_execution_provenance.json",
+    "experiments/logs/exp-20260712-005.json",
+    "experiments/cards/exp-20260712-005.md",
+    "experiments/manifests/exp-20260712-005.json",
+    "experiments/tickets/exp-20260712-005.json",
+    "docs/experiment_registry.json"
+  ],
+  "related_files": [
+    "data/live_pilot/broker_execution/position_snapshots.jsonl",
+    "data/paper_sleeves/*/state.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_20260604.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260712_005_pilot_scorecard_execution_provenance.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_pilot_tracker.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260712_005_pilot_scorecard_execution_provenance.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "anti_js": {
+    "used_javascript": false,
+    "evidence": "Python runner only."
+  },
+  "artifact": "data/experiments/exp-20260712-005/exp_20260712_005_pilot_scorecard_execution_provenance.json",
+  "log": "experiments/logs/exp-20260712-005.json",
+  "updated_at": "2026-07-12T04:11:55+00:00"
+}

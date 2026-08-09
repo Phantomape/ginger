@@ -10,7 +10,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import re
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
@@ -28,7 +31,42 @@ DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"
 DEFAULT_MAX_EXPIRATIONS = 2
 DEFAULT_MAX_STRIKES_PER_SIDE = 12
 DEFAULT_REQUEST_SLEEP_SECONDS = 0.05
+# Upstream serves via a CDN that intermittently returns whole-evening 5xx
+# bursts (observed 2026-05-25, 2026-06-19, 2026-07-23). Forward vintage is
+# unrecoverable once the quote day passes, so transient failures get bounded
+# in-run retries instead of a single shot.
+DEFAULT_FETCH_MAX_ATTEMPTS = 3
+DEFAULT_FETCH_RETRY_BACKOFF_SECONDS = (1.0, 5.0)
+DEFAULT_SNAPSHOT_SECOND_ATTEMPT_DELAY_SECONDS = 300.0
+_TRANSIENT_ERROR_TEXT = re.compile(
+    r"(HTTP Error 5\d\d|urlopen error|timed? ?out|Connection reset|RemoteDisconnected)",
+    re.IGNORECASE,
+)
 CALL_PUT_VALUES = ("call", "put")
+
+
+def _retry_sleep(seconds: float) -> None:
+    if seconds > 0:
+        time.sleep(seconds)
+
+
+def _is_transient_exception(exc: BaseException) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code >= 500
+    return isinstance(exc, (urllib.error.URLError, TimeoutError))
+
+
+def _is_transient_error_text(text: Any) -> bool:
+    return bool(_TRANSIENT_ERROR_TEXT.search(str(text or "")))
+
+
+def _fetch_max_attempts() -> int:
+    raw = os.environ.get("GINGER_OPTIONS_FETCH_MAX_ATTEMPTS")
+    try:
+        value = int(raw) if raw else DEFAULT_FETCH_MAX_ATTEMPTS
+    except ValueError:
+        value = DEFAULT_FETCH_MAX_ATTEMPTS
+    return max(1, value)
 
 FetchJson = Callable[..., Any]
 
@@ -145,8 +183,20 @@ def fetch_onclickmedia_json(
             "User-Agent": user_agent,
         },
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:  # nosec - research adapter URL is fixed.
-        text = response.read().decode("utf-8")
+    max_attempts = _fetch_max_attempts()
+    text = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:  # nosec - research adapter URL is fixed.
+                text = response.read().decode("utf-8")
+            break
+        except Exception as exc:
+            if attempt >= max_attempts or not _is_transient_exception(exc):
+                raise
+            backoff = DEFAULT_FETCH_RETRY_BACKOFF_SECONDS[
+                min(attempt - 1, len(DEFAULT_FETCH_RETRY_BACKOFF_SECONDS) - 1)
+            ]
+            _retry_sleep(backoff)
     payload = json.loads(text)
     cache_file.parent.mkdir(parents=True, exist_ok=True)
     cache_file.write_text(
@@ -625,6 +675,7 @@ def persist_daily_options_snapshot(
     timeout: float = 30.0,
     logger: Any = None,
     fetch_json: FetchJson = fetch_onclickmedia_json,
+    second_attempt_delay_seconds: float | None = None,
 ) -> dict[str, Any]:
     as_of_date = _parse_date(as_of)
     tag = as_of_date.strftime("%Y%m%d")
@@ -635,23 +686,60 @@ def persist_daily_options_snapshot(
     output = root / f"options_onclickmedia_chain_{tag}.jsonl"
     summary_output = root / f"options_onclickmedia_summary_{tag}.json"
 
-    summary = run_options_backfill(
-        tickers=tickers_clean,
-        start=as_of_date,
-        end=as_of_date,
-        output=output,
-        summary_output=summary_output,
-        cache_dir=DEFAULT_CACHE_DIR,
-        refresh=refresh,
-        max_expirations=max_expirations,
-        max_strikes_per_side=max_strikes_per_side,
-        collection_mode="forward_daily",
-        include_weekends=True,
-        sleep_seconds=sleep_seconds,
-        timeout=timeout,
-        underlying_prices=underlying_prices,
-        fetch_json=fetch_json,
-    )
+    def _attempt() -> dict[str, Any]:
+        return run_options_backfill(
+            tickers=tickers_clean,
+            start=as_of_date,
+            end=as_of_date,
+            output=output,
+            summary_output=summary_output,
+            cache_dir=DEFAULT_CACHE_DIR,
+            refresh=refresh,
+            max_expirations=max_expirations,
+            max_strikes_per_side=max_strikes_per_side,
+            collection_mode="forward_daily",
+            include_weekends=True,
+            sleep_seconds=sleep_seconds,
+            timeout=timeout,
+            underlying_prices=underlying_prices,
+            fetch_json=fetch_json,
+        )
+
+    summary = _attempt()
+    recovery = {
+        "second_attempt_used": False,
+        "first_attempt_rows_written": summary["rows_written"],
+        "first_attempt_error_count": summary["error_count"],
+        "first_attempt_all_transient": False,
+        "second_attempt_delay_seconds": None,
+    }
+    if summary["rows_written"] == 0 and summary["error_count"] > 0:
+        all_transient = all(
+            _is_transient_error_text(error.get("error")) for error in summary.get("errors", [])
+        )
+        recovery["first_attempt_all_transient"] = all_transient
+        if all_transient:
+            if second_attempt_delay_seconds is None:
+                raw_delay = os.environ.get("GINGER_OPTIONS_SNAPSHOT_RETRY_DELAY_SECONDS")
+                try:
+                    delay = float(raw_delay) if raw_delay else DEFAULT_SNAPSHOT_SECOND_ATTEMPT_DELAY_SECONDS
+                except ValueError:
+                    delay = DEFAULT_SNAPSHOT_SECOND_ATTEMPT_DELAY_SECONDS
+            else:
+                delay = float(second_attempt_delay_seconds)
+            delay = max(0.0, delay)
+            recovery["second_attempt_used"] = True
+            recovery["second_attempt_delay_seconds"] = delay
+            if logger:
+                logger.warning(
+                    "Daily OnclickMedia options snapshot: whole-run transient outage "
+                    "(%s errors, 0 rows); retrying once in %.0fs",
+                    summary["error_count"],
+                    delay,
+                )
+            _retry_sleep(delay)
+            summary = _attempt()
+    summary["recovery"] = recovery
     summary["status"] = "ok" if summary["rows_written"] > 0 or summary["error_count"] == 0 else "failed"
     if summary["rows_written"] > 0 and summary["error_count"] > 0:
         summary["status"] = "partial"

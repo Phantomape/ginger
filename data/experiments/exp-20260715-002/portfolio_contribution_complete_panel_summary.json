@@ -1,0 +1,120 @@
+{
+  "benchmarks": {
+    "strategy_total_return_pct": 2.185040392688
+  },
+  "best_candidate": {
+    "aggregate": {
+      "combined_concentration_proxy": {
+        "hhi_concentration": 0.06463934097307207,
+        "positive_pnl_usd": 248882.27363317282,
+        "positive_ticker_count": 25,
+        "single_ticker_positive_share": 0.1223698801662693,
+        "top_5_contribution_pct": 0.46021225271510346
+      },
+      "core_concentration_proxy": {
+        "hhi_concentration": 0.07071416602563835,
+        "positive_pnl_usd": 259353.05000000005,
+        "positive_ticker_count": 21,
+        "single_ticker_positive_share": 0.13047720086576964,
+        "top_5_contribution_pct": 0.47837829553190137
+      },
+      "diagnostic_vs_90_core_10_cash": {
+        "aggregate_ev_delta": 0.6414257177689999,
+        "aggregate_pnl_delta": 11059.524794518002
+      },
+      "formal_vs_full_core": {
+        "aggregate_ev_delta": -0.9493398425699999,
+        "aggregate_pnl_delta": -19348.240731123267,
+        "combined_expected_value_score_sum": 11.314064249772,
+        "combined_total_pnl_sum": 218504.03926887678,
+        "core_expected_value_score_sum": 12.263404092341,
+        "core_total_pnl_sum": 237852.28000000006
+      },
+      "simultaneous_inference": {
+        "bootstrap_standard_error": 1.3870628981052955,
+        "multiple_testing_passed": false,
+        "observed_aggregate_ev_delta": -0.9493398425702557,
+        "simultaneous_90pct_lower_bound": -2.494851076947848
+      },
+      "worst_es95_worsening_fraction": 0.0571256113279464,
+      "worst_max_drawdown_worse": 0.004718065772
+    },
+    "evidence_blockers": [
+      "selection_panel_incomplete",
+      "multiple_testing_not_passed",
+      "simultaneous_ev_lower_bound_not_positive"
+    ],
+    "experiment_id": "exp-20260626-003",
+    "family": "companyfacts_purchase_obligation_maturity_ladder_candidate_pool",
+    "hard_failures": [
+      "non_positive_aggregate_ev",
+      "non_positive_aggregate_pnl",
+      "too_many_material_regressed_windows",
+      "insufficient_non_regressed_windows",
+      "es95_worse_guardrail"
+    ],
+    "strict_verdict": "portfolio_reject"
+  },
+  "bootstrap": {
+    "block_length": 20,
+    "bootstrap_matrix_shape": [
+      10000,
+      31
+    ],
+    "confidence": 0.9,
+    "critical_max_t": 1.1142329857490487,
+    "replicates": 10000,
+    "seed": 2026071502
+  },
+  "candidate_count": 31,
+  "capital_allocation_contract": {
+    "candidate_return_initial_capital_usd": 10000.0,
+    "candidate_sleeve_initial_cash_usd_per_window": 10000.0,
+    "double_scaling_prohibited": true,
+    "entry_principal_constraint": "cash/(1+entry_fee)",
+    "exit_cashflow": "shares*effective_exit_price-exit_fee",
+    "no_leverage": true,
+    "portfolio_return_formula": "0.90*core_return+0.10*candidate_sleeve_return",
+    "prior_day_exit_cash_reuse": true,
+    "profit_and_loss_affect_later_cash": true,
+    "same_day_entry_allocation": "pro_rata_including_entry_fee",
+    "same_day_exit_cash_reuse": false
+  },
+  "diagnostic_comparison": "0.90*active_core + 0.10*candidate versus 0.90*active_core + 0.10*cash",
+  "expected_family_count": 31,
+  "expected_value_score": 11.314064249772,
+  "experiment_id": "exp-20260715-002",
+  "family_batch_complete": true,
+  "formal_comparison": "0.90*active_core + 0.10*candidate versus 1.00*active_core",
+  "generated_at": "2026-07-15T07:03:26.595175+00:00",
+  "materialized_ohlcv_snapshot": {
+    "actual_consumed_pair_count": 10319,
+    "canonical_json_sha256": "7514d632c514bac066d6f52e2283a4a1f6a301a265ab7ec3e2f7ee94c52249d3",
+    "gzip_sha256": "27148fd7c0eac5023f9acfadc543e81f16d7edb0ac9617dd669df96e33b2714f",
+    "hash_verification": "explicit",
+    "missing_actual_consumed_pair_count": 0,
+    "missing_pair_count": 0,
+    "mode": "frozen_snapshot_replay",
+    "path": "data/experiments/exp-20260715-002/candidate_ohlcv_rowset.json.gz",
+    "potential_requested_pair_count": 13590,
+    "row_count": 13590,
+    "selection_contract": "reproducibility superset of potential fixed-calendar OHLCV rows; actual_consumed_pair_count reflects cash-funded rows",
+    "sha256_path": "data/experiments/exp-20260715-002/candidate_ohlcv_rowset.json.gz.sha256",
+    "unused_superset_pair_count": 3271
+  },
+  "max_drawdown_pct": 0.10219464804,
+  "observed_family_count": 31,
+  "schema": "ginger.portfolio_contribution_complete_panel_summary.v1",
+  "selection_panel_caveat": "selection_panel_complete=false: the preserved ranking contains all 31 family representatives, but the approximately 264 historical rejected-positive selection candidates used to choose those representatives were not persisted as a complete simultaneous panel",
+  "selection_panel_complete": false,
+  "sharpe_daily": 5.177965719825265,
+  "strict_verdict": "portfolio_reject",
+  "survival_rate": 0.7885,
+  "synthetic_closeout_only": true,
+  "synthetic_sharpe_definition": "aggregate_window_ev_sum/aggregate_window_return_fraction_sum",
+  "total_pnl": 218504.03926887678,
+  "total_trades": 158,
+  "verdict_counts": {
+    "portfolio_reject": 31
+  }
+}

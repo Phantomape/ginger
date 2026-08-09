@@ -1,0 +1,313 @@
+{
+  "acceptance_rule": "Require >=60 tagged unique settled rows and Q5>=12; Q5 must underperform Q1-Q4 on mean cash/SPY/QQQ replacement value; the fixed 0.75 cash-hold tilt must improve aggregate cash/SPY/QQQ replacement value in both chronological halves, with no single sleeve contributing >50% of positive improvement; otherwise reject and park.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260716_007_forward_short_volume_soft_tilt.py",
+    "data/experiments/exp-20260716-007/exp_20260716_007_forward_short_volume_soft_tilt.json",
+    "experiments/cards/exp-20260716-007.md",
+    "experiments/manifests/exp-20260716-007.json",
+    "experiments/tickets/exp-20260716-007.json",
+    "experiments/logs/exp-20260716-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data\\paper_sleeves\\forward_replacement_value.jsonl",
+  "card_file": "experiments/cards/exp-20260716-007.md",
+  "causal_components": [
+    "fixed Q5 tag",
+    "fixed 0.75 scalar",
+    "cash hold",
+    "chronological half validation",
+    "source concentration audit"
+  ],
+  "change_type": "forward_evidence_notional_scalar",
+  "changed_variable": "forward_replacement_entry_short_volume_q5_notional_075",
+  "claimed_at": "2026-07-16T14:11:45+00:00",
+  "completed_at": "2026-07-16T14:12:00+00:00",
+  "created_at": "2026-07-16T14:10:54+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-07-15",
+      "start": "2026-06-11"
+    }
+  ],
+  "experiment_id": "exp-20260716-007",
+  "experiment_uid": "expuid-f589f0536dd244c5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260716-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-16T14:10:54+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_short_volume_soft_tilt"
+  },
+  "hypothesis": "Forward-only soft short-flow notional-scalar alpha: on materially expanded settled forward rows, entry-time short-volume toxic Q5 should identify lower-quality demand; scale only Q5 decisions to 0.75 notional and hold freed capital as cash, leaving all other decisions unchanged.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "Q5 percentile cutoff",
+    "0.75 scalar",
+    "freed capital held as cash",
+    "104-row frozen ledger",
+    "all tagged sleeves",
+    "chronological median split"
+  ],
+  "mechanism_family": "forward_short_volume_soft_tilt",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/run.py",
+    "live orders",
+    "default orders",
+    "ranking",
+    "exits"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260626-018"
+  ],
+  "new_evidence_type": "materially_more_settled_forward_rows",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_short_volume_replacement_value_attribution",
+        "score": 0.6683,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "default_off_forward_short_volume_tagging",
+        "score": 0.6513,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "score": 0.639,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6377,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "default_off_forward_entry_exhaustion_tagging",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "all",
+        "alpha",
+        "as",
+        "capital",
+        "cash",
+        "decisions",
+        "demand",
+        "entry",
+        "expanded",
+        "flow",
+        "forward",
+        "freed",
+        "hold",
+        "identify",
+        "leaving",
+        "lower",
+        "materially",
+        "notional",
+        "on",
+        "only",
+        "other",
+        "q5",
+        "rows",
+        "scalar",
+        "scale",
+        "settled",
+        "short",
+        "should",
+        "soft",
+        "tilt",
+        "time",
+        "to",
+        "toxic",
+        "unchanged",
+        "volume"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_short_volume_replacement_value_attribution",
+        "reopen_condition": "At least 20 PIT-tagged Q5 closed forward rows, max single Q5 ticker share <=40%, positive clean-vs-toxic separation versus cash/SPY/QQQ, or a materially new borrow fee/utilization/loan-availability field.",
+        "score": 0.6683,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_short_volume_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows per short-volume quintile (the current per-quintile N is single digits and not significance-tested), or a PIT borrow fee / utilization / loan-availability field, before any soft-tilt activation test.",
+        "score": 0.6513,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_entry_regime_exposure_scalar",
+        "reopen_condition": "Need materially more closed forward replacement rows carrying entry_regime tags across diversified sleeves and non-risk-on states before any regime soft-tilt activation test.",
+        "score": 0.639,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6377,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_entry_exhaustion_tagging",
+        "reopen_condition": "Materially more closed forward replacement rows so the exhaustion extension can be tested as a discriminator of the failed-followthrough cohort with statistical power, or a genuinely new PIT entry-fragility data source, before any tilt-activation test.",
+        "score": 0.6308,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Materially more settled forward evidence: 104 unique closed rows versus 40 at exp-20260626-018 (+64, +160%); 71 tagged versus 37 (+34, +92%); Q5 doubled from 7 to 14. This satisfies the settled-row reopen axis without changing tag threshold or response family.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": true,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "Materially more settled forward evidence: 104 unique closed rows versus 40 at exp-20260626-018 (+64, +160%); 71 tagged versus 37 (+34, +92%); Q5 doubled from 7 to 14. This satisfies the settled-row reopen axis without changing tag threshold or response family.",
+        "categories": [],
+        "invalid_same_source_field_only": true,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Materially more settled forward evidence: 104 unique closed rows versus 40 at exp-20260626-018 (+64, +160%); 71 tagged versus 37 (+34, +92%); Q5 doubled from 7 to 14. This satisfies the settled-row reopen axis without changing tag threshold or response family.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-explore",
+  "prediction": {
+    "confidence_reason": "The June 26 PIT tag diagnostic showed clean Q1-Q2 mean cash replacement +225 versus toxic Q5 -204 but only 37 tagged rows/Q5 n=7; the ledger now has 104 unique settled rows, 71 tagged, Q5 n=14. The main risk is nonstationary source mix rather than missing sample growth.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": 700.0,
+    "main_failure_modes": [
+      "short_volume_sign_decay",
+      "source_mix_confound",
+      "one_sleeve_dominance",
+      "chronological_instability"
+    ],
+    "recorded_at": "2026-07-16T14:10:13+00:00",
+    "success_probability": 0.35
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.35,
+      "brier_score": 0.1225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 700.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "short_volume_sign_decay",
+        "source_mix_confound",
+        "one_sleeve_dominance",
+        "chronological_instability"
+      ],
+      "realized_failure_mode": "reopen_condition_not_met_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The advisory override recognized material total-row growth, but the nearest frozen-family record exposed a stricter Q5-specific minimum that had not matured."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260716-007.json",
+  "single_causal_variable": "forward_entry_short_volume_q5_notional_075_cash_hold_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260716-007.json",
+  "trial_family": "forward_short_volume_soft_tilt",
+  "trial_variant_id": "q5_notional_075_cash_hold_104_settled_v1"
+}

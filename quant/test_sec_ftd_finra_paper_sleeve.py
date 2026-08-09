@@ -144,6 +144,8 @@ def test_sec_ftd_finra_snapshot_admits_candidate_without_orders():
     assert candidate["finra_days_to_cover"] == 5.0
     assert candidate["finra_short_interest_change_pct"] == 12.0
     assert snapshot["new_pending_entries"][0]["notional"] == 4_000.0
+    assert len(snapshot["pending_entries"]) == snapshot["pending_count"] == 1
+    assert snapshot["pending_entries"][0]["notional"] == 4_000.0
     assert snapshot["candidate_reject_counts"]["finra_days_to_cover_below_threshold"] == 1
 
 

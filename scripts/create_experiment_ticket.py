@@ -750,6 +750,295 @@ def evaluate_routine_materialization_guard(args, repo_root=None, today=None):
     return result
 
 
+_RECIPE_BATCH_EXIT_MARKERS = (
+    "single batch",
+    "one batch",
+    "single pooled batch",
+    "pooled batch",
+    "batch experiment",
+    "batched representatives",
+)
+
+
+def _load_recipe_lanes(repo_root=None):
+    root = Path(repo_root) if repo_root else Path(_repo_root())
+    path = root / "docs" / "recipe_lanes.jsonl"
+    lanes = []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    lanes.append(json.loads(line))
+    except Exception:
+        return []
+    return [lane for lane in lanes if isinstance(lane, dict)]
+
+
+def _recipe_normalize(text):
+    text = str(text or "").lower()
+    text = re.sub(r"[-_/×,;:()\[\]{}]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _recipe_phrase_hits(normalized_text, phrases):
+    hits = []
+    for phrase in phrases or []:
+        p = _recipe_normalize(phrase)
+        if not p:
+            continue
+        pattern = r"(?<!\w)" + re.escape(p).replace(r"\ ", r"\s+") + r"(?!\w)"
+        if re.search(pattern, normalized_text):
+            hits.append(phrase)
+    return hits
+
+
+def classify_recipe_lane_match(text, lanes):
+    """Match free text against curated recipe lanes (docs/recipe_lanes.jsonl).
+
+    A lane matches when the text hits >= min_source_hits distinct source-cluster
+    phrases AND >= min_response_hits distinct response-cluster phrases. This is
+    the machine identity for AGENTS.md §2.4 排名/枚举清单消费: the ordinary
+    novelty gate keys on data_source, so a NEW source consumed by an OLD recipe
+    always looks novel — this classifier keys on the recipe instead.
+    """
+    normalized = _recipe_normalize(text)
+    matches = []
+    for lane in lanes:
+        src_hits = _recipe_phrase_hits(normalized, lane.get("source_cluster"))
+        resp_hits = _recipe_phrase_hits(normalized, lane.get("response_cluster"))
+        min_src = int(lane.get("min_source_hits", 1))
+        min_resp = int(lane.get("min_response_hits", 2))
+        if len(src_hits) >= min_src and len(resp_hits) >= min_resp:
+            matches.append(
+                {
+                    "lane_key": lane.get("lane_key"),
+                    "status": lane.get("status"),
+                    "consecutive_rejects": lane.get("consecutive_rejects"),
+                    "batch_exit_used": bool(lane.get("batch_exit_used")),
+                    "source_hits": src_hits[:6],
+                    "response_hits": resp_hits[:6],
+                    "member_experiments": (lane.get("member_experiments") or [])[:5],
+                    "reopen_condition": lane.get("reopen_condition"),
+                }
+            )
+    return matches
+
+
+def evaluate_recipe_lane_guard(args, repo_root=None):
+    """Machine form of the AGENTS.md §2.4 排名/枚举清单消费 (enumeration-
+    consumption) row for curated burned lanes.
+
+    Recipe-level repetition dominated 2026-07-14..07-21 (45 alpha tickets, 41
+    rejected, 0 accepted; ~15 official-release×fixed-response reskins, 3
+    developer-count reskins) because every other guard keys on data_source and a
+    new source with an old recipe always looks novel. Lanes are curated in
+    docs/recipe_lanes.jsonl; when a lane parks or a new burn pattern is named in
+    a reflection, add/extend a lane entry there in the same experiment.
+
+    Legal exits mirror the prose rule: a single pooled batch (only if the lane
+    has not spent its batch exit; detected via explicit batch markers in the
+    hypothesis) or park. --recipe-lane-override plus --new-evidence-axis
+    escapes for genuinely different mechanisms that collide with the phrase
+    clusters.
+    """
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "batch_exit_detected": False,
+        "matches": [],
+        "rule": (
+            "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite "
+            "taxonomy with one fixed evaluation recipe, one item per ID, is loop "
+            "unrolling — not new evidence. After the lane triggers, only a single "
+            "pooled batch (once) or park is legal. Curated lanes: "
+            "docs/recipe_lanes.jsonl."
+        ),
+    }
+    try:
+        lane = str(getattr(args, "lane", "") or "").lower()
+        if lane not in ALPHA_LANES:
+            return result
+        lanes = _load_recipe_lanes(repo_root)
+        active = [
+            l for l in lanes
+            if str(l.get("status", "")).lower() in {"parked", "triggered"}
+        ]
+        if not active:
+            return result
+        text = " ".join(
+            str(getattr(args, name, "") or "")
+            for name in (
+                "hypothesis",
+                "single_causal_variable",
+                "changed_variable",
+                "trial_family",
+                "mechanism_family",
+                "file_slug",
+            )
+        )
+        matches = classify_recipe_lane_match(text, active)
+        result["matches"] = matches
+        if not matches:
+            return result
+        result["applicable"] = True
+        normalized = _recipe_normalize(text)
+        batch_marker = any(m in normalized for m in _RECIPE_BATCH_EXIT_MARKERS)
+        batch_available = all(not m["batch_exit_used"] for m in matches)
+        result["batch_exit_detected"] = batch_marker
+        if batch_marker and batch_available:
+            # The one legal pooled-batch exit for a lane that still has it.
+            return result
+        if getattr(args, "recipe_lane_override", False) and (
+            str(getattr(args, "new_evidence_axis", "") or "").strip()
+        ):
+            result["override_accepted"] = True
+            return result
+        result["blocked"] = True
+    except Exception:
+        return result
+    return result
+
+
+_IN_FLIGHT_OPEN_STATUSES = {"proposed", "claimed", "running"}
+
+
+def _field_tag_jaccard(fp_a, fp_b):
+    """Raw field-tag overlap in [0,1], independent of source classification.
+
+    The classified fingerprint distance under-scores verbatim duplicates whose
+    data_source falls to "other" (the same classifier escape AGENTS.md §2.4
+    warns about): two identical unclassified hypotheses score at most
+    0.40 (Jaccard weight) + 0.15 (gate shape). Duplicate reservations share
+    near-verbatim hypothesis text, so raw tag Jaccard is the reliable signal.
+    """
+    a = set(fp_a.get("field_tags") or [])
+    b = set(fp_b.get("field_tags") or [])
+    if not (a or b):
+        return 0.0
+    return round(len(a & b) / len(a | b), 4)
+
+
+def evaluate_in_flight_duplicate_guard(args, fingerprint, repo_root=None, today=None):
+    """Machine form of the AGENTS.md §7 concurrent-duplicate-reservation rule.
+
+    The frozen-family novelty gate only sees CLOSED experiments
+    (docs/frozen_families.jsonl), so concurrent agents reserve the same
+    hypothesis twice and the loser burns the ID as
+    duplicate_reservation_accounting (7 duplicate tickets = 27% of the
+    2026-07-10/11 window; recurrence exp-20260713-002). This guard scans OPEN
+    tickets (proposed/claimed/running) reserved within a recent window and
+    blocks when the proposal's fingerprint is a strong near-duplicate of one,
+    for every lane — the documented duplicate pairs include measurement
+    repairs (exp-20260711-021/022).
+
+    Recency uses the ticket ID's date prefix so stale months-old proposed
+    tickets cannot false-block new work. Thresholds tunable via
+    GINGER_IN_FLIGHT_DUP_THRESHOLD / GINGER_IN_FLIGHT_WINDOW_DAYS. Fails safe:
+    any error leaves the guard inapplicable.
+
+    Default threshold 0.65, calibrated on real ticket pairs (2026-07-14):
+    known duplicate pairs score 0.75-0.95 (and the weakest, a rephrased
+    duplicate, scores just under 0.75 at check time because trial/mechanism
+    family default-fill happens at reserve time); distinct same-day
+    hypotheses score <= 0.28; related-but-legitimately-distinct neighbors in
+    one sleeve family score 0.49-0.51. 0.65 sits inside the separation gap.
+    """
+    try:
+        threshold = float(os.environ.get("GINGER_IN_FLIGHT_DUP_THRESHOLD", "0.65"))
+    except (TypeError, ValueError):
+        threshold = 0.65
+    try:
+        window_days = int(os.environ.get("GINGER_IN_FLIGHT_WINDOW_DAYS", "7"))
+    except (TypeError, ValueError):
+        window_days = 7
+    result = {
+        "applicable": False,
+        "blocked": False,
+        "override_accepted": False,
+        "threshold": threshold,
+        "window_days": window_days,
+        "matches": [],
+        "rule": (
+            "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see "
+            "in-flight tickets, so reservation re-checks open "
+            "proposed/claimed/running tickets from the last "
+            f"{window_days} days and blocks fingerprint near-duplicates "
+            f"(score >= {threshold}). Coordinate via scripts/list_experiments.py "
+            "and scripts/agent_mailbox.py instead of racing."
+        ),
+    }
+    try:
+        import experiment_fingerprint as efp
+
+        root = Path(repo_root) if repo_root else _repo_root()
+        tickets_dir = root / "experiments" / "tickets"
+        if not tickets_dir.is_dir():
+            return result
+        result["applicable"] = True
+
+        import datetime as _dt
+
+        current = today or _dt.date.today()
+        cutoff = current - _dt.timedelta(days=window_days)
+        own_id = str(getattr(args, "experiment_id", "") or "")
+
+        matches = []
+        for path in sorted(tickets_dir.glob("exp-*.json")):
+            match = re.match(r"exp-(\d{8})-\d+$", path.stem)
+            if not match:
+                continue
+            try:
+                ticket_date = _dt.datetime.strptime(match.group(1), "%Y%m%d").date()
+            except ValueError:
+                continue
+            if ticket_date < cutoff:
+                continue
+            if own_id and path.stem == own_id:
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if data.get("status") not in _IN_FLIGHT_OPEN_STATUSES:
+                continue
+            open_fp = efp.infer_fingerprint(
+                data.get("hypothesis") or "",
+                data.get("single_causal_variable") or "",
+                data.get("trial_family") or "",
+                data.get("mechanism_family") or "",
+                data.get("changed_variable") or "",
+            )
+            score = max(
+                efp.distance(fingerprint, open_fp),
+                _field_tag_jaccard(fingerprint, open_fp),
+            )
+            if score >= threshold:
+                matches.append(
+                    {
+                        "experiment_id": data.get("experiment_id") or path.stem,
+                        "status": data.get("status"),
+                        "owner": data.get("owner"),
+                        "score": score,
+                        "hypothesis": (data.get("hypothesis") or "")[:160],
+                    }
+                )
+        matches.sort(key=lambda item: -item["score"])
+        result["matches"] = matches[:5]
+        if not matches:
+            return result
+        if getattr(args, "in_flight_duplicate_override", False):
+            result["override_accepted"] = True
+            return result
+        result["blocked"] = True
+    except Exception:
+        result["applicable"] = False
+        result["blocked"] = False
+        return result
+    return result
+
+
 def _novelty_check(args):
     """Advisory near-neighbor check at reservation time. Fails safe.
 
@@ -989,6 +1278,96 @@ def _novelty_check(args):
     if routine_guard.get("override_accepted"):
         print("[routine-materialization] override accepted.", file=sys.stderr)
 
+    recipe_guard = evaluate_recipe_lane_guard(args)
+    out["recipe_lane_guard"] = recipe_guard
+    if recipe_guard.get("matches"):
+        for m in recipe_guard["matches"][:3]:
+            print(
+                f"[recipe-lane] matches burned lane '{m['lane_key']}' "
+                f"[{m['status']}, {m['consecutive_rejects']} consecutive rejects, "
+                f"batch_exit_used={m['batch_exit_used']}]: "
+                f"source_hits={m['source_hits']} response_hits={m['response_hits']}",
+                file=sys.stderr,
+            )
+    if recipe_guard.get("blocked") and enforce and alpha_lane:
+        top = (recipe_guard.get("matches") or [{}])[0]
+        batch_note = (
+            "The lane's single pooled-batch exit is still available: state "
+            "explicitly in the hypothesis that this is a single pooled batch "
+            "over the remaining representatives, and the gate passes it once."
+            if not top.get("batch_exit_used")
+            else "This lane's batch exit was already spent; the only legal next "
+            "step is park (or the lane's recorded reopen_condition)."
+        )
+        raise SystemExit(
+            "recipe-lane gate blocked this reservation: the hypothesis matches "
+            f"burned recipe lane '{top.get('lane_key')}' "
+            f"({top.get('consecutive_rejects')} consecutive rejects; members "
+            f"include {', '.join(str(e) for e in top.get('member_experiments') or [])}). "
+            "A NEW data source consumed by this lane's FIXED recipe is loop "
+            "unrolling, not a new evidence axis — the per-source novelty gate "
+            "passing it does not exempt it (AGENTS.md §2.4 排名/枚举清单消费). "
+            + batch_note
+            + " Reopen condition: "
+            + str(top.get("reopen_condition"))
+            + " If this hypothesis is a genuinely different mechanism that "
+            "collides with the phrase clusters, re-run with "
+            "--recipe-lane-override and --new-evidence-axis naming what breaks "
+            "the recipe."
+        )
+    if recipe_guard.get("override_accepted"):
+        print(
+            "[recipe-lane] override accepted; "
+            f"axis={out['new_evidence_axis']}",
+            file=sys.stderr,
+        )
+    if recipe_guard.get("applicable") and recipe_guard.get("batch_exit_detected") and not recipe_guard.get("blocked"):
+        print(
+            "[recipe-lane] pooled-batch exit accepted — this consumes the "
+            "lane's single batch exit; set batch_exit_used=true in "
+            "docs/recipe_lanes.jsonl when closing this experiment.",
+            file=sys.stderr,
+        )
+
+    in_flight_guard = evaluate_in_flight_duplicate_guard(args, fingerprint)
+    out["in_flight_duplicate_guard"] = in_flight_guard
+    if in_flight_guard.get("matches"):
+        top = in_flight_guard["matches"][0]
+        print(
+            f"[in-flight] open-ticket near-duplicate(s) within "
+            f"{in_flight_guard['window_days']}d (threshold "
+            f"{in_flight_guard['threshold']}): "
+            + ", ".join(
+                f"{m['experiment_id']}[{m['status']}] score={m['score']:.3f}"
+                for m in in_flight_guard["matches"][:3]
+            ),
+            file=sys.stderr,
+        )
+        print(
+            f"[in-flight]   closest hypothesis: {top['hypothesis']}",
+            file=sys.stderr,
+        )
+    # Blocks on EVERY lane when enforcement is on: the documented duplicate
+    # pairs include measurement repairs (exp-20260711-021/022), not just alpha.
+    if in_flight_guard.get("blocked") and enforce:
+        top = (in_flight_guard.get("matches") or [{}])[0]
+        raise SystemExit(
+            "in-flight duplicate gate blocked this reservation: open ticket "
+            f"{top.get('experiment_id')} [{top.get('status')}, owner "
+            f"{top.get('owner') or '-'}] is already a fingerprint "
+            f"near-duplicate (score {top.get('score')}) of this hypothesis. "
+            "The novelty gate cannot see in-flight tickets, so this is the "
+            "machine form of the AGENTS.md §7 pre-reserve self-check. Next "
+            "steps: read the open ticket via scripts/list_experiments.py; if "
+            "another agent owns it, coordinate via scripts/agent_mailbox.py or "
+            "pick different work; if it is your own orphaned reservation, "
+            "close it as duplicate_reservation_accounting first. To proceed "
+            "anyway (e.g. the open ticket is genuinely different work), re-run "
+            "with --in-flight-duplicate-override."
+        )
+    if in_flight_guard.get("override_accepted"):
+        print("[in-flight] duplicate override accepted.", file=sys.stderr)
+
     if result.get("warn") and enforce and alpha_lane:
         if not (args.novelty_override and (args.new_evidence_axis or "").strip()):
             raise SystemExit(
@@ -1083,6 +1462,14 @@ def main(description=__doc__):
     parser.add_argument("--lane", required=True)
     parser.add_argument("--hypothesis", required=True)
     parser.add_argument("--change-type", required=True)
+    parser.add_argument(
+        "--promotion-request",
+        help=(
+            "Tracked alpha promotion request produced after outcome-blind "
+            "D0-D3 panel verification. Required for new "
+            "alpha_search, alpha_discovery, and universe_scout tickets."
+        ),
+    )
     parser.add_argument(
         "--single-causal-variable",
         "--decision-variable",
@@ -1214,6 +1601,30 @@ def main(description=__doc__):
         ),
     )
     parser.add_argument(
+        "--recipe-lane-override",
+        action="store_true",
+        help=(
+            "Proceed despite matching a burned recipe lane in "
+            "docs/recipe_lanes.jsonl (AGENTS.md §2.4 排名/枚举清单消费 machine "
+            "gate). Requires --new-evidence-axis naming what makes the "
+            "mechanism different from the lane's fixed recipe. A new data "
+            "source consumed by the same recipe does not qualify."
+        ),
+    )
+    parser.add_argument(
+        "--in-flight-duplicate-override",
+        action="store_true",
+        help=(
+            "Proceed despite an open-ticket fingerprint near-duplicate "
+            "(AGENTS.md §7 concurrent-reservation gate). Use only after "
+            "confirming the open proposed/claimed ticket is genuinely "
+            "different work — if another agent owns the same hypothesis, "
+            "coordinate via scripts/agent_mailbox.py instead of racing, and "
+            "close your own orphaned duplicates as "
+            "duplicate_reservation_accounting."
+        ),
+    )
+    parser.add_argument(
         "--enforce-novelty",
         action="store_true",
         help=(
@@ -1270,6 +1681,7 @@ def main(description=__doc__):
         file_slug=args.file_slug,
         exclusive_scope_ok=args.exclusive_scope_ok,
         prediction=prediction,
+        promotion_request=args.promotion_request,
         timeout_seconds=args.lock_timeout_seconds,
     )
     _attach_novelty(ticket, novelty)
