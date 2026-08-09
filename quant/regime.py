@@ -11,6 +11,7 @@ Regime classification:
 """
 
 import logging
+import math
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -33,6 +34,69 @@ def _scalar(val):
     return float(val.item() if hasattr(val, "item") else val)
 
 
+def _finite_close_series(ticker, ohlcv_data):
+    """Return the ticker's finite Close observations from a vendor OHLCV frame.
+
+    ``yfinance`` may return either flat columns or a two-level column index in
+    ``ticker/price`` or ``price/ticker`` order. It can also append a partial
+    current-session row whose OHLC values are NaN while Volume is populated.
+    Regime classification must anchor on the last valid close, never let that
+    placeholder turn comparisons into false values.
+    """
+    if ohlcv_data is None or not isinstance(ohlcv_data, pd.DataFrame):
+        return None
+    if ohlcv_data.empty:
+        return None
+
+    try:
+        data = ohlcv_data
+        if isinstance(data.columns, pd.MultiIndex):
+            ticker_key = str(ticker).upper()
+            level0_key = next(
+                (
+                    value
+                    for value in data.columns.get_level_values(0)
+                    if str(value).upper() == ticker_key
+                ),
+                None,
+            )
+            level1_key = next(
+                (
+                    value
+                    for value in data.columns.get_level_values(1)
+                    if str(value).upper() == ticker_key
+                ),
+                None,
+            )
+            if level0_key is not None:
+                data = data[level0_key]
+            elif level1_key is not None:
+                data = data.xs(level1_key, axis=1, level=1)
+            else:
+                logger.warning("%s: no ticker slice in regime OHLCV frame", ticker)
+                return None
+
+        if "Close" not in data.columns:
+            logger.warning("%s: Close column missing from regime OHLCV frame", ticker)
+            return None
+        close = data["Close"]
+        if isinstance(close, pd.DataFrame):
+            if close.shape[1] != 1:
+                logger.warning("%s: ambiguous Close columns in regime OHLCV frame", ticker)
+                return None
+            close = close.iloc[:, 0]
+
+        numeric = pd.to_numeric(close, errors="coerce")
+        finite = numeric.map(
+            lambda value: pd.notna(value) and math.isfinite(float(value))
+        )
+        numeric = numeric.loc[finite].astype(float)
+        return numeric if not numeric.empty else None
+    except Exception as exc:
+        logger.error("Failed to normalize regime Close data for %s: %s", ticker, exc)
+        return None
+
+
 def _fetch_index(ticker, ma_period=MA_PERIOD):
     """
     Download data and compute MA status for a single index ticker.
@@ -49,33 +113,13 @@ def _fetch_index(ticker, ma_period=MA_PERIOD):
             ticker, start=start, end=end, progress=False, retry_logger=logger
         )
 
-        if data.empty or len(data) < ma_period:
-            logger.warning(f"Insufficient data for {ticker} ({len(data)} rows)")
-            return None
-
-        close  = data["Close"]
-        ma     = close.rolling(window=ma_period).mean()
-
-        latest_close = _scalar(close.iloc[-1])
-        latest_ma    = _scalar(ma.iloc[-1])
-
-        above_ma    = latest_close > latest_ma
-        pct_from_ma = (latest_close - latest_ma) / latest_ma
-
-        # 10-day momentum — used for RS filter in signal_engine
-        momentum_10d_pct = None
-        if len(data) >= 11:
-            close_10d_ago    = _scalar(close.iloc[-11])
-            momentum_10d_pct = round((latest_close - close_10d_ago) / close_10d_ago, 4)
-
-        return {
-            "ticker":           ticker,
-            "close":            round(latest_close, 2),
-            f"ma{ma_period}":   round(latest_ma, 2),
-            "above_ma":         above_ma,
-            "pct_from_ma":      round(pct_from_ma, 4),
-            "momentum_10d_pct": momentum_10d_pct,
-        }
+        result = _compute_regime_from_ohlcv(ticker, data, ma_period)
+        if result is None:
+            row_count = len(data) if isinstance(data, pd.DataFrame) else 0
+            logger.warning(
+                "Insufficient or invalid data for %s (%s rows)", ticker, row_count
+            )
+        return result
 
     except Exception as e:
         logger.error(f"Failed to fetch regime data for {ticker}: {e}")
@@ -97,23 +141,31 @@ def _compute_regime_from_ohlcv(ticker, ohlcv_data, ma_period=MA_PERIOD):
     Returns:
         dict with close, ma200, above_ma, pct_from_ma — or None on failure
     """
-    if ohlcv_data is None or len(ohlcv_data) < ma_period:
-        return None
-
     try:
-        close = ohlcv_data["Close"]
+        close = _finite_close_series(ticker, ohlcv_data)
+        if close is None or len(close) < ma_period:
+            return None
         ma = close.rolling(window=ma_period).mean()
 
         latest_close = _scalar(close.iloc[-1])
         latest_ma = _scalar(ma.iloc[-1])
+        if not (
+            math.isfinite(latest_close)
+            and math.isfinite(latest_ma)
+            and latest_ma != 0.0
+        ):
+            return None
 
-        above_ma = latest_close > latest_ma
+        above_ma = bool(latest_close > latest_ma)
         pct_from_ma = (latest_close - latest_ma) / latest_ma
 
         momentum_10d_pct = None
-        if len(ohlcv_data) >= 11:
+        if len(close) >= 11:
             close_10d_ago = _scalar(close.iloc[-11])
-            momentum_10d_pct = round((latest_close - close_10d_ago) / close_10d_ago, 4)
+            if math.isfinite(close_10d_ago) and close_10d_ago != 0.0:
+                momentum_10d_pct = round(
+                    (latest_close - close_10d_ago) / close_10d_ago, 4
+                )
 
         return {
             "ticker": ticker,
@@ -147,24 +199,28 @@ def compute_market_regime(ma_period=MA_PERIOD, ohlcv_override=None):
     """
     indices = {}
     for ticker in REGIME_TICKERS:
-        if ohlcv_override and ticker in ohlcv_override:
+        if ohlcv_override is not None:
             result = _compute_regime_from_ohlcv(
-                ticker, ohlcv_override[ticker], ma_period
+                ticker, ohlcv_override.get(ticker), ma_period
             )
         else:
             result = _fetch_index(ticker, ma_period)
         if result:
             indices[ticker] = result
 
-    if not indices:
+    missing = [ticker for ticker in REGIME_TICKERS if ticker not in indices]
+    if missing:
         return {
             "regime":  "UNKNOWN",
-            "note":    "Could not fetch index data — treat as NEUTRAL",
-            "indices": {},
+            "note":    (
+                "Market regime requires finite SPY and QQQ data; "
+                f"missing or invalid: {', '.join(missing)}."
+            ),
+            "indices": indices,
         }
 
     above_count = sum(1 for r in indices.values() if r.get("above_ma"))
-    total       = len(indices)
+    total       = len(REGIME_TICKERS)
 
     if above_count == total:
         regime = "BULL"

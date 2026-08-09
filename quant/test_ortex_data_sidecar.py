@@ -264,3 +264,163 @@ def test_daily_refresh_rotates_only_four_oldest_and_uses_incremental_ranges(tmp_
     ]
     assert all(call["to_date"] == "2026-07-20" for call in calls)
     assert "AMZN" not in [call["ticker"] for call in calls]
+
+
+def test_daily_refresh_materializes_every_page_and_accounts_each_http_request(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "rows.jsonl"
+    sidecar.append_normalised_rows_atomic(
+        [_row("AAPL", "2026-01-01")],
+        path=output,
+    )
+    provider_days = [
+        (date(2026, 1, 2) + timedelta(days=offset)).isoformat()
+        for offset in range(101)
+    ]
+    first_page = {
+        "paginationLinks": {"next": "https://api.example.test/ctb/new?page=2"},
+        "rows": [
+            {"date": day, "costToBorrowNew": float(index)}
+            for index, day in enumerate(provider_days[:100])
+        ],
+        "creditsUsed": 2.0,
+        "creditsLeft": 998.0,
+    }
+    second_page = {
+        "paginationLinks": {"next": None},
+        "rows": [{"date": provider_days[-1], "costToBorrowNew": 100.0}],
+        "creditsUsed": 1.0,
+        "creditsLeft": 997.0,
+    }
+    responses = [_Response(200, first_page), _Response(200, second_page)]
+    calls: list[dict] = []
+    secret = "pagination-secret-must-stay-in-memory"
+
+    def fake_get(url, **kwargs):
+        calls.append({"url": url, **kwargs})
+        return responses.pop(0)
+
+    calendar = [
+        (date(2026, 1, 1) + timedelta(days=offset)).isoformat()
+        for offset in range(103)
+    ]
+    result = sidecar.materialize_daily_refresh(
+        as_of="2026-04-13",
+        trading_dates=calendar,
+        tickers=("AAPL",),
+        output_path=output,
+        api_key=secret,
+        exchange_by_ticker={"AAPL": "NASDAQ"},
+        max_refresh_tickers=4,
+        min_refresh_age_days=5,
+        credit_budget=10.0,
+        min_credits_left=250.0,
+        estimated_credits_per_request=1.0,
+        max_pages_per_range=2,
+        request_interval_s=0,
+        base_url="https://api.example.test",
+        retries=1,
+        request_get=fake_get,
+        collected_at="2026-04-13T22:00:00Z",
+    )
+
+    assert len(calls) == 2
+    assert calls[1]["url"] == "https://api.example.test/ctb/new?page=2"
+    assert result["status"] == "completed"
+    assert result["requests_made"] == 2
+    assert result["http_requests_made"] == 2
+    assert result["pages_fetched"] == 2
+    assert result["rows_appended"] == 101
+    assert result["credits_used_total"] == 3.0
+    assert result["credits_left_last_reported"] == 997.0
+    assert result["request_records"][0]["pages_fetched"] == 2
+    assert len(sidecar.load_normalised_rows(output)) == 102
+    persisted = output.read_text(encoding="utf-8")
+    assert secret not in persisted
+    assert "paginationLinks" not in persisted
+    assert "creditsUsed" not in persisted
+    assert secret not in json.dumps(result)
+
+
+def test_daily_refresh_fails_closed_when_page_bound_leaves_continuation(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "rows.jsonl"
+    initial = _row("AAPL", "2026-07-01")
+    sidecar.append_normalised_rows_atomic([initial], path=output)
+    response = _Response(
+        200,
+        {
+            "paginationLinks": {"next": "https://api.example.test/page/2"},
+            "rows": [{"date": "2026-07-02", "costToBorrowNew": 2.0}],
+            "creditsUsed": 1.0,
+            "creditsLeft": 999.0,
+        },
+    )
+
+    with pytest.raises(sidecar.OrtexHttpError, match="incomplete"):
+        sidecar.materialize_daily_refresh(
+            as_of="2026-07-10",
+            trading_dates=[
+                (date(2026, 7, 1) + timedelta(days=offset)).isoformat()
+                for offset in range(11)
+            ],
+            tickers=("AAPL",),
+            output_path=output,
+            api_key="in-memory-only",
+            exchange_by_ticker={"AAPL": "NASDAQ"},
+            min_refresh_age_days=5,
+            credit_budget=10.0,
+            min_credits_left=250.0,
+            estimated_credits_per_request=1.0,
+            max_pages_per_range=1,
+            request_interval_s=0,
+            base_url="https://api.example.test",
+            retries=1,
+            request_get=lambda *args, **kwargs: response,
+        )
+    assert sidecar.load_normalised_rows(output) == [initial]
+
+
+def test_daily_refresh_fails_closed_when_next_page_http_request_fails(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "rows.jsonl"
+    initial = _row("AAPL", "2026-07-01")
+    sidecar.append_normalised_rows_atomic([initial], path=output)
+    responses = [
+        _Response(
+            200,
+            {
+                "paginationLinks": {"next": "https://api.example.test/page/2"},
+                "rows": [{"date": "2026-07-02", "costToBorrowNew": 2.0}],
+                "creditsUsed": 1.0,
+                "creditsLeft": 999.0,
+            },
+        ),
+        _Response(503),
+    ]
+
+    with pytest.raises(sidecar.OrtexHttpError, match="page 2 failed"):
+        sidecar.materialize_daily_refresh(
+            as_of="2026-07-10",
+            trading_dates=[
+                (date(2026, 7, 1) + timedelta(days=offset)).isoformat()
+                for offset in range(11)
+            ],
+            tickers=("AAPL",),
+            output_path=output,
+            api_key="in-memory-only",
+            exchange_by_ticker={"AAPL": "NASDAQ"},
+            min_refresh_age_days=5,
+            credit_budget=10.0,
+            min_credits_left=250.0,
+            estimated_credits_per_request=1.0,
+            max_pages_per_range=2,
+            request_interval_s=0,
+            base_url="https://api.example.test",
+            retries=1,
+            request_get=lambda *args, **kwargs: responses.pop(0),
+        )
+    assert sidecar.load_normalised_rows(output) == [initial]

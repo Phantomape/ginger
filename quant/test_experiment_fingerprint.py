@@ -369,6 +369,43 @@ def test_existing_source_mappings_still_resolve(text, expected):
     assert fp.infer_fingerprint(text)["data_source"] == expected
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "authorized Massive API full-market OHLCV relation backfill",
+        "https://api.massive.com/v2/aggs/grouped full-market breakout replay",
+        "massive_full_market_ohlcv candidate pool",
+        "massive_full_market_source_ingestion",
+        "massive_ohlcv_backfill momentum warehouse",
+        "Massive dividend declaration research surface",
+        "massive_dividend_declaration_surface",
+        "Massive API /stocks/v1/dividends decision-safe projection",
+    ],
+)
+def test_massive_full_market_ohlcv_has_dedicated_source_before_generic_ohlcv(text):
+    assert fp.infer_fingerprint(text)["data_source"] == "massive_full_market_ohlcv"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "massive upside after earnings news",
+        "massive news coverage for an issuer",
+        "a massive full-market opportunity",
+    ],
+)
+def test_massive_ordinary_english_does_not_match_dedicated_source(text):
+    assert fp.infer_fingerprint(text)["data_source"] != "massive_full_market_ohlcv"
+
+
+def test_companyfacts_dividend_phrase_is_not_misrouted_to_massive():
+    result = fp.infer_fingerprint(
+        "SEC Companyfacts dividend per share increase candidate pool"
+    )
+
+    assert result["data_source"] == "companyfacts_ratio"
+
+
 def test_sec_form_nport_public_holdings_precedes_sec13f_holder_language():
     result = fp.infer_fingerprint(
         "Risk-allocation alpha from SEC Form N-PORT public as-filed registered-"
@@ -659,6 +696,17 @@ def test_cash_conflict_oldest_incumbent_has_dedicated_surface_and_gate_shape():
 
     assert fingerprint["data_source"] == "cash_feasible_core_book"
     assert fingerprint["gate_shape"] == "incumbent_rotation"
+
+
+def test_sec_public_recurring_dividend_bundle_has_dedicated_population():
+    fingerprint = fp.infer_fingerprint(
+        "sec_public_recurring_capital_return_bundle_first_safe_open_h10_v1 "
+        "uses SEC archive filing-text and accepted_at for SEC-public recurring-"
+        "dividend initiation/resumption disclosure bundles"
+    )
+
+    assert fingerprint["data_source"] == "sec_public_recurring_dividend_bundle"
+    assert fingerprint["gate_shape"] == "candidate_pool_top1_10d"
 
 
 def test_cash_conflict_persistent_queue_has_distinct_surface_and_gate_shape():
@@ -1652,3 +1700,54 @@ def test_linux_cve_and_news_text_does_not_match_signed_rc_contribution_source(te
     assert fp.infer_fingerprint(text)["data_source"] != (
         "linux_mainline_signed_rc_contributions"
     )
+
+
+def test_bare_replacement_value_prose_does_not_route_to_forward_ledger_bucket():
+    # "replacement value" is required precommitment vocabulary in every
+    # discovery candidate (replacement_value_comparator), so the bare spelling
+    # must not classify a hypothesis as the settled-forward attribution
+    # surface (exp-20260728-005: five spurious D3 rejects via this label).
+    result = fp.infer_fingerprint(
+        "Buying liquid active common stocks after a forward stock split "
+        "execution date produces after-cost replacement value above the "
+        "same-date core candidate or cash."
+    )
+
+    assert result["data_source"] != "forward_replacement_value"
+    assert result["gate_shape"] != "forward_attribution"
+
+
+def test_compound_forward_replacement_spellings_still_route():
+    result = fp.infer_fingerprint(
+        "Attribute settled forward replacement rows in the observed-only "
+        "ledger using forward_replacement_value accounting."
+    )
+
+    assert result["data_source"] == "forward_replacement_value"
+    assert result["gate_shape"] == "forward_attribution"
+
+
+def test_massive_dividend_restart_forward_observer_routes_to_dedicated_source():
+    # exp-20260802-003: the observer face says "settled forward" naturally and
+    # must not misroute into forward_replacement_value or the generic Massive
+    # OHLCV population.
+    result = fp.infer_fingerprint(
+        "A default-off Massive dividend restart forward observer accumulates "
+        "settled forward H10 decisions for the dividend-restart lane reopen "
+        "contract."
+    )
+
+    assert result["data_source"] == "massive_dividend_restart_forward"
+
+
+def test_ordinary_dividend_prose_does_not_route_to_restart_forward_source():
+    for text in (
+        "Dividend per share increases from SEC Companyfacts gate a candidate "
+        "pool with relative strength confirmation.",
+        "Massive API grouped daily bars backfill the full-market OHLCV "
+        "warehouse for research replay.",
+    ):
+        assert (
+            fp.infer_fingerprint(text)["data_source"]
+            != "massive_dividend_restart_forward"
+        )

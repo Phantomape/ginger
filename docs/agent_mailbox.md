@@ -1,187 +1,313 @@
-# Agent Mailbox — file-based agent-to-agent conversation
+# Agent Mailbox: local file-based agent conversation
 
-A minimal, file-driven channel so two (or more) agents running **on the same
-machine** can talk by listening to each other. No server, no shared memory —
-just atomic files, the same idiom as ticket reservation. Tool:
-[`scripts/agent_mailbox.py`](../scripts/agent_mailbox.py).
+`scripts/agent_mailbox.py` is a small same-machine mailbox for coordinating
+agents without a server. Messages, cursors, launch receipts, and attachments
+are files under `data/agent_mailbox/`.
 
-## When to use / when not to
+## Scope and trust boundary
 
-- **Use it** for live coordination between concurrent agents on this machine:
-  hand off a sub-task, ask the agent holding a ticket a question, negotiate who
-  takes which lane, debate a decision before committing.
-- **Do NOT use it** for cross-machine or persistent record-keeping. Messages are
-  **local and gitignored** (`data/agent_mailbox/` is not tracked) — on purpose.
-  Tracking an append-only chat is exactly what caused the `experiment_log.jsonl`
-  merge conflicts this repo retired (see `experiment.py rebuild-log`). For a
-  durable decision, write it to the experiment ticket/log, not here. For agents
-  in *other* sessions/machines, use the session-management channel, not files.
-- Listening is **polling** (1s), so latency is ~1s, not instant.
-- Both participants must be alive and looping. An agent that exits cannot be
-  talked to. **Exception:** `dispatch` (below) removes the "both already
-  alive" requirement by spawning the peer itself.
+- Use the mailbox for temporary coordination, handoffs, and bounded debates on
+  one machine.
+- Model debate is optional research discussion. It is not required for alpha
+  promotion, reservation, claim, or audit; those boundaries use the
+  outcome-blind D0-D3 panel and deterministic artifact hashes.
+- The mailbox is gitignored and disposable. It is not a durable research
+  record. Promote decisions and evidence into the experiment ticket, log, or a
+  tracked artifact before cleanup.
+- The launcher receipt is launcher-attested local provenance. It records which
+  executable the launcher hashed and invoked; it is **not cryptographic proof**
+  that a remote provider served a particular model. Another local process with
+  access to the mailbox can rewrite these files.
+- `from` / `--me` is a routing and display string, not identity. Structured
+  identity comes from a valid launch receipt bound to role, runtime, provider,
+  and run ID.
+- Hashing an attachment detects later byte changes. It is not malware or
+  content-safety scanning. Treat untrusted attachments as data, scan them with
+  the normal local security tools, and never execute them merely because their
+  digest matches.
 
-## Where messages live
+Use the session-management channel for agents on another machine or in a
+separate hosted session.
 
+## Files and slugs
+
+```text
+data/agent_mailbox/<channel>/<seq>-<sender>.json
+data/agent_mailbox/<channel>/.cursor-<agent>
+data/agent_mailbox/<channel>/attachments/<name>
+data/agent_mailbox/<channel>/.launch-<participant>-<run_id>.json
+data/agent_mailbox/<channel>/.<participant>-exec.log
+data/agent_mailbox/<channel>/.<participant>-exec.pid
 ```
-data/agent_mailbox/<channel>/<seq>-<sender>.json   # one atomic message file
-data/agent_mailbox/<channel>/.cursor-<agent>       # each agent's read cursor
+
+Sequence files use atomic `O_EXCL` creation, so concurrent senders cannot
+overwrite one another. Each receiver has an independent cursor.
+
+Channel, sender, receiver, peer, role, and run-ID values are path components.
+They must be ASCII slugs matching `[A-Za-z0-9][A-Za-z0-9._-]*`, at most 128
+characters, and may not be Windows device names. Separators, absolute paths,
+`..`, whitespace padding, drive paths, and UNC paths are rejected before a
+filesystem or process action.
+
+## Legacy messages remain supported
+
+The original API and JSON shape are unchanged:
+
+```python
+seq = send_message("channel", "agent-a", "hello")
+message = recv_message("channel", "agent-b", peer="agent-a")
 ```
 
-- A **channel** is just a directory; pick a descriptive name, e.g.
-  `next-priority-20260628` or `exp-20260628-002-handoff`.
-- **seq** is a per-channel global sequence (`0001`, `0002`, …) allocated
-  lock-free via `O_EXCL`; concurrent senders never collide or overwrite.
-- Each agent has a **cursor** tracking the last message it has read, so you just
-  alternate `send`/`recv` without tracking sequence numbers by hand.
+```json
+{
+  "channel": "channel",
+  "seq": 1,
+  "from": "agent-a",
+  "text": "hello",
+  "ts": "2026-07-22T00:00:00+00:00"
+}
+```
 
-## CLI
+Legacy `send`, `recv`, `transcript`, `list`, and Codex-default `dispatch`
+commands keep their existing behavior. A legacy channel can pass the original
+experiment-ID/path existence checks, but it is always reported as
+`legacy_existence_only` and can never be marked cross-model verified.
+
+## Basic CLI
 
 ```powershell
-# Send a message (prints the allocated seq)
-python scripts/agent_mailbox.py send --channel C --me A --text 'hello B'
+# Send an opener.
+python scripts/agent_mailbox.py send `
+  --channel exp-20260722-002-debate --me proposer --text "Please challenge this."
 
-# Block until the next message addressed to you (not your own); prints its text.
-# Exits with code 2 on timeout (default 100s) -- just re-run the same recv.
-python scripts/agent_mailbox.py recv --channel C --me A
-python scripts/agent_mailbox.py recv --channel C --me A --peer B   # only from B
-python scripts/agent_mailbox.py recv --channel C --me A --timeout 60
+# Receive the next unread non-self message. Timeout exits 2; rerun recv.
+python scripts/agent_mailbox.py recv `
+  --channel exp-20260722-002-debate --me challenger --peer proposer --timeout 60
 
-# Read the whole conversation in order; list channels
-python scripts/agent_mailbox.py transcript --channel C
+# Read/list/verify.
+python scripts/agent_mailbox.py transcript --channel exp-20260722-002-debate
 python scripts/agent_mailbox.py list
-
-# One-sided trigger: send the opener AND spawn codex to join the channel.
-python scripts/agent_mailbox.py dispatch --channel C --me A --task '<brief>' `
-    --peer codex --rounds 3
+python scripts/agent_mailbox.py verify --channel exp-20260722-002-debate
 ```
 
-## Dispatch — start a conversation when the peer is not running
+`recv` returns the lowest sequence after the receiver's cursor that was not
+sent by that receiver and, when `--peer` is supplied, came from that peer. It
+advances the cursor and prints only the message text to stdout; the sender/seq
+header goes to stderr.
 
-`dispatch` makes the mailbox usable one-sided: the caller (e.g. a Claude
-session without network access) both **sends the opener** and **launches the
-peer** as a background `codex exec` process, so web-research or other
-codex-capability tasks can be delegated on demand.
+## Structured messages
 
-What it does:
+`send_message` accepts optional keyword fields without changing legacy calls:
 
-1. sends `--task` as the opener message from `--me` (speaks-first side);
-2. auto-discovers a working codex binary (`--version` probe; the npm
-   `codex.CMD` wrapper is broken on this machine, so it falls back to the
-   desktop app's bundled CLI under `~\.codex\`), or takes `--codex-exe`;
-3. spawns `codex exec --sandbox danger-full-access "<bootstrap prompt>"`
-   detached, cwd = repo root, stdout/stderr appended to
-   `data/agent_mailbox/<channel>/.<peer>-exec.log`, pid in `.<peer>-exec.pid`;
-4. the bootstrap prompt tells the peer to join listen-first under the name
-   `--peer`, answer with SHORT pointer messages whose bodies live under
-   `data/agent_mailbox/<channel>/attachments/`, never touch tracked files,
-   never commit, never reserve experiment ids, and finish with a message
-   containing `DONE` within `--rounds` turns.
-
-After dispatching, the caller just runs the normal speaks-first recipe
-(`recv`, `send`, `recv`, …). `recv` timeouts (exit 2) are expected while the
-peer is thinking — re-run the same `recv`. If the peer never replies, check
-the exec log; the spawned process dies with its own session, it is not a
-persistent daemon.
-
-Trust note: `danger-full-access` is required for network research on this
-machine; only dispatch task briefs you would be comfortable running yourself,
-and keep the no-tracked-writes / no-commit rules in every brief.
-
-`recv` returns the lowest-sequence message past your cursor that you did **not**
-send (optionally filtered to `--peer`), advances your cursor, and prints the
-text to stdout (a `[from=… seq=…]` header goes to stderr). Messages you sent are
-skipped automatically.
-
-## How to participate (deadlock-free turn recipe)
-
-Two agents, 5 rounds. The rule that prevents both sides from waiting at once:
-**one agent speaks first; the other listens first.** After that, each agent
-simply alternates `recv` then `send`.
-
-Agent **A** (speaks first):
-```
-send  --channel C --me A --text '<opener>'
-recv  --channel C --me A          # read B's reply
-send  --channel C --me A --text '<reply>'
-recv  --channel C --me A
-... (repeat until done)
+```python
+send_message(
+    channel,
+    display_sender,
+    "challenge in attachment",
+    role="challenger",
+    runtime="claude",
+    provider="anthropic",
+    run_id="run-7bdf",
+    identity_receipt=receipt,
+    attachment="attachments/challenge.json",
+)
 ```
 
-Agent **B** (listens first):
-```
-recv  --channel C --me B          # read A's opener
-send  --channel C --me B --text '<reply>'
-recv  --channel C --me B
-send  --channel C --me B --text '<reply>'
-... (repeat until done)
-```
-
-This yields the interleaving `A1, B1, A2, B2, …` with no deadlock: whenever one
-side calls `recv`, the other has already sent or is about to. End by agreeing on
-a turn count up front (e.g. "5 rounds then stop") or by sending a final message
-that says you are done.
-
-More than two agents share a channel the same way; use `--peer` when you need to
-wait for a specific sender rather than "anyone but me".
-
-## Debate protocol v2 — keep consensus honest
-
-A fluent agent can state a confident but wrong fact, and a smooth back-and-forth
-will *launder* it into the agreed conclusion. (This happened on the first run:
-an agent cited a real experiment id for a row count that belonged to a different
-experiment — the number was right, the id was wrong, and it nearly shipped.) Use
-this protocol whenever a conversation will drive an action (a brief, a reserved
-experiment, anything hard to undo).
-
-**Roles.** Name them explicitly when you open the channel:
-- **proposer** — argues a position.
-- **challenger** — argues the opposing position; must, before converging, either
-  steelman the proposer once or produce one fact that would overturn its own
-  side. (Two agents that share priors converge too fast; force real dissent.)
-- **verifier (V)** — does not debate. After the debate converges, V checks every
-  load-bearing fact against the repo and posts a verdict per fact:
-  `verified / wrong / unverifiable`.
-
-**Claim-citation rule.** Any fact that drives the decision MUST carry a checkable
-source inline: `来源:/source:<path | exp-id | one-line command>`. A claim with no
-source is treated as unverified and cannot enter the final decision.
-
-**Lock rule.** Convergence is NOT lock. The conclusion is locked (safe to hand to
-an executor) only after V has signed off on every load-bearing fact. A `wrong`
-verdict reopens the debate; `unverifiable` facts move to the "assumptions"
-section, never the "verified" section.
-
-**Final-artifact template** (e.g. a `docs/*.md` handoff): three explicit parts —
-1. **Verified facts** — each with its source and who verified it.
-2. **Unverified assumptions** — claims that drive nothing irreversible, or that V
-   could not confirm.
-3. **Decision** — what to do, gated only on the verified facts.
-
-**Mechanical pre-filter (helper, not a substitute for V).**
+The CLI equivalent reads the receipt from a JSON file and recomputes the
+attachment hash before writing the message:
 
 ```powershell
-python scripts/agent_mailbox.py verify --channel C
+python scripts/agent_mailbox.py send `
+  --channel alpha-debate-20260722-example `
+  --me claude-challenger `
+  --text "challenge in attachment" `
+  --role challenger `
+  --runtime claude `
+  --provider anthropic `
+  --run-id run-7bdf `
+  --identity-receipt data/agent_mailbox/exp-20260722-002-debate/.launch-claude-challenger-run-7bdf.json `
+  --attachment data/agent_mailbox/exp-20260722-002-debate/attachments/challenge.json
 ```
 
-`verify` scans the channel for referenced experiment ids and repo paths and
-flags any that do **not exist** (dangling references); exits non-zero if it finds
-any. Run it before asking V to sign off — but know its hard limit: it only checks
-*existence*. It cannot catch a reference that exists but is **mis-attributed**
-(exactly the first-run failure). Catching exists-but-wrong is V's job: V must open
-the cited ticket/file and confirm it actually says what the claim says.
+Structured attachments must already exist inside that channel's
+`attachments/` directory. Absolute files outside the directory, traversal,
+directories, and symlinks that resolve outside the directory fail closed. The
+message stores a normalized channel-relative path, byte count, and SHA-256.
 
-**Scope.** Match verification depth to the cost of being wrong. Casual exchanges
-need none of this; anything that reserves an experiment or writes a brief gets
-the full protocol.
+## Runtime and provider receipts
 
-## Conventions
+The supported mapping is fixed in code and exported as
+`RUNTIME_PROVIDERS`:
 
-- **Names**: pick a stable, unique `--me` (e.g. your lane + id: `alpha-explore`,
-  `measurement-repair`, or an experiment owner name).
-- **Channel naming**: `<purpose>-<YYYYMMDD>` or `<exp-id>-<purpose>`.
-- **Message text**: keep it short; plain text. When invoking via a shell, avoid
-  embedding the quote character you used to wrap `--text`.
-- **Cleanup**: channels are disposable local files; delete the channel directory
-  when a conversation is finished. Nothing here is part of the durable record —
-  promote any decision into the experiment ticket/log.
+| Runtime | Provider |
+| --- | --- |
+| `codex` | `openai` |
+| `claude` | `anthropic` |
+
+`make_launch_receipt(...)` hashes the selected native executable and emits:
+
+- `schema_version`
+- `channel`, `participant`, and `role`
+- `runtime` and derived `provider`
+- `run_id` and random `nonce`
+- resolved `executable`, `executable_sha256`, and `executable_version`
+- `requested_model`
+- `cross_provider_acknowledged`
+- optional `initiator_runtime`
+- `receipt_hash`, the canonical JSON SHA-256 of the other receipt fields
+
+`validate_launch_receipt(...)` never raises for malformed input. It returns:
+
+```json
+{"valid": false, "errors": ["receipt_hash_mismatch"], "receipt": {}}
+```
+
+Callers can bind validation to expected channel, participant, role, runtime,
+provider, and run ID. The validator re-hashes an executable that is still
+present and checks runtime/provider consistency and cross-provider
+acknowledgement. This is local launch provenance, not remote authentication.
+
+## Native dispatch and model-diverse review
+
+`dispatch` sends the opener and launches a listen-first peer in the background.
+It supports native Codex and Claude CLIs. Discovery probes every candidate with
+`--version`; a broken npm/batch wrapper is skipped even if it appears first on
+`PATH`. Fallback discovery includes:
+
+- known Codex desktop/cache binaries;
+- `~/.vscode/extensions/openai.chatgpt-*`;
+- `~/.vscode/extensions/anthropic.claude-code-*`; and
+- the Windows Claude app `LocalCache/.../Claude/claude-code/*` path.
+
+Use `--runtime-exe` to pin a native executable. `--codex-exe` remains a
+backwards-compatible Codex-only alias. `--runtime auto` preserves the legacy
+Codex default unless the peer name or explicit executable clearly names a
+supported runtime.
+
+The default sandbox is `workspace-write`, which is sufficient for the peer to
+write its channel and attachments. Claude maps that default to `acceptEdits`;
+the dangerous skip-permissions flag appears only when an operator explicitly
+selects `--sandbox danger-full-access`.
+
+An optional same-provider debate uses distinct Codex runs and at least two
+requested model identities. A typical topology is Sol initiator, Terra
+challenger, and a fresh Sol verifier run.
+
+Pass `--initiator-model gpt-5.6-sol` and `--model gpt-5.6-terra` on the
+challenger dispatch. Launch the verifier as another distinct participant/run,
+with a model different from the challenger. Dispatch on a non-empty channel
+starts that peer at its own opener rather than replaying an earlier role's task.
+
+Codex initiator to Claude challenger:
+
+```powershell
+python scripts/agent_mailbox.py dispatch `
+  --channel exp-20260722-002-debate `
+  --me codex-proposer `
+  --peer claude-challenger `
+  --task "Challenge the frozen candidate pool; cite every load-bearing fact." `
+  --initiator-runtime codex `
+  --runtime claude `
+  --peer-role challenger `
+  --acknowledge-cross-provider `
+  --rounds 3
+```
+
+Claude initiator to Codex challenger:
+
+```powershell
+python scripts/agent_mailbox.py dispatch `
+  --channel alpha-debate-20260722-reverse `
+  --me claude-proposer `
+  --peer codex-challenger `
+  --task "Challenge the proposal and identify its strongest falsifier." `
+  --initiator-runtime claude `
+  --runtime codex `
+  --peer-role challenger `
+  --acknowledge-cross-provider `
+  --rounds 3
+```
+
+A launch that crosses the fixed provider mapping without
+`--acknowledge-cross-provider` fails closed: no opener, receipt, PID, or child
+process is created. The acknowledgement is explicit operator consent to invoke
+another provider; it does not upgrade the receipt into cryptographic proof.
+
+When `--initiator-runtime` is explicit, dispatch also discovers (or accepts
+`--initiator-runtime-exe` for) the initiator's native CLI, creates a separate
+initiator receipt and run ID, binds `--initiator-model` when supplied, and sends
+the opener as a structured `initiator` message. `auto` retains the old legacy
+opener for compatibility and therefore cannot produce an independently
+verified debate channel.
+
+Codex dispatch uses the existing `codex exec --sandbox ...` shape. Claude uses
+its native noninteractive print mode and maps the mailbox sandbox choice to a
+Claude permission mode. The bootstrap prompt instructs the peer to listen
+first, send receipt-bound structured replies, put long bodies in hashed
+attachments, avoid tracked-file edits/commits/experiment reservation, and stop
+within the declared rounds.
+
+## Verification and durable locks
+
+```powershell
+python scripts/agent_mailbox.py verify --channel alpha-debate-20260722-example
+```
+
+`verify_channel` retains the old dangling experiment-ID/path check and also:
+
+1. canonical-hashes the ordered transcript as `transcript_sha256`;
+2. resolves, reads, and hashes every structured attachment, returning an
+   `attachment_sha256` map;
+3. validates each structured receipt against the message's channel, role,
+   runtime, provider, and run ID;
+4. reports message, receipt, and attachment errors separately; and
+5. sets `cross_model_verified=true` only when the whole channel is structured,
+   error-free, contains both Codex/OpenAI and Claude/Anthropic launcher
+   receipts, and has explicit cross-provider acknowledgement. It instead sets
+   `codex_model_diverse_verified=true` when all three roles are receipt-bound
+   Codex/OpenAI runs, every requested model is non-empty, and the challenger
+   model differs from the initiator and verifier models.
+
+The `initiator`, `challenger`, and `verifier` roles must use distinct run IDs
+and distinct receipt participants. A challenger cannot become a verifier by
+changing its sender string or reusing its run receipt. Launch or attest the
+verifier as a second run and send a receipt-bound `verifier` message.
+
+A mixed legacy/structured channel is useful for coordination but is not an
+admission lock. Legacy schema-v1 `alpha_debate.py lock` artifacts can still be
+validated for historical reproducibility. Current schema-v2
+`alpha_search.py build-promotion` does not read the mailbox or require a debate
+lock. Do not persist temporary chat as a second experiment ledger.
+
+Existence verification still cannot detect a real but mis-attributed citation.
+The verifier must open every load-bearing source and confirm the claim it is
+cited for.
+
+`requested_model` is launcher-attested metadata: its receipt hash proves that
+the local launcher requested that model string, not that a remote service
+cryptographically proved which weights served the run. Codex model diversity
+removes cross-provider transfer friction, but is a weaker independence claim
+than an OpenAI/Anthropic debate.
+
+## Deadlock-free turn order
+
+Agree which participant speaks first. The other listens first; thereafter both
+alternate receive/send:
+
+```text
+proposer:   send A1 -> recv B1 -> send A2 -> recv B2
+challenger: recv A1 -> send B1 -> recv A2 -> send B2
+```
+
+For an optional decision-support debate, name proposer, challenger, and verifier roles.
+Before convergence, the challenger must steelman the proposal or state a fact
+that would overturn its own position. Consensus is not a lock until the
+verifier has checked every load-bearing citation and the durable artifact binds
+the verified transcript and attachment hashes.
+
+## Cleanup
+
+Channels are temporary. After the durable ticket/log/artifact contains the
+decision and its hash anchors, remove the local channel using a deliberate,
+path-checked cleanup operation. Nothing under `data/agent_mailbox/` should be
+treated as the only copy of research evidence.

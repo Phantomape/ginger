@@ -29,11 +29,15 @@ from experiment_registry import (  # noqa: E402
     load_registry,
     next_experiment_id,
     normalize_prediction,
+    persist_self_registered_result,
     require_available_experiment_id,
+    reserve_experiment,
     save_experiment_log_entry,
     save_registry,
     update_result,
 )
+import experiment_registry as experiment_registry_module  # noqa: E402
+from quant.test_alpha_debate import _research_claim_receipt_fixture  # noqa: E402
 
 
 def alpha_prediction():
@@ -45,6 +49,552 @@ def alpha_prediction():
             "and thin sample or concentration can still fail."
         ),
     }
+
+
+class _FakeAlphaPromotionApi:
+    PROMOTION_REQUIRED_LANES = frozenset(
+        {"alpha_search", "alpha_discovery", "universe_scout"}
+    )
+
+    def __init__(self):
+        self.revalidate_error = None
+        self.revalidated = []
+        self.anchor_overrides = {}
+
+    @staticmethod
+    def normalize_ticket_proposal(value):
+        return dict(value)
+
+    def validate_promotion_request(self, path, expected_proposal=None, repo_root=None):
+        assert path == "data/alpha_search/promotion.json"
+        assert expected_proposal["lane"] == "alpha_search"
+        anchor = {
+            "promotion_request_path": path,
+            "promotion_request_sha256": "a" * 64,
+            "promotion_hash": "b" * 64,
+            "panel_path": "data/alpha_search/panel.json",
+            "panel_sha256": "e" * 64,
+            "panel_hash": "f" * 64,
+            "selection_scope_id": "scope-fixture",
+            "candidate_id": "candidate-fixture",
+            "candidate_snapshot_hash": "1" * 64,
+            "preflight_hash": "2" * 64,
+            "research_refs": ["res-20260721-fixture"],
+        }
+        anchor.update(self.anchor_overrides)
+        return anchor
+
+    def revalidate_ticket_promotion(self, ticket, repo_root=None):
+        self.revalidated.append((ticket["experiment_id"], repo_root))
+        if self.revalidate_error is not None:
+            raise ValueError(self.revalidate_error)
+        return ticket["alpha_promotion"]
+
+
+def _alpha_ticket_kwargs():
+    return {
+        "lane": "alpha_search",
+        "hypothesis": "A directly observed prior/fact gap should converge.",
+        "change_type": "candidate_pool",
+        "single_causal_variable": "official_prior_gap",
+        "causal_components": ["official fact", "observable market prior"],
+        "mechanism_family": "official_prior_gap",
+        "trial_family": "official_prior_gap_v1",
+        "changed_variable": "candidate admission",
+        "prediction": alpha_prediction(),
+    }
+
+
+def _research_replay_anchor_overrides():
+    return {
+        "admission_class": "research_replay",
+        "selected_evidence_grade": "lead",
+        "result_ceiling": "observed_only",
+        "paper_live_eligible": False,
+        "source_readiness_bindings": [
+            {
+                "surface_id": "research-fixture",
+                "pit_status": "research_pit",
+                "source_contract_hash": "3" * 64,
+                "readiness_hash": "4" * 64,
+            }
+        ],
+    }
+
+
+def _research_ticket_kwargs():
+    values = _alpha_ticket_kwargs()
+    values["change_type"] = "private_replay_scout"
+    return values
+
+
+def test_alpha_ticket_requires_hash_bound_promotion_before_any_reservation(tmp_path):
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+
+    with pytest.raises(ValueError, match="requires --promotion-request"):
+        create_ticket(registry, **_alpha_ticket_kwargs())
+
+    assert registry["experiments"] == []
+
+
+def test_alpha_ticket_stores_promotion_and_claim_revalidates_before_force(
+    tmp_path, monkeypatch
+):
+    fake = _FakeAlphaPromotionApi()
+    monkeypatch.setattr(experiment_registry_module, "_alpha_promotion_api", lambda: fake)
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    ticket = create_ticket(
+        registry,
+        promotion_request="data/alpha_search/promotion.json",
+        **_alpha_ticket_kwargs(),
+    )
+
+    assert ticket["research_refs"] == ["res-20260721-fixture"]
+    assert ticket["alpha_promotion"]["candidate_id"] == "candidate-fixture"
+
+    fake.revalidate_error = "promotion artifact was tampered"
+    with pytest.raises(ValueError, match="tampered"):
+        claim_ticket(registry, ticket["experiment_id"], "codex", force=True)
+    assert ticket["status"] == "proposed"
+
+    fake.revalidate_error = None
+    claimed, conflicts = claim_ticket(
+        registry, ticket["experiment_id"], "codex", force=True
+    )
+    assert conflicts == []
+    assert claimed["status"] == "claimed"
+    assert len(fake.revalidated) == 2
+
+
+def test_research_replay_anchor_is_stored_and_claim_revalidated(
+    tmp_path, monkeypatch
+):
+    fake = _FakeAlphaPromotionApi()
+    fake.anchor_overrides = _research_replay_anchor_overrides()
+    monkeypatch.setattr(experiment_registry_module, "_alpha_promotion_api", lambda: fake)
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    ticket = create_ticket(
+        registry,
+        promotion_request="data/alpha_search/promotion.json",
+        **_research_ticket_kwargs(),
+    )
+
+    assert ticket["alpha_promotion"]["admission_class"] == "research_replay"
+    assert ticket["alpha_promotion"]["result_ceiling"] == "observed_only"
+    assert ticket["alpha_promotion"]["paper_live_eligible"] is False
+    claimed, conflicts = claim_ticket(
+        registry, ticket["experiment_id"], "codex", force=True
+    )
+    assert conflicts == []
+    assert claimed["status"] == "claimed"
+    assert fake.revalidated == [(ticket["experiment_id"], tmp_path)]
+
+
+def test_real_research_claim_creates_receipt_and_audit_uses_snapshot(tmp_path):
+    fixture = _research_claim_receipt_fixture(tmp_path)
+    ticket = fixture["ticket"]
+    ticket.update(
+        {
+            "experiment_id": "exp-20990101-101",
+            "owner": None,
+            "allowed_write_scope": [],
+            "locked_variables": [],
+        }
+    )
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+
+    claimed, conflicts = claim_ticket(
+        registry, ticket["experiment_id"], "codex", force=True
+    )
+    assert conflicts == []
+    assert claimed["status"] == "claimed"
+    receipt = claimed["alpha_promotion_claim_receipt"]
+    assert receipt["claimed_validation_at"] == claimed["claimed_at"]
+    assert receipt["research_artifact_snapshots"]
+
+    fixture["paths"]["artifact"].write_text(
+        json.dumps({"timestamp": "2099-01-01T00:02:00Z", "probability": 0.8}),
+        encoding="utf-8",
+    )
+    updated = update_result(
+        registry,
+        ticket["experiment_id"],
+        {
+            "decision": "rejected",
+            "acceptance_reasons": [],
+            "before_metrics": {"expected_value_score": 1.0},
+            "after_metrics": {"expected_value_score": 0.5},
+            "delta_metrics": {"expected_value_score": -0.5},
+        },
+        "before.json",
+        "after.json",
+        status_override="rejected",
+        realized_failure_mode="fixture_rejected",
+        surprise_note="Receipt-backed closeout fixture.",
+    )
+    assert updated["status"] == "rejected"
+    assert updated["alpha_promotion_claim_receipt"] == receipt
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    audit = audit_experiment_process(
+        registry,
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+    )
+    assert audit["invalid_alpha_promotion_count"] == 0
+
+    claimed["alpha_promotion_claim_receipt"]["receipt_hash"] = "0" * 64
+    forged_audit = audit_experiment_process(
+        registry,
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+    )
+    assert forged_audit["invalid_alpha_promotion_count"] == 1
+    assert "claim_receipt_hash_mismatch" in forged_audit[
+        "invalid_alpha_promotion_examples"
+    ][0]["error"]
+
+
+def test_post_rollout_measurement_ticket_claim_does_not_require_alpha_receipt(
+    tmp_path,
+):
+    ticket = {
+        "experiment_id": "exp-20990101-104",
+        "experiment_uid": "expuid-measurement-fixture",
+        "lane": "measurement_repair",
+        "status": "proposed",
+        "owner": None,
+        "created_at": "2099-01-01T00:00:00+00:00",
+        "claimed_at": None,
+        "allowed_write_scope": [],
+        "locked_variables": [],
+    }
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+
+    claimed, conflicts = claim_ticket(
+        registry, ticket["experiment_id"], "codex", force=True
+    )
+
+    assert conflicts == []
+    assert claimed["status"] == "claimed"
+    assert claimed["owner"] == "codex"
+    assert claimed["claimed_at"]
+    assert "alpha_promotion" not in claimed
+    assert "alpha_promotion_claim_receipt" not in claimed
+
+
+def test_real_research_claim_tamper_before_claim_leaves_ticket_proposed(tmp_path):
+    fixture = _research_claim_receipt_fixture(tmp_path)
+    ticket = fixture["ticket"]
+    ticket.update(
+        {
+            "experiment_id": "exp-20990101-102",
+            "owner": None,
+            "allowed_write_scope": [],
+            "locked_variables": [],
+        }
+    )
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    fixture["paths"]["artifact"].write_text("tampered before claim", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="research_artifact_sha256_mismatch"):
+        claim_ticket(registry, ticket["experiment_id"], "codex", force=True)
+    assert ticket["status"] == "proposed"
+    assert ticket["claimed_at"] is None
+    assert "alpha_promotion_claim_receipt" not in ticket
+
+
+def test_post_rollout_proposed_alpha_cannot_close_without_claim_receipt(tmp_path):
+    fixture = _research_claim_receipt_fixture(tmp_path)
+    ticket = fixture["ticket"]
+    ticket.update(
+        {
+            "experiment_id": "exp-20990101-103",
+            "owner": None,
+            "allowed_write_scope": [],
+            "locked_variables": [],
+        }
+    )
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 0.5},
+        "delta_metrics": {"expected_value_score": -0.5},
+    }
+
+    with pytest.raises(ValueError, match="cannot close without a successful claim"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+            status_override="rejected",
+        )
+    assert ticket["status"] == "proposed"
+    assert ticket.get("result") is None
+
+
+def test_post_rollout_proposed_alpha_cannot_self_close_without_receipt(
+    tmp_path, monkeypatch
+):
+    fixture = _research_claim_receipt_fixture(tmp_path)
+    ticket = fixture["ticket"]
+    ticket["experiment_id"] = "exp-20990101-104"
+    docs_dir = tmp_path / "docs"
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    docs_dir.mkdir(parents=True)
+    tickets_dir.mkdir(parents=True)
+    registry_path = docs_dir / "experiment_registry.json"
+    save_registry(
+        {
+            "schema_version": 1,
+            "updated_at": None,
+            "experiments": [ticket],
+        },
+        registry_path,
+    )
+    (tickets_dir / f"{ticket['experiment_id']}.json").write_text(
+        json.dumps(ticket, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(experiment_registry_module, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(ValueError, match="cannot close without a successful claim"):
+        persist_self_registered_result(
+            registry_path,
+            experiment_id=ticket["experiment_id"],
+            lane="alpha_search",
+            status="rejected",
+            prediction=ticket["prediction"],
+            result={"decision": "rejected"},
+            allow_missing_prediction=True,
+        )
+    persisted = json.loads(
+        (tickets_dir / f"{ticket['experiment_id']}.json").read_text(encoding="utf-8")
+    )
+    assert persisted["status"] == "proposed"
+
+
+def test_claim_transition_is_idempotent_for_owner_and_rejects_takeover_or_reopen():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="measurement_repair",
+        hypothesis="Protect claim state transitions.",
+        change_type="identity_or_measurement_repair",
+        single_causal_variable="claim transition guard",
+    )
+    claimed, conflicts = claim_ticket(registry, ticket["experiment_id"], "agent-a")
+    assert conflicts == []
+    original_claimed_at = claimed["claimed_at"]
+
+    same, conflicts = claim_ticket(registry, ticket["experiment_id"], "agent-a")
+    assert conflicts == []
+    assert same["claimed_at"] == original_claimed_at
+    with pytest.raises(ValueError, match="owner takeover"):
+        claim_ticket(registry, ticket["experiment_id"], "agent-b", force=True)
+    claimed["status"] = "rejected"
+    claimed["result"] = {"decision": "rejected"}
+    with pytest.raises(ValueError, match="cannot transition"):
+        claim_ticket(registry, ticket["experiment_id"], "agent-a", force=True)
+    assert claimed["status"] == "rejected"
+
+
+def test_future_experiment_id_cannot_backdate_away_promotion_enforcement():
+    ticket = {
+        "experiment_id": "exp-20990101-105",
+        "lane": "alpha_search",
+        "status": "proposed",
+        "owner": None,
+        "created_at": "2020-01-01T00:00:00+00:00",
+        "claimed_at": None,
+        "prediction": alpha_prediction(),
+        "allowed_write_scope": [],
+        "locked_variables": [],
+    }
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_enforce_alpha_promotion": True,
+    }
+    with pytest.raises(ValueError, match="missing hash-bound"):
+        claim_ticket(registry, ticket["experiment_id"], "codex", force=True)
+    assert ticket["status"] == "proposed"
+
+
+def test_legacy_alpha_cannot_be_claimed_into_receipt_era_without_proof(monkeypatch):
+    ticket = {
+        "experiment_id": "exp-20200101-001",
+        "lane": "alpha_search",
+        "status": "proposed",
+        "owner": None,
+        "created_at": "2020-01-01T00:00:00+00:00",
+        "claimed_at": None,
+        "prediction": alpha_prediction(),
+        "allowed_write_scope": [],
+        "locked_variables": [],
+    }
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_enforce_alpha_promotion": True,
+    }
+    monkeypatch.setattr(
+        experiment_registry_module,
+        "utc_now_iso",
+        lambda: "2099-01-01T00:00:00+00:00",
+    )
+    with pytest.raises(ValueError, match="without a promotion anchor"):
+        claim_ticket(registry, ticket["experiment_id"], "codex", force=True)
+    assert ticket["status"] == "proposed"
+
+
+def test_audit_checks_receipt_rollout_for_legacy_reserved_claim(tmp_path):
+    registry = {
+        "schema_version": 1,
+        "_enforce_alpha_promotion": True,
+        "experiments": [
+            {
+                "experiment_id": "exp-20200101-002",
+                "lane": "alpha_search",
+                "status": "claimed",
+                "created_at": "2020-01-01T00:00:00+00:00",
+                "claimed_at": "2099-01-01T00:00:00+00:00",
+                "prediction": alpha_prediction(),
+            }
+        ],
+    }
+    audit = audit_experiment_process(
+        registry,
+        tickets_dir=tmp_path / "tickets",
+        logs_dir=tmp_path / "logs",
+    )
+    assert audit["passed"] is False
+    assert audit["missing_alpha_promotion_count"] == 1
+
+
+def test_measurement_repair_does_not_require_alpha_promotion(tmp_path):
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+
+    ticket = create_ticket(
+        registry,
+        lane="measurement_repair",
+        hypothesis="Make promotion admission measurable.",
+        change_type="measurement_instrumentation",
+        single_causal_variable="promotion admission telemetry",
+    )
+
+    assert ticket["status"] == "proposed"
+    assert "alpha_promotion" not in ticket
+
+
+def test_audit_blocks_post_enforcement_alpha_without_promotion(tmp_path):
+    registry = {
+        "schema_version": 1,
+        "experiments": [
+            {
+                "experiment_id": "exp-20990101-001",
+                "lane": "alpha_search",
+                "status": "proposed",
+                "created_at": "2099-01-01T00:00:00+00:00",
+                "prediction": alpha_prediction(),
+            }
+        ],
+        "_enforce_alpha_promotion": True,
+    }
+
+    audit = audit_experiment_process(
+        registry,
+        tickets_dir=tmp_path / "tickets",
+        logs_dir=tmp_path / "logs",
+    )
+
+    assert audit["passed"] is False
+    assert audit["missing_alpha_promotion_count"] == 1
+    assert audit["missing_alpha_promotion_examples"][0]["experiment_id"] == (
+        "exp-20990101-001"
+    )
+
+
+def test_audit_blocks_research_replay_above_observed_only_ceiling(
+    tmp_path, monkeypatch
+):
+    fake = _FakeAlphaPromotionApi()
+    fake.anchor_overrides = _research_replay_anchor_overrides()
+    monkeypatch.setattr(experiment_registry_module, "_alpha_promotion_api", lambda: fake)
+    anchor = fake.validate_promotion_request(
+        "data/alpha_search/promotion.json",
+        expected_proposal={"lane": "alpha_search"},
+    )
+    registry = {
+        "schema_version": 1,
+        "_enforce_alpha_promotion": True,
+        "experiments": [
+            {
+                "experiment_id": "exp-20990101-002",
+                "lane": "alpha_search",
+                "status": "accepted_paper_pending_forward",
+                "created_at": "2099-01-01T00:00:00+00:00",
+                "prediction": alpha_prediction(),
+                "alpha_promotion": anchor,
+                "research_refs": anchor["research_refs"],
+                "result": {"decision": "accepted_paper_pending_forward"},
+            }
+        ],
+    }
+
+    audit = audit_experiment_process(
+        registry,
+        tickets_dir=tmp_path / "tickets",
+        logs_dir=tmp_path / "logs",
+    )
+
+    assert audit["passed"] is False
+    assert audit["research_replay_count"] == 1
+    assert audit["research_result_ceiling_violation_count"] == 1
 
 
 def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
@@ -663,6 +1213,133 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
     )
 
 
+def test_research_replay_log_and_update_result_enforce_observed_only_ceiling(
+    tmp_path, monkeypatch
+):
+    fake = _FakeAlphaPromotionApi()
+    fake.anchor_overrides = _research_replay_anchor_overrides()
+    monkeypatch.setattr(experiment_registry_module, "_alpha_promotion_api", lambda: fake)
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    ticket = create_ticket(
+        registry,
+        promotion_request="data/alpha_search/promotion.json",
+        **_research_ticket_kwargs(),
+    )
+    judgement = {
+        "decision": "accepted_paper_pending_forward",
+        "acceptance_reasons": ["diagnostic Gate 4 passed"],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 2.0},
+        "delta_metrics": {"expected_value_score": 1.0},
+    }
+
+    with pytest.raises(ValueError, match="result_ceiling=observed_only"):
+        build_log_draft(ticket, judgement, "before.json", "after.json")
+    with pytest.raises(ValueError, match="result_ceiling=observed_only"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+        )
+
+    draft = build_log_draft(
+        ticket,
+        judgement,
+        "before.json",
+        "after.json",
+        status_override="observed_only",
+    )
+    updated = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "before.json",
+        "after.json",
+        status_override="observed_only",
+    )
+    assert draft["decision"] == "observed_only"
+    assert draft["paper_live_eligible"] is False
+    assert updated["status"] == "observed_only"
+    assert updated["result"]["admission_class"] == "research_replay"
+    assert updated["result"]["paper_live_eligible"] is False
+
+
+def _settled_forward_anchor_overrides():
+    return {
+        "admission_class": "settled_forward_attribution",
+        "selected_evidence_grade": "observed_only",
+        "result_ceiling": "observed_only",
+        "paper_live_eligible": False,
+        "source_readiness_bindings": [
+            {
+                "surface_id": "settled-forward-fixture",
+                "pit_status": "settled_forward_sufficient",
+                "source_contract_hash": "5" * 64,
+                "readiness_hash": "6" * 64,
+            }
+        ],
+    }
+
+
+def test_settled_forward_attribution_enforces_observed_only_ceiling(
+    tmp_path, monkeypatch
+):
+    fake = _FakeAlphaPromotionApi()
+    fake.anchor_overrides = _settled_forward_anchor_overrides()
+    monkeypatch.setattr(experiment_registry_module, "_alpha_promotion_api", lambda: fake)
+    registry = {
+        "schema_version": 1,
+        "experiments": [],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    kwargs = _alpha_ticket_kwargs()
+    kwargs["change_type"] = "observed_only_attribution"
+    ticket = create_ticket(
+        registry,
+        promotion_request="data/alpha_search/promotion.json",
+        **kwargs,
+    )
+    judgement = {
+        "decision": "accepted_paper_pending_forward",
+        "acceptance_reasons": ["diagnostic Gate 4 passed"],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 2.0},
+        "delta_metrics": {"expected_value_score": 1.0},
+    }
+
+    with pytest.raises(ValueError, match="result_ceiling=observed_only"):
+        build_log_draft(ticket, judgement, "before.json", "after.json")
+    with pytest.raises(ValueError, match="result_ceiling=observed_only"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+        )
+
+    updated = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "before.json",
+        "after.json",
+        status_override="observed_only",
+    )
+    assert updated["status"] == "observed_only"
+    assert updated["result"]["admission_class"] == "settled_forward_attribution"
+    assert updated["result"]["selected_evidence_grade"] == "observed_only"
+    assert updated["result"]["paper_live_eligible"] is False
+
+
 def test_log_draft_includes_prediction_calibration():
     registry = {"schema_version": 1, "updated_at": None, "experiments": []}
     ticket = create_ticket(
@@ -1150,6 +1827,78 @@ def test_concurrent_locked_registry_updates_do_not_duplicate_ids(tmp_path):
     assert ids == sorted(ids)
 
 
+def _intent_lock_kwargs():
+    return {
+        "lane": "measurement_repair",
+        "hypothesis": (
+            "Protect identical automatic reservation retries with an intent lock."
+        ),
+        "change_type": "identity_or_measurement_repair",
+        "single_causal_variable": "reservation intent lock",
+        "allowed_write_scope": ["scripts/experiment_registry.py"],
+    }
+
+
+def test_reserve_experiment_returns_existing_open_ticket_for_identical_intent(tmp_path):
+    registry_path = tmp_path / "docs" / "experiment_registry.json"
+    registry_path.parent.mkdir()
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+
+    first = reserve_experiment(registry_path, **_intent_lock_kwargs())
+    second = reserve_experiment(registry_path, **_intent_lock_kwargs())
+
+    assert second["experiment_id"] == first["experiment_id"]
+    assert second["experiment_uid"] == first["experiment_uid"]
+    intent = second["reservation_intent"]
+    assert intent["key"]
+    intent_path = (
+        tmp_path
+        / "experiments"
+        / "reservation_intents"
+        / f"{intent['key']}.json"
+    )
+    assert json.loads(intent_path.read_text(encoding="utf-8"))["experiment_id"] == (
+        first["experiment_id"]
+    )
+
+
+def test_reserve_experiment_recovers_open_ticket_when_intent_file_missing(tmp_path):
+    registry_path = tmp_path / "docs" / "experiment_registry.json"
+    registry_path.parent.mkdir()
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+
+    first = reserve_experiment(registry_path, **_intent_lock_kwargs())
+    intent_path = (
+        tmp_path
+        / "experiments"
+        / "reservation_intents"
+        / f"{first['reservation_intent']['key']}.json"
+    )
+    intent_path.unlink()
+
+    second = reserve_experiment(registry_path, **_intent_lock_kwargs())
+
+    assert second["experiment_id"] == first["experiment_id"]
+    assert intent_path.exists()
+
+
+def test_reserve_experiment_allows_new_intent_after_prior_ticket_closes(tmp_path):
+    registry_path = tmp_path / "docs" / "experiment_registry.json"
+    registry_path.parent.mkdir()
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+
+    first = reserve_experiment(registry_path, **_intent_lock_kwargs())
+    ticket_path = tmp_path / "experiments" / "tickets" / f"{first['experiment_id']}.json"
+    ticket = json.loads(ticket_path.read_text(encoding="utf-8"))
+    ticket["status"] = "rejected"
+    ticket_path.write_text(json.dumps(ticket, indent=2) + "\n", encoding="utf-8")
+
+    second = reserve_experiment(registry_path, **_intent_lock_kwargs())
+
+    assert second["experiment_id"] != first["experiment_id"]
+    assert second["experiment_id"].endswith("-002")
+
+
 def test_update_result_honors_status_override():
     registry = {"schema_version": 1, "updated_at": None, "experiments": []}
     ticket = create_ticket(
@@ -1177,6 +1926,89 @@ def test_update_result_honors_status_override():
 
     assert updated["status"] == "observed_only"
     assert updated["result"]["decision"] == "observed_only"
+
+
+def test_update_result_refuses_to_overwrite_terminal_result():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="A terminal closeout must remain immutable.",
+        change_type="analysis_only",
+        single_causal_variable="terminal result immutability",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+    )
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "delta_metrics": {},
+    }
+    first = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "data/before.json",
+        "data/after.json",
+    )
+
+    with pytest.raises(ValueError, match="terminal results are immutable"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "data/different_before.json",
+            "data/different_after.json",
+        )
+
+    assert first["result"]["before_result_file"] == "data/before.json"
+    assert first["result"]["after_result_file"] == "data/after.json"
+
+
+def test_alpha_status_override_cannot_promote_rejected_gate_to_accepted():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="A rejected Gate result cannot be promoted by a CLI override.",
+        change_type="candidate_pool",
+        single_causal_variable="accepted override boundary",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction={
+            "success_probability": 0.2,
+            "expected_ev_delta": 0.0,
+            "expected_pnl_delta": 0.0,
+            "main_failure_modes": ["no replacement value"],
+            "confidence_reason": (
+                "The candidate mechanism is measurable, but the prior remains weak and "
+                "the test explicitly protects the machine Gate from manual promotion."
+            ),
+        },
+    )
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 0.5},
+        "delta_metrics": {"expected_value_score": -0.5},
+    }
+
+    with pytest.raises(ValueError, match="cannot promote"):
+        build_log_draft(
+            ticket,
+            judgement,
+            "data/before.json",
+            "data/after.json",
+            status_override="accepted",
+        )
+    with pytest.raises(ValueError, match="cannot promote"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "data/before.json",
+            "data/after.json",
+            status_override="accepted",
+        )
 
 
 def test_update_result_records_prediction_calibration():

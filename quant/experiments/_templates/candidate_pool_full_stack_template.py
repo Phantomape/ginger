@@ -3,8 +3,9 @@
 Goal
 ----
 Reach a production / paper-sleeve verdict in ONE experiment instead of across
-many rounds. Fill the 5 TODOs below and this runner emits a standardized
-verdict: ``reject`` / ``accepted_paper_pending_forward`` / ``live_eligible``.
+many rounds. Fill the 6 TODOs below and this runner emits a standardized
+verdict: ``reject`` / ``research_only`` /
+``accepted_paper_pending_forward`` / ``live_eligible``.
 
 How to use
 ----------
@@ -19,8 +20,9 @@ How to use
         --success-probability 0.35 ^
         --main-failure-modes "thin_sample,concentration_failed,not_incremental"
 2. Copy this file to ``quant/experiments/exp_YYYYMMDD_NNN_my_candidate_pool.py``.
-3. Implement the 5 TODOs (candidate source, shared sleeve adapter, 3-window
-   before/after metrics, execution envelope, forward/parity inputs).
+3. Implement the 6 TODOs (candidate source, PIT authority, shared sleeve
+   adapter, 3-window before/after metrics, execution envelope,
+   forward/parity inputs).
 4. Run it; commit the verdict JSON + artifact.
 
 Why one experiment is enough
@@ -65,18 +67,30 @@ def load_candidate_pool() -> Any:
 
 
 # ---------------------------------------------------------------------------
-# TODO 2: shared sleeve adapter. Implement ONE helper (a `*_paper_sleeve.py`
+# TODO 2: bind the temporal authority admitted by the experiment ticket.
+# Use research_pit only for a research_replay/private_replay_scout ticket;
+# only a validated canonical promotion may declare canonical_pit. Never infer
+# this value from a positive backtest.
+# ---------------------------------------------------------------------------
+def declare_pit_evidence() -> dict[str, Any]:
+    raise NotImplementedError(
+        "TODO 2: bind research_pit or canonical_pit from the admission request"
+    )
+
+
+# ---------------------------------------------------------------------------
+# TODO 3: shared sleeve adapter. Implement ONE helper (a `*_paper_sleeve.py`
 # module) that BOTH historical replay and the daily default-off snapshot call,
 # so production-visibility and the backtest share code. Do not write a private
 # one-off scorer. Model on quant/finra_iwm_paper_sleeve.py or
 # quant/fundamental_growth_rs_paper_sleeve.py.
 # ---------------------------------------------------------------------------
 def build_shared_sleeve_adapter():
-    raise NotImplementedError("TODO 2: wire the shared replay+daily sleeve adapter")
+    raise NotImplementedError("TODO 3: wire the shared replay+daily sleeve adapter")
 
 
 # ---------------------------------------------------------------------------
-# TODO 3: 3-window canonical before/after metrics. Run the canonical 3-window
+# TODO 4: 3-window canonical before/after metrics. Run the canonical 3-window
 # backtest (see docs/backtesting.md) with and without the sleeve and return a
 # metrics dict with these keys (deltas are after-minus-before):
 #   aggregate_ev_delta, aggregate_pnl_delta,
@@ -87,11 +101,11 @@ def build_shared_sleeve_adapter():
 #   avg_pnl_per_trade_delta, avg_return_delta_pp
 # ---------------------------------------------------------------------------
 def compute_window_metrics() -> dict[str, Any]:
-    raise NotImplementedError("TODO 3: run the 3-window backtest, return metrics dict")
+    raise NotImplementedError("TODO 4: run the 3-window backtest, return metrics dict")
 
 
 # ---------------------------------------------------------------------------
-# TODO 4: declare the live execution envelope. Every field must be a real,
+# TODO 5: declare the live execution envelope. Every field must be a real,
 # measured/decided value before the sleeve can become live_eligible. Leaving a
 # field None is allowed while paper-pending -- it just shows up as a remaining
 # checklist item. Fill them all here so live promotion is a config change.
@@ -112,7 +126,7 @@ def declare_execution_envelope() -> ExecutionEnvelope:
 
 
 # ---------------------------------------------------------------------------
-# TODO 5: forward + parity inputs for Gate 5. On a FIRST run these are usually
+# TODO 6: forward + parity inputs for Gate 5. On a FIRST run these are usually
 # immature (0 closed forward trades, kill-switch parity may still be passing if
 # you wrote the parity test in this experiment). That is expected -- the verdict
 # will land at accepted_paper_pending_forward. ``dsr_report`` must come from
@@ -131,6 +145,7 @@ def collect_live_readiness_inputs() -> dict[str, Any]:
 
 def run() -> dict[str, Any]:
     load_candidate_pool()
+    pit_evidence = declare_pit_evidence()
     build_shared_sleeve_adapter()
 
     window_metrics = compute_window_metrics()
@@ -140,7 +155,10 @@ def run() -> dict[str, Any]:
     gate4 = evaluate_gate4(window_metrics)
     live_readiness = evaluate_live_readiness(envelope=envelope, **fwd)
     verdict = full_stack_verdict(
-        gate4=gate4, live_readiness=live_readiness, envelope=envelope
+        gate4=gate4,
+        live_readiness=live_readiness,
+        envelope=envelope,
+        pit_evidence=pit_evidence,
     )
 
     out_dir = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID

@@ -1,6 +1,6 @@
 ﻿# Alpha External Research Map
 
-Last refreshed: 2026-07-21.
+Last refreshed: 2026-07-26.
 
 External research notes moved out of `docs/alpha-optimization-playbook.md`.
 Use this file when converting research literature into replayable fields or bounded LLM infrastructure ideas.
@@ -4568,3 +4568,85 @@ Controls:
 Source: <https://arxiv.org/abs/2607.01765>
 
 entry_id: res-20260721-factor-models-need-cap-axis-diagnostics
+
+### Grid Equipment Backlogs Need An Observable Expectation Gap
+
+The transformer and high-voltage switchgear chain is a credible physical
+bottleneck, but a bottleneck is not automatically stock alpha. DOE documents
+long customized procurement cycles, specialized equipment and qualification
+constraints, while NERC and IEA document unusually rapid but uncertain
+electric-load growth. Issuer filings also show large order and backlog growth.
+The Ginger translation must therefore compare a source-dated change in
+transformer/switchgear backlog, book-to-bill, delivery lead time or commissioned
+capacity with a pre-event market prior. Static membership in an AI-power or grid
+beneficiary basket is explicitly not the signal.
+
+expectation_proxy: Pre-event estimate revisions plus price/volume response and Moomoo main-flow for the same issuer/event cohort.
+crowding: high
+pit_feasibility: Lead only until issuer backlog/capacity releases are archived and hash-bound and the expectation surfaces have executable overlap.
+falsifier: No PIT normalized series, fewer than five touches per canonical window, two quarters with delivery proxies below 12 months, supply growth above demand/backlog growth, or no incremental information beyond revisions and price.
+
+Implementable fields:
+
+- `issuer_metric_source_hash`
+- `issuer_metric_known_at`
+- `grid_product_scope_share_bucket`
+- `backlog_growth_comparable_pct`
+- `book_to_bill_comparable`
+- `delivery_lead_time_months`
+- `announced_capacity_start_date`
+- `commissioned_capacity_status`
+- `pre_event_estimate_revision_bucket`
+- `pre_event_price_volume_response_bucket`
+- `pre_event_moomoo_main_flow_bucket`
+- `expectation_gap_abstain_reason`
+- `h5_h10_h20_replacement_value`
+
+Controls:
+
+- preserve the original filing or release, retrieval time and content hash;
+- treat issuer IR pages as human-readable context only: current GE Vernova and
+  Eaton terms limit downloads to personal, non-commercial use; an automated
+  research archive must use SEC EDGAR filings/exhibits or another explicitly
+  authorized source and preserve its local-ingestion clock;
+- use the LLM only to extract product scope, metric comparability, capacity
+  status and supporting spans; a deterministic policy computes any score;
+- treat acquisition-driven backlog changes, broad segment mix and cancellation
+  risk separately from organic transformer/switchgear demand;
+- compare against the static AI-power/grid basket, same-sector peers, cash,
+  SPY/QQQ and the exact cash-feasible candidate displaced;
+- require a source-authorization and PIT contract plus at least five executable
+  touches per canonical window before any Gate 1-4 experiment;
+- do not infer current factory utilization from long queues: DOE's cited
+  roughly 40% utilization estimate is from 2019;
+- falsify the mechanism if delivery proxies remain below 12 months for two
+  quarters, commissioned supply growth overtakes demand/backlog growth, or the
+  proposed signal adds no information beyond pre-event revisions and price.
+
+Expectation and crowding contract:
+
+- `expectation_proxy`: pre-event estimate revisions plus price/volume response
+  and Moomoo main-flow, once those surfaces cover the same issuer/event cohort;
+- `crowding`: high, because AI power and grid beneficiaries are already a
+  popular theme and are represented in prior Ginger candidate-pool work;
+- `pit_feasibility`: lead only until issuer backlog/capacity releases are
+  archived and hash-bound and the expectation surfaces have executable overlap;
+- `reopen_condition`: at least 10 mapped listed issuers, five touches in every
+  canonical window, and 20 independent forward decisions with replacement-value
+  labels under a frozen metric-comparability policy.
+
+Primary sources and counterevidence:
+
+- [DOE Large Power Transformer Resilience Report](https://www.energy.gov/sites/default/files/2024-10/EXEC-2022-001242%20-%20Large%20Power%20Transformer%20Resilience%20Report%20signed%20by%20Secretary%20Granholm%20on%207-10-24.pdf)
+- [DOE Supply Chain and Market Analysis](https://www.energy.gov/oe/supply-chain-and-market-analysis)
+- [NERC Long-Term Reliability Assessments](https://www.nerc.com/our-work/assessments/long-term-reliability-assessments)
+- [IEA: Data-centre electricity use and tightening bottlenecks](https://www.iea.org/news/data-centre-electricity-use-surged-in-2025-even-with-tightening-bottlenecks-driving-a-scramble-for-solutions)
+- [FERC remarks on speculative large-load requests](https://www.ferc.gov/news-events/news/commissioner-rosners-remarks-large-load-show-cause-orders-e-7-e-12-june-18-2026)
+- [GE Vernova second-quarter 2026 results](https://www.gevernova.com/news/articles/ge-vernova-releases-second-quarter-2026-financial-results)
+- [Eaton first-quarter 2026 results](https://www.eaton.com/us/en-us/company/news-insights/news-releases/2026/eaton-reports-record-first-quarter-2026-results.html)
+- [GE Vernova Terms of Use](https://www.gevernova.com/terms)
+- [Eaton Terms and Conditions](https://www.eaton.com/us/en-us/company/policies-and-statements/terms-and-conditions.html)
+- [SEC EDGAR reuse and timestamp guidance](https://www.sec.gov/about/webmaster-frequently-asked-questions)
+- [SEC EDGAR fair-access contract](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data)
+
+entry_id: res-20260726-grid-equipment-backlogs-need-an-observable-expectation-gap

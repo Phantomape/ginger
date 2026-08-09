@@ -8,8 +8,11 @@ preserving point-in-time auditability and production/backtest parity.
 
 1. The current watchlist is not ground truth. It is one universe version.
 2. New and old tickers use the same lifecycle, including demotion.
-3. Static pool backtests can generate hypotheses, but cannot grant production
-   status by themselves.
+3. Static current-pool backtests contain known survivorship/oracle membership.
+   They are `not_pit` diagnostics that may illustrate a hypothesis, but their
+   returns are not alpha evidence and cannot grant research or production
+   status. Timestamped historical membership may be `research_pit`; an
+   append-only effective event ledger is `canonical_pit`.
 4. Every universe state change must be reconstructable from an append-only
    event ledger.
 5. Pilot trades must freeze counterfactuals before entry, not after outcome.
@@ -66,8 +69,9 @@ future information leakage.
 
 | Mode | Valid Use |
 | --- | --- |
-| `static_pool_backtest` | Hypothesis generation only. Answers: "If this pool had existed, would the strategy have found anything?" |
-| `walk_forward_universe_backtest` | Formal historical evidence. Replays discovery, eligibility, status changes, promotion, quarantine, and retirement using point-in-time data. |
+| `static_pool_backtest` | Oracle/diagnostic only; known survivorship means its return metrics are not alpha evidence. Answers only: "If this pool had existed, what mechanism might be worth making PIT?" |
+| `timestamped_membership_replay` | Research-only evidence when historical membership dates are available but as-known vintage/mapping history is not canonical. |
+| `walk_forward_universe_backtest` | Formal canonical historical evidence. Replays discovery, eligibility, status changes, promotion, quarantine, and retirement from an append-only point-in-time ledger. |
 | `live_pilot_attribution` | Forward evidence for short-history, new-theme, and event-sensitive names. |
 
 Production promotion requires either walk-forward evidence or live pilot

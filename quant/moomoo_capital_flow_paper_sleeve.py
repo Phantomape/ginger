@@ -123,7 +123,11 @@ DEFAULT_CONFIG = {
     "hold_days": 10,
     "same_ticker_cooldown_days": 10,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
-    "max_archive_staleness_days": 3,
+    # The daily run already calls this helper only for valid US equity
+    # sessions.  A multi-day calendar tolerance silently skipped intervening
+    # sessions, so the archive must attempt a refresh whenever today's row is
+    # newer than its newest stored flow date.
+    "max_archive_staleness_days": 0,
     "allow_network_fetch": True,
     "block_same_day_core_overlap": True,
     "forward_gate_min_closed_trades": 20,
@@ -314,7 +318,7 @@ def refresh_moomoo_capital_flow_archive(
     existing_rows: list[dict[str, Any]],
     tickers: list[str] | set[str],
     as_of: str,
-    max_staleness_days: int = 3,
+    max_staleness_days: int = 0,
     fetch_fn=None,
     save: bool = True,
     rows_path: Path | str = DEFAULT_ROWS_PATH,

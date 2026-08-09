@@ -163,6 +163,65 @@ def test_report_still_flags_dateless_state_only_surface(tmp_path):
     assert "candidate_decision_training_ledger" in report["stalled_sleeves"]
 
 
+def test_report_recognizes_candidate_training_ledger_state_with_rows(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    name = "candidate_decision_training_ledger"
+    _mk_state(
+        root,
+        name,
+        {
+            "surface_contract": "append_only_candidate_decision_training_ledger",
+            "as_of": "2026-07-25",
+            "rows_seen": 1,
+        },
+    )
+    (root / name / "rows.jsonl").write_text(
+        json.dumps({"as_of": "2026-07-25", "ticker": "AAPL"}) + chr(10),
+        encoding="utf-8",
+    )
+    report = sh.build_sleeve_health_report(
+        "2026-07-25",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    entry = report["disk_status"][name]
+    assert entry["status"] == "fresh_summary"
+    assert entry["last_summary"] == "2026-07-25"
+    assert entry["summary_file"] == "state.json"
+    assert name not in report["stalled_sleeves"]
+
+
+def test_report_rejects_unrecognized_or_incomplete_state_contracts(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    payloads = {
+        "unknown": {
+            "surface_contract": "unknown_append_only_ledger",
+            "as_of": "2026-07-25",
+        },
+        "unmarked": {"as_of": "2026-07-25"},
+        "missing_rows": {
+            "surface_contract": "append_only_candidate_decision_training_ledger",
+            "as_of": "2026-07-25",
+        },
+    }
+    for name, payload in payloads.items():
+        _mk_state(root, name, payload)
+        if name != "missing_rows":
+            (root / name / "rows.jsonl").write_text("{}\n", encoding="utf-8")
+    report = sh.build_sleeve_health_report(
+        "2026-07-25",
+        {},
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    for name in payloads:
+        assert report["disk_status"][name]["status"] == "never_persisted"
+        assert name in report["stalled_sleeves"]
+
+
 def test_report_uses_marked_heartbeat_state_when_snapshot_is_older(tmp_path):
     root = tmp_path / "paper_sleeves"
     name = "core_risk_intensity_forward_observation"

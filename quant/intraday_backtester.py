@@ -28,6 +28,7 @@ try:
         _redirect_moomoo_sdk_appdata,
         _restore_moomoo_sdk_appdata,
     )
+    from us_market_calendar import is_us_equity_session
 except ImportError:  # pragma: no cover - package-style imports
     from quant.data_paths import DATA_ROOT
     from quant.intraday_moomoo import _history_pages
@@ -35,13 +36,17 @@ except ImportError:  # pragma: no cover - package-style imports
         _redirect_moomoo_sdk_appdata,
         _restore_moomoo_sdk_appdata,
     )
+    from quant.us_market_calendar import is_us_equity_session
 
 
 SCHEMA_VERSION = 1
-OUTCOME_RULE_VERSION = "intraday_triage_counterfactual_outcome_v1"
+OUTCOME_RULE_VERSION = "intraday_triage_counterfactual_outcome_v2"
 EXECUTION_RULE_VERSION = "intraday_triage_next_5m_execution_v1"
 AGGREGATION_RULE_VERSION = "intraday_triage_latest_pre_execution_cohort_v1"
+SESSION_COMPLETION_RULE_VERSION = "intraday_triage_completed_1555_et_bar_v1"
 HORIZONS = ("h1", "rth_close", "next_close", "d3_close")
+CLOSE_DEPENDENT_HORIZONS = frozenset({"rth_close", "next_close", "d3_close"})
+COMPLETED_RTH_CLOSE_BAR_TIME = pd.Timestamp("15:55").time()
 NO_ADJUSTMENT_ACTIONS = frozenset({"NO_TRADE", "WAIT", "HOLD_ONLY"})
 LONG_ACTIONS = frozenset({"ADD_SMALL", "OPEN_SMALL"})
 SHORT_EXPOSURE_ACTIONS = frozenset({"REDUCE_RISK"})
@@ -280,6 +285,33 @@ def _session_rows(rows: Sequence[Mapping[str, Any]]) -> dict[date, list[Mapping[
     return dict(sessions)
 
 
+def _completed_session_close(
+    rows: Sequence[Mapping[str, Any]],
+) -> Mapping[str, Any] | None:
+    """Return the final five-minute bar only after a normal RTH close.
+
+    Five-minute RTH bars are timestamped at the start of their interval, so
+    15:55 ET is the completed 15:55-16:00 close bar.  Early-close sessions are
+    deliberately fail-closed until the pipeline has an auditable exchange
+    calendar contract for their shortened final interval.
+    """
+    if not rows:
+        return None
+    final = rows[-1]
+    final_time = pd.Timestamp(final["time"]).time()
+    return final if final_time == COMPLETED_RTH_CLOSE_BAR_TIME else None
+
+
+def _session_after(start: date, offset: int) -> date:
+    cursor = start
+    sessions_seen = 0
+    while sessions_seen < offset:
+        cursor += timedelta(days=1)
+        if is_us_equity_session(cursor):
+            sessions_seen += 1
+    return cursor
+
+
 def _horizon_bar(
     rows: Sequence[Mapping[str, Any]],
     execution: Mapping[str, Any],
@@ -287,11 +319,9 @@ def _horizon_bar(
 ) -> Mapping[str, Any] | None:
     execution_ts = pd.Timestamp(execution["time"])
     sessions = _session_rows(rows)
-    session_dates = sorted(sessions)
     execution_date = execution_ts.date()
     if execution_date not in sessions:
         return None
-    session_index = session_dates.index(execution_date)
     if horizon == "h1":
         threshold = execution_ts + pd.Timedelta(hours=1)
         return next((
@@ -299,12 +329,12 @@ def _horizon_bar(
             if pd.Timestamp(row["time"]) >= threshold
         ), None)
     if horizon == "rth_close":
-        return sessions[execution_date][-1]
+        return _completed_session_close(sessions[execution_date])
     offset = 1 if horizon == "next_close" else 3
-    target_index = session_index + offset
-    if target_index >= len(session_dates):
+    target_date = _session_after(execution_date, offset)
+    if target_date not in sessions:
         return None
-    return sessions[session_dates[target_index]][-1]
+    return _completed_session_close(sessions[target_date])
 
 
 def _bars_between(
@@ -514,6 +544,7 @@ def build_intraday_outcomes(
             "record_type": "intraday_triage_outcome",
             "outcome_rule_version": OUTCOME_RULE_VERSION,
             "execution_rule_version": EXECUTION_RULE_VERSION,
+            "session_completion_rule_version": SESSION_COMPLETION_RULE_VERSION,
             "observation_id": decision.get("observation_id"),
             "source_decision_file": decision.get("source_decision_file"),
             "ticker": ticker,
@@ -736,6 +767,75 @@ def _daily_curve(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+_PENDING_OUTCOME_FIELDS = frozenset({
+    "schema_version",
+    "record_type",
+    "outcome_rule_version",
+    "execution_rule_version",
+    "session_completion_rule_version",
+    "observation_id",
+    "source_decision_file",
+    "ticker",
+    "decision_date",
+    "decision_timestamp",
+    "primary_ticker_day_decision",
+    "market_phase",
+    "final_action",
+    "machine_default_action",
+    "underlying",
+    "sector_proxy",
+    "market_proxy",
+    "confidence",
+    "position_market_value_at_decision",
+    "as_of_date",
+    "trade_enabled",
+    "strategy_behavior_changed",
+    "horizon",
+    "status",
+    "execution_time",
+    "execution_price",
+})
+
+
+def is_completed_close_outcome(row: Mapping[str, Any]) -> bool:
+    """Whether a close-dependent outcome has an auditable completed RTH bar."""
+    if row.get("horizon") not in CLOSE_DEPENDENT_HORIZONS:
+        return True
+    horizon_ts = _parse_et_timestamp(row.get("horizon_time"))
+    return (
+        horizon_ts is not None
+        and pd.Timestamp(horizon_ts).time() == COMPLETED_RTH_CLOSE_BAR_TIME
+    )
+
+
+def migrate_intraday_outcomes_to_current_rule(
+    outcomes: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Copy outcomes into v2, demoting partial-session pseudo-settlements.
+
+    This migration is intentionally price-free: a row that cannot prove its
+    target session completed is pending until a later normal settlement run.
+    Outcome-derived prices, returns and PnL are removed from demoted rows.
+    """
+    migrated: list[dict[str, Any]] = []
+    for raw in outcomes:
+        row = dict(raw)
+        row["outcome_rule_version"] = OUTCOME_RULE_VERSION
+        row["session_completion_rule_version"] = SESSION_COMPLETION_RULE_VERSION
+        if (
+            row.get("horizon") in CLOSE_DEPENDENT_HORIZONS
+            and row.get("status") == "closed"
+            and not is_completed_close_outcome(row)
+        ):
+            row["status"] = "pending_horizon_bar"
+            row = {
+                key: value for key, value in row.items()
+                if key in _PENDING_OUTCOME_FIELDS
+            }
+        migrated.append(row)
+    return migrated
+
+
 def select_effective_economic_outcomes(
     rows: Sequence[Mapping[str, Any]],
 ) -> tuple[list[Mapping[str, Any]], dict[str, Any]]:
@@ -802,7 +902,17 @@ def build_scorecard(
     as_of_date: str,
     price_source: Mapping[str, Any],
 ) -> dict[str, Any]:
-    primary = [row for row in outcomes if row.get("primary_ticker_day_decision")]
+    partial_close_rows_demoted = sum(
+        row.get("horizon") in CLOSE_DEPENDENT_HORIZONS
+        and row.get("status") == "closed"
+        and not is_completed_close_outcome(row)
+        for row in outcomes
+    )
+    normalized_outcomes = migrate_intraday_outcomes_to_current_rule(outcomes)
+    primary = [
+        row for row in normalized_outcomes
+        if row.get("primary_ticker_day_decision")
+    ]
     horizon_summary: dict[str, Any] = {}
     effective_by_horizon: dict[str, list[Mapping[str, Any]]] = {}
     for horizon in HORIZONS:
@@ -876,6 +986,7 @@ def build_scorecard(
         "outcome_rule_version": OUTCOME_RULE_VERSION,
         "execution_rule_version": EXECUTION_RULE_VERSION,
         "aggregation_rule_version": AGGREGATION_RULE_VERSION,
+        "session_completion_rule_version": SESSION_COMPLETION_RULE_VERSION,
         "as_of_date": as_of_date,
         "status": status,
         "decision_rows": len(decisions),
@@ -885,6 +996,12 @@ def build_scorecard(
         "source_decision_files": list(source_files),
         "skipped_sources": list(skipped_sources),
         "price_source": dict(price_source),
+        "settlement_integrity": {
+            "close_bar_time_et": "15:55",
+            "close_dependent_horizons": sorted(CLOSE_DEPENDENT_HORIZONS),
+            "partial_close_rows_demoted": partial_close_rows_demoted,
+            "early_close_policy": "pending_until_explicit_calendar_contract",
+        },
         "horizons": horizon_summary,
         "daily_portfolio_curve_next_close": _daily_curve(next_closed),
         "readiness": {

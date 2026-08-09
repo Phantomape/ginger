@@ -7,8 +7,10 @@ import intraday_backtester as intraday_backtester_module
 from intraday_backtester import (
     HORIZONS,
     build_intraday_outcomes,
+    build_scorecard,
     fetch_opend_history,
     load_finalized_decisions,
+    migrate_intraday_outcomes_to_current_rule,
     run_intraday_backtest,
 )
 
@@ -251,6 +253,126 @@ def test_as_of_date_prevents_future_bar_settlement():
     assert by_horizon["rth_close"]["status"] == "closed"
     assert by_horizon["next_close"]["status"] == "pending_horizon_bar"
     assert by_horizon["d3_close"]["status"] == "pending_horizon_bar"
+
+
+def test_partial_execution_session_keeps_close_pending_but_h1_can_settle():
+    rows = [
+        _bar("2026-07-10", "10:05", 101.0),
+        _bar("2026-07-10", "11:05", 102.0),
+        _bar("2026-07-10", "13:05", 103.0),
+    ]
+    outcomes = build_intraday_outcomes(
+        [_decision()],
+        _all_bars(rows),
+        as_of_date="2026-07-10",
+    )
+    by_horizon = {row["horizon"]: row for row in outcomes}
+    assert by_horizon["h1"]["status"] == "closed"
+    assert by_horizon["rth_close"]["status"] == "pending_horizon_bar"
+    assert "horizon_time" not in by_horizon["rth_close"]
+
+
+def test_partial_target_session_keeps_next_close_pending():
+    rows = [
+        _bar("2026-07-10", "10:05", 101.0),
+        _bar("2026-07-10", "15:55", 102.0),
+        _bar("2026-07-13", "09:30", 103.0),
+        _bar("2026-07-13", "13:05", 104.0),
+    ]
+    outcomes = build_intraday_outcomes(
+        [_decision()],
+        _all_bars(rows),
+        as_of_date="2026-07-13",
+    )
+    by_horizon = {row["horizon"]: row for row in outcomes}
+    assert by_horizon["rth_close"]["status"] == "closed"
+    assert by_horizon["next_close"]["status"] == "pending_horizon_bar"
+
+
+def test_missing_expected_session_does_not_shift_horizon_forward():
+    rows = [
+        _bar("2026-07-10", "10:05", 101.0),
+        _bar("2026-07-10", "15:55", 102.0),
+        # Monday 2026-07-13 is the expected next session but is missing.
+        _bar("2026-07-14", "15:55", 104.0),
+        _bar("2026-07-15", "15:55", 105.0),
+    ]
+    outcomes = build_intraday_outcomes(
+        [_decision()],
+        _all_bars(rows),
+        as_of_date="2026-07-15",
+    )
+    by_horizon = {row["horizon"]: row for row in outcomes}
+    assert by_horizon["next_close"]["status"] == "pending_horizon_bar"
+
+
+def test_early_close_without_calendar_contract_fails_closed():
+    rows = [
+        _bar("2026-07-10", "10:05", 101.0),
+        _bar("2026-07-10", "12:55", 102.0),
+    ]
+    outcomes = build_intraday_outcomes(
+        [_decision()],
+        _all_bars(rows),
+        as_of_date="2026-07-10",
+    )
+    rth = next(row for row in outcomes if row["horizon"] == "rth_close")
+    assert rth["status"] == "pending_horizon_bar"
+
+
+def test_migration_demotes_legacy_partial_close_and_drops_derived_values():
+    legacy = {
+        "schema_version": 1,
+        "record_type": "intraday_triage_outcome",
+        "outcome_rule_version": "intraday_triage_counterfactual_outcome_v1",
+        "execution_rule_version": "intraday_triage_next_5m_execution_v1",
+        "observation_id": "obs-legacy",
+        "ticker": "NVDA",
+        "decision_date": "2026-07-23",
+        "decision_timestamp": "2026-07-23 13:00:00",
+        "primary_ticker_day_decision": True,
+        "horizon": "next_close",
+        "status": "closed",
+        "execution_time": "2026-07-23 13:05:00",
+        "execution_price": 100.0,
+        "horizon_time": "2026-07-24 13:05:00",
+        "horizon_price": 101.0,
+        "incremental_pnl_vs_no_adjustment_usd": 25.0,
+        "final_result": {"paper_pnl_usd": 25.0},
+    }
+    migrated = migrate_intraday_outcomes_to_current_rule([legacy])[0]
+    assert migrated["status"] == "pending_horizon_bar"
+    assert migrated["outcome_rule_version"].endswith("_v2")
+    assert "horizon_time" not in migrated
+    assert "horizon_price" not in migrated
+    assert "incremental_pnl_vs_no_adjustment_usd" not in migrated
+    assert "final_result" not in migrated
+
+
+def test_scorecard_defensively_excludes_legacy_partial_close():
+    legacy = {
+        **_decision(),
+        "decision_timestamp": "2026-07-23 13:00:00",
+        "primary_ticker_day_decision": True,
+        "horizon": "next_close",
+        "status": "closed",
+        "execution_time": "2026-07-23 13:05:00",
+        "horizon_time": "2026-07-24 13:05:00",
+        "incremental_pnl_vs_no_adjustment_usd": 25.0,
+    }
+    scorecard = build_scorecard(
+        [legacy],
+        decisions=[_decision()],
+        source_files=[],
+        skipped_sources=[],
+        as_of_date="2026-07-24",
+        price_source={"status": "provided"},
+    )
+    next_close = scorecard["horizons"]["next_close"]
+    assert next_close["raw_closed"] == 0
+    assert next_close["closed"] == 0
+    assert next_close["pending"] == 1
+    assert scorecard["settlement_integrity"]["partial_close_rows_demoted"] == 1
 
 
 def test_missing_position_value_is_not_scored_with_fallback_notional():

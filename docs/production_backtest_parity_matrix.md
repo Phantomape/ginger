@@ -51,9 +51,12 @@ publishes the previously omitted deep-drawdown rebound surface.
 ## USAspending Obligation-Conversion First-Seen Observer
 
 `exp-20260713-007` adds a shared, default-off observer over a locally frozen
-official USAspending transaction snapshot. The historical current snapshot is
-seed-only: agency action dates are regulatory metadata and may not be used as
-policy availability. Availability begins only at the locally persisted
+official USAspending transaction snapshot. `exp-20260727-003` restores its
+daily producer, `exp-20260729-008` journals resumable async jobs, and
+`exp-20260730-001` drains a still-valid prior-day job before the next daily
+request while durably exposing its health. The historical current
+snapshot is seed-only: agency action dates are regulatory metadata and may not
+be used as policy availability. Availability begins only at the locally persisted
 `first_seen_at`. This means local first observation, not proof of first public
 availability. The observation clock must be monotonic, later rows must pass a
 post-initialization `initial_report_date` freshness guard before they can count
@@ -62,23 +65,26 @@ excluded, and the observer remains `trade_enabled=false`.
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |
 | --- | --- | --- | --- | --- |
-| Default-off USAspending obligation-conversion first-seen observer | `usaspending_obligation_observer.py`, `data/non_ohlcv/usaspending_obligation_observer/`, `run.py` | canonical backtests do not consume the historical current snapshot; all initial rows are `seed_not_forward`, action dates cannot backdate availability, and a replay may begin only from persisted local `first_seen_at` rows after the seed that also passed the source-freshness guard | daily run skips unless an explicit local snapshot path is configured, fails soft on missing/invalid snapshots, and persists unseen non-DoD/non-USACE keys with a monotonic local clock; every row remains observer-only and `trade_enabled=false`, so it cannot alter candidates, orders, ranking, sizing, or exits | production may accumulate eligible prospective rows while backtests have no eligible historical rows; performance evaluation remains parked until >=75 settled unique eligible events across >=15 local first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete cash/SPY/QQQ outcomes |
+| Default-off USAspending obligation-conversion first-seen observer | `usaspending_obligation_observer.py`, `data/non_ohlcv/usaspending_obligation_observer/`, `run.py` | canonical backtests do not consume the historical current snapshot; all initial rows are `seed_not_forward`, action dates cannot backdate availability, and a replay may begin only from persisted local `first_seen_at` rows after the seed that also passed the source-freshness guard | when no explicit local override is configured, the daily run requests the fixed official transaction download with a bounded wait, freezes a validated immutable ZIP plus manifest, and binds availability to actual retrieval UTC. Immediately after a job is created, a durable dated receipt journals the `submitted`, polling, and `finished-awaiting-download` phases; transient status or file GET failures therefore resume the same job before another POST, including across a UTC date boundary. Resume uses the receipt's original run date and frozen request only when official HTTPS URLs, bounded status history, monotonic clocks, and the 24-hour TTL all revalidate. A prior job that is still pending blocks the current-day POST; once finished, its original dated snapshot is consumed first, its journal is explicitly retired as completed, and the current day may then proceed. Invalid or expired receipts remain non-ok. Pending, failed, missing, or stale production is persisted as non-ok health and atomically copied into the dated non-OHLCV snapshot, while a fresh zero-event snapshot remains an explicit successful heartbeat. An explicit local snapshot override is still supported. Every row remains observer-only and `trade_enabled=false`, so it cannot alter candidates, orders, ranking, sizing, or exits | production may accumulate eligible prospective rows while backtests have no eligible historical rows; performance evaluation remains parked until >=75 settled unique eligible events across >=15 local first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete cash/SPY/QQQ outcomes |
 
 ## Drugs@FDA Original NDA/BLA First-Seen Observer
 
-`exp-20260713-006` adds a fail-soft, default-off observer over the locally
-frozen official CDER Drugs@FDA ZIP. The observer records original NDA/BLA
+`exp-20260713-006` adds a default-off observer over the official CDER
+Drugs@FDA ZIP; `exp-20260728-001` repairs its silently starved daily producer.
+The observer records original NDA/BLA
 approval rows and assigns `first_seen_at` only when this policy first reads the
 snapshot. The current ZIP is a current-state snapshot, not a historical
 point-in-time archive, so its older approval dates cannot be treated as
 historically observable decisions. The surface has no issuer/ticker mapping
-and therefore cannot generate candidates, signals, or orders. `run.py` invokes
-the observer only when the fixed local official ZIP is present; it never
-downloads the source and failures remain isolated from strategy execution.
+and therefore cannot generate candidates, signals, or orders. The daily path
+now acquires the fixed official FDA ZIP before consuming it, freezes a dated
+snapshot plus manifest, and exposes source freshness separately from process
+success; failures remain isolated from strategy execution but no longer look
+healthy.
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |
 | --- | --- | --- | --- | --- |
-| Default-off CDER original NDA/BLA first-seen observer | `drugsfda_approval_observer.py`, `data/non_ohlcv/drugsfda_approval_observer/raw/drugsatfda_20260710.zip`, `run.py` | canonical backtests do not consume this surface; the current snapshot is not historical PIT evidence, older approval dates may not be backdated to strategy decisions, and no replay is allowed until separately frozen timestamped snapshots and a PIT issuer/ticker relation exist | when the fixed official ZIP exists, daily run idempotently persists first-seen approval observations with `trade_enabled=false`; a missing ZIP skips the call and parse/persistence errors fail soft | production may accumulate prospective first-seen rows while backtests have no eligible rows; no ticker mapping, candidate generation, live/default orders, ranking, sizing, exits, watchlists, or LLM/news policy may consume this observer without a separate shared policy and Gate 1-4 experiment |
+| Default-off CDER original NDA/BLA first-seen observer | `drugsfda_approval_observer.py`, `data/non_ohlcv/drugsfda_approval_observer/raw/`, `run.py` | canonical backtests do not consume this surface; the current snapshot is not historical PIT evidence, older approval dates may not be backdated to strategy decisions, and no replay is allowed until separately frozen timestamped snapshots and a PIT issuer/ticker relation exist | without an explicit local override, the daily path requests the fixed official FDA HTTPS endpoint with bounded timeout and size, validates the required ZIP tables, freezes `drugsatfda_YYYYMMDD.zip` plus `snapshot_manifest_YYYYMMDD.json`, and binds `first_seen_at` to the manifest retrieval UTC. Missing, unavailable, stale, or unverifiable production persists non-ok health; an unchanged valid daily snapshot emits an explicit healthy zero-event heartbeat. Every row remains `trade_enabled=false` | production may accumulate prospective first-seen rows while backtests have no eligible rows; no ticker mapping, candidate generation, live/default orders, ranking, sizing, exits, watchlists, or LLM/news policy may consume this observer without a separate shared policy and Gate 1-4 experiment |
 
 ## Rejected FDA Orange Book Monthly NEWA Release Basket
 

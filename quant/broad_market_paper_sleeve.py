@@ -54,7 +54,21 @@ LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 HIGH_VOLATILITY_RULE_VERSION = "broad_market_high_volatility_notional_v1"
 TREND_PERSISTENCE_RULE_VERSION = "broad_market_trend_persistence_notional_v1"
 UNIVERSE_STATE_FEED_RULE_VERSION = "broad_market_universe_state_observation_feed_v1"
+COHORT_CAPACITY_RULE_VERSION = "broad_market_clean_generation_capacity_v1"
+CLEAN_FORWARD_COHORT = "clean_forward"
+EXPECTED_CLEAN_FORWARD_GENERATION = "broad_market_clean_forward_v1"
+EXPECTED_CLEAN_FORWARD_CUTOFF = "2026-07-17"
 STATE_SCHEMA_VERSION = 1
+
+CLEAN_FORWARD_PROVENANCE_FIELDS = (
+    "membership_as_of",
+    "membership_hash",
+    "membership_snapshot_hash",
+    "membership_ledger_hash",
+    "clean_cutoff",
+    "forward_generation",
+)
+CLEAN_FORWARD_ROW_FIELDS = ("cohort", *CLEAN_FORWARD_PROVENANCE_FIELDS)
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("broad_market_paper_snapshots")
@@ -196,6 +210,14 @@ def empty_broad_market_paper_sleeve_snapshot(as_of: str, reason: str) -> dict[st
         "unrealized_pnl": 0.0,
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "data_source": {"status": reason},
+        "cohort_capacity": {
+            "rule_version": COHORT_CAPACITY_RULE_VERSION,
+            "mode": "unavailable",
+            "clean_context_active": False,
+            "max_active_positions": int(DEFAULT_CONFIG["max_active_positions"]),
+            "starved": False,
+            "starvation_reason": None,
+        },
         "production_impact": _production_impact(),
         "error": reason,
     }
@@ -383,6 +405,7 @@ def build_broad_market_paper_sleeve_snapshot(
         for ticker, rows in (ohlcv_by_ticker or {}).items()
     }
     loaded_universe = _normalise_candidate_universe(candidate_universe)
+    clean_context = _clean_forward_context(loaded_universe, as_of=as_of_date)
     tradeable = {str(ticker).upper() for ticker in (current_tradeable_universe or set())}
     current, opens = _exact_asof_price_maps(
         rows_by_ticker,
@@ -423,6 +446,7 @@ def build_broad_market_paper_sleeve_snapshot(
             str(row.get("ticker") or "").upper()
             for row in working_state.get("open_positions") or []
         },
+        clean_context=clean_context,
         config=cfg,
     )
     new_pending = _add_candidates(
@@ -430,6 +454,7 @@ def build_broad_market_paper_sleeve_snapshot(
         candidates,
         as_of=as_of_date,
         config=cfg,
+        clean_context=clean_context,
     )
 
     snapshot = _snapshot_payload(
@@ -442,6 +467,7 @@ def build_broad_market_paper_sleeve_snapshot(
         filled_today=filled_today,
         closed_today=closed_today,
         skipped_today=skipped_today,
+        clean_context=clean_context,
     )
     if persist:
         save_broad_market_paper_state(working_state, state_path)
@@ -457,6 +483,7 @@ def build_broad_market_paper_candidates(
     ticker_metadata: dict[str, dict[str, Any]] | None = None,
     current_tradeable_universe: set[str] | None = None,
     open_position_tickers: set[str] | None = None,
+    clean_context: dict[str, Any] | None = None,
     config: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     cfg = _config(config)
@@ -493,7 +520,12 @@ def build_broad_market_paper_candidates(
             features.append(feature)
     features = select_broad_market_features(features, config=cfg)
     return [
-        _candidate_from_feature(feature, source_rank=rank, config=cfg)
+        _candidate_from_feature(
+            feature,
+            source_rank=rank,
+            config=cfg,
+            clean_context=clean_context,
+        )
         for rank, feature in enumerate(features, start=1)
     ]
 
@@ -739,6 +771,7 @@ def _candidate_from_feature(
     *,
     source_rank: int,
     config: dict[str, Any],
+    clean_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     ticker = str(feature["ticker"]).upper()
     decision_id = f"{SLEEVE_NAME}:{RULE_VERSION}:{feature['date']}:{ticker}"
@@ -747,7 +780,7 @@ def _candidate_from_feature(
         feature,
         config,
     )
-    return {
+    candidate = {
         "decision_id": decision_id,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -801,6 +834,8 @@ def _candidate_from_feature(
         "sector_map_rule_version": SECTOR_MAP_RULE_VERSION,
         **_sector_fields(ticker),
     }
+    candidate.update(_cohort_provenance_payload(clean_context))
+    return candidate
 
 
 def broad_market_rank_notional_multiplier(
@@ -1025,6 +1060,7 @@ def _fill_pending_entries(
             "paper_status": "open",
             "source_candidate": entry.get("candidate") or {},
         }
+        position.update(_cohort_provenance_payload(entry))
         if current is not None:
             position["unrealized_pnl"] = _pnl(entry_open, current, notional, cost)
         state["open_positions"].append(position)
@@ -1033,22 +1069,360 @@ def _fill_pending_entries(
     return filled_today, skipped_today
 
 
+def _clean_forward_context(
+    data_source: dict[str, Any] | None,
+    *,
+    as_of: str,
+) -> dict[str, Any] | None:
+    """Return the persisted forward-membership context, or legacy mode.
+
+    Capacity is isolated only when the feed supplies the complete immutable
+    membership identity.  A future-dated membership snapshot fails closed;
+    feeds before the declared clean cutoff retain the historical global-slot
+    behavior.
+    """
+    if not isinstance(data_source, dict):
+        return None
+    as_of_date = _date10(as_of)
+    clean_cutoff = _date10(data_source.get("clean_cutoff"))
+    feed_as_of = _date10(data_source.get("as_of"))
+    membership_as_of = _date10(data_source.get("membership_as_of"))
+    forward_generation = str(data_source.get("forward_generation") or "").strip()
+    ledger_status = str(data_source.get("membership_ledger_status") or "").strip()
+    hashes = {
+        key: str(data_source.get(key) or "").strip()
+        for key in (
+            "membership_hash",
+            "membership_snapshot_hash",
+            "membership_ledger_hash",
+        )
+    }
+    if (
+        not as_of_date
+        or not clean_cutoff
+        or clean_cutoff != EXPECTED_CLEAN_FORWARD_CUTOFF
+        or as_of_date < clean_cutoff
+        or not membership_as_of
+        or membership_as_of != as_of_date
+        or feed_as_of != as_of_date
+        or forward_generation != EXPECTED_CLEAN_FORWARD_GENERATION
+        or ledger_status not in {"appended", "duplicate"}
+        or not all(hashes.values())
+        or any(
+            len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value.lower())
+            for value in hashes.values()
+        )
+    ):
+        return None
+    membership = data_source.get("membership")
+    if isinstance(membership, dict):
+        nested_pairs = {
+            "effective_as_of": membership_as_of,
+            "membership_hash": hashes["membership_hash"],
+            "snapshot_hash": hashes["membership_snapshot_hash"],
+            "ledger_hash": hashes["membership_ledger_hash"],
+            "ledger_status": ledger_status,
+            "clean_cutoff": clean_cutoff,
+            "forward_generation": forward_generation,
+        }
+        if any(
+            key in membership
+            and str(membership.get(key) or "").strip() != str(expected)
+            for key, expected in nested_pairs.items()
+        ):
+            return None
+    return {
+        "cohort": CLEAN_FORWARD_COHORT,
+        "membership_as_of": membership_as_of,
+        **hashes,
+        "clean_cutoff": clean_cutoff,
+        "forward_generation": forward_generation,
+    }
+
+
+def _cohort_provenance_payload(
+    source: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not isinstance(source, dict):
+        return {}
+    return {
+        key: deepcopy(source.get(key))
+        for key in CLEAN_FORWARD_ROW_FIELDS
+        if source.get(key) is not None
+    }
+
+
+def _has_complete_membership_provenance(row: dict[str, Any]) -> bool:
+    return bool(
+        row.get("cohort") == CLEAN_FORWARD_COHORT
+        and all(str(row.get(key) or "").strip() for key in CLEAN_FORWARD_PROVENANCE_FIELDS)
+    )
+
+
+def _row_matches_clean_context(
+    row: dict[str, Any],
+    clean_context: dict[str, Any],
+) -> bool:
+    return bool(
+        _has_complete_membership_provenance(row)
+        and str(row.get("forward_generation"))
+        == str(clean_context.get("forward_generation"))
+        and _date10(row.get("clean_cutoff"))
+        == _date10(clean_context.get("clean_cutoff"))
+    )
+
+
+def _is_clean_evidence_row(
+    row: dict[str, Any],
+) -> bool:
+    created_asof = _date10(row.get("created_asof"))
+    membership_as_of = _date10(row.get("membership_as_of"))
+    hashes = [
+        str(row.get(key) or "").strip()
+        for key in (
+            "membership_hash",
+            "membership_snapshot_hash",
+            "membership_ledger_hash",
+        )
+    ]
+    return bool(
+        created_asof
+        and created_asof >= EXPECTED_CLEAN_FORWARD_CUTOFF
+        and membership_as_of == created_asof
+        and _has_complete_membership_provenance(row)
+        and _date10(row.get("clean_cutoff")) == EXPECTED_CLEAN_FORWARD_CUTOFF
+        and str(row.get("forward_generation"))
+        == EXPECTED_CLEAN_FORWARD_GENERATION
+        and all(
+            len(value) == 64
+            and all(
+                character in "0123456789abcdef"
+                for character in value.lower()
+            )
+            for value in hashes
+        )
+    )
+
+
+def _state_has_stored_clean_rows(state: dict[str, Any]) -> bool:
+    return any(
+        isinstance(row, dict)
+        and _has_complete_membership_provenance(row)
+        and _date10(row.get("clean_cutoff")) == EXPECTED_CLEAN_FORWARD_CUTOFF
+        and str(row.get("forward_generation"))
+        == EXPECTED_CLEAN_FORWARD_GENERATION
+        for bucket in (
+            "pending_entries",
+            "open_positions",
+            "closed_positions",
+            "skipped_entries",
+        )
+        for row in state.get(bucket) or []
+    )
+
+
+def _active_cohort_counts(
+    state: dict[str, Any],
+    clean_context: dict[str, Any],
+) -> dict[str, int]:
+    counts = {
+        "total_active_count": 0,
+        "capacity_consuming_active_count": 0,
+        "capacity_consuming_pending_count": 0,
+        "capacity_consuming_open_count": 0,
+        "same_generation_provenanced_active_count": 0,
+        "same_generation_provenanced_pending_count": 0,
+        "same_generation_provenanced_open_count": 0,
+        "legacy_carry_active_count": 0,
+        "legacy_carry_pending_count": 0,
+        "legacy_carry_open_count": 0,
+        "post_cutoff_unattributed_active_count": 0,
+        "post_cutoff_unattributed_pending_count": 0,
+        "post_cutoff_unattributed_open_count": 0,
+        "unknown_created_asof_active_count": 0,
+        "different_clean_context_active_count": 0,
+    }
+    clean_cutoff = _date10(clean_context.get("clean_cutoff"))
+    for bucket, bucket_label in (
+        ("pending_entries", "pending"),
+        ("open_positions", "open"),
+    ):
+        for row in state.get(bucket) or []:
+            if not isinstance(row, dict):
+                continue
+            counts["total_active_count"] += 1
+            created_asof = _date10(row.get("created_asof"))
+            if not created_asof:
+                counts["unknown_created_asof_active_count"] += 1
+                counts["capacity_consuming_active_count"] += 1
+                counts[f"capacity_consuming_{bucket_label}_count"] += 1
+            elif created_asof < clean_cutoff:
+                counts["legacy_carry_active_count"] += 1
+                counts[f"legacy_carry_{bucket_label}_count"] += 1
+            elif _row_matches_clean_context(row, clean_context):
+                counts["same_generation_provenanced_active_count"] += 1
+                counts[
+                    f"same_generation_provenanced_{bucket_label}_count"
+                ] += 1
+                counts["capacity_consuming_active_count"] += 1
+                counts[f"capacity_consuming_{bucket_label}_count"] += 1
+            elif _has_complete_membership_provenance(row):
+                counts["different_clean_context_active_count"] += 1
+                counts["capacity_consuming_active_count"] += 1
+                counts[f"capacity_consuming_{bucket_label}_count"] += 1
+            else:
+                # Safety bridge for rows admitted after the cutoff by an older
+                # code version.  They cannot be treated as evidence, but they
+                # still consume capacity until they settle so the repair cannot
+                # create accidental over-allocation.
+                counts["post_cutoff_unattributed_active_count"] += 1
+                counts[
+                    f"post_cutoff_unattributed_{bucket_label}_count"
+                ] += 1
+                counts["capacity_consuming_active_count"] += 1
+                counts[f"capacity_consuming_{bucket_label}_count"] += 1
+    return counts
+
+
+def _cohort_capacity_diagnostics(
+    state: dict[str, Any],
+    *,
+    config: dict[str, Any],
+    clean_context: dict[str, Any] | None,
+    candidates: list[dict[str, Any]],
+    new_pending: list[dict[str, Any]],
+) -> dict[str, Any]:
+    max_active = int(config["max_active_positions"])
+    admitted_count = len(new_pending)
+    candidate_count = len(candidates)
+    total_active_after = len(state.get("pending_entries") or []) + len(
+        state.get("open_positions") or []
+    )
+    total_active_before = max(0, total_active_after - admitted_count)
+    stored_clean_rows_present = _state_has_stored_clean_rows(state)
+    admission_blocked_without_current_context = bool(
+        clean_context is None and stored_clean_rows_present
+    )
+
+    if clean_context is None:
+        active_after = total_active_after
+        counts: dict[str, Any] = {
+            "total_active_count": total_active_after,
+            "legacy_global_active_count": total_active_after,
+            "capacity_consuming_active_count": total_active_after,
+            "capacity_consuming_pending_count": len(
+                state.get("pending_entries") or []
+            ),
+            "capacity_consuming_open_count": len(state.get("open_positions") or []),
+            "same_generation_provenanced_active_count": 0,
+            "legacy_carry_active_count": 0,
+            "post_cutoff_unattributed_active_count": 0,
+            "unknown_created_asof_active_count": 0,
+            "different_clean_context_active_count": 0,
+        }
+        mode = "legacy_global"
+    else:
+        counts = _active_cohort_counts(state, clean_context)
+        counts["legacy_global_active_count"] = counts["total_active_count"]
+        active_after = counts["capacity_consuming_active_count"]
+        mode = "clean_forward_generation"
+
+    active_before = max(0, active_after - admitted_count)
+    remaining_before = max(0, max_active - active_before)
+    remaining_after = max(0, max_active - active_after)
+    starved = bool(
+        candidate_count
+        and admitted_count == 0
+        and (remaining_before == 0 or admission_blocked_without_current_context)
+    )
+    capacity_limited = bool(
+        candidate_count > admitted_count and remaining_after == 0
+    )
+    return {
+        "rule_version": COHORT_CAPACITY_RULE_VERSION,
+        "mode": mode,
+        "clean_context_active": clean_context is not None,
+        "cohort": (clean_context or {}).get("cohort"),
+        "clean_cutoff": (clean_context or {}).get("clean_cutoff"),
+        "forward_generation": (clean_context or {}).get("forward_generation"),
+        "membership_as_of": (clean_context or {}).get("membership_as_of"),
+        "max_active_positions": max_active,
+        "candidate_count": candidate_count,
+        "admitted_count": admitted_count,
+        "not_admitted_candidate_count": max(0, candidate_count - admitted_count),
+        "capacity_consuming_active_count_before_admission": active_before,
+        "capacity_consuming_active_count": active_after,
+        "remaining_capacity_before_admission": remaining_before,
+        "remaining_capacity": remaining_after,
+        "legacy_global_active_count_before_admission": total_active_before,
+        "legacy_global_remaining_capacity_before_admission": max(
+            0, max_active - total_active_before
+        ),
+        "legacy_carry_starvation_bypassed": bool(
+            clean_context is not None
+            and total_active_before >= max_active
+            and remaining_before > 0
+            and admitted_count > 0
+        ),
+        "stored_clean_rows_present": stored_clean_rows_present,
+        "admission_blocked_without_current_context": (
+            admission_blocked_without_current_context
+        ),
+        "admission_blocked_reason": (
+            "missing_current_clean_membership_context"
+            if admission_blocked_without_current_context
+            else None
+        ),
+        "capacity_limited": capacity_limited,
+        "starved": starved,
+        "starvation_reason": (
+            "missing_current_clean_membership_context"
+            if starved and admission_blocked_without_current_context
+            else "clean_cohort_at_capacity"
+            if starved and clean_context is not None
+            else "legacy_global_capacity_at_limit"
+            if starved
+            else None
+        ),
+        **counts,
+    }
+
+
 def _add_candidates(
     state: dict[str, Any],
     candidates: list[dict[str, Any]],
     *,
     as_of: str,
     config: dict[str, Any],
+    clean_context: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     if not config.get("paper_enabled", True):
         return []
-    active_count = len(state["open_positions"]) + len(state["pending_entries"])
+    if clean_context is None and _state_has_stored_clean_rows(state):
+        return []
+    if clean_context is None:
+        active_count = len(state["open_positions"]) + len(state["pending_entries"])
+    else:
+        active_count = _active_cohort_counts(state, clean_context)[
+            "capacity_consuming_active_count"
+        ]
     capacity = max(0, int(config["max_active_positions"]) - active_count)
     if capacity <= 0:
         return []
     existing = _existing_decision_ids(state)
     new_entries = []
-    for candidate in sorted(candidates, key=_candidate_sort_key)[:capacity]:
+    ranked_candidates = sorted(candidates, key=_candidate_sort_key)
+    if clean_context is None:
+        ranked_candidates = ranked_candidates[:capacity]
+    for candidate in ranked_candidates:
+        if len(new_entries) >= capacity:
+            break
+        if clean_context is not None and not _row_matches_clean_context(
+            candidate,
+            clean_context,
+        ):
+            continue
         decision_id = candidate["decision_id"]
         if decision_id in existing:
             continue
@@ -1064,6 +1438,7 @@ def _add_candidates(
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
+        entry.update(_cohort_provenance_payload(candidate))
         state["pending_entries"].append(entry)
         new_entries.append(entry)
         existing.add(decision_id)
@@ -1081,19 +1456,78 @@ def _snapshot_payload(
     filled_today: list[dict[str, Any]],
     closed_today: list[dict[str, Any]],
     skipped_today: list[dict[str, Any]],
+    clean_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     closed = [row for row in state["closed_positions"] if isinstance(row, dict)]
     open_positions = [row for row in state["open_positions"] if isinstance(row, dict)]
     realized = round(sum(_money(row.get("pnl")) for row in closed), 2)
     unrealized = round(sum(_money(row.get("unrealized_pnl")) for row in open_positions), 2)
-    gate = _forward_paper_gate(closed, config)
+    stored_clean_rows_present = _state_has_stored_clean_rows(state)
+    clean_evidence_scope_active = bool(
+        clean_context is not None or stored_clean_rows_present
+    )
+    if not clean_evidence_scope_active:
+        gate_closed = closed
+        report_candidates = candidates
+        report_pending = state["pending_entries"]
+        report_open = open_positions
+        report_closed = closed
+        report_skipped = state["skipped_entries"]
+    else:
+        gate_closed = [
+            row for row in closed if _is_clean_evidence_row(row)
+        ]
+        report_candidates = [
+            row
+            for row in candidates
+            if clean_context is not None
+            and _row_matches_clean_context(row, clean_context)
+        ]
+        report_pending = [
+            row
+            for row in state["pending_entries"]
+            if isinstance(row, dict) and _is_clean_evidence_row(row)
+        ]
+        report_open = [
+            row
+            for row in open_positions
+            if _is_clean_evidence_row(row)
+        ]
+        report_closed = gate_closed
+        report_skipped = [
+            row
+            for row in state["skipped_entries"]
+            if isinstance(row, dict) and _is_clean_evidence_row(row)
+        ]
+    gate = _forward_paper_gate(gate_closed, config)
     replacement_value_report = build_broad_market_replacement_value_report(
-        candidates=candidates,
-        pending_entries=state["pending_entries"],
-        open_positions=open_positions,
-        closed_positions=closed,
-        skipped_entries=state["skipped_entries"],
+        candidates=report_candidates,
+        pending_entries=report_pending,
+        open_positions=report_open,
+        closed_positions=report_closed,
+        skipped_entries=report_skipped,
         config=config,
+    )
+    evidence_scope = (
+        "clean_forward_generation"
+        if clean_evidence_scope_active
+        else "legacy_global"
+    )
+    gate["cohort_scope"] = evidence_scope
+    gate["excluded_non_current_clean_closed_count"] = len(closed) - len(gate_closed)
+    replacement_value_report["cohort_scope"] = evidence_scope
+    replacement_value_report["excluded_non_current_clean_counts"] = {
+        "pending": len(state["pending_entries"]) - len(report_pending),
+        "open": len(open_positions) - len(report_open),
+        "closed": len(closed) - len(report_closed),
+        "skipped": len(state["skipped_entries"]) - len(report_skipped),
+    }
+    cohort_capacity = _cohort_capacity_diagnostics(
+        state,
+        config=config,
+        clean_context=clean_context,
+        candidates=candidates,
+        new_pending=new_pending,
     )
     return {
         "schema_version": STATE_SCHEMA_VERSION,
@@ -1117,6 +1551,29 @@ def _snapshot_payload(
         "unrealized_pnl": unrealized,
         "ticker_summary": _ticker_summary(closed, open_positions, candidates),
         "replacement_value_report": replacement_value_report,
+        "cohort_evidence": {
+            "scope": evidence_scope,
+            "clean_context_active": clean_context is not None,
+            "stored_clean_rows_present": stored_clean_rows_present,
+            "forward_generation": (
+                (clean_context or {}).get("forward_generation")
+                or EXPECTED_CLEAN_FORWARD_GENERATION
+                if clean_evidence_scope_active
+                else None
+            ),
+            "clean_cutoff": (
+                (clean_context or {}).get("clean_cutoff")
+                or EXPECTED_CLEAN_FORWARD_CUTOFF
+                if clean_evidence_scope_active
+                else None
+            ),
+            "gate_closed_count": len(gate_closed),
+            "excluded_non_current_clean_closed_count": len(closed)
+            - len(gate_closed),
+            "report_pending_count": len(report_pending),
+            "report_open_count": len(report_open),
+            "report_closed_count": len(report_closed),
+        },
         "parameters": dict(config),
         "data_source": {
             "status": data_source.get("status"),
@@ -1136,6 +1593,7 @@ def _snapshot_payload(
             "clean_cutoff": data_source.get("clean_cutoff"),
             "forward_generation": data_source.get("forward_generation"),
         },
+        "cohort_capacity": cohort_capacity,
         "candidates": deepcopy(candidates),
         "new_pending_entries": deepcopy(new_pending),
         "filled_entries": deepcopy(filled_today),

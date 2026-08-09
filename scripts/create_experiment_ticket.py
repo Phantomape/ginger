@@ -1463,6 +1463,14 @@ def main(description=__doc__):
     parser.add_argument("--hypothesis", required=True)
     parser.add_argument("--change-type", required=True)
     parser.add_argument(
+        "--promotion-request",
+        help=(
+            "Tracked alpha promotion request produced after outcome-blind "
+            "D0-D3 panel verification. Required for new "
+            "alpha_search, alpha_discovery, and universe_scout tickets."
+        ),
+    )
+    parser.add_argument(
         "--single-causal-variable",
         "--decision-variable",
         dest="single_causal_variable",
@@ -1673,6 +1681,7 @@ def main(description=__doc__):
         file_slug=args.file_slug,
         exclusive_scope_ok=args.exclusive_scope_ok,
         prediction=prediction,
+        promotion_request=args.promotion_request,
         timeout_seconds=args.lock_timeout_seconds,
     )
     _attach_novelty(ticket, novelty)

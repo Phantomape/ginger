@@ -49,6 +49,7 @@ PIT_STATUSES = frozenset(
         "snapshot_only",
         "pit_forward_unsettled",
         "settled_forward_sufficient",
+        "research_pit",
         "canonical_pit",
     }
 )
@@ -328,6 +329,497 @@ def _string_tuple(
     if required and not normalised:
         _fail("nonempty_list_required", path, "must contain at least one value")
     return tuple(sorted(normalised))
+
+
+_RESEARCH_REF_RE = re.compile(r"res-\d{8}-[a-z0-9][a-z0-9._-]*")
+
+_AMENDMENT_REASON = "outcome_blind_contract_completion"
+_AMENDMENT_LINEAGE_FIELDS = frozenset(
+    {
+        "parent_candidate_id",
+        "parent_candidate_snapshot",
+        "parent_candidate_snapshot_hash",
+        "parent_selection_scope_id",
+        "amendment_reason",
+        "changed_fields",
+        "parent_outcome_accessed",
+        "parent_experiment_id",
+        "declared_at",
+    }
+)
+_ABANDONED_ANCESTOR_FIELDS = frozenset(
+    {
+        "ancestor_candidate_id",
+        "attestation_artifact",
+        "attestation_artifact_hash",
+    }
+)
+AMENDMENT_CHANGED_FIELD_ALLOWLIST = frozenset(
+    {
+        "source_readiness_snapshot",
+        "baseline.comparator_allocation_attachment",
+        "baseline.comparator_allocation_attachment_hash",
+        "treatment.endpoint_preflight_attachment",
+        "treatment.endpoint_preflight_attachment_hash",
+        "next_machine_action",
+    }
+)
+_CANDIDATE_ID_RE = re.compile(r"cand-[a-z0-9][a-z0-9._-]*")
+_SELECTION_SCOPE_ID_RE = re.compile(r"scope-[a-z0-9][a-z0-9._-]*")
+_EXPERIMENT_ID_RE = re.compile(r"exp-\d{8}-\d{3}")
+_QUANTITATIVE_REOPEN_AXIS = "settled_forward_growth"
+_QUANTITATIVE_REOPEN_PROOF_FIELDS = frozenset(
+    {
+        "schema_version",
+        "axis",
+        "readiness_artifact_path",
+        "readiness_artifact_sha256",
+        "readiness_generated_at",
+        "readiness_lane",
+        "readiness_lane_hash",
+        "counters_hash",
+        "thresholds_hash",
+        "current_counter_key",
+        "baseline_counter_key",
+        "threshold_key",
+        "current_count",
+        "baseline_count",
+        "threshold_count",
+        "minimum_relative_growth_bps",
+        "minimum_absolute_growth",
+        "historical_record_id",
+        "historical_record_hash",
+        "historical_family_key",
+        "representative_experiment_id",
+        "reopened_surface_id",
+        "policy_hash",
+        "fingerprint_hash",
+    }
+)
+
+
+def _research_refs(value: Any, *, path: str) -> tuple[str, ...]:
+    """Canonical research-digest references carried by a candidate snapshot.
+
+    References are readiness/provenance metadata rather than hypothesis
+    identity.  They are therefore included in a candidate snapshot hash, but
+    deliberately excluded from :meth:`HypothesisCandidate.semantic_payload`.
+    """
+
+    refs = _string_tuple(value, path=path, required=False, lower=True)
+    for index, ref in enumerate(refs):
+        if _RESEARCH_REF_RE.fullmatch(ref) is None:
+            _fail(
+                "invalid_research_ref",
+                f"{path}[{index}]",
+                "must match res-YYYYMMDD-<slug>",
+            )
+    return refs
+
+
+def _abandoned_ancestors(
+    value: Any, *, parent_candidate_id: str, path: str
+) -> tuple[Mapping[str, Any], ...] | None:
+    """Validate the optional attested abandoned-ancestor declaration shape.
+
+    Each entry names one never-reserved discovery candidate of the same abort
+    chain and binds it to a hash-bound repository pre-reservation block
+    artifact.  This layer validates only the immutable declaration; the D3
+    engine authenticates the artifact content, the bound history records, and
+    the never-reached-reservation requirement before waiving anything.
+    """
+
+    if value is None:
+        return None
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        _fail(
+            "abandoned_ancestors_invalid",
+            path,
+            "must be a list of attestation objects",
+        )
+    if not value:
+        _fail(
+            "abandoned_ancestors_empty",
+            path,
+            "declare at least one attested ancestor or omit the field",
+        )
+    entries: list[Mapping[str, Any]] = []
+    seen: set[str] = set()
+    for index, raw_entry in enumerate(value):
+        entry_path = f"{path}[{index}]"
+        entry = _mapping(raw_entry, path=entry_path)
+        _reject_outcomes(entry, path=entry_path)
+        _check_fields(entry, required=_ABANDONED_ANCESTOR_FIELDS, path=entry_path)
+        ancestor_candidate_id = _text(
+            entry["ancestor_candidate_id"],
+            path=f"{entry_path}.ancestor_candidate_id",
+        )
+        if _CANDIDATE_ID_RE.fullmatch(ancestor_candidate_id) is None:
+            _fail(
+                "invalid_candidate_id",
+                f"{entry_path}.ancestor_candidate_id",
+                "must match cand-<lowercase identifier>",
+            )
+        if ancestor_candidate_id == parent_candidate_id:
+            _fail(
+                "abandoned_ancestor_is_parent",
+                f"{entry_path}.ancestor_candidate_id",
+                "the authenticated parent is waived by the lineage itself",
+            )
+        if ancestor_candidate_id in seen:
+            _fail(
+                "abandoned_ancestor_duplicate",
+                f"{entry_path}.ancestor_candidate_id",
+                "each ancestor may be attested at most once",
+            )
+        seen.add(ancestor_candidate_id)
+        attestation_artifact = _text(
+            entry["attestation_artifact"],
+            path=f"{entry_path}.attestation_artifact",
+        ).replace("\\", "/")
+        attestation_artifact_hash = _sha256_digest(
+            entry["attestation_artifact_hash"],
+            path=f"{entry_path}.attestation_artifact_hash",
+        )
+        entries.append(
+            MappingProxyType(
+                {
+                    "ancestor_candidate_id": ancestor_candidate_id,
+                    "attestation_artifact": attestation_artifact,
+                    "attestation_artifact_hash": attestation_artifact_hash,
+                }
+            )
+        )
+    entries.sort(key=lambda row: row["ancestor_candidate_id"])
+    return tuple(entries)
+
+
+def _amendment_lineage(value: Any, *, path: str) -> Mapping[str, Any] | None:
+    """Validate an outcome-blind, evaluation-artifact-only amendment lineage.
+
+    The embedded parent is preserved as immutable canonical JSON.  Recursive
+    candidate validation and the parent/child semantic diff belong to the
+    preflight engine, but this contract binds the exact parent document and
+    refuses nested amendments or any outcome-bearing payload.
+    """
+
+    if value is None:
+        return None
+    raw = _mapping(value, path=path)
+    _reject_outcomes(raw, path=path)
+    _check_fields(
+        raw,
+        required=_AMENDMENT_LINEAGE_FIELDS,
+        optional=("abandoned_ancestors",),
+        path=path,
+    )
+
+    parent_candidate_id = _text(
+        raw["parent_candidate_id"], path=f"{path}.parent_candidate_id"
+    )
+    if _CANDIDATE_ID_RE.fullmatch(parent_candidate_id) is None:
+        _fail(
+            "invalid_candidate_id",
+            f"{path}.parent_candidate_id",
+            "must match cand-<lowercase identifier>",
+        )
+
+    parent_selection_scope_id = _text(
+        raw["parent_selection_scope_id"],
+        path=f"{path}.parent_selection_scope_id",
+    )
+    if _SELECTION_SCOPE_ID_RE.fullmatch(parent_selection_scope_id) is None:
+        _fail(
+            "invalid_selection_scope_id",
+            f"{path}.parent_selection_scope_id",
+            "must match scope-<lowercase identifier>",
+        )
+
+    amendment_reason = _text(
+        raw["amendment_reason"], path=f"{path}.amendment_reason"
+    )
+    if amendment_reason != _AMENDMENT_REASON:
+        _fail(
+            "invalid_amendment_reason",
+            f"{path}.amendment_reason",
+            f"must equal {_AMENDMENT_REASON!r}",
+        )
+
+    changed_fields = _string_tuple(
+        raw["changed_fields"], path=f"{path}.changed_fields"
+    )
+    disallowed_fields = sorted(
+        set(changed_fields) - AMENDMENT_CHANGED_FIELD_ALLOWLIST
+    )
+    if disallowed_fields:
+        _fail(
+            "amendment_field_not_allowed",
+            f"{path}.changed_fields",
+            "only outcome-blind evaluation-artifact completion may be amended; "
+            f"disallowed: {', '.join(disallowed_fields)}",
+        )
+
+    parent_outcome_accessed = _boolean(
+        raw["parent_outcome_accessed"],
+        path=f"{path}.parent_outcome_accessed",
+    )
+    if parent_outcome_accessed:
+        _fail(
+            "parent_outcome_accessed_not_false",
+            f"{path}.parent_outcome_accessed",
+            "must be false for an outcome-blind amendment",
+        )
+    if raw["parent_experiment_id"] is not None:
+        _fail(
+            "parent_experiment_id_not_null",
+            f"{path}.parent_experiment_id",
+            "must be null because amendments are pre-reservation only",
+        )
+
+    parent_snapshot_raw = _mapping(
+        raw["parent_candidate_snapshot"],
+        path=f"{path}.parent_candidate_snapshot",
+    )
+    if "amendment_lineage" in parent_snapshot_raw:
+        _fail(
+            "nested_amendment_lineage",
+            f"{path}.parent_candidate_snapshot.amendment_lineage",
+            "the parent snapshot must not itself contain amendment_lineage",
+        )
+    _reject_outcomes(
+        parent_snapshot_raw, path=f"{path}.parent_candidate_snapshot"
+    )
+    if "candidate_id" not in parent_snapshot_raw:
+        _fail(
+            "missing_field",
+            f"{path}.parent_candidate_snapshot",
+            "missing required field: candidate_id",
+        )
+    snapshot_candidate_id = _text(
+        parent_snapshot_raw["candidate_id"],
+        path=f"{path}.parent_candidate_snapshot.candidate_id",
+    )
+    if snapshot_candidate_id != parent_candidate_id:
+        _fail(
+            "parent_candidate_id_mismatch",
+            f"{path}.parent_candidate_snapshot.candidate_id",
+            "must match amendment_lineage.parent_candidate_id",
+        )
+    parent_snapshot = _frozen_json(
+        parent_snapshot_raw, path=f"{path}.parent_candidate_snapshot"
+    )
+    parent_snapshot_hash = _sha256_digest(
+        raw["parent_candidate_snapshot_hash"],
+        path=f"{path}.parent_candidate_snapshot_hash",
+    )
+    actual_parent_snapshot_hash = canonical_hash(parent_snapshot)
+    if parent_snapshot_hash != actual_parent_snapshot_hash:
+        _fail(
+            "parent_candidate_snapshot_hash_mismatch",
+            f"{path}.parent_candidate_snapshot_hash",
+            f"expected {actual_parent_snapshot_hash}",
+        )
+
+    declared_at = _known_at(raw["declared_at"], path=f"{path}.declared_at")
+    if len(declared_at) == 10:
+        _fail(
+            "timestamp_required",
+            f"{path}.declared_at",
+            "must be a timezone-aware ISO datetime, not a date",
+        )
+
+    abandoned_ancestors = _abandoned_ancestors(
+        raw.get("abandoned_ancestors"),
+        parent_candidate_id=parent_candidate_id,
+        path=f"{path}.abandoned_ancestors",
+    )
+
+    result = {
+        "parent_candidate_id": parent_candidate_id,
+        "parent_candidate_snapshot": parent_snapshot,
+        "parent_candidate_snapshot_hash": parent_snapshot_hash,
+        "parent_selection_scope_id": parent_selection_scope_id,
+        "amendment_reason": amendment_reason,
+        "changed_fields": changed_fields,
+        "parent_outcome_accessed": False,
+        "parent_experiment_id": None,
+        "declared_at": declared_at,
+    }
+    if abandoned_ancestors is not None:
+        result["abandoned_ancestors"] = abandoned_ancestors
+    return MappingProxyType(result)
+
+
+def _quantitative_reopen_proof(
+    value: Any, *, path: str
+) -> Mapping[str, Any] | None:
+    """Normalise the closed, outcome-blind Axis-C proof envelope.
+
+    This layer validates only the immutable declaration shape.  The D3 engine
+    reopens the referenced readiness artifact and historical snapshot before
+    accepting any waiver; a well-formed declaration is never sufficient by
+    itself.
+    """
+
+    if value is None:
+        return None
+    raw = _mapping(value, path=path)
+    _reject_outcomes(raw, path=path)
+    _check_fields(raw, required=_QUANTITATIVE_REOPEN_PROOF_FIELDS, path=path)
+    if raw["schema_version"] != 1 or isinstance(raw["schema_version"], bool):
+        _fail(
+            "quantitative_reopen_schema_mismatch",
+            f"{path}.schema_version",
+            "must equal 1",
+        )
+    axis = _text(raw["axis"], path=f"{path}.axis", lower=True)
+    if axis != _QUANTITATIVE_REOPEN_AXIS:
+        _fail(
+            "quantitative_reopen_axis_mismatch",
+            f"{path}.axis",
+            f"must equal {_QUANTITATIVE_REOPEN_AXIS!r}",
+        )
+    locator = _text(
+        raw["readiness_artifact_path"],
+        path=f"{path}.readiness_artifact_path",
+    ).replace("\\", "/")
+    generated_at = _known_at(
+        raw["readiness_generated_at"], path=f"{path}.readiness_generated_at"
+    )
+    if len(generated_at) == 10:
+        _fail(
+            "timestamp_required",
+            f"{path}.readiness_generated_at",
+            "must be a timezone-aware ISO datetime",
+        )
+
+    hashes = {
+        field_name: _sha256_digest(raw[field_name], path=f"{path}.{field_name}")
+        for field_name in (
+            "readiness_artifact_sha256",
+            "readiness_lane_hash",
+            "counters_hash",
+            "thresholds_hash",
+            "historical_record_id",
+            "historical_record_hash",
+            "policy_hash",
+            "fingerprint_hash",
+        )
+    }
+    minimum_relative_growth_bps = _nonnegative_integer(
+        raw["minimum_relative_growth_bps"],
+        path=f"{path}.minimum_relative_growth_bps",
+    )
+    minimum_absolute_growth = _nonnegative_integer(
+        raw["minimum_absolute_growth"],
+        path=f"{path}.minimum_absolute_growth",
+    )
+    if minimum_relative_growth_bps != 5000:
+        _fail(
+            "quantitative_reopen_relative_floor_mismatch",
+            f"{path}.minimum_relative_growth_bps",
+            "Axis C requires exactly 5000 bps (+50%)",
+        )
+    if minimum_absolute_growth != 10:
+        _fail(
+            "quantitative_reopen_absolute_floor_mismatch",
+            f"{path}.minimum_absolute_growth",
+            "Axis C requires exactly 10 additional settled rows",
+        )
+    counts = {
+        field_name: _nonnegative_integer(raw[field_name], path=f"{path}.{field_name}")
+        for field_name in ("current_count", "baseline_count", "threshold_count")
+    }
+    if counts["baseline_count"] <= 0:
+        _fail(
+            "quantitative_reopen_baseline_required",
+            f"{path}.baseline_count",
+            "must be greater than zero",
+        )
+
+    representative_experiment_id = _text(
+        raw["representative_experiment_id"],
+        path=f"{path}.representative_experiment_id",
+        lower=True,
+    )
+    if _EXPERIMENT_ID_RE.fullmatch(representative_experiment_id) is None:
+        _fail(
+            "invalid_experiment_id",
+            f"{path}.representative_experiment_id",
+            "must match exp-YYYYMMDD-NNN",
+        )
+    reopened_surface_id = _text(
+        raw["reopened_surface_id"], path=f"{path}.reopened_surface_id"
+    )
+
+    return MappingProxyType(
+        {
+            "schema_version": 1,
+            "axis": axis,
+            "readiness_artifact_path": locator,
+            "readiness_artifact_sha256": hashes["readiness_artifact_sha256"],
+            "readiness_generated_at": generated_at,
+            "readiness_lane": _text(
+                raw["readiness_lane"], path=f"{path}.readiness_lane"
+            ),
+            "readiness_lane_hash": hashes["readiness_lane_hash"],
+            "counters_hash": hashes["counters_hash"],
+            "thresholds_hash": hashes["thresholds_hash"],
+            "current_counter_key": _text(
+                raw["current_counter_key"], path=f"{path}.current_counter_key"
+            ),
+            "baseline_counter_key": _text(
+                raw["baseline_counter_key"], path=f"{path}.baseline_counter_key"
+            ),
+            "threshold_key": _text(
+                raw["threshold_key"], path=f"{path}.threshold_key"
+            ),
+            **counts,
+            "minimum_relative_growth_bps": minimum_relative_growth_bps,
+            "minimum_absolute_growth": minimum_absolute_growth,
+            "historical_record_id": hashes["historical_record_id"],
+            "historical_record_hash": hashes["historical_record_hash"],
+            "historical_family_key": _text(
+                raw["historical_family_key"], path=f"{path}.historical_family_key"
+            ),
+            "representative_experiment_id": representative_experiment_id,
+            "reopened_surface_id": reopened_surface_id,
+            "policy_hash": hashes["policy_hash"],
+            "fingerprint_hash": hashes["fingerprint_hash"],
+        }
+    )
+
+
+def _quantitative_reopen_proofs(
+    value: Any, *, path: str
+) -> tuple[Mapping[str, Any], ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, Sequence) or isinstance(
+        value, (str, bytes, bytearray)
+    ):
+        _fail("list_required", path, "must be a list of Axis-C proofs")
+    if not value:
+        return ()
+    proofs = tuple(
+        _quantitative_reopen_proof(item, path=f"{path}[{index}]")
+        for index, item in enumerate(value)
+    )
+    if any(item is None for item in proofs):  # defensive; list items may not be null.
+        _fail("mapping_required", path, "proof items must be objects")
+    record_ids = [str(item["historical_record_id"]) for item in proofs if item]
+    if len(record_ids) != len(set(record_ids)):
+        _fail(
+            "quantitative_reopen_duplicate_target",
+            path,
+            "each historical record may be claimed at most once",
+        )
+    return tuple(
+        sorted(
+            (item for item in proofs if item),
+            key=lambda item: item["historical_record_id"],
+        )
+    )
 
 
 def _known_at(value: Any, *, path: str) -> str:
@@ -737,6 +1229,8 @@ class EvidenceSurface:
     source_contract_status: str = "partial"
     as_of: str | None = None
     artifact_snapshot_hashes: Mapping[str, str] | None = None
+    research_pit_basis: str | None = None
+    known_future_leakage: bool | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "surface_id", _text(self.surface_id, path="$.surface_id"))
@@ -794,6 +1288,10 @@ class EvidenceSurface:
             "snapshot_only": "lead",
             "pit_forward_unsettled": "observer",
             "settled_forward_sufficient": "observed_only",
+            # PIT tier and evidence maturity are intentionally separate.
+            # Timestamped historical data is eligible for a private replay,
+            # but remains a lead until canonical as-known provenance exists.
+            "research_pit": "lead",
             "canonical_pit": "gate_candidate",
         }
         if _GRADE_RANK[grade] > _GRADE_RANK[maximum_grade_by_pit[pit_status]]:
@@ -858,6 +1356,54 @@ class EvidenceSurface:
                 f"must be one of {sorted(SOURCE_CONTRACT_STATUSES)}",
             )
         object.__setattr__(self, "source_contract_status", source_contract_status)
+        if self.known_future_leakage is not None:
+            known_future_leakage = _boolean(
+                self.known_future_leakage, path="$.known_future_leakage"
+            )
+        else:
+            known_future_leakage = None
+        object.__setattr__(self, "known_future_leakage", known_future_leakage)
+        research_pit_basis = (
+            None
+            if self.research_pit_basis is None
+            else _text(self.research_pit_basis, path="$.research_pit_basis")
+        )
+        object.__setattr__(self, "research_pit_basis", research_pit_basis)
+        if known_future_leakage is True and pit_status != "not_pit":
+            _fail(
+                "known_future_leakage_requires_not_pit",
+                "$.pit_status",
+                "a surface with known future leakage must be classified not_pit",
+            )
+        if pit_status == "research_pit":
+            if research_pit_basis is None:
+                _fail(
+                    "research_pit_basis_required",
+                    "$.research_pit_basis",
+                    "research_pit requires the historical timestamp field and vintage caveat",
+                )
+            if known_future_leakage is not False:
+                _fail(
+                    "research_pit_leakage_attestation_required",
+                    "$.known_future_leakage",
+                    "research_pit requires an explicit false known-future-leakage attestation",
+                )
+            if source_contract_status != "pass":
+                _fail(
+                    "research_pit_source_contract_not_ready",
+                    "$.source_contract_status",
+                    "research_pit requires a passing authorization and source-availability contract",
+                )
+            if independent_count == 0:
+                _fail(
+                    "research_pit_history_required",
+                    "$.independent_count",
+                    "research_pit requires at least one independent historical row",
+                )
+            # Candidate overlap is hypothesis-specific, not an intrinsic PIT
+            # property of the historical source. D0/admission still parks a
+            # proposed replay when overlap is zero, but the source itself may
+            # remain research_pit for a different candidate universe.
         if gate_ready and source_contract_status != "pass":
             _fail(
                 "source_contract_not_ready",
@@ -890,6 +1436,19 @@ class EvidenceSurface:
                 "$.artifact_snapshot_hashes",
                 "hash keys must exactly match the registered artifact locators",
             )
+        if pit_status == "research_pit":
+            if as_of is None:
+                _fail(
+                    "surface_as_of_required",
+                    "$.as_of",
+                    "research_pit requires a timestamped source snapshot",
+                )
+            if not snapshot_hashes:
+                _fail(
+                    "artifact_snapshot_hash_required",
+                    "$.artifact_snapshot_hashes",
+                    "research_pit requires immutable artifact snapshot hashes",
+                )
         if gate_ready:
             if pit_status != "canonical_pit":
                 _fail(
@@ -943,6 +1502,8 @@ class EvidenceSurface:
                 "source_contract_status",
                 "as_of",
                 "artifact_snapshot_hashes",
+                "research_pit_basis",
+                "known_future_leakage",
             },
             path="$",
         )
@@ -967,7 +1528,7 @@ class EvidenceSurface:
         return cls(**values)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "schema_version": SCHEMA_VERSION,
             "surface_id": self.surface_id,
             "data_source": self.data_source,
@@ -987,6 +1548,11 @@ class EvidenceSurface:
             "as_of": self.as_of,
             "artifact_snapshot_hashes": _plain(self.artifact_snapshot_hashes),
         }
+        if self.research_pit_basis is not None:
+            result["research_pit_basis"] = self.research_pit_basis
+        if self.known_future_leakage is not None:
+            result["known_future_leakage"] = self.known_future_leakage
+        return result
 
     @property
     def canonical_hash(self) -> str:
@@ -1243,6 +1809,9 @@ class HypothesisCandidate:
     prediction: Mapping[str, Any] | None = None
     reopen_condition: Any = None
     next_machine_action: str | None = None
+    research_refs: tuple[str, ...] = ()
+    amendment_lineage: Mapping[str, Any] | None = None
+    quantitative_reopen_proofs: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         _reject_outcomes(
@@ -1259,6 +1828,8 @@ class HypothesisCandidate:
                 "source_readiness_snapshot": self.source_readiness_snapshot,
                 "prediction": self.prediction,
                 "reopen_condition": self.reopen_condition,
+                "amendment_lineage": self.amendment_lineage,
+                "quantitative_reopen_proofs": self.quantitative_reopen_proofs,
             }
         )
         if (
@@ -1459,6 +2030,24 @@ class HypothesisCandidate:
                 "next_machine_action",
                 _text(self.next_machine_action, path="$.next_machine_action"),
             )
+        object.__setattr__(
+            self,
+            "research_refs",
+            _research_refs(self.research_refs, path="$.research_refs"),
+        )
+        object.__setattr__(
+            self,
+            "amendment_lineage",
+            _amendment_lineage(self.amendment_lineage, path="$.amendment_lineage"),
+        )
+        object.__setattr__(
+            self,
+            "quantitative_reopen_proofs",
+            _quantitative_reopen_proofs(
+                self.quantitative_reopen_proofs,
+                path="$.quantitative_reopen_proofs",
+            ),
+        )
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "HypothesisCandidate":
@@ -1501,6 +2090,9 @@ class HypothesisCandidate:
             "reopen_condition",
             "production_impact",
             "next_machine_action",
+            "research_refs",
+            "amendment_lineage",
+            "quantitative_reopen_proofs",
         }
         _check_fields(
             raw,
@@ -1594,6 +2186,9 @@ class HypothesisCandidate:
                 "production_impact", {"trade_enabled": False}
             ),
             next_machine_action=raw.get("next_machine_action"),
+            research_refs=raw.get("research_refs", ()),
+            amendment_lineage=raw.get("amendment_lineage"),
+            quantitative_reopen_proofs=raw.get("quantitative_reopen_proofs", ()),
         )
 
     @classmethod
@@ -1629,6 +2224,9 @@ class HypothesisCandidate:
                 "source_readiness_snapshot",
                 "prediction",
                 "reopen_condition",
+                "research_refs",
+                "amendment_lineage",
+                "quantitative_reopen_proofs",
             },
             path="$",
         )
@@ -1699,6 +2297,9 @@ class HypothesisCandidate:
             reopen_condition=raw.get("reopen_condition"),
             production_impact=raw["production_impact"],
             next_machine_action=raw.get("next_machine_action"),
+            research_refs=raw.get("research_refs", ()),
+            amendment_lineage=raw.get("amendment_lineage"),
+            quantitative_reopen_proofs=raw.get("quantitative_reopen_proofs", ()),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -1734,6 +2335,14 @@ class HypothesisCandidate:
             result["reopen_condition"] = _plain(self.reopen_condition)
         if self.next_machine_action is not None:
             result["next_machine_action"] = self.next_machine_action
+        if self.research_refs:
+            result["research_refs"] = list(self.research_refs)
+        if self.amendment_lineage is not None:
+            result["amendment_lineage"] = _plain(self.amendment_lineage)
+        if self.quantitative_reopen_proofs:
+            result["quantitative_reopen_proofs"] = _plain(
+                self.quantitative_reopen_proofs
+            )
         return result
 
     @property
@@ -1791,6 +2400,8 @@ class HypothesisCandidate:
             "created_at",
             "created_by",
             "source_readiness_snapshot",
+            "research_refs",
+            "quantitative_reopen_proofs",
         ):
             payload.pop(field_name, None)
         return payload
@@ -2346,8 +2957,7 @@ class SelectionPanel:
             candidate = candidates_by_id[candidate_id]
             if candidate.candidate_kind == "plain_event_lead":
                 if (
-                    decision.decision != "park"
-                    or decision.gates["D1"]["status"] != "park"
+                    decision.gates["D1"]["status"] != "park"
                     or FailureReason.MARKET_EXPECTATION_UNIDENTIFIED
                     not in decision.failure_reasons
                 ):
@@ -2845,6 +3455,7 @@ __all__ = [
     "QUEUE_ALIASES",
     "EXPECTATION_PROXY_ALIASES",
     "CANDIDATE_KINDS",
+    "AMENDMENT_CHANGED_FIELD_ALLOWLIST",
     "EVIDENCE_GRADES",
     "PIT_STATUSES",
     "SATURATION_STATUSES",

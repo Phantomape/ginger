@@ -255,6 +255,124 @@ def test_daily_snapshot_can_collect_options_as_data_only(tmp_path, monkeypatch):
     assert impact["alters_orders"] is False
 
 
+def test_daily_snapshot_separates_run_date_from_completed_options_quote_date(
+    tmp_path, monkeypatch
+):
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def fake_options(**kwargs):
+        assert kwargs["as_of"].isoformat() == "2026-07-30"
+        assert kwargs["underlying_prices"] == {"TSLA": 300.0}
+        return {
+            "status": "ok",
+            "rows_written": 4,
+            "pit_safe_rows": 4,
+            "output_path": str(
+                tmp_path / "options_onclickmedia_chain_20260730.jsonl"
+            ),
+            "summary_output": str(
+                tmp_path / "options_onclickmedia_summary_20260730.json"
+            ),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "persist_daily_options_snapshot", fake_options)
+
+    health = {
+        "status": "ok",
+        "completed_session_date": "2026-07-30",
+        "quote_date_source": "test_completed_session",
+    }
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-07-31",
+        data_dir=tmp_path,
+        refresh_options=True,
+        options_tickers=["TSLA"],
+        option_underlying_prices={"TSLA": 300.0},
+        options_quote_date="2026-07-30",
+        options_collection_health=health,
+    )
+
+    assert snapshot["asof_date"] == "2026-07-31"
+    assert snapshot["options_quote_date"] == "2026-07-30"
+    assert snapshot["paths"]["options_onclickmedia_chain"].endswith(
+        "options_onclickmedia_chain_20260730.jsonl"
+    )
+    options = snapshot["options_onclickmedia"]
+    assert options["run_asof_date"] == "2026-07-31"
+    assert options["source_quote_date"] == "2026-07-30"
+    assert options["input_health"] == health
+
+
+def test_daily_snapshot_fails_closed_when_options_session_inputs_are_stale(
+    tmp_path, monkeypatch
+):
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def unexpected_options(**kwargs):
+        raise AssertionError("blocked canonical inputs must not call OnclickMedia")
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(
+        daily_snapshot, "persist_daily_options_snapshot", unexpected_options
+    )
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-07-31",
+        data_dir=tmp_path,
+        refresh_options=True,
+        options_tickers=[],
+        option_underlying_prices={},
+        options_quote_date=None,
+        options_collection_health={
+            "status": "blocked",
+            "reason": "canonical_benchmark_session_rows_unavailable",
+            "missing_exact_benchmarks": ["SPY", "QQQ"],
+        },
+    )
+
+    assert snapshot["status"] == "partial"
+    options = snapshot["options_onclickmedia"]
+    assert options["status"] == "failed"
+    assert options["source_quote_date"] is None
+    assert options["input_health"]["missing_exact_benchmarks"] == ["SPY", "QQQ"]
+    assert options["production_impact"]["scope"] == (
+        "options_data_collection_fail_closed"
+    )
+
+
 def test_daily_snapshot_can_collect_borrow_availability_as_data_only(tmp_path, monkeypatch):
     borrow_manifest = tmp_path / "borrow_availability" / "manifest.json"
     borrow_rows = tmp_path / "borrow_availability" / "rows.jsonl"

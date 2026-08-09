@@ -28,6 +28,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from data_paths import resolve_daily_artifact_path  # noqa: E402
+from ohlcv_warehouse import connect_overlay_reader, overlay_reader_status  # noqa: E402
 
 EXPERIMENT_ID = "exp-20260507-091"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
@@ -536,6 +537,7 @@ def _load_ohlcv_warehouse(
     path: str | Path | None,
     *,
     tickers: set[str] | None = None,
+    diagnostics: dict[str, Any] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     if not path:
         return {}
@@ -555,11 +557,15 @@ def _load_ohlcv_warehouse(
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     base_query = (
         "select ticker, date, open, high, low, close, volume "
-        "from ohlcv"
+        "from ohlcv_overlay"
     )
     try:
-        with sqlite3.connect(source) as conn:
+        conn = connect_overlay_reader(source)
+        try:
             conn.row_factory = sqlite3.Row
+            if diagnostics is not None:
+                diagnostics.update(overlay_reader_status(conn))
+                diagnostics["reader"] = "ohlcv_overlay"
             if selected_tickers:
                 for start in range(0, len(selected_tickers), 900):
                     chunk = selected_tickers[start : start + 900]
@@ -591,6 +597,8 @@ def _load_ohlcv_warehouse(
                         "close": row["close"],
                         "volume": row["volume"],
                     })
+        finally:
+            conn.close()
     except sqlite3.Error:
         return {}
     return dict(out)
@@ -601,9 +609,14 @@ def _load_ohlcv_inputs(
     warehouse_path: str | Path | None,
     *,
     tickers: set[str] | None = None,
+    warehouse_diagnostics: dict[str, Any] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     snapshot_rows = _load_ohlcv_snapshot(snapshot_path)
-    warehouse_rows = _load_ohlcv_warehouse(warehouse_path, tickers=tickers)
+    warehouse_rows = _load_ohlcv_warehouse(
+        warehouse_path,
+        tickers=tickers,
+        diagnostics=warehouse_diagnostics,
+    )
     if not snapshot_rows:
         return warehouse_rows
     if not warehouse_rows:
@@ -1022,10 +1035,12 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
         }
         candidate_tickers.update(candidate.get("ticker") for candidate in candidates)
 
+    ohlcv_warehouse_diagnostics: dict[str, Any] = {}
     ohlcv = _load_ohlcv_inputs(
         args.ohlcv_snapshot,
         args.ohlcv_warehouse,
         tickers=candidate_tickers,
+        warehouse_diagnostics=ohlcv_warehouse_diagnostics,
     )
 
     ledger_rows: list[dict[str, Any]] = []
@@ -1129,6 +1144,7 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
             "quant_signal_dir": _repo_rel(args.quant_signal_dir),
             "ohlcv_snapshot": _repo_rel(args.ohlcv_snapshot) if args.ohlcv_snapshot else None,
             "ohlcv_warehouse": _repo_rel(args.ohlcv_warehouse) if args.ohlcv_warehouse else None,
+            "ohlcv_warehouse_overlay_status": ohlcv_warehouse_diagnostics or None,
         },
         "join_policy": {
             "candidate_join_date_mode": args.candidate_join_date_mode,

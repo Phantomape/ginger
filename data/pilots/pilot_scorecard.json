@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-07-21T03:55:15+00:00",
+  "as_of": "2026-08-09T04:08:41+00:00",
   "per_position_notional_usd": 10000.0,
   "graduate_rule": {
     "min_closed": 20,
@@ -11,83 +11,22 @@
     "scorecard_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
     "paper_verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
     "broker_snapshot_status": "available",
-    "broker_snapshot_observed_at_utc": "2026-07-21T03:02:42.160720Z",
-    "broker_current_position_count": 10,
-    "paper_actionable_ticker_count": 3,
-    "broker_current_ticker_overlap_count": 1,
+    "broker_snapshot_observed_at_utc": "2026-08-08T03:02:00.522936Z",
+    "broker_current_position_count": 20,
+    "paper_actionable_ticker_count": 5,
+    "broker_current_ticker_overlap_count": 2,
     "broker_current_ticker_overlap": [
-      "DDOG"
+      "DDOG",
+      "PLTR"
     ],
     "historical_closed_trade_link_status": "unavailable_without_pilot_execution_id_or_broker_order_strategy_tag",
     "live_promotion_eligible": false,
     "note": "Paper sleeve outcomes remain valid shadow evidence and retain their precommitted stop rule. Current-ticker overlap is not lot or strategy attribution, so no scorecard verdict is broker-confirmed live evidence."
   },
-  "cross_pilot_overlap": [
-    {
-      "ticker": "DDOG",
-      "pilots": [
-        "Source-priority allocator (TOP-1 only)",
-        "Fundamental growth + RS"
-      ],
-      "participant_context": [
-        {
-          "pilot": "Source-priority allocator (TOP-1 only)",
-          "pilot_key": "allocator_top1",
-          "label": "Source-priority allocator (TOP-1 only)",
-          "sleeve": "accepted_helper_source_priority_allocator",
-          "pilot_verdict": "KILL",
-          "pilot_verdict_note": "book drawdown 83.2% breaches 15% ceiling -> stop pilot",
-          "new_entries_blocked": true,
-          "status": "EXIT_NEXT_SESSION",
-          "actionable_status": "EXIT_NEXT_SESSION",
-          "stop_status": "OK",
-          "entry_date": "2026-07-08",
-          "days_held": 9,
-          "days_remaining": 1,
-          "unrealized_pct": 0.0419,
-          "pilot_notional_usd": 10000.0
-        },
-        {
-          "pilot": "Fundamental growth + RS",
-          "pilot_key": "fundamental_growth_rs",
-          "label": "Fundamental growth + RS",
-          "sleeve": "fundamental_growth_rs",
-          "pilot_verdict": "KILL",
-          "pilot_verdict_note": "book drawdown 40.1% breaches 15% ceiling -> stop pilot",
-          "new_entries_blocked": true,
-          "status": "HOLD",
-          "actionable_status": "HOLD",
-          "stop_status": "OK",
-          "entry_date": "2026-07-17",
-          "days_held": 2,
-          "days_remaining": 8,
-          "unrealized_pct": 0.0265,
-          "pilot_notional_usd": 10000.0
-        }
-      ],
-      "pilot_verdicts": {
-        "allocator_top1": "KILL",
-        "fundamental_growth_rs": "KILL"
-      },
-      "pilot_statuses": {
-        "allocator_top1": [
-          "EXIT_NEXT_SESSION"
-        ],
-        "fundamental_growth_rs": [
-          "HOLD"
-        ]
-      },
-      "new_entries_blocked_by_pilot": {
-        "allocator_top1": true,
-        "fundamental_growth_rs": true
-      },
-      "positions": 2,
-      "total_exposure_usd": 20000.0
-    }
-  ],
+  "cross_pilot_overlap": [],
   "cross_pilot_concentration": {
-    "total_actionable_exposure_usd": 40000.0,
-    "position_count": 4,
+    "total_actionable_exposure_usd": 50000.0,
+    "position_count": 5,
     "alert_rule": {
       "min_positions": 3,
       "min_positions_for_exposure_share": 2,
@@ -100,47 +39,75 @@
         "sector": "Technology",
         "positions": 4,
         "tickers": [
-          "AMD",
+          "BSY",
           "DDOG",
-          "MU"
+          "NOW",
+          "PLTR"
         ],
         "pilots": [
-          "allocator_top1",
+          "distribution_absorption",
           "fundamental_growth_rs"
         ],
         "exposure_usd": 40000.0,
-        "exposure_share": 1.0,
+        "exposure_share": 0.8,
         "alert": true
+      },
+      {
+        "sector": "Industrials",
+        "positions": 1,
+        "tickers": [
+          "ALLE"
+        ],
+        "pilots": [
+          "allocator_top1"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.2,
+        "alert": false
       }
     ],
     "by_industry": [
       {
         "industry": "Software - Application",
-        "positions": 2,
+        "positions": 3,
         "tickers": [
-          "DDOG"
+          "BSY",
+          "DDOG",
+          "NOW"
         ],
         "pilots": [
-          "allocator_top1",
+          "distribution_absorption",
           "fundamental_growth_rs"
         ],
-        "exposure_usd": 20000.0,
-        "exposure_share": 0.5,
+        "exposure_usd": 30000.0,
+        "exposure_share": 0.6,
         "alert": true
       },
       {
-        "industry": "Semiconductors",
-        "positions": 2,
+        "industry": "Security & Protection Services",
+        "positions": 1,
         "tickers": [
-          "AMD",
-          "MU"
+          "ALLE"
+        ],
+        "pilots": [
+          "allocator_top1"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.2,
+        "alert": false
+      },
+      {
+        "industry": "Software - Infrastructure",
+        "positions": 1,
+        "tickers": [
+          "PLTR"
         ],
         "pilots": [
           "fundamental_growth_rs"
         ],
-        "exposure_usd": 20000.0,
-        "exposure_share": 0.5,
-        "alert": true
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.2,
+        "alert": false
       }
     ],
     "alerts": [
@@ -148,44 +115,33 @@
         "sector": "Technology",
         "positions": 4,
         "tickers": [
-          "AMD",
+          "BSY",
           "DDOG",
-          "MU"
+          "NOW",
+          "PLTR"
         ],
         "pilots": [
-          "allocator_top1",
+          "distribution_absorption",
           "fundamental_growth_rs"
         ],
         "exposure_usd": 40000.0,
-        "exposure_share": 1.0,
+        "exposure_share": 0.8,
         "alert": true
       },
       {
         "industry": "Software - Application",
-        "positions": 2,
+        "positions": 3,
         "tickers": [
-          "DDOG"
+          "BSY",
+          "DDOG",
+          "NOW"
         ],
         "pilots": [
-          "allocator_top1",
+          "distribution_absorption",
           "fundamental_growth_rs"
         ],
-        "exposure_usd": 20000.0,
-        "exposure_share": 0.5,
-        "alert": true
-      },
-      {
-        "industry": "Semiconductors",
-        "positions": 2,
-        "tickers": [
-          "AMD",
-          "MU"
-        ],
-        "pilots": [
-          "fundamental_growth_rs"
-        ],
-        "exposure_usd": 20000.0,
-        "exposure_share": 0.5,
+        "exposure_usd": 30000.0,
+        "exposure_share": 0.6,
         "alert": true
       }
     ]
@@ -196,21 +152,21 @@
       "pilot": "allocator_top1",
       "label": "Source-priority allocator (TOP-1 only)",
       "sleeve": "accepted_helper_source_priority_allocator",
-      "as_of": "2026-07-21T03:55:15+00:00",
-      "closed_trades": 11,
-      "open_positions": 6,
+      "as_of": "2026-08-09T04:08:41+00:00",
+      "closed_trades": 21,
+      "open_positions": 5,
       "pending_entries": 1,
-      "hit_rate": 0.273,
-      "realized_pilot_pnl_usd": -7685.08,
-      "replacement_value_rows": 11,
-      "rv_vs_cash_usd": -7685.13,
-      "rv_vs_spy_usd": -7981.45,
-      "rv_vs_qqq_usd": -5742.72,
-      "book_max_drawdown_usd": 8314.77,
-      "book_max_drawdown_pct": 0.8315,
+      "hit_rate": 0.429,
+      "realized_pilot_pnl_usd": -7762.53,
+      "replacement_value_rows": 21,
+      "rv_vs_cash_usd": -7762.61,
+      "rv_vs_spy_usd": -8359.79,
+      "rv_vs_qqq_usd": -4265.9,
+      "book_max_drawdown_usd": 9641.99,
+      "book_max_drawdown_pct": 0.9642,
       "drawdown_ceiling_breached": true,
       "verdict": "KILL",
-      "verdict_note": "book drawdown 83.2% breaches 15% ceiling -> stop pilot",
+      "verdict_note": "book drawdown 96.4% breaches 15% ceiling -> stop pilot",
       "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
       "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
       "broker_confirmed_closed_trades": null,
@@ -220,21 +176,21 @@
       "pilot": "distribution_absorption",
       "label": "Distribution-day absorption leadership",
       "sleeve": "distribution_day_absorption_leadership",
-      "as_of": "2026-07-21T03:48:21+00:00",
-      "closed_trades": 4,
-      "open_positions": 0,
-      "pending_entries": 1,
-      "hit_rate": 0.25,
-      "realized_pilot_pnl_usd": -1289.16,
-      "replacement_value_rows": 4,
-      "rv_vs_cash_usd": -1289.17,
-      "rv_vs_spy_usd": -1984.79,
-      "rv_vs_qqq_usd": -1217.98,
-      "book_max_drawdown_usd": 1811.91,
-      "book_max_drawdown_pct": 0.1812,
+      "as_of": "2026-08-09T04:04:26+00:00",
+      "closed_trades": 7,
+      "open_positions": 1,
+      "pending_entries": 0,
+      "hit_rate": 0.286,
+      "realized_pilot_pnl_usd": -2195.86,
+      "replacement_value_rows": 7,
+      "rv_vs_cash_usd": -2195.86,
+      "rv_vs_spy_usd": -3822.54,
+      "rv_vs_qqq_usd": -2704.44,
+      "book_max_drawdown_usd": 2195.86,
+      "book_max_drawdown_pct": 0.2196,
       "drawdown_ceiling_breached": true,
       "verdict": "KILL",
-      "verdict_note": "book drawdown 18.1% breaches 15% ceiling -> stop pilot",
+      "verdict_note": "book drawdown 22.0% breaches 15% ceiling -> stop pilot",
       "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
       "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
       "broker_confirmed_closed_trades": null,
@@ -244,21 +200,21 @@
       "pilot": "fundamental_growth_rs",
       "label": "Fundamental growth + RS",
       "sleeve": "fundamental_growth_rs",
-      "as_of": "2026-07-21T03:43:20+00:00",
-      "closed_trades": 14,
+      "as_of": "2026-08-09T03:59:53+00:00",
+      "closed_trades": 18,
       "open_positions": 3,
       "pending_entries": 0,
-      "hit_rate": 0.429,
-      "realized_pilot_pnl_usd": -3240.53,
-      "replacement_value_rows": 14,
-      "rv_vs_cash_usd": -3240.52,
-      "rv_vs_spy_usd": -2400.24,
-      "rv_vs_qqq_usd": -1199.61,
-      "book_max_drawdown_usd": 4006.34,
-      "book_max_drawdown_pct": 0.4006,
+      "hit_rate": 0.444,
+      "realized_pilot_pnl_usd": -4022.85,
+      "replacement_value_rows": 18,
+      "rv_vs_cash_usd": -4022.84,
+      "rv_vs_spy_usd": -3426.94,
+      "rv_vs_qqq_usd": -1832.42,
+      "book_max_drawdown_usd": 4282.8,
+      "book_max_drawdown_pct": 0.4283,
       "drawdown_ceiling_breached": true,
       "verdict": "KILL",
-      "verdict_note": "book drawdown 40.1% breaches 15% ceiling -> stop pilot",
+      "verdict_note": "book drawdown 42.8% breaches 15% ceiling -> stop pilot",
       "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
       "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
       "broker_confirmed_closed_trades": null,

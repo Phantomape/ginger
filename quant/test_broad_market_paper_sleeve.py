@@ -25,8 +25,13 @@ from quant.broad_market_paper_sleeve import (
 )
 
 
-def _rows(start_price: float, step: float, *, volume_last: float = 1500.0) -> list[dict]:
-    start = date(2026, 1, 1)
+def _rows(
+    start_price: float,
+    step: float,
+    *,
+    volume_last: float = 1500.0,
+    start: date = date(2026, 1, 1),
+) -> list[dict]:
     rows = []
     for idx in range(62):
         close = start_price + step * idx
@@ -45,6 +50,68 @@ def _rows(start_price: float, step: float, *, volume_last: float = 1500.0) -> li
 
 def _drop_date(rows: list[dict], as_of: str) -> list[dict]:
     return [row for row in rows if row["date"] != as_of]
+
+
+def _clean_feed(
+    as_of: str,
+    tickers: list[str],
+    *,
+    hash_char: str = "a",
+) -> dict:
+    hashes = {
+        "membership_hash": hash_char * 64,
+        "membership_snapshot_hash": chr(ord(hash_char) + 1) * 64,
+        "membership_ledger_hash": chr(ord(hash_char) + 2) * 64,
+    }
+    return {
+        "status": "loaded",
+        "path": "test-clean-universe.json",
+        "as_of": as_of,
+        "tickers": tickers,
+        "records": {ticker: {"ticker": ticker} for ticker in tickers},
+        "membership_as_of": as_of,
+        **hashes,
+        "membership_ledger_status": "appended",
+        "clean_cutoff": "2026-07-17",
+        "forward_generation": "broad_market_clean_forward_v1",
+        "membership": {
+            "effective_as_of": as_of,
+            "membership_hash": hashes["membership_hash"],
+            "snapshot_hash": hashes["membership_snapshot_hash"],
+            "ledger_hash": hashes["membership_ledger_hash"],
+            "ledger_status": "appended",
+            "clean_cutoff": "2026-07-17",
+            "forward_generation": "broad_market_clean_forward_v1",
+        },
+    }
+
+
+def _membership_projection(row: dict) -> dict:
+    return {
+        key: row.get(key)
+        for key in (
+            "cohort",
+            "membership_as_of",
+            "membership_hash",
+            "membership_snapshot_hash",
+            "membership_ledger_hash",
+            "clean_cutoff",
+            "forward_generation",
+        )
+    }
+
+
+def _open_position(ticker: str, created_asof: str, **extra) -> dict:
+    return {
+        "decision_id": f"open-{ticker}",
+        "ticker": ticker,
+        "created_asof": created_asof,
+        "entry_date": created_asof,
+        "entry_price": 50.0,
+        "notional": 10_000.0,
+        "observed_trading_days": 0,
+        **extra,
+    }
 
 
 def test_broad_market_feature_and_price_floor_gate():
@@ -209,6 +276,249 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert second["replacement_value_report"]["open_count"] == 1
     assert second["open_positions"][0]["source_candidate"]["high_volatility_rule_version"] == HIGH_VOLATILITY_RULE_VERSION
     assert second["open_positions"][0]["source_candidate"]["trend_persistence_rule_version"] == TREND_PERSISTENCE_RULE_VERSION
+
+
+def test_clean_forward_capacity_excludes_five_legacy_open_positions():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    as_of = spy_rows[60]["date"]
+    feed = _clean_feed(as_of, ["WIN"])
+    state = empty_broad_market_paper_state()
+    state["open_positions"] = [
+        _open_position(f"LEGACY{idx}", "2026-07-16") for idx in range(5)
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=feed,
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["open_position_count"] == 5
+    assert snapshot["new_pending_count"] == 1
+    assert snapshot["pending_count"] == 1
+    assert _membership_projection(snapshot["candidates"][0]) == _membership_projection(
+        snapshot["new_pending_entries"][0]
+    )
+    capacity = snapshot["cohort_capacity"]
+    assert capacity["mode"] == "clean_forward_generation"
+    assert capacity["legacy_carry_active_count"] == 5
+    assert capacity["same_generation_provenanced_active_count"] == 1
+    assert capacity["remaining_capacity"] == 4
+    assert capacity["legacy_carry_starvation_bypassed"] is True
+    assert snapshot["trade_enabled"] is False
+
+
+def test_clean_membership_provenance_survives_pending_to_next_session_fill():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    first_as_of = spy_rows[60]["date"]
+    first = build_broad_market_paper_sleeve_snapshot(
+        as_of=first_as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=_clean_feed(first_as_of, ["WIN"], hash_char="a"),
+        state=empty_broad_market_paper_state(),
+        persist=False,
+    )
+    pending_provenance = _membership_projection(first["pending_entries"][0])
+
+    state = empty_broad_market_paper_state()
+    state["pending_entries"] = first["pending_entries"]
+    second_as_of = spy_rows[61]["date"]
+    second = build_broad_market_paper_sleeve_snapshot(
+        as_of=second_as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=_clean_feed(second_as_of, ["WIN"], hash_char="d"),
+        state=state,
+        persist=False,
+    )
+
+    assert second["filled_count"] == 1
+    filled = second["filled_entries"][0]
+    assert _membership_projection(filled) == pending_provenance
+    assert _membership_projection(filled["source_candidate"]) == pending_provenance
+    assert filled["membership_hash"] != second["data_source"]["membership_hash"]
+    assert filled["trade_enabled"] is False
+
+
+def test_clean_active_at_cap_blocks_candidates_and_uses_clean_only_evidence():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    as_of = spy_rows[60]["date"]
+    feed = _clean_feed(as_of, ["WIN"])
+    provenance = _membership_projection({**feed, "cohort": "clean_forward"})
+    state = empty_broad_market_paper_state()
+    state["open_positions"] = [
+        _open_position(f"CLEAN{idx}", as_of, **provenance) for idx in range(5)
+    ]
+    state["closed_positions"] = [
+        {**_open_position("CLEAN-CLOSED", as_of, **provenance), "pnl": 125.0},
+        {**_open_position("LEGACY-CLOSED", "2026-07-16"), "pnl": 10_000.0},
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=feed,
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["new_pending_count"] == 0
+    capacity = snapshot["cohort_capacity"]
+    assert capacity["same_generation_provenanced_active_count"] == 5
+    assert capacity["remaining_capacity"] == 0
+    assert capacity["starved"] is True
+    assert capacity["starvation_reason"] == "clean_cohort_at_capacity"
+    assert snapshot["forward_paper_gate"]["metrics"]["closed_trades"] == 1
+    assert snapshot["forward_paper_gate"]["cohort_scope"] == "clean_forward_generation"
+    assert snapshot["replacement_value_report"]["closed_count"] == 1
+    assert snapshot["replacement_value_report"]["closed_pnl"] == 125.0
+    assert snapshot["cohort_evidence"]["excluded_non_current_clean_closed_count"] == 1
+
+
+def test_stale_fill_day_feed_keeps_stored_clean_evidence_isolated():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    signal_as_of = spy_rows[60]["date"]
+    fill_as_of = spy_rows[61]["date"]
+    win_rows[61]["volume"] = 2_000.0
+    signal_feed = _clean_feed(signal_as_of, ["WIN"])
+    provenance = _membership_projection(
+        {**signal_feed, "cohort": "clean_forward"}
+    )
+    invalid_provenance = {**provenance, "membership_hash": "not-a-sha256"}
+    state = empty_broad_market_paper_state()
+    state["closed_positions"] = [
+        {
+            **_open_position("CLEAN-CLOSED", signal_as_of, **provenance),
+            "pnl": 125.0,
+        },
+        {
+            **_open_position("INVALID-CLEAN", signal_as_of, **invalid_provenance),
+            "pnl": 9_000.0,
+        },
+        {**_open_position("LEGACY-CLOSED", "2026-07-16"), "pnl": 10_000.0},
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=fill_as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=signal_feed,
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["cohort_capacity"]["mode"] == "legacy_global"
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["cohort_capacity"]["admission_blocked_without_current_context"] is True
+    assert (
+        snapshot["cohort_capacity"]["admission_blocked_reason"]
+        == "missing_current_clean_membership_context"
+    )
+    assert snapshot["cohort_evidence"]["clean_context_active"] is False
+    assert snapshot["cohort_evidence"]["stored_clean_rows_present"] is True
+    assert snapshot["forward_paper_gate"]["cohort_scope"] == "clean_forward_generation"
+    assert snapshot["forward_paper_gate"]["metrics"]["closed_trades"] == 1
+    assert snapshot["forward_paper_gate"]["metrics"]["realized_pnl"] == 125.0
+    assert snapshot["replacement_value_report"]["closed_count"] == 1
+    assert snapshot["replacement_value_report"]["closed_pnl"] == 125.0
+    assert snapshot["cohort_evidence"]["excluded_non_current_clean_closed_count"] == 2
+
+
+def test_post_cutoff_unattributed_active_row_consumes_clean_capacity():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    as_of = spy_rows[60]["date"]
+    feed = _clean_feed(as_of, ["WIN"])
+    provenance = _membership_projection({**feed, "cohort": "clean_forward"})
+    state = empty_broad_market_paper_state()
+    state["open_positions"] = [
+        *[
+            _open_position(f"CLEAN{idx}", as_of, **provenance)
+            for idx in range(4)
+        ],
+        _open_position("UNTAGGED", as_of),
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=feed,
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["cohort_capacity"]["post_cutoff_unattributed_active_count"] == 1
+    assert snapshot["cohort_capacity"]["capacity_consuming_active_count"] == 5
+
+
+def test_no_clean_context_preserves_legacy_global_capacity_behavior():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    as_of = spy_rows[60]["date"]
+    state = empty_broad_market_paper_state()
+    state["open_positions"] = [
+        _open_position(f"LEGACY{idx}", "2026-07-16") for idx in range(5)
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+        candidate_universe=["WIN"],
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["pending_count"] == 0
+    assert snapshot["cohort_capacity"]["mode"] == "legacy_global"
+    assert snapshot["cohort_capacity"]["starvation_reason"] == "legacy_global_capacity_at_limit"
+    assert snapshot["forward_paper_gate"]["cohort_scope"] == "legacy_global"
+
+
+def test_incomplete_or_stale_clean_context_falls_back_to_legacy_capacity():
+    start = date(2026, 5, 21)
+    spy_rows = _rows(100.0, 0.02, start=start)
+    win_rows = _rows(50.0, 0.35, start=start)
+    as_of = spy_rows[60]["date"]
+    variants = [
+        {"membership_as_of": "2026-07-19"},
+        {"as_of": None},
+        {"membership_ledger_status": "dry_run_not_persisted"},
+        {"forward_generation": "broad_market_clean_forward_v2"},
+        {"membership_hash": "not-a-sha256"},
+    ]
+
+    for updates in variants:
+        feed = _clean_feed(as_of, ["WIN"])
+        feed.pop("membership")
+        feed.update(updates)
+        state = empty_broad_market_paper_state()
+        state["open_positions"] = [
+            _open_position(f"LEGACY{idx}", "2026-07-16") for idx in range(5)
+        ]
+        snapshot = build_broad_market_paper_sleeve_snapshot(
+            as_of=as_of,
+            ohlcv_by_ticker={"SPY": spy_rows, "WIN": win_rows},
+            candidate_universe=feed,
+            state=state,
+            persist=False,
+        )
+        assert snapshot["new_pending_count"] == 0
+        assert snapshot["cohort_capacity"]["mode"] == "legacy_global"
 
 
 def test_snapshot_does_not_use_stale_prices_when_asof_ohlcv_is_missing():

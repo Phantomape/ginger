@@ -7,6 +7,7 @@ positions, or alter the production signal path.
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
@@ -16,13 +17,15 @@ from typing import Any
 from data_paths import atomic_write_text, daily_artifact_glob, resolve_daily_artifact_path
 
 SNAPSHOT_RE = re.compile(r"earnings_snapshot_(\d{8})\.json$")
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3  # semantic decision-clock contract
+MIN_QUALIFIED_SNAPSHOT_SCHEMA_VERSION = 3
 
 QUANT_SIGNAL_LIST_KEYS = (
     ("signals", "selected_signal", True, True),
     ("pilot_signals", "selected_pilot_signal", True, True),
     ("heat_blocked_signals", "heat_blocked_signal", True, False),
     ("heat_blocked_pilot_signals", "heat_blocked_pilot_signal", True, False),
+    ("cash_admission_observations", "cash_admission_observation", True, True),
 )
 
 ENTRY_PLAN_LIST_KEYS = (
@@ -141,7 +144,9 @@ def build_revision_ledger_rows(
     """Build per-ticker estimate revision rows for one snapshot date.
 
     A row is usable for revision analysis only when the current and prior
-    observation are both PIT-safe and refer to the same next earnings date.
+    observation are both PIT-safe, use the same explicitly persisted estimate
+    source and event identity, and have timezone-aware retrieval clocks.  This
+    deliberately leaves legacy snapshots visible but unable to retro-qualify.
     """
     if not snapshot_records:
         return []
@@ -171,8 +176,8 @@ def build_revision_ledger_rows(
             prior
             for prior in history_by_ticker.get(ticker, [])
             if (
-                obs["next_earnings_date"] is not None
-                and prior["next_earnings_date"] == obs["next_earnings_date"]
+                obs["estimate_event_identity"] is not None
+                and prior["estimate_event_identity"] == obs["estimate_event_identity"]
             )
         ]
         prior = same_event_history[-1] if same_event_history else None
@@ -185,11 +190,25 @@ def build_revision_ledger_rows(
         delta_30d = _delta(obs["eps_estimate"], prior_30d.get("eps_estimate") if prior_30d else None)
         prior_pit_safe = bool(prior and prior.get("source_snapshot_pit_safe"))
         revision_pit_safe = bool(current_pit_safe and prior_pit_safe)
-        usable = bool(
-            revision_pit_safe
-            and obs["next_earnings_date"] is not None
-            and obs["eps_estimate"] is not None
-            and prior_eps is not None
+        direction = _direction(delta_prev)
+        rollback = _is_estimate_rollback(
+            current_estimate=obs["eps_estimate"],
+            prior=prior,
+            same_event_history=same_event_history,
+        )
+        quarantine_reason = _revision_quarantine_reason(
+            current_pit_safe=current_pit_safe,
+            prior=prior,
+            obs=obs,
+            prior_eps=prior_eps,
+            rollback=rollback,
+        )
+        usable = quarantine_reason is None
+        decision_id = _decision_id(
+            ticker=ticker,
+            obs=obs,
+            prior=prior,
+            direction=direction,
         )
 
         rows.append(
@@ -203,21 +222,45 @@ def build_revision_ledger_rows(
                 "source_snapshot_mtime_utc": current["file_mtime_utc"].isoformat(timespec="seconds"),
                 "source_snapshot_pit_safe": current_pit_safe,
                 "next_earnings_date": obs["next_earnings_date"],
-                "fiscal_period": item.get("fiscal_period"),
+                "fiscal_period": obs["estimate_fiscal_period"],
+                "estimate_event_identity": obs["estimate_event_identity"],
+                "estimate_source": obs["estimate_source"],
                 "eps_estimate": obs["eps_estimate"],
                 "revenue_estimate": item.get("revenue_estimate"),
-                "vendor_asof": item.get("vendor_asof"),
-                "source_retrieved_at": current["payload"].get("timestamp"),
+                "vendor_asof": obs["vendor_asof"],
+                "source_retrieved_at": obs["decision_clock"],
+                "decision_clock": obs["decision_clock"],
+                "decision_clock_valid": obs["decision_clock_valid"],
+                "decision_clock_source": "row_observed_at",
+                "first_seen_at": obs["decision_clock"] if direction != "flat" else None,
                 "prior_snapshot_date": prior["as_of_date"] if prior else None,
                 "prior_snapshot_eps_estimate": prior_eps,
                 "prior_snapshot_pit_safe": prior_pit_safe,
+                "prior_snapshot_schema_version": prior.get("snapshot_schema_version") if prior else None,
+                "prior_estimate_source": prior.get("estimate_source") if prior else None,
+                "prior_decision_clock": prior.get("decision_clock") if prior else None,
                 "eps_estimate_delta_prev": delta_prev,
                 "eps_estimate_delta_7d": delta_7d,
                 "eps_estimate_delta_30d": delta_30d,
-                "revision_direction_prev": _direction(delta_prev),
+                "revision_direction_prev": direction,
                 "same_event_history_count": len(same_event_history),
-                "same_event_revision_identifiable": obs["next_earnings_date"] is not None,
-                "pit_safe_flag": usable,
+                "same_event_revision_identifiable": obs["estimate_event_identity"] is not None,
+                "source_identity_stable": bool(
+                    prior and obs["estimate_source"] == prior.get("estimate_source")
+                ),
+                "snapshot_schema_qualified": bool(
+                    obs["snapshot_schema_version"] >= MIN_QUALIFIED_SNAPSHOT_SCHEMA_VERSION
+                    and prior
+                    and prior.get("snapshot_schema_version", 0)
+                    >= MIN_QUALIFIED_SNAPSHOT_SCHEMA_VERSION
+                ),
+                "estimate_rollback_detected": rollback,
+                "revision_quarantine_reason": quarantine_reason,
+                "decision_id": decision_id,
+                "decision_qualified": bool(
+                    usable and decision_id and direction in {"up", "down"}
+                ),
+                "pit_safe_flag": revision_pit_safe,
                 "estimate_revision_usable": usable,
                 "pit_caveat": _pit_caveat(current_pit_safe, prior, obs),
                 **_empty_match_fields(),
@@ -317,6 +360,11 @@ def summarize_ledger_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
         for row in rows
         if row.get("estimate_revision_usable") and row.get("matched_candidate_today")
     ]
+    qualified_decisions = [row for row in rows if row.get("decision_qualified")]
+    quarantined = [row for row in rows if row.get("revision_quarantine_reason")]
+    quarantine_counts: dict[str, int] = defaultdict(int)
+    for row in quarantined:
+        quarantine_counts[str(row["revision_quarantine_reason"])] += 1
     return {
         "schema_version": SCHEMA_VERSION,
         "row_count": len(rows),
@@ -324,6 +372,12 @@ def summarize_ledger_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "rows_with_next_earnings_date": sum(row.get("next_earnings_date") is not None for row in rows),
         "rows_with_prior_same_event": sum(row.get("prior_snapshot_eps_estimate") is not None for row in rows),
         "estimate_revision_usable_rows": len(usable),
+        "qualified_nonflat_decision_rows": len(qualified_decisions),
+        "independent_decision_count": len(
+            {row.get("decision_id") for row in qualified_decisions if row.get("decision_id")}
+        ),
+        "quarantined_rows": len(quarantined),
+        "quarantine_reason_counts": dict(sorted(quarantine_counts.items())),
         "up_revision_rows": len(up),
         "down_revision_rows": len(down),
         "pit_safe_rate": round(len(usable) / len(rows), 6) if rows else None,
@@ -575,6 +629,14 @@ def _extend_from_list(
                 "action": item.get("action") or item.get("decision") or item.get("status"),
                 "trade_enabled": item.get("trade_enabled"),
                 "alters_orders": item.get("alters_orders"),
+                "cash_conflict": item.get("cash_conflict"),
+                "cash_conflict_id": item.get("cash_conflict_id"),
+                "available_cash_usd": item.get("available_cash_usd"),
+                "requested_notional_usd": item.get("requested_notional_usd"),
+                "cash_source": item.get("cash_source"),
+                "capital_block_reason": item.get("capital_block_reason"),
+                "skip_reason": item.get("skip_reason"),
+                "reason": item.get("reason"),
             }
         )
 
@@ -618,6 +680,14 @@ def _compact_match_record(record: dict[str, Any]) -> dict[str, Any]:
             "action",
             "trade_enabled",
             "alters_orders",
+            "cash_conflict",
+            "cash_conflict_id",
+            "available_cash_usd",
+            "requested_notional_usd",
+            "cash_source",
+            "capital_block_reason",
+            "skip_reason",
+            "reason",
             "feature_flags",
         )
         if key in record
@@ -661,13 +731,125 @@ def _observation_from_snapshot(
     ticker: str,
     item: dict[str, Any],
 ) -> dict[str, Any]:
+    payload = record.get("payload") or {}
+    snapshot_schema_version = int(payload.get("schema_version") or 0)
+    # An earnings calendar date does not identify the estimate's own source
+    # vintage.  Generic forward-EPS fallbacks therefore remain visible but can
+    # never acquire an event identity implicitly.
+    event_date = item.get("eps_estimate_event_date")
+    fiscal_period = item.get("eps_estimate_fiscal_period") or item.get("fiscal_period")
+    estimate_source = item.get("eps_estimate_source") or item.get("estimate_source")
+    # Merged broad-universe rows are retrieved after the core snapshot.  Their
+    # availability clock must be the row clock; falling back to the top-level
+    # snapshot timestamp would backdate those observations.
+    decision_clock = _aware_timestamp(item.get("observed_at"))
     return {
         "ticker": ticker.upper(),
         "as_of_date": record["as_of_date"].isoformat(),
         "next_earnings_date": item.get("next_earnings_date"),
+        "estimate_event_identity": _estimate_event_identity(event_date, fiscal_period),
+        "estimate_fiscal_period": str(fiscal_period) if fiscal_period not in (None, "") else None,
+        "estimate_source": str(estimate_source) if estimate_source not in (None, "") else None,
+        "vendor_asof": item.get("eps_estimate_vendor_asof") or item.get("vendor_asof"),
         "eps_estimate": _float_or_none(item.get("eps_estimate")),
         "source_snapshot_pit_safe": _snapshot_pit_safe(record),
+        "snapshot_schema_version": snapshot_schema_version,
+        "decision_clock": decision_clock.isoformat(timespec="seconds") if decision_clock else None,
+        "decision_clock_valid": decision_clock is not None,
     }
+
+
+def _estimate_event_identity(event_date: Any, fiscal_period: Any) -> str | None:
+    if event_date in (None, ""):
+        return None
+    period = str(fiscal_period).strip() if fiscal_period not in (None, "") else "unknown"
+    return f"earnings:{str(event_date).strip()}:{period}"
+
+
+def _aware_timestamp(value: Any) -> datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        text = str(value).strip()
+        if text.endswith("Z"):
+            text = text[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _is_estimate_rollback(
+    *,
+    current_estimate: float | None,
+    prior: dict[str, Any] | None,
+    same_event_history: list[dict[str, Any]],
+) -> bool:
+    if current_estimate is None or prior is None:
+        return False
+    prior_estimate = prior.get("eps_estimate")
+    if prior_estimate is None or _delta(current_estimate, prior_estimate) == 0:
+        return False
+    return any(
+        candidate.get("eps_estimate") is not None
+        and abs(float(candidate["eps_estimate"]) - float(current_estimate)) <= 1e-9
+        for candidate in same_event_history[:-1]
+    )
+
+
+def _revision_quarantine_reason(
+    *,
+    current_pit_safe: bool,
+    prior: dict[str, Any] | None,
+    obs: dict[str, Any],
+    prior_eps: float | None,
+    rollback: bool,
+) -> str | None:
+    pit = _pit_caveat(current_pit_safe, prior, obs)
+    if pit:
+        return pit
+    if (
+        obs.get("snapshot_schema_version", 0) < MIN_QUALIFIED_SNAPSHOT_SCHEMA_VERSION
+        or prior is None
+        or prior.get("snapshot_schema_version", 0) < MIN_QUALIFIED_SNAPSHOT_SCHEMA_VERSION
+    ):
+        return "legacy_snapshot_schema"
+    if obs.get("eps_estimate") is None or prior_eps is None:
+        return "missing_eps_estimate"
+    if not obs.get("estimate_source") or not prior.get("estimate_source"):
+        return "missing_estimate_source"
+    if obs.get("estimate_source") != prior.get("estimate_source"):
+        return "estimate_source_switch"
+    if not obs.get("decision_clock_valid") or not prior.get("decision_clock_valid"):
+        return "naive_or_missing_decision_clock"
+    if rollback:
+        return "estimate_rollback_to_prior_value"
+    return None
+
+
+def _decision_id(
+    *,
+    ticker: str,
+    obs: dict[str, Any],
+    prior: dict[str, Any] | None,
+    direction: str | None,
+) -> str | None:
+    if direction not in {"up", "down"} or prior is None or not obs.get("decision_clock"):
+        return None
+    payload = {
+        "ticker": ticker,
+        "estimate_source": obs.get("estimate_source"),
+        "estimate_event_identity": obs.get("estimate_event_identity"),
+        "old_estimate": prior.get("eps_estimate"),
+        "new_estimate": obs.get("eps_estimate"),
+        "first_seen_at": obs.get("decision_clock"),
+    }
+    digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    ).hexdigest()[:24]
+    return f"estimate-revision:{digest}"
 
 
 def _snapshot_pit_safe(record: dict[str, Any]) -> bool:
@@ -697,6 +879,8 @@ def _pit_caveat(
 ) -> str | None:
     if obs["next_earnings_date"] is None:
         return "missing_next_earnings_date"
+    if obs.get("estimate_event_identity") is None:
+        return "missing_estimate_event_identity"
     if prior is None:
         return "no_prior_same_event_snapshot"
     if not current_pit_safe:

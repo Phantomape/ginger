@@ -9,9 +9,21 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
 import math
+import os
 from typing import Any, Iterable
 
 import pandas as pd
+
+try:
+    from moomoo_open_positions import (
+        _redirect_moomoo_sdk_appdata,
+        _restore_moomoo_sdk_appdata,
+    )
+except ImportError:  # pragma: no cover - package-style imports
+    from quant.moomoo_open_positions import (
+        _redirect_moomoo_sdk_appdata,
+        _restore_moomoo_sdk_appdata,
+    )
 
 
 LEVERAGED_PRODUCTS: dict[str, dict[str, Any]] = {
@@ -317,6 +329,18 @@ def quote_from_ticker_payload(payload: dict, capture_time_et: str) -> dict | Non
     }
 
 
+def _import_moomoo_quote_sdk() -> tuple[Any, Any, Any, Any, Any]:
+    """Import the SDK while its import-time logger points at writable storage."""
+    redirected = not os.environ.get("GINGER_MOOMOO_USE_SYSTEM_APPDATA")
+    previous_appdata = _redirect_moomoo_sdk_appdata() if redirected else None
+    try:
+        from moomoo import AuType, KLType, OpenQuoteContext, RET_OK, Session
+    finally:
+        if redirected:
+            _restore_moomoo_sdk_appdata(previous_appdata)
+    return AuType, KLType, OpenQuoteContext, RET_OK, Session
+
+
 def fetch_intraday_context(
     tickers: Iterable[str],
     *,
@@ -347,7 +371,7 @@ def fetch_intraday_context(
         return result
 
     try:
-        from moomoo import AuType, KLType, OpenQuoteContext, RET_OK, Session
+        AuType, KLType, OpenQuoteContext, RET_OK, Session = _import_moomoo_quote_sdk()
     except Exception as exc:  # pragma: no cover - depends on local SDK
         result["errors"]["sdk"] = str(exc)
         return result

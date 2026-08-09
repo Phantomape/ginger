@@ -8,42 +8,42 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 ```json
 {
-  "candidate_objects_total": 43,
+  "candidate_objects_total": 45,
   "candidate_source_breakdown": {
     "entry_execution_plan.deferred_breakout_signals": 7,
     "entry_execution_plan.slot_sliced_signals": 5,
     "pilot_entry_execution_plan.pilot_slot_sliced_signals": 6,
     "pilot_signals": 5,
-    "signals": 20
+    "signals": 22
   },
   "candidates_with_eps_estimate_delta_7d": 18,
   "closed_forward_outcomes": {
-    "10d": 43,
+    "10d": 44,
     "20d": 43,
-    "5d": 43
+    "5d": 44
   },
   "expectation_join_status_counts": {
-    "ledger_row_not_usable": 12,
+    "ledger_row_not_usable": 13,
     "missing_ledger_row": 2,
-    "usable_ledger_missing_7d_delta": 11,
+    "usable_ledger_missing_7d_delta": 12,
     "usable_ledger_with_7d_delta": 18
   },
-  "ledger_joined_candidates": 41,
-  "ledger_usable_candidates": 29,
+  "ledger_joined_candidates": 43,
+  "ledger_usable_candidates": 30,
   "positive_expectation_candidates": 8,
   "record_type_breakdown": {
     "deferred_breakout_signal": 7,
     "pilot_slot_sliced_signal": 6,
     "selected_pilot_signal": 5,
-    "selected_signal": 20,
+    "selected_signal": 22,
     "slot_sliced_signal": 5
   },
-  "residual_context_ok_candidates": 30,
+  "residual_context_ok_candidates": 32,
   "residual_context_status_counts": {
     "insufficient_residual_inputs": 13,
-    "ok": 30
+    "ok": 32
   },
-  "residual_leader_candidates": 26
+  "residual_leader_candidates": 28
 }
 ```
 
@@ -53,7 +53,7 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 8 | 1.3937% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
+| C_residual_leader_only | 20 | 19 | -4.5604% | 19 | -8.3065% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Reconstructed Scout
@@ -68,16 +68,16 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
   "not_gate4_evidence": true,
   "pit_caveat_counts": {
     "missing_next_earnings_date": 11,
-    "no_prior_same_event_snapshot": 1
+    "no_prior_same_event_snapshot": 2
   },
   "positive_expectation_candidates": 8,
   "scope": "non_pit_reconstructed_scout_only",
   "source_quality_counts": {
     "missing": 2,
-    "non_pit_reconstructed": 12,
-    "pit_usable": 29
+    "non_pit_reconstructed": 13,
+    "pit_usable": 30
   },
-  "total_usable_candidates": 43
+  "total_usable_candidates": 44
 }
 ```
 
@@ -85,7 +85,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 8 | 8 | 1.1268% | 8 | 1.3937% |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 18 | 18 | -4.9747% | 18 | -9.1422% |
+| C_residual_leader_only | 20 | 19 | -4.5604% | 19 | -8.3065% |
 | D_neither | 17 | 17 | 0.0331% | 17 | -1.7556% |
 
 ## Gate
@@ -103,7 +103,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     },
     {
       "bucket_a_avg_return": 0.011268,
-      "comparison_avg_return": -0.049747,
+      "comparison_avg_return": -0.045604,
       "comparison_bucket": "C_residual_leader_only",
       "horizon": "5d",
       "passed": true
@@ -124,7 +124,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
     },
     {
       "bucket_a_avg_return": 0.013937,
-      "comparison_avg_return": -0.091422,
+      "comparison_avg_return": -0.083065,
       "comparison_bucket": "C_residual_leader_only",
       "horizon": "10d",
       "passed": true
@@ -147,7 +147,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
   "decision": "rejected_expectation_residual_leadership_attribution",
   "passed": false,
   "reason": "bucket_a_failed_outperformance_or_concentration",
-  "total_usable_candidates": 43
+  "total_usable_candidates": 44
 }
 ```
 

@@ -1,18 +1,23 @@
 import json
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from data_paths import daily_artifact_path
 
 
-SNAPSHOT_SCHEMA_VERSION = 2
+SNAPSHOT_SCHEMA_VERSION = 3
 SNAPSHOT_FIELDS = (
     "next_earnings_date",
     "next_earnings_date_source",
     "next_earnings_date_inferred",
     "days_to_earnings",
     "eps_estimate",
+    "eps_estimate_source",
+    "eps_estimate_event_date",
+    "eps_estimate_fiscal_period",
+    "eps_estimate_vendor_asof",
+    "observed_at",
     "eps_actual_last",
     "avg_historical_surprise_pct",
     "historical_surprise_pct",
@@ -52,12 +57,41 @@ def _infer_next_earnings_date_from_dte(as_of, days_to_earnings):
     return None
 
 
-def _normalize_snapshot_row(earnings_data, as_of):
+def _aware_utc_iso(value):
+    if value in (None, ""):
+        return None
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        try:
+            text = str(value).strip()
+            if text.endswith("Z"):
+                text = text[:-1] + "+00:00"
+            parsed = datetime.fromisoformat(text)
+        except (TypeError, ValueError):
+            return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc).isoformat(timespec="seconds")
+
+
+def _normalize_snapshot_row(earnings_data, as_of, *, observed_at=None):
     row = {
         key: value
         for key, value in (earnings_data or {}).items()
         if key in SNAPSHOT_FIELDS
     }
+
+    # Availability is a retrieval fact, not an earnings-calendar fact.  A
+    # caller-provided row clock is retained only when it is timezone-aware;
+    # persistence/merge callers pass their own conservative retrieval clock.
+    row_clock = _aware_utc_iso(observed_at)
+    if row_clock is None:
+        row_clock = _aware_utc_iso(row.get("observed_at"))
+    if row_clock is not None:
+        row["observed_at"] = row_clock
+    else:
+        row.pop("observed_at", None)
 
     if row.get("next_earnings_date") is not None:
         row["next_earnings_date"] = str(row["next_earnings_date"])
@@ -74,9 +108,13 @@ def _normalize_snapshot_row(earnings_data, as_of):
     return row
 
 
-def _build_snapshot_payload(earnings_by_ticker, as_of):
+def _build_snapshot_payload(earnings_by_ticker, as_of, *, observed_at=None):
     earnings = {
-        ticker: _normalize_snapshot_row(earnings_data, as_of)
+        ticker: _normalize_snapshot_row(
+            earnings_data,
+            as_of,
+            observed_at=observed_at,
+        )
         for ticker, earnings_data in (earnings_by_ticker or {}).items()
         if earnings_data is not None
     }
@@ -99,6 +137,10 @@ def _build_snapshot_payload(earnings_by_ticker, as_of):
         "tickers_with_eps_estimate": sum(
             1 for data in earnings.values()
             if data.get("eps_estimate") is not None
+        ),
+        "tickers_with_observed_at": sum(
+            1 for data in earnings.values()
+            if data.get("observed_at") is not None
         ),
         "tickers_with_eps_actual_last": sum(
             1 for data in earnings.values()
@@ -139,6 +181,10 @@ def _count_rows_with_next_earnings_date(payload):
 def _snapshot_should_be_rewritten(existing, replacement):
     if not _payload_has_required_shape(existing):
         return True
+    if int(existing.get("schema_version") or 0) < int(
+        replacement.get("schema_version") or 0
+    ):
+        return True
     existing_next = _count_rows_with_next_earnings_date(existing)
     replacement_next = _count_rows_with_next_earnings_date(replacement)
     return replacement_next > existing_next
@@ -149,6 +195,7 @@ def merge_earnings_into_snapshot(
     as_of=None,
     base_dir=None,
     logger=None,
+    observed_at=None,
 ):
     """Merge additional tickers into an existing daily earnings snapshot.
 
@@ -161,6 +208,11 @@ def merge_earnings_into_snapshot(
     """
     if as_of is None:
         as_of = datetime.now()
+    # The broad fetch may run minutes or hours after the core snapshot.  Stamp
+    # every merged row at merge time so it can never inherit/backdate itself to
+    # the earlier top-level snapshot timestamp.
+    if observed_at is None:
+        observed_at = datetime.now(timezone.utc)
     if logger is None:
         logger = logging.getLogger(__name__)
     if base_dir is None:
@@ -179,6 +231,7 @@ def merge_earnings_into_snapshot(
             as_of=as_of,
             base_dir=base_dir,
             logger=logger,
+            observed_at=observed_at,
         )
 
     try:
@@ -205,7 +258,11 @@ def merge_earnings_into_snapshot(
         ticker = str(raw_ticker).upper().strip()
         if not ticker or ticker in existing_earnings:
             continue
-        row = _normalize_snapshot_row(earnings_data, as_of)
+        row = _normalize_snapshot_row(
+            earnings_data,
+            as_of,
+            observed_at=observed_at,
+        )
         if row is not None:
             existing_earnings[ticker] = row
             new_tickers_added += 1
@@ -238,6 +295,10 @@ def merge_earnings_into_snapshot(
         "tickers_with_eps_estimate": sum(
             1 for data in existing_earnings.values()
             if isinstance(data, dict) and data.get("eps_estimate") is not None
+        ),
+        "tickers_with_observed_at": sum(
+            1 for data in existing_earnings.values()
+            if isinstance(data, dict) and data.get("observed_at") is not None
         ),
         "tickers_with_eps_actual_last": sum(
             1 for data in existing_earnings.values()
@@ -276,10 +337,13 @@ def persist_earnings_snapshot(
     as_of=None,
     base_dir=None,
     logger=None,
+    observed_at=None,
 ):
     """Persist a daily earnings snapshot for later backtest replay."""
     if as_of is None:
         as_of = datetime.now()
+    if observed_at is None:
+        observed_at = as_of
     if logger is None:
         logger = logging.getLogger(__name__)
     if base_dir is None:
@@ -288,7 +352,11 @@ def persist_earnings_snapshot(
     date_str = as_of.strftime("%Y%m%d")
     snapshot_path = os.path.join(base_dir, f"earnings_snapshot_{date_str}.json")
     os.makedirs(os.path.dirname(os.path.abspath(snapshot_path)), exist_ok=True)
-    payload = _build_snapshot_payload(earnings_by_ticker, as_of)
+    payload = _build_snapshot_payload(
+        earnings_by_ticker,
+        as_of,
+        observed_at=observed_at,
+    )
 
     if os.path.exists(snapshot_path):
         try:

@@ -7,7 +7,7 @@ records before making strategy changes.
 ## Current Conclusion
 
 - Experiments: `243`
-- Accepted / rejected: `50` / `190`
+- Accepted / rejected: `50` / `193`
 - Accept rate: `20.58%`
 - Sum EV delta: `+16.4984`
 - Sum PnL delta: `$310,110.69`
@@ -62,7 +62,7 @@ records before making strategy changes.
 - `position_cap_or_cap_release` / `core_rs20_acceleration_risk_multiplier`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260512-113, exp-20260512-950`.
   Latest failure: `exp-20260512-950` RS20-plus-acceleration core risk top-up did not clear the canonical three-window gate; the stronger discriminator was still not robust enough to promote.
 - `position_cap_or_cap_release` / `unknown`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260504-015, exp-20260524-017`.
-  Latest failure: `exp-20260524-017` 
+  Latest failure: `exp-20260524-017`
 - `position_cap_or_cap_release` / `addon_min_checkpoint_close_location`: risk `minimal`, guidance `allow_with_standard_gate4_and_trial_disclosure`, recent `exp-20260502-012`.
   Latest failure: `exp-20260502-012` No tested close-location threshold passed multi-window Gate 4; code changes were rolled back.
 

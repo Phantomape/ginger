@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 import sys
 import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
+
+import pytest
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -11,9 +14,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from drugsfda_approval_observer import (  # noqa: E402
     APPROVAL_DATE_ROLE,
     HISTORICAL_PIT_STATUS,
+    OFFICIAL_DOWNLOAD_URL,
+    fetch_daily_drugsfda_snapshot,
     parse_drugsfda_approval_snapshot,
     persist_daily_drugsfda_approval_observer,
     persist_drugsfda_approval_observer,
+    persist_producer_health_summary,
+    validate_producer_snapshot_manifest,
 )
 
 
@@ -105,6 +112,139 @@ def _ledger(path: Path) -> list[dict]:
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+
+
+class _FakeDownloadResponse:
+    def __init__(self, payload: bytes):
+        self._payload = payload
+        self.headers = {
+            "Last-Modified": "Fri, 24 Jul 2026 12:00:00 GMT",
+            "Content-Type": "application/zip",
+        }
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return None
+
+    def read(self, _limit: int) -> bytes:
+        return self._payload
+
+    def geturl(self) -> str:
+        return OFFICIAL_DOWNLOAD_URL
+
+
+def test_official_producer_freezes_manifest_bound_snapshot_and_zero_heartbeat(
+    tmp_path: Path,
+):
+    fixture = _synthetic_zip(tmp_path / "source.zip")
+    output = tmp_path / "observer"
+    calls = []
+    clock_values = iter(
+        [
+            datetime(2026, 7, 28, 12, 0, tzinfo=timezone.utc),
+            datetime(2026, 7, 28, 12, 0, 7, tzinfo=timezone.utc),
+        ]
+    )
+
+    def fake_get(url, *, timeout):
+        calls.append((url, timeout))
+        return _FakeDownloadResponse(fixture.read_bytes())
+
+    produced = fetch_daily_drugsfda_snapshot(
+        "20260728",
+        output_root=output,
+        http_get=fake_get,
+        now_fn=lambda: next(clock_values),
+        http_timeout_seconds=11,
+    )
+
+    assert calls == [(OFFICIAL_DOWNLOAD_URL, 11)]
+    assert produced["status"] == "ok"
+    assert produced["snapshot_reused"] is False
+    assert produced["retrieved_at_utc"] == "2026-07-28T12:00:07Z"
+    assert Path(produced["snapshot_path"]).name == "drugsatfda_20260728.zip"
+    assert Path(produced["manifest_path"]).name == "snapshot_manifest_20260728.json"
+    verified = validate_producer_snapshot_manifest(
+        snapshot_path=produced["snapshot_path"],
+        manifest_path=produced["manifest_path"],
+        run_date="2026-07-28",
+    )
+    assert verified["snapshot_sha256"] == produced["snapshot_sha256"]
+
+    observer = persist_drugsfda_approval_observer(
+        "20260728",
+        raw_zip_path=produced["snapshot_path"],
+        snapshot_manifest_path=produced["manifest_path"],
+        output_root=output,
+        observed_at=produced["retrieved_at_utc"],
+    )
+    assert observer["observed_at"] == "2026-07-28T12:00:07Z"
+    assert (
+        observer["availability_timestamp_source"]
+        == "immutable_producer_manifest_retrieval_utc"
+    )
+    health = persist_producer_health_summary(
+        run_date="20260728",
+        producer_result=produced,
+        observer_summary=observer,
+        output_root=output,
+    )
+    assert health["status"] == "ok"
+    assert health["snapshot_fresh"] is True
+    assert health["zero_event_heartbeat"] is True
+    assert health["heartbeat_status"] == "fresh_success_zero_forward"
+
+    reused = fetch_daily_drugsfda_snapshot(
+        "20260728",
+        output_root=output,
+        http_get=lambda *_args, **_kwargs: pytest.fail("must reuse immutable pair"),
+        now_fn=lambda: datetime(2026, 7, 28, 13, 0, tzinfo=timezone.utc),
+    )
+    assert reused["status"] == "ok"
+    assert reused["snapshot_reused"] is True
+    assert reused["retrieved_at_utc"] == produced["retrieved_at_utc"]
+
+
+def test_manifest_clock_mismatch_and_unverified_override_fail_closed(tmp_path: Path):
+    fixture = _synthetic_zip(tmp_path / "source.zip")
+    output = tmp_path / "observer"
+    times = iter(
+        [
+            datetime(2026, 7, 28, 12, 0, tzinfo=timezone.utc),
+            datetime(2026, 7, 28, 12, 1, tzinfo=timezone.utc),
+        ]
+    )
+    produced = fetch_daily_drugsfda_snapshot(
+        "20260728",
+        output_root=output,
+        http_get=lambda *_args, **_kwargs: _FakeDownloadResponse(fixture.read_bytes()),
+        now_fn=lambda: next(times),
+    )
+
+    with pytest.raises(ValueError, match="does not match immutable"):
+        persist_drugsfda_approval_observer(
+            "20260728",
+            raw_zip_path=produced["snapshot_path"],
+            snapshot_manifest_path=produced["manifest_path"],
+            output_root=output,
+            observed_at="2026-07-28T13:00:00Z",
+        )
+
+    health = persist_producer_health_summary(
+        run_date="20260728",
+        producer_result={
+            "status": "ok",
+            "producer_mode": "configured_local_snapshot",
+            "source_mode": "local_override",
+            "snapshot_path": str(fixture),
+        },
+        output_root=tmp_path / "local_health",
+    )
+    assert health["status"] == "unavailable"
+    assert health["heartbeat_status"] == "unverified_local_override"
+    assert health["snapshot_fresh"] is False
 
 
 def test_parse_original_approved_nda_bla_and_dedupe_application(tmp_path: Path):

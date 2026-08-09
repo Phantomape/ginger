@@ -138,6 +138,24 @@ def _candidate(candidate_id="cand-a", queue="explore", **overrides):
     return row
 
 
+def _lineage(parent_snapshot=None, **overrides):
+    if parent_snapshot is None:
+        parent_snapshot = HypothesisCandidate.with_computed_id(_candidate()).to_dict()
+    row = {
+        "parent_candidate_id": parent_snapshot["candidate_id"],
+        "parent_candidate_snapshot": deepcopy(parent_snapshot),
+        "parent_candidate_snapshot_hash": canonical_hash(parent_snapshot),
+        "parent_selection_scope_id": "scope-contract-lineage-v1",
+        "amendment_reason": "outcome_blind_contract_completion",
+        "changed_fields": ["source_readiness_snapshot"],
+        "parent_outcome_accessed": False,
+        "parent_experiment_id": None,
+        "declared_at": "2026-07-29T03:30:00-04:00",
+    }
+    row.update(overrides)
+    return row
+
+
 def _assert_code(code, func):
     with pytest.raises(ContractValidationError) as caught:
         func()
@@ -291,6 +309,106 @@ def test_canonical_pit_does_not_claim_sample_maturity_by_itself():
     assert surface.pit_status == "canonical_pit"
     assert surface.evidence_grade == "observer"
     assert surface.gate_ready is False
+
+
+def test_research_pit_is_replayable_but_never_gate_ready():
+    surface = EvidenceSurface.from_dict(
+        _surface(
+            pit_status="research_pit",
+            evidence_grade="lead",
+            settled_count=0,
+            independent_count=240,
+            candidate_overlap_count=38,
+            gate_ready=False,
+            source_contract_status="pass",
+            research_pit_basis=(
+                "row event_time is vendor supplied; historical values are replayable, "
+                "but as-known vintage revisions are not independently archived"
+            ),
+            known_future_leakage=False,
+        )
+    )
+
+    assert surface.pit_status == "research_pit"
+    assert surface.evidence_grade == "lead"
+    assert surface.gate_ready is False
+    assert surface.settled_count == 0
+    assert surface.to_dict()["known_future_leakage"] is False
+
+
+@pytest.mark.parametrize(
+    "changes,code",
+    [
+        ({"research_pit_basis": None}, "research_pit_basis_required"),
+        ({"known_future_leakage": None}, "research_pit_leakage_attestation_required"),
+        ({"known_future_leakage": True}, "known_future_leakage_requires_not_pit"),
+        ({"source_contract_status": "partial"}, "research_pit_source_contract_not_ready"),
+        ({"independent_count": 0}, "research_pit_history_required"),
+        ({"as_of": None}, "surface_as_of_required"),
+        ({"artifact_snapshot_hashes": {}}, "artifact_snapshot_hash_required"),
+    ],
+)
+def test_research_pit_contract_fails_closed(changes, code):
+    row = _surface(
+        pit_status="research_pit",
+        evidence_grade="lead",
+        settled_count=0,
+        independent_count=20,
+        candidate_overlap_count=5,
+        gate_ready=False,
+        source_contract_status="pass",
+        research_pit_basis="vendor timestamped history; vintage revisions unverified",
+        known_future_leakage=False,
+    )
+    row.update(changes)
+    _assert_code(code, lambda: EvidenceSurface.from_dict(row))
+
+
+def test_research_pit_identity_does_not_depend_on_current_candidate_overlap():
+    surface = EvidenceSurface.from_dict(
+        _surface(
+            pit_status="research_pit",
+            evidence_grade="lead",
+            settled_count=0,
+            independent_count=20,
+            candidate_overlap_count=0,
+            gate_ready=False,
+            source_contract_status="pass",
+            research_pit_basis="vendor timestamped history; vintage revisions unverified",
+            known_future_leakage=False,
+        )
+    )
+
+    assert surface.pit_status == "research_pit"
+    assert surface.candidate_overlap_count == 0
+
+
+def test_research_pit_cannot_claim_canonical_gate_grade():
+    _assert_code(
+        "pit_grade_mismatch",
+        lambda: EvidenceSurface.from_dict(
+            _surface(
+                pit_status="research_pit",
+                evidence_grade="gate_candidate",
+                settled_count=20,
+                independent_count=20,
+                candidate_overlap_count=5,
+                gate_ready=True,
+                source_contract_status="pass",
+                research_pit_basis="timestamped vendor history",
+                known_future_leakage=False,
+            )
+        ),
+    )
+
+
+def test_known_future_leakage_must_be_classified_not_pit():
+    _assert_code(
+        "known_future_leakage_requires_not_pit",
+        lambda: EvidenceSurface.from_dict(
+            _surface(known_future_leakage=True)
+        ),
+    )
 
 
 def test_gate_ready_surface_hashes_exact_registered_artifacts():
@@ -608,6 +726,67 @@ def test_plain_event_lead_abstains_from_market_expectation_claim():
     assert FailureReason.MARKET_EXPECTATION_UNIDENTIFIED in preflight.failure_reasons
 
 
+def test_plain_event_panel_allows_harder_reject_but_keeps_d1_fail_closed():
+    document = HypothesisCandidate.from_dict(_candidate()).to_dict()
+    document["candidate_kind"] = "plain_event_lead"
+    document["expectation_gap"] = None
+    document["fingerprint"]["expectation_proxy"] = "unidentified"
+    document["evidence_grade"] = "lead"
+    lead = HypothesisCandidate.with_computed_id(document)
+    candidate_id = lead.candidate_id
+
+    def rehash_panel(panel):
+        preflight = panel["preflight_decisions"][candidate_id]
+        unhashed_preflight = deepcopy(preflight)
+        unhashed_preflight.pop("preflight_hash")
+        preflight["preflight_hash"] = canonical_hash(unhashed_preflight)
+        panel["preflight_decision_hashes"][candidate_id] = preflight[
+            "preflight_hash"
+        ]
+        panel["rejection_reasons"][candidate_id] = list(
+            preflight["failure_reasons"]
+        )
+        unhashed_panel = deepcopy(panel)
+        unhashed_panel.pop("panel_hash")
+        panel["panel_hash"] = canonical_hash(unhashed_panel)
+        return panel
+
+    rejected = _build_panel([lead]).to_dict()
+    rejected_preflight = rejected["preflight_decisions"][candidate_id]
+    rejected_preflight["gates"]["D0"] = {
+        "status": "reject",
+        "reasons": ["component_source_not_registered:test-source"],
+    }
+    rejected_preflight["decision"] = "reject"
+    rejected = rehash_panel(rejected)
+
+    parsed = SelectionPanel.from_dict(rejected)
+    assert parsed.preflight_decisions[candidate_id].decision == "reject"
+    assert parsed.preflight_decisions[candidate_id].gates["D1"]["status"] == "park"
+    assert parsed.selected_candidate_ids == ()
+
+    missing_d1_park = deepcopy(rejected)
+    missing_d1_park["preflight_decisions"][candidate_id]["gates"]["D1"] = {
+        "status": "pass",
+        "reasons": [],
+    }
+    missing_d1_park = rehash_panel(missing_d1_park)
+    _assert_code(
+        "plain_event_preflight_mismatch",
+        lambda: SelectionPanel.from_dict(missing_d1_park),
+    )
+
+    missing_expectation_reason = deepcopy(rejected)
+    missing_expectation_reason["preflight_decisions"][candidate_id][
+        "failure_reasons"
+    ] = ["incomplete_selection_panel"]
+    missing_expectation_reason = rehash_panel(missing_expectation_reason)
+    _assert_code(
+        "plain_event_preflight_mismatch",
+        lambda: SelectionPanel.from_dict(missing_expectation_reason),
+    )
+
+
 def test_early_expectation_gap_lead_may_abstain_from_ticker_mapping():
     row = _candidate(evidence_grade="lead")
     row["expectation_gap"]["transmission"]["affected_tickers"] = []
@@ -691,6 +870,274 @@ def test_readiness_refresh_keeps_candidate_identity_but_changes_frozen_snapshot_
         != refreshed_panel.candidate_snapshot_hashes[candidate_id]
     )
     assert first_panel.panel_hash != refreshed_panel.panel_hash
+
+
+def test_amendment_lineage_round_trips_freezes_and_enters_semantic_identity():
+    parent = HypothesisCandidate.with_computed_id(_candidate()).to_dict()
+    document = deepcopy(parent)
+    document["source_readiness_snapshot"][0]["snapshot_hash"] = "9" * 64
+    document["baseline"]["comparator_allocation_attachment"] = (
+        "data/alpha_search/comparator-allocation.json"
+    )
+    document["baseline"]["comparator_allocation_attachment_hash"] = "8" * 64
+    document["treatment"]["endpoint_preflight_attachment"] = (
+        "data/alpha_search/endpoint-preflight.json"
+    )
+    document["treatment"]["endpoint_preflight_attachment_hash"] = "7" * 64
+    document["next_machine_action"] = "Run a fresh outcome-blind review."
+    document["amendment_lineage"] = _lineage(
+        parent,
+        changed_fields=[
+            "treatment.endpoint_preflight_attachment_hash",
+            "source_readiness_snapshot",
+            "baseline.comparator_allocation_attachment",
+            "treatment.endpoint_preflight_attachment",
+            "baseline.comparator_allocation_attachment_hash",
+            "next_machine_action",
+        ],
+    )
+
+    amended = HypothesisCandidate.with_computed_id(document)
+    canonical = amended.to_dict()
+    round_tripped = HypothesisCandidate.from_dict(canonical)
+    without_lineage = deepcopy(document)
+    without_lineage.pop("amendment_lineage")
+    unlineaged = HypothesisCandidate.with_computed_id(without_lineage)
+
+    assert round_tripped.to_dict() == canonical
+    assert canonical["amendment_lineage"]["parent_candidate_snapshot"] == parent
+    assert canonical["amendment_lineage"][
+        "parent_candidate_snapshot_hash"
+    ] == canonical_hash(parent)
+    assert canonical["amendment_lineage"]["declared_at"] == "2026-07-29T07:30:00Z"
+    assert canonical["amendment_lineage"]["changed_fields"] == sorted(
+        document["amendment_lineage"]["changed_fields"]
+    )
+    assert "amendment_lineage" in amended.semantic_payload()
+    assert amended.candidate_id != unlineaged.candidate_id
+    with pytest.raises(TypeError):
+        amended.amendment_lineage["declared_at"] = "2026-07-30T00:00:00Z"
+
+
+def test_legacy_candidate_accepts_amendment_lineage_and_emits_document_form():
+    lineage = _lineage()
+    candidate = HypothesisCandidate.from_dict(_candidate(amendment_lineage=lineage))
+    document = candidate.to_dict()
+
+    assert document["amendment_lineage"]["parent_candidate_id"].startswith("cand-")
+    assert HypothesisCandidate.from_dict(document).to_dict() == document
+
+
+def _abandoned_entry(ancestor_id="cand-abandoned-original-1"):
+    return {
+        "ancestor_candidate_id": ancestor_id,
+        "attestation_artifact": "data/alpha_search/pre_reservation_block.json",
+        "attestation_artifact_hash": "6" * 64,
+    }
+
+
+def test_amendment_lineage_abandoned_ancestors_round_trip_and_canonical_order():
+    lineage = _lineage(
+        abandoned_ancestors=[
+            _abandoned_entry("cand-zzlater"),
+            _abandoned_entry("cand-aaearlier"),
+        ]
+    )
+    candidate = HypothesisCandidate.from_dict(_candidate(amendment_lineage=lineage))
+    document = candidate.to_dict()
+
+    ordered = [
+        row["ancestor_candidate_id"]
+        for row in document["amendment_lineage"]["abandoned_ancestors"]
+    ]
+    assert ordered == ["cand-aaearlier", "cand-zzlater"]
+    assert HypothesisCandidate.from_dict(document).to_dict() == document
+
+    bare = _lineage()
+    plain = HypothesisCandidate.from_dict(_candidate(amendment_lineage=bare))
+    assert "abandoned_ancestors" not in plain.to_dict()["amendment_lineage"]
+
+
+def test_amendment_lineage_abandoned_ancestors_shape_fails_closed():
+    _assert_code(
+        "abandoned_ancestors_empty",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(amendment_lineage=_lineage(abandoned_ancestors=[]))
+        ),
+    )
+    _assert_code(
+        "abandoned_ancestors_invalid",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(
+                amendment_lineage=_lineage(abandoned_ancestors="cand-abandoned")
+            )
+        ),
+    )
+    _assert_code(
+        "abandoned_ancestor_duplicate",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(
+                amendment_lineage=_lineage(
+                    abandoned_ancestors=[_abandoned_entry(), _abandoned_entry()]
+                )
+            )
+        ),
+    )
+
+    parent_snapshot = HypothesisCandidate.with_computed_id(_candidate()).to_dict()
+    _assert_code(
+        "abandoned_ancestor_is_parent",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(
+                amendment_lineage=_lineage(
+                    parent_snapshot,
+                    abandoned_ancestors=[
+                        _abandoned_entry(parent_snapshot["candidate_id"])
+                    ],
+                )
+            )
+        ),
+    )
+    _assert_code(
+        "unknown_field",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(
+                amendment_lineage=_lineage(
+                    abandoned_ancestors=[
+                        {**_abandoned_entry(), "outcome_note": "smuggled"}
+                    ]
+                )
+            )
+        ),
+    )
+    _assert_code(
+        "invalid_sha256",
+        lambda: HypothesisCandidate.from_dict(
+            _candidate(
+                amendment_lineage=_lineage(
+                    abandoned_ancestors=[
+                        {**_abandoned_entry(), "attestation_artifact_hash": "xyz"}
+                    ]
+                )
+            )
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "mutation,code",
+    [
+        (lambda row: row.pop("declared_at"), "missing_field"),
+        (lambda row: row.update({"extra": "forbidden"}), "unknown_field"),
+        (
+            lambda row: row.update({"parent_candidate_id": "parent-candidate"}),
+            "invalid_candidate_id",
+        ),
+        (
+            lambda row: row.update({"parent_candidate_snapshot_hash": "not-a-hash"}),
+            "invalid_sha256",
+        ),
+        (
+            lambda row: row.update({"parent_candidate_snapshot_hash": "0" * 64}),
+            "parent_candidate_snapshot_hash_mismatch",
+        ),
+        (
+            lambda row: row.update({"parent_selection_scope_id": "selection-1"}),
+            "invalid_selection_scope_id",
+        ),
+        (
+            lambda row: row.update({"amendment_reason": "retune_policy"}),
+            "invalid_amendment_reason",
+        ),
+        (
+            lambda row: row.update(
+                {"amendment_reason": "OUTCOME_BLIND_CONTRACT_COMPLETION"}
+            ),
+            "invalid_amendment_reason",
+        ),
+        (lambda row: row.update({"changed_fields": []}), "nonempty_list_required"),
+        (
+            lambda row: row.update({"parent_outcome_accessed": True}),
+            "parent_outcome_accessed_not_false",
+        ),
+        (
+            lambda row: row.update({"parent_experiment_id": "exp-20260729-004"}),
+            "parent_experiment_id_not_null",
+        ),
+        (
+            lambda row: row.update({"declared_at": "2026-07-29T03:30:00"}),
+            "invalid_known_at",
+        ),
+        (
+            lambda row: row.update({"declared_at": "2026-07-29"}),
+            "timestamp_required",
+        ),
+        (
+            lambda row: row.update({"actual_return": 0.1}),
+            "forbidden_outcome_field",
+        ),
+    ],
+)
+def test_amendment_lineage_strict_schema_fails_closed(mutation, code):
+    lineage = _lineage()
+    mutation(lineage)
+    _assert_code(
+        code,
+        lambda: HypothesisCandidate.from_dict(_candidate(amendment_lineage=lineage)),
+    )
+
+
+@pytest.mark.parametrize(
+    "field_path",
+    [
+        "fingerprint.economic_mechanism",
+        "treatment.policy",
+        "treatment.threshold",
+        "fingerprint.ranking",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "baseline.notional",
+        "execution_envelope.intended_instrument",
+    ],
+)
+def test_amendment_lineage_rejects_policy_and_execution_changes(field_path):
+    lineage = _lineage(changed_fields=[field_path])
+    _assert_code(
+        "amendment_field_not_allowed",
+        lambda: HypothesisCandidate.from_dict(_candidate(amendment_lineage=lineage)),
+    )
+
+
+@pytest.mark.parametrize(
+    "mutation,code",
+    [
+        (
+            lambda snapshot: snapshot.pop("candidate_id"),
+            "missing_field",
+        ),
+        (
+            lambda snapshot: snapshot.update({"candidate_id": "cand-another"}),
+            "parent_candidate_id_mismatch",
+        ),
+        (
+            lambda snapshot: snapshot.update({"amendment_lineage": {}}),
+            "nested_amendment_lineage",
+        ),
+        (
+            lambda snapshot: snapshot.update({"after_metrics": {"sharpe": 2.0}}),
+            "forbidden_outcome_field",
+        ),
+    ],
+)
+def test_amendment_lineage_parent_snapshot_is_bound_and_outcome_blind(
+    mutation, code
+):
+    lineage = _lineage()
+    mutation(lineage["parent_candidate_snapshot"])
+    _assert_code(
+        code,
+        lambda: HypothesisCandidate.from_dict(_candidate(amendment_lineage=lineage)),
+    )
 
 
 def test_panel_rejects_empty_duplicates_and_claimed_hash_tampering():

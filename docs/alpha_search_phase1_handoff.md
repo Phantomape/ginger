@@ -93,6 +93,39 @@ evidence_grade: lead
 next_machine_action: complete only the outcome-blind source-contract and issuer-overlap audit for the exploitation candidate; do not read returns or reserve an experiment
 ```
 
+## Phase 1.5 integrity rerun — 2026-07-21
+
+Phase 2 remains **NO-GO**. Experiment `exp-20260721-002` repaired the search
+measurement boundary without testing returns or changing trading policy:
+
+- repository history is now a canonical, cutoff-bound, nonempty snapshot;
+  supplying an empty prior fails closed;
+- history can veto duplicates, enforce frozen/reopen conditions, and support
+  calibration audits, but it cannot rank the next strategy family or feed past
+  winners back into candidate generation;
+- `quant/meta_research_engine.py` was removed. Its neutral deduplication, trial
+  accounting, calibration, and freeze functions moved to
+  `quant/experiment_history.py`;
+- the estimate-revision surface now requires an explicit event identity,
+  row-level timezone-aware observation clock, effective-dated ticker/CIK map,
+  next-session entry, H5/H10/H20 settlement, and structured cash-admission
+  evidence;
+- all 38,494 legacy revision rows remain quarantined. Qualified non-flat
+  independent decisions, mapped qualified tickers, actual cash conflicts, and
+  settled H5/H10/H20 decisions are all zero. Old rows were not retro-qualified.
+
+The frozen Phase-1.5 rerun again evaluated three candidates and selected none.
+The muted-response revision candidate was rejected by D3 and machine-matched
+the historical underreaction family represented by `exp-20260605-029`. This is
+an accepted measurement repair, not an accepted alpha.
+
+Phase 2 may reopen only after all of these are simultaneously true: at least 30
+qualified non-flat independent decisions, at least 10 mapped tickers, at least
+10 structured actual cash conflicts, at least 30 settled decisions at each of
+H5/H10/H20, passing source contracts, and a fresh outcome-blind D0-D3 scope
+that actually selects a candidate. Until then, threshold retuning and another
+estimate × Moomoo/SEC join are forbidden substitutes for new evidence.
+
 `opportunity_cost_winner` 为 `null`，因为 outcome-blind 阶段不能读取候选收益；机会成本比较已经预先写入每个候选的 replacement-value comparator，只有候选先通过发现层才执行。
 
 ## 6. 第一阶段实现

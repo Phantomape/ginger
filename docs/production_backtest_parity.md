@@ -6,6 +6,24 @@ adds, reduces, sizes, ranks, gates, or skips a trade, the rule must live in a
 shared policy/module or be explicitly listed below as an allowed replay-only
 difference.
 
+## PIT Authority Boundary
+
+Parity cannot upgrade data provenance. A replay-only adapter, shared helper, or
+passing parity test does not turn `research_pit` into `canonical_pit`.
+
+- `research_pit` may be consumed only by a `private_replay_scout`; its output is
+  research-only, `trade_enabled=false`, and ineligible for default-off paper,
+  activation, or live release.
+- Any new accepted/default-off/live path must bind `canonical_pit`: as-known or
+  append-only values, effective-dated mappings, revision semantics, source
+  authorization, and the same decision clock in replay and daily production.
+- `replay_only=true` documents an allowed adapter difference; it is never a PIT
+  waiver. Known temporal leakage invalidates the evidence even if replay and
+  production reproduce it identically.
+
+See [`research_pit_policy.md`](research_pit_policy.md). New parity artifacts
+should include `pit_evidence` alongside `production_impact`.
+
 ## Core Rule
 
 `quant/backtester.py` and `quant/run.py` are adapters.
@@ -121,6 +139,40 @@ core-slot positions may promote a `CRITICAL_EXIT` into account-level
 `FIRE/new_trade_locked`. Legacy, manual, observation, FOMO, and other
 `no_core_slot` rows remain visible as risk work but must not freeze core
 strategy entry capacity by themselves.
+
+Follow-through add-ons obey the same ownership boundary. The shared production
+builder may emit an `ADD` only when `position_consumes_core_slot` classifies the
+holding as core; non-core rows must fail closed with a
+`not_core_strategy_position` audit reason. They remain visible to account-level
+risk and exit handling, but the core-only backtester cannot reproduce an add-on
+for them.
+
+## Default-Off Estimate-Revision Decision Clock
+
+The estimate-revision surface is an observation contract, not an executable
+strategy adapter. Production may persist it daily only when all of the
+following are true:
+
+- the EPS estimate has an explicit source-provided fiscal/event identity;
+  generic `forwardEps` and next-earnings-date fallbacks are quarantined;
+- every row has its own timezone-aware `observed_at`; a later broad-universe
+  merge cannot inherit the earlier file-level clock;
+- issuer/ticker mapping is effective-dated and unresolved mappings fail closed;
+- entry is the first tradable U.S. session open strictly after the evidence
+  clock, with H5/H10/H20 settled from that entry only;
+- readiness counts schema-v3, usable, mapped, non-flat independent decisions,
+  not raw snapshot rows;
+- cash conflicts come only from the structured daily cash-admission observer
+  using account cash and requested notional. Free-form reason text is not
+  evidence of a conflict.
+
+The daily runner uses one `America/New_York` run clock for the snapshot date,
+ledger date, and deferred broad merge. It may write the ledger, instrument map,
+outcomes, readiness report, and cash-admission observations, but it must not
+change signals, ranking, sizing, exits, or orders. Promotion remains blocked
+until the registered 30 independent decisions / 10 mapped tickers / 10 actual
+cash conflicts / 30 settled at each H5-H10-H20 threshold is met and a new
+outcome-blind D0-D3 scope selects a candidate.
 
 ## Adapter Matrix
 

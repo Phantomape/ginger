@@ -125,6 +125,7 @@ def test_finra_source_coverage_record_reports_freshness_and_span(tmp_path: Path)
         [
             {"ticker": "AAPL", "settlement_date": "2024-10-15", "publication_date": "2024-10-24"},
             {"ticker": "AAPL", "settlement_date": "2026-05-29", "publication_date": "2026-06-09"},
+            {"ticker": "MSFT", "settlement_date": "2026-05-29", "publication_date": "2026-06-09"},
         ],
     )
 
@@ -133,7 +134,19 @@ def test_finra_source_coverage_record_reports_freshness_and_span(tmp_path: Path)
     assert record["record_type"] == "data_source_coverage"
     assert record["source_name"] == "finra_short_interest"
     assert record["status"] == "complete"  # row count present and settlement is fresh
-    assert record["row_counts"]["finra_short_interest_rows"] == 2
+    assert record["row_counts"]["finra_short_interest_rows"] == 3
+    assert record["row_counts"]["finra_latest_settlement_ticker_count"] == 2
+    assert record["row_counts"]["finra_latest_publication_ticker_count"] == 2
+    assert record["cohort_density"] == {
+        "latest_settlement_date": "2026-05-29",
+        "latest_settlement_ticker_count": 2,
+        "latest_publication_date": "2026-06-09",
+        "latest_publication_ticker_count": 2,
+        "archive_ticker_count": 2,
+        "latest_settlement_fraction_of_archive": 1.0,
+        "minimum_fraction_required": 0.5,
+        "status": "dense",
+    }
     assert record["source_watermarks"]["settlement_date_max"] == "2026-05-29"
     assert record["pit_status"]["settlement_date_min"] == "2024-10-15"
 
@@ -148,6 +161,26 @@ def test_finra_source_coverage_record_marks_stale_archive_partial(tmp_path: Path
 
     assert record["status"] == "partial"  # rows exist but newest settlement is far stale
     assert record["pit_status"]["overall"] == "finra_archive_stale"
+
+
+def test_finra_source_coverage_record_marks_sparse_latest_cohort_partial(tmp_path: Path) -> None:
+    _write_finra_archive(
+        tmp_path,
+        [
+            {"ticker": "AAA", "settlement_date": "2026-05-15", "publication_date": "2026-05-27"},
+            {"ticker": "BBB", "settlement_date": "2026-05-15", "publication_date": "2026-05-27"},
+            {"ticker": "CCC", "settlement_date": "2026-05-15", "publication_date": "2026-05-27"},
+            {"ticker": "AAA", "settlement_date": "2026-05-29", "publication_date": "2026-06-09"},
+        ],
+    )
+
+    record = build_finra_source_coverage_record("2026-06-16", data_root=tmp_path)
+
+    assert record["status"] == "partial"
+    assert record["pit_status"]["overall"] == "finra_latest_cohort_sparse"
+    assert record["cohort_density"]["latest_settlement_ticker_count"] == 1
+    assert record["cohort_density"]["archive_ticker_count"] == 3
+    assert record["cohort_density"]["status"] == "sparse"
 
 
 def test_data_source_coverage_record_does_not_shadow_per_date_completeness(tmp_path: Path) -> None:

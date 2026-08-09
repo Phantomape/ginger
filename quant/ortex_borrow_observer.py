@@ -19,7 +19,7 @@ from __future__ import annotations
 import bisect
 import json
 import math
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
@@ -37,6 +37,9 @@ OBSERVER_NAME = "ortex_cost_to_borrow_new_observer"
 OUTCOME_RULE_VERSION = "usable_session_open_to_n_sessions_later_close_v1"
 DEFAULT_HORIZONS = (5, 10)
 DEFAULT_NOTIONAL_USD = 1000.0
+DEFAULT_MAX_PROVIDER_LAG_SESSIONS = 5
+DEFAULT_MAX_PROVIDER_LAG_CALENDAR_DAYS = 7
+FRESHNESS_RULE_VERSION = "provider_content_age_sessions_v1"
 
 OBSERVER_DIR = sidecar.DEFAULT_OUTPUT_DIR / "borrow_observer"
 SNAPSHOT_LEDGER_PATH = OBSERVER_DIR / "daily_snapshots.jsonl"
@@ -68,6 +71,44 @@ def _number(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return result if math.isfinite(result) else None
+
+
+def _provider_content_age(
+    provider_day: str,
+    as_of_day: str,
+    trading_sessions: Sequence[Any],
+) -> tuple[int, int, str]:
+    """Return calendar/session age without counting normal weekends as sessions.
+
+    A complete caller calendar is authoritative (and therefore preserves
+    exchange holidays).  Otherwise a weekday-only fallback is intentionally
+    conservative: holidays count as possible sessions and the separate
+    calendar-day limit prevents an incomplete calendar from claiming freshness
+    indefinitely.
+    """
+    start = date.fromisoformat(provider_day)
+    end = date.fromisoformat(as_of_day)
+    if start > end:
+        raise ValueError("provider content date cannot be after as_of")
+    calendar_age = (end - start).days
+    supplied = sorted(
+        {
+            parsed
+            for raw in trading_sessions
+            if (parsed := _date_text(raw)) is not None
+        }
+    )
+    if supplied and supplied[0] <= provider_day and supplied[-1] >= as_of_day:
+        session_age = sum(provider_day < day <= as_of_day for day in supplied)
+        return calendar_age, session_age, "caller_supplied_trading_sessions"
+
+    session_age = 0
+    cursor = start
+    while cursor < end:
+        cursor += timedelta(days=1)
+        if cursor.weekday() < 5:
+            session_age += 1
+    return calendar_age, session_age, "weekday_calendar_fallback"
 
 
 def _load_jsonl(path: str | Path) -> list[dict[str, Any]]:
@@ -139,20 +180,36 @@ def build_daily_snapshot(
     tickers: Sequence[str] = FIXED_RESEARCH_TICKERS,
     generated_at: str | None = None,
     trading_sessions: Iterable[Any] | None = None,
+    max_provider_lag_sessions: int = DEFAULT_MAX_PROVIDER_LAG_SESSIONS,
+    max_provider_lag_calendar_days: int = DEFAULT_MAX_PROVIDER_LAG_CALENDAR_DAYS,
 ) -> dict[str, Any]:
-    """Select latest observations and attach default-off admission parity."""
+    """Select latest observations and fail health closed on stale content."""
     as_of_day = _date_text(as_of)
     if as_of_day is None:
         raise ValueError(f"invalid as_of date: {as_of!r}")
+    if max_provider_lag_sessions < 0 or max_provider_lag_calendar_days < 0:
+        raise ValueError("provider freshness limits must be non-negative")
     universe = tuple(str(ticker).upper() for ticker in tickers)
     source_rows = [dict(raw) for raw in rows]
     sessions = tuple(trading_sessions) if trading_sessions is not None else ()
     latest: dict[str, dict[str, Any]] = {}
+    latest_provider_content: dict[str, str] = {}
     for raw in source_rows:
         ticker = str(raw.get("ticker") or "").upper()
         provider_day = _date_text(raw.get("provider_date"))
         usable_day = _date_text(raw.get("usable_trade_date"))
         value = _number(raw.get("cost_to_borrow_new_pct"))
+        if (
+            ticker in universe
+            and provider_day is not None
+            and provider_day <= as_of_day
+            and value is not None
+            and provider_day > latest_provider_content.get(ticker, "")
+        ):
+            # Content freshness is separate from the conservative usable clock:
+            # a Friday provider row is fresh on the weekend even though it is
+            # not legally usable until the following session.
+            latest_provider_content[ticker] = provider_day
         if (
             ticker not in universe
             or provider_day is None
@@ -174,7 +231,62 @@ def build_daily_snapshot(
             }
     observations = [latest[ticker] for ticker in universe if ticker in latest]
     missing = [ticker for ticker in universe if ticker not in latest]
-    status = "ready" if not missing else ("partial" if observations else "no_usable_rows")
+    freshness_rows: list[dict[str, Any]] = []
+    stale_tickers: list[str] = []
+    content_missing_tickers: list[str] = []
+    for ticker in universe:
+        provider_day = latest_provider_content.get(ticker)
+        if provider_day is None:
+            content_missing_tickers.append(ticker)
+            freshness_rows.append(
+                {
+                    "ticker": ticker,
+                    "latest_provider_date": None,
+                    "content_age_calendar_days": None,
+                    "content_age_sessions": None,
+                    "calendar_source": None,
+                    "is_fresh": False,
+                    "reason": "missing_provider_content",
+                }
+            )
+            continue
+        calendar_age, session_age, calendar_source = _provider_content_age(
+            provider_day,
+            as_of_day,
+            sessions,
+        )
+        # The session limit is primary with a complete trading calendar.  The
+        # ~7-day calendar cap is used only by the conservative weekday fallback.
+        fresh = session_age <= int(max_provider_lag_sessions)
+        if calendar_source == "weekday_calendar_fallback":
+            fresh = fresh and calendar_age <= int(max_provider_lag_calendar_days)
+        if not fresh:
+            stale_tickers.append(ticker)
+        freshness_rows.append(
+            {
+                "ticker": ticker,
+                "latest_provider_date": provider_day,
+                "content_age_calendar_days": calendar_age,
+                "content_age_sessions": session_age,
+                "calendar_source": calendar_source,
+                "is_fresh": fresh,
+                "reason": "within_provider_lag_limit" if fresh else "stale_provider_content",
+            }
+        )
+
+    if not observations:
+        status = "no_usable_rows"
+    elif stale_tickers:
+        status = "stale_content"
+    elif missing or content_missing_tickers:
+        status = "partial"
+    else:
+        status = "ready"
+    freshness_status = (
+        "stale"
+        if stale_tickers
+        else ("missing_content" if content_missing_tickers else "fresh")
+    )
     entry_admission = entry_gate.build_daily_entry_admission_snapshot(
         source_rows,
         as_of_day,
@@ -188,12 +300,26 @@ def build_daily_snapshot(
         "as_of": as_of_day,
         "generated_at": generated_at or sidecar.utc_now_iso(),
         "status": status,
+        "ready": status == "ready",
         "universe_size": len(universe),
         "coverage_count": len(observations),
         "coverage_rate": round(len(observations) / len(universe), 6) if universe else 0.0,
         "missing_tickers": missing,
         "observations": observations,
         "selection_rule": "latest_provider_row_with_usable_trade_date_lte_as_of",
+        "freshness": {
+            "rule_version": FRESHNESS_RULE_VERSION,
+            "status": freshness_status,
+            "max_provider_lag_sessions": int(max_provider_lag_sessions),
+            "calendar_fallback_max_days": int(max_provider_lag_calendar_days),
+            "fresh_ticker_count": len(universe)
+            - len(stale_tickers)
+            - len(content_missing_tickers),
+            "stale_ticker_count": len(stale_tickers),
+            "stale_tickers": stale_tickers,
+            "missing_content_tickers": content_missing_tickers,
+            "by_ticker": freshness_rows,
+        },
         "entry_admission": entry_admission,
         "observer_only": True,
         "strategy_behavior_changed": False,
@@ -429,6 +555,8 @@ def run_ortex_borrow_observer_cycle(
     min_credits_left: float = 250.0,
     estimated_credits_per_request: float = sidecar.DEFAULT_ESTIMATED_CREDITS_PER_REQUEST,
     request_interval_s: float = sidecar.DEFAULT_REQUEST_INTERVAL_S,
+    max_provider_lag_sessions: int = DEFAULT_MAX_PROVIDER_LAG_SESSIONS,
+    max_provider_lag_calendar_days: int = DEFAULT_MAX_PROVIDER_LAG_CALENDAR_DAYS,
     horizons: Sequence[int] = DEFAULT_HORIZONS,
     notional_usd: float = DEFAULT_NOTIONAL_USD,
     collected_at: str | None = None,
@@ -477,6 +605,8 @@ def run_ortex_borrow_observer_cycle(
         tickers=tickers,
         generated_at=collected_at,
         trading_sessions=trading_dates,
+        max_provider_lag_sessions=max_provider_lag_sessions,
+        max_provider_lag_calendar_days=max_provider_lag_calendar_days,
     )
     snapshot_merge = _append_records_atomic(snapshot_ledger_path, (snapshot,))
     atomic_write_json(snapshot, latest_snapshot_path, indent=2, ensure_ascii=True)

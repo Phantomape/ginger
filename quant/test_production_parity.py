@@ -579,6 +579,7 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
                 "original_shares": 10,
                 "avg_cost": 100.0,
                 "entry_date": "2026-01-02",
+                "slot_policy": "consumes_core_slot",
             }
         ]
     }
@@ -602,6 +603,74 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
     assert any(row["status"] == "eligible" for row in audit)
 
 
+def test_build_followthrough_addon_actions_skips_no_core_slot_position():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "RKLB",
+                "shares": 10,
+                "original_shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+                "sleeve": "discretionary",
+                "slot_policy": "no_core_slot",
+            }
+        ]
+    }
+    ohlcv = {
+        "RKLB": _ohlcv([100.0, 101.0, 104.0]),
+        "SPY": _ohlcv([100.0, 100.0, 101.0]),
+    }
+
+    actions, audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"RKLB": 104.0},
+    )
+
+    assert actions == []
+    assert audit == [
+        {
+            "ticker": "RKLB",
+            "status": "skipped",
+            "reason": "not_core_strategy_position",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+        }
+    ]
+
+
+def test_build_followthrough_addon_actions_accepts_legacy_core_group_position():
+    open_positions = {
+        "core_positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "original_shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 101.0, 104.0]),
+        "SPY": _ohlcv([100.0, 100.0, 101.0]),
+    }
+
+    actions, audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"NVDA": 104.0},
+    )
+
+    assert len(actions) == 1
+    assert actions[0]["ticker"] == "NVDA"
+    assert actions[0]["shares_to_buy"] == 5
+    assert any(row["status"] == "eligible" for row in audit)
+
+
 def test_build_followthrough_addon_actions_uses_intended_shares_for_conservative_entry():
     open_positions = {
         "positions": [
@@ -611,6 +680,7 @@ def test_build_followthrough_addon_actions_uses_intended_shares_for_conservative
                 "intended_shares": 10,
                 "avg_cost": 100.0,
                 "entry_date": "2026-01-02",
+                "slot_policy": "consumes_core_slot",
             }
         ]
     }
@@ -643,6 +713,7 @@ def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
                 "original_shares": 35,
                 "avg_cost": 120.0,
                 "entry_date": "2026-01-30",
+                "slot_policy": "consumes_core_slot",
             }
         ]
     }
@@ -675,6 +746,7 @@ def test_build_followthrough_addon_actions_skips_mismatched_latest_dates():
                 "original_shares": 10,
                 "avg_cost": 100.0,
                 "entry_date": "2026-01-02",
+                "slot_policy": "consumes_core_slot",
             }
         ]
     }
@@ -705,6 +777,7 @@ def test_build_followthrough_addon_actions_ignores_stale_current_price_dates():
                 "original_shares": 10,
                 "avg_cost": 100.0,
                 "entry_date": "2026-01-02",
+                "slot_policy": "consumes_core_slot",
             }
         ]
     }

@@ -2,7 +2,7 @@
 
 Covers the execution envelope completeness checklist, the AGENTS.md scout
 materiality floor, the Gate-4 composition over evaluate_experiment_promotion_gate,
-the codified Gate-5 live-readiness check, and the three-rung verdict ladder
+the codified Gate-5 live-readiness check, and the tiered verdict ladder
 (including the two operator-confirmed decisions: forward-immature Gate-4 pass
 lands at accepted_paper_pending_forward, and an incomplete envelope blocks
 live_eligible only). Gate 5 also fails closed for missing, incomplete, or
@@ -601,3 +601,106 @@ def test_full_stack_verdict_rejects_unknown_evaluation_mode():
             live_readiness={"ready": True},
             evaluation_mode="unknown",
         )
+
+
+def test_research_pit_gate4_pass_is_research_only_even_when_gate5_ready():
+    gate4 = evaluate_gate4(_pass_metrics())
+    live_readiness = evaluate_live_readiness(
+        envelope=_full_envelope(),
+        closed_forward_trades=35,
+        forward_pnl=4200.0,
+        replacement_value_passed=True,
+        kill_switch_parity_passed=True,
+        dsr_report=_computed_dsr(),
+    )
+
+    verdict = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        envelope=_full_envelope(),
+        pit_evidence={
+            "tier": "research_pit",
+            "known_future_leakage": False,
+        },
+    )
+
+    assert verdict["verdict"] == "research_only"
+    assert verdict["gate4_passed"] is True
+    assert verdict["live_ready"] is False
+    assert verdict["paper_live_eligible"] is False
+    assert verdict["pit_evidence"]["authority"] == "research_only"
+
+
+@pytest.mark.parametrize(
+    ("gate4", "live_readiness", "message"),
+    [
+        ({"passed": 1}, {"ready": True}, "gate4.passed"),
+        ({"passed": True}, {"ready": 1}, "live_readiness.ready"),
+    ],
+)
+def test_verdict_requires_explicit_boolean_gate_authority(
+    gate4, live_readiness, message
+):
+    with pytest.raises(ValueError, match=message):
+        full_stack_verdict(
+            gate4=gate4,
+            live_readiness=live_readiness,
+            pit_evidence={
+                "tier": "research_pit",
+                "known_future_leakage": False,
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    "pit_evidence",
+    [
+        {"tier": "canonical_pit", "known_future_leakage": True},
+        {"tier": "canonical_pit"},
+        {"known_future_leakage": False},
+        {"tier": "unknown", "known_future_leakage": False},
+    ],
+)
+def test_known_leakage_or_unknown_temporal_evidence_cannot_reach_paper_or_live(
+    pit_evidence,
+):
+    verdict = full_stack_verdict(
+        gate4={"passed": True},
+        live_readiness={"ready": True, "blockers": []},
+        pit_evidence=pit_evidence,
+    )
+
+    assert verdict["verdict"] == "reject"
+    assert verdict["live_ready"] is False
+    assert verdict["paper_live_eligible"] is False
+    assert verdict["pit_evidence"]["authority"] == "invalid"
+
+
+def test_canonical_pit_retains_existing_live_ladder_and_omission_is_legacy_shape():
+    gate4 = {"passed": True}
+    live_readiness = {"ready": True, "blockers": []}
+    legacy = full_stack_verdict(gate4=gate4, live_readiness=live_readiness)
+    canonical = full_stack_verdict(
+        gate4=gate4,
+        live_readiness=live_readiness,
+        pit_evidence={
+            "tier": "canonical_pit",
+            "known_future_leakage": False,
+        },
+    )
+
+    assert legacy["verdict"] == "live_eligible"
+    assert "pit_evidence" not in legacy
+    assert "paper_live_eligible" not in legacy
+    assert canonical["verdict"] == "live_eligible"
+    assert canonical["paper_live_eligible"] is True
+
+
+def test_new_full_stack_template_requires_explicit_pit_evidence():
+    template = (
+        ROOT / "quant" / "experiments" / "_templates" /
+        "candidate_pool_full_stack_template.py"
+    ).read_text(encoding="utf-8")
+
+    assert "def declare_pit_evidence()" in template
+    assert "pit_evidence=pit_evidence" in template

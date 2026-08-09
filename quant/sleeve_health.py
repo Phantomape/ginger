@@ -174,7 +174,7 @@ def _json_surface_date(path: Path) -> str | None:
     return None
 
 
-def _is_heartbeat_state(path: Path) -> bool:
+def _is_recognized_state_surface(path: Path) -> bool:
     if path.name != "state.json":
         return False
     try:
@@ -183,7 +183,12 @@ def _is_heartbeat_state(path: Path) -> bool:
         return False
     if not isinstance(row, dict):
         return False
-    return row.get("surface_contract") == "forward_observation_heartbeat"
+    contract = row.get("surface_contract")
+    if contract == "forward_observation_heartbeat":
+        return True
+    if contract == "append_only_candidate_decision_training_ledger":
+        return path.with_name("rows.jsonl").is_file()
+    return False
 
 
 def _latest_summary_surface(sleeve_dir: Path) -> tuple[str | None, str | None]:
@@ -196,7 +201,7 @@ def _latest_summary_surface(sleeve_dir: Path) -> tuple[str | None, str | None]:
     # snapshots.jsonl; without this glob an alive sleeve reads as never_persisted.
     candidates.extend(sleeve_dir.glob("*snapshot.json"))
     state_path = sleeve_dir / "state.json"
-    if state_path.exists() and _is_heartbeat_state(state_path):
+    if state_path.exists() and _is_recognized_state_surface(state_path):
         candidates.append(state_path)
     for path in sorted(candidates):
         date = _json_surface_date(path)

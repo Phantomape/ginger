@@ -166,7 +166,9 @@ def refresh_archive(
     """Refresh the stalest shard of the archive.
 
     Fetches at most ``max_fetches`` tickers whose last successful fetch is
-    older than ``min_age_days`` (stalest first, never-fetched first of all).
+    older than ``min_age_days``. Due tickers are ordered by their oldest
+    attempt (never-attempted first) so recent failures cannot monopolize the
+    next shard.
     Aborts early after ``max_consecutive_failures`` consecutive errors so a
     throttling or dead host cannot stall the daily pipeline; whatever was
     fetched before the abort stays merged (resumable).
@@ -175,9 +177,9 @@ def refresh_archive(
     per_ticker: dict[str, Any] = state.get("tickers") or {}
     now = datetime.now(timezone.utc)
 
-    def _age_days(symbol: str) -> float:
+    def _age_days(symbol: str, *stamp_fields: str) -> float:
         meta = per_ticker.get(symbol) or {}
-        stamp = meta.get("last_success_utc")
+        stamp = next((meta.get(field) for field in stamp_fields if meta.get(field)), None)
         if not stamp:
             return float("inf")
         try:
@@ -187,8 +189,17 @@ def refresh_archive(
         return (now - then).total_seconds() / 86400.0
 
     cleaned = sorted({_safe_symbol(t) for t in tickers if str(t).strip()})
-    due = [t for t in cleaned if _age_days(t) >= min_age_days]
-    due.sort(key=_age_days, reverse=True)
+    due = [
+        ticker
+        for ticker in cleaned
+        if _age_days(ticker, "last_success_utc") >= min_age_days
+    ]
+    due.sort(
+        key=lambda ticker: _age_days(
+            ticker, "last_attempt_utc", "last_success_utc"
+        ),
+        reverse=True,
+    )
     shard = due[: max(0, int(max_fetches))]
 
     summary: dict[str, Any] = {

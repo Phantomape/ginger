@@ -12,17 +12,20 @@
 - 实验记录格式：[`experiment_log_format.md`](experiment_log_format.md)
 - 完整试验面板、`selection_scope_id`、DSR 与 Gate 5：[`deflated_sharpe_protocol.md`](deflated_sharpe_protocol.md)
 - 组合级增量价值：[`portfolio_covariance_lane.md`](portfolio_covariance_lane.md)
+- 每日外部研究摘要与消费账本：[`research_digest_pipeline.md`](research_digest_pipeline.md)
+- 版本化机制候选生成器：[`alpha_mechanism_generator.md`](alpha_mechanism_generator.md)
+- 跨 Agent 本机通信与辩论：[`agent_mailbox.md`](agent_mailbox.md)
 
 如果本文与上述更具体的 Gate、实验或生产合同冲突，以更具体的合同为准。
 
 ## 1. 当前诊断
 
-现有 [`quant/meta_research_engine.py`](../quant/meta_research_engine.py) 有价值，但它本质上是**历史研究先验与家族排序器**，不是 hypothesis generator：
+旧的 `quant/meta_research_engine.py` 已从活跃搜索路径退役；其不可替代的日志去重、trial accounting、校准和冻结证据迁入 [`quant/experiment_history.py`](../quant/experiment_history.py)。新模块只做**历史审计与反重复约束**，不得生成候选、排列下一策略家族，或把历史赢家重新注入 exploration / adjacent / exploitation 的生成分布。旧实现的问题是：
 
 - 当前固定权重更奖励历史 evidence、reproducibility 和 production feasibility，novelty 权重较低；
 - 自由文本会被压缩到较粗的 `mechanism_family` / `trial_family`，不同机制可能进入同一桶，同一机制也可能因命名漂移被拆开；
 - 最高优先级容易集中在已成功、容易接入的 adapter / sleeve 家族，形成 exploitation 偏置；
-- 失败记录主要用于拒绝近邻重试，尚未系统地改变下一轮的生成分布；
+- 失败记录尚未稳定转成机器可核对的 forbidden-neighbor / reopen veto，容易靠改名重复；
 - 系统通常预测“事件好坏”或“未来涨跌”，没有统一表示“市场当前相信什么、我们为何不同、差异是否已被定价”；
 - 候选往往逐个产生、逐个占用实验 ID，完整的候选池没有在读取结果前冻结，搜索选择偏差难以追溯；
 - 单策略冠军挑战会正确拒绝许多弱策略，但不能单独回答一个低相关 sleeve 是否有组合增量价值。
@@ -35,41 +38,53 @@
 2. **预期差优先。** 一个事件本身不是 edge。候选应尽量表示为 `our_posterior - market_prior`，并说明价格如何收敛。
 3. **市场预期必须可观察。** LLM 不得凭叙事编造 `market_prior`。没有可观察代理的候选只能是普通 event lead，不能标为 expectation-gap alpha。
 4. **LLM 是有边界的语义层。** LLM 可做事件分类、关系映射、证据抽取和反证搜索；概率校准、排序、Gate 与交易动作由可回放代码负责。
-5. **PIT 与 outcome blindness 先于收益。** 在候选池冻结前只允许检查来源合同、时间戳、密度、缺失率、集中度、候选交集和执行可行性，不得读取该候选的 forward return、结算标签或 Gate 结果。
+5. **PIT 与 outcome blindness 先于收益，但 PIT 分级使用。** 有历史决策时间戳且无已知泄漏的
+   `research_pit` 可进入 research-only replay；只有能还原当时真实可得值的 `canonical_pit` 可
+   accepted/paper/live。在候选池冻结前只允许检查来源合同、时间戳、密度、缺失率、集中度、候选交集和执行可行性，不得读取该候选的 forward return、结算标签或 Gate 结果。
 6. **独立经济决策才是样本。** 每日重复行、多个 horizon、多个 comparator、同一事件的重复抓取都不能冒充独立样本。
 7. **join 不是新数据源。** `component_sources` 必须逐项审计。任何成员源已饱和、frozen 或 PIT 不合格时，不能用 join 名义声明新源。
 8. **三种 readiness 分开。** `economic_alpha_evidence`、`measurement_readiness`、`production_adapter_readiness` 不可互相代替；工程接得好不代表有 alpha。
-9. **失败改变搜索后验。** 不同失败原因应减少不同类型的后续搜索，而不是统一归结为“再换一个阈值”。
+9. **失败约束搜索但不替搜索排序。** 失败用于 forbidden-neighbor、novelty veto 与定量 reopen；不得按历史输赢把 proposal distribution 拉回旧赢家。
 10. **发现层不拥有交易权限。** 候选、preflight 和 selection panel 均不改变 entry、exit、ranking、sizing、orders 或 live 配置。
+11. **发起人与反方必须异模型。** 默认使用三个独立 run：Codex Sol 发起、Codex Terra challenge、另一条 Codex Sol run 做 verifier；跨供应商 Codex↔Claude 仍是兼容模式。sender 名称不构成身份，必须绑定 launcher receipt、请求的 model id、独立 run id 与最终 verifier lock。同供应商模式只证明 launcher 请求了不同模型，不等同于密码学证明底层权重独立，证据强度低于跨供应商。
 
 ## 3. 目标流水线
 
 ```text
-EvidenceSurface registry
+Versioned MechanismGenerator（0-2 个 outcome-blind lead；可 abstain）
+  -> 结构化 staging + 机器校验 + 生成后 historical veto
+  -> External Research Map / latest digest
+  + EvidenceSurface registry
   -> 预注册 SelectionScopeManifest（数据截止、生成器、三队列预算、允许的数据面、历史指纹快照 hash）
   -> 多角色批量 synthesis
-  -> HypothesisCandidate + ExpectationGap
+  -> draft HypothesisCandidate pool + ExpectationGap + research_refs
+  -> cross-model mailbox debate（异 Codex 模型或 opposite-provider + distinct verifier）
+  -> 冻结经过挑战和修订的完整 HypothesisCandidate pool
   -> outcome-blind D0-D3 preflight
   -> exploration / adjacent / exploitation 三队列
   -> 多样性约束排序
   -> 冻结 SelectionPanel（selection_scope_id + panel_hash）
   -> 最多选择一个正式验证对象，或一个预声明的固定 batch
-  -> reserve / claim 实验 ID
+  -> 生成 hash-bound ExperimentPromotionRequest
+  -> experiment.py new / claim（唯一跨越实验 ID 边界的入口）
   -> canonical Gate 1-4；需要时走组合级 lane；Gate 5 独立处理
   -> closeout + FailureReason
-  -> 更新下一轮搜索先验、park / reopen 条件和 surface readiness
+  -> 回填 research_refs、canonical 历史 veto、park / reopen 条件和 surface readiness
 ```
 
-发现阶段使用自己的 `candidate_id` 和 `selection_scope_id`，**不占实验 ID**。只有候选已被选中、证据等级达到相应门槛并准备改变或检验策略行为时，才进入 `experiment.py new`。这样既不烧 ID，也不绕过任何 novelty、saturation、in-flight duplicate 或 reopen guard。
+发现阶段使用自己的 `candidate_id`、`debate_id` 和 `selection_scope_id`，**不占实验 ID**。mailbox 是 gitignored 的临时交流层；持久证据是 promotion request 中经哈希绑定的 challenger / verifier 结论、运行身份回执、最终候选池与 panel。只有选中候选达到 `gate_candidate`、D0-D3 全部通过且 promotion request 可重算时，才进入 `experiment.py new`。它仍须重新经过 novelty、saturation、recipe-lane、in-flight duplicate 和 reopen guard；辩论不能授予任何豁免。
 
 候选的建议状态机：
 
 ```text
-draft -> validated -> preflight_passed -> panel_frozen -> selected
-             |              |                  |
-             v              v                  v
-          invalid       parked/rejected     not_selected
+draft -> cross_model_challenged -> verifier_locked -> validated
+             |                       |               |
+             v                       v               v
+          invalid              debate_blocked   parked/rejected
 
+validated -> preflight_passed -> panel_frozen -> promotion_ready
+                                                |
+                                                v
 selected -> experiment_reserved -> accepted/rejected/observed_only
 ```
 
@@ -78,6 +93,27 @@ selected -> experiment_reserved -> accepted/rejected/observed_only
 ## 4. 核心合同
 
 第一阶段的核心类型放在 `quant/alpha_search_contract.py`。默认采用 frozen dataclass，并提供 `from_dict()`、`to_dict()` 和 `validate()`；不为这层引入新的运行时 schema 框架。所有合同都有 `schema_version`，未知版本 fail closed。
+
+### 4.0 版本化机制生成器
+
+`MechanismGenerator` 位于 external scan 与 research map 之间，只改变“会想到哪些机制”，
+不提供收益证据，也不拥有 candidate selection、实验或交易权限。首个已登记实现是
+`ai_berkshire_bottleneck`：它复用 `bottleneck-hunter` 的产业链约束视角，每次扫描最多产出
+两个 lead；没有合格机制时必须允许零输出，不能为了日更凑一个题材。
+
+每次运行先冻结 generator id / version、skill 内容哈希、数据截止和 0-2 的预算。生成 lead 前
+不得读取候选历史收益、Gate 结果或 frozen-family 输赢；草稿形成后才读取失败历史作
+forbidden-neighbor / reopen veto，且不得据此重排剩余 lead。每个 lead 至少要有两组独立来源、
+反向证据、物理约束和传导链、市场先验状态、PIT 与授权状态、baseline、treatment、horizon、
+replacement comparator 和 falsifier。skill 名称不是数据源；DOE、SEC、公司公告等底层来源
+仍须逐项登记、授权和 PIT 审计。
+
+生成器的规范输出是 research-map lead，不是 `EvidenceSurface`。没有可观察市场先验时只能是
+`plain_event_lead / lead`；没有已登记 surface 时不得伪造 `surface_ids` 或进入 panel。只有显式
+引用已登记且 ready 的 surface，才允许投影为现有 `HypothesisCandidate`，之后仍须经过异模型
+辩论、D0-D3、panel 与 promotion。估值、公司质量或可能受益 ticker 只能作为传导假设，不能从
+生成器直接进入选股排名、仓位或订单。结构化合同与调用方式见
+[`alpha_mechanism_generator.md`](alpha_mechanism_generator.md)。
 
 ### 4.1 机制指纹
 
@@ -296,7 +332,9 @@ reopen_condition: null
 | `wrong_transmission_mapping` | 事实可能有效，但 ticker / 方向 / horizon 映射错误 | 可保留 surface；新映射必须有独立机制证据，不能只换阈值 |
 | `no_candidate_overlap` | 来源与可交易池没有真实交集 | park，按交集计数设置 reopen condition |
 | `market_expectation_unidentified` | 没有可观察 prior | 降级为普通 event lead，不得声称 expectation gap |
-| `pit_or_source_failure` | publication clock、vintage、issuer map、权限或来源合同失败 | 转 measurement repair 或 park；不得读价格继续跑 |
+| `known_temporal_leakage` | 决策时间未知，或未来修订、幸存者、当前映射/成分倒灌 | hard reject；该结果不能作为 alpha 证据 |
+| `canonical_pit_incomplete` | 时间戳与授权可审计且无已知泄漏，但 immutable/as-known vintage、revision 或 effective mapping 尚未证明 | 可标 `research_pit` 做 private replay；不得 paper/live |
+| `pit_or_source_failure` | 权限、来源可用性或基本时钟合同失败 | 转 measurement repair 或 park；不得读价格继续跑 |
 | `cost_and_carry` | gross edge 被费用、持有期或资本占用吃掉 | 同一执行包络下禁止响应函数 retune |
 | `borrow_or_capacity` | 借券、流动性或容量令交易不可执行 | 下调该 instrument mapping；信号本身与执行失败分开记录 |
 | `core_opportunity_cost` | standalone 有收益但不值得挤出 core | 可转组合观察或独立资金来源；不得冒充 core replacement |
@@ -309,7 +347,7 @@ reopen_condition: null
 
 一次 closeout 必须有一个 `primary_failure_reason`，可以有若干 `secondary_failure_reasons`。旧日志映射到 taxonomy 时保留原始文字与映射置信度；不得重写历史 source-of-truth。
 
-失败后更新的是**生成与选择先验**，不是自动改变 Gate。聚合失败惩罚应至少按 `fingerprint` 的 source、mechanism、transmission、execution dependency 分解，避免“借券失败”错误地冻结底层信息源，也避免“无 gross edge”只惩罚 adapter 工程。
+失败后更新的是**admissibility、forbidden-neighbor 与 reopen 约束**，不是候选生成或选择分数，也不自动改变 Gate。失败归因仍须按 `fingerprint` 的 source、mechanism、transmission、execution dependency 分解，避免“借券失败”错误地冻结底层信息源，也避免“无 gross edge”只归咎 adapter 工程；这些结构化结论由 D3 / novelty 作 veto，不作为下一轮 proposal distribution。
 
 ## 5. 三条搜索队列
 
@@ -318,8 +356,8 @@ reopen_condition: null
 | 队列 | 目的 | 合法候选 | 主要评分 |
 |---|---|---|---|
 | `exploration` | 进入新的信息或机制区域 | 新独立数据源、新 expectation proxy、新经济机制或真正不同的 payoff | 信息增益、机制独立性、可证伪性 |
-| `adjacent` | 在已有证据旁做有因果解释的扩展 | 新 transmission、独立交叉证据、不同 portfolio role，但须满足 novelty 规则 | 与现有证据的连接强度、相似度惩罚、执行可行性 |
-| `exploitation` | 把成熟证据转成可验证候选 | settled forward 增长、已接受 default-off surface、完整 PIT replay | 数据成熟度、replacement value、生产一致性 |
+| `adjacent` | 在已有证据旁做有因果解释的扩展 | 新 transmission、独立交叉证据、不同 portfolio role，但须满足 novelty 规则 | 因果连接、机制独立性、可证伪性、执行可行性 |
+| `exploitation` | 把新近达到预声明 readiness 的证据转成可验证候选 | 已跨过既定 reopen count 的 observer、完整 PIT replay；不得因历史 accepted 身份入选 | 新增独立证据完整性、replacement-value 设计、生产一致性；不得读取历史赢家分数 |
 
 每个 synthesis scope 在生成前冻结各队列预算，并在 report 中记录计划与实际数量。默认应确保三条队列都有非零覆盖；具体比例是版本化研究配置，不在本文固化，也不得根据本轮结果回填比例。
 
@@ -351,6 +389,20 @@ LLM Agent 不直接输出买卖，而是各自提交有 provenance 的合同片�
 
 建议顺序是独立草拟后再合并，避免首个叙事锚定所有角色。编排器只接受能解析为合同、引用 registry surface 并通过确定性校验的输出。角色冲突应保留在 candidate 中；不确定时 abstain，而不是由“多数 Agent”投票制造置信度。
 
+### 6.1 跨模型辩论合同
+
+多角色 synthesis 可以由同一个 runtime 生成草稿，但正式候选池必须由异模型独立反驳：
+
+- 默认同供应商拓扑为 Codex Sol initiator、Codex Terra challenger、另一条 Codex Sol verifier；三个 participant/run id 必须不同，challenger 的请求模型必须同时不同于 initiator 与 verifier；
+- 兼容的跨供应商拓扑仍要求 challenger 与 verifier 使用 initiator 的 opposite runtime，并显式确认跨供应商调用；
+- challenger 必须先 steelman，再列出 load-bearing objections、替代解释和会改变其结论的证据；
+- verifier 不参与原始辩论，只核对引用、候选修订、未解决事实和最终 pool hash；challenger 与 verifier 的 `run_id`、participant 必须不同；
+- mailbox 的 `from`、`--me` 和模型自报字段都不可信。promotion 只接受 launcher-attested receipt；receipt 是本机流程证明，不是密码学远程证明；
+- 同供应商回执只证明 launcher 请求了不同 Codex model id，不证明底层权重或服务端路由；跨供应商独立性更强，但会发送候选与所引用的仓库上下文，必须显式确认；任一合法拓扑不可用时状态是 `debate_blocked`，不得退化成单模型自审；
+- 最终 lock 必须记录 `outcome_accessed=false`、`verdict=proceed`、`verification_status=verified`、空的 unresolved load-bearing claims，以及 challenged/final candidate-pool hashes。
+
+辩论产物只能修订假设、机制、反证、来源与执行边界；不得读取候选 forward outcome，也不得创建实验 ID。失败辩论同样保留摘要，供下一次 synthesis 避免重复叙事。
+
 ## 7. Outcome-blind preflight
 
 Preflight 在任何候选 forward outcome、收益路径或 Gate metric 被读取前运行。它是发现阶段的硬门，不占实验 ID。
@@ -358,11 +410,22 @@ Preflight 在任何候选 forward outcome、收益路径或 Gate metric 被读�
 ### D0：Source / PIT readiness
 
 - surface 与所有 component source 均已注册；
-- immutable vintage / hash、publication clock、时区、有效日期和 issuer mapping 可追溯；
 - 权限与 attribution 合同存在；
 - raw density、candidate density、独立决策数、missingness、集中度和候选交集达到预声明最低值；
 - join 成员逐项完成 saturation / frozen / parked 自查；
 - 数据等级只能由机器证据决定。
+
+D0 分成两个使用边界：
+
+- **D0-R / research replay**：row-level decision timestamp、时区和 join 的 as-of 顺序可回放；
+  `known_future_leakage=false`；source contract pass；本地测试数据 hash-bound；允许
+  `research_pit / lead` 通过 D0-D3 并参与辩论。
+- **D0-C / canonical promotion**：在 D0-R 之上，还须有 immutable/as-published vintage 或
+  append-only observer、effective-dated issuer/universe mapping、revision policy 和 shared
+  replay/daily parity；只有它能成为 `gate_candidate`。
+
+本地文件 hash 只证明“测试了哪份数据”，不证明“历史当时能拿到同样的值”。完整定义见
+[`research_pit_policy.md`](research_pit_policy.md)。
 
 ### D1：Market expectation identifiability
 
@@ -476,30 +539,36 @@ outcome_blind: true
 
 二者应共享 `selection_scope_id` 并互相引用 hash；只有发现候选恰好构成完整可比试验池时，才可显式升级为 Gate 5 panel。发现层 `panel_hash`、历史 `prior_trial_count` 或候选摘要都不能替代 DSR recomputation。
 
+### ExperimentPromotionRequest
+
+`SelectionPanel` 不直接拥有 reserve 权限。`alpha_search.py build-promotion` 必须重新执行外部上下文 panel 校验，并再次读取 live mailbox，随后把以下内容冻结为一个 tracked request：scope / panel / selected candidate / D0-D3 hashes、最终 candidate-pool hash、debate lock、transcript / attachment hashes、receipt-bound message sequence、launcher receipts、ticket proposal hash、`research_refs`。`gate_candidate` 获得 canonical promotion；由 `research_pit` 支撑的 `lead` 只能获得 `research_replay` admission，并冻结 `result_ceiling=observed_only / paper_live_eligible=false`。`experiment.py new --promotion-request ...` 在写 ticket、card 或 manifest 前再次验证；`claim` 与 close 在 per-ID lock 内重新读取并校验全部 tracked 文件 hash，但不依赖 gitignored mailbox 永久保留。`--force` 只处理写作用域冲突，不能绕过 admission/promotion gate。
+
 ## 9. Gate 与组合边界
 
 发现层不修改现有 Gate：
 
-- `lead`：只有 snapshot 或机制草案；不得改变策略或声称 alpha；
+- `lead`：只有 snapshot、机制草案或 research-only 历史回放；不得改变策略或声称 accepted alpha；
 - `observer`：PIT forward 尚未结算；固定公式、schema 和 reopen count，继续观察；
 - `observed_only`：有足够 settled attribution，但还没有 canonical PIT Gate 证据；
-- `gate_candidate`：source、PIT、独立样本与 replay 条件满足，才可 reserve 正式实验；
+- `research_pit / lead`：可在完整 D0-D3 与辩论后 reserve `private_replay_scout`，机器结果上限为 `observed_only`；
+- `gate_candidate`：source、canonical PIT、独立样本与 replay 条件满足，才可进入可接受/paper/live 的正式实验；
 - 任何影响交易行为的候选随后仍须按实验协议执行 Gate 1-4 和生产 parity；
 - standalone 未击败 core 不自动等于组合无价值；符合条件时按 [`portfolio_covariance_lane.md`](portfolio_covariance_lane.md) 走既有组合级口径，不能在发现层自创豁免；
 - Gate 5 只控制 `live_eligible` 的 trial-adjusted 证据，不推翻 Gate 4 的 default-off paper 结论；
 - 发现分数、Agent 共识、market probability 或 LLM confidence 都不能直接驱动 sizing、slots、exits 或 orders。
 
-## 10. 失败反馈如何改变搜索分布
+## 10. 失败反馈如何约束搜索、但不替搜索排序
 
-每轮 closeout 将结构化 failure 写回研究 ledger，并更新下轮候选生成的先验：
+每轮 closeout 将结构化 failure 写回研究 ledger。它的用途是阻止近邻重试、固定反证和定义
+`reopen_condition`，不是按历史输赢给下一轮 hypothesis family 分配更高或更低的生成概率：
 
 ```text
 FailureReason
   -> 定位失败层（source / prior / evidence / transmission / execution / portfolio）
-  -> 更新对应 fingerprint 维度的惩罚
   -> 写入 forbidden-neighbor 或定量 reopen condition
   -> 保留未被证伪的层
-  -> 下一轮三队列预算与候选排序读取该后验
+  -> 下一轮从当前证据面与经济机制重新合成候选
+  -> D3 / novelty / saturation 用历史记录作 veto，不作候选排序分数
 ```
 
 示例：
@@ -511,16 +580,22 @@ FailureReason
 - `core_opportunity_cost` 可以保留为独立 sleeve lead，但必须证明资金来源和组合增量；
 - `insufficient_independent_rows` 只推进 observer，不消耗实验 ID。
 
-惩罚应有衰减或明确 reopen 证据，但不能因时间经过自动解除硬 frozen / parked 规则。机器 guard 仍由既有实验协议负责。
+不得维护“历史赢家加分”“成熟 adapter 加分”或失败家族降权后再据此生成候选的隐藏分数。
+硬 frozen / parked 规则只能由明确的新证据轴或定量 reopen 证据解除，不能因时间经过自动衰减。
+机器 guard 仍由既有实验协议负责。
 
 ## 11. 研究节奏
 
-建议把“采集”“合成”“实验”分离：
+把“采集”“合成”“实验”分离，但让发现循环每天运行：
 
-- **每日**：刷新注册 surface、追加 observer、更新 outcome settlement、独立事件聚类与 readiness 计数；例行物化不占实验 ID。
-- **每周或证据显著变化时**：创建一个 selection scope，运行多角色 batch synthesis、D0-D3、三队列覆盖和 panel freeze；未成熟候选留在 ledger。
+- **每日 external scan**：先运行常规扫描和版本化 mechanism-generator pass（当前含 `ai_berkshire_bottleneck`，预算 0-2），机器校验 staging lead 后再更新 research map、latest digest 和消费 ledger；失败实验、park/reopen 与 surface readiness 只在 lead 生成后进入 veto 上下文。
+- **每日 alpha pass**：预注册当日 scope，从 digest 挑选或自行生成候选，执行跨模型 mailbox challenge、D0-D3 和 panel freeze。每天允许零个 promotion；没有 `gate_candidate` 是正常结果，不得为满足频率烧 ID。
 - **触发式正式实验**：只有选中候选达到 `gate_candidate`，或预冻结的 observed-only attribution 达到其 reopen count，才 reserve 一个实验 ID。
 - **每月或足够 closeout 后**：检查 FailureReason 分布、三队列命中与校准、source / mechanism 覆盖、panel completeness 和 Agent 的 Brier / failure-mode calibration；不得据同一批 outcome 反复调权再重选。
+
+调度器必须把这个顺序当成依赖图，而不是两个同一时刻触发的独立任务：external scan 先产出当日 freshness marker，daily alpha pass 再核对 `latest_digest.json.latest_mechanism_scan.scan_completed_at`、`scan_run_id` 和 generator version；`generated_at` 只是 digest 重建时间，不能证明 map 有新扫描。机制扫描非当日即停止消费该生成器的 lead。建议间隔 60–120 分钟，并避免与 cleanup / commit / push 的宽泛维护任务并发。仓库内的 promotion gate 是最终安全边界：即使外部调度 prompt 仍旧，缺少完整辩论和 promotion 的 alpha 任务也只能 `debate_blocked`，不得退化为直接 reserve。
+
+同供应商的 Codex 异模型模式不需要把研究上下文发给新的供应商，默认可用于每日辩论。跨供应商调用仍是独立的操作授权：自动化配置不得预置或自行推断 `--acknowledge-cross-provider`；没有用户明确授权时不得调用另一供应商，但可以改走满足 receipt、异模型和独立 run 约束的 Codex 模式。外部 scheduler 的启停与时刻不属于仓库真相源，因此 README 图表示规范顺序，不单独证明桌面自动化已经按该节奏启用。
 
 研究吞吐不以实验 ID 数量衡量。更有意义的指标包括：合法候选率、expectation prior 可识别率、独立 settled decision 增长、不同 mechanism 覆盖、panel 完整率、outcome contamination 次数、每类 failure 对后续重复率的下降，以及最终进入 Gate 的候选质量。
 
@@ -554,17 +629,16 @@ FailureReason
    - panel 缺行、重复 candidate、多个 winner、outcome contamination 被拒；
    - join component source 不能被折叠成“新源”。
 6. 兼容输出
-   - 保留现有 meta report 和历史 family 排序；
-   - 新 discovery report 与 legacy report 并行，不重解释或重写历史日志；
+   - 保留历史日志、trial accounting、冻结证据和校准事实，但退役 meta winner ranking；
+   - 新 discovery report 与中性的 experiment-history audit 并行，不重解释或重写历史日志；
    - 对旧自然语言 failure 的映射保留 raw text 与 mapping confidence。
 
-### 第一阶段非目标
+### 发现层长期边界
 
-- 不实现 Agent 自动调用或 prompt orchestration；
 - 不把 prediction-market observer 变成交易信号；
 - 不改变 `quant/run.py`、backtester、ranking、sizing、orders 或 live 配置；
 - 不放宽 novelty、saturation、Gate 1-4、Gate 4-P 或 Gate 5；
-- 不自动 reserve / claim / close 实验；
+- 不允许 discovery 或 mailbox 直接 reserve / claim / close；只能生成 promotion request，再由 `experiment.py` 走原协议；
 - 不用历史收益拟合 discovery score 权重；
 - 不补写、覆盖或“清洗”既有实验 source-of-truth；
 - 不把 schema / adapter 完成度计作经济 alpha evidence。

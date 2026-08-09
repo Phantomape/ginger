@@ -27,6 +27,7 @@ ENTRY_SEMANTICS = "next_session_open_after_signal_date"
 EXIT_SEMANTICS = "fixed_10d_20d_close_observation"
 UNIT_NOTIONAL_USD = 10000.0
 HORIZONS = (10, 20)
+FORM4_FORWARD_OBSERVER_KEY = "form4_sale_overhang_forward_ledger"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LEDGER_PATH = (
     REPO_ROOT
@@ -255,6 +256,26 @@ def _load_state(path: Path) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
+def _ledger_content_identity(path: Path) -> dict[str, Any]:
+    """Bind producer health to immutable ledger bytes, not a process clock."""
+
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        return {
+            "status": "missing",
+            "sha256": None,
+            "byte_count": 0,
+            "record_count": 0,
+        }
+    return {
+        "status": "ok",
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "byte_count": len(raw),
+        "record_count": sum(1 for line in raw.splitlines() if line.strip()),
+    }
+
+
 def _write_state(path: Path, state: Mapping[str, Any]) -> None:
     path.write_text(json.dumps(dict(state), indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -298,6 +319,7 @@ def append_candidate_decision_training_snapshot(
         "rows_skipped_duplicate": len(rows) - len(new_rows),
         "last_nonempty_as_of": last_nonempty_as_of,
         "ledger_path": str(path),
+        "ledger_content_identity": _ledger_content_identity(path),
         "state_path": str(state_path),
         "production_impact": snapshot.get("production_impact") or {},
     }
@@ -379,13 +401,60 @@ def _outcome_id(observation_id: str, horizon: int, exit_date: str) -> str:
     )
 
 
+def _refresh_form4_sale_overhang_forward_observer(
+    *,
+    as_of: str | None,
+    candidate_ledger_path: Path,
+    candidate_state_path: Path,
+    kwargs: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Refresh the Form 4 forward join without weakening this ledger on failure.
+
+    The Form 4 observer is diagnostic-only.  A missing/stale context producer
+    must surface as a non-ok nested health record, while the canonical candidate
+    ledger and its fixed-horizon settlement remain available to other consumers.
+    """
+
+    if not as_of:
+        return {
+            "status": "failed_missing_as_of",
+            "trade_enabled": False,
+            "error": "Form4 forward refresh requires an as_of date",
+        }
+    try:
+        from form4_sale_overhang_context import (
+            refresh_form4_sale_overhang_forward_ledger,
+        )
+    except ModuleNotFoundError:  # pragma: no cover - package import fallback
+        from quant.form4_sale_overhang_context import (
+            refresh_form4_sale_overhang_forward_ledger,
+        )
+
+    try:
+        return refresh_form4_sale_overhang_forward_ledger(
+            as_of=as_of,
+            candidate_ledger_path=candidate_ledger_path,
+            candidate_state_path=candidate_state_path,
+            **dict(kwargs or {}),
+        )
+    except Exception as exc:  # fail closed for this optional observer only
+        return {
+            "status": "failed_refresh_exception",
+            "trade_enabled": False,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
 def settle_candidate_decision_training_outcomes(
     *,
     ohlcv_by_ticker: Mapping[str, Any],
     as_of: str | None = None,
     ledger_path: str | Path | None = None,
+    refresh_form4_forward: bool | None = None,
+    form4_forward_kwargs: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Append fixed-horizon outcomes for decision rows whose exits are known."""
+    production_ledger = ledger_path is None
     path = Path(ledger_path) if ledger_path is not None else DEFAULT_LEDGER_PATH
     state_path = path.with_name("state.json")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -495,11 +564,31 @@ def settle_candidate_decision_training_outcomes(
         "outcome_rows_written": len(new_outcomes),
         "settlement_skip_reasons": skipped,
         "ledger_path": str(path),
+        "ledger_content_identity": _ledger_content_identity(path),
         "state_path": str(state_path),
         "trade_enabled": False,
     }
+    # Persist the producer identity before the Form4 consumer runs.  This makes
+    # producer-before-consumer ordering machine-verifiable even when outcomes
+    # were appended during the same settlement pass.
     _write_state(state_path, state)
-    return {
+    form4_refresh_enabled = (
+        production_ledger
+        if refresh_form4_forward is None
+        else bool(refresh_form4_forward)
+    )
+    form4_forward_summary = None
+    if form4_refresh_enabled:
+        form4_forward_summary = _refresh_form4_sale_overhang_forward_observer(
+            as_of=max_as_of,
+            candidate_ledger_path=path,
+            candidate_state_path=state_path,
+            kwargs=form4_forward_kwargs,
+        )
+    if form4_forward_summary is not None:
+        state[FORM4_FORWARD_OBSERVER_KEY] = form4_forward_summary
+    _write_state(state_path, state)
+    result = {
         "ledger_path": str(path),
         "state_path": str(state_path),
         "decision_rows_seen": len(decisions),
@@ -510,3 +599,6 @@ def settle_candidate_decision_training_outcomes(
         "rule_version": RULE_VERSION,
         "trade_enabled": False,
     }
+    if form4_forward_summary is not None:
+        result[FORM4_FORWARD_OBSERVER_KEY] = form4_forward_summary
+    return result

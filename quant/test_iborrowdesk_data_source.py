@@ -77,6 +77,40 @@ def test_refresh_rotates_stalest_first_and_resumes(isolated_archive, monkeypatch
     assert all(meta["status"] == "ok" for meta in state["tickers"].values())
 
 
+def test_refresh_moves_past_failed_first_shard_next_cycle(
+    isolated_archive, monkeypatch
+):
+    calls: list[str] = []
+    host_down = True
+
+    def fake_fetch(symbol, **kwargs):
+        calls.append(symbol)
+        if host_down:
+            raise TimeoutError("host down")
+        return {"daily": [{"date": "2026-07-10", "fee": 0.25}]}
+
+    monkeypatch.setattr(ibd, "fetch_ticker_payload", fake_fetch)
+    first = ibd.refresh_archive(
+        ["AAA", "BBB", "CCC", "DDD"],
+        max_fetches=4,
+        sleep_s=0.0,
+        max_consecutive_failures=2,
+    )
+    assert first["aborted_early"] is True
+    assert calls == ["AAA", "BBB"]
+
+    host_down = False
+    second = ibd.refresh_archive(
+        ["AAA", "BBB", "CCC", "DDD"],
+        max_fetches=2,
+        sleep_s=0.0,
+        max_consecutive_failures=2,
+    )
+    assert second["attempted"] == 2
+    assert second["succeeded"] == 2
+    assert calls == ["AAA", "BBB", "CCC", "DDD"]
+
+
 def test_refresh_aborts_early_on_consecutive_failures(isolated_archive, monkeypatch):
     def fail_fetch(symbol, **kwargs):
         raise TimeoutError("host down")

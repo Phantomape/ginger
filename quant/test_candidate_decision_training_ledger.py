@@ -1,6 +1,8 @@
 import json
 
+import quant.candidate_decision_training_ledger as ledger_module
 from quant.candidate_decision_training_ledger import (
+    FORM4_FORWARD_OBSERVER_KEY,
     RULE_VERSION,
     SURFACE_CONTRACT,
     append_candidate_decision_training_snapshot,
@@ -122,6 +124,9 @@ def test_append_snapshot_is_duplicate_safe_and_writes_state(tmp_path):
     assert state["surface_contract"] == SURFACE_CONTRACT
     assert state["rows_skipped_duplicate"] == 2
     assert state["last_nonempty_as_of"] == "2026-07-02"
+    assert state["ledger_content_identity"]["status"] == "ok"
+    assert state["ledger_content_identity"]["record_count"] == 2
+    assert len(state["ledger_content_identity"]["sha256"]) == 64
 
 
 def test_settlement_appends_fixed_horizon_outcomes_once(tmp_path):
@@ -158,3 +163,51 @@ def test_settlement_appends_fixed_horizon_outcomes_once(tmp_path):
     assert {row["horizon"] for row in outcomes} == {"10d", "20d"}
     assert all(row["oracle_label_used"] is False for row in outcomes)
     assert all(row["replacement_value_vs_spy_usd"] is not None for row in outcomes)
+
+
+def test_settlement_wires_form4_forward_refresh_without_changing_outcomes(
+    monkeypatch,
+    tmp_path,
+):
+    ledger = tmp_path / "rows.jsonl"
+    snapshot = build_candidate_decision_training_snapshot(
+        as_of="2026-07-02",
+        entry_candidate_review=_review([_candidate("AAA")]),
+    )
+    append_candidate_decision_training_snapshot(snapshot, ledger)
+    calls = []
+
+    def _fake_refresh(**kwargs):
+        calls.append(kwargs)
+        return {
+            "status": "ok",
+            "gate_ready": False,
+            "trade_enabled": False,
+        }
+
+    monkeypatch.setattr(
+        ledger_module,
+        "_refresh_form4_sale_overhang_forward_observer",
+        _fake_refresh,
+    )
+    result = settle_candidate_decision_training_outcomes(
+        ledger_path=ledger,
+        as_of="2026-08-03",
+        ohlcv_by_ticker={
+            "AAA": _bars(100.0),
+            "SPY": _bars(400.0),
+            "QQQ": _bars(500.0),
+        },
+        refresh_form4_forward=True,
+        form4_forward_kwargs={"effective_date": "2026-07-28"},
+    )
+
+    assert result["outcome_rows_written"] == 2
+    assert result[FORM4_FORWARD_OBSERVER_KEY]["status"] == "ok"
+    assert len(calls) == 1
+    assert calls[0]["as_of"] == "2026-08-03"
+    assert calls[0]["candidate_ledger_path"] == ledger
+    assert calls[0]["kwargs"]["effective_date"] == "2026-07-28"
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert state[FORM4_FORWARD_OBSERVER_KEY]["gate_ready"] is False
+    assert state["ledger_content_identity"]["record_count"] == 3

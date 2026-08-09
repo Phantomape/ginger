@@ -53,6 +53,7 @@ from contextlib import contextmanager
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -165,6 +166,7 @@ DEFAULT_MIN_CREDITS_LEFT = 250.0
 DEFAULT_ESTIMATED_CREDITS_PER_REQUEST = 3.0
 DEFAULT_REQUEST_INTERVAL_S = 0.35
 DEFAULT_MAX_REQUESTS = len(FIXED_RESEARCH_TICKERS) * len(HISTORICAL_BLOCKS)
+DEFAULT_MAX_PAGES_PER_RANGE = 100
 TRANSIENT_HTTP_STATUS = {429, 500, 502, 503, 504}
 
 
@@ -577,14 +579,19 @@ def fetch_cost_to_borrow_new_payload(
     retries: int = 4,
     request_get: Callable[..., requests.Response] = requests.get,
     sleep_fn: Callable[[float], None] = time.sleep,
+    max_pages: int = DEFAULT_MAX_PAGES_PER_RANGE,
+    credit_budget: float | None = None,
+    min_credits_left: float | None = None,
+    estimated_credits_per_request: float | None = None,
 ) -> Mapping[str, Any]:
-    """Fetch one bounded CTB-new range and return its in-memory payload.
+    """Fetch one bounded, completely paginated CTB-new range in memory.
 
     This helper never persists the response.  The only persistence path used by
     the observer is ``normalise_cost_to_borrow_new_rows`` followed by the
-    append-only ledger merge.
+    append-only ledger merge.  Partial pagination raises before normalisation,
+    so an incomplete range can never be reported or persisted as healthy.
     """
-    response = fetch(
+    response, payload = fetch_all_pages(
         ENDPOINTS["borrow_fee_new"][0],
         exchange=_exchange_for(exchange, ENDPOINTS["borrow_fee_new"][1]),
         ticker=str(ticker).upper(),
@@ -595,18 +602,20 @@ def fetch_cost_to_borrow_new_payload(
         retries=retries,
         request_get=request_get,
         sleep_fn=sleep_fn,
+        max_pages=max_pages,
+        credit_budget=credit_budget,
+        min_credits_left=min_credits_left,
+        estimated_credits_per_request=estimated_credits_per_request,
     )
     if int(response.status_code) != 200:
         raise OrtexHttpError(
             f"ORTEX CTB-new request failed for {str(ticker).upper()} with "
             f"HTTP {int(response.status_code)}"
         )
-    try:
-        payload = response.json()
-    except (ValueError, json.JSONDecodeError) as exc:
+    if payload is None:
         raise OrtexHttpError(
             f"ORTEX CTB-new response for {str(ticker).upper()} was not JSON"
-        ) from exc
+        )
     if not isinstance(payload, Mapping):
         raise OrtexHttpError(
             f"ORTEX CTB-new response for {str(ticker).upper()} was not an object"
@@ -662,18 +671,37 @@ def _call_range_fetcher(
     retries: int,
     request_get: Callable[..., requests.Response],
     sleep_fn: Callable[[float], None],
+    max_pages: int,
+    credit_budget: float,
+    min_credits_left: float,
+    estimated_credits_per_request: float,
 ) -> Mapping[str, Any]:
+    fetch_kwargs: dict[str, Any] = {
+        "ticker": ticker,
+        "exchange": exchange,
+        "from_date": start,
+        "to_date": end,
+        "api_key": api_key,
+        "base_url": base_url,
+        "timeout": timeout,
+        "retries": retries,
+        "request_get": request_get,
+        "sleep_fn": sleep_fn,
+    }
+    # The canonical network fetcher owns page traversal.  Keep the established
+    # adapter contract for injected/test fetchers, which may already return a
+    # fully merged payload and commonly expose only the legacy keyword set.
+    if fetcher is fetch_cost_to_borrow_new_payload:
+        fetch_kwargs.update(
+            {
+                "max_pages": max_pages,
+                "credit_budget": credit_budget,
+                "min_credits_left": min_credits_left,
+                "estimated_credits_per_request": estimated_credits_per_request,
+            }
+        )
     result = fetcher(
-        ticker=ticker,
-        exchange=exchange,
-        from_date=start,
-        to_date=end,
-        api_key=api_key,
-        base_url=base_url,
-        timeout=timeout,
-        retries=retries,
-        request_get=request_get,
-        sleep_fn=sleep_fn,
+        **fetch_kwargs,
     )
     # Test/adapter fetchers may return (payload, metadata); metadata is ignored
     # because the canonical credit fields are read from the payload itself.
@@ -682,6 +710,18 @@ def _call_range_fetcher(
     if not isinstance(result, Mapping):
         raise TypeError("ORTEX range fetcher must return a mapping payload")
     return result
+
+
+def _payload_http_request_count(payload: Mapping[str, Any]) -> int:
+    """Return the bounded physical page count without trusting arbitrary values."""
+    raw = payload.get("pagesFetched", payload.get("pages_fetched", 1))
+    try:
+        count = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise OrtexHttpError("ORTEX payload has invalid pagination accounting") from exc
+    if count <= 0:
+        raise OrtexHttpError("ORTEX payload has invalid pagination accounting")
+    return count
 
 
 def _materialize_ranges(
@@ -783,8 +823,17 @@ def _materialize_ranges(
                 retries=retries,
                 request_get=request_get,
                 sleep_fn=sleep_fn,
+                max_pages=max_requests - requests_made,
+                credit_budget=float(credit_budget) - credits_used_total,
+                min_credits_left=float(min_credits_left),
+                estimated_credits_per_request=projected_next_cost,
             )
-            requests_made += 1
+            page_count = _payload_http_request_count(payload)
+            if page_count > max_requests - requests_made:
+                raise CreditGuardStopped(
+                    "ORTEX payload exceeded the remaining HTTP request bound"
+                )
+            requests_made += page_count
             used, left = _request_credit_metadata(payload)
             if used is not None:
                 credits_used_total += used
@@ -823,6 +872,8 @@ def _materialize_ranges(
                     "to_date": end,
                     "normalised_rows": len(normalised),
                     "rows_appended": merge["appended"],
+                    "pages_fetched": page_count,
+                    "http_requests_made": page_count,
                     "credits_used": used,
                     "credits_left": left,
                 }
@@ -847,6 +898,8 @@ def _materialize_ranges(
         "status": "credit_guard_stopped" if stop_reason else "completed",
         "source_mode": source_mode,
         "requests_made": requests_made,
+        "http_requests_made": requests_made,
+        "pages_fetched": requests_made,
         "requests_skipped_complete": skipped_complete,
         "rows_received": rows_received,
         "rows_appended": rows_appended,
@@ -927,6 +980,7 @@ def materialize_daily_refresh(
     credit_budget: float = 50.0,
     min_credits_left: float = 250.0,
     estimated_credits_per_request: float = DEFAULT_ESTIMATED_CREDITS_PER_REQUEST,
+    max_pages_per_range: int = DEFAULT_MAX_PAGES_PER_RANGE,
     request_interval_s: float = DEFAULT_REQUEST_INTERVAL_S,
     base_url: str = DEFAULT_BASE_URL,
     timeout: float = 30.0,
@@ -939,7 +993,11 @@ def materialize_daily_refresh(
     as_of_day = _date_text(as_of)
     if as_of_day is None:
         raise ValueError(f"invalid as_of date: {as_of!r}")
-    if max_refresh_tickers <= 0 or min_refresh_age_days < 0:
+    if (
+        max_refresh_tickers <= 0
+        or min_refresh_age_days < 0
+        or max_pages_per_range <= 0
+    ):
         raise ValueError("daily refresh limits are invalid")
     sessions = normalise_trading_dates(trading_dates)
     if not sessions:
@@ -977,6 +1035,8 @@ def materialize_daily_refresh(
             "selected_tickers": [],
             "missing_history_tickers": missing_history,
             "requests_made": 0,
+            "http_requests_made": 0,
+            "pages_fetched": 0,
             "rows_appended": 0,
             "credits_used_total": 0.0,
             "credits_left_last_reported": None,
@@ -1013,7 +1073,7 @@ def materialize_daily_refresh(
             credit_budget=remaining_budget,
             min_credits_left=min_credits_left,
             estimated_credits_per_request=estimated_credits_per_request,
-            max_requests=1,
+            max_requests=int(max_pages_per_range),
             request_interval_s=request_interval_s,
             base_url=base_url,
             timeout=timeout,
@@ -1046,6 +1106,8 @@ def materialize_daily_refresh(
         "selected_tickers": [ticker for _, ticker in selected],
         "missing_history_tickers": missing_history,
         "requests_made": requests_made,
+        "http_requests_made": requests_made,
+        "pages_fetched": requests_made,
         "rows_received": aggregate_received,
         "rows_appended": aggregate_rows,
         "credits_used_total": round(aggregate_used, 6),
@@ -1067,46 +1129,172 @@ def fetch_all_pages(
     api_key: str,
     base_url: str = DEFAULT_BASE_URL,
     params: dict | None = None,
-    max_pages: int = 100,
+    max_pages: int = DEFAULT_MAX_PAGES_PER_RANGE,
+    timeout: float = 30.0,
+    retries: int = 3,
+    request_get: Callable[..., requests.Response] = requests.get,
+    sleep_fn: Callable[[float], None] = time.sleep,
+    credit_budget: float | None = None,
+    min_credits_left: float | None = None,
+    estimated_credits_per_request: float | None = None,
 ):
     """Fetch every page by following ``paginationLinks.next`` and merging ``rows``.
 
     Returns ``(resp, payload)`` where ``payload`` is the first page's JSON with ``rows``
-    replaced by the concatenation of all pages (plus ``pagesFetched`` / ``rowCount``).
+    replaced by the concatenation of all pages (plus bounded request accounting).
     On a non-200 first page, returns ``(resp, None)`` so the caller can report the error.
     ORTEX caps each page at 100 rows; the ``next`` link is an absolute URL whose key
-    still travels in the header, not the query string.
+    still travels in the header, not the query string.  A later-page failure,
+    malformed page, cross-origin link, cycle, or remaining continuation at
+    ``max_pages`` raises instead of returning a silently truncated payload.
     """
-    resp = fetch(path_template, exchange=exchange, ticker=ticker, api_key=api_key,
-                 base_url=base_url, params=params)
+    if int(max_pages) <= 0:
+        raise ValueError("max_pages must be positive")
+    if credit_budget is not None and float(credit_budget) <= 0:
+        raise ValueError("credit_budget must be positive")
+    if min_credits_left is not None and float(min_credits_left) < 0:
+        raise ValueError("min_credits_left must be non-negative")
+    if (
+        estimated_credits_per_request is not None
+        and float(estimated_credits_per_request) <= 0
+    ):
+        raise ValueError("estimated_credits_per_request must be positive")
+
+    resp = fetch(
+        path_template,
+        exchange=exchange,
+        ticker=ticker,
+        api_key=api_key,
+        base_url=base_url,
+        params=params,
+        timeout=timeout,
+        retries=retries,
+        request_get=request_get,
+        sleep_fn=sleep_fn,
+    )
     if resp.status_code != 200:
         return resp, None
     try:
-        payload = resp.json()
+        first_page = resp.json()
     except ValueError:
         return resp, None
-    rows = list(payload.get("rows") or [])
+    if not isinstance(first_page, Mapping):
+        return resp, None
+    first_rows = first_page.get("rows") or []
+    if not isinstance(first_rows, list):
+        raise OrtexHttpError("ORTEX pagination page rows were not a list")
+
+    payload = dict(first_page)
+    rows = list(first_rows)
     pages = 1
-    nxt = (payload.get("paginationLinks") or {}).get("next")
-    while nxt and pages < max_pages:
-        page_resp = _get(nxt, api_key=api_key)
+    total_credits_used = 0.0
+    saw_credits_used = False
+    last_credits_left: float | None = None
+    projected_next_cost = float(estimated_credits_per_request or 0.0)
+
+    def account_page(page: Mapping[str, Any]) -> None:
+        nonlocal total_credits_used, saw_credits_used, last_credits_left
+        nonlocal projected_next_cost
+        used, left = _request_credit_metadata(page)
+        if credit_budget is not None and used is None:
+            raise CreditGuardStopped(
+                "ORTEX pagination page omitted credits-used accounting"
+            )
+        if min_credits_left is not None and left is None:
+            raise CreditGuardStopped(
+                "ORTEX pagination page omitted credits-left accounting"
+            )
+        if used is not None:
+            total_credits_used += used
+            saw_credits_used = True
+            projected_next_cost = max(projected_next_cost, used)
+        if left is not None:
+            last_credits_left = left
+
+    def next_link(page: Mapping[str, Any]) -> Any:
+        links = page.get("paginationLinks")
+        if links is None:
+            return None
+        if not isinstance(links, Mapping):
+            raise OrtexHttpError("ORTEX pagination links were not an object")
+        return links.get("next")
+
+    account_page(first_page)
+    nxt = next_link(payload)
+    seen_next_urls: set[str] = set()
+    expected_origin = urlparse(base_url)
+    while nxt:
+        if pages >= int(max_pages):
+            raise OrtexHttpError(
+                "ORTEX pagination remained incomplete at the max-pages bound"
+            )
+        if credit_budget is not None and (
+            total_credits_used + projected_next_cost > float(credit_budget) + 1e-12
+        ):
+            raise CreditGuardStopped(
+                "ORTEX pagination stopped before exceeding the credit budget"
+            )
+        if (
+            min_credits_left is not None
+            and last_credits_left is not None
+            and last_credits_left - projected_next_cost <= float(min_credits_left)
+        ):
+            raise CreditGuardStopped(
+                "ORTEX pagination stopped before crossing the credit floor"
+            )
+        if not isinstance(nxt, str) or not nxt.strip():
+            raise OrtexHttpError("ORTEX pagination next link was invalid")
+        next_url = urljoin(base_url.rstrip("/") + "/", nxt.strip())
+        actual_origin = urlparse(next_url)
+        if (
+            actual_origin.scheme.lower() != expected_origin.scheme.lower()
+            or actual_origin.netloc.lower() != expected_origin.netloc.lower()
+        ):
+            raise OrtexHttpError("ORTEX pagination next link crossed API origin")
+        if next_url in seen_next_urls:
+            raise OrtexHttpError("ORTEX pagination next-link cycle detected")
+        seen_next_urls.add(next_url)
+
+        page_resp = _get(
+            next_url,
+            api_key=api_key,
+            timeout=timeout,
+            retries=retries,
+            request_get=request_get,
+            sleep_fn=sleep_fn,
+        )
         if page_resp.status_code != 200:
-            print(f"WARNING: pagination stopped at page {pages + 1}: HTTP "
-                  f"{page_resp.status_code}", file=sys.stderr)
-            break
+            raise OrtexHttpError(
+                f"ORTEX pagination page {pages + 1} failed with HTTP "
+                f"{int(page_resp.status_code)}"
+            )
         try:
             page = page_resp.json()
         except ValueError:
-            break
-        rows.extend(page.get("rows") or [])
+            raise OrtexHttpError(
+                f"ORTEX pagination page {pages + 1} was not JSON"
+            ) from None
+        if not isinstance(page, Mapping):
+            raise OrtexHttpError(
+                f"ORTEX pagination page {pages + 1} was not an object"
+            )
+        page_rows = page.get("rows") or []
+        if not isinstance(page_rows, list):
+            raise OrtexHttpError(
+                f"ORTEX pagination page {pages + 1} rows were not a list"
+            )
+        account_page(page)
+        rows.extend(page_rows)
         pages += 1
-        nxt = (page.get("paginationLinks") or {}).get("next")
-    if nxt and pages >= max_pages:
-        print(f"WARNING: hit --max-pages={max_pages}; more pages remain (next={nxt})",
-              file=sys.stderr)
+        nxt = next_link(page)
     payload["rows"] = rows
     payload["pagesFetched"] = pages
+    payload["httpRequestsMade"] = pages
     payload["rowCount"] = len(rows)
+    if saw_credits_used:
+        payload["creditsUsed"] = round(total_credits_used, 12)
+    if last_credits_left is not None:
+        payload["creditsLeft"] = last_credits_left
     payload.pop("paginationLinks", None)  # merged view: links no longer meaningful
     return resp, payload
 

@@ -1,12 +1,15 @@
 """
-LLM-based investment advisor using OpenAI API.
+LLM-based investment advisor using local Codex.
 
 Analyzes filtered trade news and current positions to provide investment recommendations.
 """
 
-import os
 import json
 import logging
+import os
+import shutil
+import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 from data_paths import DATA_ROOT, daily_artifact_path, resolve_daily_artifact_path
@@ -22,9 +25,382 @@ from open_position_schema import (
 logger = logging.getLogger(__name__)
 
 # Kept as a module attribute for older tests and callers that monkeypatch the
-# former API client path. The production path now always persists a prompt for
-# manual import instead of issuing an API call here.
+# former API client path. The production path persists an auditable prompt and
+# now prefers local Codex over remote API calls.
 OpenAI = None
+
+LOCAL_CODEX_DEFAULT_MODEL = "gpt-5.6-sol"
+LOCAL_CODEX_DEFAULT_TIMEOUT_SECONDS = 900
+LOCAL_CODEX_DEFAULT_SANDBOX = "read-only"
+
+
+def _env_flag(name, default):
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() not in {"0", "false", "no", "off", ""}
+
+
+def _first_env_value(*names):
+    for name in names:
+        value = os.environ.get(name)
+        if value and value.strip():
+            return value.strip()
+    return None
+
+
+def _local_codex_enabled():
+    return _env_flag("GINGER_LOCAL_CODEX_ENABLED", True) and _env_flag(
+        "LOCAL_CODEX_ENABLED", True
+    )
+
+
+def _resolve_local_codex_model(requested_model=None):
+    return (
+        _first_env_value("GINGER_LOCAL_CODEX_MODEL", "LOCAL_CODEX_MODEL")
+        or requested_model
+        or LOCAL_CODEX_DEFAULT_MODEL
+    )
+
+
+def _local_codex_timeout_seconds():
+    raw = _first_env_value("GINGER_LOCAL_CODEX_TIMEOUT_SECONDS", "LOCAL_CODEX_TIMEOUT_SECONDS")
+    if raw is None:
+        return LOCAL_CODEX_DEFAULT_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        logger.warning("Invalid local Codex timeout %r; using default", raw)
+        return LOCAL_CODEX_DEFAULT_TIMEOUT_SECONDS
+    if value <= 0:
+        return LOCAL_CODEX_DEFAULT_TIMEOUT_SECONDS
+    return value
+
+
+def _local_codex_ephemeral_enabled():
+    return _env_flag("GINGER_LOCAL_CODEX_EPHEMERAL", True) and _env_flag(
+        "LOCAL_CODEX_EPHEMERAL", True
+    )
+
+
+def _local_codex_sandbox_mode():
+    value = (
+        _first_env_value("GINGER_LOCAL_CODEX_SANDBOX", "LOCAL_CODEX_SANDBOX")
+        or LOCAL_CODEX_DEFAULT_SANDBOX
+    )
+    if value not in {"read-only", "workspace-write", "danger-full-access"}:
+        logger.warning("Invalid local Codex sandbox %r; using read-only", value)
+        return LOCAL_CODEX_DEFAULT_SANDBOX
+    return value
+
+
+def _candidate_codex_executables():
+    candidates = []
+    explicit = _first_env_value("GINGER_CODEX_EXE", "LOCAL_CODEX_EXE", "CODEX_EXE")
+    if explicit:
+        candidates.append(explicit)
+
+    home = Path.home()
+    candidates.extend(
+        [
+            str(home / ".codex" / ".sandbox-bin" / "codex.exe"),
+            str(home / ".codex" / "plugins" / ".plugin-appserver" / "codex.exe"),
+        ]
+    )
+    discovered = shutil.which("codex")
+    if discovered:
+        candidates.append(discovered)
+
+    unique = []
+    seen = set()
+    for candidate in candidates:
+        normalized = str(candidate)
+        key = normalized.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(normalized)
+    return unique
+
+
+def _probe_codex_executable(executable):
+    try:
+        completed = subprocess.run(
+            [executable, "--version"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+        )
+    except Exception as exc:
+        logger.debug("Local Codex probe failed for %s: %s", executable, exc)
+        return False
+    if completed.returncode == 0:
+        return True
+    logger.debug(
+        "Local Codex probe returned %s for %s: %s",
+        completed.returncode,
+        executable,
+        (completed.stderr or completed.stdout or "").strip()[-500:],
+    )
+    return False
+
+
+def _discover_codex_executable():
+    for executable in _candidate_codex_executables():
+        if _probe_codex_executable(executable):
+            return executable
+    return None
+
+
+def _tail_text(text, limit=2000):
+    text = text or ""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
+    else:
+        text = str(text)
+    if len(text) <= limit:
+        return text
+    return text[-limit:]
+
+
+def _path_status(path):
+    path = Path(path)
+    status = {"path": str(path), "exists": path.exists()}
+    if status["exists"]:
+        try:
+            stat = path.stat()
+            status["size_bytes"] = stat.st_size
+            status["modified_at"] = datetime.fromtimestamp(stat.st_mtime).isoformat()
+        except OSError as exc:
+            status["stat_error"] = str(exc)
+    return status
+
+
+def _local_codex_failure_artifact_path(date_str, data_dir):
+    advice_path = daily_artifact_path("investment_advice", date_str, data_dir)
+    return advice_path.parent / f"local_codex_failure_{date_str}.json"
+
+
+def _record_local_codex_failure(date_str, data_dir, result, **context):
+    payload = {
+        "recorded_at": datetime.now().isoformat(timespec="seconds"),
+        "provider": "local_codex",
+        **context,
+        **result,
+    }
+    response_path = payload.get("response_path")
+    if response_path:
+        payload["response_path_status"] = _path_status(response_path)
+
+    artifact_path = _local_codex_failure_artifact_path(date_str, data_dir)
+    try:
+        artifact_path.parent.mkdir(parents=True, exist_ok=True)
+        artifact_path.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True),
+            encoding="utf-8",
+        )
+        result["diagnostic_path"] = str(artifact_path)
+    except Exception as exc:
+        logger.warning("Failed to write local Codex diagnostic artifact: %s", exc)
+        result["diagnostic_error"] = str(exc)
+    return result
+
+
+def _build_local_codex_prompt(prompt_file, system_message, user_message):
+    return (
+        "You are the local Codex JSON responder for Ginger's daily trading workflow.\n"
+        "Do not inspect files, run commands, or modify the repository. The prompt below is self-contained.\n"
+        "Return only one valid JSON object matching the requested schema. Do not include markdown fences.\n"
+        "Code-owned risk, sizing, exits, and order boundaries are authoritative; only apply the prompt's LLM semantic checks.\n\n"
+        f"Audit prompt file: {prompt_file}\n\n"
+        "=== SYSTEM MESSAGE ===\n"
+        f"{system_message}\n\n"
+        "=== USER MESSAGE ===\n"
+        f"{user_message}\n"
+    )
+
+
+def _call_local_codex(prompt_file, system_message, user_message, date_str, data_dir, model=None):
+    model_id = _resolve_local_codex_model(model)
+    executable = _discover_codex_executable()
+    if not executable:
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": "local_codex_executable_unavailable",
+                "model": model_id,
+                "provider": "local_codex",
+            },
+            candidate_count=len(_candidate_codex_executables()),
+        )
+
+    advice_path = daily_artifact_path("investment_advice", date_str, data_dir)
+    output_path = advice_path.parent / f"local_codex_response_{date_str}.txt"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    codex_prompt = _build_local_codex_prompt(prompt_file, system_message, user_message)
+    sandbox_mode = _local_codex_sandbox_mode()
+    ephemeral_enabled = _local_codex_ephemeral_enabled()
+    cmd = [
+        executable,
+        "exec",
+        "--sandbox",
+        sandbox_mode,
+        "--model",
+        model_id,
+        "--cd",
+        str(Path.cwd()),
+        "--output-last-message",
+        str(output_path),
+        "-",
+    ]
+    if ephemeral_enabled:
+        cmd.insert(2, "--ephemeral")
+
+    started = time.time()
+    try:
+        completed = subprocess.run(
+            cmd,
+            input=codex_prompt,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=_local_codex_timeout_seconds(),
+        )
+    except subprocess.TimeoutExpired as exc:
+        timeout_seconds = _local_codex_timeout_seconds()
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": f"local_codex_timeout_after_{timeout_seconds}s",
+                "stderr": _tail_text(getattr(exc, "stderr", "") or ""),
+                "stdout": _tail_text(getattr(exc, "stdout", "") or ""),
+                "model": model_id,
+                "provider": "local_codex",
+                "response_path": str(output_path),
+                "codex_executable": executable,
+                "codex_ephemeral": ephemeral_enabled,
+                "codex_sandbox": sandbox_mode,
+                "timeout_seconds": timeout_seconds,
+                "duration_seconds": round(time.time() - started, 3),
+            },
+            command=cmd,
+            prompt_file=str(prompt_file),
+        )
+    except Exception as exc:
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": f"local_codex_launch_failed: {exc}",
+                "model": model_id,
+                "provider": "local_codex",
+                "response_path": str(output_path),
+                "codex_executable": executable,
+                "codex_ephemeral": ephemeral_enabled,
+                "codex_sandbox": sandbox_mode,
+                "duration_seconds": round(time.time() - started, 3),
+            },
+            command=cmd,
+            prompt_file=str(prompt_file),
+        )
+
+    duration_seconds = round(time.time() - started, 3)
+    if completed.returncode != 0:
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": f"local_codex_returncode_{completed.returncode}",
+                "returncode": completed.returncode,
+                "stderr": _tail_text(completed.stderr),
+                "stdout": _tail_text(completed.stdout),
+                "model": model_id,
+                "provider": "local_codex",
+                "response_path": str(output_path),
+                "codex_executable": executable,
+                "codex_ephemeral": ephemeral_enabled,
+                "codex_sandbox": sandbox_mode,
+                "duration_seconds": duration_seconds,
+            },
+            command=cmd,
+            prompt_file=str(prompt_file),
+        )
+
+    raw_response = ""
+    if output_path.exists():
+        raw_response = output_path.read_text(encoding="utf-8", errors="replace").strip()
+    if not raw_response:
+        raw_response = (completed.stdout or "").strip()
+
+    parsed = parse_json_advice(raw_response)
+    if not isinstance(parsed, dict) or "new_trade" not in parsed:
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": "local_codex_response_missing_new_trade_json",
+                "response_path": str(output_path),
+                "stdout": _tail_text(completed.stdout),
+                "stderr": _tail_text(completed.stderr),
+                "model": model_id,
+                "provider": "local_codex",
+                "codex_executable": executable,
+                "codex_ephemeral": ephemeral_enabled,
+                "codex_sandbox": sandbox_mode,
+                "duration_seconds": duration_seconds,
+            },
+            command=cmd,
+            prompt_file=str(prompt_file),
+        )
+
+    token_usage = {
+        "provider": "local_codex",
+        "model": model_id,
+        "codex_executable": executable,
+        "codex_ephemeral": ephemeral_enabled,
+        "codex_sandbox": sandbox_mode,
+        "codex_response_path": str(output_path),
+        "duration_seconds": duration_seconds,
+    }
+    advice_path.parent.mkdir(parents=True, exist_ok=True)
+    if not save_advice(raw_response, str(advice_path), token_usage=token_usage):
+        return _record_local_codex_failure(
+            date_str,
+            data_dir,
+            {
+                "success": False,
+                "error": "local_codex_save_advice_failed",
+                "response_path": str(output_path),
+                "model": model_id,
+                "provider": "local_codex",
+                "codex_executable": executable,
+                "codex_ephemeral": ephemeral_enabled,
+                "codex_sandbox": sandbox_mode,
+                "duration_seconds": duration_seconds,
+            },
+            command=cmd,
+            prompt_file=str(prompt_file),
+        )
+
+    return {
+        "success": True,
+        "advice_path": str(advice_path),
+        "replay_path": str(_replay_log_path_for_output(str(advice_path), date_str)),
+        "response_path": str(output_path),
+        "model": model_id,
+        "provider": "local_codex",
+        "token_usage": token_usage,
+    }
 
 
 def _load_json_if_exists(path):
@@ -787,22 +1163,26 @@ def get_investment_advice(
     trade_news,
     open_positions=None,
     trend_signals=None,
-    model="gpt-4o",
+    model=LOCAL_CODEX_DEFAULT_MODEL,
     max_tokens=4000,
-    save_prompt_only=True,
+    save_prompt_only=False,
 ):
     """
-    Build and persist the daily LLM prompt + decision log.
+    Build the daily LLM prompt, then prefer local Codex for the JSON response.
 
-    The operator workflow is manual by design: the prompt is pasted into an
-    external LLM and the response is imported via import_advice.py, which
-    writes the canonical llm_prompt_resp_<date>.json replay artifact. There is
-    no API-call branch (exp-20260612-009 removed the never-used OpenAI path).
+    The prompt and decision log are always persisted first. By default, this
+    then calls local Codex with gpt-5.6-sol and saves the structured response
+    through the same advice/replay archive path used by import_advice.py. If
+    local Codex is disabled, unavailable, or returns invalid JSON, the function
+    keeps the prompt-only fallback so the operator can still import manually.
 
     Args:
         trade_news (list): List of filtered trade news items
         open_positions (dict): Optional open positions data
         trend_signals (dict): Optional trend signal data
+        model (str): Local Codex model id. Default is gpt-5.6-sol.
+        max_tokens (int): Kept for legacy caller compatibility.
+        save_prompt_only (bool): True skips local Codex and only saves prompt.
 
     Returns:
         dict: {
@@ -812,6 +1192,8 @@ def get_investment_advice(
             "token_usage": None
         }
     """
+    del max_tokens  # Legacy API compatibility; local Codex is not token-capped here.
+
     # Load open positions if not provided
     if open_positions is None:
         open_positions = load_open_positions()
@@ -849,15 +1231,73 @@ def get_investment_advice(
             "token_usage": None
         }
 
+    data_dir = _prompt_data_dir_for_current_context()
+    if not save_prompt_only and _local_codex_enabled():
+        codex_result = _call_local_codex(
+            prompt_file,
+            system_message,
+            user_message,
+            today,
+            data_dir,
+            model=model,
+        )
+        if codex_result.get("success"):
+            return {
+                "success": True,
+                "advice": (
+                    f"Prompt saved to {prompt_file}\n"
+                    f"Local Codex ({codex_result['model']}) advice saved to "
+                    f"{codex_result['advice_path']}\n"
+                    f"Replay artifact ready at {codex_result['replay_path']}"
+                ),
+                "error": None,
+                "token_usage": codex_result.get("token_usage"),
+            }
+
+        diagnostic_path = codex_result.get("diagnostic_path")
+        diagnostic_suffix = f" diagnostic={diagnostic_path}" if diagnostic_path else ""
+        stderr_tail = _tail_text(codex_result.get("stderr"), limit=500).strip()
+        logger.warning(
+            "Local Codex auto-call failed: %s%s",
+            codex_result.get("error"),
+            diagnostic_suffix,
+        )
+        if stderr_tail:
+            logger.warning("Local Codex stderr tail: %s", stderr_tail)
+        fallback_lines = [
+            f"Prompt saved to {prompt_file}",
+            f"Local Codex auto-call failed: {codex_result.get('error')}",
+        ]
+        if diagnostic_path:
+            fallback_lines.append(f"Diagnostic artifact: {diagnostic_path}")
+        fallback_lines.extend(
+            [
+                "",
+                "Manual fallback: import the structured JSON response via import_advice.py",
+            ]
+        )
+        return {
+            "success": True,
+            "advice": "\n".join(fallback_lines),
+            "error": None,
+            "token_usage": {
+                "provider": "local_codex",
+                "model": codex_result.get("model") or _resolve_local_codex_model(model),
+                "error": codex_result.get("error"),
+                "diagnostic_path": diagnostic_path,
+                "stderr_tail": stderr_tail or None,
+            },
+        }
+
     return {
         "success": True,
         "advice": (
-            f"Prompt saved to {prompt_file}\n\nTo use this prompt:\n"
-            "1. Copy the content\n2. Paste into ChatGPT or Claude\n"
-            "3. Import the structured JSON response via import_advice.py"
+            f"Prompt saved to {prompt_file}\n\n"
+            "Local Codex auto-call is disabled for this run. "
+            "Import the structured JSON response via import_advice.py."
         ),
         "error": None,
-        "token_usage": None
+        "token_usage": None,
     }
 
 

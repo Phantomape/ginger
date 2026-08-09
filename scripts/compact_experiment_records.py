@@ -2,7 +2,7 @@
 oversized diagnostic dump fields (e.g. *_by_window candidate/trade samples).
 
 Those fields are 100x larger than the compact decision metadata, are not consumed
-by any tooling (build_alpha_memory / meta_research_engine read only compact
+by any tooling (build_alpha_memory / experiment_history read only compact
 fields), and already live in the experiment artifact (data/experiments/<id>/).
 This rewrites docs/experiment_log.jsonl and experiments/logs/*.json so they hold
 only the compact record + a marker, dramatically shrinking both. The full dumps

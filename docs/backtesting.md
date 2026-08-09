@@ -4,6 +4,27 @@ This file defines the canonical backtest command shape and the frozen-input
 identity contract used by alpha experiments. Other ad hoc runs may be useful
 for debugging, but they are not acceptance evidence.
 
+## PIT Tier and Result Authority
+
+“Canonical command” describes the metric/window protocol; it does not by itself
+make every input `canonical_pit`. Every new alpha artifact must record a
+`pit_evidence` block with `tier`, `known_future_leakage`, decision/availability
+clock, revision or vintage limitation, artifact hashes, requested use, and
+maximum disposition. Full definitions live in
+[`research_pit_policy.md`](research_pit_policy.md).
+
+- `research_pit` may run the same frozen windows and costs to estimate gross
+  historical edge, but before/after must use the same PIT tier and provenance.
+  A positive result is research-only and may close only as `observed_only`; it
+  cannot replace the canonical Gate-1 anchor or become default-off paper/live.
+- `canonical_pit` is required for an accepted strategy result, an accepted
+  default-off helper, activation, and `live_eligible`.
+- Known decision-time leakage invalidates EV, PnL, Sharpe, and Gate evidence.
+  It is not a “known bias” that can be disclosed and accepted.
+- Future return, MFE/MAE, and settlement labels may be computed after the
+  candidate, rule, threshold, and decision clock are frozen. Feeding them back
+  into candidate generation or selection is leakage.
+
 ## Canonical Command
 
 Use exactly this command shape for production-parity fixed-window backtests.

@@ -8,17 +8,22 @@ metadata; candidate-specific realised outcomes are forbidden at this boundary.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import re
 from collections import Counter, defaultdict
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime, time as datetime_time, timezone
+from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 try:
     from .alpha_search_contract import (
+        AMENDMENT_CHANGED_FIELD_ALLOWLIST,
         canonical_hash as _contract_canonical_hash,
         canonical_json as _contract_canonical_json,
+        normalize_evidence_surface,
         normalize_hypothesis_candidate,
         normalize_preflight_decision,
         normalize_selection_scope_manifest,
@@ -28,8 +33,10 @@ try:
     )
 except ImportError:  # pragma: no cover - direct quant/ test import fallback.
     from alpha_search_contract import (  # type: ignore
+        AMENDMENT_CHANGED_FIELD_ALLOWLIST,
         canonical_hash as _contract_canonical_hash,
         canonical_json as _contract_canonical_json,
+        normalize_evidence_surface,
         normalize_hypothesis_candidate,
         normalize_preflight_decision,
         normalize_selection_scope_manifest,
@@ -371,28 +378,51 @@ def build_selection_scope_manifest(
     candidate_generation_config: Mapping[str, Any],
     allowed_surface_ids: Sequence[str],
     surface_registry_hash: str,
-    prior_fingerprints: Iterable[str | Mapping[str, Any]],
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
     queue_budgets: Mapping[str, int],
     expected_candidate_count: int,
     selection_limit: int = 1,
     batch_policy_bundle_id: str | None = None,
 ) -> dict[str, Any]:
-    prior_hashes = _normalise_prior_fingerprint_hashes(prior_fingerprints)
+    if not isinstance(prior_fingerprints, Mapping) or "snapshot_version" not in prior_fingerprints:
+        raise AlphaSearchError(
+            "historical_snapshot_required",
+            "new selection scopes require a canonical historical snapshot object",
+        )
+    preregistered_text = _normal_clock(
+        preregistered_at, path="manifest.preregistered_at"
+    )
+    data_cutoff_text = _normal_clock(data_cutoff, path="manifest.data_cutoff")
+    freeze_text = _normal_clock(freeze_at, path="manifest.freeze_at")
+    _assert_snapshot_clock_not_after(
+        prior_fingerprints,
+        upper_bound=preregistered_text,
+        upper_path="manifest.preregistered_at",
+    )
+    _assert_snapshot_clock_not_after(
+        prior_fingerprints,
+        upper_bound=data_cutoff_text,
+        upper_path="manifest.data_cutoff",
+    )
+    _, prior_snapshot_hash, prior_count = _prior_rows_and_anchor(prior_fingerprints)
+    if prior_count <= 0:
+        raise AlphaSearchError(
+            "empty_historical_prior",
+            "new selection scopes cannot be built with empty repository history",
+        )
     row = {
         "schema_version": SCHEMA_VERSION,
         "manifest_version": SCOPE_MANIFEST_VERSION,
         "scope_name": scope_name,
-        "preregistered_at": _normal_clock(
-            preregistered_at, path="manifest.preregistered_at"
-        ),
-        "data_cutoff": _normal_clock(data_cutoff, path="manifest.data_cutoff"),
-        "freeze_at": _normal_clock(freeze_at, path="manifest.freeze_at"),
+        "preregistered_at": preregistered_text,
+        "data_cutoff": data_cutoff_text,
+        "freeze_at": freeze_text,
         "generator_version": generator_version,
         "candidate_generation_config": dict(_plain(candidate_generation_config)),
         "allowed_surface_ids": sorted(set(str(item) for item in allowed_surface_ids)),
         "surface_registry_hash": surface_registry_hash,
-        "prior_fingerprint_snapshot_hash": _prior_fingerprint_snapshot_hash(prior_hashes),
-        "prior_fingerprint_count": len(prior_hashes),
+        "prior_fingerprint_snapshot_hash": prior_snapshot_hash,
+        "prior_fingerprint_count": prior_count,
         "selector_version": SELECTOR_VERSION,
         "score_version": SCORE_VERSION,
         "queue_budgets": {queue: int(queue_budgets.get(queue, 0)) for queue in SEARCH_QUEUES},
@@ -558,7 +588,23 @@ def _surface_rows(surfaces: Any) -> list[dict[str, Any]]:
                     raw_rows.append({"surface_id": key, **dict(value)})
     else:
         raw_rows = surfaces or []
-    return [dict(_plain(row)) for row in raw_rows if isinstance(_plain(row), Mapping)]
+    rows: list[dict[str, Any]] = []
+    for index, raw_row in enumerate(raw_rows):
+        row = _plain(raw_row)
+        if not isinstance(row, Mapping):
+            raise AlphaSearchError(
+                "invalid_evidence_surface",
+                f"surfaces[{index}] must be an EvidenceSurface-compatible object",
+            )
+        try:
+            rows.append(normalize_evidence_surface(row))
+        except Exception as exc:
+            detail = getattr(exc, "code", type(exc).__name__)
+            raise AlphaSearchError(
+                "invalid_evidence_surface",
+                f"surfaces[{index}] failed EvidenceSurface validation ({detail}): {exc}",
+            ) from exc
+    return rows
 
 
 def _surface_indexes(
@@ -622,6 +668,8 @@ def _surface_grade(surface: Mapping[str, Any]) -> str:
         or (surface.get("coverage") or {}).get("settled_independent_decisions")
         or 0
     )
+    if pit == "research_pit" and int(surface.get("independent_count") or 0) > 0:
+        return "lead"
     if pit in {"canonical", "canonical_pit", "pass"} and settled > 0:
         return "observed_only"
     if pit in {"pit_forward_unsettled", "forward", "partial"}:
@@ -666,6 +714,1027 @@ def _fingerprint_key(candidate: Mapping[str, Any]) -> str:
     return stable_hash(semantic)
 
 
+def candidate_policy_hash(candidate: Mapping[str, Any]) -> str:
+    """Hash the exact evaluation policy that an Axis-C retry may not retune."""
+
+    row = dict(_plain(candidate))
+    return stable_hash(
+        {
+            "baseline": row.get("baseline"),
+            "treatment": row.get("treatment"),
+            "replacement_value_comparator": row.get(
+                "replacement_value_comparator",
+                row.get("replacement_comparison"),
+            ),
+            "expected_horizon": row.get("expected_horizon", row.get("horizon")),
+            "execution_envelope": row.get(
+                "execution_envelope", row.get("execution")
+            ),
+        }
+    )
+
+
+def _validate_repository_reopen_history(
+    value: Mapping[str, Any], *, repo_root: Path
+) -> Mapping[str, Any]:
+    """Require an as-of snapshot recomputable from repository truth sources."""
+
+    try:
+        from .alpha_search_history import validate_repository_historical_snapshot
+    except ImportError:  # pragma: no cover - direct quant/ test fallback.
+        from alpha_search_history import validate_repository_historical_snapshot  # type: ignore
+    return validate_repository_historical_snapshot(value, repo_root=repo_root)
+
+
+def _quantitative_reopen_artifact_path(
+    locator: Any, *, repo_root: Path
+) -> tuple[Path | None, str | None]:
+    if not isinstance(locator, str) or not locator.strip():
+        return None, "readiness_artifact_path_invalid"
+    relative = Path(locator.strip())
+    if relative.is_absolute():
+        return None, "readiness_artifact_outside_repository"
+    resolved = (repo_root / relative).resolve()
+    try:
+        resolved.relative_to(repo_root.resolve())
+    except ValueError:
+        return None, "readiness_artifact_outside_repository"
+    if not resolved.is_file():
+        return None, "readiness_artifact_missing"
+    return resolved, None
+
+
+def _proof_integer(value: Any) -> int | None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        return None
+    return value
+
+
+def _validate_quantitative_reopen_proof_item(
+    candidate: Mapping[str, Any],
+    proof: Mapping[str, Any],
+    prior_snapshot: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+    *,
+    referenced_surfaces: Sequence[Mapping[str, Any]],
+    data_cutoff: datetime,
+    evaluated_at: datetime,
+    repo_root: Path,
+) -> tuple[set[str], str | None, list[str]]:
+    """Authenticate one narrow AGENTS section 2.4 Axis-C waiver.
+
+    A valid proof waives exactly one named historical ``record_id`` and, when
+    applicable, the one named parked surface.  Every other exact/near neighbor
+    and every other parked surface remains untouched by the caller.
+    """
+
+    reasons: list[str] = []
+    if not isinstance(prior_snapshot, Mapping) or "snapshot_version" not in prior_snapshot:
+        reasons.append("quantitative_reopen_repository_history_required")
+        return set(), None, sorted(set(reasons))
+    try:
+        _validate_repository_reopen_history(prior_snapshot, repo_root=repo_root)
+    except Exception:
+        reasons.append("quantitative_reopen_repository_history_unverified")
+
+    artifact_path, path_failure = _quantitative_reopen_artifact_path(
+        proof.get("readiness_artifact_path"), repo_root=repo_root
+    )
+    if path_failure:
+        reasons.append(path_failure)
+        return set(), None, sorted(set(reasons))
+    assert artifact_path is not None
+    try:
+        payload = artifact_path.read_bytes()
+    except OSError:
+        reasons.append("readiness_artifact_read_failed")
+        return set(), None, sorted(set(reasons))
+    actual_sha = hashlib.sha256(payload).hexdigest()
+    if actual_sha != proof.get("readiness_artifact_sha256"):
+        reasons.append("readiness_artifact_sha256_mismatch")
+    try:
+        artifact = json.loads(payload.decode("utf-8-sig"))
+    except (UnicodeError, json.JSONDecodeError):
+        reasons.append("readiness_artifact_invalid_json")
+        return set(), None, sorted(set(reasons))
+    if not isinstance(artifact, Mapping):
+        reasons.append("readiness_artifact_not_object")
+        return set(), None, sorted(set(reasons))
+    lanes = artifact.get("lanes")
+    if not isinstance(lanes, list):
+        reasons.append("readiness_lanes_invalid")
+        return set(), None, sorted(set(reasons))
+    lane_name = str(proof.get("readiness_lane") or "")
+    matching_lanes = [
+        lane
+        for lane in lanes
+        if isinstance(lane, Mapping) and str(lane.get("lane") or "") == lane_name
+    ]
+    if len(matching_lanes) != 1:
+        reasons.append("readiness_lane_binding_mismatch")
+        return set(), None, sorted(set(reasons))
+    lane = dict(matching_lanes[0])
+    if stable_hash(lane) != proof.get("readiness_lane_hash"):
+        reasons.append("readiness_lane_hash_mismatch")
+    counters = lane.get("counters")
+    thresholds = lane.get("thresholds")
+    if not isinstance(counters, Mapping):
+        reasons.append("readiness_counters_invalid")
+        counters = {}
+    if not isinstance(thresholds, Mapping):
+        reasons.append("readiness_thresholds_invalid")
+        thresholds = {}
+    if stable_hash(counters) != proof.get("counters_hash"):
+        reasons.append("readiness_counters_hash_mismatch")
+    if stable_hash(thresholds) != proof.get("thresholds_hash"):
+        reasons.append("readiness_thresholds_hash_mismatch")
+    if str(lane.get("status") or "").lower() != "ready":
+        reasons.append("readiness_lane_not_ready")
+
+    generated_raw = artifact.get("generated_at")
+    if generated_raw != proof.get("readiness_generated_at"):
+        reasons.append("readiness_generated_at_mismatch")
+    try:
+        generated_at = _parse_clock(
+            generated_raw, path="quantitative_reopen.readiness_generated_at"
+        )
+        if generated_at > data_cutoff or generated_at > evaluated_at:
+            reasons.append("readiness_artifact_after_preflight_cutoff")
+        candidate_created_at = _parse_clock(
+            candidate.get("created_at"), path="candidate.created_at"
+        )
+        if generated_at > candidate_created_at:
+            reasons.append("readiness_artifact_after_candidate_creation")
+    except AlphaSearchError:
+        generated_at = None
+        reasons.append("readiness_generated_at_invalid")
+
+    current_key = str(proof.get("current_counter_key") or "")
+    baseline_key = str(proof.get("baseline_counter_key") or "")
+    threshold_key = str(proof.get("threshold_key") or "")
+    if not re.search(r"(?:settled|closed)", current_key, re.IGNORECASE):
+        reasons.append("readiness_current_counter_not_settled")
+    if threshold_key != current_key:
+        reasons.append("readiness_threshold_counter_mismatch")
+    actual_current = _proof_integer(counters.get(current_key))
+    actual_baseline = _proof_integer(counters.get(baseline_key))
+    actual_threshold = _proof_integer(thresholds.get(threshold_key))
+    if actual_current is None:
+        reasons.append("readiness_current_counter_invalid")
+    if actual_baseline is None or actual_baseline <= 0:
+        reasons.append("readiness_baseline_counter_invalid")
+    if actual_threshold is None:
+        reasons.append("readiness_threshold_invalid")
+    declared_counts = {
+        "current_count": actual_current,
+        "baseline_count": actual_baseline,
+        "threshold_count": actual_threshold,
+    }
+    for field_name, actual in declared_counts.items():
+        if proof.get(field_name) != actual:
+            reasons.append(f"readiness_{field_name}_mismatch")
+    relative_bps = proof.get("minimum_relative_growth_bps")
+    absolute_floor = proof.get("minimum_absolute_growth")
+    if relative_bps != 5000:
+        reasons.append("quantitative_reopen_relative_floor_mismatch")
+    if absolute_floor != 10:
+        reasons.append("quantitative_reopen_absolute_floor_mismatch")
+    if (
+        actual_current is not None
+        and actual_baseline is not None
+        and actual_baseline > 0
+    ):
+        if actual_current - actual_baseline < 10:
+            reasons.append("quantitative_reopen_absolute_growth_insufficient")
+        if actual_current * 10000 < actual_baseline * 15000:
+            reasons.append("quantitative_reopen_relative_growth_insufficient")
+    if actual_baseline is not None and actual_threshold is not None:
+        if actual_threshold - actual_baseline < 10:
+            reasons.append("readiness_threshold_absolute_floor_insufficient")
+        if actual_threshold * 10000 < actual_baseline * 15000:
+            reasons.append("readiness_threshold_relative_floor_insufficient")
+    if (
+        actual_current is not None
+        and actual_threshold is not None
+        and actual_current < actual_threshold
+    ):
+        reasons.append("readiness_threshold_not_met")
+
+    if proof.get("policy_hash") != candidate_policy_hash(candidate):
+        reasons.append("quantitative_reopen_policy_hash_mismatch")
+    if proof.get("fingerprint_hash") != _fingerprint_key(candidate):
+        reasons.append("quantitative_reopen_fingerprint_hash_mismatch")
+
+    try:
+        from .alpha_search_history import (
+            candidate_legacy_fingerprints,
+            find_bound_historical_record,
+            historical_record_hash,
+            legacy_near_neighbors,
+        )
+    except ImportError:  # pragma: no cover - direct quant/ test fallback.
+        from alpha_search_history import (  # type: ignore
+            candidate_legacy_fingerprints,
+            find_bound_historical_record,
+            historical_record_hash,
+            legacy_near_neighbors,
+        )
+    try:
+        record = find_bound_historical_record(
+            prior_snapshot,
+            record_id=str(proof.get("historical_record_id") or ""),
+            record_hash=str(proof.get("historical_record_hash") or ""),
+            family_key=str(proof.get("historical_family_key") or ""),
+            representative_experiment_id=str(
+                proof.get("representative_experiment_id") or ""
+            ),
+        )
+    except Exception as exc:
+        reasons.append(
+            "quantitative_reopen_"
+            + str(getattr(exc, "code", "historical_record_binding_invalid"))
+        )
+        return set(), None, sorted(set(reasons))
+    if historical_record_hash(record) != proof.get("historical_record_hash"):
+        reasons.append("quantitative_reopen_historical_record_hash_mismatch")
+    if record.get("reopen_condition") in (None, "", [], {}):
+        reasons.append("quantitative_reopen_historical_record_not_parked")
+    try:
+        record_known_at = _parse_clock(
+            record.get("known_at"), path="quantitative_reopen.record.known_at"
+        )
+        if generated_at is not None and generated_at <= record_known_at:
+            reasons.append("readiness_artifact_stale_for_historical_record")
+    except AlphaSearchError:
+        reasons.append("quantitative_reopen_historical_clock_invalid")
+
+    target_neighbor_ids = {
+        str(item.get("record_id") or "")
+        for item in legacy_near_neighbors(candidate, [record])
+    }
+    current_rich_exact = _fingerprint_key(candidate) == _fingerprint_key(
+        {"fingerprint": record.get("fingerprint") or {}}
+    )
+    if str(record.get("record_id") or "") not in target_neighbor_ids and not current_rich_exact:
+        reasons.append("quantitative_reopen_target_not_blocking_neighbor")
+    # At least the exact legacy source and gate-shape projection must match;
+    # the separately bound rich fingerprint prevents a mechanism rewrite.
+    record_fingerprint = record.get("fingerprint") or {}
+    same_face = any(
+        projection.get("data_source") == record_fingerprint.get("data_source")
+        and projection.get("gate_shape") == record_fingerprint.get("gate_shape")
+        for projection in candidate_legacy_fingerprints(candidate)
+    )
+    if not same_face:
+        reasons.append("quantitative_reopen_historical_fingerprint_mismatch")
+
+    reopened_surface_id = str(proof.get("reopened_surface_id") or "")
+    matching_surfaces = [
+        surface
+        for surface in referenced_surfaces
+        if str(surface.get("surface_id") or "") == reopened_surface_id
+    ]
+    if len(matching_surfaces) != 1:
+        reasons.append("quantitative_reopen_surface_binding_mismatch")
+
+    if reasons:
+        return set(), None, sorted(set(reasons))
+    return {str(record["record_id"])}, reopened_surface_id, []
+
+
+def _validate_quantitative_reopen_proofs(
+    candidate: Mapping[str, Any],
+    prior_snapshot: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+    *,
+    referenced_surfaces: Sequence[Mapping[str, Any]],
+    data_cutoff: datetime,
+    evaluated_at: datetime,
+    repo_root: Path,
+) -> tuple[set[str], set[str], list[str]]:
+    raw_proofs = candidate.get("quantitative_reopen_proofs")
+    if raw_proofs is None:
+        return set(), set(), []
+    if not isinstance(raw_proofs, Sequence) or isinstance(
+        raw_proofs, (str, bytes, bytearray)
+    ):
+        return set(), set(), ["quantitative_reopen_proofs_invalid"]
+    if not raw_proofs:
+        return set(), set(), ["quantitative_reopen_proofs_empty"]
+    reasons: list[str] = []
+    if candidate.get("amendment_lineage") is not None:
+        reasons.append("multiple_d3_waiver_types_forbidden")
+    record_ids = [
+        str(proof.get("historical_record_id") or "")
+        if isinstance(proof, Mapping)
+        else ""
+        for proof in raw_proofs
+    ]
+    if any(not record_id for record_id in record_ids):
+        reasons.append("quantitative_reopen_target_missing")
+    if len(record_ids) != len(set(record_ids)):
+        reasons.append("quantitative_reopen_duplicate_target")
+    if record_ids != sorted(record_ids):
+        reasons.append("quantitative_reopen_proofs_not_canonical")
+
+    waived: set[str] = set()
+    reopened_surfaces: set[str] = set()
+    for index, raw_proof in enumerate(raw_proofs):
+        if not isinstance(raw_proof, Mapping):
+            reasons.append(f"quantitative_reopen_proof_invalid:{index}")
+            continue
+        item_waived, item_surface, item_reasons = (
+            _validate_quantitative_reopen_proof_item(
+                candidate,
+                raw_proof,
+                prior_snapshot,
+                referenced_surfaces=referenced_surfaces,
+                data_cutoff=data_cutoff,
+                evaluated_at=evaluated_at,
+                repo_root=repo_root,
+            )
+        )
+        reasons.extend(f"{reason}:proof={index}" for reason in item_reasons)
+        waived.update(item_waived)
+        if item_surface:
+            reopened_surfaces.add(item_surface)
+    if len(waived) != len(raw_proofs):
+        reasons.append("quantitative_reopen_claim_not_fully_authenticated")
+    if reasons:
+        return set(), set(), sorted(set(reasons))
+    return waived, reopened_surfaces, []
+
+
+_AMENDMENT_DIFF_IGNORED_FIELDS = frozenset(
+    {
+        "candidate_id",
+        "created_at",
+        "created_by",
+        "research_refs",
+        "amendment_lineage",
+    }
+)
+
+
+def _lineage_diff_paths(parent: Any, child: Any, *, prefix: str = "") -> set[str]:
+    """Return exact changed JSON paths for a depth-one candidate amendment."""
+
+    if isinstance(parent, Mapping) and isinstance(child, Mapping):
+        changed: set[str] = set()
+        for key in sorted(set(parent) | set(child)):
+            if not prefix and key in _AMENDMENT_DIFF_IGNORED_FIELDS:
+                continue
+            path = f"{prefix}.{key}" if prefix else str(key)
+            if key not in parent or key not in child:
+                changed.add(path)
+                continue
+            changed.update(_lineage_diff_paths(parent[key], child[key], prefix=path))
+        return changed
+    if isinstance(parent, Sequence) and not isinstance(parent, (str, bytes, bytearray)):
+        if isinstance(child, Sequence) and not isinstance(child, (str, bytes, bytearray)):
+            return set() if list(parent) == list(child) else {prefix}
+    return set() if parent == child else {prefix}
+
+
+def _nested_value(value: Mapping[str, Any], path: str) -> Any:
+    current: Any = value
+    for part in path.split("."):
+        if not isinstance(current, Mapping) or part not in current:
+            return None
+        current = current[part]
+    return current
+
+
+def _repository_attachment_failure(locator: Any, expected_digest: Any) -> str | None:
+    if not isinstance(locator, str) or not locator.strip():
+        return "invalid"
+    relative = Path(locator.strip())
+    if relative.is_absolute():
+        return "outside_repository"
+    repo_root = Path(__file__).resolve().parents[1]
+    resolved = (repo_root / relative).resolve()
+    try:
+        resolved.relative_to(repo_root)
+    except ValueError:
+        return "outside_repository"
+    if not resolved.is_file():
+        return "missing"
+    if not isinstance(expected_digest, str) or re.fullmatch(
+        r"[0-9a-f]{64}", expected_digest
+    ) is None:
+        return "hash_invalid"
+    actual = hashlib.sha256(resolved.read_bytes()).hexdigest()
+    return None if actual == expected_digest else "hash_mismatch"
+
+
+_AMENDMENT_ATTACHMENT_RECORD_TYPES = {
+    "baseline.comparator_allocation_attachment": (
+        "alpha_search_comparator_allocation_v1"
+    ),
+    "treatment.endpoint_preflight_attachment": "alpha_search_endpoint_preflight_v1",
+}
+_AMENDMENT_ATTACHMENT_TOP_LEVEL_KEYS = frozenset(
+    {
+        "schema_version",
+        "record_type",
+        "parent_candidate_id",
+        "parent_candidate_snapshot_hash",
+        "created_at",
+        "data_cutoff",
+        "outcome_blind",
+        "row_count",
+        "rows",
+    }
+)
+_COMPARATOR_ALLOCATION_ROW_KEYS = frozenset(
+    {
+        "decision_key",
+        "ordinal",
+        "comparator_kind",
+        "core_slot_id",
+        "collision_reason",
+        "allocator_input_hashes",
+    }
+)
+_ENDPOINT_PREFLIGHT_ROW_KEYS = frozenset(
+    {
+        "decision_key",
+        "eligible",
+        "entry_session",
+        "exit_session",
+        "void_reason",
+        "canonical_reader_input_hash",
+    }
+)
+
+
+def _sha256_text(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+
+
+def _amendment_attachment_content_validation(
+    locator: str,
+    *,
+    expected_record_type: str,
+    parent_candidate_id: str,
+    parent_candidate_snapshot_hash: str,
+    declared_at: datetime | None,
+    preflight_data_cutoff: datetime,
+) -> tuple[list[str], bool]:
+    """Audit a hash-bound attachment's closed schema without reading outcomes.
+
+    A byte digest proves identity, not safety.  The attachment must also be a
+    typed, outcome-free decision-input document whose own clock and parent
+    binding predate the amendment declaration.
+    """
+
+    repo_root = Path(__file__).resolve().parents[1]
+    resolved = (repo_root / Path(locator)).resolve()
+    try:
+        document = json.loads(resolved.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return ["invalid_json"], False
+
+    outcome_paths = outcome_field_paths(document, _path="attachment")
+    contaminated = bool(outcome_paths)
+    reasons = [
+        f"forbidden_outcome_field:{path}" for path in sorted(outcome_paths)
+    ]
+    if not isinstance(document, Mapping):
+        reasons.append("document_not_object")
+        return sorted(set(reasons)), contaminated
+
+    missing = sorted(_AMENDMENT_ATTACHMENT_TOP_LEVEL_KEYS - set(document))
+    unknown = sorted(set(document) - _AMENDMENT_ATTACHMENT_TOP_LEVEL_KEYS)
+    if missing:
+        reasons.append("top_level_missing:" + ",".join(missing))
+    if unknown:
+        reasons.append("top_level_unknown:" + ",".join(unknown))
+    if document.get("schema_version") != 1:
+        reasons.append("schema_version_invalid")
+    if document.get("record_type") != expected_record_type:
+        reasons.append("record_type_mismatch")
+    if document.get("parent_candidate_id") != parent_candidate_id:
+        reasons.append("parent_candidate_id_mismatch")
+    if document.get("parent_candidate_snapshot_hash") != parent_candidate_snapshot_hash:
+        reasons.append("parent_candidate_snapshot_hash_mismatch")
+    if document.get("outcome_blind") is not True:
+        reasons.append("outcome_blind_not_attested")
+        contaminated = True
+
+    try:
+        created_at = _parse_clock(
+            document.get("created_at"), path="amendment_attachment.created_at"
+        )
+        data_cutoff = _parse_clock(
+            document.get("data_cutoff"), path="amendment_attachment.data_cutoff"
+        )
+        if data_cutoff > created_at:
+            reasons.append("data_cutoff_after_created_at")
+        if data_cutoff > preflight_data_cutoff:
+            reasons.append("data_cutoff_after_preflight_cutoff")
+            contaminated = True
+        if declared_at is None:
+            reasons.append("lineage_declared_at_unavailable")
+        elif created_at > declared_at:
+            reasons.append("created_after_amendment_declaration")
+    except AlphaSearchError:
+        reasons.append("clock_invalid")
+
+    rows = document.get("rows")
+    row_count = document.get("row_count")
+    if not isinstance(rows, list) or not rows:
+        reasons.append("rows_not_nonempty_list")
+        rows = []
+    if (
+        not isinstance(row_count, int)
+        or isinstance(row_count, bool)
+        or row_count != len(rows)
+    ):
+        reasons.append("row_count_mismatch")
+
+    decision_keys: set[str] = set()
+    ordinals: set[int] = set()
+    core_slot_ids: set[str] = set()
+    for index, raw_row in enumerate(rows):
+        row_path = f"rows[{index}]"
+        if not isinstance(raw_row, Mapping):
+            reasons.append(f"row_not_object:{row_path}")
+            continue
+        expected_keys = (
+            _COMPARATOR_ALLOCATION_ROW_KEYS
+            if expected_record_type == "alpha_search_comparator_allocation_v1"
+            else _ENDPOINT_PREFLIGHT_ROW_KEYS
+        )
+        if set(raw_row) != expected_keys:
+            reasons.append(f"row_schema_mismatch:{row_path}")
+            continue
+        decision_key = raw_row.get("decision_key")
+        if not isinstance(decision_key, str) or not decision_key.strip():
+            reasons.append(f"decision_key_invalid:{row_path}")
+        elif decision_key in decision_keys:
+            reasons.append(f"decision_key_duplicate:{row_path}")
+        else:
+            decision_keys.add(decision_key)
+
+        if expected_record_type == "alpha_search_comparator_allocation_v1":
+            ordinal = raw_row.get("ordinal")
+            if (
+                not isinstance(ordinal, int)
+                or isinstance(ordinal, bool)
+                or ordinal < 0
+            ):
+                reasons.append(f"ordinal_invalid:{row_path}")
+            elif ordinal in ordinals:
+                reasons.append(f"ordinal_duplicate:{row_path}")
+            else:
+                ordinals.add(ordinal)
+            comparator_kind = raw_row.get("comparator_kind")
+            core_slot_id = raw_row.get("core_slot_id")
+            collision_reason = raw_row.get("collision_reason")
+            if comparator_kind == "core_slot":
+                if not isinstance(core_slot_id, str) or not core_slot_id.strip():
+                    reasons.append(f"core_slot_id_invalid:{row_path}")
+                elif core_slot_id in core_slot_ids:
+                    reasons.append(f"core_slot_id_duplicate:{row_path}")
+                else:
+                    core_slot_ids.add(core_slot_id)
+                if collision_reason is not None:
+                    reasons.append(f"core_slot_collision_reason_not_null:{row_path}")
+            elif comparator_kind == "cash":
+                if core_slot_id is not None:
+                    reasons.append(f"cash_core_slot_id_not_null:{row_path}")
+                if not isinstance(collision_reason, str) or not collision_reason.strip():
+                    reasons.append(f"cash_collision_reason_invalid:{row_path}")
+            else:
+                reasons.append(f"comparator_kind_invalid:{row_path}")
+            input_hashes = raw_row.get("allocator_input_hashes")
+            if not isinstance(input_hashes, Mapping) or not input_hashes:
+                reasons.append(f"allocator_input_hashes_invalid:{row_path}")
+            elif any(
+                not isinstance(name, str)
+                or not name.strip()
+                or not _sha256_text(digest)
+                for name, digest in input_hashes.items()
+            ):
+                reasons.append(f"allocator_input_hashes_invalid:{row_path}")
+        else:
+            eligible = raw_row.get("eligible")
+            entry_session = raw_row.get("entry_session")
+            exit_session = raw_row.get("exit_session")
+            void_reason = raw_row.get("void_reason")
+            if not isinstance(eligible, bool):
+                reasons.append(f"eligible_invalid:{row_path}")
+            elif eligible:
+                if not isinstance(entry_session, str) or not entry_session.strip():
+                    reasons.append(f"entry_session_invalid:{row_path}")
+                if not isinstance(exit_session, str) or not exit_session.strip():
+                    reasons.append(f"exit_session_invalid:{row_path}")
+                if void_reason is not None:
+                    reasons.append(f"eligible_void_reason_not_null:{row_path}")
+                if isinstance(entry_session, str) and isinstance(exit_session, str):
+                    try:
+                        if _parse_clock(
+                            entry_session, path=f"{row_path}.entry_session"
+                        ) > _parse_clock(exit_session, path=f"{row_path}.exit_session"):
+                            reasons.append(f"entry_after_exit:{row_path}")
+                    except AlphaSearchError:
+                        reasons.append(f"session_clock_invalid:{row_path}")
+            else:
+                if entry_session is not None or exit_session is not None:
+                    reasons.append(f"ineligible_session_not_null:{row_path}")
+                if not isinstance(void_reason, str) or not void_reason.strip():
+                    reasons.append(f"void_reason_invalid:{row_path}")
+            if not _sha256_text(raw_row.get("canonical_reader_input_hash")):
+                reasons.append(f"canonical_reader_input_hash_invalid:{row_path}")
+
+    return sorted(set(reasons)), contaminated
+
+
+def _validate_repository_lineage_history(value: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Require an as-of history snapshot recomputable from canonical ledgers."""
+
+    try:
+        from .alpha_search_history import validate_repository_historical_snapshot
+    except ImportError:  # pragma: no cover - direct quant/ test fallback.
+        from alpha_search_history import validate_repository_historical_snapshot  # type: ignore
+    return validate_repository_historical_snapshot(value)
+
+
+_ABANDONED_ANCESTOR_ATTESTATION_RECORD_TYPE = "alpha_search_pre_reservation_block"
+_ABANDONED_ANCESTOR_ATTESTATION_DISPOSITION = "parked_pre_reservation"
+_ABANDONED_ANCESTOR_RESERVATION_FLAGS = ("experiment_id_reserved", "experiment_claimed")
+
+
+def _validate_abandoned_ancestor_attestations(
+    raw_ancestors: Any,
+    prior_records: Sequence[Mapping[str, Any]],
+    *,
+    parent_id: str,
+    child_id: str,
+) -> tuple[set[str], set[str], list[str]]:
+    """Authenticate optional attested abandoned-ancestor waivers (exp-20260801-003).
+
+    The depth-one amendment waiver deadlocks whenever an abort chain left more
+    than one ledger-recorded, never-reserved candidate (the 2026-07-29
+    dividend-restart chain).  Each attestation here binds exactly one such
+    abandoned ancestor to the declared parent chain through a hash-bound
+    repository pre-reservation block artifact.  Every check fails closed:
+    a missing or forged artifact, an outcome-bearing artifact, a chain
+    mismatch, an unauthenticated history record, or any evidence the ancestor
+    reached reservation rejects the whole lineage.  Unrelated neighbors are
+    never touched.
+    """
+
+    if raw_ancestors is None:
+        return set(), set(), []
+    if not isinstance(raw_ancestors, Sequence) or isinstance(
+        raw_ancestors, (str, bytes, bytearray)
+    ):
+        return set(), set(), ["abandoned_ancestor_attestation_invalid"]
+    if not raw_ancestors:
+        return set(), set(), ["abandoned_ancestor_attestation_empty"]
+
+    repo_root = Path(__file__).resolve().parents[1]
+    reasons: list[str] = []
+    waived: set[str] = set()
+    attested: set[str] = set()
+    seen: set[str] = set()
+    for index, raw_entry in enumerate(raw_ancestors):
+        if not isinstance(raw_entry, Mapping):
+            reasons.append(f"abandoned_ancestor_entry_invalid:{index}")
+            continue
+        ancestor_id = str(raw_entry.get("ancestor_candidate_id") or "")
+        if not ancestor_id:
+            reasons.append(f"abandoned_ancestor_id_missing:{index}")
+            continue
+        if ancestor_id in seen:
+            reasons.append(f"abandoned_ancestor_duplicate:{ancestor_id}")
+            continue
+        seen.add(ancestor_id)
+        if ancestor_id in (parent_id, child_id):
+            reasons.append(f"abandoned_ancestor_not_distinct:{ancestor_id}")
+            continue
+
+        locator = raw_entry.get("attestation_artifact")
+        digest = raw_entry.get("attestation_artifact_hash")
+        artifact_failure = _repository_attachment_failure(locator, digest)
+        if artifact_failure is not None:
+            reasons.append(
+                f"abandoned_ancestor_artifact_{artifact_failure}:{ancestor_id}"
+            )
+            continue
+        try:
+            document = json.loads(
+                (repo_root / str(locator).strip()).read_text(encoding="utf-8")
+            )
+        except (OSError, ValueError):
+            reasons.append(f"abandoned_ancestor_artifact_unreadable:{ancestor_id}")
+            continue
+        if (
+            not isinstance(document, Mapping)
+            or str(document.get("record_type") or "")
+            != _ABANDONED_ANCESTOR_ATTESTATION_RECORD_TYPE
+        ):
+            reasons.append(
+                f"abandoned_ancestor_artifact_record_type_invalid:{ancestor_id}"
+            )
+            continue
+        if (
+            str(document.get("disposition") or "")
+            != _ABANDONED_ANCESTOR_ATTESTATION_DISPOSITION
+        ):
+            reasons.append(f"abandoned_ancestor_artifact_not_parked:{ancestor_id}")
+            continue
+        safety_state = document.get("safety_state")
+        if not isinstance(safety_state, Mapping) or not (
+            {"candidate_outcomes_accessed", "experiment_id_reserved"}
+            <= set(safety_state)
+        ):
+            reasons.append(
+                f"abandoned_ancestor_artifact_safety_state_invalid:{ancestor_id}"
+            )
+            continue
+        if any(
+            safety_state.get(flag, False) is not False
+            for flag in _ABANDONED_ANCESTOR_RESERVATION_FLAGS
+        ):
+            reasons.append(f"abandoned_ancestor_reached_reservation:{ancestor_id}")
+            continue
+        if any(value is not False for value in safety_state.values()):
+            reasons.append(
+                f"abandoned_ancestor_artifact_not_outcome_blind:{ancestor_id}"
+            )
+            continue
+
+        original_id = str(document.get("original_candidate_id") or "")
+        amended_id = str(document.get("amended_candidate_id") or "")
+        reusable = document.get("reusable_artifacts")
+        recorded_child_id = (
+            str(reusable.get("child_candidate_id") or "")
+            if isinstance(reusable, Mapping)
+            else ""
+        )
+        bound_as_original = original_id == ancestor_id and amended_id == parent_id
+        bound_as_abandoned_child = recorded_child_id == ancestor_id
+
+        family_records = [
+            record
+            for record in prior_records
+            if str(record.get("family_key") or "") == ancestor_id
+            or (
+                isinstance(record.get("candidate_metadata"), Mapping)
+                and record["candidate_metadata"].get("candidate_id") == ancestor_id
+            )
+        ]
+        if not family_records:
+            reasons.append(f"abandoned_ancestor_missing_from_history:{ancestor_id}")
+            continue
+        entry_reasons: list[str] = []
+        authenticated_parent_links: set[str] = set()
+        for record in family_records:
+            if str(record.get("origin") or "") != "discovery_candidate":
+                entry_reasons.append(
+                    f"abandoned_ancestor_non_discovery_record:{ancestor_id}"
+                )
+                continue
+            if record.get("representative_exps"):
+                entry_reasons.append(
+                    f"abandoned_ancestor_reached_reservation:{ancestor_id}"
+                )
+                continue
+            metadata = record.get("candidate_metadata")
+            if (
+                not isinstance(metadata, Mapping)
+                or metadata.get("candidate_id") != ancestor_id
+            ):
+                entry_reasons.append(
+                    f"abandoned_ancestor_metadata_unauthenticated:{ancestor_id}"
+                )
+                continue
+            link = metadata.get("amendment_parent_candidate_id")
+            if link:
+                authenticated_parent_links.add(str(link))
+        if bound_as_original:
+            chain_ok = True
+        elif bound_as_abandoned_child:
+            # An abandoned prior child binds only when the bound ledger itself
+            # proves it declared the same parent chain.
+            chain_ok = authenticated_parent_links == {parent_id}
+        else:
+            chain_ok = False
+        if not chain_ok:
+            entry_reasons.append(f"abandoned_ancestor_chain_mismatch:{ancestor_id}")
+        if entry_reasons:
+            reasons.extend(entry_reasons)
+            continue
+        attested.add(ancestor_id)
+        waived.update(
+            str(record["record_id"])
+            for record in family_records
+            if record.get("record_id")
+        )
+    if reasons:
+        return set(), set(), sorted(set(reasons))
+    return waived, attested, []
+
+
+def _validate_amendment_lineage(
+    candidate: Mapping[str, Any],
+    prior_records: Sequence[Mapping[str, Any]],
+    *,
+    data_cutoff: datetime,
+    evaluated_at: datetime,
+    selection_scope_id: str | None,
+) -> tuple[set[str], list[str], bool]:
+    """Authenticate one outcome-blind contract-completion amendment.
+
+    The parent remains in the bound history.  A valid lineage waives only the
+    exact authenticated parent projections; every other exact or near neighbor
+    continues to veto D3.
+    """
+
+    raw_lineage = candidate.get("amendment_lineage")
+    if raw_lineage is None:
+        return set(), [], False
+    if not isinstance(raw_lineage, Mapping):
+        return set(), ["amendment_lineage_invalid"], False
+
+    reasons: list[str] = []
+    try:
+        parent = normalize_hypothesis_candidate(raw_lineage["parent_candidate_snapshot"])
+        validate_candidate_semantic_id(parent)
+    except Exception:
+        return set(), ["amendment_parent_snapshot_invalid"], False
+
+    parent_id = str(raw_lineage.get("parent_candidate_id") or "")
+    parent_hash = str(raw_lineage.get("parent_candidate_snapshot_hash") or "")
+    parent_scope_id = str(raw_lineage.get("parent_selection_scope_id") or "")
+    child_id = _candidate_id(candidate)
+    if parent.get("candidate_id") != parent_id:
+        reasons.append("amendment_parent_id_mismatch")
+    if stable_hash(parent) != parent_hash:
+        reasons.append("amendment_parent_hash_mismatch")
+    if parent.get("amendment_lineage") is not None:
+        reasons.append("amendment_depth_exceeded")
+    if parent_id == child_id:
+        reasons.append("amendment_self_cycle")
+    if not selection_scope_id:
+        reasons.append("amendment_scope_context_missing")
+    elif selection_scope_id == parent_scope_id:
+        reasons.append("amendment_scope_reuse")
+
+    try:
+        declared_at = _parse_clock(
+            raw_lineage.get("declared_at"), path="amendment_lineage.declared_at"
+        )
+        if declared_at > evaluated_at:
+            reasons.append("amendment_declared_after_preflight")
+        try:
+            child_created_at = _parse_clock(
+                candidate.get("created_at"), path="candidate.created_at"
+            )
+            if declared_at != child_created_at:
+                reasons.append("amendment_declaration_child_clock_mismatch")
+        except AlphaSearchError:
+            reasons.append("amendment_child_clock_invalid")
+    except AlphaSearchError:
+        declared_at = None
+        reasons.append("amendment_declared_at_invalid")
+
+    parent_records = [
+        record
+        for record in prior_records
+        if str(record.get("origin") or "") == "discovery_candidate"
+        and str(record.get("family_key") or "") == parent_id
+    ]
+    if not parent_records:
+        reasons.append("amendment_parent_missing_from_history")
+
+    authenticated: list[Mapping[str, Any]] = []
+    for record in parent_records:
+        metadata = record.get("candidate_metadata")
+        if not isinstance(metadata, Mapping):
+            continue
+        if (
+            metadata.get("candidate_id") == parent_id
+            and metadata.get("candidate_snapshot_hash") == parent_hash
+            and metadata.get("selection_scope_id") == parent_scope_id
+        ):
+            authenticated.append(record)
+    if parent_records and not authenticated:
+        reasons.append("amendment_parent_anchor_mismatch")
+    if declared_at is not None and authenticated:
+        try:
+            newest_parent = max(
+                _parse_clock(record["known_at"], path="amendment_parent.known_at")
+                for record in authenticated
+            )
+            if newest_parent >= declared_at:
+                reasons.append("amendment_not_after_parent")
+        except (AlphaSearchError, KeyError):
+            reasons.append("amendment_parent_clock_invalid")
+
+    (
+        ancestor_waived,
+        attested_ancestor_ids,
+        ancestor_reasons,
+    ) = _validate_abandoned_ancestor_attestations(
+        raw_lineage.get("abandoned_ancestors"),
+        prior_records,
+        parent_id=parent_id,
+        child_id=child_id,
+    )
+    reasons.extend(ancestor_reasons)
+
+    competing_children = sorted(
+        {
+            str(metadata.get("candidate_id") or record.get("family_key") or "")
+            for record in prior_records
+            for metadata in [record.get("candidate_metadata")]
+            if isinstance(metadata, Mapping)
+            and metadata.get("amendment_parent_candidate_id") == parent_id
+            and str(metadata.get("candidate_id") or "") != child_id
+        }
+        # A fully attested abandoned prior child is proven non-competing: it
+        # never reached reservation and its abort is bound by a hash-anchored
+        # park artifact.  Anything less keeps vetoing.
+        - attested_ancestor_ids
+    )
+    if competing_children:
+        reasons.extend(
+            f"amendment_competing_child:{candidate_id}"
+            for candidate_id in competing_children
+        )
+
+    parent_for_diff = dict(parent)
+    child_for_diff = dict(candidate)
+    actual_changes = _lineage_diff_paths(parent_for_diff, child_for_diff)
+    declared_changes = {
+        str(path) for path in raw_lineage.get("changed_fields") or []
+    }
+    unexpected = sorted(actual_changes - set(AMENDMENT_CHANGED_FIELD_ALLOWLIST))
+    if unexpected:
+        reasons.extend(f"amendment_semantic_change:{path}" for path in unexpected)
+    if actual_changes != declared_changes:
+        reasons.append("amendment_changed_fields_mismatch")
+
+    attachment_outcome_contaminated = False
+    for attachment_path, hash_path in (
+        (
+            "baseline.comparator_allocation_attachment",
+            "baseline.comparator_allocation_attachment_hash",
+        ),
+        (
+            "treatment.endpoint_preflight_attachment",
+            "treatment.endpoint_preflight_attachment_hash",
+        ),
+    ):
+        pair = {attachment_path, hash_path}
+        if not (actual_changes & pair):
+            continue
+        if not pair.issubset(actual_changes):
+            reasons.append(f"amendment_attachment_pair_incomplete:{attachment_path}")
+            continue
+        if any(_nested_value(parent_for_diff, path) is not None for path in pair):
+            reasons.append(f"amendment_attachment_not_completion:{attachment_path}")
+        attachment = _nested_value(child_for_diff, attachment_path)
+        digest = _nested_value(child_for_diff, hash_path)
+        if not isinstance(attachment, str) or not attachment.strip():
+            reasons.append(f"amendment_attachment_invalid:{attachment_path}")
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            reasons.append(f"amendment_attachment_hash_invalid:{hash_path}")
+        attachment_failure = _repository_attachment_failure(attachment, digest)
+        if attachment_failure is not None:
+            reasons.append(
+                f"amendment_attachment_{attachment_failure}:{attachment_path}"
+            )
+            continue
+        content_reasons, content_contaminated = (
+            _amendment_attachment_content_validation(
+                attachment,
+                expected_record_type=_AMENDMENT_ATTACHMENT_RECORD_TYPES[attachment_path],
+                parent_candidate_id=parent_id,
+                parent_candidate_snapshot_hash=parent_hash,
+                declared_at=declared_at,
+                preflight_data_cutoff=data_cutoff,
+            )
+        )
+        attachment_outcome_contaminated = (
+            attachment_outcome_contaminated or content_contaminated
+        )
+        reasons.extend(
+            f"amendment_attachment_content_{reason}:{attachment_path}"
+            for reason in content_reasons
+        )
+
+    if reasons:
+        return set(), sorted(set(reasons)), attachment_outcome_contaminated
+    return {
+        str(record["record_id"])
+        for record in authenticated
+        if record.get("record_id")
+    } | ancestor_waived, [], attachment_outcome_contaminated
+
+
 def _normalise_prior_fingerprint_hashes(
     prior_fingerprints: Iterable[str | Mapping[str, Any]],
 ) -> tuple[str, ...]:
@@ -677,7 +1746,7 @@ def _normalise_prior_fingerprint_hashes(
                 raise AlphaSearchError(
                     "invalid_prior_fingerprints", f"row {index} fingerprint must be an object"
                 )
-            digest = _fingerprint_key({"fingerprint": fingerprint})
+            digest = _prior_mapping_digest(fingerprint)
         else:
             digest = str(prior or "").strip().lower()
             if not re.fullmatch(r"[0-9a-f]{64}", digest):
@@ -689,44 +1758,155 @@ def _normalise_prior_fingerprint_hashes(
     return tuple(sorted(hashes))
 
 
+def _prior_mapping_digest(fingerprint: Mapping[str, Any]) -> str:
+    if "field_tags" in fingerprint or "gate_shape" in fingerprint:
+        legacy = {
+            "data_source": str(fingerprint.get("data_source") or ""),
+            "field_tags": sorted(set(str(value) for value in fingerprint.get("field_tags") or [])),
+            "gate_shape": str(fingerprint.get("gate_shape") or "other"),
+        }
+        return stable_hash({"legacy_fingerprint": legacy})
+    return _fingerprint_key({"fingerprint": fingerprint})
+
+
 def _prior_fingerprint_snapshot_hash(fingerprint_hashes: Sequence[str]) -> str:
     return stable_hash(list(fingerprint_hashes))
 
 
+def _prior_rows_and_anchor(
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+) -> tuple[tuple[str | Mapping[str, Any], ...], str, int]:
+    """Return canonical rows plus the external snapshot anchor.
+
+    A historical snapshot binds source hashes and its time cutoff into the
+    scope.  Legacy Phase-1 callers may still pass a list of semantic hashes or
+    mappings; those retain the original list-hash behaviour.
+    """
+    if isinstance(prior_fingerprints, Mapping) and "snapshot_version" in prior_fingerprints:
+        try:
+            from .alpha_search_history import validate_historical_prior_snapshot
+        except ImportError:  # pragma: no cover - direct quant/ test fallback.
+            from alpha_search_history import validate_historical_prior_snapshot  # type: ignore
+        try:
+            snapshot = validate_historical_prior_snapshot(prior_fingerprints)
+        except Exception as exc:
+            raise AlphaSearchError(
+                getattr(exc, "code", "invalid_historical_snapshot"), str(exc)
+            ) from exc
+        rows = tuple(dict(row) for row in snapshot["records"])
+        return rows, str(snapshot["snapshot_hash"]), len(rows)
+    if isinstance(prior_fingerprints, Mapping):
+        raise AlphaSearchError(
+            "invalid_prior_fingerprints",
+            "expected a historical snapshot object or a legacy list",
+        )
+    rows = tuple(prior_fingerprints)
+    hashes = _normalise_prior_fingerprint_hashes(rows)
+    # Preserve deterministic one-row-per-hash semantics from the original
+    # Phase-1 list contract while retaining rich mappings for D3 comparison.
+    by_hash: dict[str, str | Mapping[str, Any]] = {}
+    for prior in rows:
+        if isinstance(prior, Mapping):
+            fingerprint = prior.get("fingerprint", prior)
+            digest = _prior_mapping_digest(fingerprint)
+            by_hash.setdefault(digest, dict(prior))
+        else:
+            digest = str(prior or "").strip().lower()
+            by_hash.setdefault(digest, digest)
+    canonical_rows = tuple(by_hash[digest] for digest in sorted(by_hash))
+    return canonical_rows, _prior_fingerprint_snapshot_hash(hashes), len(hashes)
+
+
+def _snapshot_history_cutoff(
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+) -> datetime | None:
+    if not isinstance(prior_fingerprints, Mapping) or "snapshot_version" not in prior_fingerprints:
+        return None
+    try:
+        return _parse_clock(
+            prior_fingerprints.get("history_cutoff"),
+            path="historical_snapshot.history_cutoff",
+        )
+    except AlphaSearchError:
+        raise
+
+
+def _assert_snapshot_clock_not_after(
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+    *,
+    upper_bound: Any,
+    upper_path: str,
+) -> None:
+    history_cutoff = _snapshot_history_cutoff(prior_fingerprints)
+    if history_cutoff is None:
+        return
+    bound = _parse_clock(upper_bound, path=upper_path)
+    if history_cutoff > bound:
+        raise AlphaSearchError(
+            "historical_snapshot_after_scope_clock",
+            f"history_cutoff={history_cutoff.isoformat()} exceeds {upper_path}={bound.isoformat()}",
+        )
+
+
 def _verify_prior_fingerprint_anchor(
     manifest: Mapping[str, Any],
-    prior_fingerprints: Iterable[str | Mapping[str, Any]],
-) -> tuple[str, ...]:
-    hashes = _normalise_prior_fingerprint_hashes(prior_fingerprints)
-    actual_hash = _prior_fingerprint_snapshot_hash(hashes)
-    if len(hashes) != manifest.get("prior_fingerprint_count"):
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any],
+) -> tuple[str | Mapping[str, Any], ...]:
+    _assert_snapshot_clock_not_after(
+        prior_fingerprints,
+        upper_bound=manifest.get("preregistered_at"),
+        upper_path="manifest.preregistered_at",
+    )
+    _assert_snapshot_clock_not_after(
+        prior_fingerprints,
+        upper_bound=manifest.get("data_cutoff"),
+        upper_path="manifest.data_cutoff",
+    )
+    rows, actual_hash, actual_count = _prior_rows_and_anchor(prior_fingerprints)
+    if actual_count != manifest.get("prior_fingerprint_count"):
         raise AlphaSearchError(
             "prior_fingerprint_snapshot_mismatch",
-            f"manifest count={manifest.get('prior_fingerprint_count')} actual={len(hashes)}",
+            f"manifest count={manifest.get('prior_fingerprint_count')} actual={actual_count}",
         )
     if actual_hash != manifest.get("prior_fingerprint_snapshot_hash"):
         raise AlphaSearchError(
             "prior_fingerprint_snapshot_mismatch",
             f"manifest={manifest.get('prior_fingerprint_snapshot_hash')} actual={actual_hash}",
         )
-    return hashes
+    return rows
 
 
 def evaluate_preflight(
     candidate: Any,
     surfaces: Any,
     *,
-    prior_fingerprints: Iterable[str | Mapping[str, Any]] = (),
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any] = (),
     data_cutoff: str,
     evaluated_at: str | None = None,
     selection_scope_id: str | None = None,
+    repo_root: str | Path | None = None,
 ) -> dict[str, Any]:
     """Evaluate deterministic D0-D3 gates without candidate outcome access."""
     row = dict(_plain(candidate))
     candidate_id = _candidate_id(row)
     contamination = outcome_field_paths(row)
+    lineage_history_reject: list[str] = []
+    if row.get("amendment_lineage") is not None:
+        if not isinstance(prior_fingerprints, Mapping) or "snapshot_version" not in prior_fingerprints:
+            lineage_history_reject.append("amendment_repository_history_required")
+        else:
+            try:
+                _validate_repository_lineage_history(prior_fingerprints)
+            except Exception:
+                lineage_history_reject.append("amendment_repository_history_unverified")
     cutoff_dt = _parse_clock(data_cutoff, path="data_cutoff")
     cutoff_text = cutoff_dt.isoformat().replace("+00:00", "Z")
+    _assert_snapshot_clock_not_after(
+        prior_fingerprints,
+        upper_bound=cutoff_text,
+        upper_path="data_cutoff",
+    )
+    prior_fingerprint_rows, _, _ = _prior_rows_and_anchor(prior_fingerprints)
     evaluated_dt = _parse_clock(
         evaluated_at or cutoff_text,
         path="evaluated_at",
@@ -749,6 +1929,12 @@ def evaluate_preflight(
     d3_park: list[str] = []
     failures: set[str] = set()
     temporal_clean = True
+    repository_root = Path(repo_root or Path(__file__).resolve().parents[1]).resolve()
+    surface_saturation_blocks: list[tuple[str, str]] = []
+
+    if lineage_history_reject:
+        d3_reject.extend(lineage_history_reject)
+        failures.add("duplicate_or_frozen")
 
     if not candidate_id:
         d3_reject.append("missing_candidate_id")
@@ -803,6 +1989,10 @@ def evaluate_preflight(
         sid = str(surface.get("surface_id") or "unknown")
         expanded_referenced_sources.add(str(surface.get("data_source") or ""))
         expanded_referenced_sources.update(str(value) for value in surface.get("component_sources") or [])
+        if surface.get("known_future_leakage") is True:
+            d0_reject.append(f"surface_known_future_leakage:{sid}")
+            failures.add("outcome_contamination")
+            temporal_clean = False
         readiness = _surface_readiness(surface)
         source_status = str(readiness.get("source_contract") or surface.get("status") or "").lower()
         if source_status in {"fail", "failed", "blocked", "unavailable"}:
@@ -818,8 +2008,7 @@ def evaluate_preflight(
             else str(surface.get("saturation_status") or "").lower()
         )
         if saturation_status in {"saturated", "frozen", "parked"}:
-            d3_reject.append(f"component_surface_{saturation_status}:{sid}")
-            failures.add("duplicate_or_frozen")
+            surface_saturation_blocks.append((sid, saturation_status))
         if "candidate_overlap_count" in surface and int(surface.get("candidate_overlap_count") or 0) == 0:
             d0_park.append(f"surface_candidate_overlap_absent:{sid}")
             failures.add("no_candidate_overlap")
@@ -1051,16 +2240,93 @@ def evaluate_preflight(
         d3_park.append("incomplete_mechanism_fingerprint")
 
     current_fp = _fingerprint_key(row)
-    existing_fps: set[str] = set()
-    for prior_fp in prior_fingerprints:
+    exact_prior_records: list[Mapping[str, Any]] = []
+    opaque_exact_prior = False
+    legacy_prior_records: list[Mapping[str, Any]] = []
+    for prior_fp in prior_fingerprint_rows:
         if isinstance(prior_fp, Mapping):
+            legacy_prior_records.append(prior_fp)
             if "fingerprint" in prior_fp or "data_source" in prior_fp:
-                existing_fps.add(_fingerprint_key({"fingerprint": prior_fp.get("fingerprint", prior_fp)}))
+                if current_fp == _fingerprint_key(
+                    {"fingerprint": prior_fp.get("fingerprint", prior_fp)}
+                ):
+                    exact_prior_records.append(prior_fp)
         else:
-            existing_fps.add(str(prior_fp))
-    if current_fp in existing_fps:
+            if current_fp == str(prior_fp):
+                opaque_exact_prior = True
+
+    (
+        waived_parent_record_ids,
+        lineage_reject,
+        attachment_outcome_contaminated,
+    ) = _validate_amendment_lineage(
+        row,
+        legacy_prior_records,
+        data_cutoff=cutoff_dt,
+        evaluated_at=evaluated_dt,
+        selection_scope_id=selection_scope_id,
+    )
+    if attachment_outcome_contaminated:
+        temporal_clean = False
+        failures.add("outcome_contamination")
+    if lineage_reject:
+        d3_reject.extend(lineage_reject)
+        failures.add("duplicate_or_frozen")
+
+    (
+        waived_reopen_record_ids,
+        reopened_surface_ids,
+        reopen_reject,
+    ) = _validate_quantitative_reopen_proofs(
+        row,
+        prior_fingerprints,
+        referenced_surfaces=referenced,
+        data_cutoff=cutoff_dt,
+        evaluated_at=evaluated_dt,
+        repo_root=repository_root,
+    )
+    if reopen_reject:
+        d3_reject.extend(reopen_reject)
+        failures.add("duplicate_or_frozen")
+    waived_record_ids = waived_parent_record_ids | waived_reopen_record_ids
+
+    for surface_id, saturation_status in surface_saturation_blocks:
+        if surface_id in reopened_surface_ids:
+            continue
+        d3_reject.append(f"component_surface_{saturation_status}:{surface_id}")
+        failures.add("duplicate_or_frozen")
+
+    unwaived_exact = [
+        record
+        for record in exact_prior_records
+        if str(record.get("record_id") or "") not in waived_record_ids
+    ]
+    if opaque_exact_prior or unwaived_exact:
         d3_reject.append("exact_prior_fingerprint")
         failures.add("duplicate_or_frozen")
+    if legacy_prior_records:
+        try:
+            from .alpha_search_history import legacy_near_neighbors
+        except ImportError:  # pragma: no cover - direct quant/ test fallback.
+            from alpha_search_history import legacy_near_neighbors  # type: ignore
+        neighbors = [
+            neighbor
+            for neighbor in legacy_near_neighbors(row, legacy_prior_records)
+            if str(neighbor.get("record_id") or "") not in waived_record_ids
+        ]
+        if neighbors:
+            # Keep a small ordered witness set rather than only the top score:
+            # the closest plumbing family must not hide the older substantive
+            # alpha rejection that actually freezes the proposed mechanism.
+            for neighbor in neighbors[:5]:
+                representative = next(
+                    iter(neighbor.get("representative_exps") or []),
+                    neighbor.get("family_key") or neighbor.get("record_id") or "historical_family",
+                )
+                d3_reject.append(
+                    f"legacy_near_neighbor:{representative}:score={float(neighbor['score']):.4f}"
+                )
+            failures.add("duplicate_or_frozen")
 
     gates = {
         "D0": _gate(_status(d0_reject, d0_park), [*d0_reject, *d0_park]),
@@ -1243,6 +2509,7 @@ def freeze_selection_panel(
     scope_manifest: Mapping[str, Any],
     selection_pool_complete: bool,
     prior_fingerprints: Iterable[str | Mapping[str, Any]] = (),
+    repo_root: str | Path | None = None,
 ) -> dict[str, Any]:
     """Freeze the complete candidate pool under a predeclared scope anchor."""
     manifest = validate_selection_scope_manifest(scope_manifest)
@@ -1315,10 +2582,19 @@ def freeze_selection_panel(
         _candidate_id(row): evaluate_preflight(
             row,
             surfaces,
-            prior_fingerprints=prior_fingerprint_rows,
+            # Preserve the full authenticated snapshot record set. Passing the
+            # extracted rows back through the legacy-list normaliser would
+            # collapse same-fingerprint records and could hide a second,
+            # non-parent blocker behind the lineage parent.
+            prior_fingerprints=(
+                prior_fingerprints
+                if isinstance(prior_fingerprints, Mapping)
+                else prior_fingerprint_rows
+            ),
             data_cutoff=data_cutoff,
             evaluated_at=manifest["freeze_at"],
             selection_scope_id=selection_scope_id,
+            repo_root=repo_root,
         )
         for row in rows
     }
@@ -1398,8 +2674,13 @@ def freeze_selection_panel(
         panel,
         surfaces=surfaces,
         scope_manifest=manifest,
-        prior_fingerprints=prior_fingerprint_rows,
+        prior_fingerprints=(
+            prior_fingerprints
+            if isinstance(prior_fingerprints, Mapping)
+            else prior_fingerprint_rows
+        ),
         require_external_context=True,
+        repo_root=repo_root,
     )
     return panel
 
@@ -1409,8 +2690,9 @@ def verify_selection_panel(
     *,
     surfaces: Any | None = None,
     scope_manifest: Mapping[str, Any] | None = None,
-    prior_fingerprints: Iterable[str | Mapping[str, Any]] = (),
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any] = (),
     require_external_context: bool = False,
+    repo_root: str | Path | None = None,
 ) -> dict[str, Any]:
     """Recompute a discovery panel and fail closed on omission or tampering.
 
@@ -1420,6 +2702,8 @@ def verify_selection_panel(
     D0-D3 preflight and is what the CLI and panel freezer use.
     """
     row = dict(_plain(panel))
+    if not isinstance(prior_fingerprints, Mapping):
+        prior_fingerprints = tuple(prior_fingerprints)
     errors: list[str] = []
     try:
         contract_panel = normalize_selection_panel(row)
@@ -1449,7 +2733,8 @@ def verify_selection_panel(
     if surfaces is None and require_external_context:
         errors.append("external_surface_registry_required")
     prior_fingerprint_rows: tuple[str, ...] = ()
-    if manifest:
+    prior_context_supplied = isinstance(prior_fingerprints, Mapping) or bool(prior_fingerprints)
+    if manifest and (require_external_context or prior_context_supplied):
         try:
             prior_fingerprint_rows = _verify_prior_fingerprint_anchor(
                 manifest, prior_fingerprints
@@ -1625,10 +2910,15 @@ def verify_selection_panel(
                 recomputed_preflight = evaluate_preflight(
                     candidate,
                     surfaces,
-                    prior_fingerprints=prior_fingerprint_rows,
+                    prior_fingerprints=(
+                        prior_fingerprints
+                        if isinstance(prior_fingerprints, Mapping)
+                        else prior_fingerprint_rows
+                    ),
                     data_cutoff=str(row.get("data_cutoff") or ""),
                     evaluated_at=str(row.get("created_at") or ""),
                     selection_scope_id=str(row.get("selection_scope_id") or ""),
+                    repo_root=repo_root,
                 )
             except (AlphaSearchError, TypeError, ValueError) as exc:
                 errors.append(f"preflight_recomputation_failed:{candidate_id}:{getattr(exc, 'code', type(exc).__name__)}")
@@ -1715,16 +3005,22 @@ def build_search_report(
     *,
     surfaces: Any | None = None,
     scope_manifest: Mapping[str, Any] | None = None,
-    prior_fingerprints: Iterable[str | Mapping[str, Any]] = (),
+    prior_fingerprints: Iterable[str | Mapping[str, Any]] | Mapping[str, Any] = (),
     require_external_context: bool = False,
+    repo_root: str | Path | None = None,
 ) -> dict[str, Any]:
-    prior_fingerprint_rows = tuple(prior_fingerprints)
+    prior_fingerprint_rows = (
+        prior_fingerprints
+        if isinstance(prior_fingerprints, Mapping)
+        else tuple(prior_fingerprints)
+    )
     verification = verify_selection_panel(
         panel,
         surfaces=surfaces,
         scope_manifest=scope_manifest,
         prior_fingerprints=prior_fingerprint_rows,
         require_external_context=require_external_context,
+        repo_root=repo_root,
     )
     preflights = panel.get("preflight_decisions") or {}
     decision_counts = Counter(
@@ -1755,7 +3051,10 @@ def build_search_report(
         "outcome_blind": True,
         "trade_enabled": False,
         "experiment_id_reserved": False,
-        "next_boundary": "selected gate_candidate may separately enter experiment.py novelty/reserve workflow",
+        "next_boundary": (
+            "selected research_pit may enter a research-only replay admission; "
+            "only selected gate_candidate may enter canonical paper/live promotion"
+        ),
         "production_impact": panel.get("production_impact") or {},
     }
 

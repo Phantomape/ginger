@@ -28,7 +28,15 @@ from quant.alpha_search_engine import (  # noqa: E402
     freeze_selection_panel,
     verify_selection_panel,
 )
+from quant.alpha_search_history import (  # noqa: E402
+    HistoricalPriorError,
+    build_historical_prior_snapshot,
+    require_nonempty_snapshot,
+    validate_repository_historical_snapshot,
+)
+from quant.alpha_mechanism_generator import build_mechanism_lead_batch  # noqa: E402
 from quant.data_paths import atomic_write_json  # noqa: E402
+from scripts.alpha_debate import build_promotion_request  # noqa: E402
 
 
 def _load_json(path: str | Path) -> Any:
@@ -92,10 +100,32 @@ def _history_rows(value: Any) -> list[dict[str, Any]]:
     return [dict(row) for row in value]
 
 
-def _prior_fingerprint_rows(path: str) -> list[Any]:
+def _prior_fingerprint_rows(
+    path: str,
+    *,
+    snapshot_required: bool = False,
+    isolated_history_fixture: bool = False,
+) -> Any:
     value = _load_json(path)
+    if isinstance(value, Mapping):
+        try:
+            snapshot = require_nonempty_snapshot(value)
+            if not isolated_history_fixture:
+                snapshot = validate_repository_historical_snapshot(
+                    snapshot, repo_root=REPO_ROOT
+                )
+        except HistoricalPriorError as exc:
+            raise AlphaSearchError(exc.code, exc.detail) from exc
+        return snapshot
+    if snapshot_required:
+        raise AlphaSearchError(
+            "historical_snapshot_required",
+            "new strict scopes require a canonical historical snapshot object, not a bare list",
+        )
     if not isinstance(value, list):
-        raise AlphaSearchError("invalid_prior_fingerprints", "expected a JSON list")
+        raise AlphaSearchError(
+            "invalid_prior_fingerprints", "expected a historical snapshot or legacy JSON list"
+        )
     return value
 
 
@@ -160,12 +190,11 @@ def _cmd_validate_candidate(args: argparse.Namespace) -> dict[str, Any]:
 
 def _cmd_preflight(args: argparse.Namespace) -> dict[str, Any]:
     candidate = _validate_contract(_candidate_payload(_load_json(args.candidate)))
-    prior_fingerprints: list[Any] = []
-    if args.prior_fingerprints:
-        raw = _load_json(args.prior_fingerprints)
-        if not isinstance(raw, list):
-            raise AlphaSearchError("invalid_prior_fingerprints", "expected a JSON list")
-        prior_fingerprints = raw
+    prior_fingerprints = _prior_fingerprint_rows(
+        args.prior_fingerprints,
+        snapshot_required=True,
+        isolated_history_fixture=args.isolated_history_fixture,
+    )
     return evaluate_preflight(
         candidate,
         _surface_payload(_load_json(args.surfaces)),
@@ -200,7 +229,11 @@ def _cmd_build_scope(args: argparse.Namespace) -> dict[str, Any]:
         candidate_generation_config=generation_config,
         allowed_surface_ids=allowed_surface_ids,
         surface_registry_hash=surfaces.canonical_hash,
-        prior_fingerprints=_prior_fingerprint_rows(args.prior_fingerprints),
+        prior_fingerprints=_prior_fingerprint_rows(
+            args.prior_fingerprints,
+            snapshot_required=True,
+            isolated_history_fixture=args.isolated_history_fixture,
+        ),
         queue_budgets=_queue_budgets(args.queue_budget),
         expected_candidate_count=args.expected_candidate_count,
         selection_limit=args.selection_limit,
@@ -213,7 +246,10 @@ def _cmd_build_panel(args: argparse.Namespace) -> dict[str, Any]:
         _validate_contract(candidate)
         for candidate in _candidate_rows(_load_json(args.candidates))
     ]
-    prior_fingerprints = _prior_fingerprint_rows(args.prior_fingerprints)
+    prior_fingerprints = _prior_fingerprint_rows(
+        args.prior_fingerprints,
+        isolated_history_fixture=args.isolated_history_fixture,
+    )
     scope_manifest = _load_json(args.scope_manifest)
     if not isinstance(scope_manifest, Mapping):
         raise AlphaSearchError("invalid_selection_scope_manifest", "scope manifest must be an object")
@@ -261,7 +297,10 @@ def _cmd_verify_panel(args: argparse.Namespace) -> dict[str, Any]:
     scope_manifest = _load_json(args.scope_manifest)
     if not isinstance(scope_manifest, Mapping):
         raise AlphaSearchError("invalid_selection_scope_manifest", "scope manifest must be an object")
-    prior_fingerprints = _prior_fingerprint_rows(args.prior_fingerprints)
+    prior_fingerprints = _prior_fingerprint_rows(
+        args.prior_fingerprints,
+        isolated_history_fixture=args.isolated_history_fixture,
+    )
     return verify_selection_panel(
         value,
         surfaces=_surface_payload(_load_json(args.surfaces)),
@@ -278,7 +317,10 @@ def _cmd_report(args: argparse.Namespace) -> dict[str, Any]:
     scope_manifest = _load_json(args.scope_manifest)
     if not isinstance(scope_manifest, Mapping):
         raise AlphaSearchError("invalid_selection_scope_manifest", "scope manifest must be an object")
-    prior_fingerprints = _prior_fingerprint_rows(args.prior_fingerprints)
+    prior_fingerprints = _prior_fingerprint_rows(
+        args.prior_fingerprints,
+        isolated_history_fixture=args.isolated_history_fixture,
+    )
     return build_search_report(
         value,
         surfaces=_surface_payload(_load_json(args.surfaces)),
@@ -290,6 +332,63 @@ def _cmd_report(args: argparse.Namespace) -> dict[str, Any]:
 
 def _cmd_failure_map(args: argparse.Namespace) -> dict[str, Any]:
     return build_failure_taxonomy(_history_rows(_load_json(args.history)))
+
+
+def _cmd_build_history(args: argparse.Namespace) -> dict[str, Any]:
+    try:
+        return build_historical_prior_snapshot(
+            args.frozen_families,
+            history_cutoff=args.history_cutoff,
+            discovery_ledgers=args.discovery_ledger,
+            open_tickets=args.open_ticket,
+            repo_root=REPO_ROOT,
+            isolated_fixture=args.isolated_history_fixture,
+        )
+    except HistoricalPriorError as exc:
+        raise AlphaSearchError(exc.code, exc.detail) from exc
+
+
+def _cmd_build_mechanism_leads(args: argparse.Namespace) -> dict[str, Any]:
+    """Validate one external scan and render lead-only research-map sections."""
+
+    scan = _load_json(args.scan)
+    registry = _load_json(args.generator_registry)
+    if not isinstance(scan, Mapping):
+        raise AlphaSearchError("invalid_mechanism_scan", "scan must be an object")
+    if not isinstance(registry, Mapping):
+        raise AlphaSearchError("invalid_generator_registry", "registry must be an object")
+    known_surface_ids = None
+    if args.surfaces:
+        surfaces = _surface_payload(_load_json(args.surfaces))
+        known_surface_ids = surfaces.surface_ids
+    return build_mechanism_lead_batch(
+        scan,
+        registry,
+        known_surface_ids=known_surface_ids,
+    )
+
+
+def _cmd_build_promotion(args: argparse.Namespace) -> dict[str, Any]:
+    """Revalidate one selected D0-D3 candidate and freeze its admission proof."""
+
+    proposal = _load_json(args.proposal)
+    if not isinstance(proposal, Mapping):
+        raise AlphaSearchError("invalid_ticket_proposal", "proposal must be an object")
+    if args.repo_root and not args.isolated_fixture:
+        raise AlphaSearchError(
+            "isolated_fixture_required",
+            "--repo-root is test-only and requires --isolated-fixture",
+        )
+    repo_root = Path(args.repo_root).resolve() if args.repo_root else REPO_ROOT
+    return build_promotion_request(
+        panel_path=args.panel,
+        scope_manifest_path=args.scope_manifest,
+        surface_registry_path=args.surfaces,
+        prior_fingerprints_path=args.prior_fingerprints,
+        debate_artifact_path=args.debate_lock,
+        proposal=proposal,
+        repo_root=repo_root,
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -309,7 +408,8 @@ def build_parser() -> argparse.ArgumentParser:
     preflight.add_argument("candidate")
     preflight.add_argument("--surfaces", required=True)
     preflight.add_argument("--data-cutoff", required=True)
-    preflight.add_argument("--prior-fingerprints")
+    preflight.add_argument("--prior-fingerprints", required=True)
+    preflight.add_argument("--isolated-history-fixture", action="store_true")
     preflight.add_argument("--output")
     preflight.set_defaults(handler=_cmd_preflight)
 
@@ -324,6 +424,7 @@ def build_parser() -> argparse.ArgumentParser:
     scope.add_argument("--generation-config", required=True)
     scope.add_argument("--surfaces", required=True)
     scope.add_argument("--prior-fingerprints", required=True)
+    scope.add_argument("--isolated-history-fixture", action="store_true")
     scope.add_argument("--allowed-surface", action="append", default=[], required=True)
     scope.add_argument(
         "--queue-budget",
@@ -343,6 +444,7 @@ def build_parser() -> argparse.ArgumentParser:
     panel.add_argument("--surfaces", required=True)
     panel.add_argument("--scope-manifest", required=True)
     panel.add_argument("--prior-fingerprints", required=True)
+    panel.add_argument("--isolated-history-fixture", action="store_true")
     panel.add_argument("--selection-pool-complete", action="store_true", required=True)
     panel.add_argument(
         "--ledger",
@@ -356,6 +458,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--surfaces", required=True)
     verify.add_argument("--scope-manifest", required=True)
     verify.add_argument("--prior-fingerprints", required=True)
+    verify.add_argument("--isolated-history-fixture", action="store_true")
     verify.add_argument("--output")
     verify.set_defaults(handler=_cmd_verify_panel)
 
@@ -364,6 +467,7 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--surfaces", required=True)
     report.add_argument("--scope-manifest", required=True)
     report.add_argument("--prior-fingerprints", required=True)
+    report.add_argument("--isolated-history-fixture", action="store_true")
     report.add_argument("--output")
     report.set_defaults(handler=_cmd_report)
 
@@ -371,6 +475,61 @@ def build_parser() -> argparse.ArgumentParser:
     failure_map.add_argument("history")
     failure_map.add_argument("--output")
     failure_map.set_defaults(handler=_cmd_failure_map)
+
+    history = subparsers.add_parser(
+        "build-history",
+        help="freeze a canonical, time-anchored historical prior snapshot",
+    )
+    history.add_argument(
+        "--frozen-families",
+        default=str(REPO_ROOT / "docs" / "frozen_families.jsonl"),
+    )
+    history.add_argument("--history-cutoff", required=True)
+    history.add_argument("--discovery-ledger", action="append", default=[])
+    history.add_argument("--open-ticket", action="append", default=[])
+    history.add_argument("--isolated-history-fixture", action="store_true")
+    history.add_argument("--output")
+    history.set_defaults(handler=_cmd_build_history)
+
+    mechanism = subparsers.add_parser(
+        "build-mechanism-leads",
+        help=(
+            "validate an outcome-blind external mechanism scan and render "
+            "lead-only research-map sections (never ranks, trades, reserves IDs, or builds a panel)"
+        ),
+    )
+    mechanism.add_argument("scan")
+    mechanism.add_argument(
+        "--generator-registry",
+        default=str(REPO_ROOT / "data" / "reference" / "alpha_mechanism_generators.json"),
+    )
+    mechanism.add_argument(
+        "--surfaces",
+        help=(
+            "required only when the scan explicitly requests candidate projection; "
+            "IDs must already exist in this EvidenceSurface registry"
+        ),
+    )
+    mechanism.add_argument("--output")
+    mechanism.set_defaults(handler=_cmd_build_mechanism_leads)
+
+    promotion = subparsers.add_parser(
+        "build-promotion",
+        help=(
+            "strictly revalidate a one-candidate D0-D3 panel and freeze an "
+            "immutable admission proof (never reserves an experiment ID)"
+        ),
+    )
+    promotion.add_argument("panel")
+    promotion.add_argument("--surfaces", required=True)
+    promotion.add_argument("--scope-manifest", required=True)
+    promotion.add_argument("--prior-fingerprints", required=True)
+    promotion.add_argument("--debate-lock", help=argparse.SUPPRESS)
+    promotion.add_argument("--proposal", required=True)
+    promotion.add_argument("--output", required=True)
+    promotion.add_argument("--repo-root", help=argparse.SUPPRESS)
+    promotion.add_argument("--isolated-fixture", action="store_true", help=argparse.SUPPRESS)
+    promotion.set_defaults(handler=_cmd_build_promotion)
     return parser
 
 

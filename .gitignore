@@ -68,6 +68,11 @@ data/warehouse/warehouse_main_hot.sqlite-journal
 data/warehouse/warehouse_main_hot.sqlite-wal
 data/warehouse/warehouse_main_hot.sqlite-shm
 
+# exp-20260728-002: authorized Massive research-PIT staging warehouse.
+# Exact raw responses and normalized rows are retained locally and hash-bound;
+# they must not be committed or mixed into the production OHLCV warehouse.
+data/warehouse/massive_history.sqlite*
+
 # exp-20260613-007: SEC 13F source zips are ~100MB and regenerable from SEC on
 # demand; only the aggregated holdings_*.json + latest.json are tracked.
 data/non_ohlcv/sec13f_institutional/source_cache/
@@ -108,6 +113,8 @@ secrets/
 !.env.example
 secrets.local.*
 *.secret
+# Local Massive API credential file.
+massive.txt
 # Decrypted output of an encrypted secrets file (SOPS/age/git-crypt), if used.
 secrets.dec.*
 

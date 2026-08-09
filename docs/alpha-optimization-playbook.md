@@ -89,14 +89,16 @@ closeout record.
    replacement values. Representative evidence: `exp-20260714-010`.
 
 8. **A new source must pass source-contract and executable-overlap preflight
-   before price evaluation.** Require an immutable vintage or archive,
-   publication clock, point-in-time issuer mapping, legal/attribution
-   provenance, outcome-blind density/concentration checks, and a zero-price
-   touch check against the actual decision surface. Passing raw source density
+   before price evaluation, with tiered PIT authority.** Authorized historical
+   rows with a decision timestamp, strict as-of joins, positive executable
+   overlap, and no known future leakage may enter a `research_pit`
+   `private_replay_scout`; immutable/as-published vintages, effective-dated
+   mappings, revision policy, and shared parity are required only for
+   `canonical_pit` acceptance/paper/live promotion. Passing raw source density
    does not justify a Gate ID when baseline executed touches are absent. A
-   derived join of already-used sources is not itself a new data source.
-   Otherwise the right result is an observer or identity repair, not alpha.
-   Representative evidence: `exp-20260720-005`.
+   derived join of already-used sources is not itself a new data source. Known
+   leakage remains invalid, not a research tier. Representative evidence:
+   `exp-20260720-005`; policy: `docs/research_pit_policy.md`.
 
 9. **Prove gross economic mapping before building elaborate plumbing.** If a
    simple, causal response has no gross edge or no candidate intersection,
@@ -134,9 +136,12 @@ closeout record.
   issuer map, permission, candidate overlap, or legal new-evidence axis is
   absent.
 - Positive retrospective proxy leads and discovery-layer candidates are queue
-  inputs, not alpha. Freeze the formula and collect point-in-time forward rows;
-  do not reserve an experiment ID until the source contract, candidate touch
-  surface, and baseline/treatment replacement-value plan are already present.
+  inputs, not accepted alpha. When authorized timestamped history has no known
+  leakage, a D0-D3-verified and hash-bound `research_pit` candidate may reserve one
+  `private_replay_scout`; it must freeze the formula, candidate touch surface,
+  and baseline/treatment replacement-value plan first, and it can close only as
+  `observed_only`. Collect or reconstruct canonical as-known evidence before any
+  shared-paper or live promotion.
 - Stale or low-touch risk surfaces should begin as context, attribution, or a
   default-off admission audit; hard exclusions need enough executable touches
   and replacement value to prove they are not deleting scarce winners.
@@ -151,16 +156,19 @@ and recent-experiment inventory.
 
 ## Active Research Queue
 
-### Lane 1: Mature accepted default-off evidence
+### Lane 1: Newly matured predeclared forward evidence
 
-- **Money hypothesis:** some accepted candidate, relation, or source adapters
-  contain incremental information that survives cash and benchmark replacement
-  once evaluated on independent forward decisions.
+- **Money hypothesis:** a candidate, relation, or source whose predeclared
+  observer-readiness threshold has newly matured may contain incremental
+  information that survives cash and benchmark replacement on independent
+  forward decisions.
 - **Evidence unit:** one outcome-blind decision per issuer and decision clock,
   with policy/source version, displaced alternative, costs, closed H5/H10/H20
   outcomes, cash/SPY/QQQ replacement values, and concentration metadata.
-- **Next work:** choose the highest-density accepted adapter from the current
-  state snapshot and append settled forward evidence under its frozen policy.
+- **Next work:** admit only observers that have crossed their already-recorded
+  reopen condition. If several mature together, batch the fixed set or choose by
+  a predeclared mechanism-coverage rotation; never choose by historical accept
+  rate, EV, PnL, adapter maturity, or “highest-density accepted” status.
 - **Accept:** aggregate and window evidence remains useful after realistic cash,
   cost, concentration, and execution constraints; shared historical/daily parity
   holds.
@@ -261,7 +269,7 @@ validates the same condition.
 | Surface | Minimum evidence required before reopen |
 |---|---|
 | CISA KEV | Immutable `old_thin` bars for at least 2 independent mapped issuer-weeks, plus an explicit short-borrow and execution envelope |
-| Exit lifecycle | A fixed post-2026-06-30 cohort with at least 101 settled entries, including at least 20 advisory exits and 8 hard-stop exits |
+| Exit lifecycle | The same fixed post-2026-06-30 cohort must reach at least 212 settled entries, including at least 30 advisory exits and 21 hard-stop exits; any policy promotion also requires slot-reuse/winner-collateral accounting and a shared default-off helper |
 | FIRST EPSS | Source preflight in every canonical window: at least 20 issuer-weeks, 10 tickers, and top-1 share <=30%; performance reopen: at least 30 prospective PIT-correct settled events across 10 tickers under a frozen shared observer |
 | PyPI release acceleration | An immutable distribution archive, bilateral effective-dated package-to-issuer evidence, and in every window at least 20 issuer-weeks, 10 tickers, and top-1 share <=30% |
 | GH Archive development acceleration | Authorized audit-grade history, a hash-bound gap-free manifest, an effective-dated ownership map, the same per-window `20 / 10 / <=30%` density bars, and at least 10 actual cash-conflict comparisons |

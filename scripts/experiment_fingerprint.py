@@ -13,6 +13,23 @@ from __future__ import annotations
 import re
 from typing import Any
 
+
+# Canonical aliases are intentionally public: the discovery layer consumes
+# the same source identity as the experiment novelty/saturation guards.  Keep
+# aliases here rather than teaching each caller its own spelling table.
+_DATA_SOURCE_ALIASES: dict[str, str] = {
+    "analyst_estimate_revision": "revision_expectation",
+    "analyst_estimate_revisions": "revision_expectation",
+    "estimate_revision": "revision_expectation",
+    "estimate_revisions": "revision_expectation",
+}
+
+
+def canonical_data_source(value: Any) -> str:
+    """Return the novelty guard's canonical source identity."""
+    normal = re.sub(r"[^a-z0-9]+", "_", str(value or "").strip().lower()).strip("_")
+    return _DATA_SOURCE_ALIASES.get(normal, normal)
+
 # Ordered: first matching source wins. Keep specific before generic.
 _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     # Duplicate reservations are accounting rows, not evidence from the
@@ -412,6 +429,19 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "training table readiness", "model_readiness", "model readiness",
         "candidate_meta_label_v1",
     )),
+    # Official S&P DJI constituent-change announcements are their own source
+    # population.  Keep the aliases compound and narrow: bare "S&P", "index",
+    # or "addition" would over-match price indices and generic universe work.
+    ("sp_index_constituent_change", (
+        "sp_dow_jones_indices_constituent_change_announcement",
+        "sp dow jones indices constituent change announcement",
+        "sp_composite_1500_inclusion_forced_flow",
+        "sp composite 1500 inclusion forced flow",
+        "sp1500_constituent_addition_forced_flow",
+        "sp1500 constituent addition forced flow",
+        "sp_global_constituent_addition_announcements",
+        "s&p dow jones indices composite 1500 constituent additions",
+    )),
     # Keep newer source-specific surfaces above their generic parents so the
     # saturation guards count the actual population under test.
     # The joined FINRA venue/short-interest surface combines weekly ATS and
@@ -462,6 +492,18 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("crypto_sleeve", (
         "crypto_sleeve", "crypto sleeve", "btc_spot", "btc spot", "btc/usd", "btc-usd", "btc usd",
         "bitcoin spot", "crypto_positions", "daily_ema20_ema100_spot_trend",
+    )),
+    # Public SEC text that explicitly confirms a recurring distribution
+    # lifecycle and binds entry to accepted_at is a distinct evidence surface
+    # from generic item-code or filing-text scans. Keep compound spellings so
+    # ordinary dividend references do not collide with this narrow contract.
+    ("sec_public_recurring_dividend_bundle", (
+        "sec_public_recurring_dividend_bundle",
+        "sec public recurring dividend bundle",
+        "sec-public recurring-dividend initiation/resumption disclosure bundles",
+        "public recurring capital return state change bundle",
+        "sec archive filing-text and accepted_at",
+        "sec accepted_at plus declaration-date new york close",
     )),
     # Third-party Schedule TO cash tenders remain an SEC filing-text source
     # even when ORTEX supplies delisted price history or Moomoo supplies the
@@ -541,9 +583,28 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "entity_theme_news_observer", "entity-theme news observer",
         "entity theme news observer",
     )),
+    # Keep spellings compound: since the discovery-candidate schema made
+    # "replacement value" a REQUIRED precommitment vocabulary item
+    # (replacement_value_comparator), the bare spelling is ordinary candidate
+    # prose and misroutes every discovery hypothesis into this bucket
+    # (exp-20260728-005: five spurious D3 rejects at 0.62-0.63 all via this
+    # source label).
+    # The Massive dividend-restart forward observer face (exp-20260802-003)
+    # must rank ahead of forward_replacement_value: its hypotheses naturally
+    # say "settled forward" and would otherwise misroute out of their own
+    # saturation / observed-only population. Compound spellings only -- bare
+    # "dividend" stays with the SEC/Companyfacts recipes.
+    ("massive_dividend_restart_forward", (
+        "massive_dividend_restart_forward",
+        "massive dividend restart forward",
+        "dividend restart forward", "dividend-restart forward",
+        "dividend_restart_forward",
+        "dividend restart observer", "dividend-restart observer",
+        "dividend restart lane", "dividend-restart lane",
+    )),
     ("forward_replacement_value", (
         "forward_replacement", "forward replacement", "forward_replacement_value",
-        "replacement_value", "replacement value", "settled forward", "closed forward",
+        "settled forward", "closed forward",
         "entry_exhaustion", "entry exhaustion", "entry_regime", "entry regime",
     )),
     ("cisa_kev", ("cisa_kev", "cisa", "kev", "known_exploited_vulnerabilities")),
@@ -741,6 +802,34 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "form ap engagement partner", "firmfilings.zip",
         "regulatory_audit_uncertainty_peer_substitution",
     )),
+    # Massive's grouped daily market endpoint is a date-native full-market
+    # OHLCV source, distinct from generic price-relation and momentum recipes.
+    # Keep spellings deliberately compound: bare "massive" is ordinary prose
+    # and would misroute hypotheses such as "massive upside after news".
+    ("massive_full_market_ohlcv", (
+        "massive api",
+        "api.massive.com",
+        "massive_full_market_ohlcv",
+        "massive_full_market_source",
+        "massive_ohlcv_backfill",
+        # Dividend-declaration rows are another endpoint on the same
+        # authorized Massive source. Keep aliases compound so ordinary
+        # dividend hypotheses retain their true SEC/Companyfacts source.
+        "massive dividend",
+        "massive_dividend",
+        "/stocks/v1/dividends",
+        # Split-event surface rows live in the same Massive source and must
+        # share its saturation accounting (exp-20260728-006). Compound
+        # spellings only: bare "split" is ordinary prose.
+        "forward split execution",
+        "forward_split_execution",
+        "forward stock-split execution",
+        "stock-split execution date",
+        "split execution date",
+        "split_execution_date",
+        "massive stock split",
+        "massive_forward_split",
+    )),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",
         "inventory", "dso", "dio", "dpo", "margin", "liability", "gross_profit", "cash_conversion",
@@ -764,6 +853,28 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
 ]
 
 _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
+    ("candidate_pool_top1_10d", (
+        "sec_public_recurring_capital_return_bundle_first_safe_open_h10",
+        "sec public recurring capital return bundle first safe open h10",
+        "sec_public_recurring_dividend_bundle_research_replay",
+        "sec-public recurring-dividend initiation/resumption disclosure bundles",
+        "public-disclosure-bundle gate shape",
+    )),
+    # A named-security index addition is evaluated over the economically
+    # forced tracker-flow lifecycle, not a generic top-N/fixed-H candidate
+    # response.  Exact compound spellings avoid swallowing ordinary event
+    # lifecycle and candidate-pool experiments.
+    ("index_inclusion_forced_flow_lifecycle", (
+        "index_inclusion_forced_flow_lifecycle",
+        "index inclusion forced flow lifecycle",
+        "sp1500_constituent_addition_forced_flow",
+        "sp1500 constituent addition forced flow",
+        "sp1500_addition_announcement_to_pre_effective_forced_flow_lifecycle",
+        "sp1500 addition announcement to pre effective forced flow lifecycle",
+        "announcement_to_pre_effective_event_lifecycle",
+        "announcement to pre-effective event lifecycle",
+        "first regular open strictly after the public announcement date and the close immediately preceding the effective inclusion date",
+    )),
     # A target share is converted into the filed cash consideration through a
     # real tender lifecycle.  This is neither a fixed-horizon SEC candidate
     # response nor a generic daily-equity overlay: completion, higher-bid,
@@ -993,9 +1104,11 @@ _GATE_SHAPE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "exact url deduplicated event decision",
         "url event basket", "url_event_basket",
     )),
+    # Bare "replacement value" removed for the same reason as the
+    # forward_replacement_value source bucket above (exp-20260728-005).
     ("forward_attribution", (
         "forward_attribution", "forward attribution", "forward_replacement",
-        "forward replacement", "replacement_value", "replacement value",
+        "forward replacement",
         "settled forward", "closed forward", "entry_exhaustion", "entry exhaustion",
     )),
     ("pilot_scorecard_readiness", (
@@ -1071,7 +1184,7 @@ def infer_fingerprint(*texts: str) -> dict[str, Any]:
     data_source = "other"
     for source, kws in _DATA_SOURCE_KEYWORDS:
         if any(kw in blob for kw in kws):
-            data_source = source
+            data_source = canonical_data_source(source)
             break
     gate_shape = "other"
     for shape, kws in _GATE_SHAPE_KEYWORDS:

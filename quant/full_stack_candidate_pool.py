@@ -12,6 +12,9 @@ Verdict ladder
 --------------
 - ``reject``                         : Gate 4 fails (EV/PnL/window-robustness/
                                        concentration/drawdown/materiality).
+- ``research_only``                  : Gate 4 passes on ``research_pit`` data.
+                                       Record only an observed-only research
+                                       result; no paper/live authority.
 - ``accepted_paper_pending_forward`` : Gate 4 passes. Accept as a default-off
                                        paper sleeve NOW. The only things left
                                        before live capital are forward-row
@@ -31,6 +34,9 @@ Design decisions (confirmed with the operator)
 2. An incomplete execution envelope blocks ``live_eligible`` only. It does NOT
    block ``accepted_paper_pending_forward``; it surfaces as a checklist of
    what still has to be filled before live promotion.
+3. A supplied PIT authority block is fail-closed: only ``canonical_pit`` can
+   reach paper/live. Omitting the block preserves the historical API for
+   callers that predate this contract; new experiment artifacts must supply it.
 
 This module is read-only evaluation. It changes no orders, sleeves, sizing,
 or ranking. It only turns measured metrics into a standardized verdict.
@@ -77,6 +83,17 @@ MIN_CLOSED_FORWARD_TRADES = 30
 # probability threshold.
 MIN_DSR_PROBABILITY = 0.95
 
+PIT_TIER_RESEARCH = "research_pit"
+PIT_TIER_CANONICAL = "canonical_pit"
+KNOWN_PIT_TIERS = {
+    "not_pit",
+    "snapshot_only",
+    "pit_forward_unsettled",
+    "settled_forward_sufficient",
+    PIT_TIER_RESEARCH,
+    PIT_TIER_CANONICAL,
+}
+
 
 def _get(metrics: dict[str, Any], keys: tuple[str, ...]) -> float | None:
     """Return the first present, numeric value among ``keys``."""
@@ -87,6 +104,64 @@ def _get(metrics: dict[str, Any], keys: tuple[str, ...]) -> float | None:
         if isinstance(value, (int, float)):
             return float(value)
     return None
+
+
+def _evaluate_pit_authority(pit_evidence: Any) -> dict[str, Any]:
+    """Classify the temporal authority supplied to the verdict ladder.
+
+    This intentionally accepts a compact block.  The experiment admission
+    layer validates source clocks and artifact hashes; the verdict helper only
+    needs the admitted tier and an explicit leakage attestation to prevent a
+    research/unknown input from acquiring paper or live authority.
+    """
+
+    base = {
+        "tier": None,
+        "known_future_leakage": None,
+        "authority": "invalid",
+        "paper_live_eligible": False,
+        "blockers": [],
+    }
+    if not isinstance(pit_evidence, dict):
+        return {**base, "blockers": ["pit_evidence_not_object"]}
+    tier_raw = pit_evidence.get("tier")
+    tier = tier_raw.strip().lower() if isinstance(tier_raw, str) else None
+    leakage = pit_evidence.get("known_future_leakage")
+    blockers: list[str] = []
+    if tier not in KNOWN_PIT_TIERS:
+        blockers.append("pit_tier_unknown")
+    if leakage is True:
+        blockers.append("known_future_leakage")
+    elif leakage is not False:
+        blockers.append("future_leakage_status_unknown")
+    if blockers:
+        return {
+            **base,
+            "tier": tier,
+            "known_future_leakage": leakage,
+            "blockers": blockers,
+        }
+    if tier == PIT_TIER_CANONICAL:
+        return {
+            **base,
+            "tier": tier,
+            "known_future_leakage": False,
+            "authority": "canonical",
+            "paper_live_eligible": True,
+        }
+    if tier == PIT_TIER_RESEARCH:
+        return {
+            **base,
+            "tier": tier,
+            "known_future_leakage": False,
+            "authority": "research_only",
+        }
+    return {
+        **base,
+        "tier": tier,
+        "known_future_leakage": False,
+        "blockers": [f"pit_tier_not_paper_live_eligible:{tier}"],
+    }
 
 
 @dataclass
@@ -501,7 +576,23 @@ def evaluate_live_readiness(
     }
 
 
-def _next_step(verdict: str, live_readiness: dict[str, Any]) -> str:
+def _next_step(
+    verdict: str,
+    live_readiness: dict[str, Any],
+    pit_authority: dict[str, Any] | None = None,
+) -> str:
+    if verdict == "research_only":
+        return (
+            "Record the positive replay only as observed_only research. "
+            "Upgrade the missing as-known/vintage evidence to canonical_pit "
+            "before any default-off paper or live evaluation."
+        )
+    if pit_authority and pit_authority.get("authority") == "invalid":
+        blockers = ", ".join(pit_authority.get("blockers") or []) or "unknown"
+        return (
+            "Reject paper/live disposition because PIT authority is invalid or "
+            f"unknown: {blockers}."
+        )
     if verdict == "portfolio_reject":
         return (
             "Reject the portfolio sleeve under the capital-conserving "
@@ -548,6 +639,7 @@ def full_stack_verdict(
     live_readiness: dict[str, Any],
     envelope: ExecutionEnvelope | None = None,
     evaluation_mode: str | None = None,
+    pit_evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Combine Gate 4 + Gate-5 live-readiness into the selected verdict ladder.
 
@@ -561,6 +653,12 @@ def full_stack_verdict(
     the mode is inherited from the gate report so a portfolio result cannot be
     accidentally interpreted by the champion/live ladder.
     """
+    gate4_passed = gate4.get("passed")
+    if not isinstance(gate4_passed, bool):
+        raise ValueError("gate4.passed must be an explicit boolean")
+    live_ready_flag = live_readiness.get("ready")
+    if not isinstance(live_ready_flag, bool):
+        raise ValueError("live_readiness.ready must be an explicit boolean")
     gate_mode = gate4.get("evaluation_mode")
     if gate_mode is not None and gate_mode not in VALID_EVALUATION_MODES:
         raise ValueError(
@@ -587,18 +685,18 @@ def full_stack_verdict(
         report_consistent = (
             (
                 reported_portfolio_verdict == "portfolio_reject"
-                and not gate4.get("passed")
+                and gate4_passed is False
                 and bool(hard_failures)
             )
             or (
                 reported_portfolio_verdict == "portfolio_forward_watch"
-                and not gate4.get("passed")
+                and gate4_passed is False
                 and not hard_failures
                 and bool(evidence_blockers)
             )
             or (
                 reported_portfolio_verdict == "accepted_portfolio_paper"
-                and gate4.get("passed") is True
+                and gate4_passed is True
                 and not hard_failures
                 and not evidence_blockers
             )
@@ -618,15 +716,33 @@ def full_stack_verdict(
         verdict = portfolio_verdict
         live_ready = False
     else:
-        if not gate4.get("passed"):
+        if gate4_passed is False:
             verdict = "reject"
         elif live_readiness.get("ready"):
             verdict = "live_eligible"
         else:
             verdict = "accepted_paper_pending_forward"
-        live_ready = bool(live_readiness.get("ready"))
+        live_ready = live_ready_flag
 
-    return {
+    pit_authority = (
+        _evaluate_pit_authority(pit_evidence)
+        if pit_evidence is not None
+        else None
+    )
+    if pit_authority is not None:
+        authority = pit_authority["authority"]
+        if authority == "research_only" and gate4_passed is True:
+            # A Gate-4 pass estimates historical gross edge.  It does not
+            # promote a research-PIT lead to paper or live authority.
+            verdict = "research_only"
+            live_ready = False
+        elif authority == "invalid":
+            # Known leakage and unknown temporal status invalidate acceptance
+            # even when a hand-built Gate-4 report claims to pass.
+            verdict = "reject"
+            live_ready = False
+
+    result = {
         "anti_js": "No JavaScript was used.",
         "verdict": verdict,
         "evaluation_mode": evaluation_mode,
@@ -635,10 +751,25 @@ def full_stack_verdict(
             if evaluation_mode == EVALUATION_MODE_PORTFOLIO_CONTRIBUTION
             else True
         ),
-        "gate4_passed": bool(gate4.get("passed")),
+        "gate4_passed": gate4_passed,
         "live_ready": live_ready,
-        "next_step": _next_step(verdict, live_readiness),
+        "next_step": _next_step(verdict, live_readiness, pit_authority),
         "gate4": gate4,
         "live_readiness": live_readiness,
         "execution_envelope": envelope.to_dict() if envelope is not None else None,
     }
+    # Omitting PIT evidence is an explicit legacy compatibility path: preserve
+    # the historical output shape and verdict ladder exactly.  New callers get
+    # the authority decision and its fail-closed paper/live boundary.
+    if pit_authority is not None:
+        result["pit_evidence"] = pit_authority
+        result["paper_live_eligible"] = bool(
+            pit_authority["paper_live_eligible"]
+            and verdict
+            in {
+                "accepted_paper_pending_forward",
+                "accepted_portfolio_paper",
+                "live_eligible",
+            }
+        )
+    return result

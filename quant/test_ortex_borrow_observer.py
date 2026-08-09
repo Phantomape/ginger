@@ -66,6 +66,63 @@ def test_daily_snapshot_uses_latest_legally_usable_row() -> None:
     assert snapshot["strategy_behavior_changed"] is False
 
 
+def test_daily_snapshot_fails_closed_on_stale_content_but_not_weekend_lag() -> None:
+    stale_rows = [
+        _source_row(
+            ticker,
+            provider_date="2026-06-30",
+            usable_trade_date="2026-07-01",
+        )
+        for ticker in ("AAPL", "MSFT")
+    ]
+    stale = observer.build_daily_snapshot(
+        stale_rows,
+        as_of="2026-07-15",
+        tickers=("AAPL", "MSFT"),
+        generated_at="2026-07-15T22:00:00Z",
+    )
+
+    assert stale["coverage_count"] == 2
+    assert stale["missing_tickers"] == []
+    assert stale["status"] == "stale_content"
+    assert stale["ready"] is False
+    assert stale["freshness"]["status"] == "stale"
+    assert stale["freshness"]["max_provider_lag_sessions"] == 5
+    assert stale["freshness"]["calendar_fallback_max_days"] == 7
+    assert stale["freshness"]["stale_tickers"] == ["AAPL", "MSFT"]
+    assert all(
+        row["content_age_sessions"] > 5
+        and row["content_age_calendar_days"] > 7
+        and row["is_fresh"] is False
+        for row in stale["freshness"]["by_ticker"]
+    )
+
+    weekend = observer.build_daily_snapshot(
+        [
+            _source_row(
+                provider_date="2026-07-09",
+                usable_trade_date="2026-07-10",
+                value=1.0,
+            ),
+            _source_row(
+                provider_date="2026-07-10",
+                usable_trade_date="2026-07-13",
+                value=2.0,
+            ),
+        ],
+        as_of="2026-07-12",
+        tickers=("AAPL",),
+        generated_at="2026-07-12T22:00:00Z",
+    )
+    freshness = weekend["freshness"]["by_ticker"][0]
+    assert weekend["status"] == "ready"
+    assert weekend["observations"][0]["provider_date"] == "2026-07-09"
+    assert freshness["latest_provider_date"] == "2026-07-10"
+    assert freshness["content_age_calendar_days"] == 2
+    assert freshness["content_age_sessions"] == 0
+    assert freshness["is_fresh"] is True
+
+
 def test_daily_snapshot_embeds_shared_default_off_entry_admission_parity() -> None:
     sessions = [
         "2026-06-30",
