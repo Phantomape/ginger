@@ -602,13 +602,16 @@ def lane_prediction_market_postfix():
 
 
 def lane_entity_theme_axis_c():
-    """Observed-only refresh exp-20260729-006 baseline: 73275 settled rows.
-    Axis-(c) requires >=+50% growth (>=109913) before a same-face re-probe."""
+    """Observed-only refresh exp-20260810-001 baseline: 114541 settled rows.
+    Axis-(c) requires >=+50% growth (>=171812) before a same-face re-probe.
+    Note: the entity_theme_news observed-only streak reached 3 consecutive
+    closes (exp-20260719-004, exp-20260729-006, exp-20260810-001), so a
+    fourth probe also needs an explicit observed-only override."""
     path = os.path.join(
         REPO_ROOT, "data", "non_ohlcv", "entity_theme_news_observer", "latest_outcome_summary.json"
     )
     d = json.load(open(path, encoding="utf-8"))
-    baseline = 73275
+    baseline = 114541
     current = int(d.get("settled_count") or 0)
     counters = {
         "settled_count": current,
@@ -620,9 +623,9 @@ def lane_entity_theme_axis_c():
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if current >= thresholds["settled_count"] else "not_ready",
-        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260729-006 baseline",
+        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260810-001 baseline",
         "counter_source": "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
-        "note": None,
+        "note": "observed-only streak at 3; fourth same-face probe needs --observed-only-override plus the >=171812 bar (exp-20260810-001: sole failed bar was 3/6 query groups vs SPY+QQQ, needed 4)",
     }
 
 
