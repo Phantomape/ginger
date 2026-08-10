@@ -128,3 +128,21 @@ docs/experiment_log.jsonl
 # Deliberately untracked: a tracked append-only chat would reintroduce the
 # divergent-append merge conflicts retired with experiment_log.jsonl.
 data/agent_mailbox/
+
+# Reservation intents are a local idempotence/concurrency cache. Durable
+# reservation identity is already embedded in experiments/tickets/*.json.
+experiments/reservation_intents/
+
+# Runtime command logs are diagnostics, not replay inputs.
+data/daily/*.log
+
+# Raw source archives are reproducible from their public upstreams. Keep the
+# small provenance manifests and normalized rows, not the downloaded ZIPs.
+data/non_ohlcv/sec_ftd/source_cache/
+data/non_ohlcv/usaspending_obligation_observer/raw/*.zip
+
+# The entity-theme outcome files are cumulative daily materializations and now
+# exceed GitHub's 100MB per-file limit. They are reproducible from the retained
+# shadow rows plus settlement prices; commit the latest summary, not each full
+# materialization.
+data/non_ohlcv/entity_theme_news_observer/outcome_ledgers/
