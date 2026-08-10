@@ -1,0 +1,161 @@
+{
+  "asof_date": "2026-08-08",
+  "content_identity": {
+    "algorithm": "sha256",
+    "content_as_of": "2026-08-08",
+    "identity_type": "semantic_form4_context_rows",
+    "max_latest_usable_trade_date": "2026-08-07",
+    "row_count": 31,
+    "rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+    "schema_version": 1,
+    "sha256": "49324cd006680b4e588e8c514e19a43af81eea26f3484ebffe6963d5bcaab978",
+    "ticker_count": 31
+  },
+  "daily_snapshot_wired": true,
+  "entry_context_schema": {
+    "context_fields": [
+      "form4_context_rows",
+      "form4_sale_overhang_bucket",
+      "form4_high_sale_overhang",
+      "form4_sale_rows",
+      "form4_ten_b5_sale_rows",
+      "form4_officer_sale_rows",
+      "form4_sale_value_usd",
+      "form4_latest_usable_trade_date",
+      "form4_context_as_of"
+    ],
+    "keys": [
+      "ticker",
+      "entry_date"
+    ],
+    "pit_filter": "context_as_of <= entry_date and underlying Form4 usable_trade_date <= context_as_of"
+  },
+  "form4_sale_overhang_bucket_counts": {
+    "high_sale_overhang": 21,
+    "moderate_or_routine_disposal": 7,
+    "no_sale_overhang": 3
+  },
+  "forward_reopen_gate": {
+    "closed_forward_rows_min": 25,
+    "high_sale_overhang_forward_rows_min": 8,
+    "park_after_materialization_runs_without_new_closable_rows": 3,
+    "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+    "required_replacement_values": [
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "single_ticker_share_max": 0.4
+  },
+  "forward_reopen_progress": {
+    "closed_forward_rows_current": 0,
+    "closed_forward_rows_without_required_replacement_values": 0,
+    "context_rows_current": 31,
+    "gate": {
+      "closed_forward_rows_min": 25,
+      "high_sale_overhang_forward_rows_min": 8,
+      "park_after_materialization_runs_without_new_closable_rows": 3,
+      "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "single_ticker_share_max": 0.4
+    },
+    "gate_ready": false,
+    "high_sale_overhang_closed_forward_rows_current": 0,
+    "high_sale_overhang_context_rows_current": 21,
+    "max_single_ticker_closed_forward_row_share": null,
+    "not_ready_reasons": [
+      "closed_forward_rows_below_min",
+      "high_sale_overhang_forward_rows_below_min"
+    ],
+    "replacement_value_complete_closed_rows_current": 0,
+    "unique_tickers_closed_forward_rows": 0
+  },
+  "generated_at": "2026-08-09T03:03:47+00:00",
+  "lookback_days": 10,
+  "max_latest_usable_trade_date": "2026-08-07",
+  "min_latest_usable_trade_date": "2026-07-29",
+  "outcome_join_schema": {
+    "forward_outcome_fields": [
+      "cash_replacement_value_10d",
+      "cash_replacement_value_20d",
+      "spy_replacement_value_10d",
+      "spy_replacement_value_20d",
+      "qqq_replacement_value_10d",
+      "qqq_replacement_value_20d",
+      "closed_forward_row"
+    ],
+    "join_keys": [
+      "ticker",
+      "entry_date",
+      "context_as_of_lte_entry_date",
+      "form4_latest_usable_trade_date_lte_context_as_of"
+    ],
+    "pit_guard": "Only context rows with context_as_of <= entry_date and underlying Form 4 usable_trade_date <= context_as_of are eligible for an entry join."
+  },
+  "output_path": "data/non_ohlcv/form4_sale_overhang_context_20260808.jsonl",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "scope": "form4_sale_overhang_context_collection",
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rows_with_form4_sale_rows": 23,
+  "rows_with_high_sale_overhang": 21,
+  "rows_with_officer_sale": 17,
+  "rows_with_ten_b5_sale": 16,
+  "rows_written": 31,
+  "rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+  "schema_version": 1,
+  "source_audit": {
+    "asof_date": "2026-08-08",
+    "bad_json_rows": 0,
+    "deduped_rows_loaded": 32742,
+    "form4_dir": "data/non_ohlcv",
+    "max_usable_trade_date": "2026-08-07",
+    "min_usable_trade_date": "2024-09-24",
+    "raw_jsonl_rows": 305414,
+    "sample_source_files_used": [
+      "data/non_ohlcv/form4_transactions_20260801.jsonl",
+      "data/non_ohlcv/form4_transactions_20260802.jsonl",
+      "data/non_ohlcv/form4_transactions_20260803.jsonl",
+      "data/non_ohlcv/form4_transactions_20260804.jsonl",
+      "data/non_ohlcv/form4_transactions_20260805.jsonl",
+      "data/non_ohlcv/form4_transactions_20260806.jsonl",
+      "data/non_ohlcv/form4_transactions_20260807.jsonl",
+      "data/non_ohlcv/form4_transactions_20260808.jsonl"
+    ],
+    "source_file_count": 510,
+    "source_files_skipped_future": 0,
+    "source_files_used": 510,
+    "ticker_count": 49,
+    "transaction_code_counts": {
+      "A": 3002,
+      "C": 1461,
+      "D": 85,
+      "E": 172,
+      "F": 2387,
+      "G": 460,
+      "H": 1,
+      "I": 25,
+      "J": 256,
+      "M": 6042,
+      "P": 343,
+      "S": 18492,
+      "X": 16
+    }
+  },
+  "status": "ok",
+  "summary_output": "data/non_ohlcv/form4_sale_overhang_context_summary_20260808.json",
+  "ticker_count": 31,
+  "trade_enabled": false
+}
