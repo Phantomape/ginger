@@ -1,0 +1,145 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-07-30 13:00 ET (10:00 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 739.79 vs 200MA 696.49 (+6.2%)  [moomoo_opend_rth]
+  QQQ 681.79 vs 200MA 642.91 (+6.0%)  [moomoo_opend_rth]
+
+PORTFOLIO HEAT (intraday prices): 3.8% / cap 8%   (quote coverage 18/18 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+23.0% add-review-eligible=DINO,MSFT,NFLX
+  AMD    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=519.92 invalid=481.83
+         blocks: near_existing_stop,below_ema8,below_sma20
+  BKNG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=194.13 invalid=194.13
+         blocks: below_rth_vwap,weak_rth_range_location
+  DDOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=266.67 invalid=266.67
+         blocks: below_rth_vwap,weak_rth_range_location
+  DINO   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=91.22 invalid=91.22
+  GOOG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=348.13 invalid=332.41
+         blocks: below_ema8,below_sma20
+  HOOD   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  MCD    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=271.33 invalid=268.01
+         blocks: near_existing_stop,below_ema8,below_rth_vwap,below_sma20,weak_rth_range_location
+  MSFT   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=447.31 invalid=447.31
+  MU     WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=927.18 invalid=837.30
+         blocks: below_ema8,below_sma20
+  NFLX   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=72.65 invalid=71.50
+  NOW    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=108.60 invalid=108.60
+         blocks: near_existing_stop,weak_rth_range_location
+  NVDA   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=203.13 invalid=194.26
+         blocks: below_ema8,below_rth_vwap,below_sma20,weak_rth_range_location
+  RKLB   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=75.93 invalid=62.76
+         blocks: below_ema8,below_sma20
+  SPY    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=745.79 invalid=736.01
+         blocks: below_sma20
+  TSM    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=418.68 invalid=400.00
+         blocks: below_sma20
+  UNH    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=425.14 invalid=419.81
+         blocks: near_existing_stop
+  APP    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=460.18 invalid=399.25
+         blocks: below_ema8,below_sma20
+  META   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  HOOD   $87.25 (-2.9% today, moomoo_opend_rth 2026-07-30 13:00:57)
+    HARD_STOP CRITICAL: Price 87.25 <= hard stop 92.58
+    ATR_STOP HIGH: Price 87.25 <= ATR stop 95.46
+    hard stop 92.58 (-6.1% away) [stop_source=default]
+    ATR stop 95.46 (-9.4% away)
+    trailing 110.45 (-26.6% away)
+    target 126.24 (+44.7% to go)
+  META   $530.59 (-9.4% today, moomoo_opend_rth 2026-07-30 13:00:57)
+    ATR_STOP HIGH: Price 530.59 <= ATR stop 552.76
+    hard stop 516.66 (+2.6% away) [stop_source=default]
+    ATR stop 552.76 (-4.2% away)
+    trailing 551.97 (-4.0% away)
+    target 704.54 (+32.8% to go)
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  AMD    $486.23 (+13.2% today, moomoo_opend_rth 2026-07-30 13:00:57)
+    hard stop 428.44 (+11.9% away) [stop_source=default]
+    ATR stop 429.57 (+11.7% away)
+    trailing 485.76 (+0.1% away)
+    target 584.23 (+20.2% to go)
+    flags: NEAR_TRAILING_STOP
+  MCD    $267.99 (-1.3% today, moomoo_opend_rth 2026-07-30 13:00:55)
+    hard stop 239.80 (+10.5% away) [stop_source=default]
+    ATR stop 264.19 (+1.4% away)
+    trailing 256.40 (+4.3% away)
+    target 326.99 (+22.0% to go)
+    flags: NEAR_ATR_STOP
+  NOW    $109.26 (-5.6% today, moomoo_opend_rth 2026-07-30 13:00:56)
+    hard stop 94.86 (+13.2% away) [stop_source=default]
+    ATR stop 97.86 (+10.4% away)
+    trailing 108.89 (+0.3% away)
+    target 129.35 (+18.4% to go)
+    flags: NEAR_TRAILING_STOP
+  UNH    $425.56 (+1.2% today, moomoo_opend_rth 2026-07-30 13:00:40)
+    hard stop 376.06 (+11.6% away) [stop_source=default]
+    ATR stop 409.11 (+3.9% away)
+    trailing 424.69 (+0.2% away)
+    target 512.81 (+20.5% to go)
+    flags: NEAR_TRAILING_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  APP    $402.35    day +0.7%   stop +12.5%  target +19.3%  [moomoo_opend_rth]
+  BKNG   $192.73    day -4.3%   stop +14.7%  target +16.3%  [moomoo_opend_rth]
+  DDOG   $266.06    day +0.7%   stop +14.8%  target +16.2%  [moomoo_opend_rth]
+  DINO   $91.56     day +1.7%   stop +15.2%  target +15.7%  [moomoo_opend_rth]
+  GOOG   $334.65    day -0.3%   stop +12.5%  target +19.4%  [moomoo_opend_rth]
+  MSFT   $455.51    day +16.6%  stop +23.9%  target +3.7%   [moomoo_opend_rth]
+  MU     $859.99    day +16.4%  stop +2.2%   target +33.3%  [moomoo_opend_rth]
+  NFLX   $73.12     day -0.7%   stop +15.7%  target +14.9%  [moomoo_opend_rth]
+  NVDA   $193.76    day +2.0%   stop +11.4%  target +20.8%  [moomoo_opend_rth]
+  RKLB   $63.44     day +8.3%   stop +5.5%   target +28.8%  [moomoo_opend_rth]
+  SPY    $739.79    day +1.4%   stop +12.8%  target +19.0%  [moomoo_opend_rth]
+  TSM    $403.69    day +7.8%   stop +17.6%  target +12.3%  [moomoo_opend_rth]
+
+------------------------------------------------------------
+ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)
+------------------------------------------------------------
+  HOOD   EXIT HARD_STOP CRITICAL shares=31
+  HOOD   EXIT ATR_STOP HIGH shares=31
+  META   EXIT ATR_STOP HIGH shares=2
+
+------------------------------------------------------------
+INTRADAY NEWS (fetched 2026-07-30 13:00 ET): 13 trade-filtered item(s)
+------------------------------------------------------------
+  [T3] META: Meta Platforms Stock Selloff Reflects Q3 Guidance, No Clarity on AI Monetization, Oppenhei
+  [T3] AMD: AMD Stock Soars as Susquehanna Lifts Price Target Ahead of Earnings - Yahoo Finance UK
+  [T3] MCD: Will Dividend Strength and Softer Sales Expectations Change McDonald's (MCD) Long-Term Inv
+  [T3] NFLX: Netflix (NFLX) Stock Forecast: 23x P/E, $94 Target, Testing Trendline at $73 - TradingKey
+  [T3] GOOGL,PEP,MU: Zacks Earnings Trends Highlights: MU, GOOGL, SPCX, PG, CAG and PEP - Yahoo Finance
+  [T3] APP: AppLovin (APP) Draws Fresh Earnings Focus, Is The Valuation Gap Still Justified? - simplyw
+  [T3] GOOG: Alphabet (NASDAQ:GOOG) Stock Rating Upgraded by Phillip Securities - MarketBeat
+  [T3] AAPL,APP: Apple (AAPL) Faces Crypto Wallet Lawsuit Over App Store Negligence - simplywall.st
+  [T3] TSLA: Tesla Stock (TSLA) Opinions on Earnings and Robotaxi Timeline Adjustments - Quiver Quantit
+  [T3] MA: 8-K - Mastercard Inc (0001141391) (Filer)
+  [T3] COIN: COIN Stock Outlook as Wall Street Firm Reiterates $240 Target Ahead of July 30 Earnings - 
+  [T3] TSLA,INTC: SA analyst upgrades/downgrades: INTC, TSLA, SPCX, PLTR - Seeking Alpha
+  [T3] QQQ: Invesco earnings up next: Can QQQ fend off BlackRock, State Street? - Investing.com Nigeri
+
+------------------------------------------------------------
+DATA QUALITY: quotes moomoo_opend_rth=18
+  moomoo OpenD status=ok available=24/24
+  news sources ok=17 failed=0
+  news text sanitation items=13 flagged=13 changed=13 flags=html_entity_unescaped=12 ticker_entity_metadata_only=1
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================

@@ -1,0 +1,110 @@
+============================================================
+INTRADAY RISK REVIEW  —  2026-08-04 12:25 ET (09:25 PT)
+ADVISORY ONLY — execution monitoring of existing rules.
+No new entry signals. Does not modify EOD artifacts or operator_inputs/.
+============================================================
+
+MACRO EVENT DAY: none scheduled today
+  Upcoming (7d): 2026-08-07 NFP
+
+MARKET REGIME (intraday): BULL   [last-close basis: BULL]
+  SPY 769.18 vs 200MA 697.91 (+10.2%)  [moomoo_opend_rth]
+  QQQ 719.80 vs 200MA 644.35 (+11.7%)  [moomoo_opend_rth]
+
+PORTFOLIO HEAT (intraday prices): 4.2% / cap 8%   (quote coverage 18/18 quotes)
+
+------------------------------------------------------------
+MACHINE TRIAGE GUARDRAILS (advisory only; no orders)
+------------------------------------------------------------
+  phase=RTH cash=+26.8% add-review-eligible=AMD,DDOG,GOOG,MA,NOW,RKLB,SPY,TSM
+  AMD    ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=15.0% confirm=515.61 invalid=515.61
+  BKNG   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=193.38 invalid=193.38
+         blocks: below_rth_vwap,weak_rth_range_location
+  DDOG   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=282.10 invalid=282.10
+  DINO   HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=89.77 invalid=87.18
+         blocks: near_existing_stop,below_ema8
+  GOOG   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=372.15 invalid=372.15
+  MA     ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=569.32 invalid=569.32
+  MCD    HOLD_ONLY                 default=HOLD_ONLY   allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=270.07 invalid=268.56
+         blocks: near_existing_stop,below_ema8,below_rth_vwap,below_sma20,weak_rth_range_location
+  MSFT   RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  NFLX   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=73.07 invalid=73.07
+         blocks: below_rth_vwap,weak_rth_range_location
+  NOW    ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=15.0% confirm=115.27 invalid=115.27
+  NVDA   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=210.49 invalid=210.49
+         blocks: weak_rth_range_location
+  RKLB   ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=10.0% confirm=73.76 invalid=73.76
+  SPY    ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=764.18 invalid=764.18
+  TSM    ADD_REVIEW_ELIGIBLE       default=WAIT        allowed=HOLD_ONLY,WAIT,ADD_SMALL add_cap=20.0% confirm=415.48 invalid=415.48
+  UNH    RISK_ACTION_REQUIRED      default=REDUCE_RISK allowed=REDUCE_RISK add_cap=0.0% confirm=n/a invalid=n/a
+         blocks: existing_exit_rule_breached,existing_exit_rule_breached
+  AMZN   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=277.76 invalid=277.76
+         blocks: weak_rth_range_location
+  APP    WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=438.70 invalid=413.95
+         blocks: below_sma20,weak_rth_range_location
+  META   WAIT_FOR_CONFIRMATION     default=WAIT        allowed=HOLD_ONLY,WAIT add_cap=0.0% confirm=620.30 invalid=583.08
+         blocks: below_ema8,below_rth_vwap,below_sma20,weak_rth_range_location
+
+------------------------------------------------------------
+BREACHED — existing rules currently triggered at intraday prices
+------------------------------------------------------------
+  MSFT   $496.53 (+1.8% today, moomoo_opend_rth 2026-08-04 12:25:53)
+    SIGNAL_TARGET HIGH: daily_high 499.44 >= signal target 472.39 (+20.0%) - full-position target exit
+    hard stop 346.42 (+30.2% away) [stop_source=default]
+    ATR stop 368.47 (+25.8% away)
+    trailing 459.48 (+7.5% away)
+    target 472.39 (-4.9% to go)
+  UNH    $408.50 (-1.7% today, moomoo_opend_rth 2026-08-04 12:25:54)
+    ATR_STOP HIGH: Price 408.50 <= ATR stop 409.75
+    hard stop 376.06 (+7.9% away) [stop_source=default]
+    ATR stop 409.75 (-0.3% away)
+    trailing 424.69 (-4.0% away)
+    target 512.81 (+25.5% to go)
+
+------------------------------------------------------------
+APPROACHING — within 2% of a stop/target (advisory display only, not an exit rule)
+------------------------------------------------------------
+  DINO   $88.09 (-0.6% today, moomoo_opend_rth 2026-08-04 12:25:39)
+    hard stop 77.68 (+11.8% away) [stop_source=default]
+    ATR stop 83.15 (+5.6% away)
+    trailing 86.68 (+1.6% away)
+    target 105.93 (+20.2% to go)
+    flags: NEAR_TRAILING_STOP
+  MCD    $267.81 (+1.0% today, moomoo_opend_rth 2026-08-04 12:25:53)
+    hard stop 239.80 (+10.5% away) [stop_source=default]
+    ATR stop 263.60 (+1.6% away)
+    trailing 256.40 (+4.3% away)
+    target 326.99 (+22.1% to go)
+    flags: NEAR_ATR_STOP
+
+------------------------------------------------------------
+OK POSITIONS
+------------------------------------------------------------
+  AMD    $523.99    day +8.1%   stop +18.2%  target +11.5%  [moomoo_opend_rth]
+  AMZN   $278.06    day -2.1%   stop +13.1%  target +18.6%  [moomoo_opend_rth]
+  APP    $416.31    day +2.5%   stop +15.4%  target +15.3%  [moomoo_opend_rth]
+  BKNG   $192.51    day -0.1%   stop +14.6%  target +16.4%  [moomoo_opend_rth]
+  DDOG   $286.25    day +4.6%   stop +20.8%  target +8.0%   [moomoo_opend_rth]
+  GOOG   $373.51    day +0.3%   stop +20.5%  target +8.4%   [moomoo_opend_rth]
+  MA     $570.02    day -0.2%   stop +11.8%  target +20.3%  [moomoo_opend_rth]
+  META   $581.96    day -1.4%   stop +15.1%  target +15.8%  [moomoo_opend_rth]
+  NFLX   $72.69     day -0.9%   stop +14.0%  target +17.3%  [moomoo_opend_rth]
+  NOW    $115.80    day +1.4%   stop +18.1%  target +11.7%  [moomoo_opend_rth]
+  NVDA   $210.51    day +1.9%   stop +18.8%  target +10.8%  [moomoo_opend_rth]
+  RKLB   $74.61     day +5.9%   stop +19.7%  target +9.6%   [moomoo_opend_rth]
+  SPY    $769.18    day +1.5%   stop +16.1%  target +14.4%  [moomoo_opend_rth]
+  TSM    $416.37    day +2.5%   stop +20.2%  target +8.9%   [moomoo_opend_rth]
+
+------------------------------------------------------------
+ADVISORY SHADOW ACTIONS (existing-rule projection, no orders)
+------------------------------------------------------------
+  MSFT   EXIT SIGNAL_TARGET HIGH shares=6
+  UNH    EXIT ATR_STOP HIGH shares=10
+
+------------------------------------------------------------
+DATA QUALITY: quotes moomoo_opend_rth=18
+  moomoo OpenD status=ok available=23/23
+  [i] calendar/finra_publication_overrides: verified FINRA publication pins end at settlement 2026-04-30 — later cycles use the labeled 7-business-day rule fallback (fine while the holiday calendar is current; pin new dates from finra.org when convenient)
+  Note: daily history is dividend-adjusted while live quotes are raw; tiny stop/ATR offsets are possible near ex-dividend dates.
+============================================================
