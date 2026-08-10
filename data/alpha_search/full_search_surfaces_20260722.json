@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context"
+      ],
+      "artifacts": [
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_candidate_order",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as the frozen cash-feasible core opportunity-cost prior; OHLCV relabeling is not a new evidence source.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-22T17:45:00Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "portfolio_exposure_context_unbound_20260722",
+      "data_source": "portfolio_exposure_state",
+      "component_sources": [
+        "portfolio_exposure_state"
+      ],
+      "roles": [
+        "independent_evidence",
+        "portfolio_exposure"
+      ],
+      "artifacts": [
+        "data/alpha_search/full_search_portfolio_surface_20260722.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Bind a sanitized, point-in-time portfolio exposure snapshot to each historical candidate decision and produce at least 20 settled same-slot conflict decisions without exposing live positions to the research model.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-22T17:45:00Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/full_search_portfolio_surface_20260722.json": "aefb8f8377c8bd59743c3fb86715d5d6a4e3aa15808da4498fbada1dd3f44146"
+      }
+    },
+    {
+      "surface_id": "execution_capacity_context_20260722",
+      "data_source": "execution_liquidity_context",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "independent_evidence",
+        "execution_cost",
+        "liquidity"
+      ],
+      "artifacts": [
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 49,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Freeze point-in-time spread and participation-impact inputs for the same candidate decisions; OHLCV ADV alone is insufficient.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-22T17:45:00Z",
+      "artifact_snapshot_hashes": {
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    }
+  ]
+}

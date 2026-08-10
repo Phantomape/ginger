@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context"
+      ],
+      "artifacts": [
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_candidate_order",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as the frozen cash-feasible core opportunity-cost prior; OHLCV relabeling is not a new evidence source.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-23T07:30:00Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "us_opex_week_calendar_20260723",
+      "data_source": "exchange_calendar",
+      "component_sources": [
+        "exchange_calendar"
+      ],
+      "roles": [
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/alpha_search/opex_week_calendar_surface_20260723.json"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 9,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "The calendar is deterministic and complete, but the frozen cash-feasible baseline shows only 4/2/3 (old_thin/mid_weak/late_strong) canonical entry touches inside OPEX weeks; the entry-conditioning use of this surface stays parked until at least 5 baseline entry touches exist per standard window (calendar-bound as new windows roll forward), or until a dealer-positioning proxy (point-in-time options open interest or gamma exposure) exists per the exp-20260610-001 frozen-family reopen condition.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-23T07:30:00Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/opex_week_calendar_surface_20260723.json": "1a564a4762658da39d6ba03be472c4eed2a55241019935f73ca775f6a8eaa074"
+      }
+    }
+  ]
+}

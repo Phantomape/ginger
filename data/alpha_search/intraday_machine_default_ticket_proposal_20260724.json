@@ -1,0 +1,30 @@
+{
+  "lane": "alpha_search",
+  "hypothesis": "Observed-only deterministic policy counterfactual: under the frozen next-eligible-five-minute execution, economic-cohort deduplication, and next-close settlement contract, active machine-default REDUCE_RISK rows add cost-adjusted value versus leaving the same held-position exposure unchanged; semantic overrides are excluded, and no price-independent information claim is made.",
+  "change_type": "observed_only_attribution",
+  "single_causal_variable": "intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v1",
+  "causal_components": [
+    "treatment population fixed to exactly the 12 active machine_default_action=REDUCE_RISK rows; the 94 zero-exposure rows are context only and never enter power, chronological-half, or concentration denominators",
+    "frozen next-eligible-five-minute execution and next-close settlement",
+    "fail closed per active row unless decision_timestamp with timezone, machine_default_action origin, selected next-eligible bar timestamp and bar ID, source artifact path and SHA256 are present and execution_time is strictly after decision_timestamp",
+    "frozen result bars: active_count>=20; each chronological half count>=5; costed active mean>0 and median>0; both half means>0; maximum ticker action-count share<=0.35; maximum ticker positive-value share<=0.40; every leave-one-ticker-out total>0; double recorded one-way cost total>0",
+    "forced closeout status=rejected decision=observed_only_rejected_machine_default_vs_no_adjustment_not_robust accepted=false accepted_alpha=false regardless of measured direction because active_count=12 is below 20",
+    "classifier acceptance requires the exact reservation fingerprint to resolve to intraday_triage_machine_action before generic routes, rebuild docs/frozen_families.jsonl under that source identity, and record a passing post-rebuild source-key check before closeout",
+    "distinct population and source are intraday_triage_machine_action plus moomoo_intraday_price with next-close settlement; prohibit exit-lifecycle severity buckets, next-open-to-five-session settlement, slot-reuse attribution, and winner-collateral claims",
+    "no strategy, shared-policy, order, sizing, or exit-rule change"
+  ],
+  "mechanism_family": "intraday_machine_default_continuation_avoidance",
+  "trial_family": "intraday_machine_default_no_adjustment_forward_attribution",
+  "changed_variable": "observed_only_machine_default_counterfactual_attribution_only",
+  "prediction": {
+    "success_probability": 0.12,
+    "main_failure_modes": [
+      "active_action_power_insufficient",
+      "chronological_half_instability",
+      "leave_one_ticker_out_sign_failure",
+      "positive_value_concentration",
+      "transaction_cost_stress_failure"
+    ],
+    "confidence_reason": "The explicit 100-effective-cohort checkpoint is met, but only 12 immutable rows actively reduce exposure; the run is forced to reject promotion on power even if the aggregate direction is positive."
+  }
+}

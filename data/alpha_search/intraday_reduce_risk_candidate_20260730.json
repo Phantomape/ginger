@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "expectation_gap",
+  "candidate_id": "cand-ea93e2c4d56f8f8b731a",
+  "search_queue": "adjacent",
+  "hypothesis": "Under the frozen next-eligible-5-minute execution, economic-cohort deduplication, and next-close settlement contract, the deterministic machine-default REDUCE_RISK action avoids enough post-breach continuation loss to add cost-adjusted value versus leaving the held position unchanged; semantic overrides are excluded.",
+  "fingerprint": {
+    "data_source": "intraday_triage_machine_action",
+    "component_sources": [
+      "intraday_triage_machine_action",
+      "moomoo_intraday_price"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "exit_breach_continuation_avoidance",
+    "decision_surface": "risk_allocation",
+    "payoff_shape": "cost_adjusted_avoided_loss",
+    "horizon": "next_close",
+    "execution_dependency": "next_eligible_5m_open_after_decision_with_fixed_one_way_cost",
+    "portfolio_role": "intraday_drawdown_control"
+  },
+  "surface_ids": [
+    "intraday_machine_action_forward_20260724",
+    "intraday_price_revealed_forward_20260724"
+  ],
+  "expectation_gap": {
+    "schema_version": 1,
+    "market_prior": {
+      "observable": true,
+      "proxy_type": "price_revealed",
+      "source": "moomoo_intraday_price",
+      "known_at": "2026-07-24T20:05:41Z",
+      "provenance": {
+        "baseline_policy": "maintain the full held-position exposure through the next regular close",
+        "price_clock": "decision-time context followed by the next eligible five-minute open"
+      }
+    },
+    "independent_evidence": [
+      {
+        "active_action": "REDUCE_RISK",
+        "field": "machine_default_action",
+        "known_at": "2026-07-24T20:05:41Z",
+        "policy_version": "discretionary_intraday_guardrails_v1",
+        "source": "intraday_triage_machine_action"
+      }
+    ],
+    "gap_definition": "The unchanged-exposure prior treats the held position as worth carrying through the next close, while the independently frozen exit-breach state calls for an immediate deterministic exposure reduction.",
+    "transmission": {
+      "affected_tickers": [
+        "APP",
+        "CRDO",
+        "DDOG",
+        "DINO",
+        "GEV",
+        "HOOD",
+        "MCD",
+        "META",
+        "MRVL",
+        "MU",
+        "MUU",
+        "NFLX",
+        "NVDA",
+        "RKLB",
+        "SNXX",
+        "SPY",
+        "TQQQ",
+        "UNH",
+        "WDC"
+      ],
+      "catalyst": "A pre-existing deterministic exit-rule breach known before the next eligible five-minute execution bar.",
+      "expected_direction": "An active REDUCE_RISK decision should add cost-adjusted value when the breached position continues adversely into the next regular close.",
+      "half_life": "From the next eligible five-minute open through the next regular-session close."
+    }
+  },
+  "why_not_arbitraged": "The rule applies only to already-held positions after an internal exit breach, pays the spread and fixed one-way cost, and can be swamped by reversals; any edge is therefore conditional on continuation after the breach rather than a free-standing public entry signal.",
+  "falsifier": "Reject unless there are at least 20 active machine-default actions and at least five in each chronological half; the costed active-action mean and median are positive; each half has positive mean value; the largest ticker is at most 35% of active-action count and at most 40% of positive value; every leave-one-ticker-out total remains positive; and doubling the recorded one-way cost leaves total value positive.",
+  "baseline": {
+    "policy": "Do not alter the held-position exposure after the intraday decision; carry the existing position unchanged through the next regular close.",
+    "universe": "Effective settled primary intraday ticker-day economic cohorts under aggregation rule v1."
+  },
+  "treatment": {
+    "policy": "Apply exactly the recorded machine_default_action from discretionary_intraday_guardrails_v1 at the next eligible five-minute open; only REDUCE_RISK changes exposure, and all semantic action labels are ignored for this attribution."
+  },
+  "replacement_value_comparator": "The exact held-position notional left unchanged through the same next-close horizon, with identical timestamps, price bars, and fixed transaction-cost assumptions.",
+  "expected_horizon": "next_close",
+  "execution_envelope": {
+    "borrow_dependency": "None; treatment only reduces an existing long position and cannot create a short.",
+    "capacity_constraint": "Treatment is capped by the recorded existing-position reduction fraction and cannot exceed current shares.",
+    "costs_and_carry": "Recorded five-basis-point one-way reduction cost plus a predeclared double-cost stress; no carry assumption is added.",
+    "intended_instrument": "A reduction of the exact already-held cash equity or ETF; no new instrument or leverage mapping is created.",
+    "liquidity_dependency": "The next eligible regular-session five-minute open must exist for the held instrument, with the recorded fixed cost applied.",
+    "live_ready": false,
+    "orders_enabled": false,
+    "timing_constraint": "Machine state and position notional must be frozen before the next eligible five-minute execution bar; settlement is the next regular close.",
+    "trade_enabled": false
+  },
+  "evidence_grade": "observed_only",
+  "source_readiness_snapshot": [
+    {
+      "surface_id": "intraday_machine_action_forward_20260724",
+      "snapshot_hash": "05fc9dead9145b17a7d3460aa413c42c3aba0ae000ae42e20b5485f64f950743"
+    },
+    {
+      "surface_id": "intraday_price_revealed_forward_20260724",
+      "snapshot_hash": "f87963d76112147a8bab177be680b214551f738d1fdda514ef1175d5304ebce2"
+    }
+  ],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "title": "Machine-default intraday risk reduction versus no adjustment",
+  "created_at": "2026-07-30T16:42:00Z",
+  "created_by": "claude-scheduled-alpha-20260730",
+  "prediction": {
+    "success_probability": 0.12,
+    "main_failure_modes": [
+      "active_action_power_insufficient",
+      "chronological_half_instability",
+      "leave_one_ticker_out_sign_failure",
+      "positive_value_concentration",
+      "transaction_cost_stress_failure"
+    ],
+    "confidence_reason": "The explicit 100-effective-cohort reopen count is met under a fixed forward contract, but only 12 immutable decisions actively reduce exposure, so the predeclared power and concentration bars are likely to reject."
+  },
+  "reopen_condition": "After this frozen attribution, require at least 20 active machine-default reductions, at least five in each chronological half, and no more than 40% of positive value from one ticker before another promotion review.",
+  "next_machine_action": "If outcome-blind D0-D3 pass under this fresh scope, build the debate-free schema-v2 promotion request (exp-20260729-003 admission contract), reserve exactly one observed-only attribution ID, evaluate only the frozen robustness bars, and leave all production behavior unchanged.",
+  "research_refs": [
+    "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+  ],
+  "amendment_lineage": {
+    "parent_candidate_id": "cand-e3b751228762a361b8c2",
+    "parent_candidate_snapshot": {
+      "baseline": {
+        "policy": "Do not alter the held-position exposure after the intraday decision; carry the existing position unchanged through the next regular close.",
+        "universe": "Effective settled primary intraday ticker-day economic cohorts under aggregation rule v1."
+      },
+      "candidate_id": "cand-e3b751228762a361b8c2",
+      "candidate_kind": "expectation_gap",
+      "created_at": "2026-07-25T01:18:00Z",
+      "created_by": "codex-alpha-automation-20260724",
+      "evidence_grade": "observed_only",
+      "execution_envelope": {
+        "borrow_dependency": "None; treatment only reduces an existing long position and cannot create a short.",
+        "capacity_constraint": "Treatment is capped by the recorded existing-position reduction fraction and cannot exceed current shares.",
+        "costs_and_carry": "Recorded five-basis-point one-way reduction cost plus a predeclared double-cost stress; no carry assumption is added.",
+        "intended_instrument": "A reduction of the exact already-held cash equity or ETF; no new instrument or leverage mapping is created.",
+        "liquidity_dependency": "The next eligible regular-session five-minute open must exist for the held instrument, with the recorded fixed cost applied.",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Machine state and position notional must be frozen before the next eligible five-minute execution bar; settlement is the next regular close.",
+        "trade_enabled": false
+      },
+      "expectation_gap": {
+        "gap_definition": "The unchanged-exposure prior treats the held position as worth carrying through the next close, while the independently frozen exit-breach state calls for an immediate deterministic exposure reduction.",
+        "independent_evidence": [
+          {
+            "active_action": "REDUCE_RISK",
+            "field": "machine_default_action",
+            "known_at": "2026-07-24T20:05:41Z",
+            "policy_version": "discretionary_intraday_guardrails_v1",
+            "source": "intraday_triage_machine_action"
+          }
+        ],
+        "market_prior": {
+          "known_at": "2026-07-24T20:05:41Z",
+          "observable": true,
+          "provenance": {
+            "baseline_policy": "maintain the full held-position exposure through the next regular close",
+            "price_clock": "decision-time context followed by the next eligible five-minute open"
+          },
+          "proxy_type": "price_revealed",
+          "source": "moomoo_intraday_price"
+        },
+        "schema_version": 1,
+        "transmission": {
+          "affected_tickers": [
+            "APP",
+            "CRDO",
+            "DDOG",
+            "DINO",
+            "GEV",
+            "HOOD",
+            "MCD",
+            "META",
+            "MRVL",
+            "MU",
+            "MUU",
+            "NFLX",
+            "NVDA",
+            "RKLB",
+            "SNXX",
+            "SPY",
+            "TQQQ",
+            "UNH",
+            "WDC"
+          ],
+          "catalyst": "A pre-existing deterministic exit-rule breach known before the next eligible five-minute execution bar.",
+          "expected_direction": "An active REDUCE_RISK decision should add cost-adjusted value when the breached position continues adversely into the next regular close.",
+          "half_life": "From the next eligible five-minute open through the next regular-session close."
+        }
+      },
+      "expected_horizon": "next_close",
+      "falsifier": "Reject unless there are at least 20 active machine-default actions and at least five in each chronological half; the costed active-action mean and median are positive; each half has positive mean value; the largest ticker is at most 35% of active-action count and at most 40% of positive value; every leave-one-ticker-out total remains positive; and doubling the recorded one-way cost leaves total value positive.",
+      "fingerprint": {
+        "component_sources": [
+          "intraday_triage_machine_action",
+          "moomoo_intraday_price"
+        ],
+        "data_source": "intraday_triage_machine_action",
+        "decision_surface": "risk_allocation",
+        "economic_mechanism": "exit_breach_continuation_avoidance",
+        "execution_dependency": "next_eligible_5m_open_after_decision_with_fixed_one_way_cost",
+        "expectation_proxy": "price_revealed",
+        "horizon": "next_close",
+        "payoff_shape": "cost_adjusted_avoided_loss",
+        "portfolio_role": "intraday_drawdown_control"
+      },
+      "hypothesis": "Under the frozen next-eligible-5-minute execution, economic-cohort deduplication, and next-close settlement contract, the deterministic machine-default REDUCE_RISK action avoids enough post-breach continuation loss to add cost-adjusted value versus leaving the held position unchanged; semantic overrides are excluded.",
+      "next_machine_action": "If outcome-blind D0-D3 and model-diverse verification pass, reserve one observed-only attribution ID, evaluate only the frozen robustness bars, and leave all production behavior unchanged.",
+      "prediction": {
+        "confidence_reason": "The explicit 100-effective-cohort reopen count is met under a fixed forward contract, but only 12 immutable decisions actively reduce exposure, so the predeclared power and concentration bars are likely to reject.",
+        "main_failure_modes": [
+          "active_action_power_insufficient",
+          "chronological_half_instability",
+          "leave_one_ticker_out_sign_failure",
+          "positive_value_concentration",
+          "transaction_cost_stress_failure"
+        ],
+        "success_probability": 0.12
+      },
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "reopen_condition": "After this frozen attribution, require at least 20 active machine-default reductions, at least five in each chronological half, and no more than 40% of positive value from one ticker before another promotion review.",
+      "replacement_value_comparator": "The exact held-position notional left unchanged through the same next-close horizon, with identical timestamps, price bars, and fixed transaction-cost assumptions.",
+      "research_refs": [
+        "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+      ],
+      "schema_version": 1,
+      "search_queue": "adjacent",
+      "source_readiness_snapshot": [
+        {
+          "snapshot_hash": "3e1fe7ce511040a4fd0c3cf64325f90abc5d642cf55c68dedc5613caf44a76af",
+          "surface_id": "intraday_machine_action_forward_20260724"
+        },
+        {
+          "snapshot_hash": "673cc5d200e371f9561704f422d48912ff8189aee5bcc833fa18acbc76ba4a8f",
+          "surface_id": "intraday_price_revealed_forward_20260724"
+        }
+      ],
+      "surface_ids": [
+        "intraday_machine_action_forward_20260724",
+        "intraday_price_revealed_forward_20260724"
+      ],
+      "title": "Machine-default intraday risk reduction versus no adjustment",
+      "treatment": {
+        "policy": "Apply exactly the recorded machine_default_action from discretionary_intraday_guardrails_v1 at the next eligible five-minute open; only REDUCE_RISK changes exposure, and all semantic action labels are ignored for this attribution."
+      },
+      "why_not_arbitraged": "The rule applies only to already-held positions after an internal exit breach, pays the spread and fixed one-way cost, and can be swamped by reversals; any edge is therefore conditional on continuation after the breach rather than a free-standing public entry signal."
+    },
+    "parent_candidate_snapshot_hash": "367a8552099a0169300c8b4f87c1ea1318ec6970396376a713072bdd5003ee7e",
+    "parent_selection_scope_id": "scope-807e75e01eab3251c791f0cf",
+    "amendment_reason": "outcome_blind_contract_completion",
+    "changed_fields": [
+      "next_machine_action",
+      "source_readiness_snapshot"
+    ],
+    "parent_outcome_accessed": false,
+    "parent_experiment_id": null,
+    "declared_at": "2026-07-30T16:42:00Z"
+  }
+}

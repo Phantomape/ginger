@@ -1,0 +1,234 @@
+{
+  "card_id": "itrc-13d0380681a735830640",
+  "conflicts": [],
+  "created_at": "2026-08-06T15:22:13Z",
+  "data_cutoff": "2026-08-06T15:12:04Z",
+  "decision": {
+    "candidate": {
+      "baseline": {
+        "policy": "Use the current broad-universe EPS-surprise-only PEAD candidate policy with its frozen universe, ranking, entry clock, notional, costs and exits."
+      },
+      "candidate_id": "cand-acdf96166af588f8ecf1",
+      "candidate_kind": "plain_event_lead",
+      "created_at": "2026-08-06T15:22:13Z",
+      "created_by": "codex-alpha-automation",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none; long-only research lead",
+        "capacity_constraint": "At most one existing PEAD candidate slot, issuer positive-contribution concentration below 40%, and no production allocation",
+        "costs_and_carry": "Repository cash-equity commissions and slippage at identical notional; no financing credit",
+        "intended_instrument": "CAT common stock only for the current lead; no option, leverage, inverse product or proxy mapping",
+        "liquidity_dependency": "Canonical equity liquidity, gap-cancel and stale-price controls must pass at the next regular-session open",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "The earnings event, consensus snapshot, backlog, dealer inventory, adjusted-margin reconciliation and signal-day close must all be known before the entry open",
+        "trade_enabled": false
+      },
+      "expectation_gap": null,
+      "expected_horizon": "next_open_h10_h20",
+      "falsifier": "Reject or park if the current-quarter primary fields are absent at the decision clock, if historical values are not canonical as-known, if any standard window has fewer than five independent executable touches, if no valid novelty axis survives prior fingerprints, if the fixed bundle adds no H10 and H20 replacement value over unconditioned PEAD and cash/SPY/QQQ after costs, or if positive contribution is concentrated above 40% in one issuer.",
+      "fingerprint": {
+        "component_sources": [
+          "caterpillar_investor_relations",
+          "earnings_snapshot",
+          "ohlcv_warehouse",
+          "sec_filings"
+        ],
+        "data_source": "revision_expectation",
+        "decision_surface": "entry_admission",
+        "economic_mechanism": "earnings_surprise_operating_quality_conversion",
+        "execution_dependency": "long_only_cash_equity_next_open_with_existing_costs",
+        "expectation_proxy": "unidentified",
+        "horizon": "next_open_h10_h20",
+        "payoff_shape": "pead_persistence_replacement_value",
+        "portfolio_role": "research_lead_against_cash_and_unconditioned_pead"
+      },
+      "hypothesis": "For broad-universe positive PEAD candidates, post-earnings drift may be more durable when source-dated firm backlog growth exceeds dealer-inventory build and adjusted operating margin declines no more than 100 basis points year over year; the current CAT lead must be evaluated only after every input is known at the next regular-session open over fixed H10 and H20 replacement value versus cash, SPY, QQQ and unconditioned PEAD.",
+      "next_machine_action": "run outcome-blind D0-D3",
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "replacement_value_comparator": "Zero-return cash, identical-interval SPY and QQQ, and the exact unconditioned PEAD candidate at the same universe, slot, entry clock, notional, costs and exit policy.",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [],
+      "surface_ids": [
+        "cat_operating_quality_snapshot_20260806",
+        "cat_pead_price_event_snapshot_20260806",
+        "portfolio_constraint_snapshot_20260806"
+      ],
+      "title": "CAT PEAD operating-quality conversion lead",
+      "treatment": {
+        "policy": "Keep the baseline unchanged but admit a candidate only when latest EPS surprise is at least 10%, firm backlog change minus dealer-inventory change is above zero, and consistently defined adjusted operating margin year-over-year change is at least minus 100 basis points; enter only at the first regular-session open after all inputs are known and evaluate fixed H10 and H20 horizons."
+      },
+      "why_not_arbitraged": "EPS surprise is public and the signal-day price may already absorb the headline. Any residual edge must come from source-dated operating-quality conversion that is not captured by consensus or price, and it must survive PIT, touch-density, source-overlap, concentration and exact opportunity-cost tests."
+    },
+    "disposition": "test",
+    "next_machine_action": "run_d0_d3",
+    "rationale": "All four roles completed with source-dated evidence and agree the business mechanism is explicit enough to submit as a lead. They also agree that current Q2 field coverage, historical PIT, touch density, novelty, constituent incrementality and replacement value remain entirely for the authoritative D0-D3 qualification, with no override and no trade authority."
+  },
+  "outcome_blind": true,
+  "record_type": "investment_team_research_card",
+  "researchability": {
+    "basis": "Caterpillar and SEC primary sources establish the economic mechanism and the current PEAD and portfolio snapshots are hash-bound, but current Q2 operating-quality fields and canonical historical as-known vintages are unavailable, so the card is lead-only.",
+    "grade": "B",
+    "limitations": [
+      "The official Q2 2026 release or filing with backlog, dealer-inventory and adjusted-margin detail was unavailable at the frozen cutoff.",
+      "The current event has no canonical historical known-at panel or outcome-blind multi-window touch matrix for the three treatment fields.",
+      "Company-level backlog and dealer inventory can mix different segments and fulfillment horizons.",
+      "No CAT-matched flow, derivatives, positioning, factor or covariance evidence is bound.",
+      "Current live position control blocks new entries because an exit is pending and manual bracket orders are not broker-confirmed.",
+      "A risk-role repository search exposed the presence, but not the values, of unrelated settled CAT paper fields after candidate freeze; those fields were discarded and did not affect candidate selection or this card."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "conclusion": "Caterpillar's reported sales sit between factory shipment, dealer inventory and end-customer demand, while Financial Products can support customer and dealer purchases. An EPS beat is therefore more plausibly persistent when backlog growth is not merely matched by channel inventory and margins remain resilient. This is an economically coherent lead, not a trade or admission decision.",
+      "evidence": [
+        {
+          "claim": "Caterpillar sells equipment through an independent dealer network and Financial Products finances and insures customer and dealer purchases, so factory shipment, dealer inventory and end demand are distinct states.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Q1 2026 dealer inventory increased about $2.0 billion versus $0.1 billion a year earlier, and management said inventory changes contributed to sales growth.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The board raised the quarterly dividend 8% to $1.63 and reiterated its intention to return substantially all MP&E free cash flow over time, supporting capital-return durability but not proving near-term backlog conversion.",
+          "known_at": "2026-06-10T23:59:59Z",
+          "source": "https://www.caterpillar.com/en/news/corporate-press-releases/h/june-2026-dividends.html",
+          "source_group": "issuer_dividend_release",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The frozen evidence does not isolate dealer sell-through, order cancellation risk, segment-level backlog conversion, pricing power or the portion of backlog deliverable within H10/H20. A falling dealer inventory can also signal weak ordering rather than healthy sell-through."
+    },
+    "financial_analyst": {
+      "conclusion": "Q1 2026 illustrates the proposed mechanism: firm backlog rose $11.5 billion while dealer inventory rose $2.0 billion, adjusted operating margin declined only 30 basis points, and operating cash flow remained positive. Those prior-quarter facts cannot fill the missing Q2 treatment inputs, so financial evidence supports only a research-PIT lead that should park unless the current fields and historical vintages are bound.",
+      "evidence": [
+        {
+          "claim": "At March 31, 2026, firm backlog was approximately $62.7 billion, up $11.5 billion from fourth-quarter 2025, while dealer inventory increased $2.0 billion; about $24.8 billion of backlog was not expected to be filled within twelve months.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Q1 adjusted operating margin was 18.0% versus 18.3% a year earlier and GAAP operating margin was 17.7% versus 18.1%, satisfying the predeclared minus-100-basis-point resilience example for that prior quarter.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The Q1 issuer release reported $17.4 billion of sales and revenues, 22% growth, adjusted EPS of $5.54 and enterprise operating cash flow of $1.9 billion.",
+          "known_at": "2026-04-30T23:59:59Z",
+          "source": "https://www.caterpillar.com/en/news/corporate-press-releases/h/1q26-results-caterpillar-inc.html",
+          "source_group": "issuer_q1_2026_release",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "At the research cutoff, Caterpillar's official quarterly-results index did not expose the Q2 2026 release or presentation needed to compute current backlog, dealer inventory and margin conditions.",
+          "known_at": "2026-08-06T15:12:04Z",
+          "source": "https://investors.caterpillar.com/financials/quarterly-results/default.aspx",
+          "source_group": "issuer_quarterly_results_index",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The treatment must use a consistent adjusted-margin reconciliation across periods. Tariff costs, segment mix and a backlog share deliverable beyond twelve months can make the company-level residual a weak H10/H20 proxy. Q2 tariff costs were expected near $700 million, creating a direct margin falsifier."
+    },
+    "industry_researcher": {
+      "conclusion": "The mechanism spans construction, mining and power-generation cycles that do not convert backlog on the same clock. Power & Energy drove much of the latest backlog increase, while dealer inventory is primarily a machinery-channel measure; subtracting them at company level risks false precision. Industry demand supports a lead only if source-matched segment evidence confirms near-term end-demand conversion.",
+      "evidence": [
+        {
+          "claim": "Power & Energy was the largest contributor to Q1 backlog growth, while about $24.8 billion of total backlog was expected beyond twelve months, limiting its alignment with an H10/H20 equity horizon.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Management expected Q2 Construction dealer inventory to change only slightly and identified end-user equipment sales, while also expecting about $700 million of Q2 tariff costs; end demand and price-cost therefore need joint confirmation.",
+          "known_at": "2026-04-30T10:31:34Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000017/ex991toformcat1q2026earnin.htm",
+          "source_group": "sec_q1_2026_earnings_exhibit",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The U.S. Energy Information Administration expected U.S. electricity demand to continue growing in 2026 and 2027, with large computing facilities a major driver; this supports long-cycle power demand but does not prove near-term Caterpillar order conversion.",
+          "known_at": "2026-01-13T23:59:59Z",
+          "source": "https://www.eia.gov/pressroom/releases/press582.php",
+          "source_group": "eia_official_forecast",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The pack lacks segment-matched backlog, cancellation, delivery timing, dealer sell-through, competitor share and commodity-cycle evidence. The company-level residual may combine unrelated demand pools, and no industry source validates the fixed minus-100-basis-point margin threshold."
+    },
+    "risk_assessor": {
+      "conclusion": "The current event is timestamped well enough to freeze a lead, but the treatment was not computable before the proposed next-open decision because Q2 operating-quality fields were absent. The surface remains research_pit, and current live position control independently forces no-trade. PIT, density, novelty, constituent ablation and replacement value must fail closed in D0-D3 without override.",
+      "evidence": [
+        {
+          "claim": "The frozen CAT PEAD row has a 31.83% latest surprise, signal date 2026-08-05 and a research-level known-at boundary before the next open, but immutable as-known historical event vintages are unproven.",
+          "known_at": "2026-08-06T15:12:04Z",
+          "source": "data/alpha_search/alpha_automation_cat_q2_source_snapshot_20260806.json",
+          "source_group": "local_frozen_source_snapshot",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "Current position control reports ok_to_add_control_pass=false because an exit is pending and manual bracket orders are not broker-confirmed, so cash and reported slots do not create execution authority.",
+          "known_at": "2026-08-06T04:14:32Z",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "live_position_control",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The Q1 filing expected about $700 million of Q2 tariff costs and $2.2 billion to $2.4 billion for full-year 2026, creating a material risk that margin compression breaches the treatment floor.",
+          "known_at": "2026-05-06T15:08:09Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000021/cat-20260331.htm",
+          "source_group": "sec_q1_2026_10q",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The frozen synthesis found no ready reopen lane, no CAT flow overlap, no CAT derivatives or positioning evidence, and cash as the current executable opportunity-cost winner.",
+          "known_at": "2026-08-06T15:12:04Z",
+          "source": "data/alpha_search/alpha_automation_synthesis_20260806.json",
+          "source_group": "local_frozen_synthesis",
+          "source_kind": "secondary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "Adjusted-versus-GAAP field definitions, quarterly alignment, historical revisions, source publication clocks, touch density, issuer concentration and portfolio covariance are unresolved. A historical replay using current restated fields or current mappings would be not_pit rather than research_pit."
+    }
+  },
+  "schema_version": 1,
+  "subject": {
+    "company": "Caterpillar Inc.",
+    "research_question": "Does a source-dated operating-quality conversion gate distinguish durable post-earnings drift from channel inventory fill for a current positive CAT PEAD lead?",
+    "tickers": [
+      "CAT"
+    ]
+  },
+  "trade_enabled": false
+}

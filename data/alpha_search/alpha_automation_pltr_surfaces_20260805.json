@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "pltr_price_event_snapshot_20260805",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse",
+        "quant_daily_signal"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "candidate_pool",
+        "event"
+      ],
+      "artifacts": [
+        "data/daily/signals/quant/quant_signals_20260804.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 57,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "current_core_rank_signal_day_gap_volume_breadth_and_earnings_flag",
+        "source": "quant_daily_signal"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Current snapshot is lead-only; promotion requires a canonical PIT multi-window touch matrix with at least five executable decisions in every standard window.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-05T15:20:59Z",
+      "artifact_snapshot_hashes": {
+        "data/daily/signals/quant/quant_signals_20260804.json": "0010d5fd483fec0c8612bfba161157babb88ea0712ca93f1048cf91bfb8c9787",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "pltr_official_disclosure_snapshot_20260805",
+      "data_source": "palantir_investor_relations",
+      "component_sources": [
+        "palantir_investor_relations",
+        "sec_filings"
+      ],
+      "roles": [
+        "event",
+        "independent_evidence",
+        "fundamental"
+      ],
+      "artifacts": [
+        "data/alpha_search/alpha_automation_pltr_q2_source_snapshot_20260805.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 1,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Bind an authorized canonical filing-vintage event ledger and obtain at least five executable touches in every standard window before any Gate claim.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-05T15:20:59Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/alpha_automation_pltr_q2_source_snapshot_20260805.json": "29b989ef931e03627724cb390e8b26fa5bf4269d0cc580c04d6d3db556b9ba9f"
+      }
+    },
+    {
+      "surface_id": "moomoo_flow_forward_unsettled_20260805",
+      "data_source": "moomoo_capital_flow_day",
+      "component_sources": [
+        "moomoo_capital_flow_day"
+      ],
+      "roles": [
+        "flow",
+        "positioning_constraint",
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 11,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Accumulate at least 20 independently settled disclosure-flow decisions with at least 10 decision dates and no ticker above 40 percent; historical pre-materialization rows remain research PIT.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-05T04:23:22Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "a092c194092aabee19b7c212ff090b42f25fcf3387486b33fcf926f7be58468d",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "eb040e671eacc1913e952f1d0817e933aae3c217784cb6f55bd904b26cf7b897"
+      }
+    },
+    {
+      "surface_id": "portfolio_constraint_snapshot_20260805",
+      "data_source": "broker_portfolio",
+      "component_sources": [
+        "broker_positions",
+        "live_position_control"
+      ],
+      "roles": [
+        "portfolio_exposure",
+        "opportunity_cost",
+        "execution_constraint"
+      ],
+      "artifacts": [
+        "operator_inputs/open_positions.json",
+        "data/live_pilot/position_control/state.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 18,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Use only as current opportunity-cost and execution context; it grants no alpha novelty and position control must pass before any future order eligibility.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-05T04:24:02Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "1bdbdecaca891b301f1e76575eb5f59133833b8f1ee58b00e6a66a666b683ef5",
+        "data/live_pilot/position_control/state.json": "9730431fbae63880099febdd4f6d30cd5324763a855e9fb78db0c8022fc0cce3"
+      }
+    }
+  ]
+}

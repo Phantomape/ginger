@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-28T16:26:00Z",
+  "automation_id": "claude-scheduled-alpha",
+  "outcome_accessed": false,
+  "baseline_universe": [
+    "cash_feasible_core_gate1",
+    "cash",
+    "SPY",
+    "QQQ",
+    "Massive active common stocks as of the latest reference snapshot on or before each event decision date"
+  ],
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "opportunity_cost_basis": "No fresh same-day core, pilot or add-on signal exists at this synthesis time; historical replay decisions are therefore compared against the same-date cash-feasible core candidate when the frozen core policy admits one and cash otherwise, with SPY and QQQ as secondary comparators. This restates the frozen comparator from exp-20260712-015 behavior inputs and the exp-20260715-010 cash-feasible Gate-1 anchor; no candidate outcome was read.",
+  "evidence_surfaces_used": [
+    "cash_feasible_core_gate1",
+    "massive_full_market_ohlcv (grouped daily bars, 5667777 rows)",
+    "massive_full_market_ohlcv stock_splits (3049 split events: 544 forward_split, 2134 reverse_split, 371 stock_dividend; exp-20260728-003)",
+    "massive_reference_asof_identity (19 month-start as-of snapshots, 188528 identities; exp-20260728-004)",
+    "canonical price context (data_layer cold+hot overlay)",
+    "flow readiness counters (data/reopen_readiness.json)",
+    "derivatives readiness counters",
+    "event readiness counters",
+    "positioning and portfolio exposure state",
+    "data/research_digest/latest_digest.md"
+  ],
+  "evidence_surfaces_missing": [
+    "immutable as-published Massive vendor vintage (blocks canonical_pit)",
+    "split announcement dates (only execution_date is in the surface; decision clock must be execution-date close)",
+    "canonical Massive daily/replay parity",
+    "flow/options paired settlements at the registered threshold (5/10 flow dates)",
+    "intraday REDUCE_RISK active-action power (12/20 actions, 4/5 second-half)"
+  ],
+  "reopen_lane_check": "All 11 lanes in data/reopen_readiness.json are not_ready, accumulating, or manual_check_required as of 2026-07-28; move_relief_forward zero rows verified as trigger drought (daily snapshot heartbeat current at 2026-07-27), not starvation. No lane reopen is legal this round.",
+  "prior_iteration_acknowledgement": {
+    "iteration": "massive-date-native-opportunity-cost-20260728",
+    "disposition": "rejected_before_promotion at outcome-blind D3 (duplicate/frozen near neighbors from 2026-07-22/23 discovery candidates)",
+    "artifact": "data/alpha_search/massive_no_core_discovery_rejection_20260728_1218.json",
+    "distinction": "This round's selected hypothesis changes mechanism family (issuer corporate-action event vs broad-market price continuation), decision clock (split execution date vs fixed month-start panel), and candidate trigger (official split event rows vs cross-sectional price ranking); it does not rewrite, rescore or re-run the rejected continuation candidate."
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate": "Massive forward-split execution-date drift no-core basket",
+      "queue": "exploration",
+      "baseline": "same-date cash-feasible core candidate if present, else cash",
+      "treatment": "buy active common stocks (as-of identity) at the next session open after a forward split execution date, requiring trailing-20-session median dollar volume >= $1M and last close >= $3, top-2 per execution date by descending median dollar volume, fixed 10-session hold, round-trip costs",
+      "expected_horizon": "next_open_to_10_sessions",
+      "replacement_value_comparator": "cash-feasible core-or-cash primary; SPY and QQQ secondary",
+      "falsifier": "fewer than five selected touches in any standard window, non-positive aggregate or any-window after-cost replacement value, single-ticker positive-PnL share above 50%, top-five share above 60%, contribution HHI above 0.35, non-positive double-cost stress, or any identity/split/PIT contract failure",
+      "readiness": "eligible_for_outcome_blind_D0_D3; outcome-blind selected-touch counts 10/6/11 per standard window under the frozen policy. Diagnostic (counts only): raw forward_split events are 139/126/135 per window but ~84% are non-CS instruments (ETF/ETN/fund splits) excluded by the as-of active-CS identity filter; common-stock forward splits are genuinely scarce, so thin_sample is a declared primary failure mode"
+    },
+    {
+      "candidate": "reverse-split distress avoidance overlay",
+      "queue": "adjacent",
+      "baseline": "an admitted no-core candidate basket",
+      "treatment": "exclude issuers within N sessions after a reverse split",
+      "expected_horizon": "H10",
+      "replacement_value_comparator": "unchanged basket",
+      "falsifier": "avoidance does not add after-cost replacement value",
+      "readiness": "vetoed_before_scope: no accepted no-core baseline basket exists to exclude from, and the long-only system cannot express the short side; recorded as a dependent lead only"
+    },
+    {
+      "candidate": "flow/options disagreement downrank",
+      "queue": "exploitation",
+      "baseline": "cash-feasible core ranking",
+      "treatment": "downrank disagreement names",
+      "expected_horizon": "H20",
+      "replacement_value_comparator": "unchanged core ranking",
+      "falsifier": "paired settlements do not add replacement value",
+      "readiness": "vetoed_before_scope: 5 of 10 registered forward flow dates; calendar-bound"
+    }
+  ],
+  "selected_hypothesis": "Massive forward-split execution-date drift no-core basket",
+  "economic_mechanism": "A forward split is a deliberate, board-approved corporate action that historically correlates with management confidence, improved nominal-price accessibility, retail attention and optionability. The event is exchange-public on its execution date, so a next-open entry uses only public facts. The survivorship-free Massive membership keeps issuers that later delisted or were acquired in the sample, which the current-roster warehouse cannot represent, and the split surface itself was materialized only on 2026-07-28 (exp-20260728-003), so this event family has never been consumed by any prior experiment.",
+  "falsifier": "Reject unless every standard window has at least five selected touches and strictly positive after-cost replacement value, aggregate replacement value is strictly positive, double-cost aggregate stays positive, max single-ticker positive contribution <= 50%, top-five share <= 60%, contribution HHI <= 0.35, and all identity, split-normalization and decision-clock checks pass.",
+  "pit_tier": "research_pit",
+  "research_pit_caveat": "Only execution_date is available, not the announcement date. The decision clock is execution-date New York close with next-session-open entry; a forward split cannot execute before it was publicly announced, so known_at <= decision_time holds by construction. Immutable as-published vendor vintages remain unverified, so the surface stays research_pit and any positive result is a lead with result_ceiling observed_only.",
+  "known_future_leakage": false,
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "novelty_precheck": {
+    "tool": "scripts/check_experiment_novelty.py",
+    "blocking_matches": 0,
+    "nearest_score": 0.0667,
+    "note": "No frozen family or prior trial matches a split-event mechanism; recipe-lane source clusters (official periodic releases, dev-ecosystem counts, macro stress indices, 8-K item enumeration, idle cash) do not include issuer corporate-action execution events."
+  },
+  "digest_disposition": {
+    "displayed_entry_count": 9,
+    "fresh_unconsumed_entry_count": 0,
+    "action": "no_append",
+    "reason": "Every displayed digest entry already carries a terminal declined/no_expectation_proxy ledger disposition recorded on or before 2026-07-28T12:22Z; duplicate consumption rows are forbidden."
+  },
+  "next_machine_action": "Freeze a one-candidate outcome-blind D0-D3 panel for the forward-split drift candidate, complete receipt-bound opposite-runtime challenge and verification, build the promotion request, then reserve at most one private_replay_scout experiment."
+}

@@ -1,0 +1,73 @@
+{
+  "baseline": {
+    "policy": "Use the current broad-universe EPS-surprise-only PEAD eligibility and score ordering with its frozen universe, next-open clock, notional, costs and exits."
+  },
+  "candidate_id": "cand-b4ffe1a11c3afe860b08",
+  "candidate_kind": "plain_event_lead",
+  "created_at": "2026-08-07T15:27:18Z",
+  "created_by": "codex-alpha-automation",
+  "evidence_grade": "lead",
+  "execution_envelope": {
+    "borrow_dependency": "none; long-only research lead",
+    "capacity_constraint": "At most one existing PEAD candidate slot, issuer positive-contribution concentration below 40%, no portfolio allocation and no production effect",
+    "costs_and_carry": "Repository cash-equity commissions and slippage at identical notional; no financing or borrow credit",
+    "intended_instrument": "At most one of LLY or NVO common stock; no pair short, option, leverage, inverse product or proxy mapping",
+    "liquidity_dependency": "Canonical equity liquidity, gap-cancel, stale-price and FX-normalization controls must pass at the next regular-session open",
+    "live_ready": false,
+    "orders_enabled": false,
+    "timing_constraint": "Consensus, event, product-level volume, price or mix, supply and signal-day price inputs must all be source-dated and known before the simulated entry open",
+    "trade_enabled": false
+  },
+  "expectation_gap": null,
+  "expected_horizon": "next_open_h10_h20",
+  "falsifier": "Reject or park if issuer fields cannot be aligned by product, geography, currency convention and known_at; if the updates are treated as one common shock; if any standard window has fewer than five independent executable pair dates; if no valid novelty axis survives; if H10 and H20 replacement value does not beat cash, SPY, QQQ, unconditioned PEAD and the unselected pair member after costs; or if one issuer contributes more than 40% of positive treatment value.",
+  "fingerprint": {
+    "component_sources": [
+      "earnings_snapshot",
+      "fda_drug_shortages",
+      "lilly_investor_relations",
+      "novo_nordisk_investor_relations",
+      "ohlcv_warehouse"
+    ],
+    "data_source": "revision_expectation",
+    "decision_surface": "ranking",
+    "economic_mechanism": "same_decision_date_incretin_demand_to_revenue_conversion_ranking",
+    "execution_dependency": "long_only_cash_equity_at_most_one_candidate_next_open_with_existing_costs",
+    "expectation_proxy": "unidentified",
+    "horizon": "next_open_h10_h20",
+    "payoff_shape": "pead_pair_replacement_value",
+    "portfolio_role": "research_lead_against_cash_unconditioned_pead_and_pair_alternative"
+  },
+  "hypothesis": "For the current LLY and NVO positive PEAD candidates mapped to the same downstream decision date, a source-dated and consistently defined product-level incretin volume-growth measure net of price and mix effects may identify the more durable post-earnings drift candidate; keep PEAD eligibility unchanged, use its score only as a deterministic tie-breaker, and evaluate at most one long common-equity candidate from the next regular-session open over fixed H10 and H20 replacement value.",
+  "next_machine_action": "run outcome-blind D0-D3",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "replacement_value_comparator": "Zero-return cash, identical-interval SPY and QQQ, the exact unconditioned PEAD ordering, and the unselected pair member at the same decision clock, notional, costs and exit policy.",
+  "schema_version": 1,
+  "search_queue": "exploration",
+  "source_readiness_snapshot": [],
+  "surface_ids": [
+    "lly_nvo_capacity_conversion_source_roots_20260807",
+    "lly_nvo_pead_pair_snapshot_20260807",
+    "portfolio_constraint_snapshot_20260807"
+  ],
+  "title": "LLY-NVO PEAD demand-to-revenue conversion ranking lead",
+  "treatment": {
+    "policy": "Keep PEAD eligibility unchanged. Only when both issuers have source-dated, same-definition product-level volume growth and price-or-mix contribution known before the decision open, rank the pair by volume-led incretin growth net of price and mix drag; use the existing PEAD score only as a deterministic tie-breaker, otherwise abstain. Evaluate fixed H10 and H20 horizons."
+  },
+  "why_not_arbitraged": "Both earnings headlines and price responses are public. A residual edge can exist only if the market incompletely maps comparable product-level volume, net-price and supply conversion into relative H10/H20 cash flows, and it must survive PIT, density, transmission, concentration and exact opportunity-cost tests."
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "generated_at": "2026-07-28T03:32:11Z",
+  "automation_id": "alpha",
+  "experiment_id_reserved": false,
+  "strategy_changed": false,
+  "orders_changed": false,
+  "outcome_blind": true,
+  "history_policy": "Exploration, adjacent, and exploitation mechanisms were generated before historical records were used only as novelty, saturation, PIT, touch-density, and reopen vetoes.",
+  "baseline_universe": [
+    "47-name cash-feasible core comparator",
+    "1,228-name PIT broad-market forward universe",
+    "current 17-position account",
+    "accepted default-off paper sleeves",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash/no executable new entry",
+  "opportunity_cost_basis": {
+    "position_snapshot_as_of": "2026-07-28",
+    "portfolio_value_usd": 54023.7214,
+    "cash_usd": 9895.84,
+    "position_rows": 16,
+    "core_positions": 1,
+    "eod_daily_report_published": false,
+    "position_control_status": "fail_closed_for_new_entries",
+    "note": "The producer cycle was still running its deferred sidecars, so no incomplete candidate report was promoted into an executable recommendation."
+  },
+  "gate1_reference": {
+    "experiment_id": "exp-20260715-010",
+    "artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4E9EF413126C947B9712FD0879B83C74160F787898860987D204BFC9D60F7731",
+    "aggregate_expected_value_score": 6.2057,
+    "aggregate_pnl_usd": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "evidence_surfaces_used": [
+    "canonical OHLCV price and broad-market membership",
+    "Moomoo capital flow and FINRA flow archives",
+    "options-forward and flow-put derivative context",
+    "SEC, entity-theme, prediction-market, and USAspending event ledgers",
+    "Form 4, borrow, short-volume, and ownership positioning surfaces",
+    "current portfolio exposure, cash, slot, and live-drift controls",
+    "external research digest"
+  ],
+  "evidence_surfaces_missing": [
+    "20 independent closed flow-put decisions with both chronological halves and per-window density",
+    "1,524 additional settled entity-theme rows to reach 71,268",
+    "37 exit-lifecycle settlements, including 5 hard-stop and 7 advisory rows",
+    "8 additional intraday REDUCE_RISK settlements, including one in the second chronological half",
+    "10 actual estimate-revision cash conflicts and 30 settlements at each H5/H10/H20",
+    "4 additional concentration-compliant Q5 short-volume settlements",
+    "the first settled post-fix prediction-market cohort",
+    "60 clean broad-market settled rows across at least 20 tickers"
+  ],
+  "readiness_snapshot": {
+    "artifact": "data/reopen_readiness.json",
+    "generated_at": "2026-07-28T03:26:39Z",
+    "sha256": "0D94F95CAE71B4DFECCA7B39A8F315584447962D9EAABB9B4F4B4FF563B6652B",
+    "lane_count": 11,
+    "ready_lane_count": 0,
+    "core_drawdown_flow_put": {
+      "selected": 1,
+      "closed": 0,
+      "required_closed": 20
+    },
+    "entity_theme": {
+      "settled": 69744,
+      "required_settled": 71268
+    },
+    "exit_lifecycle": {
+      "settled": 175,
+      "required_settled": 212,
+      "hard_stop": 16,
+      "required_hard_stop": 21,
+      "advisory": 23,
+      "required_advisory": 30
+    },
+    "intraday_reduce_risk": {
+      "settled": 12,
+      "required_settled": 20,
+      "first_half": 8,
+      "second_half": 4,
+      "required_each_half": 5
+    },
+    "estimate_revision": {
+      "qualified_nonflat": 429,
+      "mapped_tickers": 351,
+      "actual_cash_conflicts": 0,
+      "settled_h5": 0,
+      "settled_h10": 0,
+      "settled_h20": 0
+    },
+    "short_volume_q5": {
+      "settled": 16,
+      "required_settled": 20,
+      "max_ticker_share": 0.4375,
+      "maximum_allowed_share": 0.4
+    },
+    "prediction_market_postfix": {
+      "rows": 1749,
+      "settled": 0
+    }
+  },
+  "generation_budget": {
+    "exploration": "fresh event attention without crowded execution in the clean broad-market forward universe",
+    "adjacent": "drawdown stabilization plus option and capital-flow stress exhaustion",
+    "exploitation": "timestamp-safe estimate revision plus muted immediate price response"
+  },
+  "hypothesis_candidates": [
+    {
+      "hypothesis_id": "broad_event_attention_x_uncrowded_execution",
+      "baseline": "All clean, prospectively timestamped broad-market forward candidates.",
+      "treatment": "Rank fresh event-attention acceleration only when positioning and execution-crowding evidence remain benign.",
+      "expected_horizon": "H10 primary; H5 and H20 diagnostics.",
+      "replacement_value_comparator": "Cash, SPY, QQQ, the unconditioned clean broad cohort, and the same-day core alternative.",
+      "economic_mechanism": "A fresh information-demand shock may drift when it is not already crowded into positioning or execution.",
+      "falsifier": "Reject if there are fewer than 60 clean settled decisions across 20 tickers, PIT provenance or touch density fails, or net replacement value is non-positive.",
+      "pit_tier": "research_pit",
+      "evidence_grade": "lead",
+      "result_ceiling": "observed_only",
+      "legal_new_evidence_axis_now": false,
+      "axis_note": "The cross-surface join is not a new source; the registered clean-forward settlement bar remains unmet."
+    },
+    {
+      "hypothesis_id": "drawdown_flow_stabilization_x_put_stress_exhaustion",
+      "baseline": "Unconditioned cash-feasible core drawdown candidates.",
+      "treatment": "Admit only price-stabilized drawdowns with positive capital flow and complete downside-option stress context.",
+      "expected_horizon": "H10 primary; H5 and H20 diagnostics.",
+      "replacement_value_comparator": "Cash, SPY, QQQ, complement decisions, and the same-day core alternative.",
+      "economic_mechanism": "Returning flow and exhausted put stress may distinguish forced-selling exhaustion from continuing deterioration.",
+      "falsifier": "Reject if fewer than 20 independent decisions close, either chronological half fails, concentration exceeds 40%, or per-window touch density is inadequate.",
+      "pit_tier": "research_pit",
+      "evidence_grade": "observer",
+      "result_ceiling": "observed_only",
+      "legal_new_evidence_axis_now": false,
+      "axis_note": "The registered forward-row reopen condition is still 0/20 closed decisions."
+    },
+    {
+      "hypothesis_id": "muted_price_response_to_timestamp_safe_estimate_revision",
+      "baseline": "The cash-feasible core candidate set and unconditioned revision observer.",
+      "treatment": "Select mapped non-flat revisions whose first tradable price path has not yet revealed the revision direction.",
+      "expected_horizon": "H5, H10, and H20.",
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the skipped or scaled same-day core candidate.",
+      "economic_mechanism": "A timestamp-safe change in explicit expectations may drift when the first tradable price response remains muted.",
+      "falsifier": "Reject if actual cash conflicts remain absent, any horizon has fewer than 30 settlements, the source or vintage contract fails, or D0-D3 selects no non-frozen candidate.",
+      "pit_tier": "research_pit",
+      "evidence_grade": "observer",
+      "result_ceiling": "observed_only",
+      "legal_new_evidence_axis_now": false,
+      "axis_note": "The lane has zero actual cash conflicts and zero settled H5/H10/H20 outcomes."
+    }
+  ],
+  "selected_hypothesis": null,
+  "economic_mechanism": null,
+  "falsifier": "All three candidates are vetoed before outcome evaluation by registered readiness, PIT, touch-density, or promotion-proof requirements.",
+  "pit_tier": "research_pit",
+  "evidence_grade": "observer",
+  "result_ceiling": "observed_only",
+  "research_digest": {
+    "displayed_entries": 9,
+    "all_displayed_entries_already_terminal": true,
+    "ledger_rows_appended_this_pass": 0,
+    "latest_mechanism_scan_lead_count": 0
+  },
+  "producer_cycle": {
+    "status": "running_deferred_sidecars",
+    "pid": 27232,
+    "responding": true,
+    "daily_report_published": false,
+    "note": "Promotion-relevant observers had already published and every registered lane remained below its reopen contract; the healthy producer was left undisturbed."
+  },
+  "verification": {
+    "experiment_audit_lean_strict_passed": true,
+    "alpha_playbook_contract_passed": true,
+    "self_registration_passed": true
+  },
+  "decision": "zero_id_iteration_no_legal_promotion",
+  "next_machine_action": "Allow the healthy EOD sidecars to finish, then recheck only registered readiness counters after source artifacts advance; start opposite-runtime debate plus D0-D3 only after a candidate clears its outcome-blind preflight."
+}

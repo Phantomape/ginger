@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "expectation_gap",
+  "candidate_id": "cand-ccc5f926e3514a3e0330",
+  "search_queue": "exploration",
+  "title": "SEC-public recurring capital-return state-change bundles",
+  "hypothesis": "Buying an active common stock at the first regular-session open strictly after both declaration-date close and an SEC filing that publicly confirms a recurring cash-dividend initiation or resumption following at least 1095 days without a same-ticker positive USD declaration can produce positive after-cost H10 replacement value versus the available cash-feasible core slot or cash, because accepting a recurring distribution commitment can reveal that cash-flow durability and capital-allocation policy crossed a state boundary not represented by the fixed core candidate pool. The treatment is the complete public filing bundle, not a claim that the dividend alone caused the response.",
+  "fingerprint": {
+    "data_source": "sec_archive_filing_text",
+    "component_sources": [
+      "sec_submissions_accepted_at",
+      "sec_archive_filing_text",
+      "massive_full_market_ohlcv",
+      "massive_reference_asof_identity",
+      "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "public_recurring_capital_return_state_change_bundle",
+    "decision_surface": "candidate_pool",
+    "payoff_shape": "cost_adjusted_slot_replacement_value",
+    "horizon": "first_public_open_to_10_sessions",
+    "execution_dependency": "sec_accepted_at_and_declaration_close_before_regular_session_open_with_double_cost_stress",
+    "portfolio_role": "scarce_cash_feasible_entry_slot_alternative"
+  },
+  "surface_ids": [
+    "cash_feasible_core_price_prior_20260715",
+    "massive_dividend_restart_research_pit_20260728",
+    "massive_reference_asof_identity_research_pit_20260728",
+    "sec_submissions_accepted_at_canonical_pit_20260801",
+    "sec_public_recurring_dividend_bundle_research_pit_20260801"
+  ],
+  "expectation_gap": {
+    "schema_version": 1,
+    "market_prior": {
+      "observable": true,
+      "proxy_type": "price_revealed",
+      "source": "ohlcv_warehouse",
+      "known_at": "2026-07-28T21:34:22Z",
+      "provenance": {
+        "baseline_policy": "use one actual same-entry-date cash-feasible core slot at most once; unmatched treatment slots use cash",
+        "behavior_inputs": "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "secondary_comparators": ["SPY", "QQQ"]
+      }
+    },
+    "independent_evidence": [
+      {
+        "source": "sec_archive_filing_text",
+        "field": "accepted_at_explicit_initiation_or_resumption_matching_cash_amount",
+        "known_at": "2026-08-02T05:49:00.510014Z",
+        "decision_exclusions": "filings without explicit lifecycle language, amount mismatches, special/irregular/unknown distributions and mixed ticker-date distribution types"
+      },
+      {
+        "source": "massive_reference_asof_identity",
+        "field": "as_of_ticker_type_active_only",
+        "known_at": "2026-07-28T10:59:15Z",
+        "decision_exclusions": "current identity remapping and future descriptive fields"
+      }
+    ],
+    "gap_definition": "The core-or-cash prior represents the opportunity cost. A public SEC filing that explicitly starts or resumes a recurring cash distribution after a long observed gap is independent evidence of a capital-return state change outside the core roster.",
+    "transmission": {
+      "affected_tickers": [
+        "CCL", "EGO", "EQX", "EXPE", "GIII", "LB", "MCB", "NBBK", "NGS",
+        "ORLA", "OSPN", "PLUS", "PYPL", "RNG", "SOBO", "TPC", "VRSN", "VTOL", "WSC"
+      ],
+      "catalyst": "The complete SEC disclosure bundle explicitly confirms initiation or resumption of a recurring cash-dividend program.",
+      "expected_direction": "The frozen 19-row bundle roster should exceed the identical costed value of the displaced core slot or cash.",
+      "half_life": "First regular-session open after both SEC accepted_at and declaration-date close through the tenth trading-session close."
+    }
+  },
+  "why_not_arbitraged": "Recurring-distribution state changes are sparse, often arrive inside broader corporate updates, and require point-in-time document interpretation plus a strict opportunity-cost hurdle. The bundle may be fully priced at the first tradable open, so the hypothesis can easily fail.",
+  "falsifier": "Reject unless the frozen roster remains exactly 5/5/9 across old_thin/mid_weak/late_strong, every entry open follows both SEC accepted_at and declaration-date close, at least two of three windows and the aggregate have positive after-cost replacement value versus the nonduplicated core-or-cash allocation, aggregate replacement value remains positive under double costs, maximum single-ticker positive contribution is at most 40%, top-five positive contribution share is at most 65%, and contribution HHI is at most 0.25. Report lifecycle and predeclared coannouncement signatures without selecting a winning subtype. If the aggregate result is explained only by one coannouncement signature, or a declaration/type/amount was not actually available as represented, reject rather than retune.",
+  "baseline": {
+    "gate1_anchor": "exp-20260715-010",
+    "policy": "For each frozen treatment entry date, consume one actual cash-feasible core slot at most once when present and not the same ticker; otherwise use zero-return cash. Never duplicate a core slot.",
+    "secondary_comparators": [
+      "SPY over the identical entry-to-exit sessions",
+      "QQQ over the identical entry-to-exit sessions"
+    ]
+  },
+  "treatment": {
+    "decision_count": 19,
+    "touch_counts_by_window": {
+      "old_thin": 5,
+      "mid_weak": 5,
+      "late_strong": 9
+    },
+    "preflight_attachment": "data/alpha_search/dividend_recurring_public_timestamp_preflight_20260801.json",
+    "preflight_attachment_hash": "98e811dd3b862702706e64c00cc6bc15f4c18c445e67a0b6cd515212601e9f60",
+    "policy": "Start from the outcome-blind endpoint-ready roster; require a pure recurring positive-USD distribution with frequency greater than zero, an SEC filing within seven calendar days whose text explicitly says initiation or resumption and contains the same per-share amount, and a valid first session open strictly after both SEC accepted_at and declaration-date New York close. Keep all 19 timestamp-verified filing bundles, predeclare their coannouncement signatures, enter at the decision-safe session open, exit at the tenth session close, use fixed $4,000 research notional and report double-cost stress. No post-entry price or return was used to select rows."
+  },
+  "replacement_value_comparator": "Use one actual same-entry-date cash-feasible core slot at most once when present and not the same ticker; use zero-return cash for unmatched slots. SPY and QQQ remain secondary comparators.",
+  "expected_horizon": "first_public_open_to_10_sessions",
+  "execution_envelope": {
+    "intended_instrument": "Cash equities exactly as identified in the dated event roster; no ETF, option, leverage or present-day identity remapping.",
+    "liquidity_dependency": "The inherited outcome-blind endpoint preflight requires 20 pre-declaration bars, median dollar volume of at least $1 million and reference close of at least $3.",
+    "costs_and_carry": "Apply repository round-trip costs and a predeclared double-cost stress; do not count a later dividend cash receipt.",
+    "borrow_dependency": "None; long-only research lead.",
+    "capacity_constraint": "Fixed $4,000 research notional per row, no production allocation and no duplicated core comparator slot.",
+    "timing_constraint": "Entry is the first New York regular-session open strictly after both SEC accepted_at and declaration-date close; exit is the tenth session close.",
+    "trade_enabled": false,
+    "orders_enabled": false,
+    "live_ready": false
+  },
+  "evidence_grade": "lead",
+  "production_impact": {
+    "trade_enabled": false,
+    "orders_changed": false,
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "daily_snapshot_exposed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "live_ready": false,
+    "live_realism_evaluated": false
+  },
+  "created_at": "2026-08-02T05:49:51Z",
+  "created_by": "codex-investment-team-repair",
+  "reopen_condition": "If rejected, do not retune the gap, filing window, text patterns, amount match, costs or H10. Reopen only with immutable as-published corporate-action vintages, an independent public-announcement archive, or materially more public-timestamped decisions under the same policy.",
+  "next_machine_action": "Run a fresh outcome-blind D0-D3 panel, then build the same-entry-date nonduplicated comparator map before any return access. Reserve a research_pit private replay only if the panel passes; result ceiling remains observed_only and paper/live stay disabled."
+}

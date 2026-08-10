@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": ["ohlcv_warehouse"],
+      "roles": ["market_expectation", "price_revealed_context", "opportunity_cost"],
+      "artifacts": [
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 19,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_candidate_order_or_cash_at_decision",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as the frozen active opportunity-cost comparator; it grants no novelty or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-28T21:34:22Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "massive_dividend_restart_research_pit_20260728",
+      "data_source": "massive_full_market_ohlcv",
+      "component_sources": ["massive_full_market_ohlcv"],
+      "roles": ["independent_evidence", "candidate_pool", "official_event", "liquidity"],
+      "artifacts": [
+        "data/alpha_search/massive_dividend_declaration_readiness_20260728.json",
+        "data/experiments/exp-20260728-002/after_source_surface.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 5805212,
+      "candidate_overlap_count": 19,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "A positive replay remains observed-only until immutable as-published Massive dividend vintages are verified.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-29T00:05:09Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/massive_dividend_declaration_readiness_20260728.json": "656064b54c04c775c819fe6209cc353e492a2473c90f496b5e4f67000ca73916",
+        "data/experiments/exp-20260728-002/after_source_surface.json": "d607f2debcdd44925abac522ff75df88da0aa68d550850cc5035ab85797a69bc"
+      },
+      "research_pit_basis": "Official dividend rows are retrieval-time hash-bound. The repaired candidate uses distribution_type and frequency only to require a pure recurring positive-USD event, while immutable as-published Massive vintages remain unverified.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+      "data_source": "massive_reference_asof_identity",
+      "component_sources": ["massive_reference_asof_identity"],
+      "roles": ["independent_evidence", "candidate_universe", "identity"],
+      "artifacts": ["data/alpha_search/massive_asof_identity_readiness_20260728.json"],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 188528,
+      "candidate_overlap_count": 19,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "A positive replay remains observed-only until dated identity has immutable as-published vintage proof.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-28T10:59:15Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/massive_asof_identity_readiness_20260728.json": "04bae7c39f5bb76980c9553165c53c1110e0570b8d4279cf130a9094344e0a00"
+      },
+      "research_pit_basis": "The official dated reference query freezes active common-stock membership by reference snapshot date; future descriptive revisions remain excluded.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "sec_submissions_accepted_at_canonical_pit_20260801",
+      "data_source": "sec_submissions_accepted_at",
+      "component_sources": ["sec_submissions_accepted_at"],
+      "roles": ["independent_evidence", "official_event", "decision_clock"],
+      "artifacts": ["data/alpha_search/dividend_recurring_sec_events_20260801.jsonl"],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 19,
+      "independent_count": 1550,
+      "candidate_overlap_count": 19,
+      "gate_ready": true,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Use accepted_at only as the public decision clock; it grants no outcome evidence or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-02T05:34:10Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/dividend_recurring_sec_events_20260801.jsonl": "811d5e8b950ee5242e95ee95d675c4e53919f12ef5f6ca5a0b725308c7a9d1f6"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "sec_public_recurring_dividend_bundle_research_pit_20260801",
+      "data_source": "sec_archive_filing_text",
+      "component_sources": [
+        "sec_submissions_accepted_at",
+        "sec_archive_filing_text",
+        "massive_full_market_ohlcv"
+      ],
+      "roles": [
+        "independent_evidence",
+        "official_event",
+        "decision_clock",
+        "candidate_pool"
+      ],
+      "artifacts": [
+        "data/alpha_search/dividend_recurring_sec_events_20260801.jsonl",
+        "data/alpha_search/dividend_recurring_sec_text_near_declaration_20260801.jsonl",
+        "data/alpha_search/dividend_recurring_public_timestamp_preflight_20260801.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 19,
+      "independent_count": 19,
+      "candidate_overlap_count": 19,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Positive evidence remains observed-only until the Massive corporate-action inputs have immutable as-published vintages and the SEC-text classifier has replay/daily parity.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-02T05:49:00.510014Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/dividend_recurring_sec_events_20260801.jsonl": "811d5e8b950ee5242e95ee95d675c4e53919f12ef5f6ca5a0b725308c7a9d1f6",
+        "data/alpha_search/dividend_recurring_sec_text_near_declaration_20260801.jsonl": "e0133a4dab469f44ea05593ffe05e1b183db96a931807885174a5f855a3effac",
+        "data/alpha_search/dividend_recurring_public_timestamp_preflight_20260801.json": "98e811dd3b862702706e64c00cc6bc15f4c18c445e67a0b6cd515212601e9f60"
+      },
+      "research_pit_basis": "Every admitted row has an SEC accepted_at timestamp, explicit initiation/resumption language, a matching per-share amount, and an entry session whose New York open is strictly after both accepted_at and declaration-date close so the inherited ranking/liquidity fields are already known. Coannouncements are retained as a predeclared event-bundle taxonomy rather than represented as dividend-only causality.",
+      "known_future_leakage": false
+    }
+  ]
+}

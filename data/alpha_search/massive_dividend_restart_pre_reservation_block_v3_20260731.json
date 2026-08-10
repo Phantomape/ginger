@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_search_pre_reservation_block",
+  "recorded_at": "2026-07-31T16:55:00Z",
+  "automation_id": "claude-scheduled-alpha-20260731",
+  "synthesis_artifact": "data/alpha_search/synthesis_pass_20260731_0817.json",
+  "prior_block": "data/alpha_search/massive_dividend_restart_pre_reservation_block_v2_20260729.json",
+  "selected_hypothesis": "A first positive USD cash distribution after at least 1095 days without a same-ticker positive USD declaration may identify restored cash-generation confidence and capital-return capacity.",
+  "defect_repair_status": {
+    "comparator_slot_map_not_materialized": {
+      "status": "REPAIRED",
+      "artifact": "data/alpha_search/massive_dividend_restart_comparator_map_20260731.json",
+      "artifact_sha256": "e7801d2ffb585fd6361393796c11293b69c82d5aa7f09d9559b3e9ad40ea956a",
+      "typed_attachment": "data/alpha_search/massive_dividend_restart_comparator_allocation_v1_20260731.json",
+      "typed_attachment_sha256": "2682474b68ec96cc6ade104afc73d4691063eba276bb52ce380d64ec1c3c89df",
+      "detail": "Exact 89-row treatment-key to core_slot_id-or-cash allocation, outcome-blind (dates and identity only), globally one-use core slots, deterministic ordering, allocator-input hashes bound. 9 matched core slots, 67 no-core-slot cash, 13 additional-slot cash, 0 same-ticker collisions."
+    },
+    "d3_prior_snapshot_omits_same_session_near_neighbor": {
+      "status": "REPAIRED_BUT_SUPERSEDED_BY_NEW_BLOCKER",
+      "detail": "A complete fresh prior-fingerprint snapshot (1412 records, cutoff 2026-07-31T16:23:00Z) now includes BOTH prior dividend-restart candidates. The amendment-lineage child (cand-325a1299bfb2fcc72d57, exp-20260729-004 mechanism) validates, all typed-attachment content checks pass, and the parent cand-4047cfda28a51c488a77 authenticates and is waived by D3."
+    }
+  },
+  "new_blocking_defect": {
+    "code": "amendment_waiver_depth_one_deadlock_on_two_record_abort_chain",
+    "detail": "The pre-mechanism 2026-07-29 session left TWO abandoned candidates of the same chain: the original cand-d3d84780295914d0f19a (ledger-recorded 2026-07-29T01:14Z) and its improvised same-session amendment cand-4047cfda28a51c488a77 (ledger-recorded only 2026-07-31T16:22:22Z, this session, to satisfy amendment_parent_missing_from_history). The exp-20260729-004 lineage waiver is deliberately depth-one (tested invariant test_amendment_does_not_waive_another_blocking_neighbor). With both ancestors now in the append-only discovery ledger, ANY child is D3-rejected: parent=cand-4047 leaves cand-d3d8 as an unwaived 0.9688 legacy near neighbor (panel data/alpha_search/massive_dividend_restart_panel_v4_20260731.json, decision reject); parent=cand-d3d8 leaves the newly recorded cand-4047 as an unwaived near neighbor.",
+    "session_error_acknowledged": "Before this session's ledger append, the viable protocol path was: declare the ORIGINAL ledger-recorded candidate cand-d3d8 as lineage parent and express the cumulative roster-void and comparator-map amendments purely through the allowlisted typed attachments. This session instead chose the block-v2 framing (parent=cand-4047), hit amendment_parent_missing_from_history, and materialized the v3 candidate snapshot into the ledger - which is faithful history but forecloses the d3d8-parent path. Removing the event would violate the append-only ledger contract and the block-v2 instruction not to hide near neighbors.",
+    "why_not_fixed_this_session": "Clearing the deadlock requires extending the amendment-lineage contract and D3 waiver to an attested abandoned-ancestor chain - reversing a guard invariant that shipped one day ago (exp-20260729-004), to admit this session's own blocked candidate. Under the AGENTS.md rollout-smoke-check rule and the governance-churn pattern (same-day accept, next-day repair), that design decision belongs in a deliberate measurement-repair ticket, not in the same session whose candidate it unblocks. Nothing decays: the scout is a historical replay, not a forward surface."
+  },
+  "proposed_next_machine_action": {
+    "ticket_shape": "measurement_repair (alpha-enabling): extend amendment lineage with an OPTIONAL abandoned_ancestor attestation - each listed ancestor must resolve in bound history as origin=discovery_candidate with valid candidate_metadata, zero representative experiment ids, and be bound to the declared parent chain by a hash-bound repository pre-reservation block artifact naming both original_candidate_id and amended_candidate_id; only then are that ancestor's record ids added to the D3 waiver set. Fail closed on any missing artifact, outcome-bearing content, id mismatch, or ancestor that ever reached reservation. Must keep test_amendment_does_not_waive_another_blocking_neighbor green (unrelated neighbors stay blocking) and add boundary tests per AGENTS.md section 6.",
+    "attestation_artifacts_ready": [
+      "data/alpha_search/massive_dividend_restart_pre_reservation_block_v2_20260729.json (binds cand-d3d84780295914d0f19a -> cand-4047cfda28a51c488a77 with panel v3 hashes)",
+      "data/alpha_search/massive_dividend_restart_panel_v3_20260729.json",
+      "data/alpha_search/massive_dividend_restart_panel_verification_v3_20260729.json"
+    ],
+    "after_repair": "Rebuild a fresh scope on a complete post-repair history snapshot, re-freeze the one-candidate panel (child of cand-4047cfda28a51c488a77 with the existing typed attachments), build the debate-free schema-v2 promotion request, and reserve exactly one research_pit private_replay_scout with result ceiling observed_only."
+  },
+  "reusable_artifacts": {
+    "comparator_map": "data/alpha_search/massive_dividend_restart_comparator_map_20260731.json",
+    "comparator_allocation_typed": "data/alpha_search/massive_dividend_restart_comparator_allocation_v1_20260731.json",
+    "endpoint_preflight_typed": "data/alpha_search/massive_dividend_restart_endpoint_preflight_v1_20260731.json",
+    "child_candidate": "data/alpha_search/massive_dividend_restart_candidate_v4_20260731.json",
+    "child_candidate_id": "cand-325a1299bfb2fcc72d57",
+    "prior_fingerprints": "data/alpha_search/massive_dividend_restart_prior_fingerprints_v4b_20260731.json",
+    "scope_manifest": "data/alpha_search/massive_dividend_restart_scope_v4b_20260731.json",
+    "rejected_panel": "data/alpha_search/massive_dividend_restart_panel_v4_20260731.json",
+    "note": "The rejected v4 panel and its candidate/preflight/selection events were appended to the discovery ledger via --ledger; they are honest history and future D3 runs will see cand-325a1299bfb2fcc72d57 as a recorded rejected-panel candidate. A post-repair child will need a fresh candidate id (new created_at) and should declare lineage against cand-4047cfda28a51c488a77 exactly as this one did."
+  },
+  "safety_state": {
+    "candidate_outcomes_accessed": false,
+    "price_magnitudes_accessed": false,
+    "experiment_id_reserved": false,
+    "experiment_claimed": false,
+    "strategy_logic_changed": false,
+    "backtest_or_replay_run": false,
+    "orders_changed": false,
+    "trade_enabled": false
+  },
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "disposition": "parked_pre_reservation",
+  "reopen_condition": "Reopen when the amendment-lineage abandoned-ancestor attestation (or an equivalent deliberate mechanism accepted through a measurement-repair ticket) allows the two-record 2026-07-29 abort chain to be waived in D3, OR when a genuinely fresh dividend-restart candidate panel can be built whose history contains no unwaivable ancestor (e.g. immutable as-published Massive dividend vintages enabling a canonical rebuild). Do not retune the frozen policy, do not edit ledger rows, and do not pick a history cutoff that hides either ancestor."
+}

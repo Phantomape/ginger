@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_search_source_contract_preflight",
+  "search_run": "alpha-search-20260727-convergence-0846",
+  "created_at": "2026-07-27T15:56:12Z",
+  "data_cutoff": "2026-07-27T15:46:05Z",
+  "outcome_accessed": false,
+  "trade_enabled": false,
+  "research_digest": {
+    "path": "data/research_digest/latest_digest.md",
+    "generated_at": "2026-07-27T07:15:12Z",
+    "fresh_entries": 0,
+    "ledger_append_required": false,
+    "reason": "All eligible entries already have terminal declined, parked, or lane-blocked dispositions."
+  },
+  "mechanism_generation": {
+    "generator": "ai-berkshire-bottleneck-hunter-as-lead-generator-v1",
+    "role": "Generate physical or contractual bottleneck mechanisms only; it does not rank, recommend, reserve experiments, or read candidate outcomes.",
+    "pre_history_payoff_shapes": [
+      "cross_market_adr_parity_convergence",
+      "put_call_parity_residual_convergence",
+      "spac_trust_value_redemption_convergence"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "moomoo_openapi_quotes",
+      "authority": "Moomoo OpenAPI documentation",
+      "locators": [
+        "https://openapi.moomoo.com/moomoo-api-doc/en/quote/request-history-kline.html",
+        "https://openapi.moomoo.com/futu-api-doc/en/qa/quote.html",
+        "https://openapi.moomoo.com/moomoo-api-doc/en/quote/overview.html"
+      ],
+      "contract_status": "partial",
+      "pit_observation": "Documented market-specific clocks are auditable, but this run has no frozen issuer-level SPAC or ADR quote snapshot. US OpenAPI quote quality can be limited to Nasdaq Basic rather than consolidated US exchange data.",
+      "authorization_observation": "The API documents quote access subject to market-data entitlements; the specific account entitlements and downstream research-use terms still need a machine-bound check before collection.",
+      "blocking_gaps": [
+        "no frozen SPAC candidate universe",
+        "no consolidated executable US quote contract",
+        "no synchronized ADR-home-share-FX snapshot"
+      ]
+    },
+    {
+      "source_id": "sec_spac_filings",
+      "authority": "US Securities and Exchange Commission",
+      "locators": [
+        "https://xbrl.sec.gov/spac/2025/spactaxonomyguide-2025-03-17.pdf",
+        "https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/tender-offer-rules-schedules"
+      ],
+      "contract_status": "partial",
+      "pit_observation": "SEC filing timestamps and structured SPAC trust/redemption concepts are auditable, but the repository has no survivorship-safe historical SPAC universe, filing-vintage parser, redemption-deadline ledger, or per-share trust-claim snapshot.",
+      "authorization_observation": "Primary public regulatory material is suitable for research source preflight, subject to SEC fair-access and rate-limit controls in any collector.",
+      "blocking_gaps": [
+        "no local PIT filing-vintage archive for the proposed fields",
+        "no delisted and liquidated SPAC universe",
+        "no broker corporate-action eligibility or deadline ledger"
+      ]
+    },
+    {
+      "source_id": "adr_conversion_terms",
+      "authority": "issuer deposit agreements and SEC filings",
+      "locators": [
+        "https://www.sciencedirect.com/science/article/abs/pii/S0304405X10000486",
+        "https://www.sciencedirect.com/science/article/abs/pii/S1042443105000077"
+      ],
+      "contract_status": "partial",
+      "pit_observation": "Prior research says deviations are usually small and bounded by conversion, FX, settlement, shorting, and asynchronous-market costs. This run has no issuer-level fungibility/ratio/fee or synchronized quote snapshot.",
+      "authorization_observation": "Research papers support the mechanism audit only; issuer conversion terms and executable market data must be sourced independently for an implementation.",
+      "blocking_gaps": [
+        "no live FX source in Moomoo OpenAPI",
+        "no conversion-fee and fungibility ledger",
+        "no simultaneous executable quotes across venues"
+      ]
+    },
+    {
+      "source_id": "occ_option_contract_and_assignment",
+      "authority": "Options Industry Council / OCC educational material",
+      "locators": [
+        "https://www.optionseducation.org/advancedconcepts/put-call-parity",
+        "https://www.optionseducation.org/optionsoverview/exercising-options"
+      ],
+      "contract_status": "partial",
+      "pit_observation": "Put-call parity is a valid accounting identity, but American early exercise, dividends, borrow, assignment, bid-ask spreads, and non-atomic multi-leg fills are load-bearing. The repository lacks a simultaneous executable stock-call-put-cash surface and assignment-aware ledger.",
+      "authorization_observation": "The public educational sources define the contract mechanics; tradable quote histories and entitlements still require a separate source contract.",
+      "blocking_gaps": [
+        "no consolidated simultaneous option and stock NBBO",
+        "no PIT dividend, borrow, rate, and early-exercise model",
+        "no atomic multi-leg or legging-risk execution envelope"
+      ]
+    }
+  ],
+  "portfolio_context": {
+    "as_of": "2026-07-27T15:04:43Z",
+    "positions": 12,
+    "portfolio_value_usd": 60962.44,
+    "cash_usd": 22204.45,
+    "new_position_control": "fail_closed",
+    "opportunity_cost_winner": "cash_no_executable_new_entry"
+  },
+  "reservation_boundary": "No candidate may reserve an experiment unless model-diverse debate and outcome-blind D0-D3 both pass on canonical PIT surfaces."
+}

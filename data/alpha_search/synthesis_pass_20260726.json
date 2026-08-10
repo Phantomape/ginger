@@ -1,0 +1,87 @@
+{
+  "schema": "agents_md_synthesis_pass_v1",
+  "generated_at": "2026-07-27T00:10:18Z",
+  "session": "codex-alpha-automation",
+  "no_experiment_id_consumed": true,
+  "baseline_universe": [
+    "47-name frozen cash-feasible Gate-1 core",
+    "60-name latest complete 2026-07-24 daily feature cross-section",
+    "current 50-name runtime core universe",
+    "1228-name broad observation universe",
+    "current 12-position broker account",
+    "accepted default-off sleeves",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash / no new executable entry",
+  "opportunity_cost_note": "The 2026-07-23 panel is expired because the latest complete price session and runtime universe changed. A fresh outcome-blind read of data/daily/signals/quant/quant_signals_20260724.json covers 60 feature names and the current 50-name runtime universe, and reports 0 core, 0 pilot, 0 add-on, and 0 reviewed entry candidates while live position control fails closed. The incomplete 2026-07-25 weekend trend artifact predates exp-20260726-001 and contains a false-BEAR regime; its raw RTX/XOM/CVX breakouts are shadow challengers only, not executable evidence.",
+  "evidence_surfaces_used": [
+    "OHLCV warehouse (price)",
+    "moomoo capital flow DAY archive (flow; daily refresh active)",
+    "OnclickMedia options chain snapshots (derivatives; healthy through 2026-07-24, retry fix exp-20260724-002)",
+    "entity-theme news observer (event; 2026-07-25 run 0 source errors, settled 64901)",
+    "prediction-market event observer (event; rows through 2026-07-26, 1367 post-fix rows, 0 settled)",
+    "form4 sale-overhang context (positioning; daily wired, 20 context rows, 12 high-overhang)",
+    "parsed SEC 13D/13G ownership-intent surface (positioning; 6267 rows, 691 Item-4 text rows, 67 governance-term rows; baseline executed-entry touches 0/1/0 and Item-4 touches 0/0/0)",
+    "OnclickMedia options-forward event-candidate ledger (derivatives; 241 rows, 10 PIT-safe convexity-ranking eligible rows across 8 dates, only 4 settled)",
+    "sleeve-health fire-rate watch x forward replacement-value touch preflight (portfolio exposure/capacity; 141 forward rows, 3 exact entry-date health joins, all status=ok, 0 underfire touches)",
+    "core_drawdown_flow_put_stabilization sleeve (portfolio/candidate; first selected decision ISRG 2026-07-24, 0 closed)",
+    "exit-lifecycle outcome ledger (settled 159/212)",
+    "intraday triage outcome ledger (strict settlements 94/100, REDUCE_RISK 10/20)",
+    "estimate-revision readiness artifact (settled h5/h10/h20 all 0/30)",
+    "live-drift reconciliation (constant contract; alert handled by exp-20260726-003)",
+    "research digest latest_digest.md (generated 2026-07-25; all 10 shown entries previously consumed/declined no_expectation_proxy; zero fresh entries this round, nothing to append to ledger)"
+  ],
+  "evidence_surfaces_missing": [
+    "Settled forward rows on ALL 11 reopen lanes (build_reopen_readiness.py 2026-07-26: 8 not_ready, 1 accumulating, 2 manual_check_required)",
+    "entity_theme_axis_c: 64901/71268 settled (+36.6% vs +50% bar); ~3100 settles/day implies ready ~2026-07-28",
+    "form4 sale-overhang forward gate: closed_forward_rows 0/25, high_sale_overhang 0/8, replacement values incomplete, and concentration gate not yet measurable",
+    "13D/13G ownership intent: exact baseline executed-entry touch density 0/1/0 by canonical window, zero Item-4 governance touches, no populated derivative-context field, and existing fixed policy neighbors are frozen",
+    "flow-put sleeve: independent_closed_decisions 0/20 (first selected decision entered 2026-07-27)",
+    "options-implied event ranking: only 10 eligible rows across 8 dates and 4 settled, below the governing 10 additional forward dates / 20 settled paired-decision contract; exact stale proposed predecessor exp-20260613-024 remains open",
+    "accepted-sleeve underfire replacement shadow: 0 exact underfire joins between entry-date sleeve_health status and 141 forward replacement rows; existing exp-20260624-027 already rejected the nearby sleeve-health attribution face and requires materially more closed rows/variation or a separate promoted shared-policy gate",
+    "prediction_market_postfix: 0 settled (10d horizon; earliest cohort settles early Aug 2026)"
+  ],
+  "hypothesis_candidates": [
+    {
+      "id": "H1_form4_overhang_x_flow_put_stabilization",
+      "statement": "Within the default-off core_drawdown_flow_put_stabilization sleeve, candidates carrying form4_sale_overhang_bucket=high_sale_overhang at signal_date should show materially worse settled replacement value than the no-overhang/routine complement; a PIT exclusion (or downweight) gate keyed on the existing form4 context join (ticker, entry_date) would then add EV without new wiring.",
+      "economic_mechanism": "Deep-drawdown stabilization longs bet the selling is liquidity/positioning-driven and exhausting. Contemporaneous heavy insider disposals (officer sales, non-10b5-1) are a direct signal the selling is information-driven, invalidating the stabilization premise for exactly those rows.",
+      "surfaces_joined": ["form4_sale_overhang_context (positioning)", "core_drawdown_flow_put_stabilization sleeve (flow+derivatives+price)"],
+      "current_joint_touch_count": 0,
+      "note_on_axes": "Cross-source join is NOT section 2.4 axis (a). When mature, the evidence axis is (c) newly settled forward rows on the flow-put face; the form4 context is already PIT-logged daily keyed (ticker, entry_date), so the retrospective join needs zero new wiring and zero IDs today. The first flow-put decision, ISRG, currently has no matching Form4 context row."
+    },
+    {
+      "id": "H2_options_implied_event_candidate_ranking",
+      "statement": "Within existing default-off event-sleeve candidates, rank PIT-safe OnclickMedia rows with options_scoring_allowed=true, squeeze_overlay=true, and downside_risk_overlay=false above otherwise comparable same-date event candidates, without changing live entry, sizing, or exits.",
+      "economic_mechanism": "A liquid call-demand/term-structure convexity state may distinguish active repricing demand from stale event narratives, supplying an expectation proxy that the event surface lacks.",
+      "preflight_result": "parked_before_promotion: 10 eligible rows, 8 dates, 7 tickers, 4 source sections, and only 4 settled rows; exact prior open proposal exp-20260613-024 and exp-20260721-001 forward contract govern.",
+      "falsifier": "Fewer than 10 additional genuine forward dates or 20 settled paired disagreement decisions, fewer than 5 touches per declared evaluation slice, PIT-unsafe joins, or concentration above 40%.",
+      "note_on_axes": "The options/event join is not a new source. A ranking response is a distinct gate shape, but it cannot authorize reservation without the already-recorded forward power contract and a fresh outcome-blind D0-D3 promotion."
+    },
+    {
+      "id": "H3_sec13dg_item4_ownership_intent",
+      "statement": "Structured Schedule 13D/13G ownership intent could distinguish durable sponsorship, activist governance catalysts, or supply overhang from raw ownership events, but only if a fixed policy produces real executable candidate touches.",
+      "economic_mechanism": "Holder intent, board-seat or standstill terms, and stake direction can separate information-bearing control campaigns from passive reporting and stale ownership changes.",
+      "preflight_result": "drop_or_park_before_promotion: the canonical surface has 6267 rows and usable PIT fields, but exact same-ticker plus usable-trade-date intersections with active cash-feasible executed entries are 0/1/0 across late_strong/mid_weak/old_thin; Item-4 governance and concrete board-campaign intersections are 0/0/0. Fixed Item-4 governance, board-campaign, and 13G/A increase policies already failed or lacked power in exp-20260629-009, exp-20260710-005, and exp-20260710-015.",
+      "falsifier": "Fewer than 5 exact executable touches in any canonical window, absent derivative-context or effective-dated mapping provenance, or another fixed ownership subtype that merely enumerates the same finite taxonomy.",
+      "note_on_axes": "Existing structured fields are not a new axis after the prior trials. Reopen requires closed forward replacement-value rows from a fixed shared helper, a genuinely new ownership/campaign source, or a real mapping/provenance repair followed by fresh outcome-blind touch counts."
+    },
+    {
+      "id": "H4_accepted_sleeve_underfire_replacement_shadow",
+      "statement": "A production-visible accepted sleeve that persistently underfires its replay-implied admission rate could mark unused strategy capacity; a shadow-only replacement comparison would test whether those states contain a better same-day cash/SPY/QQQ/core alternative without changing sleeve rules or orders.",
+      "economic_mechanism": "A live admission drought can reveal that an accepted sleeve's historical opportunity set is absent in the current regime, so scarce attention/capital should be benchmarked against observable alternatives rather than assigned by stale replay frequency.",
+      "surfaces_joined": ["sleeve_health fire_rate_watch (portfolio exposure/capacity)", "forward_replacement_value ledger", "cash-feasible core opportunity cost"],
+      "preflight_result": "drop_before_promotion: among 141 forward replacement rows, only 3 have an exact entry-date sleeve-health join and all three are status=ok; underfire statuses have 0 exact touches. The closest substantive prior exp-20260624-027 rejected sleeve-health replacement attribution for insufficient usable health variation and explicitly forbids cohort/status retunes without materially new rows or a separately promoted shared policy.",
+      "falsifier": "Zero exact underfire touches, fewer than 5 touches per declared window, or no independent same-day replacement comparisons; the current preflight already fails on zero touches.",
+      "note_on_axes": "The novelty classifier misroutes this description to data_source=other and reports clean, so manual history/recipe review controls. Underfire wording does not create a new source, forward cohort, or legal allocator override."
+    }
+  ],
+  "selected_hypothesis": "H1_form4_overhang_x_flow_put_stabilization",
+  "economic_mechanism": "Insider-disposal information content should separate information-driven from liquidity-driven deep-drawdown selling; stabilization longs are only sound in the latter.",
+  "falsifier": "Dead if (a) settled high-overhang flow-put rows do NOT underperform the complement on net replacement value vs cash/SPY/QQQ, or (b) joint touch density < 5 touches per standard window at maturity (touch-density preflight, AGENTS.md section 5) -- in which case record a one-line count closeout, burn no ID, and drop the overlay.",
+  "evidence_grade": "lead",
+  "next_machine_action": "No ID now. Reopen only after flow-put has at least 20 independent closed decisions and Form4 has at least 25 closed rows including 8 high-overhang rows, complete cash/SPY/QQQ replacement values, and maximum ticker share at most 40%. Then perform an outcome-blind (ticker, entry_date) joined touch count and require at least 5 touches per declared evaluation window before reserving an ID.",
+  "blocker_statement": "No alpha experiment ID was consumed because all 11 registered reopen lanes remain unready, the selected Form4 x flow-put lead has zero current joint touches, the options-ranking alternative has only 4 settled rows and collides with stale open proposal exp-20260613-024, the 13D/13G alternative has only 0/1/0 exact baseline executed-entry touches, and the new sleeve-underfire shadow has 0 exact underfire forward touches with a rejected nearby attribution predecessor. No fresh research-digest entry or valid D0-D3 promotion request exists, and every recipe lane is parked. The counters contain no legal section-2.4 evidence axis; reserving now would violate saturation governance."
+}

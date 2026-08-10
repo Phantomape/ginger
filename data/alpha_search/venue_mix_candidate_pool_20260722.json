@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "data_cutoff": "2026-07-22T10:11:10Z",
+  "selection_pool_complete": true,
+  "queue_budgets": {
+    "exploration": 1,
+    "adjacent": 0,
+    "exploitation": 0
+  },
+  "candidates": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-47964aba2fc1b6938da4",
+      "search_queue": "exploration",
+      "title": "Moomoo NASDAQ and NYSE short-activity entry admission",
+      "created_at": "2026-07-22T10:11:20Z",
+      "created_by": "alpha-automation-20260722",
+      "hypothesis": "Entry-admission alpha: exclude the next-session core long entry when nasdaq_shares_short divided by total_shares_short is at or above its strictly-prior-60-row 70th percentile; insufficient history is neutral.",
+      "fingerprint": {
+        "data_source": "moomoo_short_volume",
+        "component_sources": [
+          "moomoo_short_volume",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "nasdaq_execution_venue_short_pressure",
+        "decision_surface": "entry_admission",
+        "payoff_shape": "fragile_long_avoidance",
+        "horizon": "H10",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "core_entry_quality"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "moomoo_daily_short_volume_venue_mix_20260623"
+      ],
+      "expectation_gap": {
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "ohlcv_warehouse",
+          "known_at": "2026-07-22T09:57:30Z",
+          "units": "frozen_core_candidate_order",
+          "provenance": "The cash-feasible core ranking uses only frozen behavior inputs and OHLCV bars known by the signal close."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "moomoo-nasdaq-venue-share-percentile-v1",
+            "source": "moomoo_short_volume",
+            "known_at": "2026-07-22T09:57:30Z",
+            "state": "nasdaq_shares_short divided by total_shares_short is at or above its within-ticker 70th percentile versus the strictly prior 60 activity rows, with at least 40 prior rows",
+            "provenance": "Authenticated Moomoo daily short-volume activity archive; activity_date is usable no earlier than the next tradable session."
+          }
+        ],
+        "gap_definition": "The existing price state says admit the core long candidate, while an unusually NASDAQ-concentrated short-activity venue mix says the apparent strength faces information-sensitive sell pressure not represented by aggregate short-volume ratio.",
+        "transmission": {
+          "affected_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COHR",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GLD",
+            "GOOG",
+            "GS",
+            "HOOD",
+            "IAU",
+            "ISRG",
+            "IWM",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MRVL",
+            "MSFT",
+            "MU",
+            "MUU",
+            "NBIS",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "QQQ",
+            "RKLZ",
+            "RTX",
+            "SLV",
+            "SNOW",
+            "SPCX",
+            "SPOT",
+            "SPY",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "expected_direction": "exclude the flagged next-session core long entry",
+          "catalyst": "Next-session price discovery incorporates venue-concentrated short activity after the source becomes usable.",
+          "half_life": "10 sessions",
+          "causal_steps": [
+            "core price state admits a long candidate",
+            "independent short activity concentrates on NASDAQ versus the ticker's own history",
+            "the flagged next-session long entry is withheld",
+            "avoiding fragile demand improves replacement value over H10"
+          ]
+        }
+      },
+      "why_not_arbitraged": "The venue split is not the commonly used aggregate short-volume ratio, requires ticker-specific rolling history and a strict after-close-to-next-session clock, and is absent from the existing core entry contract.",
+      "falsifier": "Fewer than five exact canonical baseline entry touches in any standard window, fail-open or timing mismatch in the shared policy, or failure to improve aggregate expected-value score and H10 replacement value without worse drawdown falsifies the rule.",
+      "baseline": {
+        "universe": "frozen cash-feasible core candidate universe",
+        "policy": "Preserve the accepted core candidate order without Moomoo venue-mix information."
+      },
+      "treatment": {
+        "policy": "For the next tradable session only, exclude a core long entry when venue_share_percentile is at or above 0.70, require up to 60 strictly prior activity rows with at least 40, and remain neutral on missing history."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the baseline entered trade under identical costs and capital constraints.",
+      "expected_horizon": "H10",
+      "execution_envelope": {
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "the accepted core universe liquidity and spread floors",
+        "costs_and_carry": "canonical cash-equity costs and turnover accounting",
+        "borrow_dependency": "none; short activity is context for long ranking and does not authorize a short sale",
+        "capacity_constraint": "same cash-feasible slot and notional limits as the active baseline",
+        "timing_constraint": "no earlier than next session after activity_date; no same-session use",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "evidence_grade": "gate_candidate",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "cash_feasible_core_price_prior_20260715",
+          "snapshot_hash": "49f3cc3e0fa181ebe1bc7b0974c68de67c0b5eec659bef0723f1a1f7679a6960"
+        },
+        {
+          "surface_id": "moomoo_daily_short_volume_venue_mix_20260623",
+          "snapshot_hash": "5332675a3d91eedb2f0f5b92df5d93f05f44801800b0e227b1ec5e451a2a988b"
+        }
+      ],
+      "prediction": {
+        "success_probability": 0.1,
+        "main_failure_modes": [
+          "only_five_mid_and_late_window_touches",
+          "false_positive_entry_exclusions",
+          "venue_split_is_routing_noise",
+          "window_regression",
+          "core_opportunity_cost_not_beaten"
+        ],
+        "confidence_reason": "The field axis and entry-admission response are untried and density is broad, but mid and late baseline touches sit exactly at the preflight floor and venue attribution may be routing noise."
+      },
+      "reopen_condition": "If canonical replay drops below five entry touches in any window, park until at least ten additional exact entry touches exist; if Gate 4 rejects, only a genuinely independent source or materially sufficient newly settled forward rows may reopen it.",
+      "next_machine_action": "Run outcome-blind D0-D3, then obtain an opposite-runtime challenge and independent verification before reserving a shared default-off entry-admission experiment.",
+      "research_refs": [],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false,
+        "orders_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "live_realism_evaluated": false,
+        "live_ready": false,
+        "parity_test_added": false
+      }
+    }
+  ]
+}
