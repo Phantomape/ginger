@@ -1,0 +1,28 @@
+{
+ "schema_version": 1,
+ "experiment_id": "exp-20260801-003",
+ "artifact_type": "measurement_contract_after",
+ "recorded_at": "2026-08-01T16:50:00Z",
+ "outcome_accessed": false,
+ "strategy_or_order_behavior_changed": false,
+ "result": {
+  "amendment_lineage_supports_abandoned_ancestor_waiver": true,
+  "two_record_abort_chain_waivable": true,
+  "contract_layer": "quant/alpha_search_contract.py: optional amendment_lineage.abandoned_ancestors, strict entry shape (ancestor_candidate_id, attestation_artifact, attestation_artifact_hash), canonical ordering, duplicate/parent/empty/unknown-field/invalid-hash all fail closed.",
+  "engine_layer": "quant/alpha_search_engine.py::_validate_abandoned_ancestor_attestations: hash-bound artifact must be record_type=alpha_search_pre_reservation_block with disposition=parked_pre_reservation and all-false safety_state; chain binds as original (original_candidate_id+amended_candidate_id) or as abandoned prior child (reusable_artifacts.child_candidate_id + ledger-authenticated amendment_parent_candidate_id); every bound history record must be origin=discovery_candidate with authenticated candidate_metadata and zero representative_exps; only then are that ancestor's record ids waived and the ancestor excluded from amendment_competing_child.",
+  "tests": "206 passed across quant/test_alpha_search_engine.py (10 new boundary tests), test_alpha_search_contract.py (2 new shape tests), test_alpha_search_history.py, test_alpha_search_cli.py, test_alpha_debate.py, test_alpha_reopen_contract.py; test_amendment_does_not_waive_another_blocking_neighbor stays green and the new unrelated-neighbor test extends it to attested chains.",
+  "real_chain_validation": {
+   "history_snapshot": "data/alpha_search/massive_dividend_restart_prior_fingerprints_v5_20260801.json (1418 records, cutoff 2026-08-01T16:35:00Z, complete)",
+   "child_candidate": "cand-ed4c2908c4645ea90319 (data/alpha_search/massive_dividend_restart_candidate_v5_20260801.json)",
+   "panel": "data/alpha_search/massive_dividend_restart_panel_v5_20260801.json decision=pass D3={status: pass, reasons: []} selected=cand-ed4c2908c4645ea90319 outcome_blind=true",
+   "strict_verification": "data/alpha_search/massive_dividend_restart_panel_verification_v5_20260801.json valid=true"
+  },
+  "rollout_smoke_boundaries": "No wall-clock reads (all clocks from bound snapshot/candidate fields); stateless pure validation so next-cycle rerun is identical; optional field means non-target lanes are byte-identical (no candidate without the field changes behavior); crash/restart writes nothing; empty attestation list fails closed at both contract and engine layers; artifact drift after declaration fails closed on sha256."
+ },
+ "artifact_hashes": {
+  "panel_v5": "dc2e8c1c46073029c073b3abd77b27c10c2e2b5a1bfc827e1f84bf031f312d50",
+  "verification_v5": "89c2748d4f08854be37b02502b1be341e421d85b6e9655543d3b85ee06ceacb8",
+  "candidate_v5": "4f6be240c6dd7b8e62c7d5f1a40c8c0b25cbb314d78707b9f948891b7a4fe0ad",
+  "prior_fingerprints_v5": "6931a9aee8a022012ace013f9f4dd8718604ccae7ac7dc045e052a92841be531"
+ }
+}

@@ -1,0 +1,320 @@
+{
+  "acceptance_rule": "Official FDA HTTPS acquisition is bounded and schema validated; immutable dated ZIP and manifest bind first_seen_at to retrieval UTC; producer runs before observer; missing unavailable stale or unverifiable input persists non-ok health; unchanged fresh snapshot records a healthy zero-event heartbeat; repeated same-day runs are idempotent; focused tests and lean audit pass; Gate-1 SHA256 remains 4E9EF413126C947B9712FD0879B83C74160F787898860987D204BFC9D60F7731; no strategy behavior changes.",
+  "allowed_write_scope": [
+    "quant/drugsfda_approval_observer.py",
+    "quant/test_drugsfda_approval_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/drugsfda_approval_observer/"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260728-001.md",
+  "causal_components": [
+    "official_bounded_zip_fetch",
+    "immutable_dated_snapshot_manifest",
+    "manifest_bound_observation_clock",
+    "producer_before_consumer",
+    "fail_closed_health_heartbeat"
+  ],
+  "change_type": "forward_producer_fault_recovery",
+  "changed_variable": "drugsfda_official_daily_snapshot_producer_health_v2",
+  "claimed_at": "2026-07-28T04:15:46+00:00",
+  "completed_at": "2026-07-28T04:27:36+00:00",
+  "created_at": "2026-07-28T04:14:16+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260728-001",
+  "experiment_uid": "expuid-79810c8a9c28473e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260728-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-28T04:14:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "drugsfda_official_daily_snapshot_producer_health_v2"
+  },
+  "hypothesis": "Genuine forward-producer fault recovery: the accepted Drugs@FDA first-seen observer repeatedly consumes a frozen 2026-07-10 ZIP while rewriting snapshot_retrieved_at and reporting status=ok, so a bounded official daily ZIP producer, immutable dated snapshot manifest, manifest-bound retrieval clock, and fail-closed missing stale or invalid health contract should restore prospective regulatory-event collection without changing strategy behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "NDA_BLA_original_application_parsing",
+    "first_snapshot_seed_only",
+    "later_new_hash_forward_only",
+    "manifest_retrieval_clock",
+    "no_ticker_mapping",
+    "next_open_pending",
+    "trade_enabled_false",
+    "no_historical_PIT_claim",
+    "no_signal_ranking_sizing_exit_order_change"
+  ],
+  "mechanism_family": "production_visible_official_drugsfda_approval_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/daily/orders/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-006",
+    "exp-20260727-003"
+  ],
+  "new_evidence_type": "genuine_fault_recovery_no_alpha_evidence",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "drugsfda_approval",
+      "field_tags": [
+        "a",
+        "accepted",
+        "approval",
+        "at",
+        "behavior",
+        "bound",
+        "bounded",
+        "changing",
+        "clock",
+        "closed",
+        "collection",
+        "consumes",
+        "contract",
+        "daily",
+        "dated",
+        "drugs",
+        "drugsfda",
+        "event",
+        "fail",
+        "fault",
+        "fda",
+        "first",
+        "forward",
+        "frozen",
+        "genuine",
+        "health",
+        "immutable",
+        "invalid",
+        "manifest",
+        "missing",
+        "observer",
+        "official",
+        "ok",
+        "or",
+        "producer",
+        "prospective",
+        "recovery",
+        "regulatory",
+        "repeatedly",
+        "reporting",
+        "restore",
+        "retrieval",
+        "retrieved",
+        "rewriting",
+        "seen",
+        "should",
+        "snapshot",
+        "so",
+        "stale",
+        "status",
+        "strategy",
+        "while",
+        "without",
+        "zip"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "drugsfda_approval",
+        "family_key": "drugsfda_cder_original_application_first_seen_observer",
+        "reopen_condition": "Reopen performance only after at least 30 prospective first-seen approvals across at least 20 approval dates with contemporaneous public-sponsor mapping and complete next-open/10-session cash/SPY/QQQ outcomes, or after obtaining an independently auditable official historical PIT snapshot archive.",
+        "score": 0.4967,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "kova_snapshot",
+        "family_key": "kova_multisource_candidate_pool_readiness",
+        "reopen_condition": null,
+        "score": 0.1638,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item101_contract_economic_terms_shared_default_off",
+        "reopen_condition": "Materially more closed forward rows, a real PIT EDGAR timestamp boundary, exhibit-level normalized customer/supplier identity, contract revenue exposure, or a different non-SEC-text source.",
+        "score": 0.1636,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "dod_contract_award",
+        "family_key": "dod_daily_contract_award_candidate_pool",
+        "reopen_condition": "If this fixed DoD award bundle fails, do not retry by sweeping the $250M threshold, award/market-cap ratios, modification filters, branch filters, contractor lists, absorption thresholds, top-N, hold days, cooldown, or notional on these frozen windows. A valid retry needs a genuinely different response shape justified ex ante, closed forward replacement-value rows from a fixed shared helper, or ma",
+        "score": 0.1633,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.1629,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": "Genuine fault recovery: since acceptance the Drugs@FDA surface has spent 14 calendar days with zero forward rows because daily wiring never refreshes its frozen 2026-07-10 ZIP while status remains ok.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "drugsfda_approval",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuine fault recovery: since acceptance the Drugs@FDA surface has spent 14 calendar days with zero forward rows because daily wiring never refreshes its frozen 2026-07-10 ZIP while status remains ok.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "drugsfda_approval",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The daily wiring and static hash prove structural starvation; the same immutable producer and fail-closed pattern is already accepted on another official forward surface.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "FDA_endpoint_unavailable_or_redirect_drift",
+      "zip_schema_drift",
+      "partial_or_oversized_download",
+      "manifest_clock_mismatch",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T04:13:32+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "0a17b9d0327a0e05e0a3aedbe8d3b90b9cc475152c49d5f374fcf6d796f4462b",
+    "payload_hash": "0a17b9d0327a0e05e0a3aedbe8d3b90b9cc475152c49d5f374fcf6d796f4462b",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/after_producer_health.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "FDA_endpoint_unavailable_or_redirect_drift",
+        "zip_schema_drift",
+        "partial_or_oversized_download",
+        "manifest_clock_mismatch",
+        "dirty_worktree_overlap"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The first repaired snapshot recovered seven locally unseen applications immediately; all remain unmapped, unsettled, observer-only, and ineligible for trading."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260728-001.json",
+  "single_causal_variable": "drugsfda_official_daily_snapshot_producer_health_v2",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260728-001.json",
+  "trial_family": "drugsfda_forward_producer_health",
+  "trial_variant_id": "official_daily_snapshot_fail_closed_v1"
+}

@@ -1,0 +1,139 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "history_loader_hides_duplicate_marker",
+      "readiness_source_missing_before_first_daily_state",
+      "closeout_metadata_divergence"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The repair was deterministic; the important additional finding was that the accepted forward contract contains survival, chronological-half, concentration, and per-window density checks beyond the headline 20-decision count."
+  },
+  "causal_components": [
+    "duplicate-accounting exclusion",
+    "frozen-family rebuild",
+    "observer readiness registration",
+    "closeout metadata correction",
+    "regression tests"
+  ],
+  "change_summary": "Exclude duplicate_reservation_accounting from substantive frozen-family aggregation, register the full fail-closed deep-drawdown observer readiness contract, and reconcile exp-20260723-004/005 closeout metadata without changing strategy behavior.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "deep_drawdown_flow_put_observer_guard_registry_integrity_v1",
+  "component": "scripts/build_frozen_families.py, scripts/build_reopen_readiness.py, quant/test_build_frozen_families.py, quant/test_build_reopen_readiness.py, experiments/cards, experiments/logs, experiments/tickets, experiments/manifests, data/experiments, docs/frozen_families.jsonl, data/reopen_readiness.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-006",
+  "hypothesis": "The deep-drawdown flow-put observer machine guard is unreliable because duplicate-reservation accounting is counted as a substantive frozen-family trial and supersedes its quantitative reopen condition, while the accepted observer is absent from canonical reopen readiness; exclude duplicate accounting from family aggregation, register the frozen observer 20-settlement readiness contract, and complete closeout metadata without changing signals or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260723-004",
+    "exp-20260723-005",
+    "exp-20260723-002",
+    "exp-20260714-007"
+  ],
+  "new_evidence_type": "newly_observed_guard_state_corruption",
+  "next_retry_requires": [
+    "Do not reserve routine readiness-audit or daily-materialization IDs; the existing daily pipeline owns forward row collection",
+    "Reopen alpha only after at least 20 independent closed single-slot decisions, survival at least 5%, positive net replacement value in both chronological halves, single-ticker positive-PnL share at most 40%, at least 5 selected and 5 settled decisions per evaluation window, and model-diverse promotion review",
+    "An earlier canonical replay requires an authorized exact-date PIT option archive covering all three standard windows"
+  ],
+  "notes": "Accepted measurement repair only, not alpha or live-ready. The family now has one substantive accepted trial (004); the canonical observer lane is not_ready at 0/20, and every unavailable secondary check remains unknown/fail-closed. Twelve focused tests passed.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled",
+      "live_orders",
+      "core_entry",
+      "core_ranking",
+      "core_sizing",
+      "core_exits",
+      "exp-20260723-004 frozen selector"
+    ],
+    "single_causal_variable": "deep_drawdown_flow_put_observer_guard_registry_integrity_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness-audit, threshold-retune, retrospective-fold, or manual daily-materialization ID for this observer; the existing daily pipeline owns row collection and one-line readiness count checks consume no ID.",
+    "new_evidence_required": "No further measurement repair is justified unless the builder or daily materialization actually faults. Alpha evaluation reopens only after at least 20 independent closed single-slot decisions, survival at least 5%, positive net replacement value in both chronological halves, single-ticker positive-PnL share at most 40%, at least 5 selected and 5 settled decisions per evaluation window, and model-diverse promotion review; alternatively, an authorized exact-date PIT option archive must cover the canonical windows.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The family builder counted every closed ID and selected the latest record for reopen metadata, so duplicate exp-20260723-005 inflated the denominator and replaced exp-20260723-004's quantitative contract with TODO; the readiness builder also omitted the observer. Excluding duplicate accounting and registering the full fail-closed lane deterministically restored the machine contract."
+  },
+  "prediction": {
+    "confidence_reason": "The corrupt guard state is reproduced directly from exp-20260723-004 and exp-20260723-005 and the repair is deterministic metadata/readiness logic; the main risk is defining a truthful zero-state source before the first post-wiring daily run.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "history_loader_hides_duplicate_marker",
+      "readiness_source_missing_before_first_daily_state",
+      "closeout_metadata_divergence"
+    ],
+    "recorded_at": "2026-07-23T06:15:53+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-006/before.json",
+    "data/experiments/exp-20260723-006/after.json",
+    "data/experiments/exp-20260723-006/synthesis.json",
+    "scripts/build_frozen_families.py",
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_frozen_families.py",
+    "quant/test_build_reopen_readiness.py",
+    "docs/frozen_families.jsonl",
+    "data/reopen_readiness.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-23T06:30:20+00:00",
+  "trial_family": "deep_drawdown_observer_guard_registry_integrity",
+  "trial_variant_id": "exp-20260723-006"
+}

@@ -1,0 +1,110 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "duplicate_post_reintroduced_for_unexpired_cross_date_job",
+      "invalid_future_receipt_no_longer_fails_closed",
+      "expired_no_network_case_masks_stale_health",
+      "daily_wiring_contract_regression"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "none",
+    "surprise_level": "low",
+    "surprise_note": "The failure mode matched the current producer summary; the repair stayed local to expired receipt handling."
+  },
+  "causal_components": [
+    "expired_pending_receipt_clear_and_repost_same_run_date",
+    "pending_receipt_validation_boundary_tests",
+    "producer_health_manifest_stale_vs_fresh_contract"
+  ],
+  "change_summary": "Recover USAspending forward producer from expired pending job receipts by clearing the stale continuation and issuing a fresh bounded request while preserving invalid/future fail-closed behavior.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "usaspending_expired_pending_job_recovery_v1",
+  "component": "quant/usaspending_obligation_observer.py, quant/test_usaspending_obligation_observer.py, quant/test_run_daily_wiring.py, quant/experiments/exp_20260801_002_usaspending_expired_pending_job_recovery.py, data/experiments/exp-20260801-002/exp_20260801_002_usaspending_expired_pending_job_recovery.json, experiments/cards/exp-20260801-002.md, experiments/manifests/exp-20260801-002.json, experiments/tickets/exp-20260801-002.json, experiments/logs/exp-20260801-002.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260801-002",
+  "hypothesis": "Fault recovery: USAspending forward producer should recover from an expired pending job receipt by clearing the stale receipt and issuing a fresh bounded request for the same data-calendar run instead of ending stale, so eligible forward obligation rows are not silently lost.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "genuine_forward_producer_fault_recovery",
+  "next_retry_requires": [],
+  "notes": "Measurement repair only: no strategy, order, ranking, sizing, exit, or trade-enabled path changed. Tests: 37 USAspending observer tests passed; 8 daily wiring usaspending tests passed; runner checks all true.",
+  "parameters": {
+    "locked_variables": [
+      "usaspending_expired_pending_job_recovery_v1",
+      "USAspending forward producer health only"
+    ],
+    "single_causal_variable": "usaspending_expired_pending_job_recovery_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open another USAspending receipt-retry ticket for ordinary expired async jobs, status poll exhaustion, or cross-date pending continuation; those boundaries are now covered by the receipt journal tests.",
+    "new_evidence_required": "A future repair needs a new reproducible USAspending producer boundary, such as an upstream schema/API contract change, completed-journal proof mismatch, immutable snapshot validation failure, or a natural daily run that still ends stale despite a valid fresh request path.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The failure mode matched the current producer summary; the repair stayed local to expired receipt handling."
+  },
+  "prediction": {
+    "confidence_reason": "The current summary exposes a reproducible boundary: an expired persisted receipt from an older USAspending async job stops the current run before a fresh request, while the intended fix is local to receipt validation and producer retry control.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "duplicate_post_reintroduced_for_unexpired_cross_date_job",
+      "invalid_future_receipt_no_longer_fails_closed",
+      "expired_no_network_case_masks_stale_health",
+      "daily_wiring_contract_regression"
+    ],
+    "recorded_at": "2026-08-01T15:12:00+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260801-002/exp_20260801_002_usaspending_expired_pending_job_recovery.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-01T15:13:53+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260801-002"
+}

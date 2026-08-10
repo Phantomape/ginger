@@ -1,0 +1,140 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "split_endpoint_plan_or_schema_mismatch",
+      "pagination_hash_gap",
+      "provider_event_conflict",
+      "future_split_leakage",
+      "cumulative_factor_misuse",
+      "current_reference_identity_false_positive",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": "provider_event_conflict",
+    "surprise_level": "very_low",
+    "surprise_note": "Real payloads contained seven valid same-ticker same-date same-type stock-dividend groups with distinct provider IDs and ratios; the first attempt safely rolled back, and the final effect key binds the full ratio tuple while provider-ID reuse still fails closed."
+  },
+  "causal_components": [
+    "split_event_ingestion",
+    "hash_bound_pagination",
+    "event_local_asof_factor",
+    "current_reference_identity_fail_closed"
+  ],
+  "change_summary": "Accepted alpha-enabling Massive split normalization measurement repair: 520/520 grouped checkpoints and 3,049 schema-valid split events are hash-bound and resumable; event-local factors exclude future events and the provider cumulative factor; current-only identity metadata correctly parks replay.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_full_market_ohlcv research-PIT split event and identity readiness contract",
+  "component": "quant/massive_ohlcv_backfill.py, quant/test_massive_ohlcv_backfill.py, data/alpha_search/massive_normalization_readiness_20260728.json, data/warehouse/massive_history.sqlite, data/warehouse/massive_history.sqlite-wal, data/warehouse/massive_history.sqlite-shm, data/warehouse/massive_history.sqlite-journal",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-003",
+  "hypothesis": "Alpha-enabling massive_full_market_ohlcv measurement repair: after the grouped-daily warehouse reaches 520 complete checkpoints, add the previously absent Massive API split-event surface and a fail-closed research-PIT normalization audit. Persist exact split_from, split_to, and execution_date rows with hash-bound pagination; compute factors only from events known by the explicit as-of cutoff; reject current reference identity as replay-ready when effective-dated lifecycle coverage is missing; do not inspect returns or change production.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260728-002",
+    "exp-20260727-006",
+    "exp-20260627-019"
+  ],
+  "new_evidence_type": "unprecedented_split_event_fields_on_unsaturated_source",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair, not alpha. Real endpoint sync completed in one page with all-pages SHA256 6932d0739caa16efc6da4e103c7240594fd4cd1448878583ffb08a4f071614cd; repeat sync was network-free and identical; full 559-response audit passed; 30 focused tests passed. Identity remains fail-closed: 36,314/36,314 rows lack list_date, 19,846 lack both FIGIs, 61 tickers have multiple identities, and 11 overlap active/inactive snapshots. No returns were inspected; Gate-1 and must-not-touch hashes are unchanged. Do not spend another ID on split pagination/storage/factor thresholds or consume historical_adjustment_factor. Reopen the no-core research replay only after an effective-dated identity surface is frozen, then complete outcome-blind D0-D3 and opposite-runtime promotion.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled_false",
+      "no_live_or_core_change",
+      "no_return_inspection",
+      "unadjusted_bars",
+      "research_pit_ceiling_observed_only",
+      "production_warehouse_untouched",
+      "current_reference_not_asof"
+    ],
+    "single_causal_variable": "massive_research_pit_split_and_identity_readiness_contract_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another Massive split pagination, storage-field, factor-threshold, or historical_adjustment_factor experiment on this frozen window; routine split completion is now an idempotent source operation, not a new evidence axis.",
+    "new_evidence_required": "Freeze an effective-dated research-PIT identity surface that maps each candidate (ticker, trade_date) to exactly one lifecycle without current-reference leakage; then complete outcome-blind D0-D3, model-diverse debate, and a separate private_replay_scout promotion request.",
+    "realized_failure_mode": "provider_event_conflict",
+    "why_result_happened": "Real payloads contained seven valid same-ticker same-date same-type stock-dividend groups with distinct provider IDs and ratios; the first attempt safely rolled back, and the final effect key binds the full ratio tuple while provider-ID reuse still fails closed."
+  },
+  "prediction": {
+    "confidence_reason": "The 520-date predecessor and real endpoint schema preflight passed before any return inspection; the work reuses tested transport, hash, transaction, and resume primitives, while the identity verdict is deliberately fail-closed.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "split_endpoint_plan_or_schema_mismatch",
+      "pagination_hash_gap",
+      "provider_event_conflict",
+      "future_split_leakage",
+      "cumulative_factor_misuse",
+      "current_reference_identity_false_positive",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T08:31:46+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/alpha_search/massive_normalization_readiness_20260728.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-28T08:54:23+00:00",
+  "trial_family": "massive_split_normalization",
+  "trial_variant_id": "official_split_events_fail_closed_identity_audit_v1"
+}

@@ -1,0 +1,197 @@
+{
+  "accepted_alpha": false,
+  "after": {
+    "candidate_count": 241,
+    "closed_10d_count": 25,
+    "closed_20d_count": 19,
+    "closed_5d_count": 25,
+    "closed_60d_count": 0,
+    "options_scoring_allowed_candidates": 30,
+    "partial_or_pending": 197,
+    "signal_date_missing_in_ohlcv": 44
+  },
+  "after_artifact": "data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger_report.json",
+  "all_checks_passed": true,
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "active cash-feasible strategy universe",
+      "same-date default-off candidate pool"
+    ],
+    "economic_mechanism": "cash-equity demand unsupported by option positioning may flag fragile continuation, while agreement may identify demand with better follow-through",
+    "evidence_grade": "observer",
+    "evidence_surfaces_missing": [
+      "20 settled paired flow-options disagreement decisions",
+      "10 additional genuine forward PIT collection dates",
+      "settled same-slot portfolio replacement outcomes"
+    ],
+    "evidence_surfaces_used": [
+      "canonical cold-plus-hot OHLCV",
+      "OnClickMedia PIT-safe options chains",
+      "daily candidate snapshots",
+      "Moomoo flow observer readiness",
+      "active portfolio exposure state",
+      "research digest 2026-07-27"
+    ],
+    "falsifier": "paired disagreement decisions fail to separate replacement value after costs",
+    "hypothesis_candidates": [
+      {
+        "baseline": "same-date candidates without disagreement classification",
+        "falsifier": "no monotone replacement-value separation after 20 settled pairs",
+        "grade": "observer",
+        "horizon": "5/10/20 trading days",
+        "name": "flow-options disagreement",
+        "replacement_value": "same-day entered alternatives and cash",
+        "treatment": "spot net-flow strength paired with PIT-safe put/skew disagreement"
+      },
+      {
+        "baseline": "same-day untagged candidates",
+        "falsifier": "no cross-theme separation after 75 settled events",
+        "grade": "observer",
+        "horizon": "5/20 trading days",
+        "name": "exact-url entity-theme event repricing",
+        "replacement_value": "same-day candidates without event exposure",
+        "treatment": "PIT exact-URL event rows joined to canonical prices"
+      },
+      {
+        "baseline": "held slot trajectory",
+        "falsifier": "nonpositive replacement value after 20 settled conflicts",
+        "grade": "snapshot_only",
+        "horizon": "holding-period matched",
+        "name": "portfolio slot-conflict replacement",
+        "replacement_value": "real held position after costs",
+        "treatment": "same-day rejected candidate replacing the occupied slot"
+      }
+    ],
+    "next_machine_action": "continue daily collection until at least 10 additional PIT dates and 20 settled paired disagreement decisions; do not promote or retune before then",
+    "opportunity_cost_winner": "cash; no new executable candidate is Gate-ready",
+    "selected_hypothesis": "flow-options disagreement"
+  },
+  "before": {
+    "candidate_count": 241,
+    "closed_10d_count": 12,
+    "closed_20d_count": 9,
+    "closed_5d_count": 14,
+    "closed_60d_count": 0,
+    "options_scoring_allowed_candidates": 30,
+    "partial_or_pending": 147,
+    "signal_date_missing_in_ohlcv": 94
+  },
+  "before_artifact": "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+  "before_snapshot": "data/experiments/exp-20260727-001/options_forward_before_summary.json",
+  "before_source_generated_at": "2026-07-25T03:34:54Z",
+  "changed_files": [
+    "scripts/run_options_forward_ledger.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260727_001_options_forward_hot_overlay_settlement.py"
+  ],
+  "checks": {
+    "candidate_population_unchanged_241": true,
+    "canonical_hot_sibling_attached": true,
+    "cash_feasible_gate1_anchor_unchanged": true,
+    "closed_horizons_increase_or_hold": true,
+    "cold_only_missing_precondition_94": true,
+    "overlay_missing_reduced_to_true_44": true,
+    "overlay_reaches_hot_edge": true,
+    "pending_rows_restored_147_to_197": true,
+    "remaining_dates_are_known_nontrading_dates": true,
+    "remaining_pairs_absent_from_both_stores": true,
+    "scoring_allowed_unchanged_30": true
+  },
+  "decision": "accepted_measurement_repair",
+  "delta": {
+    "candidate_count": 0,
+    "closed_10d_count": 13,
+    "closed_20d_count": 10,
+    "closed_5d_count": 11,
+    "closed_60d_count": 0,
+    "options_scoring_allowed_candidates": 0,
+    "partial_or_pending": 50,
+    "signal_date_missing_in_ohlcv": -50
+  },
+  "experiment_id": "exp-20260727-001",
+  "gate1_baseline": {
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "minimum_survival_rate": 0.8116,
+      "positive_ev_windows": 3,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "experiment_id": "exp-20260715-010",
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  },
+  "gate_evaluation": {
+    "gate1": "active cash-feasible anchor unchanged",
+    "gate2": "consumer uses ohlcv_overlay and reports hot attach status; strategy entry_date and target_price sentinels are outside this shadow settlement ledger and unchanged",
+    "gate3": "not applicable: no entry filter or signal survival change",
+    "gate4": "measurement before/after only; strategy EV and PnL are intentionally unchanged"
+  },
+  "generated_at": "2026-07-27T03:32:18.924516+00:00",
+  "hypothesis": "The options-forward daily settlement is stale because it reads only the cold OHLCV warehouse. The canonical cold-plus-hot overlay should recover recent outcomes without changing candidates, option tags, PIT joins, signals, sizing, exits, or orders.",
+  "lane": "measurement_repair",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not tune options tags or infer flow-options alpha from this repair alone.",
+    "retry_evidence": "Only a failed attach/precedence regression justifies another measurement-repair ID; alpha evaluation still requires the parked lane's settled-row thresholds.",
+    "why": "The cold warehouse stopped at 2026-06-15 while the sibling hot tier held the next sessions through 2026-07-24; the consumer bypassed the repository overlay contract."
+  },
+  "prediction": {
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hot_overlay_attach_failure",
+      "overlay_precedence_error",
+      "recent_candidate_tickers_missing_in_hot"
+    ],
+    "success_probability": 0.95
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "default_off_shadow_only": true,
+    "exits_changed": false,
+    "options_settlement_reader_changed": true,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "signals_changed": false,
+    "sizing_changed": false
+  },
+  "related_experiments": [
+    "exp-20260704-017",
+    "exp-20260707-011",
+    "exp-20260709-002",
+    "exp-20260709-017",
+    "exp-20260630-010"
+  ],
+  "remaining_missing": {
+    "absent_from_cold_and_hot": true,
+    "by_candidate_action_date": {
+      "2026-05-23": 42,
+      "2026-06-19": 2
+    },
+    "count": 44,
+    "interpretation": "42 duplicate DE candidate rows fall on Saturday 2026-05-23; CAT and TSM each have one row on the 2026-06-19 Juneteenth market holiday."
+  },
+  "reproduction": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260727_001_options_forward_hot_overlay_settlement.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "research_digest_review": {
+    "decision": "no append: displayed entries were already terminal in the ledger",
+    "fresh_actionable_entries": 0,
+    "path": "data/research_digest/latest_digest.md"
+  },
+  "schema": "options_forward_hot_overlay_settlement_repair_v1",
+  "single_causal_variable": "options_forward settlement reads canonical OHLCV overlay",
+  "warehouse": {
+    "cold_max_date": "2026-06-15",
+    "hot_attached": true,
+    "hot_error": null,
+    "hot_exists": true,
+    "hot_max_date": "2026-07-24",
+    "hot_path": "D:\\Github\\ginger\\data\\warehouse\\warehouse_main_hot.sqlite",
+    "overlay_max_date": "2026-07-24"
+  }
+}

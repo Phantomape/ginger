@@ -1,0 +1,126 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.09,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "session_resolution_boundary_error",
+      "non_idempotent_event_emission",
+      "comparator_binding_outcome_leak",
+      "split_normalization_mismatch",
+      "warehouse_staleness_masks_pending_growth"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "low",
+    "surprise_note": "The 2026-07-24 warehouse bars edge means zero decisions can resolve until the massive grouped-daily ingestion catches up to 2026-08-03; settlement throughput is bound by warehouse freshness, not by this contract, so warehouse refresh cadence is now the binding resource for the dividend-restart reopen counter."
+  },
+  "causal_components": [
+    "entry_session_resolution_et_0930_after_first_seen",
+    "all_same_date_gates_final_top2_liquidity_dedup",
+    "outcome_blind_core_or_cash_comparator_binding",
+    "h10_split_normalized_settlement_replay_parity",
+    "stateless_idempotent_event_sourcing",
+    "run_py_daily_wiring_producer_before_consumer"
+  ],
+  "change_summary": "Built the dividend-restart forward settlement contract (observer first-build ID 2 of 2): deterministic ET-0930 entry-session resolution on the SPY data calendar, all-gates-final top-2/day liquidity dedup with a PIT active-common-stock membership gate, outcome-blind core-or-cash comparator binding from live core-bucket fills, and lazy split-normalized H10 settlement with replay-parity leg math, wired fail-soft into both run.py daily paths with a coverage manifest entry. No strategy, order, ranking, sizing, or exit behavior changed; trade_enabled stays false.",
+  "change_type": "new_forward_observer_first_build_settlement_and_daily_wiring",
+  "changed_variable": "massive_dividend_restart_forward_settlement_contract_v1",
+  "component": "quant/massive_dividend_restart_forward_settlement.py, quant/test_massive_dividend_restart_forward_settlement.py, quant/run.py, quant/test_run_daily_wiring.py, data/non_ohlcv/massive_dividend_restart_forward/settlement_ledger.jsonl, data/non_ohlcv/massive_dividend_restart_forward/latest_settlement_summary.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260803-002",
+  "hypothesis": "Alpha-enabling forward-observer first build (ID 2 of 2 of the section 2.4 observer first-build budget, the settlement contract named by the exp-20260802-003 reopen condition): a default-off settlement layer for the Massive dividend-restart forward observer that resolves each eligible restart_after_observed_gap decision entry session as the first regular 09:30 America/New_York session open strictly after first_seen_at anchored to the SPY session calendar inside the massive warehouse and never the wall clock, applies the frozen top-2-per-declaration-date liquidity dedup only after every same-declaration-date gate evaluation is final, binds an outcome-blind core-or-cash comparator at decision resolution from same-entry-session live core-bucket fills consumed at most once with same-ticker collisions and absent surfaces falling to zero-return cash, and lazily settles the frozen next-open-to-10th-session-close H10 replacement value at 4000 dollar notional with 0.35 percent round-trip cost and 0.70 percent double-cost stress and split normalization and SPY QQQ secondary legs, appending event-sourced decision and settlement rows to a dedicated append-only settlement ledger wired fail-soft into run.py daily so the dividend-restart reopen counter of at least 30 settled restart decisions accrues machine-checkably.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_full_market_dividend_restart_forward_observer",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260802-003",
+    "exp-20260803-001",
+    "exp-20260801-004"
+  ],
+  "new_evidence_type": "forward_settled_rows_settlement_first_build",
+  "next_retry_requires": [],
+  "notes": "Accepted alpha-enabling measurement work. 22 new settlement tests plus 4 new wiring tests pass (134 total across the three affected suites). First real run: 167 candidates, 16 empty-pool declaration dates resolved and closed for discovery, 5 dates pending on gate finality or the 2026-07-24 warehouse calendar edge, 0 decisions yet because every first_seen entry anchor (2026-08-03) is beyond the warehouse edge; rerun emitted 0 events proving idempotency on production data. The reopen counter (>=30 settled restart_after_observed_gap decisions) now accrues mechanically from run.py; progress is visible in the coverage manifest via reopen_progress. Section 6 boundary set covered: next-cycle rerun, cross-UTC-midnight first_seen, weekend anchor, empty input, missing warehouse fail-closed, torn-final-line crash recovery on both ledgers, late-discovery append-only exclusion. The observer first-build budget is now fully consumed: no further dividend-restart plumbing IDs are legal outside genuine fault recovery; the lane waits on calendar time and warehouse refresh. Research digest unchanged since 2026-07-27 with all nine entries previously declined, so no new digest consumption this round. Gate 1 anchor untouched; Gates 2-4 not applicable because no signal or execution semantics changed.",
+  "parameters": {
+    "locked_variables": [
+      "entry_rule",
+      "gap_days",
+      "top2_policy",
+      "h10_horizon",
+      "notional_4000",
+      "cost_0p35",
+      "double_cost_0p70",
+      "comparator_rule",
+      "trade_enabled"
+    ],
+    "single_causal_variable": "massive_dividend_restart_forward_settlement_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further dividend-restart plumbing IDs: the observer first-build budget (2 IDs) is fully consumed. Do not re-tune the frozen settlement policy (entry rule, top-2 dedup, H10 horizon, notional/costs, comparator rule, membership rule) and do not reserve routine materialization IDs for daily settlement deltas - run.py wiring now owns them. Do not reserve a readiness-audit ID before the reopen count advances.",
+    "new_evidence_required": "At least 30 settled restart_after_observed_gap H10 forward decisions in the settlement ledger (reopen_progress in the coverage manifest), or canonical as-published dividend vintages, or a genuine settlement/observer fault under the repaired contracts (fault recovery stays exempt from saturation math). Warehouse bars catching up past each entry anchor is the mechanical prerequisite.",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The 2026-07-24 warehouse bars edge means zero decisions can resolve until the massive grouped-daily ingestion catches up to 2026-08-03; settlement throughput is bound by warehouse freshness, not by this contract, so warehouse refresh cadence is now the binding resource for the dividend-restart reopen counter."
+  },
+  "prediction": {
+    "confidence_reason": "Named ID 2 next machine action of the exp-20260802-003 reopen condition inside the sanctioned observer first-build budget; leg math ports directly from the executed exp-20260801-004 replay runner; main risk is session-boundary and idempotency edge cases, which the section 6 boundary template addresses",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "session_resolution_boundary_error",
+      "non_idempotent_event_emission",
+      "comparator_binding_outcome_leak",
+      "split_normalization_mismatch",
+      "warehouse_staleness_masks_pending_growth"
+    ],
+    "recorded_at": "2026-08-03T16:15:49+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260803-002/settlement_before.json",
+    "data/experiments/exp-20260803-002/settlement_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-03T16:26:04+00:00",
+  "trial_family": "massive_dividend_restart_forward_observer_first_build",
+  "trial_variant_id": "exp-20260803-002"
+}

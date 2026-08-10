@@ -1,0 +1,317 @@
+{
+  "acceptance_rule": "Authorized key works without credential persistence; isolated SQLite stores valid unadjusted date-native daily rows and inactive/reference metadata with transactional checkpoints, bounded retries, response hashes, and reproducible coverage manifest; resume is idempotent; later-delisted sample names are represented; no production/canonical warehouse or strategy behavior changes; focused tests and lean audit pass.",
+  "allowed_write_scope": [
+    "quant/massive_ohlcv_backfill.py",
+    "quant/test_massive_ohlcv_backfill.py",
+    "scripts/experiment_fingerprint.py",
+    "quant/test_experiment_fingerprint.py",
+    ".env.example",
+    ".gitignore",
+    "data/alpha_search/massive_full_market_synthesis_20260728.json",
+    "data/warehouse/massive_history.sqlite",
+    "data/warehouse/massive_history.sqlite-wal",
+    "data/warehouse/massive_history.sqlite-shm"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260728-002.md",
+  "causal_components": [
+    "authorized_source_contract",
+    "isolated_staging_schema",
+    "unadjusted_grouped_daily_backfill",
+    "inactive_reference_metadata",
+    "resumable_checkpoint",
+    "hash_bound_manifest",
+    "credential_non_persistence"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "new independent Massive full-market research-PIT source surface",
+  "claimed_at": "2026-07-28T06:06:17+00:00",
+  "completed_at": "2026-07-28T06:47:03+00:00",
+  "created_at": "2026-07-28T06:05:47+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260728-002",
+  "experiment_uid": "expuid-7903abb50ff5453c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260728-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-28T06:05:47+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "massive_research_pit_full_market_source_v1"
+  },
+  "hypothesis": "Alpha-enabling new-source repair: an authorized Massive API date-native full-market staging warehouse with unadjusted grouped daily bars, inactive/reference metadata, resumable checkpoints, and hash-bound provenance removes the current-survivor blocker for a later no-core research-PIT replay without changing production behavior.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled_false",
+    "no_live_or_core_change",
+    "no_outcome_reading",
+    "adjusted_false",
+    "research_pit_ceiling_observed_only",
+    "production_warehouse_untouched"
+  ],
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/daily/orders/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260627-019",
+    "exp-20260717-003",
+    "exp-20260727-006"
+  ],
+  "new_evidence_type": "new_independent_data_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "an",
+        "api",
+        "authorized",
+        "bars",
+        "behavior",
+        "blocker",
+        "bound",
+        "changing",
+        "checkpoints",
+        "core",
+        "current",
+        "daily",
+        "date",
+        "enabling",
+        "full",
+        "grouped",
+        "hash",
+        "inactive",
+        "ingestion",
+        "later",
+        "market",
+        "massive",
+        "metadata",
+        "native",
+        "new",
+        "no",
+        "pit",
+        "provenance",
+        "reference",
+        "removes",
+        "repair",
+        "research",
+        "resumable",
+        "staging",
+        "survivor",
+        "unadjusted",
+        "warehouse",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_universe_membership_ledger",
+        "family_key": "legacy_core_pit_universe_measurement_repair",
+        "reopen_condition": "A genuinely new point-in-time membership source with delisted/acquired names, or at least 60 clean settled broad-forward rows across at least 20 distinct tickers for a prospective covariance/replacement-value test.",
+        "score": 0.0314,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "factor_etf_reference_warehouse_repair",
+        "reopen_condition": "Next valid alpha_search: rerun the fixed factor-residual idiosyncratic leadership bundle with this repaired warehouse surface; do not change thresholds, hold days, notional, or ETF list.",
+        "score": 0.0261,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_regime_gate",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially richer rank-validity field. Do not just mine alpha_score state gates on the same frozen replay.",
+        "score": 0.0261,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "core_misfit_no_trade_forward_maturation",
+        "reopen_condition": "Reach 20 closed 10d CORE_MISFIT_PAPER outcomes, then test exactly one live-path haircut or exclusion variable.",
+        "score": 0.0255,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "regime_state",
+        "family_key": "full_universe_alpha_score_candidate_pool_safe_risk_budget",
+        "reopen_condition": "A shared production/replay default-off adapter for the alpha_score market-regime source, parity tests, and forward replacement-value rows. No live/default orders before that adapter exists.",
+        "score": 0.0255,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New independent authorized Massive API source: date-native all-market rows plus inactive/delisted reference metadata not present in the current-survivor yfinance/SEC warehouse.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New independent authorized Massive API source: date-native all-market rows plus inactive/delisted reference metadata not present in the current-survivor yfinance/SEC warehouse.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "API schema and inactive/delisted recovery already passed outcome-blind preflight; remaining risks are bounded transport, identity, and provenance engineering.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "rate_limit_or_plan_mismatch",
+      "reference_pagination_gap",
+      "ticker_identity_collision",
+      "split_adjustment_leakage",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T06:04:35+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "d27b00fa0efd7af8281be40307ad2e02607a8f4226a0cfe7070365ae3cdb61a3",
+    "payload_hash": "d27b00fa0efd7af8281be40307ad2e02607a8f4226a0cfe7070365ae3cdb61a3",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "Explicit user authorization and credential non-persistence contract passed.",
+      "Exact raw hashes, transactional checkpoints, active/inactive listing coverage, and idempotent resume passed real-data and focused tests.",
+      "The isolated research_pit database leaves production, live orders, and strategy behavior unchanged."
+    ],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/experiments/exp-20260728-002/after_source_surface.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "rate_limit_or_plan_mismatch",
+        "reference_pagination_gap",
+        "ticker_identity_collision",
+        "split_adjustment_leakage",
+        "credential_leak",
+        "dirty_worktree_overlap"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "Massive preserves case-sensitive provider symbols and one FIGI can span multiple ticker/listing lifecycles; ticker uppercasing and FIGI-only identity both caused real-data collisions, so staging now keys exact provider ticker plus listing boundaries."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260728-002.json",
+  "single_causal_variable": "massive_research_pit_full_market_source_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260728-002.json",
+  "trial_family": "massive_full_market_source_ingestion",
+  "trial_variant_id": "unadjusted_grouped_daily_inactive_master_v1"
+}

@@ -1,0 +1,321 @@
+{
+  "acceptance_rule": "Preflight remains at least 5 independent announcement dates and 10 eligible tickers per window with top sector at most 35 percent. Gate evaluation must be PIT safe, after 35 bps round trip cost, positive aggregate expected_value_score and PnL, nonnegative treatment minus cash in every window, and must not materially worsen drawdown or concentration. SPY and QQQ matched-interval replacement are reported and failure to beat both in most windows rejects promotion. Daily output remains default off and cannot alter production decisions.",
+  "allowed_write_scope": [
+    "quant/sp_index_addition_observer.py",
+    "quant/experiments",
+    "quant/test_sp_index_addition_observer.py",
+    "data/non_ohlcv/sp_index_additions",
+    "data/paper_sleeves/sp_index_addition",
+    "data/experiments",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/artifacts",
+    "experiments/logs",
+    "experiments/tickets",
+    "scripts/experiment_fingerprint.py",
+    "quant/run.py",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260721-003.md",
+  "causal_components": [
+    "official_press_archive_pit_contract",
+    "addition_table_parser",
+    "warehouse_ticker_mapping",
+    "next_open_entry",
+    "pre_effective_close_exit",
+    "equal_risk_clock_basket",
+    "35bps_round_trip_cost",
+    "default_off_daily_snapshot"
+  ],
+  "change_type": "candidate_pool/full_stack",
+  "changed_variable": "candidate_pool_event_lifecycle",
+  "claimed_at": "2026-07-21T18:27:20+00:00",
+  "completed_at": "2026-07-21T18:52:23+00:00",
+  "created_at": "2026-07-21T18:23:03+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260721-003",
+  "experiment_uid": "expuid-07c1d7dba2d04ad2",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260721-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-21T18:23:03+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sp1500_addition_announcement_to_pre_effective_forced_flow_lifecycle_v1"
+  },
+  "hypothesis": "Shared-paper-first candidate_pool alpha: official S&P Dow Jones Indices Composite 1500 constituent additions create predictable tracker demand between the first regular open strictly after the public announcement date and the close immediately preceding the effective inclusion date. Group additions by announcement date, allocate equal risk within each clock, and compare the fixed lifecycle after costs with cash, SPY, and QQQ on matched intervals.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "first post-publication regular open entry",
+    "pre-effective close exit",
+    "addition rows only",
+    "S&P 500 plus MidCap 400 plus SmallCap 600",
+    "equal risk by announcement clock",
+    "35bps round trip cost",
+    "no H5 H10 threshold sweep",
+    "no outcome-based filtering"
+  ],
+  "mechanism_family": "index_rebalance_forced_flow",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "live order submission",
+    "live ranking",
+    "live sizing",
+    "live exits",
+    "trade_enabled defaults",
+    "unrelated dirty worktree files"
+  ],
+  "nearby_prior_experiments": [
+    "none; repo-wide novelty scan found no constituent-addition lifecycle trial"
+  ],
+  "new_evidence_type": "new_data_source_and_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": true,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "addition",
+        "additions",
+        "after",
+        "allocate",
+        "alpha",
+        "announcement",
+        "between",
+        "by",
+        "cash",
+        "clock",
+        "close",
+        "compare",
+        "composite",
+        "constituent",
+        "costs",
+        "create",
+        "date",
+        "demand",
+        "dow",
+        "each",
+        "effective",
+        "equal",
+        "first",
+        "flow",
+        "forced",
+        "group",
+        "immediately",
+        "inclusion",
+        "index",
+        "indices",
+        "intervals",
+        "jones",
+        "lifecycle",
+        "matched",
+        "official",
+        "on",
+        "p",
+        "pre",
+        "preceding",
+        "predictable",
+        "public",
+        "qqq",
+        "rebalance",
+        "regular",
+        "risk",
+        "s",
+        "sp1500",
+        "spy",
+        "strictly",
+        "to",
+        "tracker",
+        "within"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "dollar_weakness_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT dollar/liquidity evidence, such as DXY/FX baskets, currency-flow, ETF creation/redemption, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.1762,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "inventory_to_revenue_leanness_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT inventory-quality evidence such as quarterly inventory turnover where reported, finished-goods vs raw-materials decomposition, days-inventory-outstanding trajectory, or closed forward replacement-value rows. Do not sweep the inventory tag list, inventory/revenue threshold, revenue-growth floor, annual fact freshness, price guards, top-N, hold, cooldown, or no",
+        "score": 0.1643,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "free_cash_flow_capex_coverage_quality_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT capex/cash-flow evidence or closed forward replacement rows. Do not sweep FCF/assets, OCF/capex, capex/assets, fact freshness, RS/close/volume/vol guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.164,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "free_cash_flow_covered_buyback_candidate_pool",
+        "reopen_condition": "A retry needs materially different PIT shareholder-yield evidence such as completed-program progress, per-share cash-return yield adjusted by market cap, or closed forward replacement-value rows. Do not sweep repurchase/OCF thresholds, tag sets, annual fact freshness, price guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.164,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "companyfacts_ratio",
+        "family_key": "cash_conversion_quality_protective_stop_candidate_pool",
+        "reopen_condition": "Need a materially different PIT earnings-quality field (TTM same-period accruals, accrual-change momentum, or quarterly cash-flow when reported) or closed forward replacement-value rows before revisiting cash-conversion quality. Do not retry by sweeping the protective stop level on the same windows.",
+        "score": 0.1638,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "First repository use of the independent S&P Global official constituent-addition press archive plus a structurally distinct announcement-to-effective lifecycle gate, with outcome-blind local warehouse preflight showing 64 43 88 eligible addition rows and 24 21 19 independent dates across old mid late windows.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "First repository use of the independent S&P Global official constituent-addition press archive plus a structurally distinct announcement-to-effective lifecycle gate, with outcome-blind local warehouse preflight showing 64 43 88 eligible addition rows and 24 21 19 independent dates across old mid late windows.",
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "First repository use of the independent S&P Global official constituent-addition press archive plus a structurally distinct announcement-to-effective lifecycle gate, with outcome-blind local warehouse preflight showing 64 43 88 eligible addition rows and 24 21 19 independent dates across old mid late windows.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "Tracker demand is economically forced and the outcome-blind preflight has 24 21 19 independent dates with 63 43 86 mapped names, but published evidence suggests the classic effect may have weakened.",
+    "expected_ev_delta": 0.1,
+    "expected_pnl_delta": 1000.0,
+    "main_failure_modes": [
+      "classic index inclusion effect already priced before next open",
+      "quarterly rebalance clocks dominate independence",
+      "sector concentration",
+      "announcement date lacks intraday timestamp",
+      "transaction costs erase short holding edge"
+    ],
+    "recorded_at": "2026-07-21T18:21:54+00:00",
+    "success_probability": 0.3
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.3,
+      "brier_score": 0.09,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.1,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 1000.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "classic index inclusion effect already priced before next open",
+        "quarterly rebalance clocks dominate independence",
+        "sector concentration",
+        "announcement date lacks intraday timestamp",
+        "transaction costs erase short holding edge"
+      ],
+      "realized_failure_mode": "source_authorization_and_preflight_concentration_failure",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Loose addition rows looked diversified, but removing tier migrations exposed a preliminary mid-window 36.93% sector weight; the official terms independently prohibit the intended investment-strategy use without another agreement."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260721-003.json",
+  "single_causal_variable": "sp1500_addition_announcement_to_pre_effective_forced_flow_lifecycle_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260721-003.json",
+  "trial_family": "sp1500_constituent_addition_forced_flow",
+  "trial_variant_id": "announcement_plus_1_open_to_pre_effective_close_v1"
+}

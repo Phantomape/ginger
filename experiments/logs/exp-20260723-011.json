@@ -1,0 +1,173 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0016,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "legacy_core_rows_missing_schema_tags",
+      "shared_schema_semantics_disagree",
+      "focused_test_failure",
+      "gate1_identity_drift"
+    ],
+    "predicted_success_probability": 0.96,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The broadened account-position schema exposed discretionary positions to a core-only add-on builder, and the resulting action propagated unchanged through the LLM and operator report."
+  },
+  "causal_components": [
+    "shared core-slot classifier",
+    "production add-on eligibility",
+    "audit reason",
+    "focused parity tests",
+    "zero-delta Gate-1 verification"
+  ],
+  "change_summary": "Fail closed follow-through add-ons for positions outside the authoritative core slot while preserving exact core and legacy-core action semantics.",
+  "change_type": "production_backtest_parity_repair",
+  "changed_variable": "followthrough_addon_core_slot_ownership_boundary_v2",
+  "component": "quant\\production_parity.py, quant\\test_production_parity.py, docs\\production_backtest_parity.md, quant\\experiments, data\\experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-011",
+  "hypothesis": "Fault recovery: the shared production follow-through add-on builder must apply the accepted core lifecycle only to positions that the authoritative open-position schema marks consumes_core_slot; the 2026-07-22 daily artifact incorrectly emitted a code-decided ADD for discretionary no_core_slot RKLB, which the core-only backtester cannot reproduce. Filter non-core rows fail-closed while preserving every core add-on trigger, threshold, cap, timing rule, and canonical Gate 1-4 metric.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "followthrough_addon_production_parity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260428-012",
+    "exp-20260723-010",
+    "exp-20260608-018"
+  ],
+  "new_evidence_type": "newly_observed_production_parity_mismatch",
+  "next_retry_requires": [
+    "Only a newly observed ownership-boundary regression or a materially different action path may reopen this repair; do not retune follow-through thresholds or add per-sleeve exceptions."
+  ],
+  "notes": "Accepted measurement repair. Stored 2026-07-22 quant, LLM, and report artifacts prove RKLB ADD 2 crossed into an explicitly discretionary no_core_slot holding. Repaired helper emits no non-core action plus not_core_strategy_position audit; identical consumes_core_slot and legacy core-group twins reproduce the stored action exactly. Active Gate-1 metrics remain exact zero-delta; no threshold, cap, timing, entry, exit, ranking, sizing, backtester, or bracket-order semantics changed.",
+  "parameters": {
+    "locked_variables": [
+      "ADDON_CHECKPOINT_DAYS",
+      "ADDON_MIN_UNREALIZED_PCT",
+      "ADDON_MIN_RS_VS_SPY",
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES",
+      "ADDON_MAX_POSITION_PCT",
+      "SECOND_ADDON_ENABLED",
+      "entry",
+      "exit",
+      "ranking",
+      "core_sizing",
+      "backtester_behavior"
+    ],
+    "single_causal_variable": "followthrough_addon_core_slot_ownership_boundary_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not special-case RKLB, discretionary, paper, or individual sleeves, and do not change add-on thresholds, caps, checkpoint timing, ranking, sizing, or exits under this ticket family.",
+    "new_evidence_required": "A new persisted production artifact showing the authoritative core-slot classifier disagrees with another executable action path, or a newly introduced account-position group whose ownership cannot be represented by the shared schema.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The broadened account-position schema exposed discretionary positions to a core-only add-on builder, and the resulting action propagated unchanged through the LLM and operator report."
+  },
+  "prediction": {
+    "confidence_reason": "The daily quant artifact, LLM prompt, and response directly show RKLB ADD 2 while operator_inputs marks RKLB discretionary and no_core_slot. The accepted add-on originated as core BacktestEngine lifecycle parity, and the shared position schema already provides the authoritative deterministic classifier; risk is limited to legacy rows without explicit core metadata and test-fixture migration.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legacy_core_rows_missing_schema_tags",
+      "shared_schema_semantics_disagree",
+      "focused_test_failure",
+      "gate1_identity_drift"
+    ],
+    "recorded_at": "2026-07-23T22:12:42+00:00",
+    "success_probability": 0.96
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-011/before.json",
+    "data/experiments/exp-20260723-011/after.json",
+    "data/experiments/exp-20260723-011/verification.json",
+    "data/experiments/exp-20260723-011/alpha_synthesis.json",
+    "quant/experiments/exp_20260723_011_followthrough_addon_core_slot_boundary.py"
+  ],
+  "production_impact": {
+    "core_strategy_action_semantics_changed": false,
+    "non_core_unvalidated_action_removed": true,
+    "llm_addon_advice_for_noncore_positions_changed": true,
+    "bracket_order_semantics_changed": false,
+    "backtester_changed": false,
+    "thresholds_caps_timing_changed": false
+  },
+  "verification": {
+    "experiment_runner_passed": true,
+    "pytest_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_production_parity.py quant\\test_open_position_schema.py quant\\test_run_daily_wiring.py",
+    "pytest_result": "116 passed",
+    "gate1_expected_value_score": 6.2057,
+    "gate1_total_pnl": 130992.36,
+    "gate1_trade_count": 49,
+    "gate1_minimum_survival_rate": 0.8116,
+    "gate1_worst_max_drawdown_pct": 0.0889,
+    "gate1_all_deltas_zero": true
+  },
+  "changed_files": [
+    "quant/production_parity.py",
+    "quant/test_production_parity.py",
+    "docs/production_backtest_parity.md",
+    "quant/experiments/exp_20260723_011_followthrough_addon_core_slot_boundary.py",
+    "data/experiments/exp-20260723-011/before.json",
+    "data/experiments/exp-20260723-011/after.json",
+    "data/experiments/exp-20260723-011/verification.json",
+    "data/experiments/exp-20260723-011/alpha_synthesis.json"
+  ],
+  "reproduction": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260723_011_followthrough_addon_core_slot_boundary.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_production_parity.py quant\\test_open_position_schema.py quant\\test_run_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-23T22:26:36+00:00",
+  "trial_family": "followthrough_addon_position_ownership_boundary",
+  "trial_variant_id": "exp-20260723-011"
+}

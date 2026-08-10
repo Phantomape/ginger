@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "partial facade state",
+      "proposal round-trip mismatch",
+      "duplicate closeout",
+      "hidden safety-gate bypass"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "not_scored",
+    "surprise_note": "The reservation succeeded without its ticket JSON being visible in the caller output, so a wording retry created a second ID. The facade must make the reserved ID explicit and reuse the reservation intent."
+  },
+  "causal_components": [
+    "qualify delegates card projection and final D0-D3 panel/promotion validation",
+    "start atomically reserves then claims from the exact promotion proposal",
+    "finish closes existing artifacts then runs lean-strict audit",
+    "no strategy or order behavior changes"
+  ],
+  "change_summary": "Duplicate reservation accounting only; no implementation or strategy change.",
+  "change_type": "workflow_orchestration",
+  "changed_variable": "three_command_facade_only",
+  "component": "scripts/alpha_workflow.py, quant/test_alpha_workflow_cli.py, docs/alpha_workflow.md",
+  "date_range": {},
+  "decision": "observed_only",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260805-001",
+  "hypothesis": "Alpha hypothesis: Investment Team structured mechanism, evidence, valuation, and risk synthesis can improve alpha candidate quality, but the current manual handoff duplicates fail-closed validation and creates partial-state mistakes; a three-command facade should preserve identical admission and lifecycle gates while reducing operator actions.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "investment_team_to_alpha_search_operator_contract",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260801-001"
+  ],
+  "new_evidence_type": "measurement_workflow_simplification",
+  "next_retry_requires": [],
+  "notes": "The first reservation attempt wrote exp-20260805-001 although the surrounding tool call surfaced only novelty diagnostics. Work continues under exp-20260805-002; this ticket is closed rather than deleted.",
+  "parameters": {
+    "locked_variables": [
+      "alpha_gate_thresholds",
+      "live_order_behavior",
+      "production_ranking",
+      "position_sizing",
+      "exit_rules"
+    ],
+    "single_causal_variable": "alpha_workflow_three_command_facade_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The reservation succeeded without its ticket JSON being visible in the caller output, so a wording retry created a second ID. The facade must make the reserved ID explicit and reuse the reservation intent."
+  },
+  "prediction": {
+    "confidence_reason": "The facade delegates existing guarded entry points and removes only redundant operator invocations, so the main risk is orchestration state handling rather than strategy logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "partial facade state",
+      "proposal round-trip mismatch",
+      "duplicate closeout",
+      "hidden safety-gate bypass"
+    ],
+    "recorded_at": "2026-08-05T02:09:19+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-08-05T02:12:28+00:00",
+  "trial_family": "alpha_workflow_operator_complexity_reduction",
+  "trial_variant_id": "exp-20260805-001"
+}

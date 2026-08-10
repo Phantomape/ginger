@@ -1,0 +1,121 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "canonical_schema_mismatch",
+      "field_translation_error",
+      "existing_dirty_change_overlap"
+    ],
+    "predicted_success_probability": 0.97,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "not_scored",
+    "surprise_note": "The first asynchronous reservation completed after appearing to return only a novelty warning; protocol requires retaining the first ticket and closing this retry."
+  },
+  "causal_components": [
+    "canonical readiness load",
+    "counter translation",
+    "threshold verdict",
+    "focused tests",
+    "measurement artifact"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260723-002 owns the identical estimate-revision readiness counter repair.",
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1",
+  "component": "scripts/build_reopen_readiness.py, quant/test_build_reopen_readiness.py, quant/experiments, data/experiments, experiments/tickets, experiments/cards, experiments/manifests, experiments/logs, data/reopen_readiness.json, docs/experiment_registry.json, docs/frozen_families.jsonl, docs/alpha_context_pack.md, docs/current_state_snapshot.md, docs/lessons",
+  "date_range": {},
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260723-003",
+  "duplicate_of": "exp-20260723-002",
+  "hypothesis": "Bind Phase-2 estimate-revision reopen counters to the canonical readiness artifact instead of hard-coded zeroes, fail closed on malformed input, and leave all trading behavior unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260721-004",
+    "exp-20260721-002"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "next_retry_requires": [
+    "Do not reopen exp-20260723-003 or reserve another copy; exp-20260723-002 owns the repair."
+  ],
+  "notes": "No implementation or new evidence. The asynchronous first reservation completed after its initial warning output, so the immediate retry produced this losing duplicate. Do not implement under exp-20260723-003.",
+  "parameters": {
+    "locked_variables": [
+      "entry",
+      "ranking",
+      "sizing",
+      "exit",
+      "orders",
+      "trade_enabled",
+      "alpha_thresholds"
+    ],
+    "single_causal_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun this counter binding under exp-20260723-003; exp-20260723-002 is the sole substantive owner.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The first asynchronous reservation completed after appearing to return only a novelty warning; protocol requires retaining the first ticket and closing this retry."
+  },
+  "prediction": {
+    "confidence_reason": "The canonical readiness file already exposes stable independent, mapped, cash-conflict, and horizon-settlement fields while the builder visibly hard-codes zero; the risk is schema drift rather than strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_schema_mismatch",
+      "field_translation_error",
+      "existing_dirty_change_overlap"
+    ],
+    "recorded_at": "2026-07-23T05:15:30+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "duplicate_reservation_accounting",
+  "related_files": [
+    "data/non_ohlcv/estimate_revision_readiness_latest.json",
+    "data/non_ohlcv/estimate_revision_readiness_latest.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-07-23T05:19:19+00:00",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exp-20260723-003"
+}

@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260803-001",
+  "record_type": "measurement_repair_after",
+  "captured_at": "2026-08-03T15:24:44Z",
+  "scope": "default_off_massive_dividend_restart_forward_observer",
+  "decision_variable": "massive_dividend_restart_content_freshness_identity_v2",
+  "decision": "accepted_measurement_repair",
+  "implementation": {
+    "content_identity_kind": "decision_safe_dividend_row_multiset_v2",
+    "content_identity_projection": [
+      "provider_id",
+      "ticker",
+      "declaration_date",
+      "cash_amount"
+    ],
+    "canonicalization": "sorted normalized row multiset; identical rows with the same provider_id fold; anonymous multiplicity is retained; conflicting decision fields for one provider_id fail closed",
+    "retrieval_provenance_identity_kind": "ordered_sanitized_page_raw_sha256_v1",
+    "retrieval_provenance": "ordered sanitized page URL and verified raw SHA-256 are persisted separately in coverage, state, and summary",
+    "freshness_unit": "distinct latest_completed_us_equity_session observation",
+    "freshness_threshold": 3,
+    "session_boundaries": "same session, weekend, cross-UTC rerun, and clock regression do not advance; the persisted session anchor is monotonic",
+    "legacy_migration": "state without the new identity kind resets once without an alert, persists the new kind, and resumes counting across restarts",
+    "changed_content_behavior": "resets the unchanged-session counter"
+  },
+  "boundary_evidence": {
+    "volatile_request_metadata": "stable decision identity unchanged; raw retrieval provenance identity changed",
+    "page_order_and_partition": "stable decision identity unchanged; raw retrieval provenance identity changed",
+    "each_decision_field": "provider_id, ticker, declaration_date, and cash_amount each change the stable identity",
+    "duplicate_provider_id": "identical decision row folds; conflicting decision row raises MassiveError",
+    "anonymous_rows": "multiplicity changes the stable identity",
+    "same_session_weekend_cross_utc": "unchanged-session count remains zero after the baseline observation",
+    "clock_regression_restore": "a previously observed completed session is not counted twice",
+    "three_distinct_sessions": "third later unchanged completed session produces status=stale_input and alert=true",
+    "legacy_restart": "migration is reported exactly once and subsequent distinct-session counting resumes"
+  },
+  "tests": {
+    "observer_plus_market_calendar": {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_massive_dividend_restart_forward_observer.py quant\\test_us_market_calendar.py",
+      "result": "48 passed"
+    },
+    "observer_plus_daily_wiring_targeted": {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_massive_dividend_restart_forward_observer.py quant\\test_run_daily_wiring.py -k massive_dividend_restart_or_fetch_or_persist",
+      "result": "39 passed, 69 deselected"
+    }
+  },
+  "locked_policy_verified_unchanged": {
+    "gap_days": 1095,
+    "recent_window_days": 30,
+    "entry_rule": "first_regular_session_0930_america_new_york_open_strictly_after_first_seen_at",
+    "pre_declaration_bars": 20,
+    "minimum_median_dollar_volume": 1000000.0,
+    "minimum_last_close": 3.0,
+    "top2_policy": "not implemented or changed in this observer; remains reserved for settlement ID 2",
+    "h10_settlement": "not implemented or changed in this repair",
+    "observer_only": true,
+    "trade_enabled": false,
+    "strategy_behavior_changed": false,
+    "orders_changed": false,
+    "gate1_metrics_changed": false
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "cash-feasible core universe",
+      "current 18-position portfolio",
+      "Massive dividend-restart observer",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash / no executable new entry",
+    "evidence_surfaces_used": [
+      "canonical price",
+      "Moomoo flow",
+      "OnclickMedia options",
+      "Massive corporate event",
+      "FINRA and Form 4 positioning",
+      "portfolio and live controls",
+      "research digest and reopen registry"
+    ],
+    "evidence_surfaces_missing": [
+      "settled Massive dividend-restart H10 forward rows",
+      "observer first-build ID 2 session and replacement-value contract",
+      "canonical as-published dividend vintages"
+    ],
+    "hypothesis_candidates": [
+      {
+        "name": "Massive dividend restart H10 replacement value",
+        "baseline": "cash and existing core opportunity cost",
+        "treatment": "first positive USD cash dividend after at least 1095 days without one",
+        "horizon": "H10",
+        "replacement_value_comparator": "cash, SPY, QQQ, and displaced core candidate",
+        "falsifier": "fewer than 30 settled rows, nonpositive or unstable replacement value, or excessive ticker concentration"
+      },
+      {
+        "name": "SPAC trust convergence",
+        "baseline": "cash",
+        "treatment": "discount to auditable trust value near redemption",
+        "horizon": "event close",
+        "replacement_value_comparator": "cash",
+        "falsifier": "trust value or redemption clock cannot be reconstructed point-in-time",
+        "result_ceiling": "invalid until PIT source contract exists"
+      },
+      {
+        "name": "ADR and listed-option parity dislocation",
+        "baseline": "underlying cash equity",
+        "treatment": "hedged parity residual after funding and execution costs",
+        "horizon": "intraday to H5",
+        "replacement_value_comparator": "cash and unhedged underlying",
+        "falsifier": "timestamp alignment or borrow/execution envelope is unavailable",
+        "result_ceiling": "lead only"
+      }
+    ],
+    "selected_hypothesis": "Massive dividend restart forward H10 replacement value versus cash and core opportunity cost",
+    "economic_mechanism": "the first positive cash dividend after a multi-year gap may mark a durable capital-return regime shift that is not fully reflected at declaration",
+    "falsifier": "fewer than 30 settled H10 decisions, unstable or nonpositive replacement value after costs, or excessive concentration",
+    "pit_tier": "research_pit",
+    "evidence_grade": "observer",
+    "result_ceiling": "observed_only",
+    "next_machine_action": "complete observer first-build ID 2 settlement contract, then wait for at least 30 settled restart_after_observed_gap H10 decisions before any promotion test"
+  },
+  "research_digest": {
+    "latest_digest_entries_reviewed": 9,
+    "selected_entry_ids": [],
+    "ledger_rows_appended": 0,
+    "reason": "all displayed entries already had terminal declined dispositions"
+  },
+  "gate_result": {
+    "gate1": "unchanged cash-feasible baseline",
+    "gate2_to_gate4": "not applicable: observer-health measurement repair changed no signal, entry, exit, ranking, sizing, risk budget, order, or backtest metric",
+    "acceptance_basis": "all deterministic identity, migration, and natural-boundary tests passed while the locked observer and trading policy remained unchanged"
+  },
+  "reopen_condition": "Only another independently observed content-identity, session-clock, source-format, or pagination fault can reopen this repair family; alpha promotion remains governed by the separate >=30 settled H10 forward-decision contract."
+}

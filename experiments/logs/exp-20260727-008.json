@@ -1,0 +1,118 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "shared helper coupling",
+      "caller APPDATA not restored",
+      "OpenD unavailable for a reason independent of the SDK log ACL"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "A settlement consumer already had this import-time workaround, but the separate live advisory consumer bypassed it and failed for six consecutive captures; the repair confirms the fault was path-specific rather than an OpenD outage."
+  },
+  "causal_components": [
+    "reuse established SDK APPDATA redirect around advisory import",
+    "restore caller APPDATA",
+    "focused regression",
+    "live read-only OpenD proof"
+  ],
+  "change_summary": "Wrapped the advisory intraday moomoo SDK import with the existing repo-local APPDATA redirect and guaranteed restoration on import success or failure; added focused coverage for redirect, failure restoration, and explicit system-APPDATA bypass. No context semantics, strategy, ranking, sizing, exits, or orders changed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "intraday advisory moomoo SDK import environment only",
+  "component": "quant/intraday_moomoo.py, quant/test_intraday_moomoo.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260727-008",
+  "hypothesis": "Fault recovery: the live advisory intraday OpenD capture imports the moomoo SDK under system APPDATA, reproducing permission-denied failures on six consecutive dates and returning 0 of 18 requested tickers on 2026-07-27. Reusing the established repo-local APPDATA redirect around this distinct consumer's import should restore advisory market context while leaving trade_enabled false and strategy, ranking, sizing, exits, and orders unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "intraday_advisory_production_visibility",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260711-024"
+  ],
+  "new_evidence_type": "fault_recovery_distinct_live_consumer_six_day_sdk_acl_outage",
+  "next_retry_requires": [
+    "a post-fix advisory capture that again reports an SDK APPDATA/log ACL error, or a distinct production consumer proven to import moomoo outside the established redirect contract"
+  ],
+  "notes": "Accepted measurement repair only. Baseline reproduced six consecutive unavailable daily captures and 0/18 tickers from the SDK system-APPDATA ACL error. After patch, read-only live proof returned status=ok, 18/18 tickers, zero errors, and restored caller APPDATA; trade_enabled and strategy_behavior_changed remain false. Gate 1 canonical cash-feasible baseline hash and metrics are unchanged; Gate 2 import/runtime fields exist; Gate 3 signals and survival are unchanged; Gate 4 is the scoped fault-recovery acceptance rule. Alpha synthesis generated three outcome-blind leads but no lane is mature; cash remains the opportunity-cost winner.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled=false",
+      "strategy behavior",
+      "entry and exit logic",
+      "ranking",
+      "sizing",
+      "orders",
+      "canonical Gate-1 baseline"
+    ],
+    "single_causal_variable": "intraday_advisory_opend_import_appdata_redirect_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another advisory OpenD APPDATA redirect, logger-path retune, or readiness audit while post-fix captures remain healthy; the import ordering, failure restoration, and explicit system-APPDATA bypass are now pinned by regression tests.",
+    "new_evidence_required": "A new post-fix capture with the same SDK APPDATA/log ACL failure, or a separately identified production consumer that demonstrably imports moomoo outside the established redirect contract.",
+    "realized_failure_mode": null,
+    "why_result_happened": "A settlement consumer already had this import-time workaround, but the separate live advisory consumer bypassed it and failed for six consecutive captures; the repair confirms the fault was path-specific rather than an OpenD outage."
+  },
+  "prediction": {
+    "confidence_reason": "The failure names the SDK import-time system APPDATA log path, while two existing consumers already recover the identical root cause with a repo-local import wrapper.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared helper coupling",
+      "caller APPDATA not restored",
+      "OpenD unavailable for a reason independent of the SDK log ACL"
+    ],
+    "recorded_at": "2026-07-27T18:13:44+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260727-008/before_intraday_opend_context.json",
+    "data/experiments/exp-20260727-008/after_intraday_opend_context.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-27T18:18:48+00:00",
+  "trial_family": "intraday_advisory_opend_capture_fault_recovery",
+  "trial_variant_id": "live_capture_shared_appdata_contract_v1"
+}

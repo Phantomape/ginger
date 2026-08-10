@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260802-003",
+  "record_type": "measurement_repair_after",
+  "captured_at": "2026-08-02T17:00:00Z",
+  "scope": "default_off_massive_dividend_restart_forward_observer",
+  "forward_producer_exists": true,
+  "daily_wiring_exists": true,
+  "first_real_run": {
+    "run_label": "2026-08-02",
+    "status": "ok",
+    "fetched_at": "2026-08-02T16:53:20.717942Z",
+    "page_count": 144,
+    "provider_row_count": 717741,
+    "positive_usd_row_count": 414079,
+    "max_declaration_date": "2026-07-31",
+    "min_declaration_date": "2001-11-02",
+    "content_identity": "e94955d3a5fc032e7ced8da177948ccb725d5e5b5fd2474f98d2e7140d701437",
+    "new_candidate_count": 167,
+    "candidates_by_gap_variant": {
+      "restart_after_observed_gap": 5,
+      "no_prior_positive_in_provider_history": 162
+    },
+    "gate_evaluations": 107,
+    "eligible_candidates": 5,
+    "eligible_true_restarts": ["LEND:2026-07-02"],
+    "pending_gate_count": 60,
+    "pending_reason": "declarations after warehouse daily_bars max 2026-07-24 await bars",
+    "fetch_wall_clock_minutes": 29
+  },
+  "sanity": {
+    "true_restart_rate_per_30d": 5,
+    "historical_endpoint_roster_rate": "89 eligible rows over ~18 months (~5/month) - consistent",
+    "max_declaration_freshness": "2026-07-31 is the last completed weekday before the Saturday run - fresh",
+    "first_seen_at_saturday_entry_resolves_to": "2026-08-04 (Monday) open under the frozen entry rule"
+  },
+  "tests": {
+    "quant/test_massive_dividend_restart_forward_observer.py": 23,
+    "quant/test_run_daily_wiring.py": 73,
+    "quant/test_experiment_fingerprint.py": 262,
+    "quant/test_massive_ohlcv_backfill.py": 56
+  },
+  "fail_closed_contract": {
+    "fetch_failure_or_missing_credential": "status=error, alert, error coverage row, summary persisted",
+    "frozen_upstream_content": "status=stale_input after 3 consecutive identical content identities (tolerates a weekend)",
+    "coverage_manifest_binding": "massive_dividend_restart_forward_observer entry in daily non-OHLCV coverage manifest with status/alert/cadence",
+    "clock_contract": "no wall-clock date in request params or row attribution; recency window anchored to chain max declaration date; vintage = first_seen_at"
+  },
+  "fingerprint": {
+    "new_source_key": "massive_dividend_restart_forward",
+    "ranked_ahead_of": "forward_replacement_value ('settled forward' would otherwise misroute)",
+    "reserve_time_caveat": "this ticket itself was fingerprinted as forward_replacement_value at reserve time (before the keyword group existed); true face is massive_dividend_restart_forward"
+  },
+  "known_limitations_for_id2": [
+    "PIT monthly membership gate not applied at collection; belongs to the settlement policy",
+    "top-2-per-declaration-date liquidity dedup deferred to settlement (needs all same-date gate evaluations)",
+    "no_prior_positive_in_provider_history variant is dominated by new listings/OTC; the true lane filter is gap_variant=restart_after_observed_gap",
+    "settlement contract (entry/exit session resolution, H10 replacement value vs comparator) is observer first-build ID 2"
+  ]
+}

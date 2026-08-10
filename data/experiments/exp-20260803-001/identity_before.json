@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260803-001",
+  "record_type": "measurement_repair_before",
+  "captured_at": "2026-08-03T15:14:02Z",
+  "scope": "default_off_massive_dividend_restart_forward_observer",
+  "decision_variable": "massive_dividend_restart_content_freshness_identity_v2",
+  "active_gate1": {
+    "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "expected_value_score": 6.2057,
+    "strategy_total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate_pct": 81.16,
+    "worst_max_drawdown_pct": 8.89
+  },
+  "natural_fault_evidence": {
+    "coverage_run_count": 2,
+    "first_run": {
+      "run_started_at": "2026-08-02T16:24:29.401492Z",
+      "content_identity": "e94955d3a5fc032e7ced8da177948ccb725d5e5b5fd2474f98d2e7140d701437",
+      "page_count": 144,
+      "provider_row_count": 717741,
+      "positive_usd_row_count": 414079,
+      "max_declaration_date": "2026-07-31",
+      "new_candidate_count": 167,
+      "new_gate_evaluation_count": 107,
+      "consecutive_unchanged_content_runs": 0
+    },
+    "second_run": {
+      "run_started_at": "2026-08-03T03:03:58.290876Z",
+      "content_identity": "5d59575662af2460496dfb876def1c4eb461c684252f557c447af20fde8a9159",
+      "page_count": 144,
+      "provider_row_count": 717741,
+      "positive_usd_row_count": 414079,
+      "max_declaration_date": "2026-07-31",
+      "new_candidate_count": 0,
+      "new_gate_evaluation_count": 0,
+      "consecutive_unchanged_content_runs": 0
+    },
+    "raw_payload_observation": "The Massive response contains volatile top-level request_id metadata.",
+    "failure_mode": "content_identity hashed raw response digests, so request metadata changed the identity even when the decision-safe row surface and all decision outputs were unchanged",
+    "secondary_boundary_failure": "freshness counted invocations; after stabilizing the hash, same-session or weekend reruns could have produced a false stale alert"
+  },
+  "before_contract": {
+    "stable_decision_content_identity": false,
+    "raw_retrieval_provenance_separate": false,
+    "freshness_unit": "observer_invocation",
+    "distinct_completed_session_dedup": false,
+    "legacy_identity_kind_migration": false,
+    "clock_regression_monotonic_anchor": false
+  },
+  "locked_policy": {
+    "gap_days": 1095,
+    "recent_window_days": 30,
+    "entry_rule": "first_regular_session_0930_america_new_york_open_strictly_after_first_seen_at",
+    "pre_declaration_bars": 20,
+    "minimum_median_dollar_volume": 1000000.0,
+    "minimum_last_close": 3.0,
+    "observer_only": true,
+    "trade_enabled": false
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "alpha_synthesis_pass_v1",
+  "experiment_id": "exp-20260723-011",
+  "baseline_universe": [
+    "cash-feasible frozen 47-ticker Gate-1 universe",
+    "current 46-ticker daily core universe",
+    "current 12-position broker account",
+    "accepted default-off paper candidates",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash plus the accepted cash-feasible core policy; the 2026-07-22 daily snapshot contains zero executable core candidates, while WAT is paper context only",
+  "evidence_surfaces_used": [
+    "price/OHLCV and frozen standard-window manifests",
+    "moomoo DAY flow",
+    "options positioning",
+    "event and estimate-revision ledgers",
+    "portfolio exposure and authoritative open-position schema",
+    "daily quant-to-LLM-to-report action chain",
+    "research digest and consumption ledger"
+  ],
+  "evidence_surfaces_missing": [
+    "deep-drawdown flow/put independent closed rows: 0/20",
+    "entity/theme post-park rows: 55503/71268",
+    "exit lifecycle settled/advisory/hard-stop: 148/212, 21/30, 14/21",
+    "flow/options PIT dates and paired settlements: 2/10 and null/20",
+    "estimate-revision cash conflicts and settled H5/H10/H20: 0/10 and 0/30",
+    "allocator forward rows: 9/20",
+    "negative-news settled rows: 56/200"
+  ],
+  "hypothesis_candidates": [
+    {
+      "name": "deep_drawdown_flow_put_stabilization",
+      "decision_class": "ranking",
+      "baseline": "cash-feasible core rank or cash",
+      "treatment": "rank a deep-drawdown candidate only when PIT positive DAY flow and near-put open interest jointly indicate absorption",
+      "expected_horizon": "H10",
+      "replacement_value": "cash, contemporaneous core entry, SPY, and QQQ",
+      "economic_mechanism": "price dislocation joined to real buying flow and downside positioning may separate informed absorption from uninformed bottom fishing",
+      "falsifier": "after 20 independent closed rows, treatment replacement value is non-positive or fails to beat cash/core/SPY/QQQ",
+      "evidence_grade": "observer",
+      "status": "parked_0_of_20_independent_closed"
+    },
+    {
+      "name": "estimate_revision_muted_reaction",
+      "decision_class": "candidate_pool",
+      "baseline": "same-day accepted core candidate or cash",
+      "treatment": "admit a positive PIT revision only when the initial price response is muted and the decision directly competes for scarce cash",
+      "expected_horizon": "H5/H10/H20",
+      "replacement_value": "displaced core candidate, cash, SPY, and QQQ",
+      "economic_mechanism": "a muted response to improving estimates may leave delayed fundamental information diffusion without paying for an already extended move",
+      "falsifier": "paired cash-conflict replacement value is non-positive after 10 actual conflicts and 30 settled observations at each horizon",
+      "evidence_grade": "observer",
+      "status": "parked_0_of_10_conflicts_and_0_of_30_settlements"
+    },
+    {
+      "name": "same_slot_cost_correlation_allocator",
+      "decision_class": "capital_allocation",
+      "baseline": "accepted core rank with existing position caps",
+      "treatment": "choose between same-slot candidates using forward transaction cost, overlap, and covariance only after both candidates are independently admissible",
+      "expected_horizon": "position lifecycle",
+      "replacement_value": "the displaced admissible candidate and cash",
+      "economic_mechanism": "two individually positive signals can differ in portfolio value when cost and shared factor exposure consume the same scarce risk slot",
+      "falsifier": "net portfolio replacement value does not improve after 20 comparable forward allocation decisions",
+      "evidence_grade": "observer",
+      "status": "parked_9_of_20_forward_rows"
+    }
+  ],
+  "selected_hypothesis": "deep_drawdown_flow_put_stabilization",
+  "selected_iteration_work": "followthrough_addon_core_slot_ownership_boundary_v2",
+  "economic_mechanism": "the selected alpha lead requires independent forward rows; this iteration instead repairs a proven production mismatch where a core lifecycle action crossed into a discretionary position that the core backtester cannot own",
+  "falsifier": "the RKLB row is core-owned, the repaired helper still emits its ADD, an identical core twin changes action semantics, or the Gate-1 anchor moves",
+  "evidence_grade": "observer",
+  "research_digest_fresh_entries": [],
+  "research_digest_action": "none_all_latest_entries_already_consumed_in_ledger",
+  "next_machine_action": "continue automatic forward settlement; reserve no alpha ID until a declared reopen counter advances, then validate the fixed observer formula without retuning"
+}

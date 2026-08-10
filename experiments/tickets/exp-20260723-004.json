@@ -1,0 +1,345 @@
+{
+  "acceptance_rule": "Accept only as measurement infrastructure when one shared selector drives historical and daily paths, missing same-day flow/options fails closed, entry_date and target_price are emitted for every paper candidate, trade_enabled remains false, focused parity tests pass, and the canonical three-window report explicitly records zero evaluable four-surface decisions where Put history is absent; this ticket cannot accept alpha or live readiness.",
+  "allowed_write_scope": [
+    "quant/core_drawdown_flow_put_stabilization_paper_sleeve.py",
+    "quant/test_core_drawdown_flow_put_stabilization_paper_sleeve.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments",
+    "data/experiments",
+    "data/paper_sleeves/core_drawdown_flow_put_stabilization",
+    "experiments"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260723-004.md",
+  "causal_components": [
+    "shared selector",
+    "stable-PIT flow contract",
+    "forward options contract",
+    "run.py daily wiring",
+    "lifecycle ledger",
+    "three-window fail-closed replay",
+    "parity tests",
+    "execution envelope"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "shared_default_off_deep_drawdown_flow_put_stabilization_observer_v1",
+  "claimed_at": "2026-07-23T05:22:37+00:00",
+  "completed_at": "2026-07-23T05:40:40+00:00",
+  "created_at": "2026-07-23T05:20:09+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260723-004",
+  "experiment_uid": "expuid-c57fa2c31d174965",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260723-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-23T05:20:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "core_drawdown_flow_put_observer"
+  },
+  "hypothesis": "Alpha-enabling daily-pipeline wiring: add one shared default-off deep-drawdown plus owner-authorized stable-PIT Moomoo flow plus forward near-put-OI plus price-stabilization observer and wire its snapshot and lifecycle materialization into quant/run.py so future rows land automatically without per-day experiment IDs; the identical selector also produces a fail-closed canonical three-window coverage replay, while live orders, core ranking, sizing, and exits remain unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled",
+    "live_orders",
+    "core_entry",
+    "core_ranking",
+    "core_sizing",
+    "core_exits"
+  ],
+  "mechanism_family": "alpha_observer_measurement_plumbing",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "data/open_positions.json",
+    "live_config",
+    "order_routing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260721-001",
+    "exp-20260702-019",
+    "exp-20260617-004",
+    "exp-20260706-006"
+  ],
+  "new_evidence_type": "automatic_run_pipeline_wiring_for_new_shared_forward_observer",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "deep_drawdown",
+      "field_tags": [
+        "a",
+        "add",
+        "alpha",
+        "also",
+        "authorized",
+        "automatically",
+        "canonical",
+        "closed",
+        "core",
+        "coverage",
+        "daily",
+        "deep",
+        "drawdown",
+        "enabling",
+        "exits",
+        "experiment",
+        "fail",
+        "flow",
+        "forward",
+        "future",
+        "identical",
+        "ids",
+        "into",
+        "its",
+        "land",
+        "lifecycle",
+        "live",
+        "materialization",
+        "measurement",
+        "moomoo",
+        "near",
+        "observer",
+        "oi",
+        "one",
+        "orders",
+        "owner",
+        "per",
+        "pipeline",
+        "pit",
+        "plumbing",
+        "plus",
+        "price",
+        "produces",
+        "put",
+        "py",
+        "quant",
+        "ranking",
+        "remain",
+        "rows",
+        "run",
+        "selector",
+        "sizing",
+        "snapshot",
+        "so",
+        "stabilization",
+        "stable",
+        "three",
+        "unchanged",
+        "while",
+        "window",
+        "wire",
+        "wiring",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_rebound_first_stabilization_budget",
+        "reopen_condition": "Settled forward rows from live deep-drawdown episodes recorded by the new run.py default-off wiring (reopen when >=3 new episodes have settled, i.e. likely years out), or an ex-ante bear-vs-correction conditioning state fixed before replay (different gate shape), or a genuinely new data source for capitulation quality (e.g. PIT breadth/volume climax from the index archive plus warehouse cross-sect",
+        "score": 0.4982,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_episode_budget_gate_shape",
+        "reopen_condition": "A valid retry needs a predeclared ex-ante bear-vs-correction classifier, genuinely new live/forward episode rows, or a full shared paper helper update that is tested before seeing the new episode outcomes.",
+        "score": 0.4735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_rebound_episode_quality",
+        "reopen_condition": "Reopen only after a PIT broad-market OHLCV or breadth source covers at least 12 of the 17 exp-20260706-006 signal dates, or with genuinely new settled forward deep-drawdown episodes that provide the same broad breadth fields.",
+        "score": 0.466,
+        "status": "frozen",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_episode_etf_rebound_candidate_pool",
+        "reopen_condition": "A legitimate retry needs a genuinely different gate shape declared up front: a predeclared per-episode entry budget (e.g. first stabilization only), or an ex-ante bear-vs-correction conditioning state (e.g. PIT regime classifier risk_off vs chop, or 200d-slope filter) fixed BEFORE replay; or new settled forward rows from a live episode. The pre-2023 index archive (data/non_ohlcv/index_history) is ",
+        "score": 0.4626,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_bear_vs_correction_classifier",
+        "reopen_condition": "A valid next retry needs genuinely new live/forward deep-drawdown episode rows, a materially different predeclared macro regime data source, or a full shared paper helper update tested before seeing new episode outcomes.",
+        "score": 0.4613,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "deep_drawdown",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": true
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "deep_drawdown",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The prior proxy runner already proves data schemas are readable, while the implementation is default-off and the decisive expected result is a fail-closed coverage report rather than a positive alpha claim.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "options_history_absent",
+      "run_wiring_conflict",
+      "shared_helper_parity_failure"
+    ],
+    "recorded_at": "2026-07-23T05:19:09+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "Shared selector drives both historical replay and daily default-off snapshots",
+      "Missing exact-date flow or option data fails closed and canonical coverage is reported honestly",
+      "Paper lifecycle is wired into run.py with trade_enabled=false and no core/live behavior change",
+      "Focused implementation, parity, and execution-contract tests passed"
+    ],
+    "before_result_file": "data/experiments/exp-20260723-004/before.json",
+    "after_result_file": "data/experiments/exp-20260723-004/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.82,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "options_history_absent",
+        "run_wiring_conflict",
+        "shared_helper_parity_failure"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Latest complete cross-section selected APLD rather than MU; recent positive mark-to-market is dominated by one unsettled APLD position and is not promotion evidence."
+    }
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The infrastructure acceptance rule passed, while the canonical performance question remained unevaluable because exact-date option snapshots begin after all three standard windows. Recent apparent gains are dominated by one unsettled APLD mark.",
+    "forbidden_near_neighbor_retry": "Do not synthesize historical Put OI, retune the frozen rule on the tiny recent folds, or relabel an unsettled mark-to-market result as accepted alpha.",
+    "new_evidence_required": "At least 20 independent closed single-slot forward decisions, survival at least 5%, positive net replacement value in both chronological halves, single-ticker positive-PnL share at most 40%, and at least 5 selected plus 5 settled decisions per evaluation window, followed by model-diverse alpha-promotion review; alternatively, an authorized exact-date PIT option archive covering the canonical windows.",
+    "reproduction_commands": [
+      ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260723_004_core_drawdown_flow_put_observer.py",
+      ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_core_drawdown_flow_put_stabilization_paper_sleeve.py quant\\test_run_daily_wiring.py quant\\test_paper_sleeve_execution_contract.py -q"
+    ]
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260723-004.json",
+  "single_causal_variable": "shared_default_off_deep_drawdown_flow_put_stabilization_observer_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260723-004.json",
+  "trial_family": "deep_drawdown_flow_put_stabilization_shared_observer",
+  "trial_variant_id": "exp-20260723-004"
+}

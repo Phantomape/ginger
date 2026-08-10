@@ -1,0 +1,139 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "FDA_endpoint_unavailable_or_redirect_drift",
+      "zip_schema_drift",
+      "partial_or_oversized_download",
+      "manifest_clock_mismatch",
+      "dirty_worktree_overlap"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The first repaired snapshot recovered seven locally unseen applications immediately; all remain unmapped, unsettled, observer-only, and ineligible for trading."
+  },
+  "causal_components": [
+    "official_bounded_zip_fetch",
+    "immutable_dated_snapshot_manifest",
+    "manifest_bound_observation_clock",
+    "producer_before_consumer",
+    "fail_closed_health_heartbeat"
+  ],
+  "change_summary": "Restore the Drugs@FDA default-off daily producer with bounded official ZIP acquisition, immutable dated manifest, manifest-bound first-seen clock, fail-closed source health, and explicit zero-event heartbeat; preserve all no-trade rules.",
+  "change_type": "forward_producer_fault_recovery",
+  "changed_variable": "drugsfda_official_daily_snapshot_producer_health_v2",
+  "component": "quant/drugsfda_approval_observer.py, quant/test_drugsfda_approval_observer.py, quant/run.py, quant/test_run_daily_wiring.py, docs/production_backtest_parity_matrix.md, data/non_ohlcv/drugsfda_approval_observer/",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-001",
+  "hypothesis": "Genuine forward-producer fault recovery: the accepted Drugs@FDA first-seen observer repeatedly consumes a frozen 2026-07-10 ZIP while rewriting snapshot_retrieved_at and reporting status=ok, so a bounded official daily ZIP producer, immutable dated snapshot manifest, manifest-bound retrieval clock, and fail-closed missing stale or invalid health contract should restore prospective regulatory-event collection without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_official_drugsfda_approval_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260713-006",
+    "exp-20260727-003"
+  ],
+  "new_evidence_type": "genuine_fault_recovery_no_alpha_evidence",
+  "next_retry_requires": [
+    "No near-neighbor producer ID unless an actual source, schema, retrieval-clock, or health regression occurs.",
+    "Underlying alpha remains parked until at least 30 prospective approvals span at least 20 approval dates with audited public-sponsor mappings and complete next-open/10-session cash, SPY, and QQQ replacement outcomes."
+  ],
+  "notes": "Accepted measurement repair only. The first real retrieval parsed 5,800 applications and exposed 7 prospective rows at its manifest clock. Because UTC had crossed midnight while the repository trading date remained 2026-07-27, the premature 20260728-labelled pair was quarantined under the experiment and a canonical 20260727 pair was frozen; its same-date rerun reused identical artifacts, appended zero, and emitted fresh_success_zero_forward, leaving the real 20260728 slot open. Missing July 14-27 vintages are irrecoverable and cannot be backdated. Gate-1 hash and strategy EV/PnL/trades are unchanged; accepted_alpha=false.",
+  "parameters": {
+    "locked_variables": [
+      "NDA_BLA_original_application_parsing",
+      "first_snapshot_seed_only",
+      "later_new_hash_forward_only",
+      "manifest_retrieval_clock",
+      "no_ticker_mapping",
+      "next_open_pending",
+      "trade_enabled_false",
+      "no_historical_PIT_claim",
+      "no_signal_ranking_sizing_exit_order_change"
+    ],
+    "single_causal_variable": "drugsfda_official_daily_snapshot_producer_health_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not backdate the seven recovered applications, treat approval dates as availability, infer ticker mappings from sponsor names without an audited relation, relax the source or manifest health contract, or claim alpha from unsettled rows.",
+    "new_evidence_required": "No further producer ID is needed unless a real source, schema, retrieval-clock, or health regression occurs. Alpha remains parked until the existing mapped and settled replacement-value threshold passes.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The first repaired snapshot recovered seven locally unseen applications immediately; all remain unmapped, unsettled, observer-only, and ineligible for trading."
+  },
+  "prediction": {
+    "confidence_reason": "The daily wiring and static hash prove structural starvation; the same immutable producer and fail-closed pattern is already accepted on another official forward surface.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "FDA_endpoint_unavailable_or_redirect_drift",
+      "zip_schema_drift",
+      "partial_or_oversized_download",
+      "manifest_clock_mismatch",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T04:13:32+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/after_producer_health.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-28T04:27:37+00:00",
+  "trial_family": "drugsfda_forward_producer_health",
+  "trial_variant_id": "official_daily_snapshot_fail_closed_v1"
+}

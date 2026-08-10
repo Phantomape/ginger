@@ -1,0 +1,386 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if an unconfigured daily path requests the fixed official USAspending transaction endpoint with a bounded wait, freezes a validated ZIP and manifest before observation, binds first_seen_at to retrieval UTC, preserves explicit local-snapshot override and all eligibility/embargo rules, persists non-ok health on source failure or stale/missing production, exposes successful zero-event heartbeats distinctly from starvation, is idempotent for a run date, passes focused tests and lean audit, leaves the cash-feasible Gate-1 artifact hash unchanged, and accepted_alpha remains false.",
+  "allowed_write_scope": [
+    "quant/usaspending_obligation_observer.py",
+    "quant/test_usaspending_obligation_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "data/non_ohlcv/usaspending_obligation_observer/",
+    "data/experiments/",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260727-003.md",
+  "causal_components": [
+    "official bounded transaction download",
+    "persisted immutable raw snapshot and manifest",
+    "explicit retrieval-time PIT clock",
+    "fail-closed stale or unavailable health summary",
+    "zero-row heartbeat visibility",
+    "local snapshot override preserved"
+  ],
+  "change_type": "fault_recovery_forward_producer_health",
+  "changed_variable": "usaspending_observer_snapshot_producer_and_health_contract",
+  "claimed_at": "2026-07-27T13:20:13+00:00",
+  "completed_at": "2026-07-27T13:44:37+00:00",
+  "created_at": "2026-07-27T13:19:35+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260727-003",
+  "experiment_uid": "expuid-b4c093cc9362439d",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260727-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-27T13:19:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "usaspending_forward_producer_health"
+  },
+  "hypothesis": "Fault recovery: the accepted USAspending local-first-seen observer silently starves whenever no external snapshot path is configured, while its persisted latest summary remains status=ok; a bounded official transaction-download producer plus immutable raw manifest and fail-closed freshness/zero-output heartbeat should restore prospective rows without changing any alpha rule, ranking, sizing, exits, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "exclude Department of Defense",
+    "exclude USACE",
+    "current snapshot remains seed-only",
+    "first_seen_at equals actual local retrieval UTC",
+    "positive federal_action_obligation",
+    "base_and_all_options_value <= 0",
+    "transaction-key dedupe",
+    "next-session-open future contract",
+    "trade_enabled false",
+    "no historical PIT claim",
+    "no order/ranking/sizing/exit changes"
+  ],
+  "mechanism_family": "production_visible_usaspending_obligation_conversion_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "data/open_positions.json",
+    "data/daily/orders/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260713-007"
+  ],
+  "new_evidence_type": "fault_recovery_no_alpha_evidence",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "usaspending_obligation",
+      "field_tags": [
+        "a",
+        "accepted",
+        "alpha",
+        "any",
+        "bounded",
+        "changing",
+        "closed",
+        "configured",
+        "conversion",
+        "daily",
+        "download",
+        "exits",
+        "external",
+        "fail",
+        "fault",
+        "first",
+        "forward",
+        "freshness",
+        "health",
+        "heartbeat",
+        "immutable",
+        "is",
+        "its",
+        "latest",
+        "local",
+        "manifest",
+        "no",
+        "obligation",
+        "observer",
+        "official",
+        "ok",
+        "or",
+        "orders",
+        "output",
+        "path",
+        "persisted",
+        "plus",
+        "producer",
+        "prospective",
+        "ranking",
+        "raw",
+        "recovery",
+        "remains",
+        "restore",
+        "rows",
+        "rule",
+        "seen",
+        "should",
+        "silently",
+        "sizing",
+        "snapshot",
+        "starves",
+        "status",
+        "summary",
+        "transaction",
+        "usaspending",
+        "whenever",
+        "while",
+        "without",
+        "zero"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "usaspending_obligation",
+        "family_key": "usaspending_non_dod_obligation_conversion_first_seen_observer",
+        "reopen_condition": ">=75 settled unique eligible prospective local-first-seen events across >=15 first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete next-open/10-session cash/SPY/QQQ outcomes",
+        "score": 0.5071,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.1676,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": "['Do not promote raw alpha_score top-N, score weights, or component gates from this run alone.', 'A valid retry needs non-OHLCV component monotonicity, replacement value versus same-day alternatives, and regime/cost controls.']",
+        "score": 0.1671,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "accepted_entry_cluster_rank_tail_sizing",
+        "reopen_condition": "['Only retest if new out-of-sample clusters show repeated tail losses.', 'Any promotion must put the cluster policy in shared production_parity.py.', 'Do not combine this with ticker, earnings, or event filters in the same iteration.']",
+        "score": 0.1625,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_allocator_forward_activation_readiness",
+        "reopen_condition": "Wait for closed allocator_top1 forward replacement-value rows under the existing envelope, or add a genuinely new PIT source that is not an allocator/source-arbitration neighbor.",
+        "score": 0.1619,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "True forward-production fault recovery: the accepted observer has produced zero raw snapshots and zero forward rows for fourteen calendar days because the daily producer is structurally absent; this ticket restores the producer and health contract without claiming new alpha evidence.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "usaspending_obligation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "True forward-production fault recovery: the accepted observer has produced zero raw snapshots and zero forward rows for fourteen calendar days because the daily producer is structurally absent; this ticket restores the producer and health contract without claiming new alpha evidence.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "usaspending_obligation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The official endpoint returns a status URL/file URL contract, the parser and append-only state already exist, and the repair is isolated from strategy decisions; the main uncertainty is upstream async availability.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "official_download_timeout",
+      "async_status_never_finishes",
+      "schema_drift",
+      "partial_zip_write",
+      "incorrect_retrieval_clock",
+      "weekend_zero_rows",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-27T13:18:51+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "6f3486ee3dfaf2a82bc7ea6d527c5b5581afbceee474bb8e0c75c292ae85b8b1",
+    "payload_hash": "6f3486ee3dfaf2a82bc7ea6d527c5b5581afbceee474bb8e0c75c292ae85b8b1",
+    "schema_version": 1
+  },
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair",
+    "artifact": "data/experiments/exp-20260727-003/exp_20260727_003_usaspending_forward_producer_health.json",
+    "log": "experiments/logs/exp-20260727-003.json",
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/experiments/exp-20260727-003/exp_20260727_003_usaspending_forward_producer_health.json",
+    "proof_passed": true,
+    "gate4": {
+      "passed": true,
+      "accepted_alpha": false,
+      "accepted_measurement_repair": true,
+      "decision": "accepted_measurement_repair",
+      "strategy_ev_delta": 0.0,
+      "strategy_pnl_delta": 0.0,
+      "strategy_trade_delta": 0
+    },
+    "headline_metrics": {
+      "source_rows": 1816,
+      "new_forward_rows": 249,
+      "new_eligible_forward_rows": 7,
+      "settled_eligible_forward_rows": 0,
+      "idempotent_rerun_rows_appended": 0,
+      "strategy_ev_delta": 0.0,
+      "strategy_pnl_delta": 0.0,
+      "strategy_trade_delta": 0
+    },
+    "production_impact": {
+      "run_adapter_changed": true,
+      "daily_source_producer_restored": true,
+      "fail_closed_health_added": true,
+      "default_off_observer_only": true,
+      "trade_enabled": false,
+      "signals_changed": false,
+      "ranking_changed": false,
+      "sizing_changed": false,
+      "exits_changed": false,
+      "orders_changed": false
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The observer parser and ledger were sound, but production had no default producer; a successful process could therefore skip the source indefinitely while an old status=ok summary concealed starvation.",
+      "irrecoverable_gap": "The missing July 14-26 local vintages cannot be backfilled as forward evidence. The 2026-07-27 snapshot begins a new valid local-first-seen vintage only at its manifest retrieval clock.",
+      "forbidden_near_neighbor_retry": "Do not backdate missed vintages, treat action or initial-report dates as availability, reinclude DoD/USACE, relax source freshness, retune obligation/ceiling rules, or claim alpha from these unsettled rows.",
+      "new_evidence_required": "No further producer ID is needed unless a real source, schema, retrieval-clock, or health regression occurs. Alpha evaluation remains parked until the frozen settled-row, date, mapping, concentration, and replacement-value thresholds pass."
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted_measurement_repair",
+      "actual_success": 1,
+      "predicted_success_probability": 0.86,
+      "brier_score": 0.0196,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "official_download_timeout",
+        "async_status_never_finishes",
+        "schema_drift",
+        "partial_zip_write",
+        "incorrect_retrieval_clock",
+        "weekend_zero_rows",
+        "dirty_worktree_overlap"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The first restored live snapshot produced 249 non-embargo prospective rows and 7 eligible rows immediately, but none are settled or mapped enough to reopen alpha."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260727-003.json",
+  "single_causal_variable": "usaspending_daily_official_snapshot_producer_and_fail_closed_health_v1",
+  "status": "accepted_measurement_repair",
+  "ticket_file": "experiments/tickets/exp-20260727-003.json",
+  "trial_family": "usaspending_obligation_forward_producer_fault_recovery",
+  "trial_variant_id": "official_daily_async_download_health_v1",
+  "timestamp": "2026-07-27T13:44:37Z",
+  "decision": "accepted_measurement_repair",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_ready": false,
+  "proof_artifact": "data/experiments/exp-20260727-003/exp_20260727_003_usaspending_forward_producer_health.json",
+  "proof_passed": true,
+  "next_retry_requires": [
+    "No near-neighbor producer ID unless an actual source, schema, retrieval-clock, or health regression occurs.",
+    "Underlying alpha remains parked until at least 75 settled unique eligible events span at least 15 first-seen dates and 3 mapped tickers, max ticker share is at most 30%, and cash/SPY/QQQ replacement outcomes are complete."
+  ]
+}

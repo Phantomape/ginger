@@ -1,0 +1,101 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.09,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "over-broad waiver admits unrelated near neighbors; attestation forgeable via unhashed artifact; ancestor that reached reservation slips through; rollout smoke-check boundary (next-cycle rerun",
+      "empty input) regression"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_mode": "none",
+    "surprise_level": "low",
+    "surprise_note": "The recorded rejected prior child (cand-325a) needed its own binding shape: amendment_competing_child fires from ledger metadata regardless of near-neighbor waivers, so the attestation had to both waive records and suppress the competing-child veto - the park v3 spec only anticipated the two-ancestor near-neighbor half."
+  },
+  "causal_components": [],
+  "change_summary": "Extended amendment lineage with a fail-closed attested abandoned-ancestor waiver: contract layer adds optional amendment_lineage.abandoned_ancestors (strict shape, canonical order); D3 engine authenticates each ancestor against a hash-bound parked pre-reservation block artifact (all-false safety_state, original or abandoned-prior-child chain binding, ledger metadata authentication, zero representative experiment ids) before waiving its record ids and excluding it from amendment_competing_child. 206 tests green including 12 new boundary tests; real dividend-restart chain now passes outcome-blind D0-D3 (panel v5, strict verify valid).",
+  "change_type": "measurement_repair",
+  "changed_variable": "Add optional attested abandoned-ancestor waiver to _validate_amendment_lineage in quant/alpha_search_engine.py, fail-closed on missing artifact, hash mismatch, id mismatch, outcome-bearing content, reserved-ancestor, or unauthenticated history; keep test_amendment_does_not_waive_another_blocking_neighbor green and add boundary tests (empty list, non-target lane, ancestor-that-reserved, missing artifact, wrong-chain artifact)",
+  "component": "quant/alpha_search_engine.py, quant/test_alpha_search_engine.py, quant/alpha_search_contract.py, quant/test_alpha_search_contract.py, data/experiments/exp-20260801-003, experiments/tickets/exp-20260801-003.json, experiments/cards/exp-20260801-003.md, experiments/logs/exp-20260801-003.json, experiments/manifests/exp-20260801-003.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260801-003",
+  "hypothesis": "Alpha-enabling lineage repair: the D3 amendment waiver is deliberately depth-one, so the two-record 2026-07-29 dividend-restart abort chain (ledger-recorded original cand-d3d84780295914d0f19a plus its recorded improvised amendment cand-4047cfda28a51c488a77) deadlocks every future child. Extend amendment_lineage with an OPTIONAL fail-closed abandoned_ancestors attestation: each listed ancestor must resolve in bound history as origin=discovery_candidate with authenticated candidate_metadata, have zero representative experiment ids (never reached reservation), and be bound to the declared parent chain by a hash-bound repository pre-reservation block artifact naming both original_candidate_id and amended_candidate_id with an all-false safety_state; only then are that ancestor record ids added to the D3 waiver set. Unrelated neighbors must stay blocking.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_discovery_engine_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Repairs the amendment_waiver_depth_one_deadlock_on_two_record_abort_chain park (block v3 2026-07-31). Deliberately owned by the machinery lane per the park artifact, not the session whose candidate it unblocks - but executed one day later by the scheduled agent after re-verifying the deadlock on a fresh 1418-record snapshot. Unrelated-neighbor invariant test_amendment_does_not_waive_another_blocking_neighbor stays green; new tests prove missing/hash-mismatch/wrong-chain/outcome-bearing/reserved-ancestor/empty-list all still reject. Boundary smoke per AGENTS section 6: stateless, no wall clocks, optional field inert on non-target lanes, artifact drift fails closed on sha256.",
+  "parameters": {
+    "locked_variables": [
+      "Add optional attested abandoned-ancestor waiver to _validate_amendment_lineage in quant/alpha_search_engine.py, fail-closed on missing artifact, hash mismatch, id mismatch, outcome-bearing content, reserved-ancestor, or unauthenticated history; keep test_amendment_does_not_waive_another_blocking_neighbor green and add boundary tests (empty list, non-target lane, ancestor-that-reserved, missing artifact, wrong-chain artifact)"
+    ],
+    "single_causal_variable": "Add optional attested abandoned-ancestor waiver to _validate_amendment_lineage in quant/alpha_search_engine.py, fail-closed on missing artifact, hash mismatch, id mismatch, outcome-bearing content, reserved-ancestor, or unauthenticated history; keep test_amendment_does_not_waive_another_blocking_neighbor green and add boundary tests (empty list, non-target lane, ancestor-that-reserved, missing artifact, wrong-chain artifact)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-touch the amendment lineage waiver mechanism for this chain again: no widening of the attestation to ancestors that reached reservation, no artifact types other than parked pre_reservation blocks, no depth>1 parent chains, and no retune of the 0.65/0.9688 near-neighbor thresholds. The dividend-restart chain is now waivable exactly once via the frozen v2/v3 block artifacts; any further D3 friction on this lane must present a genuinely new mechanism defect, not another waiver shape.",
+    "new_evidence_required": "Next step is consuming the repair, not extending it: freeze promotion for panel v5 child cand-ed4c2908c4645ea90319 and run the one research_pit private_replay_scout (ceiling observed_only) against the hash-bound 89-row comparator slot map. New machinery evidence would only come from a THIRD distinct abort-chain topology that the original+abandoned-child binding shapes cannot express.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The recorded rejected prior child (cand-325a) needed its own binding shape: amendment_competing_child fires from ledger metadata regardless of near-neighbor waivers, so the attestation had to both waive records and suppress the competing-child veto - the park v3 spec only anticipated the two-ancestor near-neighbor half."
+  },
+  "prediction": {
+    "confidence_reason": "Spec was pre-written outcome-blind in park v3 with attestation artifacts already hash-bound; change is localized to one validator plus tests",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "over-broad waiver admits unrelated near neighbors; attestation forgeable via unhashed artifact; ancestor that reached reservation slips through; rollout smoke-check boundary (next-cycle rerun",
+      "empty input) regression"
+    ],
+    "recorded_at": "2026-08-01T16:14:49+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260801-003/lineage_waiver_before.json",
+    "data/experiments/exp-20260801-003/lineage_waiver_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-01T16:40:23+00:00",
+  "trial_family": "amendment_lineage_waiver",
+  "trial_variant_id": "abandoned_ancestor_attestation_v1"
+}

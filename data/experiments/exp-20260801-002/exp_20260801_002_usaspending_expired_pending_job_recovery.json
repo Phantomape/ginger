@@ -1,0 +1,43 @@
+{
+  "acceptance_tests": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_usaspending_obligation_observer.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -q quant\\test_run_daily_wiring.py -k usaspending"
+  ],
+  "artifact_type": "usaspending_expired_pending_job_recovery",
+  "baseline_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+  "checks": {
+    "completed_journal_retired_receipt": true,
+    "failed_fresh_post_stays_stale": true,
+    "fresh_post_used_after_expiry": true,
+    "pending_before_recovery": true,
+    "recovered_after_expiry": true,
+    "recovery_did_not_mark_resume": true
+  },
+  "entry_rules_changed": false,
+  "exits_changed": false,
+  "experiment_id": "exp-20260801-002",
+  "orders_changed": false,
+  "producer_after_failed_repost": {
+    "fresh_post_attempted": true,
+    "pending_job_validation_status": "expired",
+    "status": "stale"
+  },
+  "producer_after_recovered": {
+    "attempt_poll_count": 1,
+    "pending_job_validation_status": "validated",
+    "resumed_pending_job": false,
+    "run_date": "2026-07-27",
+    "status": "ok",
+    "status_poll_count": 1
+  },
+  "producer_before": {
+    "pending_job_validation_status": "validated",
+    "run_date": "2026-07-27",
+    "status": "pending"
+  },
+  "ranking_changed": false,
+  "sizing_changed": false,
+  "status": "accepted",
+  "strategy_behavior_changed": false,
+  "trade_enabled": false
+}

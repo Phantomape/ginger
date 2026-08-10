@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260804-001",
+  "stage": "after",
+  "generated_at": "2026-08-04T15:37:10Z",
+  "active_gate1": {
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "unchanged_from_before": true
+  },
+  "builder_snapshot": {
+    "path": "data/reopen_readiness.json",
+    "lane_count": 13,
+    "ready_lane_count": 0,
+    "prediction_market_postfix": {
+      "status": "not_ready",
+      "counters": {
+        "postfix_observation_rows": 464,
+        "postfix_unique_markets": 34,
+        "raw_settled_candidate_rows": 196,
+        "unique_settled_candidates": 196,
+        "duplicate_candidate_rows_excluded": 0,
+        "decision_date_count": 1,
+        "query_group_count": 3,
+        "top_ticker_share": 0.158163,
+        "top_query_share": 0.94898,
+        "markets_with_any_probability_change": 17,
+        "markets_with_any_5pp_move": 9
+      },
+      "thresholds": {
+        "unique_settled_candidates": 60,
+        "decision_date_count": 10,
+        "query_group_count": 3,
+        "top_ticker_share_max": 0.15,
+        "top_query_share_max": 0.5,
+        "markets_with_any_probability_change": 20,
+        "markets_with_any_5pp_move": 10
+      },
+      "failed_checks": [
+        "decision_dates_at_least_10",
+        "top_ticker_share_at_most_15pct",
+        "top_query_share_at_most_50pct",
+        "markets_with_probability_change_at_least_20",
+        "markets_with_5pp_move_at_least_10"
+      ]
+    },
+    "massive_dividend_restart_forward": {
+      "status": "not_ready",
+      "counters": {
+        "unique_settlement_events": 0,
+        "duplicate_settlement_events_excluded": 0,
+        "settled_restart_decisions": 0,
+        "summary_settled_restart_decisions": 0,
+        "summary_reopen_progress_required": 30,
+        "summary_reopen_progress_settled_restart_decisions": 0
+      },
+      "thresholds": {
+        "settled_restart_decisions": 30
+      },
+      "health_and_alignment_checks_passed": true,
+      "failed_checks": [
+        "settled_restart_decisions_at_least_30"
+      ]
+    }
+  },
+  "repair_audit_identity_regression": {
+    "artifact": "data/non_ohlcv/prediction_market_event_observer/outcome_ledgers/prediction_market_event_observer_outcomes_20260718.jsonl",
+    "identity": [
+      "provider_market_id",
+      "candidate_ticker",
+      "observed_date",
+      "horizon_trading_days"
+    ],
+    "unique_settled_count": 3361,
+    "expected": 3361,
+    "matches": true
+  },
+  "boundary_smoke": {
+    "second_consecutive_builder_run": "passed",
+    "prediction_history_count_before_and_after_second_run": [
+      10,
+      10
+    ],
+    "massive_history_count_before_and_after_second_run": [
+      1,
+      1
+    ],
+    "missing_inputs_fail_closed": true,
+    "malformed_or_unhealthy_summary_fails_closed": true,
+    "duplicate_economic_rows_do_not_inflate": true,
+    "pre_first_seen_outcomes_are_excluded": true,
+    "identity_whitespace_is_normalized": true,
+    "malformed_observed_dates_fail_closed": true,
+    "nested_reopen_progress_is_aligned": true
+  },
+  "tests": [
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_build_reopen_readiness.py -q --basetemp data\\experiments\\exp-20260804-001\\pytest_tmp_4",
+      "result": "26 passed in 0.36s"
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B -m py_compile scripts\\build_reopen_readiness.py quant\\test_build_reopen_readiness.py",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check -- scripts/build_reopen_readiness.py quant/test_build_reopen_readiness.py data/reopen_readiness.json data/alpha_search/synthesis_pass_20260804_0809.json",
+      "result": "passed"
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+      "result": "exit 0; lean_quality_passed=true; lean_strict_passed=true; alpha_playbook_contract.passed=true"
+    }
+  ],
+  "strategy_behavior_changed": false,
+  "trade_enabled_changed": false,
+  "outcome_direction_used_by_repair": false,
+  "decision": "accepted_measurement_repair"
+}

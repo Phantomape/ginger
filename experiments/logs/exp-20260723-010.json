@@ -1,0 +1,134 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": 0.0,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0009,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "shared_schema_semantics_disagree",
+      "historical_ledger_cannot_reclassify",
+      "focused_test_failure"
+    ],
+    "predicted_success_probability": 0.97,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The deterministic repair matched the 0.97 success prediction; no unexpected strategy, formula, threshold, or persistence change was observed."
+  },
+  "causal_components": [
+    "shared open-position schema",
+    "bucket classification",
+    "all-account-group loader",
+    "focused parity tests",
+    "measurement artifact"
+  ],
+  "change_summary": "Align live-drift core bucketing and account-group loading with the shared open-position schema; add v2 contract tests and a zero-strategy-impact verification artifact.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "live_drift_core_slot_schema_alignment_v2",
+  "component": "quant\\live_drift_reconciliation.py, quant\\test_live_drift_reconciliation.py, docs\\live_drift_reconciliation.md, quant\\experiments, data\\experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-010",
+  "hypothesis": "Fault recovery: live-drift must classify every position that the shared open-position schema marks consumes_core_slot as core; the current MRVL row is wrongly bucketed as sleeve, leaving the core drift alert at zero observed sessions and blocking trustworthy live execution-decay measurement, while orders, entries, ranking, sizing, exits, and Gate 1-4 behavior remain unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "live_drift_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260706-019",
+    "exp-20260707-011",
+    "exp-20260711-006"
+  ],
+  "new_evidence_type": "newly_observed_production_schema_mismatch",
+  "next_retry_requires": [
+    "a newly observed production account-group or core-slot semantic mismatch",
+    "a material upstream open-position schema change",
+    "or correctly bucketed forward core sessions that reveal a distinct unresolved measurement defect"
+  ],
+  "notes": "Accepted measurement repair only, not alpha. MRVL changed from the legacy/persisted sleeve classification to core because slot_policy=consumes_core_slot; a persist=False verification produced one core session. Historical v1 ledger rows remain append-only. Active cash-feasible Gate-1 aggregate remains EV 6.2057, PnL 130992.36, 49 trades, min survival 0.8116, worst drawdown 0.0889 with exact zero delta. Alpha synthesis generated three leads but all remain parked below declared reopen thresholds.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled",
+      "orders",
+      "entry",
+      "ranking",
+      "sizing",
+      "exits",
+      "gate1_4",
+      "drift_formulas",
+      "alert_thresholds"
+    ],
+    "single_causal_variable": "live_drift_core_slot_schema_alignment_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another ID to relabel append-only v1 rows, append routine daily v2 rows, or restate the same core_strategy/consumes_core_slot mismatch; the shared schema is now the single classifier.",
+    "new_evidence_required": "A retry requires a newly observed production account-group/core-slot semantic mismatch, a material upstream schema change, or correctly bucketed forward core sessions that expose a distinct unresolved measurement defect.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Live-drift duplicated an incomplete sleeve-only core classifier while the shared open-position schema already represented the correct core-slot semantics; reusing that helper deterministically restored MRVL to core and preserved all locked behavior."
+  },
+  "prediction": {
+    "confidence_reason": "The production artifact directly shows MRVL with slot_policy consumes_core_slot and sleeve core_strategy while live_drift records strategy_bucket sleeve; quant/open_position_schema.py already defines the authoritative core-slot semantics, so reusing it is a narrow deterministic repair. The main risk is preserving append-only history and exact alert arithmetic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared_schema_semantics_disagree",
+      "historical_ledger_cannot_reclassify",
+      "focused_test_failure"
+    ],
+    "recorded_at": "2026-07-23T19:16:10+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-010/before.json",
+    "data/experiments/exp-20260723-010/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-23T19:26:28+00:00",
+  "trial_family": "live_drift_position_schema_alignment",
+  "trial_variant_id": "exp-20260723-010"
+}

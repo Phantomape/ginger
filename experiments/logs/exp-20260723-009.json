@@ -1,0 +1,121 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0001,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "wrong_threshold_source",
+      "playbook_contract_violation",
+      "unrelated_worktree_change"
+    ],
+    "predicted_success_probability": 0.99,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "No material surprise: the stale duplicated threshold was confirmed and the one-line contract repair preserved the pre-existing concurrent playbook edits."
+  },
+  "causal_components": [],
+  "change_summary": "Align the exit-lifecycle playbook reopen exception with the canonical 212 settled / 30 advisory / 21 hard-stop contract; no strategy behavior changed.",
+  "change_type": "measurement_contract_repair",
+  "changed_variable": "exit_lifecycle_playbook_reopen_threshold",
+  "component": "docs\\alpha-optimization-playbook.md, data\\experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-009",
+  "hypothesis": "Align the playbook exit-lifecycle parked-surface exception with the canonical exp-20260722-001 reopen thresholds of 212 settled, 30 advisory, and 21 hard-stop rows so stale 101/20/8 text cannot authorize a premature alpha retry; change no strategy, order, signal, ranking, sizing, exit, or Gate 1-4 behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260722-001",
+    "exp-20260721-004"
+  ],
+  "new_evidence_type": "canonical_threshold_contract_disagreement",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair only. Before, docs/alpha-optimization-playbook.md still authorized reopen at 101 settled / 20 advisory / 8 hard-stop rows while exp-20260722-001, scripts/build_reopen_readiness.py, data/reopen_readiness.json, and docs/frozen_families.jsonl all required 212/30/21. After, all five sources agree. Current counters remain 148 settled / 21 advisory / 14 hard-stop, so the lane remains closed. Production impact: shared_policy_changed=false, trade_enabled=false, orders/ranking/sizing/entry/exit/Gate-1-4 unchanged. Focused machine assertions passed and quant/test_alpha_playbook_contract.py passed 7 tests. Reflection: the duplicated playbook exception went stale when exp-20260722-001 raised its quantitative reopen bar. Do not reopen or retune this exit-lifecycle cohort at the old 101/20/8 thresholds; another alpha probe requires the fixed cohort to reach 212/30/21, or a genuinely new data source/gate shape, and any policy promotion also needs slot-reuse/winner-collateral accounting plus a shared default-off helper. Reproduce with the contract assertion command recorded in the run handoff and .\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_playbook_contract.py -q.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled",
+      "orders",
+      "entry",
+      "ranking",
+      "sizing",
+      "exit",
+      "gate1_4"
+    ],
+    "single_causal_variable": "exit_lifecycle_reopen_threshold_single_source_alignment_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not use the superseded 101/20/8 playbook text to reopen this fixed cohort, and do not retune exit labels, thresholds, horizons, or response functions on the current rows.",
+    "new_evidence_required": "A future exit-lifecycle alpha probe requires 212 settled, 30 advisory, and 21 hard-stop rows on the same post-2026-06-30 cohort, or a genuinely new data source or gate shape; policy promotion also requires slot-reuse/winner-collateral accounting and a shared default-off helper.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "No material surprise: the stale duplicated threshold was confirmed and the one-line contract repair preserved the pre-existing concurrent playbook edits."
+  },
+  "prediction": {
+    "confidence_reason": "The stale playbook row is directly contradicted by the closed exp-20260722-001 reflection, the readiness builder, current readiness artifact, and frozen-family record; the repair is one documentation contract value with no trading path.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "wrong_threshold_source",
+      "playbook_contract_violation",
+      "unrelated_worktree_change"
+    ],
+    "recorded_at": "2026-07-23T17:15:24+00:00",
+    "success_probability": 0.99
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-009/before.json",
+    "data/experiments/exp-20260723-009/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-23T17:19:20+00:00",
+  "trial_family": "exit_lifecycle_reopen_threshold_contract",
+  "trial_variant_id": "exp-20260723-009"
+}

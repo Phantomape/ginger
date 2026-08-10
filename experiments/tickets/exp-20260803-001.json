@@ -1,0 +1,332 @@
+{
+  "acceptance_rule": "Accept only if volatile response metadata and page partition or order cannot change the stable decision-content identity; any provider_id, ticker, declaration_date, or cash_amount change does; duplicate provider-ID conflicts fail closed; raw page-chain provenance remains separately auditable; same-session and weekend reruns do not advance freshness; three distinct completed sessions with unchanged decision content fail closed; legacy state migrates once without a false alert; changed content resets; existing observer and daily-wiring tests remain green; no strategy or settlement semantics change.",
+  "allowed_write_scope": [
+    "quant/massive_dividend_restart_forward_observer.py",
+    "quant/test_massive_dividend_restart_forward_observer.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260803-001.md",
+  "causal_components": [
+    "canonical_decision_content_hash",
+    "raw_retrieval_provenance_hash",
+    "completed_session_freshness_dedup",
+    "legacy_state_migration",
+    "boundary_tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_dividend_restart_content_freshness_identity_v2",
+  "claimed_at": "2026-08-03T15:15:12+00:00",
+  "completed_at": "2026-08-03T15:26:54+00:00",
+  "created_at": "2026-08-03T15:14:49+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260803-001",
+  "experiment_uid": "expuid-96955b44007548df",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260803-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-03T15:14:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "massive_dividend_restart_content_freshness_identity"
+  },
+  "hypothesis": "Fault recovery: two natural massive_dividend_restart_forward observer runs consumed the same 144-page, 717741-row, 414079-positive-USD, max-2026-07-31 decision surface with zero new decisions on rerun, yet volatile raw-page metadata changed content_identity and left the unchanged counter at zero; hashing the canonical decision-safe row projection while retaining raw retrieval provenance separately, and advancing freshness only once per distinct completed US-equity session, should restore fail-closed stale-input detection without changing candidates, gates, entry, ranking, sizing, exits, settlement, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "gap_days",
+    "recency_window",
+    "entry_rule",
+    "liquidity_gate",
+    "price_gate",
+    "top2_policy",
+    "h10_settlement",
+    "trade_enabled"
+  ],
+  "mechanism_family": "forward_observer_health",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "data/non_ohlcv/massive_dividend_restart_forward/ledger.jsonl",
+    "entry_rule",
+    "gap_days",
+    "recency_window",
+    "liquidity_gate",
+    "price_gate",
+    "top2_policy",
+    "h10_settlement",
+    "trade_enabled"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260802-003",
+    "exp-20260802-002"
+  ],
+  "new_evidence_type": "reproducible_production_forward_health_fault",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 1.0,
+        "family_key": "massive_dividend_restart_forward_observer_first_build",
+        "score": 0.626,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "massive_dividend_restart_forward",
+      "field_tags": [
+        "advancing",
+        "at",
+        "candidates",
+        "canonical",
+        "changed",
+        "changing",
+        "closed",
+        "completed",
+        "consumed",
+        "content",
+        "counter",
+        "decision",
+        "decisions",
+        "detection",
+        "distinct",
+        "dividend",
+        "entry",
+        "equity",
+        "exits",
+        "fail",
+        "fault",
+        "forward",
+        "freshness",
+        "gates",
+        "hashing",
+        "health",
+        "identity",
+        "input",
+        "left",
+        "massive",
+        "max",
+        "metadata",
+        "natural",
+        "new",
+        "observer",
+        "on",
+        "once",
+        "only",
+        "or",
+        "orders",
+        "page",
+        "per",
+        "positive",
+        "projection",
+        "provenance",
+        "ranking",
+        "raw",
+        "recovery",
+        "rerun",
+        "restart",
+        "restore",
+        "retaining",
+        "retrieval",
+        "row",
+        "runs",
+        "safe",
+        "same",
+        "separately",
+        "session",
+        "settlement",
+        "should",
+        "sizing",
+        "stale",
+        "surface",
+        "two",
+        "unchanged",
+        "us",
+        "usd",
+        "volatile",
+        "while",
+        "without",
+        "yet",
+        "zero"
+      ],
+      "gate_shape": "forward_observer"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "massive_dividend_restart_forward",
+        "family_key": "massive_dividend_restart_forward_observer_first_build",
+        "reopen_condition": "ID 2 of the first-build budget: the settlement contract (entry/exit session resolution from the session calendar, H10 replacement value vs comparator, top-2/day liquidity dedup, PIT membership gate at policy level). The dividend-restart lane reopens for a stability re-read only at >=30 settled forward H10 decisions on gap_variant=restart_after_observed_gap rows, or with canonical as-published divi",
+        "score": 0.626,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ortex_borrow",
+        "family_key": "batch_forward_observer_starvation_fault_recovery",
+        "reopen_condition": "Reopen only for an independently observed source-format change, pagination or credit semantic incompatibility, or another content-identity failure that persists after this repaired contract.",
+        "score": 0.1864,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_forward_context_logger",
+        "reopen_condition": "Alpha remains parked until the registered prospective ledger has at least 25 fully settled 10d+20d decisions, at least 8 high-sale-overhang decisions, cash/SPY/QQQ completeness, max single-ticker share <=40%, and healthy content-identity-bound producers; otherwise only a genuinely new source/gate shape or a real plumbing regression can justify another ID.",
+        "score": 0.1698,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "chop_forward_observer",
+        "family_key": "chop_forward_observer_fingerprint_coverage",
+        "reopen_condition": ">=15 closed forward chop rows per bundle, a different non-price chop data source, or a new shared policy tested by Gate 1-4.",
+        "score": 0.1605,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "chop_forward_observer",
+        "family_key": "chop_forward_observer_wiring",
+        "reopen_condition": "Calendar time: forward chop-labeled days accruing rows in data/paper_sleeves/chop_forward/rows.jsonl.",
+        "score": 0.1605,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuine natural forward-health fault after exp-20260802-003: volatile Massive request metadata changes raw page hashes while decision content is unchanged, defeating the required content-identity freshness guard.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "massive_dividend_restart_forward",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuine natural forward-health fault after exp-20260802-003: volatile Massive request metadata changes raw page hashes while decision content is unchanged, defeating the required content-identity freshness guard.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_observer",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "massive_dividend_restart_forward",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation-20260803",
+  "prediction": {
+    "confidence_reason": "The faulty comparison is present in code, two persisted natural coverage receipts reproduce it, and Massive raw payloads explicitly contain a volatile request_id; the repair is deterministic and module-local.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_projection_omits_decision_field",
+      "legacy_state_false_alert",
+      "raw_provenance_lost",
+      "completed_session_clock_regression"
+    ],
+    "recorded_at": "2026-08-03T15:14:02+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "583e17648640c9e6ced667500c8a76a04e3b3cc157abbe3040dbdb3c56ab0133",
+    "payload_hash": "583e17648640c9e6ced667500c8a76a04e3b3cc157abbe3040dbdb3c56ab0133",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260803-001/identity_before.json",
+    "after_result_file": "data/experiments/exp-20260803-001/identity_after.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "canonical_projection_omits_decision_field",
+        "legacy_state_false_alert",
+        "raw_provenance_lost",
+        "completed_session_clock_regression"
+      ],
+      "realized_failure_mode": "volatile_request_metadata_poisoned_raw_page_identity",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Boundary review also found that a regressed clock required a monotonic persisted session anchor to prevent recounting an already observed session after recovery."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260803-001.json",
+  "single_causal_variable": "massive_dividend_restart_content_freshness_identity_v2",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260803-001.json",
+  "trial_family": "massive_dividend_restart_forward_observer_content_freshness_fault_recovery",
+  "trial_variant_id": "exp-20260803-001"
+}

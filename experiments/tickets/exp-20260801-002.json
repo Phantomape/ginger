@@ -1,0 +1,281 @@
+{
+  "acceptance_rule": "Focused tests cover expired pending receipt recovery, cross-date pending receipt still blocking duplicate POST while unexpired, invalid/future receipts still fail closed, no-network expired receipt remains stale, and strategy behavior remains unchanged; active cash-feasible Gate-1 artifact hash stays unchanged.",
+  "allowed_write_scope": [
+    "quant/usaspending_obligation_observer.py",
+    "quant/test_usaspending_obligation_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260801_002_usaspending_expired_pending_job_recovery.py",
+    "data/experiments/exp-20260801-002/exp_20260801_002_usaspending_expired_pending_job_recovery.json",
+    "experiments/cards/exp-20260801-002.md",
+    "experiments/manifests/exp-20260801-002.json",
+    "experiments/tickets/exp-20260801-002.json",
+    "experiments/logs/exp-20260801-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260801-002.md",
+  "causal_components": [
+    "expired_pending_receipt_clear_and_repost_same_run_date",
+    "pending_receipt_validation_boundary_tests",
+    "producer_health_manifest_stale_vs_fresh_contract"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "usaspending_expired_pending_job_recovery_v1",
+  "claimed_at": "2026-08-01T15:10:30+00:00",
+  "completed_at": "2026-08-01T15:13:51+00:00",
+  "created_at": "2026-08-01T15:09:12+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260801-002",
+  "experiment_uid": "expuid-27ffd5a086f04b09",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260801-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-01T15:09:12+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "usaspending_expired_pending_job_recovery"
+  },
+  "hypothesis": "Fault recovery: USAspending forward producer should recover from an expired pending job receipt by clearing the stale receipt and issuing a fresh bounded request for the same data-calendar run instead of ending stale, so eligible forward obligation rows are not silently lost.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "usaspending_expired_pending_job_recovery_v1",
+    "USAspending forward producer health only"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/live_pilot"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "genuine_forward_producer_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "usaspending_obligation",
+      "field_tags": [
+        "a",
+        "an",
+        "are",
+        "bounded",
+        "by",
+        "calendar",
+        "clearing",
+        "data",
+        "eligible",
+        "ending",
+        "expired",
+        "fault",
+        "forward",
+        "fresh",
+        "from",
+        "instead",
+        "issuing",
+        "job",
+        "lost",
+        "not",
+        "obligation",
+        "of",
+        "pending",
+        "producer",
+        "receipt",
+        "recover",
+        "recovery",
+        "request",
+        "rows",
+        "run",
+        "same",
+        "should",
+        "silently",
+        "so",
+        "stale",
+        "usaspending"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "usaspending_obligation",
+        "family_key": "usaspending_obligation_forward_producer_fault_recovery",
+        "reopen_condition": "A new reproducible source, schema, retrieval-clock, or producer-health regression at a boundary not covered by the cross-date drain contract; alpha evaluation still requires the settled-event thresholds declared in exp-20260729-008.",
+        "score": 0.528,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "usaspending_obligation",
+        "family_key": "usaspending_non_dod_obligation_conversion_first_seen_observer",
+        "reopen_condition": ">=75 settled unique eligible prospective local-first-seen events across >=15 first-seen dates and >=3 mapped public-company tickers, max ticker share <=30%, with complete next-open/10-session cash/SPY/QQQ outcomes",
+        "score": 0.4674,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_post_repair_forward_supply_readiness",
+        "reopen_condition": "Reopen alpha activation only after the post-repair V/CVS cohort or later turn-of-month cohorts close and appear in the shared paper-sleeve replacement-value ledger with cash, SPY, and QQQ comparators.",
+        "score": 0.0372,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "onclickmedia_forward_collection_fault_recovery",
+        "reopen_condition": "A reproducible provider calendar or schema change, an official early/special-close rule not represented by the conservative completion boundary, or a natural scheduled run where exact SPY/QQQ session anchors exist but the repaired producer still selects the wrong quote date or writes zero rows. Routine healthy daily output consumes no experiment ID.",
+        "score": 0.0348,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "same_sector_forward_concurrency_rv",
+        "reopen_condition": "A valid retry needs materially more closed default-off rows under the unchanged sector-concurrency contract, a missed-risk incident with a different fixed grouping, or a full shared-policy Gate 1-4 sector exposure cap test.",
+        "score": 0.03,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "usaspending_obligation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "usaspending_obligation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The current summary exposes a reproducible boundary: an expired persisted receipt from an older USAspending async job stops the current run before a fresh request, while the intended fix is local to receipt validation and producer retry control.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "duplicate_post_reintroduced_for_unexpired_cross_date_job",
+      "invalid_future_receipt_no_longer_fails_closed",
+      "expired_no_network_case_masks_stale_health",
+      "daily_wiring_contract_regression"
+    ],
+    "recorded_at": "2026-08-01T15:12:00+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "d80556e9a3402bee106961391dfbd82a379eded23815def8797562f6cefc5167",
+    "payload_hash": "d80556e9a3402bee106961391dfbd82a379eded23815def8797562f6cefc5167",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/experiments/exp-20260801-002/exp_20260801_002_usaspending_expired_pending_job_recovery.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.75,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "duplicate_post_reintroduced_for_unexpired_cross_date_job",
+        "invalid_future_receipt_no_longer_fails_closed",
+        "expired_no_network_case_masks_stale_health",
+        "daily_wiring_contract_regression"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The failure mode matched the current producer summary; the repair stayed local to expired receipt handling."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260801-002.json",
+  "single_causal_variable": "usaspending_expired_pending_job_recovery_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260801-002.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260801-002"
+}

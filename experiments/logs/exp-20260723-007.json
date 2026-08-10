@@ -1,0 +1,157 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": null,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.09,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "onclickmedia_backfill_endpoint_or_coverage_failure",
+      "moomoo_opend_unavailable",
+      "touch_density_below_five"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_mode": "touch_density_below_five",
+    "surprise_level": "low",
+    "surprise_note": "Historical coverage reached 146/146 with zero fetch errors, but only 20 slot selections and 17 settled trades remained; aggregate marked PnL was positive while every window materially lagged SPY/QQQ and two windows were concentrated."
+  },
+  "causal_components": [
+    "Moomoo stale-threshold fault recovery",
+    "owner-authorized Onclick historical PIT contract",
+    "targeted exact-date chain materialization",
+    "frozen shared selector replay",
+    "three available windows",
+    "coverage and concentration gates"
+  ],
+  "change_summary": "Repair Moomoo every-session forward refresh and materialize 146/146 owner-assumed stable-PIT OnclickMedia pre-option ticker-date chains for the unchanged three-window paper replay.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "owner_assumed_onclick_history_plus_session_daily_moomoo_refresh_v1",
+  "component": "quant/moomoo_capital_flow_paper_sleeve.py, quant/test_moomoo_capital_flow_paper_sleeve.py, quant/experiments/exp_20260723_007_owner_assumed_options_backfill_replay.py, data/experiments/exp-20260723-007, data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl, data/non_ohlcv/moomoo_capital_flow_day/manifest.json, experiments/cards/exp-20260723-007.md, experiments/logs/exp-20260723-007.json, experiments/tickets/exp-20260723-007.json, experiments/manifests/exp-20260723-007.json",
+  "date_range": {
+    "end": "2025-10-22",
+    "start": "2025-07-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-007",
+  "hypothesis": "Fault recovery plus alpha-enabling source-contract measurement: the existing run.py Moomoo forward wiring is defective because a three-calendar-day freshness guard skips two valid US equity sessions; repair that upstream stale-threshold defect so the already-wired daily pipeline attempts every equity session. In the same frozen paper-sleeve evaluation bundle, materialize exact-date OnclickMedia historical chains under the owner's immutable quote-date D, D+1-usable assumption for the unchanged deep-drawdown plus Moomoo flow plus near-Put-OI plus stabilization selector across the available mid, late, and recent windows; do not change live orders, ranking, sizing, exits, or selector thresholds.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_observer_measurement_plumbing",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260723-004",
+    "exp-20260506-003",
+    "exp-20260506-009",
+    "exp-20260703-007"
+  ],
+  "new_evidence_type": "owner_authorized_historical_option_chain_materialization_plus_moomoo_daily_gap_fault_recovery",
+  "next_retry_requires": [
+    "At least 20 additional independently settled forward paper decisions under the frozen rule, or independently audited vendor-asof historical option chains",
+    "A new mechanism or evidence source; no threshold retuning on the owner-assumed historical rows"
+  ],
+  "notes": "Accepted measurement infrastructure only. The replay remains observed-only under owner-assumed historical options PIT, not independently vendor-asof audited, not accepted alpha, and not live-ready. Mid EV is negative, recent touch density is below five settled decisions, all windows underperform SPY/QQQ, and concentration fails in mid/recent.",
+  "parameters": {
+    "locked_variables": [
+      "drawdown threshold",
+      "RSI/ret20 distress",
+      "price stabilization",
+      "main-flow positive",
+      "Put strike bands",
+      "two expiries",
+      "min liquid rows",
+      "score",
+      "top1",
+      "next-open",
+      "H10",
+      "notional",
+      "costs",
+      "trade_enabled"
+    ],
+    "single_causal_variable": "owner_assumed_onclick_history_plus_session_daily_moomoo_refresh_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune drawdown, RSI, return, flow, Put-OI bands, expiry count, top-N, hold, notional, or costs on these owner-assumed historical rows; do not promote the positive aggregate marked PnL when every window lagged SPY/QQQ.",
+    "new_evidence_required": "A retry requires at least 20 additional independent settled forward decisions from the existing paper sleeve, an independently audited historical options archive with vendor-asof, or a genuinely different economic mechanism/data source.",
+    "realized_failure_mode": "touch_density_below_five",
+    "why_result_happened": "Historical coverage reached 146/146 with zero fetch errors, but only 20 slot selections and 17 settled trades remained; aggregate marked PnL was positive while every window materially lagged SPY/QQQ and two windows were concentrated."
+  },
+  "prediction": {
+    "confidence_reason": "The repo already contains a working historical-chain adapter and a 13,484-row smoke/overlay archive, while the main uncertainties are current endpoint completeness, OpenD availability, and sparse full-rule touches.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "onclickmedia_backfill_endpoint_or_coverage_failure",
+      "moomoo_opend_unavailable",
+      "touch_density_below_five"
+    ],
+    "recorded_at": "2026-07-23T06:28:00+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-007/before.json",
+    "data/experiments/exp-20260723-007/after.json",
+    "data/experiments/exp-20260723-007/exp_20260723_007_owner_assumed_options_backfill_replay.json",
+    "data/experiments/exp-20260723-007/owner_assumed_options_quality_gate.json",
+    "quant/experiments/exp_20260723_007_owner_assumed_options_backfill_replay.py",
+    "quant/moomoo_capital_flow_paper_sleeve.py",
+    "quant/test_moomoo_capital_flow_paper_sleeve.py",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2026-07-22",
+      "start": "2026-04-22"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-23T06:48:03+00:00",
+  "trial_family": "deep_drawdown_flow_put_owner_assumed_history_measurement",
+  "trial_variant_id": "exp-20260723-007"
+}

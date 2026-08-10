@@ -1,0 +1,102 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.09,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "full page chain too expensive or rate-limited daily; provider cursor contract changes; local history coverage insufficient to prove 1095-day gap; silent starvation if status stays ok while input frozen"
+    ],
+    "predicted_success_probability": 0.7,
+    "realized_failure_mode": "none_first_run_ok",
+    "surprise_level": "low",
+    "surprise_note": null
+  },
+  "causal_components": [],
+  "change_summary": "Built quant/massive_dividend_restart_forward_observer.py: daily full-chain freeze of /stocks/v1/dividends (144 pages, content-identity sha256 over page digests + positive-USD row count + max declaration date), deterministic >=1095-day gap detection on the chain itself with provable-coverage guard, gap_variant separation (restart_after_observed_gap vs no_prior_positive_in_provider_history), lazy strictly-pre-declaration liquidity/price gates from warehouse bars, event-sourced append-only ledger (forward_candidate/gate_evaluation/coverage), fail-closed status (error on fetch/credential failure, stale_input after 3 unchanged runs), run.py wiring in both daily paths with coverage-manifest binding, and a dedicated massive_dividend_restart_forward fingerprint source key ranked ahead of forward_replacement_value. First real run: status ok, 167 candidates (5 true restarts, consistent with the historical ~5/month rate), 107 gates evaluated, 5 eligible, 60 pending bars. 23+73+262+56 tests green.",
+  "change_type": "new_forward_observer_first_build_collection_and_daily_wiring",
+  "changed_variable": "massive_dividend_restart_forward_observer_collection_v1",
+  "component": "quant/massive_dividend_restart_forward_observer.py, quant/test_massive_dividend_restart_forward_observer.py, quant/run.py, quant/test_run_daily_wiring.py, data/non_ohlcv/massive_dividend_restart_forward/, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py",
+  "date_range": {
+    "end": "2026-12-31",
+    "start": "2026-08-03"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260802-003",
+  "hypothesis": "Alpha-enabling forward-observer first build (ID 1 of the section 2.4 observer first-build budget, the exact next machine action named by exp-20260801-004): a default-off Massive dividend restart forward observer that daily freezes the complete /stocks/v1/dividends page chain from api.massive.com with content-identity hashing, detects new first-positive-USD-cash declarations whose same-ticker positive-declaration gap is at least 1095 days against the local research_pit massive dividend history plus its own accumulated forward ledger, appends fail-closed observer-only forward candidate rows whose entry rule is frozen as the first regular session strictly after first_seen_at, and lazily evaluates strictly pre-declaration liquidity and price gates when warehouse bars become available, so the descriptive dividend-restart lead can accumulate the at-least-30 settled forward H10 decisions its reopen contract requires.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_full_market_dividend_restart_forward_observer",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "forward_settled_rows_producer_first_build",
+  "next_retry_requires": [],
+  "notes": "Observer first-build ID 1 of the section 2.4 <=2 ID budget (collection surface + daily wiring). ID 2 = settlement contract: entry/exit session resolution, H10 replacement value vs comparator, top-2/day dedup, PIT membership gate; reopen re-read at >=30 settled forward decisions per exp-20260801-004. Fingerprint caveat: reserve-time classification was forward_replacement_value (before the new keyword group); true face is massive_dividend_restart_forward. Fetch costs ~29 min/day at the documented 5/min rate limit.",
+  "parameters": {
+    "locked_variables": [
+      "massive_dividend_restart_forward_observer_collection_v1"
+    ],
+    "single_causal_variable": "massive_dividend_restart_forward_observer_collection_v1"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The observer worked on first real contact because every risky contract was pinned before the fetch: the existing MassiveClient already enforced host allowlisting, pacing and credential hygiene; the full cursor chain is the only complete discovery surface (no declaration-date filter exists) and 144 pages at the documented 5/min limit cost 29 minutes, which is acceptable for a nightly batch; and running gap detection on the fetched chain itself (provider history reaches 2001) removed any dependency on the stale local sqlite snapshot. The 5-true-restart / 162-no-prior split in the first run matches the historical eligible rate (~5/month), confirming gap_variant separates the lane correctly.",
+    "realized_failure_mode": "none_first_run_ok",
+    "forbidden_near_neighbor_retry": "Do not reserve IDs for retuning the 30-day recency window, the 3-run staleness threshold, page bounds, the gate thresholds (20 bars / 1M dollar-volume / 3 dollar close), or for routine daily materialization of this ledger - daily runs are wired into run.py and occupy no IDs per the routine-materialization rule. Do not re-litigate the historical 89-row replay roster (consumed, exp-20260801-004) or the rejected SEC disclosure-bundle path (exp-20260802-001).",
+    "new_evidence_required": "ID 2 of the first-build budget: the settlement contract (entry/exit session resolution from the session calendar, H10 replacement value vs comparator, top-2/day liquidity dedup, PIT membership gate at policy level). The dividend-restart lane reopens for a stability re-read only at >=30 settled forward H10 decisions on gap_variant=restart_after_observed_gap rows, or with canonical as-published dividend vintages lifting the research_pit ceiling."
+  },
+  "prediction": {
+    "confidence_reason": "Named next machine action of exp-20260801-004 with existing authorized client and sync machinery; observer patterns proven five times; main risk is fetch cost not correctness",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "full page chain too expensive or rate-limited daily; provider cursor contract changes; local history coverage insufficient to prove 1095-day gap; silent starvation if status stays ok while input frozen"
+    ],
+    "recorded_at": "2026-08-02T16:15:35+00:00",
+    "success_probability": 0.7
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260802-003/observer_before.json",
+    "data/experiments/exp-20260802-003/observer_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-02T16:54:29+00:00",
+  "trial_family": "massive_dividend_restart_forward_observer_first_build",
+  "trial_variant_id": "exp-20260802-003"
+}

@@ -1,0 +1,122 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "retrospective_rows_misclassified_as_forward",
+      "future_context_leakage",
+      "non_idempotent_append",
+      "consumer_before_producer",
+      "partial_comparator_settlement"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The zero settled count was a missing cumulative join/settlement producer, not normal horizon immaturity; all 622 historical contexts therefore remain ineligible for forward evidence."
+  },
+  "causal_components": [
+    "immutable_decision_ledger",
+    "canonical_10d_20d_settlement",
+    "fail_closed_producer_health"
+  ],
+  "change_summary": "Repair the structurally starved Form4 sale-overhang observer with a post-20260728 append-only PIT decision ledger, content-identity-bound producer health, idempotent fixed 10d/20d cash-SPY-QQQ settlements, and canonical readiness wiring; preserve every trading rule.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "Form4 forward observer measurement plumbing only",
+  "component": "quant/form4_sale_overhang_context.py, quant/candidate_decision_training_ledger.py, quant/test_form4_sale_overhang_context.py, quant/test_candidate_decision_training_ledger.py, scripts/build_reopen_readiness.py, quant/test_build_reopen_readiness.py, data/reopen_readiness.json, quant/experiments/exp_20260728_007_form4_sale_overhang_forward_settlement.py, data/experiments/exp-20260728-007/exp_20260728_007_form4_sale_overhang_forward_settlement.json, experiments/cards/exp-20260728-007.md, experiments/manifests/exp-20260728-007.json, experiments/tickets/exp-20260728-007.json, experiments/logs/exp-20260728-007.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-007",
+  "hypothesis": "Form 4 sale-overhang observer is structurally starved: daily status=ok context snapshots never acquire immutable decision identity or canonical 10/20-session cash/SPY/QQQ settlements, so closed_forward_rows remains zero despite mature contexts. Wire a cumulative PIT decision ledger, canonical cold+hot settlement, and fail-closed health without changing signals, ranking, sizing, exits, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "observer_forward_health_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260629-003",
+    "exp-20260629-005",
+    "exp-20260707-018"
+  ],
+  "new_evidence_type": "genuine_forward_observer_fault_recovery",
+  "next_retry_requires": [
+    "Do not reserve another Form4 readiness or retune ID while the canonical lane remains below 25 complete post-effective decisions, 8 high-sale-overhang decisions, and the 40% ticker-concentration cap.",
+    "A new measurement-repair ID requires a concrete producer, PIT identity, append-idempotency, canonical settlement, or health regression; ordinary daily appends and settlements are routine pipeline work and consume no experiment ID."
+  ],
+  "notes": "Accepted measurement repair only, not alpha. Read-only preflight found 24 daily context files / 622 rows with zero entry identities or outcomes despite mature history; those rows remain provenance-only and are never backfilled as forward evidence. The existing candidate-decision ledger now persists byte identity before the Form4 consumer, and the Form4 consumer verifies both candidate bytes and current context semantic identity. Readiness starts fail-closed at 0/25 closed and 0/8 high-overhang; first normal daily run after deployment creates operational state. Focused verification: 41 tests passed, py_compile passed, artifact checks all true, Gate-1 SHA256 unchanged, and no signal/ranking/sizing/exit/order path changed; Gate 4 was not rerun by measurement-only construction. Alpha may reopen only after 25 complete 10d+20d rows, 8 high-overhang rows, cash/SPY/QQQ completeness, max ticker share <=40%, and healthy producers.",
+  "parameters": {
+    "locked_variables": [
+      "Form4 overhang thresholds",
+      "lookback",
+      "buckets",
+      "reopen gate",
+      "Gate-1 strategy baseline"
+    ],
+    "single_causal_variable": "form4_sale_overhang_forward_settlement_wiring_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not backfill the 622 pre-effective context rows, reinterpret current-state replacement rows as prospective Form4 decisions, relax the two-horizon cash/SPY/QQQ completeness contract, or retune Form4 thresholds, roles, transaction codes, 10b5 flags, lookback, response shape, or reopen bars.",
+    "new_evidence_required": "Alpha remains parked until the registered prospective ledger has at least 25 fully settled 10d+20d decisions, at least 8 high-sale-overhang decisions, cash/SPY/QQQ completeness, max single-ticker share <=40%, and healthy content-identity-bound producers; otherwise only a genuinely new source/gate shape or a real plumbing regression can justify another ID.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The zero settled count was a missing cumulative join/settlement producer, not normal horizon immaturity; all 622 historical contexts therefore remain ineligible for forward evidence."
+  },
+  "prediction": {
+    "confidence_reason": "Read-only audit found 622 context rows and 146 canonical closed rows but zero join producer; clean helper/test files and existing canonical overlay reader make the repair bounded.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "retrospective_rows_misclassified_as_forward",
+      "future_context_leakage",
+      "non_idempotent_append",
+      "consumer_before_producer",
+      "partial_comparator_settlement"
+    ],
+    "recorded_at": "2026-07-28T21:15:32+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-28T21:34:22+00:00",
+  "trial_family": "form4_sale_overhang_forward_context_logger",
+  "trial_variant_id": "settlement_wiring_v1"
+}

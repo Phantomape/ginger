@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260727-003",
+  "timestamp": "2026-07-27T13:42:31Z",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_usaspending_forward_producer_health",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "hypothesis": "The accepted USAspending local-first-seen observer silently starves whenever no external snapshot path is configured, while its persisted summary remains status=ok; a bounded official daily producer, immutable manifest, and fail-closed health heartbeat should restore prospective rows without changing strategy behavior.",
+  "single_causal_variable": "usaspending_daily_official_snapshot_producer_and_fail_closed_health_v1",
+  "related_experiments": [
+    "exp-20260713-007"
+  ],
+  "prediction": {
+    "success_probability": 0.86,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "realized_failure_modes": []
+  },
+  "pre_run_questions": {
+    "money_hypothesis": "A locally first-seen non-DoD/USACE transaction with positive obligation and no ceiling expansion may signal funded-capacity conversion and improve listed-parent revenue visibility; this experiment repairs only its observer production.",
+    "history_and_novelty": "exp-20260713-007 accepted the observer but explicitly skipped daily runs without a configured local file. No open USAspending ticket existed; novelty nearest score was 0.5071 and the fault-recovery guard passed.",
+    "single_policy_bundle": "Official bounded download, immutable ZIP/manifest, retrieval-time PIT clock, fail-closed producer health, zero-event heartbeat, and preserved local override; all alpha rules are locked.",
+    "acceptance": "A real unconfigured run must freeze and validate today's source, append prospective rows once, reuse the immutable snapshot idempotently, report fresh zero-event heartbeat on rerun, pass focused tests and lean audit, and leave Gate-1 identity unchanged.",
+    "reproducibility": "Use the commands in reproduction_commands against the frozen 2026-07-27 manifest and snapshot.",
+    "opportunity_cost": "Cash/no executable entry remains superior; the only current cross-sectional challenger was RTX trend_long shadow with executable sizing zero under controls.",
+    "cross_surface_boundary": "Price, flow, derivatives, events, positioning, portfolio exposure, and research digest were synthesized; no candidate had gate-ready settled evidence."
+  },
+  "fault_reproduction": {
+    "before_artifact": "data/experiments/exp-20260727-003/before_usaspending_producer_health.json",
+    "before_status": "ok",
+    "before_observed_at": "2026-07-13T20:52:47Z",
+    "calendar_days_without_producer_refresh": 14,
+    "before_raw_snapshot_count": 1,
+    "before_ledger_row_count": 130,
+    "before_forward_event_count": 0,
+    "before_eligible_forward_event_count": 0,
+    "root_cause": "quant/run.py returned transaction_snapshot_not_configured and never refreshed the persisted summary, so process health and source freshness diverged."
+  },
+  "live_smoke": {
+    "run_date": "2026-07-27",
+    "request_window": {
+      "date_type": "last_modified_date",
+      "start_date": "2026-07-25",
+      "end_date": "2026-07-27",
+      "award_type_codes": ["A", "B", "C", "D"],
+      "limit": 5000
+    },
+    "producer_mode": "official_daily_transaction_download",
+    "retrieved_at_utc": "2026-07-27T13:40:51Z",
+    "snapshot_path": "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.zip",
+    "manifest_path": "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.manifest.json",
+    "source_snapshot_bytes": 362238,
+    "parsed_transaction_count": 1816,
+    "first_run": {
+      "status": "ok",
+      "heartbeat_status": "fresh_success_new_forward",
+      "rows_appended": 249,
+      "new_forward_rows_appended": 249,
+      "new_eligible_forward_rows_appended": 7,
+      "source_freshness_blocked_forward_rows": 99,
+      "ledger_row_count": 379,
+      "forward_event_count_total": 249,
+      "eligible_forward_event_count_total": 7
+    },
+    "same_date_rerun": {
+      "status": "ok",
+      "retrieved_at_utc_unchanged": true,
+      "snapshot_hash_unchanged": true,
+      "manifest_hash_unchanged": true,
+      "rows_appended": 0,
+      "new_forward_rows_appended": 0,
+      "heartbeat_status": "fresh_success_zero_forward",
+      "zero_event_heartbeat": true,
+      "ledger_row_count": 379
+    },
+    "trade_enabled": false,
+    "strategy_behavior_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false
+  },
+  "checks": {
+    "real_official_post_and_status_contract_passed": true,
+    "fixed_official_hosts_only": true,
+    "bounded_poll_budget_below_60_seconds": true,
+    "zip_and_required_headers_validated": true,
+    "immutable_snapshot_and_manifest_frozen": true,
+    "manifest_retrieval_clock_equals_observer_clock": true,
+    "source_rows_positive_and_parse_count_matches_manifest": true,
+    "first_live_run_produced_nonzero_forward_rows": true,
+    "same_date_rerun_is_idempotent": true,
+    "fresh_zero_event_heartbeat_distinct_from_starvation": true,
+    "unverified_local_override_fails_health_closed": true,
+    "source_zero_rows_fails_health_closed": true,
+    "strategy_behavior_unchanged": true,
+    "focused_pytest_83_passed": true,
+    "py_compile_passed": true,
+    "git_diff_check_passed": true,
+    "lean_strict_audit_passed": true,
+    "gate1_baseline_hash_unchanged": true
+  },
+  "gate1": {
+    "reference": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "experiment_id": "exp-20260715-010",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "passed": true
+  },
+  "gate2": {
+    "required_source_fields": [
+      "contract_transaction_unique_key",
+      "awarding_agency_name",
+      "federal_action_obligation",
+      "base_and_all_options_value"
+    ],
+    "manifest_contract": [
+      "run_date",
+      "requested_at_utc",
+      "retrieved_at_utc",
+      "raw_file_sha256",
+      "raw_file_size_bytes",
+      "row_count",
+      "frozen"
+    ],
+    "signal_sentinels": "entry_date and target_price remain null because this is an observer-only source, not a signal generator; canonical strategy signal contracts are untouched.",
+    "passed": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_changed": false,
+    "passed": true
+  },
+  "gate4": {
+    "decision": "accepted_measurement_repair",
+    "measurement_repair_only": true,
+    "accepted_alpha": false,
+    "strategy_ev_delta": 0.0,
+    "strategy_pnl_delta": 0.0,
+    "strategy_trade_delta": 0,
+    "passed": true
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "active cash-feasible core universe",
+      "current default-off paper sleeves",
+      "broad observation universe",
+      "open broker positions and cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash/no new executable entry",
+    "evidence_surfaces_used": [
+      "price cold-plus-hot OHLCV",
+      "Moomoo capital flow",
+      "PIT-safe options forward ledger",
+      "prediction-market and USAspending event observers",
+      "timestamp-safe estimate revisions",
+      "open-position exposure and live drift",
+      "research digest"
+    ],
+    "evidence_surfaces_missing": [
+      "settled USAspending eligible forward outcomes and audited public-company mappings",
+      "mature core drawdown flow-put closed decisions",
+      "prediction-market settled outcomes",
+      "estimate-revision cash conflicts and H5/H10/H20 settlements"
+    ],
+    "hypothesis_candidates": [
+      {
+        "name": "USAspending funded-capacity conversion",
+        "baseline": "same-date non-DoD federal contract transactions without the fixed obligation-conversion treatment",
+        "treatment": "locally first-seen positive obligation with nonpositive ceiling change",
+        "horizon": "next-session open through 10 trading sessions",
+        "replacement_value": "cash, SPY, QQQ, and same-day executable candidate",
+        "falsifier": "no positive replacement value after at least 75 settled unique eligible events across 15 dates and 3 mapped tickers, or max ticker share above 30%",
+        "grade": "observer"
+      },
+      {
+        "name": "core drawdown flow-put stabilization",
+        "baseline": "current deep-drawdown core candidate pool",
+        "treatment": "positive same-day capital-flow stabilization plus next-session liquid put absorption",
+        "horizon": "10 trading sessions",
+        "replacement_value": "cash, SPY, QQQ, and displaced core slot",
+        "falsifier": "fewer than 20 closed decisions, survival below 5%, nonpositive chronological halves, or concentration above 40%",
+        "grade": "observer"
+      },
+      {
+        "name": "prediction-market event interpretation",
+        "baseline": "current event/news surfaces",
+        "treatment": "fixed event-probability shocks mapped into deterministic public-equity exposure buckets",
+        "horizon": "10 and 20 trading sessions",
+        "replacement_value": "cash, SPY, QQQ, and same-day paper candidates",
+        "falsifier": "settled post-fix rows show nonpositive replacement value or excessive concentration",
+        "grade": "observer"
+      }
+    ],
+    "selected_hypothesis": "USAspending funded-capacity conversion observer",
+    "economic_mechanism": "An obligation increase without a ceiling increase may convert already-awarded capacity into funded revenue visibility, but only prospective local-first-seen rows can test it without publication leakage.",
+    "falsifier": "The frozen 75-settlement/15-date/3-ticker replacement-value contract fails or concentration exceeds 30%.",
+    "evidence_grade": "observer",
+    "next_machine_action": "Continue automatic daily snapshot collection and later add audited mapping/outcome settlement under the existing reopen contract; do not reserve an alpha experiment or alter trading before readiness."
+  },
+  "research_digest_review": {
+    "path": "data/research_digest/latest_digest.md",
+    "fresh_entries_since_last_run": 0,
+    "displayed_entries": 10,
+    "displayed_status": "declined",
+    "decision": "No ledger append: every displayed item had already been declined before this automation cutoff, and no new market-expectation proxy or evidence axis appeared. Declined remains reconsiderable, not terminal."
+  },
+  "readiness": {
+    "legal_alpha_reopen_count": 0,
+    "usaspending_forward_rows": 249,
+    "usaspending_eligible_forward_rows": 7,
+    "usaspending_settled_eligible_rows": 0,
+    "reopen_condition": ">=75 settled unique eligible events across >=15 first-seen dates and >=3 mapped tickers, max ticker share <=30%, with complete next-open/10-day cash/SPY/QQQ outcomes",
+    "reopened": false
+  },
+  "source_hashes": {
+    "gate1_baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "snapshot_zip": "e67884277a8f384a1c37af13105b1740342a7e547c6fd7c3a0252acedbe8539a",
+    "snapshot_manifest": "ad5e7de5b4bf3785ffc25e19933648ee3210bb8d8e32d0c8dd94149fb4757564",
+    "observer_ledger": "02b889db370204ab10b030ade483feb8721e26b9ff0600975c7be59a2111e4fa",
+    "observer_state": "8a1b1a5cf17311db1ad333abde6a73566e39b16f3ebd3283005e8498bc303abb",
+    "latest_summary": "52111aef76d329e219e5a3c12952f74ad19aa5d5411430c98dd4e405a00d1006"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_changed": false,
+    "run_adapter_changed": true,
+    "daily_source_producer_restored": true,
+    "fail_closed_health_added": true,
+    "default_off_observer_only": true,
+    "trade_enabled": false,
+    "signals_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "orders_changed": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The observer parser and ledger were sound, but production had no default producer; a successful process could therefore skip the source indefinitely while an old status=ok summary concealed starvation.",
+    "irrecoverable_gap": "The missing July 14-26 local vintages cannot be backfilled as forward evidence. The 2026-07-27 snapshot begins a new valid local-first-seen vintage only at its manifest retrieval clock.",
+    "forbidden_near_neighbor_retry": "Do not backdate missed vintages, treat action/initial-report dates as availability, reinclude DoD/USACE, relax source freshness, retune obligation/ceiling rules, or claim alpha from these unsettled rows.",
+    "new_evidence_required": "No further producer ID is needed unless a real source/schema/health regression occurs. Alpha evaluation remains parked until the frozen settled-row, date, mapping, concentration, and replacement-value thresholds pass."
+  },
+  "changed_files": [
+    "quant/usaspending_obligation_observer.py",
+    "quant/test_usaspending_obligation_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.zip",
+    "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.manifest.json",
+    "data/non_ohlcv/usaspending_obligation_observer/state.json",
+    "data/non_ohlcv/usaspending_obligation_observer/ledger.jsonl",
+    "data/non_ohlcv/usaspending_obligation_observer/latest_summary.json",
+    "data/experiments/exp-20260727-003/before_usaspending_producer_health.json",
+    "data/experiments/exp-20260727-003/exp_20260727_003_usaspending_forward_producer_health.json"
+  ],
+  "validation": {
+    "pytest": "83 passed in 2.68s",
+    "py_compile": "passed",
+    "git_diff_check": "passed",
+    "lean_quality_passed": true,
+    "lean_strict_passed": true
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_usaspending_obligation_observer.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\usaspending_obligation_observer.py quant\\test_usaspending_obligation_observer.py quant\\run.py quant\\test_run_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

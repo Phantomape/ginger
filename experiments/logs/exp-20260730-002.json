@@ -1,0 +1,103 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "admission_class_semantics_ambiguous",
+      "panel_anchor_regression",
+      "claim_receipt_revalidation_breakage"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [],
+  "change_summary": "Added the settled_forward_attribution admission class to the schema-v2 promotion contract (scripts/alpha_debate.py) and extended the registry observed_only closeout ceiling to it (scripts/experiment_registry.py), with regression tests. No strategy, order, outcome, or ledger semantics changed; the Gate-1 cash-feasible anchor is byte-identical before and after.",
+  "change_type": "measurement_repair",
+  "changed_variable": "settled_forward_attribution_admission_class_v1",
+  "component": "quant/experiments/exp_20260730_002_settled_forward_attribution_admission_class_v1.py, data/experiments/exp-20260730-002/exp_20260730_002_settled_forward_attribution_admission_class_v1.json, experiments/cards/exp-20260730-002.md, experiments/manifests/exp-20260730-002.json, experiments/tickets/exp-20260730-002.json, experiments/logs/exp-20260730-002.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260730-002",
+  "hypothesis": "Alpha-enabling admission repair: the schema-v2 promotion contract admits only canonical_promotion (gate_candidate, all canonical_pit) and research_replay (research-PIT lead), so a predeclared settled-forward observed-only attribution whose frozen 100/20/5/5 reopen bars are now met outcome-blind (intraday machine-default REDUCE_RISK lane ready at 142 strict cohorts, 24 active reductions, halves 9/15) cannot be admitted through any class and the only ready reopen lane is structurally blocked; add a narrow settled_forward_attribution admission class requiring evidence_grade observed_only, surfaces restricted to settled_forward_sufficient or canonical_pit PIT status with at least one settled forward surface, proposal change_type observed_only_attribution, result_ceiling observed_only, and paper_live_eligible false, changing no strategy, order, outcome, or ledger semantics.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_admission_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Trigger: intraday_triage_completed_close_settlement lane became ready (142/24/9/15 vs frozen 100/20/5/5) but the predeclared settled-forward observed-only attribution could not be admitted (promotion_evidence_grade_mismatch). Artifact: data/experiments/exp-20260730-002/settled_forward_admission_class_artifact.json. Tests: 66+34 passed. End-to-end proof: data/alpha_search/promotions/intraday_reduce_risk_scout_20260730.json admits with admission_class=settled_forward_attribution, result_ceiling=observed_only, paper_live_eligible=false.",
+  "parameters": {
+    "locked_variables": [
+      "settled_forward_attribution_admission_class_v1"
+    ],
+    "single_causal_variable": "settled_forward_attribution_admission_class_v1"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The schema-v2 promotion contract was built for canonical gate candidates and research-PIT replay leads; the section-5 ladder step settled_forward_sufficient -> observed_only attribution was never given an admission class, so the first matured settled-forward reopen (intraday REDUCE_RISK at 142/24/9/15) exposed the gap the day it became consumable.",
+    "realized_failure_mode": null,
+    "forbidden_near_neighbor_retry": "Do not reserve another admission-governance ID to add classes speculatively, widen the settled_forward PIT whitelist, relax the observed_only ceiling, or permit paper/live eligibility through this class.",
+    "new_evidence_required": "Only extend admission classes again when a concrete matured evidence path is machine-blocked; regression tests own this contract."
+  },
+  "prediction": {
+    "confidence_reason": "The research_replay class provides an exact template; the new class is a mirrored narrow branch with per-class grade and PIT checks plus regression tests, and the promotion validator recomputes admission fields symmetrically at build, reserve, and claim.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "admission_class_semantics_ambiguous",
+      "panel_anchor_regression",
+      "claim_receipt_revalidation_breakage"
+    ],
+    "recorded_at": "2026-07-30T16:32:18+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-30T16:38:41+00:00",
+  "trial_family": "alpha_promotion_admission_contract",
+  "trial_variant_id": "exp-20260730-002"
+}

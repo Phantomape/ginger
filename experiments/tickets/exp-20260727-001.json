@@ -1,0 +1,310 @@
+{
+  "acceptance_rule": "Accept only if an experiment-owned replay keeps the same 241 candidates and 30 scoring-allowed rows, reduces signal_date_missing_in_ohlcv from 94 to 44 by attaching the canonical hot sibling with hot rows winning duplicate ticker-dates, verifies that the remaining 44 rows fall on non-trading dates absent from both stores, increases or preserves closed H5/H10/H20 counts without reading future bars, keeps the cash-feasible Gate-1 aggregate unchanged, and focused tests pass with no strategy or order behavior change.",
+  "allowed_write_scope": [
+    "scripts/run_options_forward_ledger.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/experiments/exp_20260727_001_options_forward_hot_overlay_settlement.py",
+    "data/experiments/exp-20260727-001/exp_20260727_001_options_forward_hot_overlay_settlement.json",
+    "data/experiments/exp-20260727-001/options_forward_before_summary.json",
+    "data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger.jsonl",
+    "data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260727-001/options_forward_after/options_collection_quality_gate.json",
+    "data/experiments/exp-20260727-001/options_forward_after/options_quarantined_quote_dates.json",
+    "experiments/cards/exp-20260727-001.md",
+    "experiments/manifests/exp-20260727-001.json",
+    "experiments/tickets/exp-20260727-001.json",
+    "experiments/logs/exp-20260727-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260727-001.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "options_forward_ohlcv_overlay_reader",
+  "claimed_at": "2026-07-27T03:23:33+00:00",
+  "completed_at": "2026-07-27T03:33:42+00:00",
+  "created_at": "2026-07-27T03:19:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260727-001",
+  "experiment_uid": "expuid-b23a409b9d034b21",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260727-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-27T03:19:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "options_forward_hot_overlay_settlement"
+  },
+  "hypothesis": "Alpha-enabling fault recovery: the daily options-forward settlement mislabels 50 of 241 candidate rows as signal_date_missing_in_ohlcv because its default reader uses the cold warehouse ending 2026-06-15 while the canonical hot overlay reaches 2026-07-24; the other 44 missing rows fall on non-trading dates absent from both stores. Reading the canonical cold-plus-hot overlay should restore truthful forward settlement for the flow-versus-options disagreement alpha hypothesis without changing candidate formation, option tags, return formulas, signals, ranking, sizing, exits, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "options_forward settlement reads canonical cold-plus-hot OHLCV overlay"
+  ],
+  "mechanism_family": "options_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260709-017",
+    "exp-20260704-017",
+    "exp-20260721-001"
+  ],
+  "new_evidence_type": "upstream_storage_topology_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "as",
+        "because",
+        "canonical",
+        "changing",
+        "cold",
+        "daily",
+        "date",
+        "disagreement",
+        "enabling",
+        "ending",
+        "exits",
+        "fault",
+        "flow",
+        "formation",
+        "formulas",
+        "forward",
+        "hot",
+        "hypothesis",
+        "in",
+        "its",
+        "measurement",
+        "mislabels",
+        "missing",
+        "of",
+        "option",
+        "options",
+        "or",
+        "orders",
+        "overlay",
+        "plus",
+        "ranking",
+        "reaches",
+        "reader",
+        "reading",
+        "reads",
+        "recovery",
+        "repair",
+        "restore",
+        "return",
+        "rows",
+        "settlement",
+        "should",
+        "signal",
+        "signals",
+        "sizing",
+        "tags",
+        "truthful",
+        "uses",
+        "versus",
+        "warehouse",
+        "while",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": "['Do not promote raw alpha_score top-N, score weights, or component gates from this run alone.', 'A valid retry needs non-OHLCV component monotonicity, replacement value versus same-day alternatives, and regime/cost controls.']",
+        "score": 0.1758,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "same_date_flow_options_vs_rsi_allocator_proxy",
+        "reopen_condition": "Reopen only after at least 10 additional genuine forward PIT collection dates and at least 20 settled paired disagreement decisions, or with canonical untruncated three-expiry historical PIT chains plus decision-time flow vintages.",
+        "score": 0.17,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.1697,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.1636,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.1629,
+        "status": "frozen",
+        "trials": 4
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The existing accepted autowire explicitly expected warehouse coverage beyond 2026-06-15; warehouse_main_hot.sqlite now reaches 2026-07-24, and the repository already has a tested canonical overlay reader used by other forward settlement surfaces. The main risk is an attach or coverage gap, not alpha logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hot_overlay_attach_failure",
+      "overlay_precedence_error",
+      "recent_candidate_tickers_missing_in_hot"
+    ],
+    "recorded_at": "2026-07-27T03:18:45+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "59a1fc7c17d7a80c8350ba9d5e7a5203f581dde30876d0f8e6dab9a47587feb6",
+    "payload_hash": "59a1fc7c17d7a80c8350ba9d5e7a5203f581dde30876d0f8e6dab9a47587feb6",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "decision_detail": "accepted_measurement_repair",
+    "accepted_alpha": false,
+    "artifact": "data/experiments/exp-20260727-001/exp_20260727_001_options_forward_hot_overlay_settlement.json",
+    "acceptance_reasons": [
+      "candidate and scoring-allowed populations remained 241 and 30",
+      "signal_date_missing_in_ohlcv fell from 94 to 44",
+      "closed H5/H10/H20 counts increased from 14/12/9 to 25/25/19",
+      "all 44 residual misses were non-trading dates absent from cold and hot stores",
+      "79 focused tests passed and no trading policy or order behavior changed"
+    ],
+    "before_result_file": "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+    "after_result_file": "data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger_report.json",
+    "delta_metrics": {
+      "candidate_count": 0,
+      "options_scoring_allowed_candidates": 0,
+      "partial_or_pending": 50,
+      "signal_date_missing_in_ohlcv": -50,
+      "closed_5d_count": 11,
+      "closed_10d_count": 13,
+      "closed_20d_count": 10,
+      "closed_60d_count": 0
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "hot_overlay_attach_failure",
+        "overlay_precedence_error",
+        "recent_candidate_tickers_missing_in_hot"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The repair recovered exactly 50 stale-edge rows; all 44 residual misses were verified non-trading dates absent from both stores."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260727-001.json",
+  "single_causal_variable": "options_forward settlement reads canonical cold-plus-hot OHLCV overlay",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260727-001.json",
+  "trial_family": "options_forward_hot_overlay_settlement",
+  "trial_variant_id": "cold_plus_hot_overlay_v1"
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260724-001",
+  "artifact_role": "before",
+  "expected_value_score": 0.0,
+  "sharpe": 0.0,
+  "sharpe_daily": 0.0,
+  "max_drawdown_pct": 0.0,
+  "win_rate": null,
+  "total_trades": 0,
+  "survival_rate": 1.0,
+  "total_pnl": 0.0,
+  "benchmarks": {
+    "strategy_total_return_pct": 0.0
+  },
+  "measured_surface": "experiment reservation identity",
+  "strategy_behavior_changed": false,
+  "alpha_hypothesis": {
+    "hypothesis": "A legally promoted alpha cannot be evaluated efficiently while identical reserve retries can burn duplicate experiment IDs before in-flight duplicate tickets are visible.",
+    "status": "blocked_by_measurement_governance",
+    "reason": "No alpha promotion request exists and current reopen lanes are not ready; reserve identity is the active alpha-enabling blocker."
+  },
+  "synthesis_pass": {
+    "baseline_universe": [
+      "current eligible cash-equity candidate pool",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": null,
+    "evidence_surfaces_used": [
+      "price: active cash-feasible Gate-1 backtest anchor",
+      "flow: moomoo_capital_flow_day_observer",
+      "derivatives: options_forward and core_drawdown_flow_put observer readiness",
+      "event: entity_theme, prediction_market, SEC official event, estimate revision",
+      "positioning: live drift and open-position schema state",
+      "portfolio_exposure: allocator conflict and intraday scorecard state"
+    ],
+    "evidence_surfaces_missing": [
+      "hash-bound alpha promotion request selecting a candidate",
+      "gate-ready reopen lane",
+      "PIT-bound same-slot exposure and impact surface"
+    ],
+    "hypothesis_candidates": [
+      {
+        "name": "estimate revision muted-response candidate",
+        "decision": "park",
+        "falsifier": "H5/H10/H20 settled and cash-conflict counts remain below reopen bars."
+      },
+      {
+        "name": "core drawdown flow-put stabilization observer",
+        "decision": "park",
+        "falsifier": "Only three price-stabilized daily signals and zero independent closed decisions."
+      },
+      {
+        "name": "reservation intent lock measurement repair",
+        "decision": "selected",
+        "falsifier": "Identical retry still allocates a second open ticket or breaks existing registry semantics."
+      }
+    ],
+    "selected_hypothesis": "reservation intent lock measurement repair",
+    "economic_mechanism": "Preserve scarce experiment slots and prevent duplicate alpha evidence from contaminating novelty and reopen accounting.",
+    "falsifier": "A repeated identical automatic reserve call creates a new open experiment ID instead of returning the first ticket.",
+    "evidence_grade": "measurement_repair",
+    "next_machine_action": "Add a fingerprint-keyed reservation intent lock in reserve_experiment and focused tests."
+  },
+  "before_contract": {
+    "intent_lock_exists": false,
+    "tickets_store_reservation_intent_key": false,
+    "retry_reuses_existing_open_ticket": false,
+    "recovery_from_missing_intent_file": false
+  },
+  "metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "survival_rate": 1.0,
+    "strategy_behavior_changed": false
+  }
+}

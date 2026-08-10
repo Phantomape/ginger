@@ -1,0 +1,308 @@
+{
+  "acceptance_rule": "Canonical fixture maps 115 independent decisions and 115 mapped tickers instead of zero; cash conflicts and H5/H10/H20 remain zero; missing or malformed canonical readiness fails closed; no trading behavior changes; focused tests and lean-strict audit pass.",
+  "allowed_write_scope": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/logs",
+    "data/reopen_readiness.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "docs/lessons"
+  ],
+  "baseline_result_file": "data\\non_ohlcv\\estimate_revision_readiness_latest.json",
+  "card_file": "experiments/cards/exp-20260723-002.md",
+  "causal_components": [
+    "canonical readiness load",
+    "counter translation",
+    "threshold verdict",
+    "focused tests",
+    "measurement artifact"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1",
+  "claimed_at": "2026-07-23T05:20:27+00:00",
+  "completed_at": "2026-07-23T05:25:12+00:00",
+  "created_at": "2026-07-23T05:15:32+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260723-002",
+  "experiment_uid": "expuid-9d1136bf35ea4404",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260723-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-23T05:15:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_reopen_readiness_binding"
+  },
+  "hypothesis": "The canonical estimate-revision readiness artifact must drive the Phase-2 reopen counters; replacing hard-coded zeroes with fail-closed field translation will make alpha readiness auditable without changing signals, ranking, sizing, exits, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entry",
+    "ranking",
+    "sizing",
+    "exit",
+    "orders",
+    "trade_enabled",
+    "alpha_thresholds"
+  ],
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "operator_inputs/open_positions.json",
+    "data/live_pilot",
+    "orders",
+    "trade_enabled"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260721-004",
+    "exp-20260721-002"
+  ],
+  "new_evidence_type": "canonical_source_counter_repair",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "expectation_residual_component_ranking_proxy",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "alpha",
+        "artifact",
+        "auditable",
+        "binding",
+        "canonical",
+        "changing",
+        "closed",
+        "coded",
+        "counter",
+        "counters",
+        "drive",
+        "estimate",
+        "exits",
+        "fail",
+        "field",
+        "governance",
+        "hard",
+        "make",
+        "measurement",
+        "must",
+        "or",
+        "orders",
+        "phase",
+        "ranking",
+        "readiness",
+        "reopen",
+        "replacing",
+        "revision",
+        "signals",
+        "sizing",
+        "tooling",
+        "translation",
+        "will",
+        "without",
+        "zeroes"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.6182,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_residual_component_ranking_proxy",
+        "reopen_condition": "Persist PIT old alpha_score/rank for the same rows, then rerun true old-vs-new ranking attribution.",
+        "score": 0.61,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_surface_repair",
+        "reopen_condition": "Closed H3/H5/H10 cash/SPY/QQQ replacement-value rows for the 2026-07-07 matched cohort, materially more non-flat matched rows, or identification of the external process that mapped/deleted the artifact.",
+        "score": 0.4793,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "form144_revision_data_readiness",
+        "reopen_condition": "Required new evidence is PIT parsed Form 144 planned-sale shares or value, holder role, relationship-to-issuer, public float and sale_pct_float, or historical/forward analyst-count, revenue-estimate, dispersion, vendor_asof, and fiscal-period coverage with closed candidate outcomes.",
+        "score": 0.4793,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "revision_expectation",
+        "family_key": "measurement_repair_revision_magnitude_field",
+        "reopen_condition": "Wait for the watchlist to accumulate more than one earnings season. The recurring 5d-negative / 10d-positive sign flip across residual (027), PEAD window (028), and magnitude (this experiment) suggests any edge plays out slowly and needs a deeper 10d sample to confirm. The magnitude axes are now populated, so future retries need more rows not another measurement repair. A revision direction-agreem",
+        "score": 0.4767,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "revision_expectation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The canonical readiness file already exposes stable independent, mapped, cash-conflict, and per-horizon settled fields, while the builder visibly hard-codes zero; the repair is a narrow measurement binding and the principal risk is schema drift, not strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_schema_mismatch",
+      "field_translation_error",
+      "existing_dirty_change_overlap"
+    ],
+    "recorded_at": "2026-07-23T05:13:58+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 0,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness audit, counter translation, schema alias, or manual recount for this lane. Routine canonical refreshes and builder runs consume no experiment ID; the underlying alpha remains parked.",
+    "new_evidence_required": "Reopen alpha only after the canonical surface reaches at least 10 actual cash-conflict decisions and at least 30 settled independent decisions at each of H5, H10, and H20, source contracts pass, and a fresh outcome-blind D0-D3 scope earns verified promotion.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The canonical qualification surface was already wired and had advanced to 115 independent mapped decisions; only the reopen builder remained stale at hard-coded zeroes."
+  },
+  "reopen_condition": "actual_cash_conflict_decisions >= 10 AND settled independent decisions at H5 >= 30 AND H10 >= 30 AND H20 >= 30; then pass source contracts and a fresh outcome-blind D0-D3 verified promotion",
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260723-002/before_estimate_revision_reopen_readiness.json",
+    "after_result_file": "data/experiments/exp-20260723-002/after_estimate_revision_reopen_readiness.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.97,
+      "brier_score": 0.0009,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "canonical_schema_mismatch",
+        "field_translation_error",
+        "existing_dirty_change_overlap"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The canonical qualification surface was already wired and had advanced to 115 independent mapped decisions; only the reopen builder remained stale at hard-coded zeroes."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260723-002.json",
+  "single_causal_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260723-002.json",
+  "trial_family": "reopen_readiness_counter_binding",
+  "trial_variant_id": "exp-20260723-002"
+}

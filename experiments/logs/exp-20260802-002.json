@@ -1,0 +1,130 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "valid_RTH_policy_fill_suppressed",
+      "ETH_or_predecision_fill_still_alerts",
+      "weekend_duplicate_streak_persists",
+      "missing_evidence_fails_open",
+      "canonical_ledger_mutated"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The precommitted broker-session and prior-decision evidence was sufficient; no acceptance-boundary surprise occurred."
+  },
+  "causal_components": [
+    "broker_entry_order_session_evidence",
+    "prior_executable_policy_decision_lineage",
+    "unique_completed_market_session_streak"
+  ],
+  "change_summary": "Accepted live-drift v4 broker/session/decision attribution repair: preserve raw AMZN drift, fail regular-open execution alerts closed for ETH or missing prior executable decisions, and deduplicate completed market sessions.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "live_drift_broker_decision_session_attribution_v4",
+  "component": "quant/live_drift_reconciliation.py, quant/test_live_drift_reconciliation.py, docs/live_drift_reconciliation.md, quant/experiments/exp_20260802_002_live_drift_broker_decision_session_attribution.py, data/experiments/exp-20260802-002/exp_20260802_002_live_drift_broker_decision_session_attribution.json, experiments/cards/exp-20260802-002.md, experiments/manifests/exp-20260802-002.json, experiments/tickets/exp-20260802-002.json, experiments/logs/exp-20260802-002.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260802-002",
+  "hypothesis": "Urgent live-drift fault recovery: a core AMZN position bought in two ETH orders before the daily policy decision is being compared with the regular-session next-open fill model and admitted solely by a static ticker tag; binding alert eligibility to broker entry-session evidence plus a prior executable policy decision, and counting unique completed market sessions, should clear the false +2.352% alert without changing raw drift, orders, ranking, sizing, exits, formulas, or thresholds.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "live_drift_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260726-003",
+    "exp-20260723-010",
+    "exp-20260706-019",
+    "exp-20260707-011"
+  ],
+  "new_evidence_type": "forward_core_alert_session_decision_lineage_fault",
+  "next_retry_requires": [
+    "a broker lifecycle or schema change",
+    "a verified RTH or ALL prior-policy fill incorrectly suppressed by v4",
+    "a natural completed-session run that still duplicates or misattributes the position"
+  ],
+  "notes": "Real AMZN evidence reproduced two ETH BUY orders (1 @ 271.2175; 2 @ 271.42; weighted 271.3525) and no 2026-07-30 final policy signal. Before: raw fill drift +2.352%, fill_alert=true, sessions_observed=7. After non-persisting canonical replay: raw +2.352% unchanged, eligible_count=0, fill_alert=false, sessions_observed=6. Focused suite 26/26 passed; py_compile and diff check passed. Baseline SHA256 stayed 4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731; broker inputs, operator inputs, signal snapshot, canonical live-drift ledger/state, and Gate-1 artifact remained byte-identical. Strategy, orders, ranking, sizing, exits, formulas, and thresholds were untouched. SPAC convergence remains the selected research lead but is parked at 0 decisions/0 settlements pending primary broker redemption evidence.",
+  "parameters": {
+    "locked_variables": [
+      "strategy logic",
+      "core exposure ownership",
+      "drift arithmetic",
+      "fill and trajectory thresholds",
+      "entry fill model",
+      "trade_enabled",
+      "orders",
+      "ranking",
+      "sizing",
+      "exits",
+      "active Gate-1 baseline"
+    ],
+    "single_causal_variable": "live_drift_broker_decision_session_attribution_v4"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add another ticker-specific exclusion, session-name special case, or weekend exception; v4 owns broker-session evidence, prior executable decision lineage, and completed-market-session identity.",
+    "new_evidence_required": "A broker lifecycle or schema change, a verified RTH or ALL prior-policy fill incorrectly suppressed by v4, or a natural completed-session run that still duplicates or misattributes the position.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The prior implementation treated a static ticker-level strategy tag as causal execution lineage and wall-clock asof_date as an exchange session. Canonical broker facts instead show that AMZN was filled in ETH before any prior executable next-open policy decision."
+  },
+  "prediction": {
+    "confidence_reason": "The canonical broker order ledger carries session and outside-RTH facts, the daily signal snapshots carry final policy decisions, and market-session identity is derivable from the same canonical OHLCV bars already used by reconciliation; the change is observe-only and locally testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "valid_RTH_policy_fill_suppressed",
+      "ETH_or_predecision_fill_still_alerts",
+      "weekend_duplicate_streak_persists",
+      "missing_evidence_fails_open",
+      "canonical_ledger_mutated"
+    ],
+    "recorded_at": "2026-08-02T15:18:24+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 4,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260802-002/exp_20260802_002_live_drift_broker_decision_session_attribution.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-02T15:32:49+00:00",
+  "trial_family": "live_drift_measurement_integrity",
+  "trial_variant_id": "exp-20260802-002"
+}

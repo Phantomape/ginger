@@ -1,0 +1,114 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0009,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "predicate_exempts_alpha_ticket",
+      "measurement_claim_still_blocked",
+      "close_guard_diverges",
+      "focused_tests_fail"
+    ],
+    "predicted_success_probability": 0.97,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The receipt implementation correctly lane-gated validation and receipt construction, but the final rollout predicate used only clocks and therefore self-locked every non-alpha ticket; the centralized lane guard fixes exactly that omission."
+  },
+  "causal_components": [
+    "promotion-eligible ticket predicate",
+    "measurement-ticket claim regression test",
+    "alpha receipt enforcement preservation"
+  ],
+  "change_summary": "Scope claim-receipt rollout to promotion-required lanes so measurement repairs can be claimed while alpha receipts remain mandatory.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "alpha_promotion_claim_receipt_lane_scope",
+  "component": "scripts/alpha_debate.py, scripts/experiment_registry.py, quant/test_alpha_debate.py, quant/test_experiment_registry.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260729-009",
+  "hypothesis": "Fault recovery: claim-receipt enforcement currently requires a promotion receipt for every newly created ticket, including measurement_repair tickets that correctly have no alpha promotion anchor, making all new non-alpha repairs impossible to claim; scope the rollout predicate to tickets that can use an alpha promotion receipt while preserving strict receipt validation for alpha/scout tickets.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_promotion_closeout_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260729-007"
+  ],
+  "new_evidence_type": "measurement_fault_recovery",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair. The production traceback proved every post-rollout measurement ticket was self-locked despite having no promotion anchor. The public receipt predicate now returns false outside alpha_search/alpha_discovery/universe_scout; an enforcement-enabled registry regression test claims a 2099 measurement ticket with no receipt, while real research receipt, tamper, missing-receipt, and proposed-close tests remain green. 92 focused tests and pycompile passed. Gate-1 is the unchanged exp-20260715-010 artifact; no signal, entry, ranking, sizing, exit, order, PIT, novelty, or trade_enabled behavior changed. Do not reopen without a new lane-scope or receipt bypass.",
+  "parameters": {
+    "locked_variables": [
+      "claimed alpha tickets require valid receipts",
+      "proposed tickets cannot carry receipts",
+      "force cannot bypass promotion validation",
+      "measurement tickets have no promotion anchor"
+    ],
+    "single_causal_variable": "alpha_promotion_claim_receipt_lane_scope"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not weaken alpha receipt validation or add per-lane ad hoc exceptions to claim/close paths.",
+    "new_evidence_required": "A reproducible new lane-scope or receipt-integrity bypass not covered by the centralized promotion-required-lane predicate.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The receipt implementation correctly lane-gated validation and receipt construction, but the final rollout predicate used only clocks and therefore self-locked every non-alpha ticket; the centralized lane guard fixes exactly that omission."
+  },
+  "prediction": {
+    "confidence_reason": "The traceback is deterministic: claim_ticket builds no receipt for a measurement ticket, then claim_receipt_required_for_ticket returns true solely from its creation clock. The existing _ticket_can_use_claim_receipt predicate already identifies promotion-eligible tickets, so composing the predicates should remove only the unintended non-alpha requirement while preserving all alpha receipt checks.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "predicate_exempts_alpha_ticket",
+      "measurement_claim_still_blocked",
+      "close_guard_diverges",
+      "focused_tests_fail"
+    ],
+    "recorded_at": "2026-07-29T15:14:20+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-29T15:18:20+00:00",
+  "trial_family": "alpha_promotion_claim_receipt_scope",
+  "trial_variant_id": "non_alpha_lane_exemption_v1"
+}

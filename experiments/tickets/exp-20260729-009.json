@@ -1,0 +1,286 @@
+{
+  "acceptance_rule": "A new measurement_repair ticket can be claimed without a promotion anchor, a new alpha/scout ticket after the enforcement cutoff still requires a valid claim receipt, tampered or missing alpha receipts remain rejected, focused tests pass, and no trading behavior changes.",
+  "allowed_write_scope": [
+    "scripts/alpha_debate.py",
+    "scripts/experiment_registry.py",
+    "quant/test_alpha_debate.py",
+    "quant/test_experiment_registry.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260729-009.md",
+  "causal_components": [
+    "promotion-eligible ticket predicate",
+    "measurement-ticket claim regression test",
+    "alpha receipt enforcement preservation"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "alpha_promotion_claim_receipt_lane_scope",
+  "claimed_at": "2026-07-29T15:16:32+00:00",
+  "completed_at": "2026-07-29T15:18:19+00:00",
+  "created_at": "2026-07-29T15:15:04+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260729-009",
+  "experiment_uid": "expuid-983769355c8b4e37",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260729-009",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-29T15:15:04+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "claim_receipt_lane_scope"
+  },
+  "hypothesis": "Fault recovery: claim-receipt enforcement currently requires a promotion receipt for every newly created ticket, including measurement_repair tickets that correctly have no alpha promotion anchor, making all new non-alpha repairs impossible to claim; scope the rollout predicate to tickets that can use an alpha promotion receipt while preserving strict receipt validation for alpha/scout tickets.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "claimed alpha tickets require valid receipts",
+    "proposed tickets cannot carry receipts",
+    "force cannot bypass promotion validation",
+    "measurement tickets have no promotion anchor"
+  ],
+  "mechanism_family": "alpha_promotion_closeout_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "alpha promotion anchor validation",
+    "claim receipt hashes",
+    "research artifact snapshots",
+    "novelty",
+    "Gate 1-4",
+    "strategy logic",
+    "orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260729-007"
+  ],
+  "new_evidence_type": "measurement_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "all",
+        "alpha",
+        "an",
+        "anchor",
+        "can",
+        "claim",
+        "closeout",
+        "correctly",
+        "created",
+        "currently",
+        "enforcement",
+        "every",
+        "fault",
+        "have",
+        "impossible",
+        "including",
+        "integrity",
+        "lane",
+        "making",
+        "measurement",
+        "new",
+        "newly",
+        "no",
+        "non",
+        "predicate",
+        "preserving",
+        "promotion",
+        "receipt",
+        "recovery",
+        "repair",
+        "repairs",
+        "requires",
+        "rollout",
+        "scope",
+        "strict",
+        "that",
+        "ticket",
+        "tickets",
+        "to",
+        "use",
+        "validation",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "alpha_promotion_post_claim_snapshot_receipt",
+        "reopen_condition": "Reopen this governance lane only for a reproducible new claim/admission bypass, CAS integrity failure, upstream artifact-format change, or another legitimate mutable-index false invalidation not covered by receipt v1.",
+        "score": 0.0314,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "alpha_search_history_clock_integrity_repair",
+        "reopen_condition": "New forward schema-v3 rows with explicit source event identity, timezone-aware row clocks, effective instrument mappings, non-flat revisions, structured cash-conflict observations, and completed H5/H10/H20 horizons; the exact thresholds are 30 independent decisions, 10 mapped tickers, 10 cash conflicts, and 30 settled decisions at every horizon.",
+        "score": 0.025,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "regime_state",
+        "family_key": "market_regime_nonfinite_vendor_bar_fault_recovery",
+        "reopen_condition": "A genuinely new vendor column/index shape that the fail-closed normalizer cannot parse, or a production finite-input mismatch despite the shared-batch contract.",
+        "score": 0.0235,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.3333,
+        "data_source": "revision_expectation",
+        "family_key": "measurement_repair_pead_field",
+        "reopen_condition": "Wait for the watchlist to span more than one earnings season before retrying; the 10d directional inconsistency across tiers (primary +1.12 pp, wide +0.35 pp, scout -0.48 pp) is the same single-window instability AGENTS.md Section 12 warns about. Independent of PEAD: eps_estimate_delta_30d remains 0 pct coverage; filling it unblocks the magnitude-of-revision alpha branch. The doc's Hypothesis 3 (s",
+        "score": 0.0226,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_process_simplification",
+        "reopen_condition": "Revisit only if a concrete leakage, tamper, revocation, or PIT-authority failure escapes the deterministic promotion checks, or a new promotion schema needs additional hash-bound evidence.",
+        "score": 0.0218,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The traceback is deterministic: claim_ticket builds no receipt for a measurement ticket, then claim_receipt_required_for_ticket returns true solely from its creation clock. The existing _ticket_can_use_claim_receipt predicate already identifies promotion-eligible tickets, so composing the predicates should remove only the unintended non-alpha requirement while preserving all alpha receipt checks.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "predicate_exempts_alpha_ticket",
+      "measurement_claim_still_blocked",
+      "close_guard_diverges",
+      "focused_tests_fail"
+    ],
+    "recorded_at": "2026-07-29T15:14:20+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "fb0aa1791a8c2ebbb30bb034a00f8d03e40ad9e6a21f9dcb3fff5636d8203ec0",
+    "payload_hash": "fb0aa1791a8c2ebbb30bb034a00f8d03e40ad9e6a21f9dcb3fff5636d8203ec0",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.97,
+      "brier_score": 0.0009,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "predicate_exempts_alpha_ticket",
+        "measurement_claim_still_blocked",
+        "close_guard_diverges",
+        "focused_tests_fail"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The receipt implementation correctly lane-gated validation and receipt construction, but the final rollout predicate used only clocks and therefore self-locked every non-alpha ticket; the centralized lane guard fixes exactly that omission."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260729-009.json",
+  "single_causal_variable": "alpha_promotion_claim_receipt_lane_scope",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260729-009.json",
+  "trial_family": "alpha_promotion_claim_receipt_scope",
+  "trial_variant_id": "non_alpha_lane_exemption_v1"
+}

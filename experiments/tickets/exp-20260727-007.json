@@ -1,0 +1,301 @@
+{
+  "acceptance_rule": "Both latest_digest.md and latest_digest.json remain below 8192 bytes, expose the same ordered entry_id subset, report that same shown count, append no ledger events on rerun, preserve latest_mechanism_scan provenance, and leave the active Gate-1 hash plus signals/ranking/sizing/exits/orders unchanged; focused tests and lean audit pass.",
+  "allowed_write_scope": [
+    "scripts/build_research_digest.py",
+    "scripts/test_build_research_digest.py",
+    "data/research_digest/latest_digest.md",
+    "data/research_digest/latest_digest.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260727-007.md",
+  "causal_components": [
+    "shared retained subset",
+    "ordered entry-id parity",
+    "reported-count parity",
+    "focused regression test"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "digest retained candidate subset",
+  "claimed_at": "2026-07-27T17:16:11+00:00",
+  "completed_at": "2026-07-27T17:18:51+00:00",
+  "created_at": "2026-07-27T17:15:57+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260727-007",
+  "experiment_uid": "expuid-eb0fbca083704096",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260727-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-27T17:15:57+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "research_digest_output_parity"
+  },
+  "hypothesis": "Fault recovery: exp-20260727-002 enlarged the machine-readable research digest payload, and independent byte-cap trimming now publishes ten ranked entries in Markdown but only nine in JSON. A single shared retained subset must keep human and machine alpha synthesis inputs identical without changing ledger state, candidate ranking, strategy behavior, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "research digest rank order",
+    "ledger status",
+    "8192-byte cap",
+    "strategy behavior"
+  ],
+  "mechanism_family": "research_digest_candidate_input_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "signal generation",
+    "ranking",
+    "sizing",
+    "entry",
+    "exits",
+    "live/default orders",
+    "data/research_digest/ledger.jsonl",
+    "docs/alpha_external_research_map.md"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260727-002",
+    "exp-20260721-006"
+  ],
+  "new_evidence_type": "regression_reproduction_human_machine_digest_divergence",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "alpha",
+        "behavior",
+        "but",
+        "byte",
+        "cap",
+        "caps",
+        "changing",
+        "digest",
+        "dual",
+        "enlarged",
+        "entries",
+        "exp",
+        "fault",
+        "human",
+        "identical",
+        "in",
+        "independent",
+        "input",
+        "inputs",
+        "integrity",
+        "json",
+        "keep",
+        "ledger",
+        "machine",
+        "markdown",
+        "must",
+        "nine",
+        "now",
+        "only",
+        "or",
+        "orders",
+        "output",
+        "parity",
+        "payload",
+        "publishes",
+        "ranked",
+        "ranking",
+        "readable",
+        "recovery",
+        "research",
+        "retained",
+        "set",
+        "shown",
+        "single",
+        "state",
+        "strategy",
+        "subset",
+        "synthesis",
+        "ten",
+        "trimming",
+        "under",
+        "without"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.1697,
+        "status": "frozen",
+        "trials": 4
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "canonical_state_vector_ranking_validation",
+        "reopen_condition": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+        "score": 0.1636,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "candidate_pool",
+        "reopen_condition": "Only a universe-AWARE ranking+risk retune (per-name strategy-fit selected out-of-sample, validated on a later non-overlapping window) with stable OOS persistence would reopen; or a genuinely new data source. Naive add-names is frozen.",
+        "score": 0.1633,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_free_data_cross_source_consensus_candidate_ranking",
+        "reopen_condition": null,
+        "score": 0.1631,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.1629,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The live artifact reproduces a deterministic 10-versus-9 divergence immediately after exp-20260727-002 added JSON provenance fields; synchronizing to the stricter retained subset is small, strategy-neutral, and directly testable, while the main risk is preserving all existing uncommitted generator work.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "tight-cap fixture cannot isolate JSON-only trimming",
+      "shared subset changes rank order",
+      "ledger mutates",
+      "concurrent research-pit repair conflicts"
+    ],
+    "recorded_at": "2026-07-27T17:15:07+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 2,
+  "reservation_intent": {
+    "key": "e63562ad46b3ab27753d19b6414b3d24730692210224439239d1667a8b4872d6",
+    "payload_hash": "e63562ad46b3ab27753d19b6414b3d24730692210224439239d1667a8b4872d6",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.97,
+      "brier_score": 0.0009,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "tight-cap fixture cannot isolate JSON-only trimming",
+        "shared subset changes rank order",
+        "ledger mutates",
+        "concurrent research-pit repair conflicts"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The predicted JSON-only byte-cap truncation reproduced exactly; no failure mode occurred and the fix required only rerendering Markdown from JSON's stricter retained subset."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260727-007.json",
+  "single_causal_variable": "research digest human-machine shown-set parity under byte caps",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260727-007.json",
+  "trial_family": "research_digest_dual_output_parity",
+  "trial_variant_id": "exp-20260727-007"
+}

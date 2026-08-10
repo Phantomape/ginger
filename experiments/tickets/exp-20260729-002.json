@@ -1,0 +1,308 @@
+{
+  "acceptance_rule": "Focused tests prove broad FINRA refresh occurs before coverage registration; a fake stale archive becomes same-run complete with the new publication and settlement watermark; latest-settlement ticker density is machine-visible; refresh failure remains fail-soft; no signal, ranking, sizing, order, or Gate-1 metric changes.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/non_ohlcv_coverage.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/test_non_ohlcv_coverage.py",
+    "quant/experiments/exp_20260729_002_finra_source_health_order.py",
+    "data/experiments/exp-20260729-002/exp_20260729_002_finra_source_health_order.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260729-002.md",
+  "causal_components": [
+    "precoverage_archive_refresh",
+    "broad_ingest_ticker_scope",
+    "latest_settlement_cohort_density"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "finra_short_interest_broad_producer_before_coverage_health_contract_v1",
+  "claimed_at": "2026-07-29T02:22:03+00:00",
+  "completed_at": "2026-07-29T02:30:52+00:00",
+  "created_at": "2026-07-29T02:21:49+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260729-002",
+  "experiment_uid": "expuid-b59e3828a5214eb9",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260729-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-29T02:21:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_source_health_order"
+  },
+  "hypothesis": "Fault recovery: the daily FINRA short-interest coverage row is generated before the active source producer refreshes the archive, so same-run health is one cycle stale and historical unique-ticker count hides latest-settlement cohort sparsity. Refreshing the authorized archive against the existing broad-ingest universe before coverage registration, plus exposing latest-settlement cohort density, should make same-run PIT health truthful without changing signals, ranking, sizing, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core_signal_policy",
+    "candidate_ranking",
+    "position_sizing",
+    "orders",
+    "sec_ftd_finra_policy",
+    "Gate_1_anchor"
+  ],
+  "mechanism_family": "forward_observer_health_producer_before_consumer",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "quant/backtester.py",
+    "data/backtests",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260616-020",
+    "exp-20260725-004",
+    "exp-20260728-001"
+  ],
+  "new_evidence_type": "fault_recovery_finra_same_run_manifest_lag",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "active",
+        "against",
+        "archive",
+        "authorized",
+        "before",
+        "changing",
+        "cohort",
+        "consumer",
+        "contract",
+        "count",
+        "coverage",
+        "cycle",
+        "daily",
+        "density",
+        "existing",
+        "exposing",
+        "fault",
+        "finra",
+        "forward",
+        "generated",
+        "health",
+        "hides",
+        "historical",
+        "ingest",
+        "interest",
+        "is",
+        "latest",
+        "make",
+        "measurement",
+        "observer",
+        "one",
+        "or",
+        "order",
+        "orders",
+        "pit",
+        "plus",
+        "producer",
+        "ranking",
+        "recovery",
+        "refreshes",
+        "refreshing",
+        "registration",
+        "repair",
+        "row",
+        "run",
+        "same",
+        "settlement",
+        "short",
+        "should",
+        "signals",
+        "sizing",
+        "so",
+        "sparsity",
+        "stale",
+        "ticker",
+        "truthful",
+        "unique",
+        "without"
+      ],
+      "gate_shape": "forward_observer"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.47,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_covering_relief_leadership_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially richer borrow dataset are required: borrow fee, lendable-share availability, or float-normalized short-interest decline with the FINRA publication lag explicitly modeled.",
+        "score": 0.4685,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "duplicate_exposure_cap_policy_sim",
+        "reopen_condition": "A valid retry needs materially more closed forward cross-sleeve duplicate rows plus an independent historical/default-off row surface meeting the duplicate count, group, window, and concentration requirements, or a full shared-policy Gate 1-4 implementation with explicit parity.",
+        "score": 0.4671,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_breakout_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger free/cheap short-pressure field, such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.4633,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_short_pressure_iwm_confirmed_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially stronger short-pressure field such as borrow fee, borrow availability, or float-normalized short interest.",
+        "score": 0.4631,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New fault evidence: on the 2026-07-28 run the central coverage row at 03:06Z recorded 46514 rows and publication 2026-07-10, while the same run rewrote the archive at 03:34Z to 46568 rows and publication 2026-07-24; exp-20260616-020 only registered coverage and did not test producer ordering or latest-cohort density.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "finra_short_interest",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": true
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New fault evidence: on the 2026-07-28 run the central coverage row at 03:06Z recorded 46514 rows and publication 2026-07-10, while the same run rewrote the archive at 03:34Z to 46568 rows and publication 2026-07-24; exp-20260616-020 only registered coverage and did not test producer ordering or latest-cohort density.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_observer",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "Exact 27-minute same-run timestamp split reproduces the fault; the shared refresh helper already exists and later sleeve naturally reuses a fresh archive.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "network_refresh_not_fail_soft",
+      "coverage_still_precedes_producer",
+      "cohort_density_miscomputed",
+      "dirty_scope_overlap"
+    ],
+    "recorded_at": "2026-07-29T02:21:28+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "network_refresh_not_fail_soft",
+        "coverage_still_precedes_producer",
+        "cohort_density_miscomputed",
+        "dirty_scope_overlap"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": null
+    },
+    "artifact": "data/experiments/exp-20260729-002/exp_20260729_002_finra_source_health_order.json",
+    "log": "experiments/logs/exp-20260729-002.json",
+    "summary": "Accepted FINRA producer-before-coverage and sparse-cohort health repair; no alpha or trading behavior changed."
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The active SEC FTD + FINRA sleeve refreshed the shared archive 28 minutes after the central coverage row was appended. Moving the existing refresh ahead of coverage and measuring the latest settlement cohort fixed the deterministic control-flow defect without touching any trading policy.",
+    "realized_failure_mode": null,
+    "forbidden_near_neighbor_retry": "Do not reserve another ID for routine FINRA refreshes, daily coverage materialization, cohort-density threshold retunes, or any FINRA alpha/join retry. The daily pipeline now owns refresh and health registration; frozen FINRA alpha lanes remain frozen.",
+    "new_evidence_required": "Reopen measurement work only for an independently observed source-format, official-publication-clock, provenance/content-identity, or producer-order regression that persists after this repair. Remaining source_files-history and publication-clock debt must be handled in one bounded multi-observer health batch, not a FINRA-only ID."
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260729-002.json",
+  "single_causal_variable": "finra_short_interest_broad_producer_before_coverage_health_contract_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260729-002.json",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260729-002"
+}

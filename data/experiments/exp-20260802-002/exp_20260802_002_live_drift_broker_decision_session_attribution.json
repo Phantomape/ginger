@@ -1,0 +1,314 @@
+{
+  "acceptance_basis": "The real AMZN ETH/pre-decision mismatch is reproduced from canonical broker facts; v4 preserves raw drift but fails alert attribution closed and collapses weekend reruns onto one completed market session without touching strategy state.",
+  "acceptance_tests": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_live_drift_reconciliation.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\live_drift_reconciliation.py quant\\test_live_drift_reconciliation.py quant\\experiments\\exp_20260802_002_live_drift_broker_decision_session_attribution.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "after": {
+    "current_alert": {
+      "bucket": "core",
+      "consecutive_breach_sessions": 0,
+      "fill_alert": false,
+      "latest_mean_fill_drift_pct": null,
+      "sessions_observed": 6,
+      "thresholds": {
+        "consecutive_sessions": 10,
+        "mean_fill_drift_pct": 0.003,
+        "trajectory_drift_pct": -0.015
+      },
+      "trajectory_alert": false
+    },
+    "isolated_amzn_row": {
+      "alert_eligibility_contract": "live_drift_reconciliation_v4",
+      "asof_date": "2026-08-01",
+      "avg_cost": 271.353,
+      "broker_entry_evidence_status": "outside_regular_session_fill",
+      "broker_entry_fill_outside_rth": [
+        true
+      ],
+      "broker_entry_filled_qty": 3.0,
+      "broker_entry_order_ids": [
+        "FS1CE949C89FBA1000",
+        "FS1CE94AA4E9FA1000"
+      ],
+      "broker_entry_sessions": [
+        "ETH"
+      ],
+      "close_asof": 271.58,
+      "core_execution_alert_eligible": false,
+      "core_execution_alert_exclusion_reason": "outside_regular_session_fill",
+      "entry_date": "2026-07-31",
+      "entry_market_session_date": "2026-07-31",
+      "entry_strategy_provenance": "breakout_long",
+      "entry_strategy_provenance_field": "opened_by_strategy",
+      "fill_drift_pct": 0.02352,
+      "market_session_date": "2026-07-31",
+      "market_val": 814.74,
+      "modeled_entry_price": 265.1175,
+      "modeled_return_pct": 0.024376,
+      "policy_decision_date": "2026-07-30",
+      "policy_decision_evidence_status": "policy_decision_snapshot_missing",
+      "policy_decision_scope": "top_level_signals_final",
+      "position_id": 5030301604555394907,
+      "realized_return_pct": 0.000837,
+      "reason": null,
+      "reconcilable": true,
+      "rule_version": "live_drift_reconciliation_v4",
+      "shares": 3.0,
+      "strategy_bucket": "core",
+      "suspect_multi_fill": false,
+      "ticker": "AMZN",
+      "trajectory_drift_pct": -0.023539,
+      "unrealized_pl": 0.68
+    },
+    "rule_version": "live_drift_reconciliation_v4",
+    "session_dedup_proof": {
+      "next_completed_session": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": false,
+        "latest_mean_fill_drift_pct": null,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "same_completed_session": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": false,
+        "latest_mean_fill_drift_pct": null,
+        "sessions_observed": 1,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      }
+    }
+  },
+  "artifact_type": "live_drift_broker_decision_session_attribution_repair",
+  "baseline_identity": {
+    "expected_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "gate1_metrics_changed": false,
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+  },
+  "before": {
+    "amzn_rows": [
+      {
+        "asof_date": "2026-07-31",
+        "avg_cost": 271.353,
+        "close_asof": 271.58,
+        "core_execution_alert_eligible": true,
+        "core_execution_alert_exclusion_reason": null,
+        "entry_date": "2026-07-31",
+        "entry_strategy_provenance": "breakout_long",
+        "entry_strategy_provenance_field": "opened_by_strategy",
+        "fill_drift_pct": 0.02352,
+        "market_val": 814.74,
+        "modeled_entry_price": 265.1175,
+        "modeled_return_pct": 0.024376,
+        "position_id": 5030301604555394907,
+        "realized_return_pct": 0.000837,
+        "reason": null,
+        "reconcilable": true,
+        "rule_version": "live_drift_reconciliation_v3",
+        "shares": 3.0,
+        "strategy_bucket": "core",
+        "suspect_multi_fill": false,
+        "ticker": "AMZN",
+        "trajectory_drift_pct": -0.023539,
+        "unrealized_pl": 0.68
+      },
+      {
+        "asof_date": "2026-08-01",
+        "avg_cost": 271.353,
+        "close_asof": 271.58,
+        "core_execution_alert_eligible": true,
+        "core_execution_alert_exclusion_reason": null,
+        "entry_date": "2026-07-31",
+        "entry_strategy_provenance": "breakout_long",
+        "entry_strategy_provenance_field": "opened_by_strategy",
+        "fill_drift_pct": 0.02352,
+        "market_val": 814.74,
+        "modeled_entry_price": 265.1175,
+        "modeled_return_pct": 0.024376,
+        "position_id": 5030301604555394907,
+        "realized_return_pct": 0.000837,
+        "reason": null,
+        "reconcilable": true,
+        "rule_version": "live_drift_reconciliation_v3",
+        "shares": 3.0,
+        "strategy_bucket": "core",
+        "suspect_multi_fill": false,
+        "ticker": "AMZN",
+        "trajectory_drift_pct": -0.023539,
+        "unrealized_pl": 0.68
+      }
+    ],
+    "broker_entry_orders": [
+      {
+        "create_time": "2026-07-31 15:43:39.073",
+        "dealt_avg_price": "271.2175",
+        "dealt_qty": "1",
+        "fill_outside_rth": true,
+        "order_id": "FS1CE949C89FBA1000",
+        "order_status": "FILLED_ALL",
+        "session": "ETH"
+      },
+      {
+        "create_time": "2026-07-31 15:47:24.650",
+        "dealt_avg_price": "271.42",
+        "dealt_qty": "2",
+        "fill_outside_rth": true,
+        "order_id": "FS1CE94AA4E9FA1000",
+        "order_status": "FILLED_ALL",
+        "session": "ETH"
+      }
+    ],
+    "broker_fill_qty": 3.0,
+    "broker_weighted_fill_price": 271.3525,
+    "persisted_alert": {
+      "bucket": "core",
+      "consecutive_breach_sessions": 2,
+      "fill_alert": true,
+      "latest_mean_fill_drift_pct": 0.02352,
+      "sessions_observed": 7,
+      "thresholds": {
+        "consecutive_sessions": 10,
+        "mean_fill_drift_pct": 0.003,
+        "trajectory_drift_pct": -0.015
+      },
+      "trajectory_alert": false
+    },
+    "prior_session_signal_path_exists": false,
+    "same_day_signal_already_held_dropped": [
+      {
+        "conditions_met": {
+          "above_200ma": true,
+          "breakout_20d": true,
+          "pct_from_52w_high": -0.0251,
+          "post_earnings_continuation_confirmed": false,
+          "post_earnings_event_date": null,
+          "rs_vs_spy": 0.0935,
+          "volume_spike": true
+        },
+        "confidence_score": 1.0,
+        "core_confirmed_quality_state": true,
+        "core_confirmed_quality_tqs_min": 0.95,
+        "days_since_last_earnings": 1,
+        "days_to_earnings": 64,
+        "entry_note": "Execute next-day open; cancel if open > entry_price x 1.015 or open < entry_price x 0.980",
+        "entry_price": 271.58,
+        "exec_lag_adj_net_rr": 2.44,
+        "gap_vulnerability_pct": 0.0525,
+        "green_decel_quality_nonconsumer_excluded_sector": true,
+        "green_decel_quality_nonconsumer_state": false,
+        "green_decel_quality_nonconsumer_tqs_min": 0.95,
+        "last_earnings_date": "2026-07-30",
+        "mid_sector_dispersion": true,
+        "momentum_10d_minus_20d_pct": -0.0206,
+        "momentum_10d_pct": 0.0985,
+        "momentum_20d_pct": 0.1191,
+        "momentum_60d_pct": -0.007202,
+        "net_risk_reward_ratio": 2.75,
+        "post_earnings_continuation_confirmed": false,
+        "price_vs_200ma_extension_cutoff": 0.1516,
+        "price_vs_200ma_extension_state": true,
+        "price_vs_200ma_pct": 0.1556,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0685,
+        "reward_per_share": 42.8,
+        "risk_per_share": 14.27,
+        "risk_reward_ratio": 3.0,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_cutoff": 0.16377,
+        "rs60_top_quintile_state": false,
+        "sector": "Consumer Discretionary",
+        "sector_ret20_dispersion": 0.0717,
+        "signal_day_ticker_green_candle": true,
+        "signal_day_ticker_open_close_return_pct": 0.024888,
+        "signal_day_ticker_outperformed_spy": true,
+        "spy_relative_leader": true,
+        "spy_ret20_pct": 0.003,
+        "spy_signal_day_open_close_return_pct": 0.003156,
+        "stop_price": 257.31,
+        "strategy": "trend_long",
+        "target_mult_used": 4.5,
+        "target_price": 314.38,
+        "ticker": "AMZN",
+        "ticker_minus_spy_signal_day_open_close_return_pct": 0.021732,
+        "ticker_ret20_minus_spy_pct": 0.1161,
+        "trade_quality_score": 0.998
+      }
+    ],
+    "same_day_signal_generated_at": "2026-08-01T03:41:25.123837+00:00"
+  },
+  "checks": {
+    "active_gate1_hash_unchanged": true,
+    "amzn_alert_fails_closed": true,
+    "before_false_alert_reproduced": true,
+    "canonical_inputs_and_ledgers_byte_identical": true,
+    "current_false_fill_alert_cleared": true,
+    "market_session_anchored_to_last_completed_bar": true,
+    "next_completed_session_advances_once": true,
+    "no_prior_next_session_policy_decision": true,
+    "raw_amzn_drift_preserved": true,
+    "restart_is_deterministic": true,
+    "same_day_signal_was_dropped_already_held": true,
+    "signal_sentinel_fields_present": true,
+    "strategy_behavior_unchanged": true,
+    "three_share_weighted_broker_fill_reproduced": true,
+    "two_entry_orders_are_eth_outside_rth": true,
+    "weekend_same_session_deduplicated": true
+  },
+  "experiment_id": "exp-20260802-002",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add another ticker-specific exclusion or weekend special case; v4 owns broker-session, prior-decision and market-session identity.",
+    "new_evidence_required": "A broker lifecycle schema change, a verified RTH policy fill suppressed by v4, or a natural completed-session run that still duplicates or misattributes.",
+    "why_result_happened": "A static ticker-level strategy tag was treated as causal execution lineage, and calendar as-of dates were treated as exchange sessions."
+  },
+  "production_impact": {
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "observe_only": true,
+    "orders_changed": false,
+    "policy_execution_alert_attribution_changed": true,
+    "ranking_changed": false,
+    "raw_core_exposure_metrics_changed": false,
+    "shared_measurement_changed": true,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "single_causal_variable": "live_drift_broker_decision_session_attribution_v4",
+  "status": "accepted",
+  "surface_hash_guard": {
+    "after": {
+      "baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+      "broker_fills": "16c740e190c54a3c7f4d149456fa9a8c2e9b264dc0deee7c892faf31af258975",
+      "broker_orders": "3f59c91b8e398ba1a03ac6d33d9389a8efed88dea2917006291a690fabeeb20b",
+      "drift_ledger": "0bfcec54dd5753197a615c510694db3719dcf713db8d143635ebfa9837e84d2e",
+      "drift_state": "79943bb0bceb798e08b0ea40abcb4c2169fe02652046d1b09c79db75da541b9b",
+      "position_tags": "f9a4cc14053450befdbb6775ff07fc266e75bebf46e60ba9371d6caf6be12a21",
+      "positions": "1c003f15f652acc6e1c3c16a831a740341c288c26621c6e868103af768499710",
+      "signal_20260731": "83597c43cb71f79892a176543df3d47f6ac4c03235f24c34a5f896a5596725a9"
+    },
+    "before": {
+      "baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+      "broker_fills": "16c740e190c54a3c7f4d149456fa9a8c2e9b264dc0deee7c892faf31af258975",
+      "broker_orders": "3f59c91b8e398ba1a03ac6d33d9389a8efed88dea2917006291a690fabeeb20b",
+      "drift_ledger": "0bfcec54dd5753197a615c510694db3719dcf713db8d143635ebfa9837e84d2e",
+      "drift_state": "79943bb0bceb798e08b0ea40abcb4c2169fe02652046d1b09c79db75da541b9b",
+      "position_tags": "f9a4cc14053450befdbb6775ff07fc266e75bebf46e60ba9371d6caf6be12a21",
+      "positions": "1c003f15f652acc6e1c3c16a831a740341c288c26621c6e868103af768499710",
+      "signal_20260731": "83597c43cb71f79892a176543df3d47f6ac4c03235f24c34a5f896a5596725a9"
+    },
+    "exact": true
+  }
+}

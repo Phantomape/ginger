@@ -1,0 +1,290 @@
+{
+  "acceptance_rule": "Canonical fixture maps independent and mapped counts instead of zero; missing or malformed input fails closed; zero cash conflicts and settlements remain zero; focused tests and lean-strict pass.",
+  "allowed_write_scope": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "quant/experiments",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/logs",
+    "data/reopen_readiness.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "docs/lessons"
+  ],
+  "baseline_result_file": "data\\non_ohlcv\\estimate_revision_readiness_latest.json",
+  "card_file": "experiments/cards/exp-20260723-003.md",
+  "causal_components": [
+    "canonical readiness load",
+    "counter translation",
+    "threshold verdict",
+    "focused tests",
+    "measurement artifact"
+  ],
+  "change_type": "duplicate_reservation_accounting",
+  "changed_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1",
+  "claimed_at": null,
+  "completed_at": "2026-07-23T05:19:18+00:00",
+  "decision": "observed_only_duplicate_reservation_no_new_evidence",
+  "created_at": "2026-07-23T05:16:35+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260723-003",
+  "duplicate_of": "exp-20260723-002",
+  "experiment_uid": "expuid-e8ca5f3001ba4424",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260723-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-23T05:16:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "estimate_revision_reopen_readiness_binding"
+  },
+  "hypothesis": "Bind Phase-2 estimate-revision reopen counters to the canonical readiness artifact instead of hard-coded zeroes, fail closed on malformed input, and leave all trading behavior unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "entry",
+    "ranking",
+    "sizing",
+    "exit",
+    "orders",
+    "trade_enabled",
+    "alpha_thresholds"
+  ],
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "operator_inputs/open_positions.json",
+    "data/live_pilot",
+    "orders",
+    "trade_enabled"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260721-004",
+    "exp-20260721-002"
+  ],
+  "new_evidence_type": "none_duplicate_reservation_accounting",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "revision_expectation",
+      "field_tags": [
+        "all",
+        "artifact",
+        "behavior",
+        "bind",
+        "binding",
+        "canonical",
+        "closed",
+        "coded",
+        "counter",
+        "counters",
+        "estimate",
+        "fail",
+        "governance",
+        "hard",
+        "input",
+        "instead",
+        "leave",
+        "malformed",
+        "measurement",
+        "of",
+        "on",
+        "phase",
+        "readiness",
+        "reopen",
+        "revision",
+        "to",
+        "tooling",
+        "trading",
+        "unchanged",
+        "zeroes"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_candidate_match_surface_repair",
+        "reopen_condition": "Closed H3/H5/H10 cash/SPY/QQQ replacement-value rows for the 2026-07-07 matched cohort, materially more non-flat matched rows, or identification of the external process that mapped/deleted the artifact.",
+        "score": 0.4833,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "revision_expectation",
+        "family_key": "analyst_estimate_revision_earnings_quality_overlay",
+        "reopen_condition": null,
+        "score": 0.4742,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_estimate_revision_event_confirmation_overlay",
+        "reopen_condition": null,
+        "score": 0.4735,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "earnings_snapshot_date_revision_readiness",
+        "reopen_condition": null,
+        "score": 0.4735,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "estimate_revision_ledger_direction_outcome",
+        "reopen_condition": "A retry needs materially new evidence: at least another settled month of production estimate_revision_ledger rows, a distinct PIT revision field not used here, or a shared default-off helper that passes canonical Gate 1-4 rather than this gross proxy warehouse attribution.",
+        "score": 0.4735,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "revision_expectation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "revision_expectation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The canonical readiness file already exposes stable independent, mapped, cash-conflict, and horizon-settlement fields while the builder visibly hard-codes zero; the risk is schema drift rather than strategy behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_schema_mismatch",
+      "field_translation_error",
+      "existing_dirty_change_overlap"
+    ],
+    "recorded_at": "2026-07-23T05:15:30+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "observed_only_duplicate_reservation_no_new_evidence",
+    "acceptance_reasons": [],
+    "before_result_file": "data/non_ohlcv/estimate_revision_readiness_latest.json",
+    "after_result_file": "data/non_ohlcv/estimate_revision_readiness_latest.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "observed_only",
+      "actual_success": null,
+      "predicted_success_probability": 0.97,
+      "brier_score": null,
+      "calibration_direction": "not_scored",
+      "surprise_level": "not_scored",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "canonical_schema_mismatch",
+        "field_translation_error",
+        "existing_dirty_change_overlap"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The first asynchronous reservation completed after appearing to return only a novelty warning; protocol requires retaining the first ticket and closing this retry."
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement or rerun this counter binding under exp-20260723-003; exp-20260723-002 is the sole substantive owner.",
+    "new_evidence_required": "This accounting ticket generated no evidence and must not be reopened.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The first asynchronous reservation completed after appearing to return only novelty output, and an immediate self-retry created this losing duplicate."
+  },
+  "rejection_reason": "duplicate_reservation_accounting",
+  "revision_manifest_file": "experiments/manifests/exp-20260723-003.json",
+  "single_causal_variable": "estimate_revision_reopen_readiness_canonical_counter_binding_v1",
+  "status": "observed_only",
+  "ticket_file": "experiments/tickets/exp-20260723-003.json",
+  "trial_family": "duplicate_reservation_accounting",
+  "trial_variant_id": "exp-20260723-003"
+}

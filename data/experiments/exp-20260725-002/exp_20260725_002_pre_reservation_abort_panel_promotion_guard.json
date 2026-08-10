@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260725-002",
+  "timestamp": "2026-07-25T07:20:51Z",
+  "status": "accepted",
+  "decision": "accepted_measurement_repair",
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "lane": "measurement_repair",
+  "hypothesis": "Alpha discovery promotion must fail closed when a selection panel or scope has already been recorded as abort_before_alpha_reservation; otherwise superseded D0-D3 artifacts can be promoted after a measurement repair invalidates their readiness count.",
+  "change_summary": "Promotion build and revalidation now veto an explicitly revoked selection panel/scope before ordinary promotion checks.",
+  "change_type": "measurement_repair",
+  "implementation_mode": "measurement_repair",
+  "mechanism_family": "alpha_promotion_measurement_governance",
+  "trial_family": "pre_reservation_abort_promotion_guard",
+  "trial_variant_id": "exp-20260725-002",
+  "changed_variable": "pre_reservation_abort_panel_promotion_guard",
+  "single_causal_variable": "pre_reservation_abort_panel_promotion_guard",
+  "causal_components": [
+    "promotion guard",
+    "regression test",
+    "closeout artifact"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260725-001",
+    "exp-20260722-002"
+  ],
+  "prior_trial_count": 0,
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "genuine_fault_recovery_superseded_alpha_panel",
+  "parameters": {
+    "before": "promotion validation had no durable abort-record veto",
+    "after": "fail closed on schema-v1 abort artifacts matching panel_hash or selection_scope_id; never veto a fresh scope by candidate_id alone"
+  },
+  "date_range": {
+    "start": null,
+    "end": null
+  },
+  "evaluation_windows": [],
+  "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "before_metrics": {
+    "explicit_abort_veto_paths": 0,
+    "revoked_panel_reason_precedence": false,
+    "candidate_id_fresh_scope_reopen_safe": null,
+    "strategy_ev_score": 6.2057,
+    "strategy_total_pnl": 130992.36,
+    "strategy_trade_count": 49
+  },
+  "after_metrics": {
+    "explicit_abort_veto_paths": 2,
+    "revoked_panel_reason_precedence": true,
+    "candidate_id_fresh_scope_reopen_safe": true,
+    "strategy_ev_score": 6.2057,
+    "strategy_total_pnl": 130992.36,
+    "strategy_trade_count": 49
+  },
+  "delta_metrics": {
+    "explicit_abort_veto_paths": 2,
+    "strategy_ev_score": 0.0,
+    "strategy_total_pnl": 0.0,
+    "strategy_trade_count": 0
+  },
+  "headline_metrics": {
+    "guarded_promotion_paths": 2,
+    "focused_pytest_passed": 23,
+    "strategy_ev_delta": 0.0,
+    "strategy_pnl_delta": 0.0,
+    "strategy_trade_delta": 0
+  },
+  "checks": {
+    "active_cash_feasible_baseline_readable": true,
+    "abort_artifact_contract_valid": true,
+    "abort_binds_exact_panel_and_scope": true,
+    "real_revoked_panel_blocked_before_general_promotion": true,
+    "build_and_validation_paths_guarded": true,
+    "candidate_id_is_not_an_independent_veto": true,
+    "real_panel_is_observed_only_but_abort_precedes_grade_check": true
+  },
+  "gate1": {
+    "passed": true,
+    "reference": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "record_type",
+      "decision",
+      "panel_hash|selection_scope_id"
+    ],
+    "signal_sentinels": "entry_date and target_price remain canonical signal sentinels; this admission-only repair does not generate signals"
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair",
+    "measurement_repair_only": true,
+    "strategy_behavior_changed": false,
+    "failed_reasons": []
+  },
+  "prediction": {
+    "success_probability": 0.86,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "abort_matching_too_broad",
+      "fixture_repo_root_gap",
+      "audit_schema_gap"
+    ],
+    "confidence_reason": "The stale intraday panel has an explicit abort artifact after exp-20260725-001 demoted readiness to 94/100, and promotion construction currently revalidates hashes and D0-D3 but has no explicit abort-ledger veto.",
+    "recorded_at": "2026-07-25T06:49:55+00:00"
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_success_probability": 0.86,
+    "brier_score": 0.0196,
+    "realized_failure_mode": null,
+    "surprise_note": "The real panel was already observed-only, so the durable abort veto is an explicit revocation layer rather than a strategy promotion. Moving it before grade validation makes the recorded reason load-bearing."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "parity_test_added": false
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "cash-feasible 47-ticker core",
+      "current 12-position broker account",
+      "accepted default-off observers/sleeves",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "portfolio_snapshot": {
+      "as_of": "2026-07-25",
+      "portfolio_value_usd": 60962.4414,
+      "cash_usd": 22204.45,
+      "position_count": 12,
+      "core_slot_position_count": 1
+    },
+    "opportunity_cost_winner": "cash / no new executable core entry",
+    "evidence_surfaces_used": [
+      "canonical price/cash Gate-1",
+      "intraday completed-close ledger",
+      "flow and derivatives readiness",
+      "event and revision ledgers",
+      "positioning and portfolio exposure",
+      "research digest"
+    ],
+    "evidence_surfaces_missing": [
+      "100 strict intraday next-close settlements",
+      "mature cash-conflict and H5/H10/H20 revision outcomes",
+      "settled prediction-market outcomes",
+      "PIT-bound options history"
+    ],
+    "hypothesis_candidates": [
+      {
+        "hypothesis": "machine-default REDUCE_RISK versus semantic override",
+        "readiness": {
+          "raw_primary_next_close_rows": 137,
+          "effective_next_close_rows": 118,
+          "raw_closed_next_close_rows": 113,
+          "effective_closed_next_close_rows": 94,
+          "raw_strict_completed_next_close_settlements": 113,
+          "strict_effective_next_close_settlements": 94,
+          "duplicate_economic_rows_excluded": 19,
+          "incomplete_closed_effective_rows_excluded": 0
+        }
+      },
+      {
+        "hypothesis": "timestamp-safe revision versus muted price response",
+        "readiness": {
+          "qualified_nonflat_decisions": 320,
+          "mapped_tickers": 288,
+          "actual_cash_conflicts": 0,
+          "settled_h5": 0,
+          "settled_h10": 0,
+          "settled_h20": 0
+        }
+      },
+      {
+        "hypothesis": "prediction-market expectation gap",
+        "readiness": {
+          "postfix_rows": 1176,
+          "postfix_settled": 0
+        }
+      }
+    ],
+    "selected_hypothesis": "machine-default intraday REDUCE_RISK next-close policy, parked",
+    "economic_mechanism": "deterministic machine actions may avoid noisy semantic overrides at the next-session execution horizon",
+    "falsifier": "fewer than 20 economically active reductions, incomplete session identity, negative replacement value, or concentration/tail failure",
+    "evidence_grade": "lead_parked",
+    "next_machine_action": "continue routine settlement without IDs; at >=100 strict cohorts and >=20 settled active reductions build a fresh outcome-blind D0-D3 scope",
+    "research_digest_disposition": "all ten displayed entries were already declined for no expectation proxy; no duplicate ledger append"
+  },
+  "acceptance_basis": "All contract checks passed, the real revoked panel now returns the stable abort code before ordinary grade validation, late validation shares the same guard, malformed abort records fail closed, and no strategy metric moved.",
+  "rejection_reason": null,
+  "post_run_reflection": {
+    "why_result_happened": "Promotion validation previously authenticated panel/debate hashes but did not consume the durable revocation artifact written after the settlement repair invalidated readiness.",
+    "forbidden_near_neighbor_retry": "Do not reuse the superseded intraday panel, weaken malformed-abort handling, or use candidate_id alone to block a future fresh scope.",
+    "new_evidence_required": "The underlying alpha may reopen only at the recorded strict settlement and active-reduction power bars with a fresh verified promotion."
+  },
+  "next_retry_requires": [
+    "No retry of this governance repair; regression tests own the contract.",
+    "Fresh alpha scope only after the recorded intraday maturity thresholds."
+  ],
+  "source_hashes": {
+    "data/alpha_search/intraday_machine_default_discovery_abort_20260725.json": "d15be6470ae85e8c237886a731b603a0596d375aae027a78a2c180589f0f16fe",
+    "data/alpha_search/intraday_machine_default_selection_panel_20260724.json": "0bf863fb4a6e558ffebf41726d9b307008c3eaaa6d68f49f2323405995d398db",
+    "scripts/alpha_debate.py": "ea1080dc56966f9a1c062df78259fd49bef4855be8902f322bb87a50414d66b5",
+    "quant/test_alpha_debate.py": "3d4940483239ef81736ff61bd1af77fb312a33d90c6f78c09cac63f0cacb2a85"
+  },
+  "blocked_error": {
+    "code": "pre_reservation_abort_blocks_promotion",
+    "path": "$.panel",
+    "detail": "data/alpha_search/intraday_machine_default_discovery_abort_20260725.json already records abort_before_alpha_reservation for this promotion anchor (panel_hash, selection_scope_id)"
+  },
+  "changed_files": [
+    "scripts/alpha_debate.py",
+    "quant/test_alpha_debate.py",
+    "quant/experiments/exp_20260725_002_pre_reservation_abort_panel_promotion_guard.py",
+    "data/experiments/exp-20260725-002/exp_20260725_002_pre_reservation_abort_panel_promotion_guard.json",
+    "experiments/logs/exp-20260725-002.json",
+    "experiments/cards/exp-20260725-002.md",
+    "experiments/manifests/exp-20260725-002.json",
+    "experiments/tickets/exp-20260725-002.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl"
+  ],
+  "related_files": [
+    "scripts/alpha_debate.py",
+    "quant/test_alpha_debate.py",
+    "quant/experiments/exp_20260725_002_pre_reservation_abort_panel_promotion_guard.py",
+    "data/experiments/exp-20260725-002/exp_20260725_002_pre_reservation_abort_panel_promotion_guard.json",
+    "experiments/logs/exp-20260725-002.json",
+    "experiments/cards/exp-20260725-002.md",
+    "experiments/manifests/exp-20260725-002.json",
+    "experiments/tickets/exp-20260725-002.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "data/alpha_search/intraday_machine_default_discovery_abort_20260725.json",
+    "data/alpha_search/intraday_machine_default_selection_panel_20260724.json",
+    "data/alpha_search/intraday_machine_default_scope_manifest_20260724.json",
+    "data/reopen_readiness.json",
+    "operator_inputs/open_positions.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_debate.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260725_002_pre_reservation_abort_panel_promotion_guard.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true
+}

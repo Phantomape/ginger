@@ -1,0 +1,159 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "official_download_timeout",
+      "async_status_never_finishes",
+      "schema_drift",
+      "partial_zip_write",
+      "incorrect_retrieval_clock",
+      "weekend_zero_rows",
+      "dirty_worktree_overlap"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The first restored live snapshot produced 249 non-embargo prospective rows and 7 eligible rows immediately, but none are settled or mapped enough to reopen alpha."
+  },
+  "causal_components": [
+    "official bounded transaction download",
+    "persisted immutable raw snapshot and manifest",
+    "explicit retrieval-time PIT clock",
+    "fail-closed stale or unavailable health summary",
+    "zero-row heartbeat visibility",
+    "local snapshot override preserved"
+  ],
+  "change_summary": "Restore the default-off USAspending daily producer with bounded official async download, immutable ZIP/manifest, retrieval-clock PIT binding, fail-closed freshness health, and coverage heartbeat; preserve all eligibility, embargo, and no-trade rules.",
+  "change_type": "fault_recovery_forward_producer_health",
+  "changed_variable": "usaspending_observer_snapshot_producer_and_health_contract",
+  "component": "quant/usaspending_obligation_observer.py, quant/test_usaspending_obligation_observer.py, quant/run.py, quant/test_run_daily_wiring.py, data/non_ohlcv/usaspending_obligation_observer/, data/experiments/, docs/production_backtest_parity_matrix.md",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted_measurement_repair",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260727-003",
+  "hypothesis": "Fault recovery: the accepted USAspending local-first-seen observer silently starves whenever no external snapshot path is configured, while its persisted latest summary remains status=ok; a bounded official transaction-download producer plus immutable raw manifest and fail-closed freshness/zero-output heartbeat should restore prospective rows without changing any alpha rule, ranking, sizing, exits, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_visible_usaspending_obligation_conversion_candidate_pool",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260713-007"
+  ],
+  "new_evidence_type": "fault_recovery_no_alpha_evidence",
+  "next_retry_requires": [
+    "No near-neighbor producer ID unless an actual source, schema, retrieval-clock, or health regression occurs.",
+    "Underlying alpha remains parked until at least 75 settled unique eligible events span at least 15 first-seen dates and 3 mapped tickers, max ticker share is at most 30%, and cash/SPY/QQQ replacement outcomes are complete."
+  ],
+  "notes": "Accepted measurement repair only. Real 2026-07-27 smoke parsed 1,816 source rows and appended 249 prospective forward rows, 7 currently eligible; same-date rerun appended zero and emitted fresh_success_zero_forward. The July 14-26 missing vintages are irrecoverable and cannot be backfilled. Gate-1 hash and strategy EV/PnL/trades are unchanged; accepted_alpha=false.",
+  "parameters": {
+    "locked_variables": [
+      "exclude Department of Defense",
+      "exclude USACE",
+      "current snapshot remains seed-only",
+      "first_seen_at equals actual local retrieval UTC",
+      "positive federal_action_obligation",
+      "base_and_all_options_value <= 0",
+      "transaction-key dedupe",
+      "next-session-open future contract",
+      "trade_enabled false",
+      "no historical PIT claim",
+      "no order/ranking/sizing/exit changes"
+    ],
+    "single_causal_variable": "usaspending_daily_official_snapshot_producer_and_fail_closed_health_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not backdate the missing July 14-26 vintages, treat action or initial-report dates as local availability, reinclude DoD/USACE, relax source freshness, retune obligation/ceiling rules, or claim alpha from these unsettled rows.",
+    "new_evidence_required": "No further producer ID is needed unless a real source, schema, retrieval-clock, or health regression occurs. Alpha evaluation remains parked until the frozen settled-row, date, mapping, concentration, and replacement-value thresholds pass.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The observer parser and ledger were sound, but production had no default producer; a successful process could therefore skip the source indefinitely while an old status=ok summary concealed starvation."
+  },
+  "prediction": {
+    "confidence_reason": "The official endpoint returns a status URL/file URL contract, the parser and append-only state already exist, and the repair is isolated from strategy decisions; the main uncertainty is upstream async availability.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "official_download_timeout",
+      "async_status_never_finishes",
+      "schema_drift",
+      "partial_zip_write",
+      "incorrect_retrieval_clock",
+      "weekend_zero_rows",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-27T13:18:51+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260727-003/before_usaspending_producer_health.json",
+    "data/experiments/exp-20260727-003/exp_20260727_003_usaspending_forward_producer_health.json",
+    "quant/usaspending_obligation_observer.py",
+    "quant/test_usaspending_obligation_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.zip",
+    "data/non_ohlcv/usaspending_obligation_observer/raw/transaction_snapshot_20260727.manifest.json",
+    "data/non_ohlcv/usaspending_obligation_observer/state.json",
+    "data/non_ohlcv/usaspending_obligation_observer/ledger.jsonl",
+    "data/non_ohlcv/usaspending_obligation_observer/latest_summary.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted_measurement_repair",
+  "timestamp": "2026-07-27T13:44:38+00:00",
+  "trial_family": "usaspending_obligation_forward_producer_fault_recovery",
+  "trial_variant_id": "official_daily_async_download_health_v1"
+}
