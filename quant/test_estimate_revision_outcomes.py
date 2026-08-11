@@ -248,6 +248,87 @@ def test_naive_clock_and_missing_effective_mapping_never_settle(tmp_path):
     assert row["h20_status"] == "unqualified_decision"
 
 
+def test_unmatched_decision_identified_rows_settle_and_reach_readiness(tmp_path):
+    """exp-20260811-001: rows with a decision identity but no candidate overlap
+    must still receive settled outcome rows, otherwise the phase-2 readiness
+    settled counters (over ALL qualified independent decisions) can never
+    mature."""
+    output_dir = tmp_path / "non_ohlcv"
+    ledger_path = output_dir / "estimate_revision_ledger_20260629.jsonl"
+    summary_path = output_dir / "estimate_revision_ledger_summary_20260629.json"
+    warehouse_path = tmp_path / "warehouse" / "warehouse_main_hot.sqlite"
+    map_path = tmp_path / "reference" / "estimate_revision_instrument_map.jsonl"
+
+    unmatched = _qualified_revision_row(
+        decision_id="estimate-revision:unmatched-bkng",
+        matched_candidate_today=False,
+        matched_candidate_count=0,
+        matched_signal_sources=[],
+    )
+    _write_jsonl(ledger_path, [unmatched])
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text("{}\n", encoding="utf-8")
+    _write_instrument_map(map_path)
+
+    days = []
+    probe = datetime(2026, 6, 29)
+    while len(days) < 25:
+        if probe.weekday() < 5:
+            days.append(probe.date().isoformat())
+        probe += timedelta(days=1)
+    warehouse_path.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(warehouse_path) as con:
+        con.execute("create table ohlcv (ticker text, date text, open real, close real)")
+        for ticker, base in (("BKNG", 100.0), ("SPY", 500.0), ("QQQ", 400.0)):
+            con.executemany(
+                "insert into ohlcv values (?, ?, ?, ?)",
+                [
+                    (ticker, day, base + index, base + index + 0.5)
+                    for index, day in enumerate(days)
+                ],
+            )
+        con.commit()
+
+    summary = persist_estimate_revision_outcomes(
+        as_of="2026-06-29",
+        output_dir=output_dir,
+        ledger_path=ledger_path,
+        source_summary_path=summary_path,
+        warehouse_path=warehouse_path,
+        instrument_map_path=map_path,
+        horizons=(5, 10, 20),
+        generated_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+    )
+
+    assert summary["settleable_decision_rows"] == 1
+    assert summary["decision_identified_rows"] == 1
+    assert summary["matched_candidate_rows"] == 0
+    assert summary["closed_rows_by_horizon"]["h20"] == 1
+
+    row = json.loads(
+        (output_dir / "estimate_revision_outcomes_20260629.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()[0]
+    )
+    assert row["settlement_qualified"] is True
+    assert row["h5_status"] == "closed"
+    assert row["h20_status"] == "closed"
+
+    readiness = build_estimate_revision_readiness(
+        as_of="2026-08-01",
+        data_dir=tmp_path,
+        output_dir=output_dir,
+        instrument_map_path=map_path,
+        generated_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+    )
+    assert readiness["independent_decisions"] == 1
+    assert readiness["settled_independent_decisions_by_horizon"] == {
+        "h5": 1,
+        "h10": 1,
+        "h20": 1,
+    }
+
+
 def test_h20_settles_from_first_open_strictly_after_decision_clock(tmp_path):
     output_dir = tmp_path / "non_ohlcv"
     ledger_path = output_dir / "estimate_revision_ledger_20260629.jsonl"
