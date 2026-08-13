@@ -1,0 +1,143 @@
+{
+  "experiment_id": "exp-20260813-001",
+  "captured_at": "2026-08-13T16:45:00Z",
+  "archive_refresh": {
+    "status": "ok",
+    "new_rows": 1836,
+    "tickers_with_new_rows": 51,
+    "max_activity_date_before": "2026-06-22",
+    "max_activity_date_after": "2026-08-12",
+    "refreshed_at": "2026-08-13T16:23:55+00:00"
+  },
+  "retag": {
+    "rule_version": "forward_replacement_entry_short_volume_tag_v2",
+    "rows_retagged": 188,
+    "settled_status": {
+      "ok": 101,
+      "no_short_volume_history": 87
+    },
+    "ok_by_vintage": {
+      "collected_after_entry": 99,
+      "collected_before_entry": 2
+    },
+    "q5_any_vintage": 19,
+    "q5_strict_collected_before_entry": 0,
+    "prefreeze_percentile_invariance": "verified zero changes for entries <= 2026-06-22"
+  },
+  "lane_after": {
+    "counters": {
+      "tagged_settled": 101,
+      "stale_tagged_settled": 0,
+      "q5_settled": 0,
+      "q5_settled_any_vintage": 19,
+      "q5_settled_baseline_at_park": 9,
+      "max_q5_ticker_share": 0.0,
+      "max_q5_ticker": null
+    },
+    "thresholds": {
+      "q5_settled": 20,
+      "max_q5_ticker_share_max": 0.4
+    },
+    "status": "not_ready",
+    "threshold_source": "exp-20260716-007 post_run_reflection (Q5>=20 AND max ticker share <=40%); exp-20260813-001 strict-vintage rebind: only status ok (fresh, rule v2) AND vintage collected_before_entry rows count; raw any-vintage counts are reported for visibility only",
+    "counter_source": "data/paper_sleeves/forward_replacement_value.jsonl",
+    "note": "Both count and concentration must pass together on the strict fresh+collected_before_entry subset. Accrual requires the daily archive refresh (moomoo_daily_short_volume_archive.py) to keep running; a frozen archive now yields stale_archive tags, not ok.",
+    "lane": "short_volume_q5_soft_tilt",
+    "history": [
+      {
+        "as_of": "2026-07-21",
+        "counters": {
+          "tagged_settled": 80,
+          "q5_settled": 15,
+          "max_q5_ticker_share": 0.4667
+        }
+      },
+      {
+        "as_of": "2026-07-27",
+        "counters": {
+          "tagged_settled": 87,
+          "q5_settled": 16,
+          "max_q5_ticker_share": 0.4375
+        }
+      },
+      {
+        "as_of": "2026-07-28",
+        "counters": {
+          "tagged_settled": 90,
+          "q5_settled": 16,
+          "max_q5_ticker_share": 0.4375
+        }
+      },
+      {
+        "as_of": "2026-08-01",
+        "counters": {
+          "tagged_settled": 92,
+          "q5_settled": 16,
+          "max_q5_ticker_share": 0.4375
+        }
+      },
+      {
+        "as_of": "2026-08-06",
+        "counters": {
+          "tagged_settled": 93,
+          "q5_settled": 16,
+          "max_q5_ticker_share": 0.4375
+        }
+      },
+      {
+        "as_of": "2026-08-08",
+        "counters": {
+          "tagged_settled": 97,
+          "q5_settled": 18,
+          "max_q5_ticker_share": 0.3889
+        }
+      },
+      {
+        "as_of": "2026-08-11",
+        "counters": {
+          "tagged_settled": 98,
+          "q5_settled": 18,
+          "max_q5_ticker_share": 0.3889
+        }
+      },
+      {
+        "as_of": "2026-08-13",
+        "counters": {
+          "tagged_settled": 101,
+          "q5_settled": 20,
+          "max_q5_ticker_share": 0.35
+        }
+      },
+      {
+        "as_of": "2026-08-13",
+        "counters": {
+          "tagged_settled": 101,
+          "q5_settled": 20,
+          "q5_settled_baseline_at_park": 9,
+          "max_q5_ticker_share": 0.35
+        }
+      },
+      {
+        "as_of": "2026-08-13",
+        "counters": {
+          "tagged_settled": 101,
+          "stale_tagged_settled": 0,
+          "q5_settled": 0,
+          "q5_settled_any_vintage": 19,
+          "q5_settled_baseline_at_park": 9,
+          "max_q5_ticker_share": 0.0
+        }
+      }
+    ],
+    "days_since_progress": 0,
+    "stalled": false
+  },
+  "boundary_smoke": {
+    "opend_unreachable": "tcp probe fails fast -> status opend_unavailable, archive untouched (also fixed a REAL defect: OpenQuoteContext blocks in an unbounded reconnect loop on a dead port; first smoke run hung 5 minutes and was killed)",
+    "empty_archive_root": "explicit empty_archive_and_no_universe, nothing created",
+    "same_day_rerun": "ok, 0 new rows, rows.jsonl not rewritten (append-only idempotent)",
+    "synthetic_frozen_archive": "entry staleness 35d and 6d -> stale_archive with percentile None; 5d and 2d -> ok; vintage fields correct",
+    "cross_utc_day": "incremental cutoff anchored to per-ticker archive max activity_date (data calendar), wall clock never enters row identity",
+    "crash_window": "atomic_write_text same-dir temp + fsync + retried os.replace; partial fetch never rewrites file (write only when new_rows>0)"
+  }
+}

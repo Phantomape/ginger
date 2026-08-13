@@ -302,8 +302,17 @@ def lane_exit_lifecycle_advisory():
 
 
 def lane_short_volume_q5_soft_tilt():
-    """Rejected exp-20260716-007. Governing reopen (exp-20260716-007 reflection):
-    >=20 PIT-tagged Q5 closed forward rows AND max single-ticker Q5 share <=40%."""
+    """Rejected exp-20260716-007. Governing reopen (exp-20260716-007 reflection,
+    STRICT-vintage rebind exp-20260813-001): >=20 honestly PIT-tagged Q5 closed
+    forward rows AND max single-ticker Q5 share <=40% on the SAME strict subset.
+
+    exp-20260813-001: the moomoo short-volume archive froze at activity_date
+    2026-06-22 while the v1 tag kept stamping ok on later entries, so raw ok
+    counts flipped this lane to a FALSE ready on 2026-08-13. The tag is now
+    rule v2 (fail-closed stale_archive + source_activity_date + collected
+    vintage); this lane counts only rows that are BOTH fresh at entry
+    (status ok) AND collected_before_entry (the source row was retrieved
+    before the entry date, i.e. genuinely knowable at decision time)."""
     path = os.path.join(REPO_ROOT, "data", "paper_sleeves", "forward_replacement_value.jsonl")
     rows = _read_jsonl(path)
     uniq = {r["decision_id"]: r for r in rows}
@@ -312,33 +321,56 @@ def lane_short_volume_q5_soft_tilt():
         if r.get("exit_date") and r.get("replacement_value_vs_cash_usd") is not None
     ]
     tagged = [r for r in settled if r.get("entry_short_volume_status") == "ok"]
-    q5 = [r for r in tagged if r.get("entry_short_volume_quintile") == 5]
-    shares = Counter(r.get("ticker") for r in q5)
-    top_ticker, top_n = (shares.most_common(1)[0] if q5 else (None, 0))
-    max_share = round(top_n / len(q5), 4) if q5 else 0.0
+    stale = [
+        r for r in settled if r.get("entry_short_volume_status") == "stale_archive"
+    ]
+    q5_any = [r for r in tagged if r.get("entry_short_volume_quintile") == 5]
+    q5_strict = [
+        r
+        for r in q5_any
+        if r.get("entry_short_volume_vintage") == "collected_before_entry"
+    ]
+    shares = Counter(r.get("ticker") for r in q5_strict)
+    top_ticker, top_n = (shares.most_common(1)[0] if q5_strict else (None, 0))
+    max_share = round(top_n / len(q5_strict), 4) if q5_strict else 0.0
     counters = {
         "tagged_settled": len(tagged),
-        "q5_settled": len(q5),
+        "stale_tagged_settled": len(stale),
+        # STRICT: fresh at entry AND source row collected before the entry date.
+        "q5_settled": len(q5_strict),
+        "q5_settled_any_vintage": len(q5_any),
+        # Q5 count when the 20-row bar was first declared (exp-20260703-003
+        # gate4 bucket_summary.toxic_q5.n); axis-C proofs bind this baseline.
+        # NOTE: that baseline was counted under the pre-repair v1 tag; the
+        # strict counter restarts low and only daily-refresh rows can grow it.
+        "q5_settled_baseline_at_park": 9,
         "max_q5_ticker_share": max_share,
         "max_q5_ticker": top_ticker,
     }
     thresholds = {"q5_settled": 20, "max_q5_ticker_share_max": 0.40}
-    ready = len(q5) >= 20 and max_share <= 0.40
-    concentration_blocked = len(q5) > 0 and max_share > 0.40
+    ready = len(q5_strict) >= 20 and max_share <= 0.40
+    concentration_blocked = len(q5_strict) > 0 and max_share > 0.40
     return {
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if ready else "not_ready",
         "threshold_source": (
             "exp-20260716-007 post_run_reflection (Q5>=20 AND max ticker share <=40%); "
-            "NOTE the ticket's own acceptance_rule said Q5>=12 -- the reflection is governing"
+            "exp-20260813-001 strict-vintage rebind: only status ok (fresh, rule v2) "
+            "AND vintage collected_before_entry rows count; raw any-vintage counts "
+            "are reported for visibility only"
         ),
         "counter_source": "data/paper_sleeves/forward_replacement_value.jsonl",
         "note": (
             "Concentration currently breached (deadlock risk): even at Q5>=20 the lane "
-            "stays blocked while one ticker holds >40% of Q5 rows."
+            "stays blocked while one ticker holds >40% of strict Q5 rows."
             if concentration_blocked
-            else "Both count and concentration must pass together."
+            else (
+                "Both count and concentration must pass together on the strict "
+                "fresh+collected_before_entry subset. Accrual requires the daily "
+                "archive refresh (moomoo_daily_short_volume_archive.py) to keep "
+                "running; a frozen archive now yields stale_archive tags, not ok."
+            )
         ),
     }
 

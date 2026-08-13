@@ -59,7 +59,7 @@ except ImportError:  # pragma: no cover - package-style import fallback
 
 RULE_VERSION = "forward_replacement_value_v1"
 ENTRY_REGIME_TAG_RULE_VERSION = "forward_replacement_entry_regime_tag_v1"
-ENTRY_SHORT_VOLUME_TAG_RULE_VERSION = "forward_replacement_entry_short_volume_tag_v1"
+ENTRY_SHORT_VOLUME_TAG_RULE_VERSION = "forward_replacement_entry_short_volume_tag_v2"
 # Entry-time NAME-LEVEL price-exhaustion tag (exp-20260627-022). Read-only PIT
 # context for the oracle-regret-compass section-3 "weak-tape low-MFE failed-
 # followthrough" cohort, which the n=22 frozen-window entry diagnostic showed is
@@ -90,6 +90,12 @@ SHORT_VOLUME_ARCHIVE_RELPATH = (
 SHORT_VOLUME_MIN_TRAILING_OBS = 30
 SHORT_VOLUME_QUINTILES = 5
 SHORT_VOLUME_TOXIC_QUINTILE_INDEX = 4  # 0-based; Q5 (>= 0.80 percentile) is toxic
+# exp-20260813-001 fail-closed staleness bound: moomoo publishes each session's
+# short volume after that day's US close, so a next-open entry normally sits
+# 1-3 calendar days after its as-of activity_date (weekend/holiday inclusive).
+# Beyond this bound the archive is frozen relative to the entry and the tag
+# must NOT report ok -- a stale percentile is not entry-time information.
+SHORT_VOLUME_MAX_STALENESS_CALENDAR_DAYS = 5
 
 # Plausible bounds for a derived paper notional; outside this range the
 # derivation is treated as failed rather than silently recorded.
@@ -319,7 +325,7 @@ def load_short_volume_percentile_index(archive_path=None):
     )
     if not path.exists():
         return {}
-    by_ticker: dict[str, list[tuple[str, float]]] = {}
+    by_ticker: dict[str, list[tuple[str, float, str]]] = {}
     for line in path.read_text(encoding="utf-8-sig").splitlines():
         if not line.strip():
             continue
@@ -330,23 +336,25 @@ def load_short_volume_percentile_index(archive_path=None):
         ticker = str(row.get("ticker") or "").upper()
         svr = _to_float(row.get("short_volume_ratio"))
         activity_date = str(row.get("activity_date") or "")[:10]
+        collected_at = str(row.get("collected_at") or "")
         if not ticker or svr is None or not activity_date:
             continue
-        by_ticker.setdefault(ticker, []).append((activity_date, svr))
+        by_ticker.setdefault(ticker, []).append((activity_date, svr, collected_at))
 
-    index: dict[str, tuple[list[str], list[float | None]]] = {}
+    index: dict[str, tuple[list[str], list[float | None], list[str]]] = {}
     for ticker, seq in by_ticker.items():
         seq.sort()
-        dates = [d for d, _ in seq]
+        dates = [d for d, _, _ in seq]
+        collected = [c for _, _, c in seq]
         pcts: list[float | None] = []
         hist: list[float] = []
-        for _, svr in seq:
+        for _, svr, _ in seq:
             if len(hist) >= SHORT_VOLUME_MIN_TRAILING_OBS:
                 pcts.append(sum(1 for h in hist if h < svr) / len(hist))
             else:
                 pcts.append(None)
             hist.append(svr)
-        index[ticker] = (dates, pcts)
+        index[ticker] = (dates, pcts, collected)
     return index
 
 
@@ -354,15 +362,20 @@ def _short_volume_percentile_asof(index, ticker, entry_date):
     """Most recent formed short_volume_ratio percentile from an activity_date
     STRICTLY before ``entry_date`` (the moomoo activity is published after the US
     close, so an activity_date equal to the next-open entry date is not yet known).
+
+    Returns ``(percentile, source_activity_date, source_collected_at)`` or
+    ``None`` when no formed percentile exists before the entry (exp-20260813-001:
+    the true source as-of date and its retrieval vintage must travel with the
+    tag so staleness and known-before-decision status are machine-auditable).
     """
     series = index.get(str(ticker or "").upper())
     if not series:
         return None
-    dates, pcts = series
+    dates, pcts, collected = series
     i = bisect_left(dates, str(entry_date)) - 1
     while i >= 0:
         if pcts[i] is not None:
-            return pcts[i]
+            return pcts[i], dates[i], collected[i]
         i -= 1
     return None
 
@@ -478,10 +491,13 @@ def _row_needs_short_volume_tag(row):
     if row.get("entry_short_volume_tag_rule_version") != ENTRY_SHORT_VOLUME_TAG_RULE_VERSION:
         return True
     # Refresh rows that previously had no joinable history once the archive grows
-    # coverage (a new ticker or backfilled earlier dates can form a percentile).
+    # coverage (a new ticker or backfilled earlier dates can form a percentile),
+    # and rows fail-closed as stale so an archive catch-up can upgrade them
+    # (their vintage then records collected_after_entry, never ok-as-fresh).
     return row.get("entry_short_volume_status") in {
         "no_short_volume_history",
         "missing_index",
+        "stale_archive",
     }
 
 
@@ -491,23 +507,54 @@ def _apply_short_volume_tag(row, sv_percentile_index):
     percentile = None
     quintile = None
     toxic = None
+    source_activity_date = None
+    source_collected_at = None
+    staleness_days = None
+    vintage = None
     if not entry_date:
         status = "missing_entry_date"
     elif not sv_percentile_index:
         status = "missing_index"
     else:
-        percentile = _short_volume_percentile_asof(
+        resolved = _short_volume_percentile_asof(
             sv_percentile_index, ticker, entry_date
         )
-        if percentile is None:
+        if resolved is None:
             status = "no_short_volume_history"
         else:
-            status = "ok"
-            quintile = _short_volume_quintile(percentile) + 1  # 1-based for readers
-            toxic = (quintile - 1) == SHORT_VOLUME_TOXIC_QUINTILE_INDEX
+            percentile, source_activity_date, source_collected_at = resolved
+            entry_dt = _parse_date(entry_date)
+            source_dt = _parse_date(source_activity_date)
+            staleness_days = (
+                (entry_dt - source_dt).days
+                if entry_dt is not None and source_dt is not None
+                else None
+            )
+            vintage = (
+                "collected_before_entry"
+                if source_collected_at and source_collected_at[:10] <= entry_date
+                else "collected_after_entry"
+            )
+            if (
+                staleness_days is None
+                or staleness_days > SHORT_VOLUME_MAX_STALENESS_CALENDAR_DAYS
+            ):
+                # exp-20260813-001 fail-closed: a frozen archive must not
+                # produce an ok entry-time tag. Keep the audit fields, drop
+                # the percentile so no consumer can mistake it for fresh.
+                status = "stale_archive"
+                percentile = None
+            else:
+                status = "ok"
+                quintile = _short_volume_quintile(percentile) + 1  # 1-based for readers
+                toxic = (quintile - 1) == SHORT_VOLUME_TOXIC_QUINTILE_INDEX
 
     row["entry_short_volume_tag_rule_version"] = ENTRY_SHORT_VOLUME_TAG_RULE_VERSION
     row["entry_short_volume_asof_date"] = entry_date or None
+    row["entry_short_volume_source_activity_date"] = source_activity_date
+    row["entry_short_volume_source_collected_at"] = source_collected_at
+    row["entry_short_volume_staleness_days"] = staleness_days
+    row["entry_short_volume_vintage"] = vintage
     row["entry_short_volume_status"] = status
     row["entry_short_volume_ratio_percentile"] = (
         round(percentile, 6) if percentile is not None else None
@@ -680,6 +727,16 @@ def _record_from_state_row(row, sleeve_key):
             "entry_short_volume_tag_rule_version"
         ),
         "entry_short_volume_asof_date": row.get("entry_short_volume_asof_date"),
+        "entry_short_volume_source_activity_date": row.get(
+            "entry_short_volume_source_activity_date"
+        ),
+        "entry_short_volume_source_collected_at": row.get(
+            "entry_short_volume_source_collected_at"
+        ),
+        "entry_short_volume_staleness_days": row.get(
+            "entry_short_volume_staleness_days"
+        ),
+        "entry_short_volume_vintage": row.get("entry_short_volume_vintage"),
         "entry_short_volume_status": row.get("entry_short_volume_status"),
         "entry_short_volume_ratio_percentile": row.get(
             "entry_short_volume_ratio_percentile"
