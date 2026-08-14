@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_workflow_execution_spec",
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "allowed_write_scope": [
+    "data/alpha_search",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/logs",
+    "experiments/manifests",
+    "quant/experiments",
+    "scripts/experiment_fingerprint.py"
+  ],
+  "must_not_touch": [
+    "quant/policy",
+    "run.py",
+    "data/live_pilot",
+    "operator_inputs",
+    "data/warehouse/massive_history.sqlite"
+  ],
+  "locked_variables": [
+    "massive_persistent_adts_state_h5_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Ceiling observed_only regardless of sign (research_pit sources). Frozen falsifier: the fixed 183-row roster must keep at least five executable treatment touches in every standard window (33/75/75 as frozen); treatment net value after 35bp total round-trip cost must be positive versus zero-return cash AND exceed both same-clock 35bp-costed SPY and QQQ in aggregate; at least two of three windows positive versus cash; treatment must remain positive versus cash under 70bp total cost; maximum ticker selection share <= 15 percent; maximum concurrent positions <= 3; every missing execution input fails closed and any endpoint/identity/coverage/clock contract failure invalidates the run. No retune after outcome access.",
+  "file_slug": "massive_persistent_adts_state_h5_replay",
+  "trial_variant_id": "massive_persistent_adts_state_h5_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260804-003",
+    "exp-20260728-006"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "not_declared"
+}

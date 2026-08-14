@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "created_at": "2026-08-14T15:32:00Z",
+  "data_cutoff": "2026-08-14T15:16:11Z",
+  "outcome_blind_generation": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "2026-08-13 core trade universe: 43 instruments (37 common stocks and 6 ETF/benchmarks)",
+    "2026-08-13 pilot universe: 13 instruments",
+    "2026-08-13 observation universe: 42 instruments",
+    "current broker portfolio and cash",
+    "Massive PIT active-common-stock membership for the three canonical windows"
+  ],
+  "cross_sectional_opportunity_cost": {
+    "latest_complete_market_session": "2026-08-13",
+    "market_regime": "BULL",
+    "core_signal_count": 0,
+    "pilot_signal_count": 0,
+    "addon_signal_count": 0,
+    "live_buy_count": 0,
+    "price_only_breakout_or_volume_flags": [
+      "COHR",
+      "CVX",
+      "IWM",
+      "NFLX",
+      "NVDA",
+      "QQQ",
+      "SPY"
+    ],
+    "portfolio_value_usd": 60805.9414,
+    "cash_usd": 12107.02,
+    "position_control_rows": 21,
+    "position_control_pass": false,
+    "position_control_blocker": "manual_bracket_orders_not_broker_confirmed",
+    "opportunity_cost_winner": "cash_no_new_entry",
+    "basis": "The same-session cross-section has no executable core, pilot, add-on, or live-buy signal and production position control blocks additions. Price-only trend flags do not override those contracts, so cash/no-new-entry is the executable winner."
+  },
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "evidence_surface_inventory": [
+    {
+      "category": "price",
+      "surface": "canonical_cold_plus_hot_ohlcv_union",
+      "pit_boundary": "signal-day and earlier rows only; hot overlay required after the cold cutoff",
+      "row_count": 5073687,
+      "ticker_count": 8523,
+      "latest_date": "2026-08-13",
+      "status": "available_market_prior_and_opportunity_cost"
+    },
+    {
+      "category": "flow",
+      "surface": "moomoo_capital_flow_day",
+      "pit_boundary": "forward PIT only; historical backfill cannot support decision-time claims",
+      "row_count": 13915,
+      "ticker_count": 62,
+      "genuine_forward_dates_post_20260720": 18,
+      "status": "available_but_fixed_flow_options_lane_unsettled"
+    },
+    {
+      "category": "derivatives",
+      "surface": "onclickmedia_options_forward_daily",
+      "pit_boundary": "next-session research use only",
+      "latest_snapshot_rows": 5700,
+      "latest_snapshot_tickers": 57,
+      "status": "source_contract_partial_and_two_expiry_strike_truncated"
+    },
+    {
+      "category": "event",
+      "surface": "news_event_exposure_forward",
+      "pit_boundary": "settled forward attribution",
+      "settled_negative_rows": 581,
+      "required_settled_negative_rows": 650,
+      "executable_touches": "1/0/0",
+      "status": "parked"
+    },
+    {
+      "category": "positioning",
+      "surface": "moomoo_short_volume_and_ortex_borrow_context",
+      "pit_boundary": "fresh Moomoo rows are usable only after collection; legacy Q5 rows cannot be relabelled PIT",
+      "strict_q5_settled": 0,
+      "required_strict_q5_settled": 20,
+      "status": "daily_freshness_repaired_but_alpha_not_ready"
+    },
+    {
+      "category": "portfolio_exposure",
+      "surface": "broker_positions_position_control_and_live_drift",
+      "pit_boundary": "current broker/control state through the 2026-08-13 session",
+      "position_rows": 21,
+      "live_drift_status": "ok",
+      "status": "ok_to_add_false"
+    },
+    {
+      "category": "research_digest",
+      "surface": "research_digest_20260727",
+      "pit_boundary": "digest supplies no novelty or admission authority",
+      "entry_count": 9,
+      "status": "all_entries_previously_consumed_no_fresh_entry"
+    },
+    {
+      "category": "microstructure",
+      "surface": "massive_full_market_average_trade_size",
+      "pit_boundary": "research PIT; signal-time completed bars only; immutable as-published vintages unverified",
+      "warehouse_rows": 5829322,
+      "transactions_populated_rows": 5789090,
+      "source_contract_status": "pass_by_explicit_user_attestation",
+      "status": "selected_new_mechanism"
+    }
+  ],
+  "global_stock_data_contract_audit": {
+    "official_sources_available": [
+      "SEC EDGAR",
+      "U.S. Treasury",
+      "CFTC"
+    ],
+    "constraints": [
+      "SEC candidate-pool and item-taxonomy families are saturated or parked",
+      "official-release fixed-response pooled batch exit has already been consumed",
+      "FINRA data is B-grade and Moomoo archives cannot be renamed FINRA",
+      "CBOE has no repository authorization proof and was excluded",
+      "OnclickMedia remains research-only with incomplete lineage"
+    ],
+    "selected_source": "Massive internal non-display research source under explicit 2026-07-28 user attestation",
+    "selected_source_pit_tier": "research_pit"
+  },
+  "evidence_surfaces_used": [
+    "canonical_cold_plus_hot_ohlcv_union",
+    "moomoo_capital_flow_day",
+    "onclickmedia_options_forward_daily",
+    "news_event_exposure_forward",
+    "moomoo_short_volume_and_ortex_borrow_context",
+    "broker_positions_position_control_and_live_drift",
+    "research_digest_20260727",
+    "massive_full_market_average_trade_size",
+    "massive_reference_asof_identity"
+  ],
+  "evidence_surfaces_missing": [
+    "immutable_as_published_massive_grouped_daily_vintages",
+    "trade_level_or_aggressor_side_block_identity",
+    "canonical_live_authority_for_massive_research_rows"
+  ],
+  "hypothesis_candidates": [
+    {
+      "candidate_key": "massive_persistent_trade_size_regime",
+      "search_queue": "exploration",
+      "baseline": "zero-return cash primary; identical-interval SPY and QQQ secondary",
+      "treatment": "select at most the top two liquid PIT-active common stocks per signal date when five-session median average dollar trade size reaches the preceding-126-session 90th percentile, at least four of five days exceed the prior median, every recent day's dynamic z is below 3, dollar participation does not fall, and the five-day tape is nonnegative; enter next open, hold five sessions, and admit no more than three simultaneous research positions",
+      "economic_mechanism": "a robust multi-session change in dollars per reported transaction and participation can reflect a persistent execution/reporting state with incomplete price discovery; the explicit dynamic-z ceiling makes it distinct from a one-day block outlier, while unsigned daily aggregates do not identify institutions or direction",
+      "expected_horizon": "next regular-session open through the fifth-session exit",
+      "replacement_value_comparator": "same USD4000 notional and clock versus cash, SPY, and QQQ after 35bp round-trip cost; double-cost stress required",
+      "execution_envelope": "research-only liquid U.S. common stock, USD4000 per name, at most three simultaneous positions and USD12000 reserved cash, latest-five median dollar volume at least max(USD1m, prior-20 median), close at least USD3, ten-session ticker cooldown, missing execution rows fail closed, no borrow/options/leverage, trade disabled",
+      "falsifier": "reject unless after-cost aggregate value is positive versus cash and above both identical-interval benchmarks, at least two canonical windows are positive, every window has at least five touches, double costs remain positive, and no ticker exceeds 15% of selections",
+      "readiness": "183 outcome-blind historical replay rows with entry/exit-row existence; executable touches 33/75/75; 177 tickers; max ticker share 1.093%; observed maximum concurrency 3; source contract pass; research PIT; novelty blocking_matches=[]; forward settled rows remain 0 and the result ceiling is observed_only",
+      "decision": "selected_for_investment_team_and_qualification"
+    },
+    {
+      "candidate_key": "exit_lifecycle_advisory_severity",
+      "search_queue": "adjacent",
+      "baseline": "carry the same held-position exposure through the H5 horizon",
+      "treatment": "apply the unchanged advisory severity policy under the frozen replacement-value contract",
+      "economic_mechanism": "hard-stop and high-urgency states may avoid adverse continuation while preserving winner collateral",
+      "expected_horizon": "H5",
+      "replacement_value_comparator": "same held notional and timestamps left unchanged, plus cash/SPY/QQQ context",
+      "execution_envelope": "existing held cash equity only; no new slot, leverage, short, or live order",
+      "falsifier": "the exact frozen concentration, separation, breadth, and cost bars fail",
+      "readiness": "407/422 settled, 45/60 advisory, 25/33 hard-stop, 19 pending",
+      "decision": "park"
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "search_queue": "exploitation",
+      "baseline": "same-date lowest-RSI top one in the identical deep-drawdown cohort",
+      "treatment": "same-date top one by the unchanged flow-strength times captured near-put-OI-share rank",
+      "economic_mechanism": "large-order absorption combined with near-price option inventory may identify a short-lived stabilization state",
+      "expected_horizon": "next open to H10",
+      "replacement_value_comparator": "same-date RSI top one primary; cash/SPY/QQQ secondary; identical clock, notional, and cost",
+      "execution_envelope": "long common stock, one USD4000 slot, 10% NAV name cap, fail-closed snapshots, no live order",
+      "falsifier": "twenty settled paired disagreements fail replacement value, chain coverage reverses identity, or concentration dominates",
+      "readiness": "18/10 forward flow dates, 15 disagreements, 9/20 H10 settled disagreements, touches 0/0/0, source contract partial",
+      "decision": "park"
+    }
+  ],
+  "selected_hypothesis": "massive_persistent_trade_size_regime",
+  "selection_basis": "It is the only generated mechanism whose source authorization, distinct market prior, independent evidence, known_at/PIT contract, exact three-source identity, candidate overlap, historical replay density, 5/5/5 executable touch density, machine-verifiable transmission, concentration cap, fixed replacement comparators, and cash-feasible research envelope are all satisfied outcome-blind. Selection did not use candidate returns, prior-family success rates, adapter maturity, or the quarantined pilot file.",
+  "economic_mechanism": "persistent_multi_session_participant_size_mix_shift",
+  "falsifier": "persistent_trade_size_state_fails_after_cost_cash_spy_qqq_replacement_value_or_is_not_stable_across_windows_cost_stress_and_ticker_concentration",
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "freeze_investment_team_TEST_card_and_call_authoritative_qualify_once",
+  "contamination_quarantine": {
+    "incident": "A broad pilot recommendation file unexpectedly exposed outcome-bearing values during readiness inspection.",
+    "excluded_file": "data/pilots/pilot_recommendations_2026-08-14.json",
+    "discarded_bundle": "the earlier q75/prior-60 top-one H10 roster and all outcome-informed ticker exclusions",
+    "replacement_generation": "massive_persistent_adts_state_h5_v1 was independently specified from the open mechanism gap and generated without consulting the excluded file or applying ticker exclusions",
+    "policy": "The file, values, tickers, and any mechanism learned from that exposure are excluded from generation, ranking, thresholds, and the frozen roster; no outcome-informed ticker exclusion is permitted."
+  }
+}

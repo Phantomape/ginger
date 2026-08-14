@@ -1,0 +1,165 @@
+{
+  "admission_class": "research_replay",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-2a61935d81ccb09ae8fd",
+    "candidate_snapshot_hash": "888807544cf070a9c0b4bd4634d75654b4c9a13adb6dec572604bb96abf8f6cd",
+    "panel_hash": "32967edb35bc12a9dec217739da8d05f92b5573720f52008a6fdf8b9e6b4bc9e",
+    "panel_path": "data/alpha_search/qualified/alpha_automation_massive_persistent_adts_20260814_v2/panel.json",
+    "panel_sha256": "2c73f713b3867ec6d9d971d64f7b20dae1653a768c3d59006873e8e512b087d3",
+    "paper_live_eligible": false,
+    "preflight_hash": "23dbdb7c20cef724362c43d925514294d838fde43871652a4531c65292cbea69",
+    "promotion_hash": "08eae9041f5d7b1ddf03f115e9f321ecc86cec0bf0b0006dc15d3400f35a8db8",
+    "promotion_request_path": "data/alpha_search/qualified/alpha_automation_massive_persistent_adts_20260814_v2/promotion.json",
+    "promotion_request_sha256": "e9630b87c4037f1eaf3519ccb7d701f73fbfd390e5d46d8ad1dd3b37d2a07b1f",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-eb76f569282683894119a8be",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "8a31d834b92803e0851a06776c28513775b0bf621b52879c55626028866fa805",
+        "source_contract_hash": "5d9303c1fe7d1ac23c8dca917df83179fd36553fb72d0f8ff7c24e02eb0989ce",
+        "surface_id": "cash_feasible_core_price_prior_20260814"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "6d9fc3d04084fcf1b933b888205ed187d3873b51e13c692e3eff55b4035e26b7",
+        "source_contract_hash": "695e3d04c81d828f5c02f573c63ed0d901fe6837489111b8afa256c2c1f95541",
+        "surface_id": "massive_persistent_adts_research_pit_20260814"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "f8e7e241a032dae0d097756fe484b629956729ab349229eb0d2f73a9967c97aa",
+        "source_contract_hash": "6687d4f620bf89785bb19fbce18173ae920d0caf2ce4d9c21eb30aea6c65ef97",
+        "surface_id": "massive_reference_asof_identity_research_pit_20260814"
+      }
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "35bp_or_70bp_cost_erases_replacement_value",
+      "H5_transmission_is_too_long_or_too_short",
+      "price_component_mechanically_drives_dollar_per_transaction",
+      "research_pit_vintage_ceiling_blocks_canonical_use",
+      "unsigned_daily_aggregates_do_not_identify_direction",
+      "venue_and_reporting_mix_drive_ADTS",
+      "window_instability_or_hidden_factor_concentration"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "low",
+    "surprise_note": "Reservation deadlocked by tooling, not by evidence; no calibration signal."
+  },
+  "causal_components": [
+    "at least four of five ADTS observations above preceding-126 median",
+    "latest-five median ADTS at or above preceding-126 q90",
+    "latest-five median dollar participation no lower than max USD1m and prior-20 median",
+    "maximum recent dynamic prior-126 z below 3",
+    "maximum three simultaneous USD4000 research positions under USD12000 cash reservation",
+    "next-session entry and H5 exit existence",
+    "nonnegative five-session tape and USD3 minimum close",
+    "research-only observed-only ceiling with trade disabled",
+    "top-two daily ranking with ten-session ticker cooldown",
+    "zero-return cash plus same-clock costed SPY and QQQ replacement comparators"
+  ],
+  "change_summary": "Duplicate reservation accounting: claim failed inside claim-receipt construction (receipt CAS 64MB per-file cap vs 2.2GB warehouse sqlite bound by the v2 surfaces registry). Never claimed, no run, no outcome access. Superseded by the v3 bundle (compact warehouse manifest binding) under the same frozen candidate massive_persistent_adts_state_h5_v1.",
+  "change_type": "private_replay_scout",
+  "changed_variable": "admit_robust_persistent_ADTS_state_instead_of_cash_no_new_entry",
+  "component": "data/alpha_search, data/experiments, experiments/tickets, experiments/cards, experiments/logs, experiments/manifests, quant/experiments, scripts/experiment_fingerprint.py",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260814-001",
+  "hypothesis": "A robust five-session state of elevated average reported dollar per transaction, sustained participation and nonnegative tape, explicitly excluding every recent single-day z>=3 block outlier, may identify incomplete price discovery that persists through H5 relative to zero-return cash and identical-clock costed SPY and QQQ, while unsigned daily aggregates do not identify institutional accumulation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "persistent_reported_dollar_per_transaction_state",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260804-003",
+    "exp-20260728-006"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Non-substantive bookkeeping close via the exp-20260814-002 never-claimed abandonment path; not a real trial; do not count toward any family/streak accounting.",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "massive_persistent_adts_state_h5_v1"
+    ],
+    "single_causal_variable": "massive_persistent_adts_state_h5_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-reserve this bundle against the v2 promotion or any surfaces registry that directly binds data/warehouse/massive_history.sqlite; large warehouse surfaces must bind their compact identity manifest instead.",
+    "new_evidence_required": "No new evidence axis is required for the workflow path itself: the identical frozen candidate already proceeded under the v3 bundle as exp-20260814-003, and any substantive retry rules are owned by that ticket. A retry of this reservation shape would only be justified by a receipt-contract change that re-permits direct large-store bindings, which is explicitly not wanted.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The v2 surfaces registry bound the raw 2.2GB research warehouse sqlite directly, so claim-receipt construction deterministically exceeded the 64MB per-file snapshot cap; the reservation could never be claimed, no replay was run, and no outcome was accessed, so this close is pure bookkeeping for a reservation superseded by the v3 bundle that binds the compact identity manifest instead."
+  },
+  "prediction": {
+    "confidence_reason": "The mechanism is economically distinct and densely executable, but literature counterevidence, absent sign or participant identity and research-PIT vintage uncertainty warrant a low prior and an observed-only ceiling.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "35bp_or_70bp_cost_erases_replacement_value",
+      "H5_transmission_is_too_long_or_too_short",
+      "price_component_mechanically_drives_dollar_per_transaction",
+      "research_pit_vintage_ceiling_blocks_canonical_use",
+      "unsigned_daily_aggregates_do_not_identify_direction",
+      "venue_and_reporting_mix_drive_ADTS",
+      "window_instability_or_hidden_factor_concentration"
+    ],
+    "recorded_at": "2026-08-14T16:21:49+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [],
+  "selected_evidence_grade": "lead",
+  "status": "rejected",
+  "timestamp": "2026-08-14T16:32:45+00:00",
+  "trial_family": "massive_multi_session_adts_state_research_replay",
+  "trial_variant_id": "massive_persistent_adts_state_h5_v1"
+}

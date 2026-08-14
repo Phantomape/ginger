@@ -1,0 +1,105 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "guard_predicate_too_wide_reopens_closeout_bypass",
+      "guard_predicate_too_narrow_leaves_deadlock",
+      "terminal_status_inconsistent_with_audit_tooling"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "Deterministic tooling defect; repair behaved as predicted on both live deadlocked tickets."
+  },
+  "causal_components": [],
+  "change_summary": "accepted_measurement_repair: never-claimed promotion-lane reservations are no longer deadlocked. New narrow predicate _is_never_claimed_duplicate_accounting_close in scripts/experiment_registry.py lets a proposed, never-claimed, receipt-less ticket close only as rejected + realized_failure_mode=duplicate_reservation_accounting, skipping receipt requirement and promotion re-validation for that bookkeeping close alone. 4 new boundary tests; quant/test_experiment_registry.py 65/65. Applied live: exp-20260804-002 (10-day backlog) and exp-20260814-001 both closed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "allow_duplicate_reservation_accounting_close_without_claim_receipt_for_never_claimed_tickets",
+  "component": "scripts/experiment_registry.py, tests, data/experiments, experiments/tickets, experiments/cards, experiments/logs, experiments/manifests",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0
+  },
+  "experiment_id": "exp-20260814-002",
+  "hypothesis": "Never-claimed promotion-lane experiment reservations are deadlocked by the claim-receipt closeout guard: a reservation whose claim fails during claim-receipt construction (for example the receipt CAS per-file size cap) can neither be claimed nor closed, because every closeout path requires an alpha_promotion_claim_receipt that only a successful claim can produce. Second occurrence (exp-20260804-002 documented backlog, exp-20260814-001 today). Repair: permit closing a ticket that was never claimed (claimed_at null, no claim receipt, status proposed) only as non-substantive duplicate_reservation_accounting bookkeeping with a rejected-flavored terminal status, keeping every substantive closeout receipt-gated.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Root causes preserved: substantive closes still require receipts; the 64MB receipt CAS cap contract is unchanged (large warehouse surfaces must bind compact identity manifests, as the v3 bundle now does).",
+  "parameters": {
+    "locked_variables": [
+      "never_claimed_reservation_duplicate_accounting_close_path"
+    ],
+    "single_causal_variable": "never_claimed_reservation_duplicate_accounting_close_path"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not widen the bypass predicate (no claimed tickets, no observed_only/accepted flavors, no non-duplicate failure modes); do not re-litigate the receipt CAS 64MB cap by binding raw multi-GB stores again.",
+    "new_evidence_required": "A third deadlock shape that the never-claimed predicate cannot express (e.g. claim partially persisted claimed_at before receipt failure) would justify reopening this contract; otherwise none.",
+    "realized_failure_mode": "",
+    "why_result_happened": "Deterministic tooling defect; repair behaved as predicted on both live deadlocked tickets."
+  },
+  "prediction": {
+    "confidence_reason": "Deterministic tooling defect with reproducible deadlock; narrow predicate keeps the anti-bypass property; risk is mostly in status-string conventions consumed by audit/family builders.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "guard_predicate_too_wide_reopens_closeout_bypass",
+      "guard_predicate_too_narrow_leaves_deadlock",
+      "terminal_status_inconsistent_with_audit_tooling"
+    ],
+    "recorded_at": "2026-08-14T16:28:47+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260814-002/deadlock_audit_before.json",
+    "data/experiments/exp-20260814-002/deadlock_audit_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-14T16:34:43+00:00",
+  "trial_family": "claim_receipt_deadlock_abandonment_path",
+  "trial_variant_id": "exp-20260814-002"
+}
