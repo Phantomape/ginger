@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "record_type": "news_propagation_forward_cohort_readiness",
+  "generated_at": "2026-08-15T16:14:07Z",
+  "generated_by": "claude-scheduled-alpha-20260815",
+  "outcome_blind": true,
+  "ledger_path": "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+  "ledger_sha256": "48f127e13b20f1fe9b58b2d19f6396f957ba29505791a708cf291919b436c7a8",
+  "forward_predicate": {
+    "event_date_min": "2026-07-01",
+    "outcome_status": "closed",
+    "rationale": "Replay rows (exp-20260702-020/021, exp-20260703-005) cover events 2026-01..06; the run.py-wired daily observer (exp-20260702-028) accumulates current events from 2026-07 onward, so event_date >= 2026-07-01 isolates strictly out-of-replay forward rows. Identical predicate to the exp-20260807-001 freeze."
+  },
+  "reopen_bar": {
+    "source": "data/reopen_readiness.json lane news_propagation_negative_side (bar declared at the 2026-08-08 re-park, exp-20260807-001 reflection)",
+    "negative_side_closed_required": 650,
+    "negative_side_closed_baseline_at_park": 433
+  },
+  "pair_viability_bars_frozen_20260808": {
+    "event_level_separation_bp_required_gt": 100.0,
+    "row_level_mean_separation_bp_required_gt": 45.0,
+    "source": "build_reopen_readiness.py lane note synced 2026-08-08; two-sided cost bar (2 legs x 45bp round trip ~= 90bp) plus buffer",
+    "tilt_touch_bar": ">=5 executed-entry touches per canonical window; same-morning outcome-blind machine join by codex-alpha-automation measured 1/0/0 (late_strong/mid_weak/old_thin), structurally uncovered because the observer starts 2026-01"
+  },
+  "cohort": {
+    "negative": {
+      "closed_rows": 655,
+      "unique_events": 72,
+      "unique_event_dates": 24,
+      "unique_tickers": 81,
+      "max_single_ticker_row_share": 0.030534
+    },
+    "positive": {
+      "closed_rows": 812,
+      "unique_events": 83,
+      "unique_event_dates": 26,
+      "unique_tickers": 102,
+      "max_single_ticker_row_share": 0.027094
+    }
+  },
+  "pending_forward_rows": 2481,
+  "relation_type_closed_counts": {
+    "drawdown_or_failed_transaction": 393,
+    "legal_or_regulatory_pressure": 151,
+    "guidance_or_rating_upgrade": 316,
+    "capital_return": 188,
+    "product_or_approval_catalyst": 107,
+    "financial_growth_or_beat": 201,
+    "downgrade_or_target_cut": 111
+  },
+  "polarity_relation_closed_counts": {
+    "negative|drawdown_or_failed_transaction": 393,
+    "negative|legal_or_regulatory_pressure": 151,
+    "positive|guidance_or_rating_upgrade": 316,
+    "positive|capital_return": 188,
+    "positive|product_or_approval_catalyst": 107,
+    "positive|financial_growth_or_beat": 201,
+    "negative|downgrade_or_target_cut": 111
+  },
+  "bar_checks": {
+    "negative_closed_at_least_650": true,
+    "negative_events_at_least_20": true,
+    "negative_event_dates_at_least_10": true,
+    "positive_control_closed_at_least_200": true,
+    "growth_vs_park_baseline_pct": 51.27,
+    "growth_vs_park_baseline_abs": 222
+  }
+}

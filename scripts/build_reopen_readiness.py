@@ -750,21 +750,21 @@ def lane_news_propagation_negative_side():
             neg_dates.add(r.get("event_date"))
     counters = {
         "negative_side_closed": neg_rows,
-        "negative_side_closed_baseline_at_park": 433,
+        "negative_side_closed_baseline_at_park": 655,
         "negative_side_closed_unique_events": len(neg_events),
         "negative_side_closed_unique_event_dates": len(neg_dates),
     }
-    thresholds = {"negative_side_closed": 650}
+    thresholds = {"negative_side_closed": 983}
     return {
         "counters": counters,
         "thresholds": thresholds,
-        "status": "ready" if neg_rows >= 650 else "not_ready",
+        "status": "ready" if neg_rows >= 983 else "not_ready",
         "threshold_source": (
-            "exp-20260807-001 post_run_reflection: the 200-row park bar "
-            "(2026-07-19 note, 56 rows then) was consumed at 433 rows by the "
-            "confirmed out-of-replay validation read; another attribution "
-            "re-read needs >= 650 closed negative-side rows (+50% and >= +10 "
-            "absolute from 433)"
+            "exp-20260815-001 post_run_reflection: the 650-row bar (declared "
+            "at the 2026-08-08 re-park, baseline 433) was consumed at 655 rows "
+            "by the REJECTED viability re-read; another attribution re-read "
+            "needs >= 983 closed negative-side rows (+50% and >= +10 absolute "
+            "from 655)"
         ),
         "counter_source": (
             "data/non_ohlcv/news_event_exposure_observations/rows.jsonl "
@@ -772,27 +772,25 @@ def lane_news_propagation_negative_side():
             "event_date >= 2026-07-01)"
         ),
         "note": (
-            "exp-20260807-001 CONFIRMED the inverted-polarity separation "
-            "forward (event-level +88bp, both halves positive, concentration "
-            "clean; both sides negative vs SPY, so it is a relative/rotation "
-            "signal). 2026-08-08 execution-envelope preflight (0 IDs, "
-            "outcome-blind: frozen stats + cost constants only) killed both "
-            "deployable shapes at current magnitude: (1) a dollar-neutral "
-            "polarity pair pays ~90bp round trip per side-notional (2 legs x "
-            "(ROUND_TRIP_COST_PCT 35bp + 10bp slippage)) vs confirmed gross "
-            "separation of +47bp row-level / +88bp event-level per 10 "
-            "sessions -> net negative; (2) a zero-marginal-cost tilt on core "
-            "entries fails the section 5 touch-density preflight: baseline "
-            "executed entries inside active 14d polarity-peer windows = "
-            "1/0/0 across late_strong/mid_weak/old_thin vs the >=5-per-window "
-            "bar (earliest event 2026-01-23; two windows structurally "
-            "uncovered). Reopen contract at the 650-row re-read: build the "
-            "pair sleeve ONLY if event-level separation > 100bp (two-sided "
-            "cost bar + buffer) with row-level mean also > 45bp; the tilt "
-            "shape additionally needs >= 5 executed-entry touches per "
-            "evaluation window from the machine join (entry ticker+date x "
-            "observer rows with event_date within 10 sessions before entry). "
-            "Horizon/polarity/settlement stay frozen; do not retune costs."
+            "exp-20260815-001 REJECTED the 650-row viability re-read at 655 "
+            "rows / 72 events / 24 dates: event-level separation 90.2bp "
+            "missed the 100bp two-leg cost bar AND the exp-20260807-001 "
+            "half-stability confirmation BROKE (half1 -91.0bp reversed, half2 "
+            "+245.2bp; at 433 rows both halves had been positive), so the "
+            "separation is regime-concentrated in the recent half, not "
+            "time-stable. Row-level mean 61.2bp did clear the 45bp bar and "
+            "concentration stayed clean (event 4.2%, ticker 8.5%). Reopen "
+            "contract at the 983-row re-read: FIRST re-verify all five "
+            "exp-20260807-001 confirmation bars including BOTH chronological "
+            "halves positive; only then ask viability - pair sleeve ONLY if "
+            "event-level separation > 100bp (two-sided cost bar + buffer) "
+            "with row-level mean also > 45bp; the tilt shape additionally "
+            "needs >= 5 executed-entry touches per evaluation window from "
+            "the machine join (entry ticker+date x observer rows with "
+            "event_date within 10 sessions before entry; still 1/0/0 and "
+            "structurally uncovered - needs a PIT-safe historical "
+            "transmission surface). Horizon/polarity/settlement stay frozen; "
+            "do not retune costs; do not condition on the passing half."
         ),
     }
 

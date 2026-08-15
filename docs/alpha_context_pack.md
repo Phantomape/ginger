@@ -8,7 +8,7 @@ facts before changing strategy behavior.
 ## Source Snapshot
 
 - Strategy records counted: `1555`
-- Raw records loaded by history report: `5348`
+- Raw records loaded by history report: `5353`
 - History fingerprint: `2c40ff2083be8315`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
@@ -67,7 +67,7 @@ facts before changing strategy behavior.
 - `exp-20260805-002` `accepted`: EV `+0.0000`, PnL `$0.00`, family `alpha_workflow_operator_contract`, trial `operator_complexity_reduction`.
   Lesson: Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade. TODO TODO
 - `exp-20260814-001` `rejected`: EV `+0.0000`, PnL `$0.00`, family `persistent_reported_dollar_per_transaction_state`, trial `massive_multi_session_adts_state_research_replay`.
-  Lesson: Reservation deadlocked by tooling, not by evidence; no calibration signal. Do not re-reserve this bundle against the v2 promotion or any surfaces registry that directly binds data/warehouse/massive_history.sqlite; lar...
+  Lesson: The v2 surfaces registry bound the raw 2.2GB research warehouse sqlite directly, so claim-receipt construction deterministically exceeded the 64MB per-file snapshot cap; the reservation could never be claimed, no repl...
 - `exp-20260814-003` `rejected`: EV `-15620.7100`, PnL `$0.00`, family `persistent_reported_dollar_per_transaction_state`, trial `massive_multi_session_adts_state_research_replay`.
   Lesson: A robust multi-session elevated average-dollar-per-transaction state with sustained participation and nonnegative tape does not mark incomplete upward price discovery; on this universe it marks short-horizon exhaustio...
 
