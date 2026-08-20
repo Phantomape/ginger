@@ -1,10 +1,11 @@
 """Strict, research-only foundation contracts for Ginger V2.
 
 The records in this module describe source authority, point-in-time evidence,
-and replayable universe state transitions.  They deliberately perform no file
-I/O and have no runtime or order-routing integration.  Every public validator
-is fail-closed, every instant requires an explicit timezone, and trading is
-always disabled.
+replayable universe state transitions, evidence-backed research claims,
+outcome-blind hypotheses, and frozen security candidate pools.  They
+deliberately perform no file I/O and have no runtime or order-routing
+integration.  Every public validator is fail-closed, every instant requires an
+explicit timezone, and trading is always disabled.
 """
 
 from __future__ import annotations
@@ -42,6 +43,30 @@ _UNIVERSE_EVENT_TYPES = frozenset({"discovery", "state_transition"})
 _UNIVERSE_STATES = frozenset(
     {"discovered", "research_eligible", "candidate_eligible", "quarantine", "retired"}
 )
+_CLAIM_KINDS = frozenset({"fact", "interpretation", "counterevidence"})
+_PRODUCER_KINDS = frozenset({"human", "ai_skill", "deterministic"})
+_RESEARCH_AUTHORITY = "research_only"
+_NOVELTY_AXES = frozenset(
+    {
+        "independent_source",
+        "different_decision_surface",
+        "settled_forward_reopen",
+        "unused_unsaturated_field",
+        "none",
+    }
+)
+_DECISION_SURFACES = frozenset(
+    {"entry", "exit", "ranking", "candidate_pool", "notional_scalar", "allocator", "observer"}
+)
+_RESULT_CEILING_BY_PIT = {
+    "not_pit": "invalid",
+    "research_pit": "observed_only",
+    "canonical_pit": "gate_eligible",
+}
+_CANDIDATE_ADMISSION_STATES = frozenset({"admitted", "parked", "rejected"})
+_COMPARATOR_ROLES = frozenset({"cash", "spy", "qqq", "v1"})
+_COMPARATOR_AVAILABILITY = frozenset({"available", "unavailable"})
+_REQUIRED_COMPARATOR_ROLES = frozenset({"cash", "spy", "qqq", "v1"})
 _ALLOWED_TRANSITIONS = {
     "discovered": frozenset({"research_eligible", "quarantine", "retired"}),
     "research_eligible": frozenset(
@@ -247,15 +272,63 @@ def _timezone_name(value: Any, *, path: str) -> str:
     return result
 
 
-def _string_tuple(value: Any, *, path: str) -> tuple[str, ...]:
+def _string_tuple(
+    value: Any, *, path: str, allow_empty: bool = False
+) -> tuple[str, ...]:
     if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
         _fail("list_required", path, "must be a list of strings")
     values = [_text(item, path=f"{path}[{index}]") for index, item in enumerate(value)]
-    if not values:
+    if not values and not allow_empty:
         _fail("nonempty_list_required", path, "must contain at least one value")
     if len(values) != len(set(values)):
         _fail("duplicate_list_value", path, "must not contain duplicate values")
     return tuple(sorted(values))
+
+
+def _ordered_string_tuple(value: Any, *, path: str) -> tuple[str, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        _fail("list_required", path, "must be a list of strings")
+    values = tuple(
+        _text(item, path=f"{path}[{index}]") for index, item in enumerate(value)
+    )
+    if not values:
+        _fail("nonempty_list_required", path, "must contain at least one value")
+    if len(values) != len(set(values)):
+        _fail("duplicate_list_value", path, "must not contain duplicate values")
+    return values
+
+
+def _bounded_integer(value: Any, *, minimum: int, maximum: int, path: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        _fail("integer_required", path, "must be an integer")
+    if value < minimum or value > maximum:
+        _fail("integer_out_of_range", path, f"must be between {minimum} and {maximum}")
+    return value
+
+
+def _require_true(value: Any, *, path: str, code: str) -> bool:
+    result = _boolean(value, path=path)
+    if not result:
+        _fail(code, path, "must be true")
+    return True
+
+
+def _require_false(value: Any, *, path: str, code: str) -> bool:
+    result = _boolean(value, path=path)
+    if result:
+        _fail(code, path, "must be false")
+    return False
+
+
+def _research_authority(value: Any, *, path: str) -> str:
+    result = _text(value, path=path)
+    if result != _RESEARCH_AUTHORITY:
+        _fail(
+            "research_authority_required",
+            path,
+            f"must equal {_RESEARCH_AUTHORITY}",
+        )
+    return result
 
 
 def _frozen_object(value: Any, *, path: str) -> Mapping[str, Any]:
@@ -1076,6 +1149,707 @@ class UniverseEvent:
         return canonical_hash(self.to_dict())
 
 
+def _hypothesis_mechanism(value: Any, *, path: str) -> Mapping[str, Any]:
+    raw = _mapping(value, path=path)
+    _check_fields(
+        raw,
+        required={
+            "economic_mechanism",
+            "causal_chain",
+            "decision_surface",
+            "why_not_arbitraged",
+        },
+        path=path,
+    )
+    return MappingProxyType(
+        {
+            "economic_mechanism": _text(
+                raw["economic_mechanism"], path=f"{path}.economic_mechanism"
+            ),
+            "causal_chain": _ordered_string_tuple(
+                raw["causal_chain"], path=f"{path}.causal_chain"
+            ),
+            "decision_surface": _enum(
+                raw["decision_surface"],
+                allowed=_DECISION_SURFACES,
+                path=f"{path}.decision_surface",
+            ),
+            "why_not_arbitraged": _text(
+                raw["why_not_arbitraged"], path=f"{path}.why_not_arbitraged"
+            ),
+        }
+    )
+
+
+def _policy_snapshot(value: Any, *, path: str) -> Mapping[str, Any]:
+    raw = _mapping(value, path=path)
+    fields = {
+        "policy_id",
+        "entry_policy_version",
+        "ranking_policy_version",
+        "sizing_policy_version",
+        "exit_policy_version",
+        "cost_policy_version",
+        "parameters_sha256",
+    }
+    _check_fields(raw, required=fields, path=path)
+    return MappingProxyType(
+        {
+            "policy_id": _text(raw["policy_id"], path=f"{path}.policy_id"),
+            "entry_policy_version": _text(
+                raw["entry_policy_version"], path=f"{path}.entry_policy_version"
+            ),
+            "ranking_policy_version": _text(
+                raw["ranking_policy_version"], path=f"{path}.ranking_policy_version"
+            ),
+            "sizing_policy_version": _text(
+                raw["sizing_policy_version"], path=f"{path}.sizing_policy_version"
+            ),
+            "exit_policy_version": _text(
+                raw["exit_policy_version"], path=f"{path}.exit_policy_version"
+            ),
+            "cost_policy_version": _text(
+                raw["cost_policy_version"], path=f"{path}.cost_policy_version"
+            ),
+            "parameters_sha256": _sha256(
+                raw["parameters_sha256"], path=f"{path}.parameters_sha256"
+            ),
+        }
+    )
+
+
+def _execution_constraints(value: Any, *, path: str) -> Mapping[str, Any]:
+    raw = _mapping(value, path=path)
+    fields = {
+        "liquidity_rule",
+        "capacity_rule",
+        "timing_rule",
+        "overlap_rule",
+        "concentration_rule",
+    }
+    _check_fields(raw, required=fields, path=path)
+    return MappingProxyType(
+        {field: _text(raw[field], path=f"{path}.{field}") for field in sorted(fields)}
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class ResearchClaim:
+    schema_version: int
+    record_type: str
+    claim_id: str
+    claim_kind: str
+    claim_text: str
+    producer_kind: str
+    producer_id: str
+    producer_version: str
+    producer_sha256: str
+    evidence_record_ids: tuple[str, ...]
+    evidence_snapshot_sha256: str
+    affected_object_ids: tuple[str, ...]
+    as_of: str
+    created_at: str
+    known_at: str
+    recorded_at: str
+    pit_tier: str
+    known_future_leakage: bool
+    confidence_bps: int
+    confidence_basis: str
+    falsifier: str
+    next_step: str
+    outcome_blind: bool
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "ResearchClaim":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        as_of, as_of_dt = _instant(raw["as_of"], path="$.as_of")
+        created_at, created_dt = _instant(raw["created_at"], path="$.created_at")
+        known_at, known_dt = _instant(raw["known_at"], path="$.known_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if not (as_of_dt <= created_dt <= known_dt <= recorded_dt):
+            _fail(
+                "invalid_claim_chronology",
+                "$.as_of",
+                "must satisfy as_of <= created_at <= known_at <= recorded_at",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_research_claim", path="$.record_type"
+            ),
+            claim_id=_text(raw["claim_id"], path="$.claim_id"),
+            claim_kind=_enum(raw["claim_kind"], allowed=_CLAIM_KINDS, path="$.claim_kind"),
+            claim_text=_text(raw["claim_text"], path="$.claim_text"),
+            producer_kind=_enum(
+                raw["producer_kind"], allowed=_PRODUCER_KINDS, path="$.producer_kind"
+            ),
+            producer_id=_text(raw["producer_id"], path="$.producer_id"),
+            producer_version=_text(raw["producer_version"], path="$.producer_version"),
+            producer_sha256=_sha256(raw["producer_sha256"], path="$.producer_sha256"),
+            evidence_record_ids=_string_tuple(
+                raw["evidence_record_ids"], path="$.evidence_record_ids"
+            ),
+            evidence_snapshot_sha256=_sha256(
+                raw["evidence_snapshot_sha256"], path="$.evidence_snapshot_sha256"
+            ),
+            affected_object_ids=_string_tuple(
+                raw["affected_object_ids"], path="$.affected_object_ids"
+            ),
+            as_of=as_of,
+            created_at=created_at,
+            known_at=known_at,
+            recorded_at=recorded_at,
+            pit_tier=pit_tier,
+            known_future_leakage=leakage,
+            confidence_bps=_bounded_integer(
+                raw["confidence_bps"], minimum=0, maximum=10_000, path="$.confidence_bps"
+            ),
+            confidence_basis=_text(raw["confidence_basis"], path="$.confidence_basis"),
+            falsifier=_text(raw["falsifier"], path="$.falsifier"),
+            next_step=_text(raw["next_step"], path="$.next_step"),
+            outcome_blind=_require_true(
+                raw["outcome_blind"], path="$.outcome_blind", code="outcome_blind_required"
+            ),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+@dataclass(frozen=True, slots=True)
+class HypothesisCandidate:
+    schema_version: int
+    record_type: str
+    candidate_id: str
+    hypothesis: str
+    mechanism: Mapping[str, Any]
+    research_claim_ids: tuple[str, ...]
+    claim_snapshot_sha256: str
+    novelty_axis: str
+    novelty_basis: str
+    prior_fingerprint_snapshot_sha256: str
+    baseline_policy: Mapping[str, Any]
+    treatment_policy: Mapping[str, Any]
+    expected_horizon: str
+    replacement_comparator_ids: tuple[str, ...]
+    success_criteria: tuple[str, ...]
+    failure_conditions: tuple[str, ...]
+    falsifier: str
+    kill_switches: tuple[str, ...]
+    promotion_conditions: tuple[str, ...]
+    execution_constraints: Mapping[str, Any]
+    pit_tier: str
+    result_ceiling: str
+    known_future_leakage: bool
+    data_cutoff: str
+    created_at: str
+    frozen_at: str
+    recorded_at: str
+    outcome_blind: bool
+    results_accessed: bool
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "HypothesisCandidate":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        data_cutoff, cutoff_dt = _instant(raw["data_cutoff"], path="$.data_cutoff")
+        created_at, created_dt = _instant(raw["created_at"], path="$.created_at")
+        frozen_at, frozen_dt = _instant(raw["frozen_at"], path="$.frozen_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if not (cutoff_dt <= created_dt <= frozen_dt <= recorded_dt):
+            _fail(
+                "invalid_hypothesis_chronology",
+                "$.data_cutoff",
+                "must satisfy data_cutoff <= created_at <= frozen_at <= recorded_at",
+            )
+        baseline = _policy_snapshot(raw["baseline_policy"], path="$.baseline_policy")
+        treatment = _policy_snapshot(raw["treatment_policy"], path="$.treatment_policy")
+        if canonical_hash(baseline) == canonical_hash(treatment):
+            _fail(
+                "identical_baseline_treatment",
+                "$.treatment_policy",
+                "treatment policy must differ from baseline policy",
+            )
+        comparator_ids = _string_tuple(
+            raw["replacement_comparator_ids"], path="$.replacement_comparator_ids"
+        )
+        required_comparators = {"cash", "SPY", "QQQ", "V1"}
+        if set(comparator_ids) != required_comparators:
+            _fail(
+                "required_comparator_missing",
+                "$.replacement_comparator_ids",
+                "must contain exactly cash, SPY, QQQ, and V1",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        result_ceiling = _text(raw["result_ceiling"], path="$.result_ceiling")
+        expected_ceiling = _RESULT_CEILING_BY_PIT[pit_tier]
+        if result_ceiling != expected_ceiling:
+            _fail(
+                "result_ceiling_mismatch",
+                "$.result_ceiling",
+                f"must equal {expected_ceiling} for {pit_tier}",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"],
+                expected="v2_hypothesis_candidate",
+                path="$.record_type",
+            ),
+            candidate_id=_text(raw["candidate_id"], path="$.candidate_id"),
+            hypothesis=_text(raw["hypothesis"], path="$.hypothesis"),
+            mechanism=_hypothesis_mechanism(raw["mechanism"], path="$.mechanism"),
+            research_claim_ids=_string_tuple(
+                raw["research_claim_ids"], path="$.research_claim_ids"
+            ),
+            claim_snapshot_sha256=_sha256(
+                raw["claim_snapshot_sha256"], path="$.claim_snapshot_sha256"
+            ),
+            novelty_axis=_enum(
+                raw["novelty_axis"], allowed=_NOVELTY_AXES, path="$.novelty_axis"
+            ),
+            novelty_basis=_text(raw["novelty_basis"], path="$.novelty_basis"),
+            prior_fingerprint_snapshot_sha256=_sha256(
+                raw["prior_fingerprint_snapshot_sha256"],
+                path="$.prior_fingerprint_snapshot_sha256",
+            ),
+            baseline_policy=baseline,
+            treatment_policy=treatment,
+            expected_horizon=_text(raw["expected_horizon"], path="$.expected_horizon"),
+            replacement_comparator_ids=comparator_ids,
+            success_criteria=_ordered_string_tuple(
+                raw["success_criteria"], path="$.success_criteria"
+            ),
+            failure_conditions=_ordered_string_tuple(
+                raw["failure_conditions"], path="$.failure_conditions"
+            ),
+            falsifier=_text(raw["falsifier"], path="$.falsifier"),
+            kill_switches=_ordered_string_tuple(raw["kill_switches"], path="$.kill_switches"),
+            promotion_conditions=_ordered_string_tuple(
+                raw["promotion_conditions"], path="$.promotion_conditions"
+            ),
+            execution_constraints=_execution_constraints(
+                raw["execution_constraints"], path="$.execution_constraints"
+            ),
+            pit_tier=pit_tier,
+            result_ceiling=result_ceiling,
+            known_future_leakage=leakage,
+            data_cutoff=data_cutoff,
+            created_at=created_at,
+            frozen_at=frozen_at,
+            recorded_at=recorded_at,
+            outcome_blind=_require_true(
+                raw["outcome_blind"], path="$.outcome_blind", code="outcome_blind_required"
+            ),
+            results_accessed=_require_false(
+                raw["results_accessed"],
+                path="$.results_accessed",
+                code="results_accessed_forbidden",
+            ),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+@dataclass(frozen=True, slots=True)
+class CandidatePoolEntry:
+    candidate_entry_id: str
+    security_id: str
+    listing_id: str
+    universe_event_id: str
+    security_mapping_sha256: str
+    evidence_record_ids: tuple[str, ...]
+    decision_input_sha256: str
+    admission_status: str
+    reason_code: str
+    reason: str
+
+    @classmethod
+    def from_dict(
+        cls, value: Mapping[str, Any], *, path: str = "$.entries[]"
+    ) -> "CandidatePoolEntry":
+        raw = _mapping(value, path=path)
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path=path)
+        return cls(
+            candidate_entry_id=_text(
+                raw["candidate_entry_id"], path=f"{path}.candidate_entry_id"
+            ),
+            security_id=_text(raw["security_id"], path=f"{path}.security_id"),
+            listing_id=_text(raw["listing_id"], path=f"{path}.listing_id"),
+            universe_event_id=_text(
+                raw["universe_event_id"], path=f"{path}.universe_event_id"
+            ),
+            security_mapping_sha256=_sha256(
+                raw["security_mapping_sha256"],
+                path=f"{path}.security_mapping_sha256",
+            ),
+            evidence_record_ids=_string_tuple(
+                raw["evidence_record_ids"], path=f"{path}.evidence_record_ids"
+            ),
+            decision_input_sha256=_sha256(
+                raw["decision_input_sha256"], path=f"{path}.decision_input_sha256"
+            ),
+            admission_status=_enum(
+                raw["admission_status"],
+                allowed=_CANDIDATE_ADMISSION_STATES,
+                path=f"{path}.admission_status",
+            ),
+            reason_code=_text(raw["reason_code"], path=f"{path}.reason_code"),
+            reason=_text(raw["reason"], path=f"{path}.reason"),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+
+@dataclass(frozen=True, slots=True)
+class CandidatePoolComparator:
+    role: str
+    reference_id: str
+    reference_snapshot_sha256: str
+    availability_status: str
+    reason_code: str
+    reason: str
+    comparison_only: bool
+
+    @classmethod
+    def from_dict(
+        cls, value: Mapping[str, Any], *, path: str = "$.comparators[]"
+    ) -> "CandidatePoolComparator":
+        raw = _mapping(value, path=path)
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path=path)
+        return cls(
+            role=_enum(raw["role"], allowed=_COMPARATOR_ROLES, path=f"{path}.role"),
+            reference_id=_text(raw["reference_id"], path=f"{path}.reference_id"),
+            reference_snapshot_sha256=_sha256(
+                raw["reference_snapshot_sha256"],
+                path=f"{path}.reference_snapshot_sha256",
+            ),
+            availability_status=_enum(
+                raw["availability_status"],
+                allowed=_COMPARATOR_AVAILABILITY,
+                path=f"{path}.availability_status",
+            ),
+            reason_code=_text(raw["reason_code"], path=f"{path}.reason_code"),
+            reason=_text(raw["reason"], path=f"{path}.reason"),
+            comparison_only=_require_true(
+                raw["comparison_only"],
+                path=f"{path}.comparison_only",
+                code="comparison_only_required",
+            ),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+
+@dataclass(frozen=True, slots=True)
+class CandidatePool:
+    schema_version: int
+    record_type: str
+    candidate_pool_id: str
+    hypothesis_candidate_id: str
+    hypothesis_candidate_hash: str
+    universe_id: str
+    universe_event_ids: tuple[str, ...]
+    universe_event_snapshot_sha256: str
+    evidence_record_ids: tuple[str, ...]
+    evidence_snapshot_sha256: str
+    entries: tuple[CandidatePoolEntry, ...]
+    comparators: tuple[CandidatePoolComparator, ...]
+    generator_rule_id: str
+    generator_rule_version: str
+    generator_rule_sha256: str
+    ranking_rule_id: str
+    ranking_rule_version: str
+    ranking_rule_sha256: str
+    run_id: str
+    run_date: str
+    calendar_session_id: str
+    data_cutoff: str
+    frozen_at: str
+    recorded_at: str
+    expected_candidate_count: int
+    candidate_pool_complete: bool
+    universe_snapshot_complete: bool
+    input_snapshot_sha256: str
+    pit_tier: str
+    result_ceiling: str
+    known_future_leakage: bool
+    outcome_blind: bool
+    results_accessed: bool
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "CandidatePool":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        entries_raw = raw["entries"]
+        if not isinstance(entries_raw, Sequence) or isinstance(
+            entries_raw, (str, bytes, bytearray)
+        ):
+            _fail("list_required", "$.entries", "must be a list")
+        entries = tuple(
+            CandidatePoolEntry.from_dict(item, path=f"$.entries[{index}]")
+            for index, item in enumerate(entries_raw)
+        )
+        entry_ids = [item.candidate_entry_id for item in entries]
+        if len(entry_ids) != len(set(entry_ids)):
+            _fail("duplicate_candidate_entry_id", "$.entries", "entry ids must be unique")
+        securities = [(item.security_id, item.listing_id) for item in entries]
+        if len(securities) != len(set(securities)):
+            _fail(
+                "duplicate_candidate_security",
+                "$.entries",
+                "security/listing pairs must be unique",
+            )
+        expected_count = _bounded_integer(
+            raw["expected_candidate_count"],
+            minimum=0,
+            maximum=10_000_000,
+            path="$.expected_candidate_count",
+        )
+        if expected_count != len(entries):
+            _fail(
+                "candidate_count_mismatch",
+                "$.expected_candidate_count",
+                "must equal the number of frozen entries",
+            )
+        comparators_raw = raw["comparators"]
+        if not isinstance(comparators_raw, Sequence) or isinstance(
+            comparators_raw, (str, bytes, bytearray)
+        ):
+            _fail("list_required", "$.comparators", "must be a list")
+        comparators = tuple(
+            CandidatePoolComparator.from_dict(item, path=f"$.comparators[{index}]")
+            for index, item in enumerate(comparators_raw)
+        )
+        roles = [item.role for item in comparators]
+        if len(roles) != len(set(roles)) or set(roles) != _REQUIRED_COMPARATOR_ROLES:
+            _fail(
+                "comparator_panel_incomplete",
+                "$.comparators",
+                "must contain exactly one cash, SPY, QQQ, and V1 comparator",
+            )
+        data_cutoff, cutoff_dt = _instant(raw["data_cutoff"], path="$.data_cutoff")
+        frozen_at, frozen_dt = _instant(raw["frozen_at"], path="$.frozen_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if not (cutoff_dt <= frozen_dt <= recorded_dt):
+            _fail(
+                "invalid_candidate_pool_chronology",
+                "$.data_cutoff",
+                "must satisfy data_cutoff <= frozen_at <= recorded_at",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        result_ceiling = _text(raw["result_ceiling"], path="$.result_ceiling")
+        expected_ceiling = _RESULT_CEILING_BY_PIT[pit_tier]
+        if result_ceiling != expected_ceiling:
+            _fail(
+                "result_ceiling_mismatch",
+                "$.result_ceiling",
+                f"must equal {expected_ceiling} for {pit_tier}",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_candidate_pool", path="$.record_type"
+            ),
+            candidate_pool_id=_text(raw["candidate_pool_id"], path="$.candidate_pool_id"),
+            hypothesis_candidate_id=_text(
+                raw["hypothesis_candidate_id"], path="$.hypothesis_candidate_id"
+            ),
+            hypothesis_candidate_hash=_sha256(
+                raw["hypothesis_candidate_hash"], path="$.hypothesis_candidate_hash"
+            ),
+            universe_id=_text(raw["universe_id"], path="$.universe_id"),
+            universe_event_ids=_string_tuple(
+                raw["universe_event_ids"], path="$.universe_event_ids"
+            ),
+            universe_event_snapshot_sha256=_sha256(
+                raw["universe_event_snapshot_sha256"],
+                path="$.universe_event_snapshot_sha256",
+            ),
+            evidence_record_ids=_string_tuple(
+                raw["evidence_record_ids"], path="$.evidence_record_ids"
+            ),
+            evidence_snapshot_sha256=_sha256(
+                raw["evidence_snapshot_sha256"], path="$.evidence_snapshot_sha256"
+            ),
+            entries=tuple(sorted(entries, key=lambda item: item.candidate_entry_id)),
+            comparators=tuple(sorted(comparators, key=lambda item: item.role)),
+            generator_rule_id=_text(raw["generator_rule_id"], path="$.generator_rule_id"),
+            generator_rule_version=_text(
+                raw["generator_rule_version"], path="$.generator_rule_version"
+            ),
+            generator_rule_sha256=_sha256(
+                raw["generator_rule_sha256"], path="$.generator_rule_sha256"
+            ),
+            ranking_rule_id=_text(raw["ranking_rule_id"], path="$.ranking_rule_id"),
+            ranking_rule_version=_text(
+                raw["ranking_rule_version"], path="$.ranking_rule_version"
+            ),
+            ranking_rule_sha256=_sha256(
+                raw["ranking_rule_sha256"], path="$.ranking_rule_sha256"
+            ),
+            run_id=_text(raw["run_id"], path="$.run_id"),
+            run_date=_calendar_date(raw["run_date"], path="$.run_date"),
+            calendar_session_id=_text(
+                raw["calendar_session_id"], path="$.calendar_session_id"
+            ),
+            data_cutoff=data_cutoff,
+            frozen_at=frozen_at,
+            recorded_at=recorded_at,
+            expected_candidate_count=expected_count,
+            candidate_pool_complete=_require_true(
+                raw["candidate_pool_complete"],
+                path="$.candidate_pool_complete",
+                code="candidate_pool_incomplete",
+            ),
+            universe_snapshot_complete=_require_true(
+                raw["universe_snapshot_complete"],
+                path="$.universe_snapshot_complete",
+                code="universe_snapshot_incomplete",
+            ),
+            input_snapshot_sha256=_sha256(
+                raw["input_snapshot_sha256"], path="$.input_snapshot_sha256"
+            ),
+            pit_tier=pit_tier,
+            result_ceiling=result_ceiling,
+            known_future_leakage=leakage,
+            outcome_blind=_require_true(
+                raw["outcome_blind"], path="$.outcome_blind", code="outcome_blind_required"
+            ),
+            results_accessed=_require_false(
+                raw["results_accessed"],
+                path="$.results_accessed",
+                code="results_accessed_forbidden",
+            ),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for field in self.__dataclass_fields__:
+            value = getattr(self, field)
+            if field in {"entries", "comparators"}:
+                result[field] = [item.to_dict() for item in value]
+            else:
+                result[field] = _plain(value)
+        return result
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
 def validate_source_contract(value: Mapping[str, Any] | SourceContract) -> SourceContract:
     return SourceContract.from_dict(value.to_dict() if isinstance(value, SourceContract) else value)
 
@@ -1200,6 +1974,12 @@ def validate_evidence_against_source(
             "$.pit_tier",
             "evidence tier exceeds the source contract maximum",
         )
+    if contract.known_future_leakage and not record.known_future_leakage:
+        _fail(
+            "future_leakage_not_propagated",
+            "$.known_future_leakage",
+            "evidence must propagate leakage from its source contract",
+        )
     expected_mapping_kind = {
         "effective_dated": "effective_dated",
         "current_only": "current_only",
@@ -1221,6 +2001,216 @@ def validate_universe_event(value: Mapping[str, Any] | UniverseEvent) -> Univers
 
 def normalize_universe_event(value: Mapping[str, Any] | UniverseEvent) -> dict[str, Any]:
     return validate_universe_event(value).to_dict()
+
+
+def validate_research_claim(
+    value: Mapping[str, Any] | ResearchClaim,
+) -> ResearchClaim:
+    return ResearchClaim.from_dict(
+        value.to_dict() if isinstance(value, ResearchClaim) else value
+    )
+
+
+def normalize_research_claim(
+    value: Mapping[str, Any] | ResearchClaim,
+) -> dict[str, Any]:
+    return validate_research_claim(value).to_dict()
+
+
+def validate_hypothesis_candidate(
+    value: Mapping[str, Any] | HypothesisCandidate,
+) -> HypothesisCandidate:
+    return HypothesisCandidate.from_dict(
+        value.to_dict() if isinstance(value, HypothesisCandidate) else value
+    )
+
+
+def normalize_hypothesis_candidate(
+    value: Mapping[str, Any] | HypothesisCandidate,
+) -> dict[str, Any]:
+    return validate_hypothesis_candidate(value).to_dict()
+
+
+def validate_candidate_pool(
+    value: Mapping[str, Any] | CandidatePool,
+) -> CandidatePool:
+    return CandidatePool.from_dict(
+        value.to_dict() if isinstance(value, CandidatePool) else value
+    )
+
+
+def normalize_candidate_pool(
+    value: Mapping[str, Any] | CandidatePool,
+) -> dict[str, Any]:
+    return validate_candidate_pool(value).to_dict()
+
+
+def research_evidence_snapshot_hash(
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+) -> str:
+    records = [validate_evidence_record(record) for record in evidence_records]
+    ids = [record.evidence_id for record in records]
+    if not records:
+        _fail(
+            "nonempty_list_required",
+            "$.evidence_records",
+            "must contain at least one evidence record",
+        )
+    if len(ids) != len(set(ids)):
+        _fail("duplicate_evidence_id", "$.evidence_records", "evidence ids must be unique")
+    return canonical_hash(
+        [
+            {"evidence_id": record.evidence_id, "semantic_hash": record.semantic_hash}
+            for record in sorted(records, key=lambda item: item.evidence_id)
+        ]
+    )
+
+
+def research_claim_snapshot_hash(
+    claims: Sequence[Mapping[str, Any] | ResearchClaim],
+) -> str:
+    records = [validate_research_claim(claim) for claim in claims]
+    ids = [record.claim_id for record in records]
+    if not records:
+        _fail(
+            "nonempty_list_required",
+            "$.research_claims",
+            "must contain at least one research claim",
+        )
+    if len(ids) != len(set(ids)):
+        _fail("duplicate_claim_id", "$.research_claims", "claim ids must be unique")
+    return canonical_hash(
+        [
+            {"claim_id": record.claim_id, "semantic_hash": record.semantic_hash}
+            for record in sorted(records, key=lambda item: item.claim_id)
+        ]
+    )
+
+
+def universe_event_snapshot_hash(
+    events: Sequence[Mapping[str, Any] | UniverseEvent],
+) -> str:
+    records = [validate_universe_event(event) for event in events]
+    ids = [record.event_id for record in records]
+    if not records:
+        _fail(
+            "nonempty_list_required",
+            "$.universe_events",
+            "must contain at least one universe event",
+        )
+    if len(ids) != len(set(ids)):
+        _fail("duplicate_universe_event_id", "$.universe_events", "event ids must be unique")
+    return canonical_hash(
+        [
+            {"event_id": record.event_id, "semantic_hash": record.semantic_hash}
+            for record in sorted(records, key=lambda item: item.event_id)
+        ]
+    )
+
+
+def candidate_entry_input_snapshot_hash(
+    *,
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+    universe_event: Mapping[str, Any] | UniverseEvent,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    generator_rule_sha256: str,
+) -> str:
+    hypothesis = validate_hypothesis_candidate(hypothesis_candidate)
+    event = validate_universe_event(universe_event)
+    evidence = [validate_evidence_record(item) for item in evidence_records]
+    evidence_ids = [item.evidence_id for item in evidence]
+    if not evidence:
+        _fail(
+            "nonempty_list_required",
+            "$.evidence_records",
+            "candidate entry requires evidence",
+        )
+    if len(evidence_ids) != len(set(evidence_ids)):
+        _fail("duplicate_evidence_id", "$.evidence_records", "evidence ids must be unique")
+    return canonical_hash(
+        {
+            "hypothesis_candidate": {
+                "candidate_id": hypothesis.candidate_id,
+                "semantic_hash": hypothesis.semantic_hash,
+            },
+            "universe_event": {
+                "event_id": event.event_id,
+                "semantic_hash": event.semantic_hash,
+            },
+            "evidence_records": [
+                {"evidence_id": item.evidence_id, "semantic_hash": item.semantic_hash}
+                for item in sorted(evidence, key=lambda item: item.evidence_id)
+            ],
+            "generator_rule_sha256": _sha256(
+                generator_rule_sha256, path="$.generator_rule_sha256"
+            ),
+        }
+    )
+
+
+def candidate_pool_input_snapshot_hash(
+    *,
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    universe_events: Sequence[Mapping[str, Any] | UniverseEvent],
+    entries: Sequence[Mapping[str, Any] | CandidatePoolEntry],
+    comparators: Sequence[Mapping[str, Any] | CandidatePoolComparator],
+    generator_rule_sha256: str,
+    ranking_rule_sha256: str,
+    universe_id: str,
+    run_date: str,
+    calendar_session_id: str,
+    data_cutoff: str,
+) -> str:
+    hypothesis = validate_hypothesis_candidate(hypothesis_candidate)
+    evidence = [validate_evidence_record(item) for item in evidence_records]
+    events = [validate_universe_event(item) for item in universe_events]
+    normalized_entries = [
+        CandidatePoolEntry.from_dict(
+            item.to_dict() if isinstance(item, CandidatePoolEntry) else item,
+            path="$.entries[]",
+        )
+        for item in entries
+    ]
+    normalized_comparators = [
+        CandidatePoolComparator.from_dict(
+            item.to_dict() if isinstance(item, CandidatePoolComparator) else item,
+            path="$.comparators[]",
+        )
+        for item in comparators
+    ]
+    return canonical_hash(
+        {
+            "hypothesis_candidate": {
+                "candidate_id": hypothesis.candidate_id,
+                "semantic_hash": hypothesis.semantic_hash,
+            },
+            "evidence_snapshot_sha256": research_evidence_snapshot_hash(evidence),
+            "universe_event_snapshot_sha256": universe_event_snapshot_hash(events),
+            "entries": [
+                item.to_dict()
+                for item in sorted(
+                    normalized_entries, key=lambda entry: entry.candidate_entry_id
+                )
+            ],
+            "comparators": [
+                item.to_dict()
+                for item in sorted(normalized_comparators, key=lambda comparator: comparator.role)
+            ],
+            "generator_rule_sha256": _sha256(
+                generator_rule_sha256, path="$.generator_rule_sha256"
+            ),
+            "ranking_rule_sha256": _sha256(
+                ranking_rule_sha256, path="$.ranking_rule_sha256"
+            ),
+            "universe_id": _text(universe_id, path="$.universe_id"),
+            "run_date": _calendar_date(run_date, path="$.run_date"),
+            "calendar_session_id": _text(
+                calendar_session_id, path="$.calendar_session_id"
+            ),
+            "data_cutoff": _instant(data_cutoff, path="$.data_cutoff")[0],
+        }
+    )
 
 
 def universe_input_snapshot_hash(
@@ -1301,6 +2291,12 @@ def validate_universe_event_against_evidence(
             "$.pit_tier",
             "universe event tier exceeds its weakest evidence record",
         )
+    if any(item.known_future_leakage for item in referenced) and not record.known_future_leakage:
+        _fail(
+            "future_leakage_not_propagated",
+            "$.known_future_leakage",
+            "universe event must propagate leakage from referenced evidence",
+        )
     _, event_known_dt = _instant(record.known_at, path="$.known_at")
     _, event_decided_dt = _instant(record.decided_at, path="$.decided_at")
     for item in referenced:
@@ -1343,6 +2339,505 @@ def validate_universe_event_against_evidence(
     return record
 
 
+def _validated_source_registry(
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+) -> dict[str, SourceContract]:
+    by_id: dict[str, SourceContract] = {}
+    for item in source_contracts:
+        source = validate_source_contract(item)
+        if source.source_contract_id in by_id:
+            _fail(
+                "duplicate_source_contract_id",
+                "$.source_contracts",
+                f"duplicate source contract id {source.source_contract_id}",
+            )
+        by_id[source.source_contract_id] = source
+    return by_id
+
+
+def _validated_evidence_registry(
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+) -> tuple[dict[str, EvidenceRecord], dict[str, SourceContract]]:
+    sources = _validated_source_registry(source_contracts)
+    by_id: dict[str, EvidenceRecord] = {}
+    for item in evidence_records:
+        evidence = validate_evidence_record(item)
+        if evidence.evidence_id in by_id:
+            _fail(
+                "duplicate_evidence_id",
+                "$.evidence_records",
+                f"duplicate evidence id {evidence.evidence_id}",
+            )
+        source = sources.get(evidence.source_contract_id)
+        if source is None:
+            _fail(
+                "unresolved_source_contract_id",
+                "$.source_contracts",
+                f"no source contract for {evidence.source_contract_id}",
+            )
+        by_id[evidence.evidence_id] = validate_evidence_against_source(
+            evidence, source
+        )
+    return by_id, sources
+
+
+def validate_research_claim_against_evidence(
+    claim: Mapping[str, Any] | ResearchClaim,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+) -> ResearchClaim:
+    record = validate_research_claim(claim)
+    evidence_by_id, _ = _validated_evidence_registry(
+        evidence_records, source_contracts
+    )
+    missing = [item for item in record.evidence_record_ids if item not in evidence_by_id]
+    if missing:
+        _fail(
+            "unresolved_evidence_id",
+            "$.evidence_record_ids",
+            f"unresolved ids: {', '.join(missing)}",
+        )
+    referenced = [evidence_by_id[item] for item in record.evidence_record_ids]
+    expected_snapshot = research_evidence_snapshot_hash(referenced)
+    if record.evidence_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "evidence_snapshot_hash_mismatch",
+            "$.evidence_snapshot_sha256",
+            f"expected {expected_snapshot}, got {record.evidence_snapshot_sha256}",
+        )
+    weakest = min(referenced, key=lambda item: _PIT_RANK[item.pit_tier]).pit_tier
+    if _PIT_RANK[record.pit_tier] > _PIT_RANK[weakest]:
+        _fail(
+            "pit_tier_exceeds_evidence",
+            "$.pit_tier",
+            "research claim tier exceeds its weakest evidence record",
+        )
+    if any(item.known_future_leakage for item in referenced) and not record.known_future_leakage:
+        _fail(
+            "future_leakage_not_propagated",
+            "$.known_future_leakage",
+            "claim must propagate leakage from referenced evidence",
+        )
+    _, claim_as_of_dt = _instant(record.as_of, path="$.as_of")
+    _, claim_created_dt = _instant(record.created_at, path="$.created_at")
+    for item in referenced:
+        _, evidence_known_dt = _instant(item.known_at, path="$.evidence.known_at")
+        if evidence_known_dt > claim_as_of_dt:
+            _fail(
+                "claim_cutoff_before_evidence",
+                "$.as_of",
+                "claim cutoff cannot precede referenced evidence known_at",
+            )
+        _, evidence_recorded_dt = _instant(
+            item.recorded_at, path="$.evidence.recorded_at"
+        )
+        if evidence_recorded_dt > claim_created_dt:
+            _fail(
+                "evidence_recorded_after_claim_creation",
+                "$.evidence.recorded_at",
+                "referenced evidence must be recorded before the claim is created",
+            )
+    return record
+
+
+def validate_hypothesis_candidate_against_claims(
+    candidate: Mapping[str, Any] | HypothesisCandidate,
+    research_claims: Sequence[Mapping[str, Any] | ResearchClaim],
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+) -> HypothesisCandidate:
+    record = validate_hypothesis_candidate(candidate)
+    claims_by_id: dict[str, ResearchClaim] = {}
+    for item in research_claims:
+        claim = validate_research_claim(item)
+        if claim.claim_id in claims_by_id:
+            _fail(
+                "duplicate_claim_id",
+                "$.research_claims",
+                f"duplicate claim id {claim.claim_id}",
+            )
+        claims_by_id[claim.claim_id] = claim
+    missing = [item for item in record.research_claim_ids if item not in claims_by_id]
+    if missing:
+        _fail(
+            "unresolved_claim_id",
+            "$.research_claim_ids",
+            f"unresolved ids: {', '.join(missing)}",
+        )
+    referenced = [
+        validate_research_claim_against_evidence(
+            claims_by_id[item], evidence_records, source_contracts
+        )
+        for item in record.research_claim_ids
+    ]
+    expected_snapshot = research_claim_snapshot_hash(referenced)
+    if record.claim_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "claim_snapshot_hash_mismatch",
+            "$.claim_snapshot_sha256",
+            f"expected {expected_snapshot}, got {record.claim_snapshot_sha256}",
+        )
+    weakest = min(referenced, key=lambda item: _PIT_RANK[item.pit_tier]).pit_tier
+    if _PIT_RANK[record.pit_tier] > _PIT_RANK[weakest]:
+        _fail(
+            "pit_tier_exceeds_claim",
+            "$.pit_tier",
+            "hypothesis tier exceeds its weakest research claim",
+        )
+    if any(item.known_future_leakage for item in referenced) and not record.known_future_leakage:
+        _fail(
+            "future_leakage_not_propagated",
+            "$.known_future_leakage",
+            "hypothesis must propagate leakage from referenced claims",
+        )
+    _, cutoff_dt = _instant(record.data_cutoff, path="$.data_cutoff")
+    _, created_dt = _instant(record.created_at, path="$.created_at")
+    for item in referenced:
+        _, claim_known_dt = _instant(item.known_at, path="$.claim.known_at")
+        if claim_known_dt > cutoff_dt:
+            _fail(
+                "hypothesis_cutoff_before_claim",
+                "$.data_cutoff",
+                "hypothesis cutoff cannot precede claim known_at",
+            )
+        _, claim_recorded_dt = _instant(item.recorded_at, path="$.claim.recorded_at")
+        if claim_recorded_dt > created_dt:
+            _fail(
+                "claim_recorded_after_hypothesis_creation",
+                "$.claim.recorded_at",
+                "referenced claims must be recorded before the hypothesis is created",
+            )
+    return record
+
+
+def _validate_universe_event_chains(
+    events: Sequence[UniverseEvent],
+) -> dict[str, UniverseEvent]:
+    by_security: dict[str, list[UniverseEvent]] = {}
+    for event in events:
+        by_security.setdefault(event.security_mapping.security_id, []).append(event)
+    latest: dict[str, UniverseEvent] = {}
+    for security_id, chain in by_security.items():
+        ordered = sorted(
+            chain,
+            key=lambda item: (
+                _instant(item.effective_at, path="$.universe_event.effective_at")[1],
+                item.event_id,
+            ),
+        )
+        first = ordered[0]
+        if first.event_type != "discovery":
+            _fail(
+                "incomplete_universe_event_chain",
+                "$.universe_event_ids",
+                f"{security_id} snapshot does not start with discovery",
+            )
+        previous = first
+        for current in ordered[1:]:
+            _, previous_effective_dt = _instant(
+                previous.effective_at, path="$.universe_event.effective_at"
+            )
+            _, current_effective_dt = _instant(
+                current.effective_at, path="$.universe_event.effective_at"
+            )
+            _, current_decided_dt = _instant(
+                current.decided_at, path="$.universe_event.decided_at"
+            )
+            if current_effective_dt <= previous_effective_dt:
+                _fail(
+                    "nonmonotonic_universe_event_chain",
+                    "$.universe_event_ids",
+                    f"{security_id} event effective_at values must increase",
+                )
+            if current_decided_dt < previous_effective_dt:
+                _fail(
+                    "universe_transition_before_prior_effective",
+                    "$.universe_event_ids",
+                    f"{security_id} cannot transition before its prior state is effective",
+                )
+            if (
+                current.previous_event_id != previous.event_id
+                or current.previous_event_hash != previous.event_hash
+                or current.from_state != previous.to_state
+            ):
+                _fail(
+                    "broken_universe_event_chain",
+                    "$.universe_event_ids",
+                    f"{security_id} event does not bind the immediately prior state",
+                )
+            previous = current
+        latest[security_id] = previous
+    return latest
+
+
+def validate_candidate_pool_against_inputs(
+    pool: Mapping[str, Any] | CandidatePool,
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+    research_claims: Sequence[Mapping[str, Any] | ResearchClaim],
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    universe_events: Sequence[Mapping[str, Any] | UniverseEvent],
+) -> CandidatePool:
+    record = validate_candidate_pool(pool)
+    hypothesis = validate_hypothesis_candidate_against_claims(
+        hypothesis_candidate, research_claims, evidence_records, source_contracts
+    )
+    if record.hypothesis_candidate_id != hypothesis.candidate_id:
+        _fail(
+            "hypothesis_candidate_id_mismatch",
+            "$.hypothesis_candidate_id",
+            "does not match the supplied hypothesis candidate",
+        )
+    if record.hypothesis_candidate_hash != hypothesis.semantic_hash:
+        _fail(
+            "hypothesis_candidate_hash_mismatch",
+            "$.hypothesis_candidate_hash",
+            "does not bind the supplied hypothesis semantic hash",
+        )
+    comparator_identity = {"cash": "cash", "spy": "SPY", "qqq": "QQQ", "v1": "V1"}
+    for comparator in record.comparators:
+        if comparator.reference_id != comparator_identity[comparator.role]:
+            _fail(
+                "comparator_identity_mismatch",
+                "$.comparators",
+                "cash, SPY, QQQ, and V1 roles must bind their frozen hypothesis identities",
+            )
+    evidence_by_id, _ = _validated_evidence_registry(
+        evidence_records, source_contracts
+    )
+    if set(evidence_by_id) != set(record.evidence_record_ids):
+        _fail(
+            "evidence_snapshot_membership_mismatch",
+            "$.evidence_record_ids",
+            "supplied evidence must exactly match the frozen pool snapshot",
+        )
+    referenced_evidence = [evidence_by_id[item] for item in record.evidence_record_ids]
+    expected_evidence_snapshot = research_evidence_snapshot_hash(referenced_evidence)
+    if record.evidence_snapshot_sha256 != expected_evidence_snapshot:
+        _fail(
+            "evidence_snapshot_hash_mismatch",
+            "$.evidence_snapshot_sha256",
+            f"expected {expected_evidence_snapshot}, got {record.evidence_snapshot_sha256}",
+        )
+    events: list[UniverseEvent] = []
+    event_ids: set[str] = set()
+    for item in universe_events:
+        event = validate_universe_event_against_evidence(
+            item, evidence_records, source_contracts
+        )
+        if event.event_id in event_ids:
+            _fail(
+                "duplicate_universe_event_id",
+                "$.universe_events",
+                f"duplicate universe event id {event.event_id}",
+            )
+        event_ids.add(event.event_id)
+        events.append(event)
+    if event_ids != set(record.universe_event_ids):
+        _fail(
+            "universe_snapshot_membership_mismatch",
+            "$.universe_event_ids",
+            "supplied events must exactly match the frozen universe snapshot",
+        )
+    expected_event_snapshot = universe_event_snapshot_hash(events)
+    if record.universe_event_snapshot_sha256 != expected_event_snapshot:
+        _fail(
+            "universe_event_snapshot_hash_mismatch",
+            "$.universe_event_snapshot_sha256",
+            f"expected {expected_event_snapshot}, got {record.universe_event_snapshot_sha256}",
+        )
+    _, pool_cutoff_dt = _instant(record.data_cutoff, path="$.data_cutoff")
+    _, pool_frozen_dt = _instant(record.frozen_at, path="$.frozen_at")
+    for event in events:
+        if event.universe_id != record.universe_id:
+            _fail(
+                "universe_id_mismatch",
+                "$.universe_id",
+                "all frozen universe events must belong to the pool universe",
+            )
+        _, event_known_dt = _instant(event.known_at, path="$.universe_event.known_at")
+        _, event_effective_dt = _instant(
+            event.effective_at, path="$.universe_event.effective_at"
+        )
+        _, event_recorded_dt = _instant(
+            event.recorded_at, path="$.universe_event.recorded_at"
+        )
+        if event_known_dt > pool_cutoff_dt or event_effective_dt > pool_cutoff_dt:
+            _fail(
+                "universe_event_after_pool_cutoff",
+                "$.data_cutoff",
+                "universe events must be known and effective by the pool cutoff",
+            )
+        if event_recorded_dt > pool_frozen_dt:
+            _fail(
+                "universe_event_recorded_after_pool_freeze",
+                "$.universe_event.recorded_at",
+                "universe events must be recorded before the pool freezes",
+            )
+    latest_by_security = _validate_universe_event_chains(events)
+    eligible = {
+        (
+            event.security_mapping.security_id,
+            event.security_mapping.listing_id,
+        ): event
+        for event in latest_by_security.values()
+        if event.to_state == "candidate_eligible"
+    }
+    entry_keys = {(entry.security_id, entry.listing_id) for entry in record.entries}
+    if entry_keys != set(eligible):
+        _fail(
+            "candidate_surface_incomplete",
+            "$.entries",
+            "entries must exactly cover securities whose latest universe state is "
+            "candidate_eligible",
+        )
+    event_by_id = {event.event_id: event for event in events}
+    required_evidence_ids: set[str] = set()
+    claims_by_id = {
+        item.claim_id: item
+        for item in (validate_research_claim(claim) for claim in research_claims)
+    }
+    for claim_id in hypothesis.research_claim_ids:
+        required_evidence_ids.update(claims_by_id[claim_id].evidence_record_ids)
+    for event in events:
+        required_evidence_ids.update(event.evidence_record_ids)
+    for entry in record.entries:
+        required_evidence_ids.update(entry.evidence_record_ids)
+        latest_event = eligible[(entry.security_id, entry.listing_id)]
+        if entry.universe_event_id != latest_event.event_id:
+            _fail(
+                "candidate_not_bound_to_latest_universe_event",
+                "$.entries",
+                "candidate entry must bind the latest eligible universe event",
+            )
+        if entry.security_mapping_sha256 != latest_event.security_mapping.mapping_sha256:
+            _fail(
+                "candidate_mapping_hash_mismatch",
+                "$.entries",
+                "candidate entry must bind the latest universe security mapping",
+            )
+        entry_evidence: list[EvidenceRecord] = []
+        for evidence_id in entry.evidence_record_ids:
+            evidence = evidence_by_id.get(evidence_id)
+            if evidence is None:
+                _fail(
+                    "unresolved_evidence_id",
+                    "$.entries",
+                    f"candidate entry references missing evidence {evidence_id}",
+                )
+            entry_evidence.append(evidence)
+            if evidence.security_scope == "instrument":
+                mapping = evidence.security_mapping
+                if mapping is None:
+                    _fail(
+                        "candidate_evidence_security_unbound",
+                        "$.entries",
+                        "instrument evidence must carry an effective security mapping",
+                    )
+                if (
+                    mapping.security_id != entry.security_id
+                    or mapping.listing_id != entry.listing_id
+                ):
+                    _fail(
+                        "candidate_evidence_security_mismatch",
+                        "$.entries",
+                        "instrument evidence must match the candidate security and listing",
+                    )
+        expected_entry_input = candidate_entry_input_snapshot_hash(
+            hypothesis_candidate=hypothesis,
+            universe_event=event_by_id[entry.universe_event_id],
+            evidence_records=entry_evidence,
+            generator_rule_sha256=record.generator_rule_sha256,
+        )
+        if entry.decision_input_sha256 != expected_entry_input:
+            _fail(
+                "candidate_entry_input_hash_mismatch",
+                "$.entries",
+                f"entry {entry.candidate_entry_id} does not bind its decision inputs",
+            )
+    if required_evidence_ids != set(record.evidence_record_ids):
+        _fail(
+            "candidate_evidence_surface_incomplete",
+            "$.evidence_record_ids",
+            "pool evidence must exactly cover universe and candidate entry inputs",
+        )
+    _, hypothesis_recorded_dt = _instant(
+        hypothesis.recorded_at, path="$.hypothesis.recorded_at"
+    )
+    if hypothesis_recorded_dt > pool_frozen_dt:
+        _fail(
+            "hypothesis_recorded_after_pool_freeze",
+            "$.hypothesis.recorded_at",
+            "hypothesis must be recorded before the candidate pool freezes",
+        )
+    _, hypothesis_cutoff_dt = _instant(
+        hypothesis.data_cutoff, path="$.hypothesis.data_cutoff"
+    )
+    if hypothesis_cutoff_dt > pool_cutoff_dt:
+        _fail(
+            "pool_cutoff_before_hypothesis",
+            "$.data_cutoff",
+            "pool cutoff cannot precede the hypothesis data cutoff",
+        )
+    for evidence in referenced_evidence:
+        _, evidence_known_dt = _instant(evidence.known_at, path="$.evidence.known_at")
+        _, evidence_recorded_dt = _instant(
+            evidence.recorded_at, path="$.evidence.recorded_at"
+        )
+        if evidence_known_dt > pool_cutoff_dt:
+            _fail(
+                "pool_cutoff_before_evidence",
+                "$.data_cutoff",
+                "pool cutoff cannot precede evidence known_at",
+            )
+        if evidence_recorded_dt > pool_frozen_dt:
+            _fail(
+                "evidence_recorded_after_pool_freeze",
+                "$.evidence.recorded_at",
+                "pool evidence must be recorded before the pool freezes",
+            )
+    pit_inputs = [hypothesis.pit_tier]
+    pit_inputs.extend(item.pit_tier for item in referenced_evidence)
+    pit_inputs.extend(item.pit_tier for item in events)
+    weakest = min(pit_inputs, key=lambda item: _PIT_RANK[item])
+    if _PIT_RANK[record.pit_tier] > _PIT_RANK[weakest]:
+        _fail(
+            "pit_tier_exceeds_pool_inputs",
+            "$.pit_tier",
+            "candidate pool tier exceeds its weakest frozen input",
+        )
+    leakage = hypothesis.known_future_leakage or any(
+        item.known_future_leakage for item in [*referenced_evidence, *events]
+    )
+    if leakage and not record.known_future_leakage:
+        _fail(
+            "future_leakage_not_propagated",
+            "$.known_future_leakage",
+            "candidate pool must propagate leakage from every input",
+        )
+    expected_input_snapshot = candidate_pool_input_snapshot_hash(
+        hypothesis_candidate=hypothesis,
+        evidence_records=referenced_evidence,
+        universe_events=events,
+        entries=record.entries,
+        comparators=record.comparators,
+        generator_rule_sha256=record.generator_rule_sha256,
+        ranking_rule_sha256=record.ranking_rule_sha256,
+        universe_id=record.universe_id,
+        run_date=record.run_date,
+        calendar_session_id=record.calendar_session_id,
+        data_cutoff=record.data_cutoff,
+    )
+    if record.input_snapshot_sha256 != expected_input_snapshot:
+        _fail(
+            "input_snapshot_hash_mismatch",
+            "$.input_snapshot_sha256",
+            f"expected {expected_input_snapshot}, got {record.input_snapshot_sha256}",
+        )
+    return record
+
+
 __all__ = [
     "SCHEMA_VERSION",
     "PIT_TIERS",
@@ -1351,6 +2846,11 @@ __all__ = [
     "SourceContract",
     "EvidenceRecord",
     "UniverseEvent",
+    "ResearchClaim",
+    "HypothesisCandidate",
+    "CandidatePoolEntry",
+    "CandidatePoolComparator",
+    "CandidatePool",
     "canonical_json",
     "canonical_hash",
     "validate_source_contract",
@@ -1362,4 +2862,18 @@ __all__ = [
     "normalize_universe_event",
     "universe_input_snapshot_hash",
     "validate_universe_event_against_evidence",
+    "validate_research_claim",
+    "normalize_research_claim",
+    "research_evidence_snapshot_hash",
+    "validate_research_claim_against_evidence",
+    "validate_hypothesis_candidate",
+    "normalize_hypothesis_candidate",
+    "research_claim_snapshot_hash",
+    "validate_hypothesis_candidate_against_claims",
+    "validate_candidate_pool",
+    "normalize_candidate_pool",
+    "universe_event_snapshot_hash",
+    "candidate_entry_input_snapshot_hash",
+    "candidate_pool_input_snapshot_hash",
+    "validate_candidate_pool_against_inputs",
 ]

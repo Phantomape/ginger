@@ -1,17 +1,17 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-20T02:54Z（M1 基础数据合同轮）
+> 最后更新：2026-08-20T03:28Z（M1 研究候选合同轮）
 
 ## 里程碑
 
-**M0 已完成，M1 进行中**。M1 第一个最小工作单元已完成：
-`SourceContract`、`EvidenceRecord`、`UniverseEvent` 初始 schema 与 fail-closed 校验。
+**M0 已完成，M1 进行中**。M1 前两个最小工作单元已完成：基础数据合同与
+研究候选合同均已有初始 schema 和 fail-closed 跨记录校验。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
-| M1 身份、时钟、数据合同 schema | 进行中：首批三个基础合同与跨合同校验已完成；下一项为研究候选合同 |
+| M1 身份、时钟、数据合同 schema | 进行中：基础数据合同和研究候选合同已完成；下一项为决策、订单与结果合同 |
 | M2 动态 PIT 股票池 | 未开始 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -25,6 +25,29 @@
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
 
 ## M1 已完成单元
+
+### 研究候选合同
+
+- `ResearchClaim` 只能表达由已验证 `EvidenceRecord` 支持的研究断言；冻结证据语义快照、证据 cutoff、
+  生产者身份、PIT、置信度、反证、影响对象与下一步，自由文本没有 universe/ranking/risk/order 权限。
+- `HypothesisCandidate` 冻结单一可归因机制、baseline/treatment 全套 policy 版本、期限、
+  cash/SPY/QQQ/V1 替换对照、成功/失败/kill/promotion 条件、执行约束、novelty 轴和结果 ceiling；
+  不绑定具体证券池，允许同一机制在不同 PIT 股票池上复用而不伪造新假设。
+- `CandidatePool` 表示 `RankedCandidate` 之前的完整证券候选面，只绑定一个 hypothesis；每项保留
+  `admitted/parked/rejected` 及原因，并绑定当时最新 `candidate_eligible` UniverseEvent、security/listing
+  映射和候选证据。完整的零候选池也是合法记录，避免只在有赢家时留痕。
+- 候选池冻结 generator/ranking 规则身份、完整 Evidence/Universe semantic snapshot、run date/session、
+  data cutoff，以及 comparison-only 的 cash/SPY/QQQ/V1 身份；不保存 rank、score、未来收益或结算结果。
+- 跨链为 `SourceContract -> EvidenceRecord -> ResearchClaim -> HypothesisCandidate -> CandidatePool`，
+  并逐层传播 PIT ceiling、future-leakage 与 causal clocks；instrument evidence 必须匹配候选的
+  security/listing，dataclass tamper、hash 重封串线和较旧 eligible 状态都 fail closed。
+- 本单元仅验证调用者提交的冻结 universe event snapshot；全量 membership 的外部完备性仍需后续
+  append-only ledger/manifest 证明。因此 V1 幸存者名单 blocker 仍 open，不能把 schema attestation
+  当成已关闭偏差。
+- 三类合同固定 `outcome_blind=true`、`authority=research_only`、`results_accessed=false`（适用处）和
+  `trade_enabled=false`；不接 daily/replay/runtime/order，不占 alpha experiment ID。
+
+### 基础数据合同
 
 - `quant/v2_contracts.py`：独立于 V1 的不可变 `SourceContract`、`EvidenceRecord`、`UniverseEvent` 与嵌套 `SecurityMappingSnapshot`。
 - 来源合同机器声明原始身份字段、真正参与决策的内容字段、发布时钟字段、修订字段、授权证据、可用性、映射政策、PIT ceiling 与 parity 状态。
@@ -58,5 +81,5 @@
 
 ## 下一步
 
-继续 M1 的下一项：`ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema；
-复用本轮严格时钟、哈希、来源绑定与 default-off 原语，不接运行时，不占 alpha 实验 ID。
+继续 M1 的下一项：`DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema；
+沿用已完成的证据、universe、research/hypothesis/candidate 快照链，不接运行时，不占 alpha 实验 ID。

@@ -14,7 +14,7 @@
 ## M1（下一里程碑）
 
 - [x] `SourceContract`、`EvidenceRecord`、`UniverseEvent` 初始 schema + 校验（2026-08-19 本地）
-- [ ] `ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema
+- [x] `ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema（2026-08-19 本地）
 - [ ] `DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema
 - [ ] append-only 与幂等测试（schema 层）
 - [ ] 时钟合同：交易日归属锚定数据日历 / 冻结 run date，禁止进程壁钟
