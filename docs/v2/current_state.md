@@ -1,17 +1,17 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-20T03:28Z（M1 研究候选合同轮）
+> 最后更新：2026-08-20T17:00Z（M1 决策、订单意图与测量合同轮）
 
 ## 里程碑
 
-**M0 已完成，M1 进行中**。M1 前两个最小工作单元已完成：基础数据合同与
-研究候选合同均已有初始 schema 和 fail-closed 跨记录校验。
+**M0 已完成，M1 进行中**。M1 前三个最小工作单元已完成：基础数据合同、
+研究候选合同，以及决策 / 订单意图 / 结果测量合同均已有初始 schema 和 fail-closed 跨记录校验。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
-| M1 身份、时钟、数据合同 schema | 进行中：基础数据合同和研究候选合同已完成；下一项为决策、订单与结果合同 |
+| M1 身份、时钟、数据合同 schema | 进行中：三组初始合同已完成；下一项为 append-only 与幂等 schema 层测试 |
 | M2 动态 PIT 股票池 | 未开始 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -25,6 +25,26 @@
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
 
 ## M1 已完成单元
+
+### 决策、订单意图与结果测量合同
+
+- `DecisionRecord` 用完整 `DecisionItem` 面板精确覆盖 `CandidatePool` 的每一项；零候选池也必须留下显式完整决定，
+  admitted 项排名连续且唯一，parked/rejected 项不能获得信号、风险或尺寸。方向、XOR 数量/名义金额、policy arm、
+  deterministic engine、决策 context、execution/cost/comparison rule、期限、session、cutoff 与上游 record hash 均在结果前冻结。
+- `OrderIntent` 只能由 selected 且 risk-approved 的决定项产生；方向、证券映射、尺寸、币种、订单类型、价格字段、
+  execution rule、显式 execution session 和有效窗口必须一致。它固定 `submitted=false`、`authority=research_only`、
+  `trade_enabled=false`，不能表达 broker order、fill 或真钱提交；next-session 意图不会被错误绑回信号日 session。
+- `SettledOutcome` 将 decision / intent / candidate-pool record hash、期限、币种、整数资本基数、fill/position 快照、
+  record-bound settlement evidence 与精确 cost/comparison rule 连成不可变测量记录。`settled` 强制 `net = gross - cost`；
+  缺测量必须保留 `unavailable` 行。修订只能追加到同一 stable key，不能复用 record id、回退 settled 状态或改写冻结身份。
+- `ReplacementValue` 每条绑定一个 outcome 和一个冻结 comparator；四行 panel 必须精确覆盖 cash/SPY/QQQ/V1，
+  同资本基数、币种和 comparison rule，且 `replacement = strategy - comparator`。comparator evidence 同时绑定
+  reference id/hash；SPY/QQQ 还需 exact instrument mapping，cash/V1 禁止 instrument evidence，防止跨 comparator 串线。
+- 新后链同时绑定 semantic hash 与 record hash；更改上游 `recorded_at`、跨证券重封、结果回灌、修订降级、
+  事后换 execution/cost/comparison 口径均 fail closed。独立负向复验未发现剩余 P0/P1。
+- 决策 context 与 fill/position 当前仍只是 opaque snapshot，尚无自己的时钟/PIT schema；因此 V1 schema 的
+  `DecisionRecord`、`SettledOutcome` 和 `ReplacementValue` 最高只能是 `research_pit / observed_only`，不能据此声称
+  canonical Gate 或 execution parity。此单元不接 replay、daily、runtime、broker、ledger 或订单，不占 experiment ID。
 
 ### 研究候选合同
 
@@ -70,6 +90,8 @@
 - `reuse_directly` 只允许复用工程原语或不可变历史证据，不等于复用 V1 决策结论。
 - 6 项 V1 bias blocker 全部仍为 open；本轮只提供解除 blocker 所需的合同原语，不代表任何 blocker 已关闭。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
+- M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
+  初始 schema 和 139 项测试不等于 append-only、幂等、runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，V2 候选最高停在 research/shadow。
 - V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
@@ -81,5 +103,5 @@
 
 ## 下一步
 
-继续 M1 的下一项：`DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema；
-沿用已完成的证据、universe、research/hypothesis/candidate 快照链，不接运行时，不占 alpha 实验 ID。
+继续 M1 的下一项：append-only 与幂等 schema 层测试；为 stable key 建立 append / duplicate / conflict / correction
+行为，保持现有完整决策面、修订单调、research ceiling 与 default-off 边界，不接运行时，不占 alpha 实验 ID。

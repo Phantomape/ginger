@@ -2,10 +2,11 @@
 
 The records in this module describe source authority, point-in-time evidence,
 replayable universe state transitions, evidence-backed research claims,
-outcome-blind hypotheses, and frozen security candidate pools.  They
-deliberately perform no file I/O and have no runtime or order-routing
-integration.  Every public validator is fail-closed, every instant requires an
-explicit timezone, and trading is always disabled.
+outcome-blind hypotheses, frozen security candidate pools, deterministic
+research decisions, non-submitted order intents, and immutable measurement
+records.  They deliberately perform no file I/O and have no runtime or
+order-routing integration.  Every public validator is fail-closed, every
+instant requires an explicit timezone, and trading is always disabled.
 """
 
 from __future__ import annotations
@@ -67,6 +68,14 @@ _CANDIDATE_ADMISSION_STATES = frozenset({"admitted", "parked", "rejected"})
 _COMPARATOR_ROLES = frozenset({"cash", "spy", "qqq", "v1"})
 _COMPARATOR_AVAILABILITY = frozenset({"available", "unavailable"})
 _REQUIRED_COMPARATOR_ROLES = frozenset({"cash", "spy", "qqq", "v1"})
+_DECISION_POLICY_ARMS = frozenset({"baseline", "treatment"})
+_SIGNAL_ACTIONS = frozenset({"selected", "not_selected"})
+_RISK_STATUSES = frozenset({"approved", "rejected"})
+_ORDER_SIDES = frozenset({"buy", "sell", "sell_short", "buy_to_cover"})
+_ORDER_TYPES = frozenset({"market", "limit", "stop", "stop_limit"})
+_TIME_IN_FORCE_VALUES = frozenset({"day", "gtc", "ioc", "fok"})
+_OUTCOME_STATUSES = frozenset({"settled", "unavailable"})
+_REPLACEMENT_STATUSES = frozenset({"computed", "unavailable"})
 _ALLOWED_TRANSITIONS = {
     "discovered": frozenset({"research_eligible", "quarantine", "retired"}),
     "research_eligible": frozenset(
@@ -304,6 +313,33 @@ def _bounded_integer(value: Any, *, minimum: int, maximum: int, path: str) -> in
     if value < minimum or value > maximum:
         _fail("integer_out_of_range", path, f"must be between {minimum} and {maximum}")
     return value
+
+
+def _optional_integer(
+    value: Any,
+    *,
+    path: str,
+    minimum: int | None = None,
+    maximum: int | None = None,
+) -> int | None:
+    if value is None:
+        return None
+    if not isinstance(value, int) or isinstance(value, bool):
+        _fail("integer_required", path, "must be an integer or null")
+    if minimum is not None and value < minimum:
+        _fail("integer_out_of_range", path, f"must be at least {minimum}")
+    if maximum is not None and value > maximum:
+        _fail("integer_out_of_range", path, f"must be at most {maximum}")
+    return value
+
+
+def _optional_currency(value: Any, *, path: str) -> str | None:
+    if value is None:
+        return None
+    result = _text(value, path=path).upper()
+    if re.fullmatch(r"[A-Z]{3}", result) is None:
+        _fail("invalid_currency", path, "must be a three-letter uppercase currency")
+    return result
 
 
 def _require_true(value: Any, *, path: str, code: str) -> bool:
@@ -1850,6 +1886,1114 @@ class CandidatePool:
         return canonical_hash(self.to_dict())
 
 
+@dataclass(frozen=True, slots=True)
+class DecisionItem:
+    decision_item_id: str
+    candidate_entry_id: str
+    security_id: str
+    listing_id: str
+    security_mapping_sha256: str
+    rank: int | None
+    signal_action: str | None
+    side: str | None
+    risk_status: str | None
+    approved_quantity_micros: int | None
+    approved_notional_minor: int | None
+    currency: str | None
+    reason_code: str
+    reason: str
+
+    @classmethod
+    def from_dict(
+        cls, value: Mapping[str, Any], *, path: str = "$.items[]"
+    ) -> "DecisionItem":
+        raw = _mapping(value, path=path)
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path=path)
+        rank = _optional_integer(raw["rank"], path=f"{path}.rank", minimum=1)
+        action = (
+            None
+            if raw["signal_action"] is None
+            else _enum(
+                raw["signal_action"],
+                allowed=_SIGNAL_ACTIONS,
+                path=f"{path}.signal_action",
+            )
+        )
+        side = (
+            None
+            if raw["side"] is None
+            else _enum(raw["side"], allowed=_ORDER_SIDES, path=f"{path}.side")
+        )
+        risk = (
+            None
+            if raw["risk_status"] is None
+            else _enum(
+                raw["risk_status"],
+                allowed=_RISK_STATUSES,
+                path=f"{path}.risk_status",
+            )
+        )
+        quantity = _optional_integer(
+            raw["approved_quantity_micros"],
+            path=f"{path}.approved_quantity_micros",
+            minimum=1,
+        )
+        notional = _optional_integer(
+            raw["approved_notional_minor"],
+            path=f"{path}.approved_notional_minor",
+            minimum=1,
+        )
+        currency = _optional_currency(raw["currency"], path=f"{path}.currency")
+        if action == "selected":
+            if side is None:
+                _fail(
+                    "selected_side_required",
+                    f"{path}.side",
+                    "selected items must freeze an order side",
+                )
+            if risk is None:
+                _fail(
+                    "risk_status_required",
+                    f"{path}.risk_status",
+                    "selected items require an explicit approved or rejected risk result",
+                )
+            if risk == "approved":
+                if (quantity is None) == (notional is None):
+                    _fail(
+                        "approved_size_xor_required",
+                        path,
+                        "approved selected items require exactly one of quantity or notional",
+                    )
+                if currency is None:
+                    _fail(
+                        "approved_currency_required",
+                        f"{path}.currency",
+                        "approved selected items require a currency",
+                    )
+            elif quantity is not None or notional is not None or currency is not None:
+                _fail(
+                    "rejected_size_forbidden",
+                    path,
+                    "risk-rejected items cannot carry approved size or currency",
+                )
+        elif (
+            side is not None
+            or risk is not None
+            or quantity is not None
+            or notional is not None
+            or currency is not None
+        ):
+            _fail(
+                "inactive_decision_fields_forbidden",
+                path,
+                "unselected or inactive items cannot carry risk or approved size",
+            )
+        return cls(
+            decision_item_id=_text(
+                raw["decision_item_id"], path=f"{path}.decision_item_id"
+            ),
+            candidate_entry_id=_text(
+                raw["candidate_entry_id"], path=f"{path}.candidate_entry_id"
+            ),
+            security_id=_text(raw["security_id"], path=f"{path}.security_id"),
+            listing_id=_text(raw["listing_id"], path=f"{path}.listing_id"),
+            security_mapping_sha256=_sha256(
+                raw["security_mapping_sha256"],
+                path=f"{path}.security_mapping_sha256",
+            ),
+            rank=rank,
+            signal_action=action,
+            side=side,
+            risk_status=risk,
+            approved_quantity_micros=quantity,
+            approved_notional_minor=notional,
+            currency=currency,
+            reason_code=_text(raw["reason_code"], path=f"{path}.reason_code"),
+            reason=_text(raw["reason"], path=f"{path}.reason"),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+
+@dataclass(frozen=True, slots=True)
+class DecisionRecord:
+    schema_version: int
+    record_type: str
+    decision_id: str
+    candidate_pool_id: str
+    candidate_pool_hash: str
+    candidate_pool_record_hash: str
+    policy_arm: str
+    policy_snapshot: Mapping[str, Any]
+    decision_engine_id: str
+    decision_engine_version: str
+    decision_engine_sha256: str
+    decision_context_id: str
+    decision_context_sha256: str
+    execution_rule_id: str
+    execution_rule_version: str
+    execution_rule_sha256: str
+    cost_rule_id: str
+    cost_rule_version: str
+    cost_rule_sha256: str
+    comparison_rule_id: str
+    comparison_rule_version: str
+    comparison_rule_sha256: str
+    items: tuple[DecisionItem, ...]
+    expected_item_count: int
+    decision_complete: bool
+    run_id: str
+    run_date: str
+    calendar_session_id: str
+    data_cutoff: str
+    expected_horizon: str
+    decided_at: str
+    recorded_at: str
+    input_snapshot_sha256: str
+    pit_tier: str
+    result_ceiling: str
+    known_future_leakage: bool
+    outcome_blind: bool
+    results_accessed: bool
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "DecisionRecord":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        items_raw = raw["items"]
+        if not isinstance(items_raw, Sequence) or isinstance(
+            items_raw, (str, bytes, bytearray)
+        ):
+            _fail("list_required", "$.items", "must be a list")
+        items = tuple(
+            DecisionItem.from_dict(item, path=f"$.items[{index}]")
+            for index, item in enumerate(items_raw)
+        )
+        for values, code, detail in (
+            (
+                [item.decision_item_id for item in items],
+                "duplicate_decision_item_id",
+                "decision item ids must be unique",
+            ),
+            (
+                [item.candidate_entry_id for item in items],
+                "duplicate_candidate_entry_id",
+                "candidate entry ids must be unique",
+            ),
+            (
+                [(item.security_id, item.listing_id) for item in items],
+                "duplicate_decision_security",
+                "security/listing pairs must be unique",
+            ),
+        ):
+            if len(values) != len(set(values)):
+                _fail(code, "$.items", detail)
+        ranks = sorted(item.rank for item in items if item.rank is not None)
+        if ranks != list(range(1, len(ranks) + 1)):
+            _fail(
+                "noncontiguous_decision_ranks",
+                "$.items",
+                "non-null ranks must be unique and contiguous from one",
+            )
+        expected_count = _bounded_integer(
+            raw["expected_item_count"],
+            minimum=0,
+            maximum=10_000_000,
+            path="$.expected_item_count",
+        )
+        if expected_count != len(items):
+            _fail(
+                "decision_item_count_mismatch",
+                "$.expected_item_count",
+                "must equal the number of frozen decision items",
+            )
+        data_cutoff, cutoff_dt = _instant(raw["data_cutoff"], path="$.data_cutoff")
+        decided_at, decided_dt = _instant(raw["decided_at"], path="$.decided_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if not (cutoff_dt <= decided_dt <= recorded_dt):
+            _fail(
+                "invalid_decision_chronology",
+                "$.data_cutoff",
+                "must satisfy data_cutoff <= decided_at <= recorded_at",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        if pit_tier == "canonical_pit":
+            _fail(
+                "decision_context_contract_incomplete",
+                "$.pit_tier",
+                "decisions cannot be canonical until portfolio, cash, and position context PIT contracts exist",
+            )
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        result_ceiling = _text(raw["result_ceiling"], path="$.result_ceiling")
+        expected_ceiling = _RESULT_CEILING_BY_PIT[pit_tier]
+        if result_ceiling != expected_ceiling:
+            _fail(
+                "result_ceiling_mismatch",
+                "$.result_ceiling",
+                f"must equal {expected_ceiling} for {pit_tier}",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_decision_record", path="$.record_type"
+            ),
+            decision_id=_text(raw["decision_id"], path="$.decision_id"),
+            candidate_pool_id=_text(
+                raw["candidate_pool_id"], path="$.candidate_pool_id"
+            ),
+            candidate_pool_hash=_sha256(
+                raw["candidate_pool_hash"], path="$.candidate_pool_hash"
+            ),
+            candidate_pool_record_hash=_sha256(
+                raw["candidate_pool_record_hash"],
+                path="$.candidate_pool_record_hash",
+            ),
+            policy_arm=_enum(
+                raw["policy_arm"], allowed=_DECISION_POLICY_ARMS, path="$.policy_arm"
+            ),
+            policy_snapshot=_policy_snapshot(
+                raw["policy_snapshot"], path="$.policy_snapshot"
+            ),
+            decision_engine_id=_text(
+                raw["decision_engine_id"], path="$.decision_engine_id"
+            ),
+            decision_engine_version=_text(
+                raw["decision_engine_version"], path="$.decision_engine_version"
+            ),
+            decision_engine_sha256=_sha256(
+                raw["decision_engine_sha256"], path="$.decision_engine_sha256"
+            ),
+            decision_context_id=_text(
+                raw["decision_context_id"], path="$.decision_context_id"
+            ),
+            decision_context_sha256=_sha256(
+                raw["decision_context_sha256"], path="$.decision_context_sha256"
+            ),
+            execution_rule_id=_text(
+                raw["execution_rule_id"], path="$.execution_rule_id"
+            ),
+            execution_rule_version=_text(
+                raw["execution_rule_version"], path="$.execution_rule_version"
+            ),
+            execution_rule_sha256=_sha256(
+                raw["execution_rule_sha256"], path="$.execution_rule_sha256"
+            ),
+            cost_rule_id=_text(raw["cost_rule_id"], path="$.cost_rule_id"),
+            cost_rule_version=_text(
+                raw["cost_rule_version"], path="$.cost_rule_version"
+            ),
+            cost_rule_sha256=_sha256(
+                raw["cost_rule_sha256"], path="$.cost_rule_sha256"
+            ),
+            comparison_rule_id=_text(
+                raw["comparison_rule_id"], path="$.comparison_rule_id"
+            ),
+            comparison_rule_version=_text(
+                raw["comparison_rule_version"], path="$.comparison_rule_version"
+            ),
+            comparison_rule_sha256=_sha256(
+                raw["comparison_rule_sha256"], path="$.comparison_rule_sha256"
+            ),
+            items=tuple(sorted(items, key=lambda item: item.candidate_entry_id)),
+            expected_item_count=expected_count,
+            decision_complete=_require_true(
+                raw["decision_complete"],
+                path="$.decision_complete",
+                code="decision_incomplete",
+            ),
+            run_id=_text(raw["run_id"], path="$.run_id"),
+            run_date=_calendar_date(raw["run_date"], path="$.run_date"),
+            calendar_session_id=_text(
+                raw["calendar_session_id"], path="$.calendar_session_id"
+            ),
+            data_cutoff=data_cutoff,
+            expected_horizon=_text(
+                raw["expected_horizon"], path="$.expected_horizon"
+            ),
+            decided_at=decided_at,
+            recorded_at=recorded_at,
+            input_snapshot_sha256=_sha256(
+                raw["input_snapshot_sha256"], path="$.input_snapshot_sha256"
+            ),
+            pit_tier=pit_tier,
+            result_ceiling=result_ceiling,
+            known_future_leakage=leakage,
+            outcome_blind=_require_true(
+                raw["outcome_blind"],
+                path="$.outcome_blind",
+                code="outcome_blind_required",
+            ),
+            results_accessed=_require_false(
+                raw["results_accessed"],
+                path="$.results_accessed",
+                code="results_accessed_forbidden",
+            ),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        if obj.cost_rule_version != obj.policy_snapshot["cost_policy_version"]:
+            _fail(
+                "cost_rule_version_mismatch",
+                "$.cost_rule_version",
+                "must equal policy_snapshot.cost_policy_version",
+            )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for field in self.__dataclass_fields__:
+            value = getattr(self, field)
+            result[field] = (
+                [item.to_dict() for item in value]
+                if field == "items"
+                else _plain(value)
+            )
+        return result
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+@dataclass(frozen=True, slots=True)
+class OrderIntent:
+    schema_version: int
+    record_type: str
+    order_intent_id: str
+    decision_id: str
+    decision_hash: str
+    decision_record_hash: str
+    decision_item_id: str
+    candidate_entry_id: str
+    security_id: str
+    listing_id: str
+    security_mapping_sha256: str
+    side: str
+    quantity_micros: int | None
+    notional_minor: int | None
+    currency: str
+    order_type: str
+    limit_price_minor: int | None
+    stop_price_minor: int | None
+    time_in_force: str
+    not_before: str
+    expires_at: str
+    calendar_session_id: str
+    execution_rule_id: str
+    execution_rule_version: str
+    execution_rule_sha256: str
+    created_at: str
+    recorded_at: str
+    input_snapshot_sha256: str
+    submitted: bool
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "OrderIntent":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        quantity = _optional_integer(
+            raw["quantity_micros"], path="$.quantity_micros", minimum=1
+        )
+        notional = _optional_integer(
+            raw["notional_minor"], path="$.notional_minor", minimum=1
+        )
+        if (quantity is None) == (notional is None):
+            _fail(
+                "order_size_xor_required",
+                "$.quantity_micros",
+                "exactly one of quantity or notional must be provided",
+            )
+        order_type = _enum(
+            raw["order_type"], allowed=_ORDER_TYPES, path="$.order_type"
+        )
+        limit_price = _optional_integer(
+            raw["limit_price_minor"], path="$.limit_price_minor", minimum=1
+        )
+        stop_price = _optional_integer(
+            raw["stop_price_minor"], path="$.stop_price_minor", minimum=1
+        )
+        expected_price_fields = {
+            "market": (False, False),
+            "limit": (True, False),
+            "stop": (False, True),
+            "stop_limit": (True, True),
+        }[order_type]
+        actual_price_fields = (limit_price is not None, stop_price is not None)
+        if actual_price_fields != expected_price_fields:
+            _fail(
+                "order_price_fields_mismatch",
+                "$.order_type",
+                "limit and stop prices must exactly match the order type",
+            )
+        created_at, created_dt = _instant(raw["created_at"], path="$.created_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        not_before, not_before_dt = _instant(raw["not_before"], path="$.not_before")
+        expires_at, expires_dt = _instant(raw["expires_at"], path="$.expires_at")
+        if not (created_dt <= recorded_dt <= not_before_dt < expires_dt):
+            _fail(
+                "invalid_order_intent_chronology",
+                "$.created_at",
+                "must satisfy created_at <= recorded_at <= not_before < expires_at",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_order_intent", path="$.record_type"
+            ),
+            order_intent_id=_text(raw["order_intent_id"], path="$.order_intent_id"),
+            decision_id=_text(raw["decision_id"], path="$.decision_id"),
+            decision_hash=_sha256(raw["decision_hash"], path="$.decision_hash"),
+            decision_record_hash=_sha256(
+                raw["decision_record_hash"], path="$.decision_record_hash"
+            ),
+            decision_item_id=_text(
+                raw["decision_item_id"], path="$.decision_item_id"
+            ),
+            candidate_entry_id=_text(
+                raw["candidate_entry_id"], path="$.candidate_entry_id"
+            ),
+            security_id=_text(raw["security_id"], path="$.security_id"),
+            listing_id=_text(raw["listing_id"], path="$.listing_id"),
+            security_mapping_sha256=_sha256(
+                raw["security_mapping_sha256"], path="$.security_mapping_sha256"
+            ),
+            side=_enum(raw["side"], allowed=_ORDER_SIDES, path="$.side"),
+            quantity_micros=quantity,
+            notional_minor=notional,
+            currency=_optional_currency(raw["currency"], path="$.currency") or "",
+            order_type=order_type,
+            limit_price_minor=limit_price,
+            stop_price_minor=stop_price,
+            time_in_force=_enum(
+                raw["time_in_force"],
+                allowed=_TIME_IN_FORCE_VALUES,
+                path="$.time_in_force",
+            ),
+            not_before=not_before,
+            expires_at=expires_at,
+            calendar_session_id=_text(
+                raw["calendar_session_id"], path="$.calendar_session_id"
+            ),
+            execution_rule_id=_text(
+                raw["execution_rule_id"], path="$.execution_rule_id"
+            ),
+            execution_rule_version=_text(
+                raw["execution_rule_version"], path="$.execution_rule_version"
+            ),
+            execution_rule_sha256=_sha256(
+                raw["execution_rule_sha256"], path="$.execution_rule_sha256"
+            ),
+            created_at=created_at,
+            recorded_at=recorded_at,
+            input_snapshot_sha256=_sha256(
+                raw["input_snapshot_sha256"], path="$.input_snapshot_sha256"
+            ),
+            submitted=_require_false(
+                raw["submitted"], path="$.submitted", code="submitted_order_forbidden"
+            ),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        if not obj.currency:
+            _fail("currency_required", "$.currency", "must be a three-letter currency")
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+def _revision_identity(
+    *,
+    revision_number: Any,
+    previous_id: Any,
+    previous_hash: Any,
+    path: str,
+) -> tuple[int, str | None, str | None]:
+    revision = _bounded_integer(
+        revision_number,
+        minimum=1,
+        maximum=1_000_000_000,
+        path=f"{path}.revision_number",
+    )
+    prior_id = _optional_text(previous_id, path=f"{path}.previous_id")
+    prior_hash = _optional_sha256(previous_hash, path=f"{path}.previous_hash")
+    if revision == 1 and (prior_id is not None or prior_hash is not None):
+        _fail(
+            "initial_revision_previous_forbidden",
+            path,
+            "the first revision cannot reference a previous record",
+        )
+    if revision > 1 and (prior_id is None or prior_hash is None):
+        _fail(
+            "previous_revision_required",
+            path,
+            "later revisions require both previous id and previous record hash",
+        )
+    return revision, prior_id, prior_hash
+
+
+@dataclass(frozen=True, slots=True)
+class SettledOutcome:
+    schema_version: int
+    record_type: str
+    outcome_id: str
+    stable_key: str
+    revision_number: int
+    previous_outcome_id: str | None
+    previous_outcome_record_hash: str | None
+    decision_id: str
+    decision_hash: str
+    decision_record_hash: str
+    order_intent_id: str
+    order_intent_hash: str
+    order_intent_record_hash: str
+    candidate_pool_id: str
+    candidate_pool_hash: str
+    candidate_pool_record_hash: str
+    fill_snapshot_id: str
+    fill_snapshot_sha256: str
+    position_snapshot_id: str
+    position_snapshot_sha256: str
+    settlement_evidence_record_ids: tuple[str, ...]
+    settlement_evidence_snapshot_sha256: str
+    horizon: str
+    entry_session_id: str
+    entry_at: str
+    exit_session_id: str
+    exit_at: str
+    settled_at: str
+    recorded_at: str
+    status: str
+    reason_code: str
+    reason: str
+    basis_notional_minor: int | None
+    currency: str | None
+    gross_pnl_minor: int | None
+    cost_minor: int | None
+    net_pnl_minor: int | None
+    cost_rule_id: str
+    cost_rule_version: str
+    cost_rule_sha256: str
+    comparison_rule_id: str
+    comparison_rule_version: str
+    comparison_rule_sha256: str
+    input_snapshot_sha256: str
+    pit_tier: str
+    result_ceiling: str
+    known_future_leakage: bool
+    measurement_only: bool
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "SettledOutcome":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        revision, previous_id, previous_hash = _revision_identity(
+            revision_number=raw["revision_number"],
+            previous_id=raw["previous_outcome_id"],
+            previous_hash=raw["previous_outcome_record_hash"],
+            path="$",
+        )
+        evidence_ids = _string_tuple(
+            raw["settlement_evidence_record_ids"],
+            path="$.settlement_evidence_record_ids",
+            allow_empty=True,
+        )
+        entry_at, entry_dt = _instant(raw["entry_at"], path="$.entry_at")
+        exit_at, exit_dt = _instant(raw["exit_at"], path="$.exit_at")
+        settled_at, settled_dt = _instant(raw["settled_at"], path="$.settled_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if not (entry_dt <= exit_dt <= settled_dt <= recorded_dt):
+            _fail(
+                "invalid_outcome_chronology",
+                "$.entry_at",
+                "must satisfy entry_at <= exit_at <= settled_at <= recorded_at",
+            )
+        status = _enum(raw["status"], allowed=_OUTCOME_STATUSES, path="$.status")
+        basis_notional = _optional_integer(
+            raw["basis_notional_minor"],
+            path="$.basis_notional_minor",
+            minimum=1,
+        )
+        currency = _optional_currency(raw["currency"], path="$.currency")
+        gross = _optional_integer(raw["gross_pnl_minor"], path="$.gross_pnl_minor")
+        cost = _optional_integer(raw["cost_minor"], path="$.cost_minor", minimum=0)
+        net = _optional_integer(raw["net_pnl_minor"], path="$.net_pnl_minor")
+        measurement_values = (basis_notional, currency, gross, cost, net)
+        if status == "settled":
+            if not evidence_ids:
+                _fail(
+                    "settled_evidence_required",
+                    "$.settlement_evidence_record_ids",
+                    "settled outcomes require settlement evidence",
+                )
+            if any(item is None for item in measurement_values):
+                _fail(
+                    "settled_values_required",
+                    "$.status",
+                    "settled outcomes require basis notional, currency, gross, cost, and net",
+                )
+            assert gross is not None and cost is not None and net is not None
+            if net != gross - cost:
+                _fail(
+                    "net_pnl_mismatch",
+                    "$.net_pnl_minor",
+                    "must equal gross_pnl_minor - cost_minor",
+                )
+        elif any(item is not None for item in measurement_values):
+            _fail(
+                "unavailable_values_forbidden",
+                "$.status",
+                "unavailable outcomes must keep all measurement values null",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        if pit_tier == "canonical_pit":
+            _fail(
+                "execution_snapshot_contract_incomplete",
+                "$.pit_tier",
+                "settled outcomes cannot be canonical until Fill/Reject and PositionState PIT contracts exist",
+            )
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        result_ceiling = _text(raw["result_ceiling"], path="$.result_ceiling")
+        expected_ceiling = _RESULT_CEILING_BY_PIT[pit_tier]
+        if result_ceiling != expected_ceiling:
+            _fail(
+                "result_ceiling_mismatch",
+                "$.result_ceiling",
+                f"must equal {expected_ceiling} for {pit_tier}",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_settled_outcome", path="$.record_type"
+            ),
+            outcome_id=_text(raw["outcome_id"], path="$.outcome_id"),
+            stable_key=_sha256(raw["stable_key"], path="$.stable_key"),
+            revision_number=revision,
+            previous_outcome_id=previous_id,
+            previous_outcome_record_hash=previous_hash,
+            decision_id=_text(raw["decision_id"], path="$.decision_id"),
+            decision_hash=_sha256(raw["decision_hash"], path="$.decision_hash"),
+            decision_record_hash=_sha256(
+                raw["decision_record_hash"], path="$.decision_record_hash"
+            ),
+            order_intent_id=_text(raw["order_intent_id"], path="$.order_intent_id"),
+            order_intent_hash=_sha256(
+                raw["order_intent_hash"], path="$.order_intent_hash"
+            ),
+            order_intent_record_hash=_sha256(
+                raw["order_intent_record_hash"],
+                path="$.order_intent_record_hash",
+            ),
+            candidate_pool_id=_text(
+                raw["candidate_pool_id"], path="$.candidate_pool_id"
+            ),
+            candidate_pool_hash=_sha256(
+                raw["candidate_pool_hash"], path="$.candidate_pool_hash"
+            ),
+            candidate_pool_record_hash=_sha256(
+                raw["candidate_pool_record_hash"],
+                path="$.candidate_pool_record_hash",
+            ),
+            fill_snapshot_id=_text(
+                raw["fill_snapshot_id"], path="$.fill_snapshot_id"
+            ),
+            fill_snapshot_sha256=_sha256(
+                raw["fill_snapshot_sha256"], path="$.fill_snapshot_sha256"
+            ),
+            position_snapshot_id=_text(
+                raw["position_snapshot_id"], path="$.position_snapshot_id"
+            ),
+            position_snapshot_sha256=_sha256(
+                raw["position_snapshot_sha256"], path="$.position_snapshot_sha256"
+            ),
+            settlement_evidence_record_ids=evidence_ids,
+            settlement_evidence_snapshot_sha256=_sha256(
+                raw["settlement_evidence_snapshot_sha256"],
+                path="$.settlement_evidence_snapshot_sha256",
+            ),
+            horizon=_text(raw["horizon"], path="$.horizon"),
+            entry_session_id=_text(
+                raw["entry_session_id"], path="$.entry_session_id"
+            ),
+            entry_at=entry_at,
+            exit_session_id=_text(raw["exit_session_id"], path="$.exit_session_id"),
+            exit_at=exit_at,
+            settled_at=settled_at,
+            recorded_at=recorded_at,
+            status=status,
+            reason_code=_text(raw["reason_code"], path="$.reason_code"),
+            reason=_text(raw["reason"], path="$.reason"),
+            basis_notional_minor=basis_notional,
+            currency=currency,
+            gross_pnl_minor=gross,
+            cost_minor=cost,
+            net_pnl_minor=net,
+            cost_rule_id=_text(raw["cost_rule_id"], path="$.cost_rule_id"),
+            cost_rule_version=_text(
+                raw["cost_rule_version"], path="$.cost_rule_version"
+            ),
+            cost_rule_sha256=_sha256(
+                raw["cost_rule_sha256"], path="$.cost_rule_sha256"
+            ),
+            comparison_rule_id=_text(
+                raw["comparison_rule_id"], path="$.comparison_rule_id"
+            ),
+            comparison_rule_version=_text(
+                raw["comparison_rule_version"], path="$.comparison_rule_version"
+            ),
+            comparison_rule_sha256=_sha256(
+                raw["comparison_rule_sha256"], path="$.comparison_rule_sha256"
+            ),
+            input_snapshot_sha256=_sha256(
+                raw["input_snapshot_sha256"], path="$.input_snapshot_sha256"
+            ),
+            pit_tier=pit_tier,
+            result_ceiling=result_ceiling,
+            known_future_leakage=leakage,
+            measurement_only=_require_true(
+                raw["measurement_only"],
+                path="$.measurement_only",
+                code="measurement_only_required",
+            ),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+@dataclass(frozen=True, slots=True)
+class ReplacementValue:
+    schema_version: int
+    record_type: str
+    replacement_value_id: str
+    stable_key: str
+    revision_number: int
+    previous_replacement_value_id: str | None
+    previous_replacement_value_record_hash: str | None
+    settled_outcome_id: str
+    settled_outcome_hash: str
+    settled_outcome_record_hash: str
+    candidate_pool_id: str
+    candidate_pool_hash: str
+    candidate_pool_record_hash: str
+    comparator_role: str
+    comparator_reference_id: str
+    comparator_reference_snapshot_sha256: str
+    comparator_evidence_record_ids: tuple[str, ...]
+    comparator_evidence_snapshot_sha256: str
+    comparison_rule_id: str
+    comparison_rule_version: str
+    comparison_rule_sha256: str
+    status: str
+    reason_code: str
+    reason: str
+    basis_notional_minor: int | None
+    currency: str | None
+    strategy_value_minor: int | None
+    comparator_value_minor: int | None
+    replacement_value_minor: int | None
+    settled_at: str
+    recorded_at: str
+    input_snapshot_sha256: str
+    pit_tier: str
+    result_ceiling: str
+    known_future_leakage: bool
+    measurement_only: bool
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "ReplacementValue":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        revision, previous_id, previous_hash = _revision_identity(
+            revision_number=raw["revision_number"],
+            previous_id=raw["previous_replacement_value_id"],
+            previous_hash=raw["previous_replacement_value_record_hash"],
+            path="$",
+        )
+        evidence_ids = _string_tuple(
+            raw["comparator_evidence_record_ids"],
+            path="$.comparator_evidence_record_ids",
+            allow_empty=True,
+        )
+        settled_at, settled_dt = _instant(raw["settled_at"], path="$.settled_at")
+        recorded_at, recorded_dt = _instant(raw["recorded_at"], path="$.recorded_at")
+        if settled_dt > recorded_dt:
+            _fail(
+                "invalid_replacement_chronology",
+                "$.settled_at",
+                "settled_at must not follow recorded_at",
+            )
+        status = _enum(
+            raw["status"], allowed=_REPLACEMENT_STATUSES, path="$.status"
+        )
+        basis_notional = _optional_integer(
+            raw["basis_notional_minor"],
+            path="$.basis_notional_minor",
+            minimum=1,
+        )
+        currency = _optional_currency(raw["currency"], path="$.currency")
+        strategy = _optional_integer(
+            raw["strategy_value_minor"], path="$.strategy_value_minor"
+        )
+        comparator = _optional_integer(
+            raw["comparator_value_minor"], path="$.comparator_value_minor"
+        )
+        replacement = _optional_integer(
+            raw["replacement_value_minor"], path="$.replacement_value_minor"
+        )
+        measurement_values = (
+            basis_notional,
+            currency,
+            strategy,
+            comparator,
+            replacement,
+        )
+        if status == "computed":
+            if not evidence_ids:
+                _fail(
+                    "computed_evidence_required",
+                    "$.comparator_evidence_record_ids",
+                    "computed replacement rows require comparator evidence",
+                )
+            if any(item is None for item in measurement_values):
+                _fail(
+                    "computed_values_required",
+                    "$.status",
+                    "computed replacement rows require all measurement values",
+                )
+            assert strategy is not None and comparator is not None and replacement is not None
+            if replacement != strategy - comparator:
+                _fail(
+                    "replacement_value_mismatch",
+                    "$.replacement_value_minor",
+                    "must equal strategy_value_minor - comparator_value_minor",
+                )
+        elif any(item is not None for item in measurement_values):
+            _fail(
+                "unavailable_values_forbidden",
+                "$.status",
+                "unavailable replacement rows must keep measurement values null",
+            )
+        pit_tier = _enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier")
+        leakage = _boolean(raw["known_future_leakage"], path="$.known_future_leakage")
+        if pit_tier != "not_pit" and leakage:
+            _fail(
+                "future_leakage_requires_not_pit",
+                "$.known_future_leakage",
+                "known future leakage is only valid with not_pit",
+            )
+        result_ceiling = _text(raw["result_ceiling"], path="$.result_ceiling")
+        expected_ceiling = _RESULT_CEILING_BY_PIT[pit_tier]
+        if result_ceiling != expected_ceiling:
+            _fail(
+                "result_ceiling_mismatch",
+                "$.result_ceiling",
+                f"must equal {expected_ceiling} for {pit_tier}",
+            )
+        obj = cls(
+            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            record_type=_record_type(
+                raw["record_type"], expected="v2_replacement_value", path="$.record_type"
+            ),
+            replacement_value_id=_text(
+                raw["replacement_value_id"], path="$.replacement_value_id"
+            ),
+            stable_key=_sha256(raw["stable_key"], path="$.stable_key"),
+            revision_number=revision,
+            previous_replacement_value_id=previous_id,
+            previous_replacement_value_record_hash=previous_hash,
+            settled_outcome_id=_text(
+                raw["settled_outcome_id"], path="$.settled_outcome_id"
+            ),
+            settled_outcome_hash=_sha256(
+                raw["settled_outcome_hash"], path="$.settled_outcome_hash"
+            ),
+            settled_outcome_record_hash=_sha256(
+                raw["settled_outcome_record_hash"],
+                path="$.settled_outcome_record_hash",
+            ),
+            candidate_pool_id=_text(
+                raw["candidate_pool_id"], path="$.candidate_pool_id"
+            ),
+            candidate_pool_hash=_sha256(
+                raw["candidate_pool_hash"], path="$.candidate_pool_hash"
+            ),
+            candidate_pool_record_hash=_sha256(
+                raw["candidate_pool_record_hash"],
+                path="$.candidate_pool_record_hash",
+            ),
+            comparator_role=_enum(
+                raw["comparator_role"],
+                allowed=_COMPARATOR_ROLES,
+                path="$.comparator_role",
+            ),
+            comparator_reference_id=_text(
+                raw["comparator_reference_id"], path="$.comparator_reference_id"
+            ),
+            comparator_reference_snapshot_sha256=_sha256(
+                raw["comparator_reference_snapshot_sha256"],
+                path="$.comparator_reference_snapshot_sha256",
+            ),
+            comparator_evidence_record_ids=evidence_ids,
+            comparator_evidence_snapshot_sha256=_sha256(
+                raw["comparator_evidence_snapshot_sha256"],
+                path="$.comparator_evidence_snapshot_sha256",
+            ),
+            comparison_rule_id=_text(
+                raw["comparison_rule_id"], path="$.comparison_rule_id"
+            ),
+            comparison_rule_version=_text(
+                raw["comparison_rule_version"], path="$.comparison_rule_version"
+            ),
+            comparison_rule_sha256=_sha256(
+                raw["comparison_rule_sha256"], path="$.comparison_rule_sha256"
+            ),
+            status=status,
+            reason_code=_text(raw["reason_code"], path="$.reason_code"),
+            reason=_text(raw["reason"], path="$.reason"),
+            basis_notional_minor=basis_notional,
+            currency=currency,
+            strategy_value_minor=strategy,
+            comparator_value_minor=comparator,
+            replacement_value_minor=replacement,
+            settled_at=settled_at,
+            recorded_at=recorded_at,
+            input_snapshot_sha256=_sha256(
+                raw["input_snapshot_sha256"], path="$.input_snapshot_sha256"
+            ),
+            pit_tier=pit_tier,
+            result_ceiling=result_ceiling,
+            known_future_leakage=leakage,
+            measurement_only=_require_true(
+                raw["measurement_only"],
+                path="$.measurement_only",
+                code="measurement_only_required",
+            ),
+            trade_enabled=_require_default_off(raw["trade_enabled"], path="$.trade_enabled"),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field: _plain(getattr(self, field)) for field in self.__dataclass_fields__}
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
 def validate_source_contract(value: Mapping[str, Any] | SourceContract) -> SourceContract:
     return SourceContract.from_dict(value.to_dict() if isinstance(value, SourceContract) else value)
 
@@ -2045,24 +3189,91 @@ def normalize_candidate_pool(
     return validate_candidate_pool(value).to_dict()
 
 
-def research_evidence_snapshot_hash(
+def validate_decision_record(
+    value: Mapping[str, Any] | DecisionRecord,
+) -> DecisionRecord:
+    return DecisionRecord.from_dict(
+        value.to_dict() if isinstance(value, DecisionRecord) else value
+    )
+
+
+def normalize_decision_record(
+    value: Mapping[str, Any] | DecisionRecord,
+) -> dict[str, Any]:
+    return validate_decision_record(value).to_dict()
+
+
+def validate_order_intent(
+    value: Mapping[str, Any] | OrderIntent,
+) -> OrderIntent:
+    return OrderIntent.from_dict(
+        value.to_dict() if isinstance(value, OrderIntent) else value
+    )
+
+
+def normalize_order_intent(
+    value: Mapping[str, Any] | OrderIntent,
+) -> dict[str, Any]:
+    return validate_order_intent(value).to_dict()
+
+
+def validate_settled_outcome(
+    value: Mapping[str, Any] | SettledOutcome,
+) -> SettledOutcome:
+    return SettledOutcome.from_dict(
+        value.to_dict() if isinstance(value, SettledOutcome) else value
+    )
+
+
+def normalize_settled_outcome(
+    value: Mapping[str, Any] | SettledOutcome,
+) -> dict[str, Any]:
+    return validate_settled_outcome(value).to_dict()
+
+
+def validate_replacement_value(
+    value: Mapping[str, Any] | ReplacementValue,
+) -> ReplacementValue:
+    return ReplacementValue.from_dict(
+        value.to_dict() if isinstance(value, ReplacementValue) else value
+    )
+
+
+def normalize_replacement_value(
+    value: Mapping[str, Any] | ReplacementValue,
+) -> dict[str, Any]:
+    return validate_replacement_value(value).to_dict()
+
+
+def _evidence_snapshot_hash(
     evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    *,
+    path: str,
+    allow_empty: bool,
 ) -> str:
     records = [validate_evidence_record(record) for record in evidence_records]
     ids = [record.evidence_id for record in records]
-    if not records:
+    if not records and not allow_empty:
         _fail(
             "nonempty_list_required",
-            "$.evidence_records",
+            path,
             "must contain at least one evidence record",
         )
     if len(ids) != len(set(ids)):
-        _fail("duplicate_evidence_id", "$.evidence_records", "evidence ids must be unique")
+        _fail("duplicate_evidence_id", path, "evidence ids must be unique")
     return canonical_hash(
         [
             {"evidence_id": record.evidence_id, "semantic_hash": record.semantic_hash}
             for record in sorted(records, key=lambda item: item.evidence_id)
         ]
+    )
+
+
+def research_evidence_snapshot_hash(
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+) -> str:
+    return _evidence_snapshot_hash(
+        evidence_records, path="$.evidence_records", allow_empty=False
     )
 
 
@@ -2209,6 +3420,384 @@ def candidate_pool_input_snapshot_hash(
                 calendar_session_id, path="$.calendar_session_id"
             ),
             "data_cutoff": _instant(data_cutoff, path="$.data_cutoff")[0],
+        }
+    )
+
+
+def decision_input_snapshot_hash(
+    *,
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    policy_arm: str,
+    policy_snapshot: Mapping[str, Any],
+    decision_engine_id: str,
+    decision_engine_version: str,
+    decision_engine_sha256: str,
+    decision_context_id: str,
+    decision_context_sha256: str,
+    execution_rule_id: str,
+    execution_rule_version: str,
+    execution_rule_sha256: str,
+    cost_rule_id: str,
+    cost_rule_version: str,
+    cost_rule_sha256: str,
+    comparison_rule_id: str,
+    comparison_rule_version: str,
+    comparison_rule_sha256: str,
+    items: Sequence[Mapping[str, Any] | DecisionItem],
+    run_id: str,
+    run_date: str,
+    calendar_session_id: str,
+    data_cutoff: str,
+    expected_horizon: str,
+) -> str:
+    pool = validate_candidate_pool(candidate_pool)
+    normalized_items = [
+        DecisionItem.from_dict(
+            item.to_dict() if isinstance(item, DecisionItem) else item,
+            path="$.items[]",
+        )
+        for item in items
+    ]
+    item_ids = [item.decision_item_id for item in normalized_items]
+    if len(item_ids) != len(set(item_ids)):
+        _fail("duplicate_decision_item_id", "$.items", "decision item ids must be unique")
+    return canonical_hash(
+        {
+            "candidate_pool": {
+                "candidate_pool_id": pool.candidate_pool_id,
+                "semantic_hash": pool.semantic_hash,
+                "record_hash": pool.record_hash,
+            },
+            "policy_arm": _enum(
+                policy_arm, allowed=_DECISION_POLICY_ARMS, path="$.policy_arm"
+            ),
+            "policy_snapshot": _plain(
+                _policy_snapshot(policy_snapshot, path="$.policy_snapshot")
+            ),
+            "decision_engine": {
+                "id": _text(decision_engine_id, path="$.decision_engine_id"),
+                "version": _text(
+                    decision_engine_version, path="$.decision_engine_version"
+                ),
+                "sha256": _sha256(
+                    decision_engine_sha256, path="$.decision_engine_sha256"
+                ),
+            },
+            "decision_context": {
+                "id": _text(decision_context_id, path="$.decision_context_id"),
+                "sha256": _sha256(
+                    decision_context_sha256, path="$.decision_context_sha256"
+                ),
+            },
+            "execution_rule": {
+                "id": _text(execution_rule_id, path="$.execution_rule_id"),
+                "version": _text(
+                    execution_rule_version, path="$.execution_rule_version"
+                ),
+                "sha256": _sha256(
+                    execution_rule_sha256, path="$.execution_rule_sha256"
+                ),
+            },
+            "cost_rule": {
+                "id": _text(cost_rule_id, path="$.cost_rule_id"),
+                "version": _text(cost_rule_version, path="$.cost_rule_version"),
+                "sha256": _sha256(cost_rule_sha256, path="$.cost_rule_sha256"),
+            },
+            "comparison_rule": {
+                "id": _text(comparison_rule_id, path="$.comparison_rule_id"),
+                "version": _text(
+                    comparison_rule_version, path="$.comparison_rule_version"
+                ),
+                "sha256": _sha256(
+                    comparison_rule_sha256, path="$.comparison_rule_sha256"
+                ),
+            },
+            "items": [
+                item.to_dict()
+                for item in sorted(
+                    normalized_items, key=lambda item: item.candidate_entry_id
+                )
+            ],
+            "run_id": _text(run_id, path="$.run_id"),
+            "run_date": _calendar_date(run_date, path="$.run_date"),
+            "calendar_session_id": _text(
+                calendar_session_id, path="$.calendar_session_id"
+            ),
+            "data_cutoff": _instant(data_cutoff, path="$.data_cutoff")[0],
+            "expected_horizon": _text(
+                expected_horizon, path="$.expected_horizon"
+            ),
+        }
+    )
+
+
+def order_intent_input_snapshot_hash(
+    *,
+    decision_record: Mapping[str, Any] | DecisionRecord,
+    decision_item_id: str,
+    side: str,
+    quantity_micros: int | None,
+    notional_minor: int | None,
+    currency: str,
+    order_type: str,
+    limit_price_minor: int | None,
+    stop_price_minor: int | None,
+    time_in_force: str,
+    not_before: str,
+    expires_at: str,
+    calendar_session_id: str,
+    execution_rule_id: str,
+    execution_rule_version: str,
+    execution_rule_sha256: str,
+    created_at: str,
+) -> str:
+    decision = validate_decision_record(decision_record)
+    quantity = _optional_integer(
+        quantity_micros, path="$.quantity_micros", minimum=1
+    )
+    notional = _optional_integer(
+        notional_minor, path="$.notional_minor", minimum=1
+    )
+    if (quantity is None) == (notional is None):
+        _fail(
+            "order_size_xor_required",
+            "$.quantity_micros",
+            "exactly one of quantity or notional is required",
+        )
+    normalized_order_type = _enum(
+        order_type, allowed=_ORDER_TYPES, path="$.order_type"
+    )
+    limit_price = _optional_integer(
+        limit_price_minor, path="$.limit_price_minor", minimum=1
+    )
+    stop_price = _optional_integer(
+        stop_price_minor, path="$.stop_price_minor", minimum=1
+    )
+    required_prices = {
+        "market": (False, False),
+        "limit": (True, False),
+        "stop": (False, True),
+        "stop_limit": (True, True),
+    }[normalized_order_type]
+    if (limit_price is not None, stop_price is not None) != required_prices:
+        _fail(
+            "order_price_fields_mismatch",
+            "$.order_type",
+            "limit and stop prices must exactly match the order type",
+        )
+    return canonical_hash(
+        {
+            "decision": {
+                "decision_id": decision.decision_id,
+                "semantic_hash": decision.semantic_hash,
+                "record_hash": decision.record_hash,
+            },
+            "decision_item_id": _text(decision_item_id, path="$.decision_item_id"),
+            "side": _enum(side, allowed=_ORDER_SIDES, path="$.side"),
+            "quantity_micros": quantity,
+            "notional_minor": notional,
+            "currency": _optional_currency(currency, path="$.currency"),
+            "order_type": normalized_order_type,
+            "limit_price_minor": limit_price,
+            "stop_price_minor": stop_price,
+            "time_in_force": _enum(
+                time_in_force,
+                allowed=_TIME_IN_FORCE_VALUES,
+                path="$.time_in_force",
+            ),
+            "not_before": _instant(not_before, path="$.not_before")[0],
+            "expires_at": _instant(expires_at, path="$.expires_at")[0],
+            "calendar_session_id": _text(
+                calendar_session_id, path="$.calendar_session_id"
+            ),
+            "execution_rule": {
+                "id": _text(execution_rule_id, path="$.execution_rule_id"),
+                "version": _text(
+                    execution_rule_version, path="$.execution_rule_version"
+                ),
+                "sha256": _sha256(
+                    execution_rule_sha256, path="$.execution_rule_sha256"
+                ),
+            },
+            "created_at": _instant(created_at, path="$.created_at")[0],
+        }
+    )
+
+
+def settlement_evidence_snapshot_hash(
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+) -> str:
+    records = [validate_evidence_record(record) for record in evidence_records]
+    ids = [record.evidence_id for record in records]
+    if len(ids) != len(set(ids)):
+        _fail(
+            "duplicate_evidence_id",
+            "$.settlement_evidence_records",
+            "evidence ids must be unique",
+        )
+    return canonical_hash(
+        [
+            {
+                "evidence_id": record.evidence_id,
+                "semantic_hash": record.semantic_hash,
+                "record_hash": record.record_hash,
+            }
+            for record in sorted(records, key=lambda item: item.evidence_id)
+        ]
+    )
+
+
+def settled_outcome_stable_key(*, order_intent_id: str, horizon: str) -> str:
+    return canonical_hash(
+        {
+            "order_intent_id": _text(
+                order_intent_id, path="$.order_intent_id"
+            ),
+            "horizon": _text(horizon, path="$.horizon"),
+        }
+    )
+
+
+def settled_outcome_input_snapshot_hash(
+    *,
+    decision_record: Mapping[str, Any] | DecisionRecord,
+    order_intent: Mapping[str, Any] | OrderIntent,
+    settlement_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    fill_snapshot_id: str,
+    fill_snapshot_sha256: str,
+    position_snapshot_id: str,
+    position_snapshot_sha256: str,
+    horizon: str,
+    entry_session_id: str,
+    entry_at: str,
+    exit_session_id: str,
+    exit_at: str,
+    cost_rule_id: str,
+    cost_rule_version: str,
+    cost_rule_sha256: str,
+    comparison_rule_id: str,
+    comparison_rule_version: str,
+    comparison_rule_sha256: str,
+) -> str:
+    decision = validate_decision_record(decision_record)
+    intent = validate_order_intent(order_intent)
+    evidence = [validate_evidence_record(item) for item in settlement_evidence_records]
+    return canonical_hash(
+        {
+            "decision": {
+                "decision_id": decision.decision_id,
+                "semantic_hash": decision.semantic_hash,
+                "record_hash": decision.record_hash,
+            },
+            "order_intent": {
+                "order_intent_id": intent.order_intent_id,
+                "semantic_hash": intent.semantic_hash,
+                "record_hash": intent.record_hash,
+            },
+            "candidate_pool": {
+                "candidate_pool_id": decision.candidate_pool_id,
+                "semantic_hash": decision.candidate_pool_hash,
+                "record_hash": decision.candidate_pool_record_hash,
+            },
+            "fill_snapshot": {
+                "id": _text(fill_snapshot_id, path="$.fill_snapshot_id"),
+                "sha256": _sha256(
+                    fill_snapshot_sha256, path="$.fill_snapshot_sha256"
+                ),
+            },
+            "position_snapshot": {
+                "id": _text(position_snapshot_id, path="$.position_snapshot_id"),
+                "sha256": _sha256(
+                    position_snapshot_sha256, path="$.position_snapshot_sha256"
+                ),
+            },
+            "settlement_evidence_snapshot_sha256": settlement_evidence_snapshot_hash(
+                evidence
+            ),
+            "horizon": _text(horizon, path="$.horizon"),
+            "entry_session_id": _text(
+                entry_session_id, path="$.entry_session_id"
+            ),
+            "entry_at": _instant(entry_at, path="$.entry_at")[0],
+            "exit_session_id": _text(exit_session_id, path="$.exit_session_id"),
+            "exit_at": _instant(exit_at, path="$.exit_at")[0],
+            "cost_rule": {
+                "id": _text(cost_rule_id, path="$.cost_rule_id"),
+                "version": _text(cost_rule_version, path="$.cost_rule_version"),
+                "sha256": _sha256(cost_rule_sha256, path="$.cost_rule_sha256"),
+            },
+            "comparison_rule": {
+                "id": _text(comparison_rule_id, path="$.comparison_rule_id"),
+                "version": _text(
+                    comparison_rule_version, path="$.comparison_rule_version"
+                ),
+                "sha256": _sha256(
+                    comparison_rule_sha256, path="$.comparison_rule_sha256"
+                ),
+            },
+        }
+    )
+
+
+def replacement_value_stable_key(
+    *, settled_outcome_stable_key: str, comparator_role: str
+) -> str:
+    return canonical_hash(
+        {
+            "settled_outcome_stable_key": _sha256(
+                settled_outcome_stable_key, path="$.settled_outcome_stable_key"
+            ),
+            "comparator_role": _enum(
+                comparator_role,
+                allowed=_COMPARATOR_ROLES,
+                path="$.comparator_role",
+            ),
+        }
+    )
+
+
+def replacement_value_input_snapshot_hash(
+    *,
+    settled_outcome: Mapping[str, Any] | SettledOutcome,
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    comparator: Mapping[str, Any] | CandidatePoolComparator,
+    comparator_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    comparison_rule_id: str,
+    comparison_rule_version: str,
+    comparison_rule_sha256: str,
+) -> str:
+    outcome = validate_settled_outcome(settled_outcome)
+    pool = validate_candidate_pool(candidate_pool)
+    comparator_record = CandidatePoolComparator.from_dict(
+        comparator.to_dict() if isinstance(comparator, CandidatePoolComparator) else comparator,
+        path="$.comparator",
+    )
+    evidence = [validate_evidence_record(item) for item in comparator_evidence_records]
+    return canonical_hash(
+        {
+            "settled_outcome": {
+                "outcome_id": outcome.outcome_id,
+                "semantic_hash": outcome.semantic_hash,
+                "record_hash": outcome.record_hash,
+            },
+            "candidate_pool": {
+                "candidate_pool_id": pool.candidate_pool_id,
+                "semantic_hash": pool.semantic_hash,
+                "record_hash": pool.record_hash,
+            },
+            "comparator": comparator_record.to_dict(),
+            "comparator_evidence_snapshot_sha256": settlement_evidence_snapshot_hash(
+                evidence
+            ),
+            "comparison_rule": {
+                "id": _text(comparison_rule_id, path="$.comparison_rule_id"),
+                "version": _text(
+                    comparison_rule_version, path="$.comparison_rule_version"
+                ),
+                "sha256": _sha256(
+                    comparison_rule_sha256, path="$.comparison_rule_sha256"
+                ),
+            },
         }
     )
 
@@ -2838,6 +4427,929 @@ def validate_candidate_pool_against_inputs(
     return record
 
 
+def validate_decision_record_against_candidate_pool(
+    decision: Mapping[str, Any] | DecisionRecord,
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+) -> DecisionRecord:
+    record = validate_decision_record(decision)
+    pool = validate_candidate_pool(candidate_pool)
+    hypothesis = validate_hypothesis_candidate(hypothesis_candidate)
+    if (
+        pool.hypothesis_candidate_id != hypothesis.candidate_id
+        or pool.hypothesis_candidate_hash != hypothesis.semantic_hash
+    ):
+        _fail(
+            "pool_hypothesis_binding_mismatch",
+            "$.candidate_pool_id",
+            "the supplied pool does not bind the supplied hypothesis",
+        )
+    if record.candidate_pool_id != pool.candidate_pool_id:
+        _fail(
+            "candidate_pool_id_mismatch",
+            "$.candidate_pool_id",
+            "does not match the supplied candidate pool",
+        )
+    if record.candidate_pool_hash != pool.semantic_hash:
+        _fail(
+            "candidate_pool_hash_mismatch",
+            "$.candidate_pool_hash",
+            "does not bind the supplied candidate pool semantic hash",
+        )
+    if record.candidate_pool_record_hash != pool.record_hash:
+        _fail(
+            "candidate_pool_record_hash_mismatch",
+            "$.candidate_pool_record_hash",
+            "does not bind the exact supplied candidate pool record",
+        )
+    if record.expected_horizon != hypothesis.expected_horizon:
+        _fail(
+            "decision_horizon_mismatch",
+            "$.expected_horizon",
+            "must equal the frozen hypothesis expected horizon",
+        )
+    expected_policy = (
+        hypothesis.baseline_policy
+        if record.policy_arm == "baseline"
+        else hypothesis.treatment_policy
+    )
+    if canonical_hash(record.policy_snapshot) != canonical_hash(expected_policy):
+        _fail(
+            "decision_policy_snapshot_mismatch",
+            "$.policy_snapshot",
+            "must exactly match the frozen hypothesis policy arm",
+        )
+    if (
+        record.run_id != pool.run_id
+        or record.run_date != pool.run_date
+        or record.calendar_session_id != pool.calendar_session_id
+        or record.data_cutoff != pool.data_cutoff
+    ):
+        _fail(
+            "decision_clock_identity_mismatch",
+            "$.run_id",
+            "run, session, and cutoff must exactly match the candidate pool",
+        )
+    _, pool_recorded_dt = _instant(pool.recorded_at, path="$.pool.recorded_at")
+    _, decided_dt = _instant(record.decided_at, path="$.decided_at")
+    if pool_recorded_dt > decided_dt:
+        _fail(
+            "decision_before_pool_recorded",
+            "$.decided_at",
+            "the complete candidate pool must be recorded before the decision",
+        )
+    pool_entries = {item.candidate_entry_id: item for item in pool.entries}
+    decision_items = {item.candidate_entry_id: item for item in record.items}
+    if set(decision_items) != set(pool_entries):
+        _fail(
+            "decision_surface_incomplete",
+            "$.items",
+            "decision items must exactly cover every candidate pool entry",
+        )
+    for entry_id, item in decision_items.items():
+        entry = pool_entries[entry_id]
+        if (
+            item.security_id != entry.security_id
+            or item.listing_id != entry.listing_id
+            or item.security_mapping_sha256 != entry.security_mapping_sha256
+        ):
+            _fail(
+                "decision_item_identity_mismatch",
+                "$.items",
+                f"decision item {item.decision_item_id} does not bind its pool entry",
+            )
+        if entry.admission_status == "admitted":
+            if item.rank is None or item.signal_action is None:
+                _fail(
+                    "admitted_decision_required",
+                    "$.items",
+                    "admitted entries require rank and selected/not-selected action",
+                )
+        elif any(
+            value is not None
+            for value in (
+                item.rank,
+                item.signal_action,
+                item.side,
+                item.risk_status,
+                item.approved_quantity_micros,
+                item.approved_notional_minor,
+                item.currency,
+            )
+        ):
+            _fail(
+                "inactive_pool_entry_decision_forbidden",
+                "$.items",
+                "parked and rejected pool entries cannot carry rank, action, risk, or size",
+            )
+    expected_decision_tier = (
+        "research_pit" if pool.pit_tier == "canonical_pit" else pool.pit_tier
+    )
+    if (
+        record.pit_tier != expected_decision_tier
+        or record.result_ceiling
+        != _RESULT_CEILING_BY_PIT[expected_decision_tier]
+        or record.known_future_leakage != pool.known_future_leakage
+    ):
+        _fail(
+            "decision_evidence_identity_mismatch",
+            "$.pit_tier",
+            "decision must propagate pool leakage and obey the research-only context ceiling",
+        )
+    expected_snapshot = decision_input_snapshot_hash(
+        candidate_pool=pool,
+        policy_arm=record.policy_arm,
+        policy_snapshot=record.policy_snapshot,
+        decision_engine_id=record.decision_engine_id,
+        decision_engine_version=record.decision_engine_version,
+        decision_engine_sha256=record.decision_engine_sha256,
+        decision_context_id=record.decision_context_id,
+        decision_context_sha256=record.decision_context_sha256,
+        execution_rule_id=record.execution_rule_id,
+        execution_rule_version=record.execution_rule_version,
+        execution_rule_sha256=record.execution_rule_sha256,
+        cost_rule_id=record.cost_rule_id,
+        cost_rule_version=record.cost_rule_version,
+        cost_rule_sha256=record.cost_rule_sha256,
+        comparison_rule_id=record.comparison_rule_id,
+        comparison_rule_version=record.comparison_rule_version,
+        comparison_rule_sha256=record.comparison_rule_sha256,
+        items=record.items,
+        run_id=record.run_id,
+        run_date=record.run_date,
+        calendar_session_id=record.calendar_session_id,
+        data_cutoff=record.data_cutoff,
+        expected_horizon=record.expected_horizon,
+    )
+    if record.input_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "input_snapshot_hash_mismatch",
+            "$.input_snapshot_sha256",
+            f"expected {expected_snapshot}, got {record.input_snapshot_sha256}",
+        )
+    return record
+
+
+def validate_order_intent_against_decision(
+    order_intent: Mapping[str, Any] | OrderIntent,
+    decision_record: Mapping[str, Any] | DecisionRecord,
+) -> OrderIntent:
+    intent = validate_order_intent(order_intent)
+    decision = validate_decision_record(decision_record)
+    if intent.decision_id != decision.decision_id:
+        _fail(
+            "decision_id_mismatch",
+            "$.decision_id",
+            "does not match the supplied decision",
+        )
+    if intent.decision_hash != decision.semantic_hash:
+        _fail(
+            "decision_hash_mismatch",
+            "$.decision_hash",
+            "does not bind the supplied decision semantic hash",
+        )
+    if intent.decision_record_hash != decision.record_hash:
+        _fail(
+            "decision_record_hash_mismatch",
+            "$.decision_record_hash",
+            "does not bind the exact supplied decision record",
+        )
+    by_item_id = {item.decision_item_id: item for item in decision.items}
+    item = by_item_id.get(intent.decision_item_id)
+    if item is None:
+        _fail(
+            "unresolved_decision_item_id",
+            "$.decision_item_id",
+            "does not identify a supplied decision item",
+        )
+    if item.signal_action != "selected" or item.risk_status != "approved":
+        _fail(
+            "order_intent_not_approved",
+            "$.decision_item_id",
+            "only selected and risk-approved decision items may create an intent",
+        )
+    if (
+        intent.candidate_entry_id != item.candidate_entry_id
+        or intent.security_id != item.security_id
+        or intent.listing_id != item.listing_id
+        or intent.security_mapping_sha256 != item.security_mapping_sha256
+    ):
+        _fail(
+            "order_intent_identity_mismatch",
+            "$.candidate_entry_id",
+            "intent security identity must exactly match the approved decision item",
+        )
+    if (
+        intent.quantity_micros != item.approved_quantity_micros
+        or intent.notional_minor != item.approved_notional_minor
+        or intent.currency != item.currency
+    ):
+        _fail(
+            "order_intent_size_mismatch",
+            "$.quantity_micros",
+            "intent size and currency must exactly match risk approval",
+        )
+    if intent.side != item.side:
+        _fail(
+            "order_intent_side_mismatch",
+            "$.side",
+            "intent side must exactly match the frozen decision item side",
+        )
+    if (
+        intent.execution_rule_id != decision.execution_rule_id
+        or intent.execution_rule_version != decision.execution_rule_version
+        or intent.execution_rule_sha256 != decision.execution_rule_sha256
+    ):
+        _fail(
+            "execution_rule_mismatch",
+            "$.execution_rule_id",
+            "intent execution rule must exactly match the frozen decision rule",
+        )
+    _, decision_recorded_dt = _instant(
+        decision.recorded_at, path="$.decision.recorded_at"
+    )
+    _, intent_created_dt = _instant(intent.created_at, path="$.created_at")
+    if decision_recorded_dt > intent_created_dt:
+        _fail(
+            "intent_created_before_decision_recorded",
+            "$.created_at",
+            "the decision must be recorded before an intent is created",
+        )
+    expected_snapshot = order_intent_input_snapshot_hash(
+        decision_record=decision,
+        decision_item_id=intent.decision_item_id,
+        side=intent.side,
+        quantity_micros=intent.quantity_micros,
+        notional_minor=intent.notional_minor,
+        currency=intent.currency,
+        order_type=intent.order_type,
+        limit_price_minor=intent.limit_price_minor,
+        stop_price_minor=intent.stop_price_minor,
+        time_in_force=intent.time_in_force,
+        not_before=intent.not_before,
+        expires_at=intent.expires_at,
+        calendar_session_id=intent.calendar_session_id,
+        execution_rule_id=intent.execution_rule_id,
+        execution_rule_version=intent.execution_rule_version,
+        execution_rule_sha256=intent.execution_rule_sha256,
+        created_at=intent.created_at,
+    )
+    if intent.input_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "input_snapshot_hash_mismatch",
+            "$.input_snapshot_sha256",
+            f"expected {expected_snapshot}, got {intent.input_snapshot_sha256}",
+        )
+    return intent
+
+
+def validate_settled_outcome_against_inputs(
+    settled_outcome: Mapping[str, Any] | SettledOutcome,
+    decision_record: Mapping[str, Any] | DecisionRecord,
+    order_intent: Mapping[str, Any] | OrderIntent,
+    settlement_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    *,
+    previous_outcome: Mapping[str, Any] | SettledOutcome | None = None,
+) -> SettledOutcome:
+    outcome = validate_settled_outcome(settled_outcome)
+    decision = validate_decision_record(decision_record)
+    intent = validate_order_intent_against_decision(order_intent, decision)
+    if (
+        outcome.decision_id != decision.decision_id
+        or outcome.decision_hash != decision.semantic_hash
+        or outcome.decision_record_hash != decision.record_hash
+    ):
+        _fail(
+            "outcome_decision_binding_mismatch",
+            "$.decision_id",
+            "outcome must bind the exact supplied decision record",
+        )
+    if (
+        outcome.order_intent_id != intent.order_intent_id
+        or outcome.order_intent_hash != intent.semantic_hash
+        or outcome.order_intent_record_hash != intent.record_hash
+    ):
+        _fail(
+            "outcome_intent_binding_mismatch",
+            "$.order_intent_id",
+            "outcome must bind the exact supplied intent record",
+        )
+    if (
+        outcome.candidate_pool_id != decision.candidate_pool_id
+        or outcome.candidate_pool_hash != decision.candidate_pool_hash
+        or outcome.candidate_pool_record_hash
+        != decision.candidate_pool_record_hash
+    ):
+        _fail(
+            "outcome_pool_binding_mismatch",
+            "$.candidate_pool_id",
+            "outcome must bind the decision's exact candidate pool record",
+        )
+    if outcome.horizon != decision.expected_horizon:
+        _fail(
+            "outcome_horizon_mismatch",
+            "$.horizon",
+            "outcome horizon must equal the frozen decision horizon",
+        )
+    expected_key = settled_outcome_stable_key(
+        order_intent_id=intent.order_intent_id, horizon=outcome.horizon
+    )
+    if outcome.stable_key != expected_key:
+        _fail(
+            "outcome_stable_key_mismatch",
+            "$.stable_key",
+            f"expected {expected_key}, got {outcome.stable_key}",
+        )
+    evidence_by_id, _ = _validated_evidence_registry(
+        settlement_evidence_records, source_contracts
+    )
+    if set(evidence_by_id) != set(outcome.settlement_evidence_record_ids):
+        _fail(
+            "settlement_evidence_membership_mismatch",
+            "$.settlement_evidence_record_ids",
+            "supplied evidence must exactly match the frozen settlement snapshot",
+        )
+    evidence = [
+        evidence_by_id[item] for item in outcome.settlement_evidence_record_ids
+    ]
+    expected_evidence_snapshot = settlement_evidence_snapshot_hash(evidence)
+    if outcome.settlement_evidence_snapshot_sha256 != expected_evidence_snapshot:
+        _fail(
+            "settlement_evidence_snapshot_mismatch",
+            "$.settlement_evidence_snapshot_sha256",
+            f"expected {expected_evidence_snapshot}, got "
+            f"{outcome.settlement_evidence_snapshot_sha256}",
+        )
+    _, entry_dt = _instant(outcome.entry_at, path="$.entry_at")
+    _, settled_dt = _instant(outcome.settled_at, path="$.settled_at")
+    _, not_before_dt = _instant(intent.not_before, path="$.intent.not_before")
+    _, expires_dt = _instant(intent.expires_at, path="$.intent.expires_at")
+    if not (not_before_dt <= entry_dt < expires_dt):
+        _fail(
+            "entry_outside_intent_window",
+            "$.entry_at",
+            "entry must fall inside the frozen intent window",
+        )
+    if outcome.entry_session_id != intent.calendar_session_id:
+        _fail(
+            "entry_session_mismatch",
+            "$.entry_session_id",
+            "must equal the intent calendar session",
+        )
+    for item in evidence:
+        if item.security_scope == "instrument":
+            mapping = item.security_mapping
+            if mapping is None or (
+                mapping.security_id != intent.security_id
+                or mapping.listing_id != intent.listing_id
+            ):
+                _fail(
+                    "settlement_evidence_security_mismatch",
+                    "$.settlement_evidence_record_ids",
+                    "instrument settlement evidence must match the intent security and listing",
+                )
+        _, evidence_known_dt = _instant(item.known_at, path="$.evidence.known_at")
+        _, evidence_recorded_dt = _instant(
+            item.recorded_at, path="$.evidence.recorded_at"
+        )
+        if evidence_known_dt > settled_dt or evidence_recorded_dt > settled_dt:
+            _fail(
+                "settlement_evidence_after_settlement",
+                "$.settled_at",
+                "settlement evidence must be known and recorded by settled_at",
+            )
+    if (
+        outcome.status == "settled"
+        and intent.notional_minor is not None
+        and outcome.basis_notional_minor != intent.notional_minor
+    ):
+        _fail(
+            "outcome_basis_notional_mismatch",
+            "$.basis_notional_minor",
+            "must equal the frozen intent notional when that notional is available",
+        )
+    if outcome.status == "settled" and outcome.currency != intent.currency:
+        _fail(
+            "outcome_currency_mismatch",
+            "$.currency",
+            "settled outcome currency must equal the frozen intent currency",
+        )
+    if (
+        outcome.cost_rule_id != decision.cost_rule_id
+        or outcome.cost_rule_version != decision.cost_rule_version
+        or outcome.cost_rule_sha256 != decision.cost_rule_sha256
+    ):
+        _fail(
+            "cost_rule_mismatch",
+            "$.cost_rule_id",
+            "outcome cost rule must exactly match the frozen decision rule",
+        )
+    if (
+        outcome.comparison_rule_id != decision.comparison_rule_id
+        or outcome.comparison_rule_version != decision.comparison_rule_version
+        or outcome.comparison_rule_sha256 != decision.comparison_rule_sha256
+    ):
+        _fail(
+            "comparison_rule_mismatch",
+            "$.comparison_rule_id",
+            "outcome comparison rule must exactly match the frozen decision rule",
+        )
+    weakest = min(
+        [decision.pit_tier, *(item.pit_tier for item in evidence)],
+        key=lambda item: _PIT_RANK[item],
+    )
+    if weakest == "canonical_pit":
+        weakest = "research_pit"
+    leakage = decision.known_future_leakage or any(
+        item.known_future_leakage for item in evidence
+    )
+    if (
+        outcome.pit_tier != weakest
+        or outcome.result_ceiling != _RESULT_CEILING_BY_PIT[weakest]
+        or outcome.known_future_leakage != leakage
+    ):
+        _fail(
+            "outcome_evidence_identity_mismatch",
+            "$.pit_tier",
+            "outcome must exactly propagate weakest PIT, ceiling, and leakage",
+        )
+    expected_snapshot = settled_outcome_input_snapshot_hash(
+        decision_record=decision,
+        order_intent=intent,
+        settlement_evidence_records=evidence,
+        fill_snapshot_id=outcome.fill_snapshot_id,
+        fill_snapshot_sha256=outcome.fill_snapshot_sha256,
+        position_snapshot_id=outcome.position_snapshot_id,
+        position_snapshot_sha256=outcome.position_snapshot_sha256,
+        horizon=outcome.horizon,
+        entry_session_id=outcome.entry_session_id,
+        entry_at=outcome.entry_at,
+        exit_session_id=outcome.exit_session_id,
+        exit_at=outcome.exit_at,
+        cost_rule_id=outcome.cost_rule_id,
+        cost_rule_version=outcome.cost_rule_version,
+        cost_rule_sha256=outcome.cost_rule_sha256,
+        comparison_rule_id=outcome.comparison_rule_id,
+        comparison_rule_version=outcome.comparison_rule_version,
+        comparison_rule_sha256=outcome.comparison_rule_sha256,
+    )
+    if outcome.input_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "input_snapshot_hash_mismatch",
+            "$.input_snapshot_sha256",
+            f"expected {expected_snapshot}, got {outcome.input_snapshot_sha256}",
+        )
+    if outcome.revision_number == 1:
+        if previous_outcome is not None:
+            _fail(
+                "unexpected_previous_outcome",
+                "$.previous_outcome_id",
+                "the first revision cannot be validated against a previous outcome",
+            )
+    else:
+        if previous_outcome is None:
+            _fail(
+                "previous_outcome_required",
+                "$.previous_outcome_id",
+                "later revisions require the referenced previous outcome",
+            )
+        previous = validate_settled_outcome(previous_outcome)
+        if previous.status == "settled" and outcome.status != "settled":
+            _fail(
+                "settled_outcome_revision_regression",
+                "$.status",
+                "a settled outcome revision cannot regress to unavailable",
+            )
+        if (
+            outcome.previous_outcome_id != previous.outcome_id
+            or outcome.previous_outcome_record_hash != previous.record_hash
+            or outcome.outcome_id == previous.outcome_id
+            or outcome.stable_key != previous.stable_key
+            or outcome.revision_number != previous.revision_number + 1
+            or outcome.decision_id != previous.decision_id
+            or outcome.decision_hash != previous.decision_hash
+            or outcome.decision_record_hash != previous.decision_record_hash
+            or outcome.order_intent_id != previous.order_intent_id
+            or outcome.order_intent_hash != previous.order_intent_hash
+            or outcome.order_intent_record_hash
+            != previous.order_intent_record_hash
+            or outcome.candidate_pool_id != previous.candidate_pool_id
+            or outcome.candidate_pool_hash != previous.candidate_pool_hash
+            or outcome.candidate_pool_record_hash
+            != previous.candidate_pool_record_hash
+            or outcome.horizon != previous.horizon
+            or outcome.cost_rule_id != previous.cost_rule_id
+            or outcome.cost_rule_version != previous.cost_rule_version
+            or outcome.cost_rule_sha256 != previous.cost_rule_sha256
+            or outcome.comparison_rule_id != previous.comparison_rule_id
+            or outcome.comparison_rule_version
+            != previous.comparison_rule_version
+            or outcome.comparison_rule_sha256
+            != previous.comparison_rule_sha256
+        ):
+            _fail(
+                "previous_outcome_binding_mismatch",
+                "$.previous_outcome_id",
+                "revision must bind the immediately prior record in the same outcome chain",
+            )
+        _, previous_recorded_dt = _instant(
+            previous.recorded_at, path="$.previous_outcome.recorded_at"
+        )
+        _, outcome_recorded_dt = _instant(outcome.recorded_at, path="$.recorded_at")
+        if previous_recorded_dt > outcome_recorded_dt:
+            _fail(
+                "nonmonotonic_outcome_revision",
+                "$.recorded_at",
+                "a revision cannot be recorded before its predecessor",
+            )
+    return outcome
+
+
+def validate_replacement_value_against_inputs(
+    replacement_value: Mapping[str, Any] | ReplacementValue,
+    settled_outcome: Mapping[str, Any] | SettledOutcome,
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    comparator_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    *,
+    previous_replacement_value: Mapping[str, Any] | ReplacementValue | None = None,
+) -> ReplacementValue:
+    replacement = validate_replacement_value(replacement_value)
+    outcome = validate_settled_outcome(settled_outcome)
+    pool = validate_candidate_pool(candidate_pool)
+    if (
+        pool.candidate_pool_id != outcome.candidate_pool_id
+        or pool.semantic_hash != outcome.candidate_pool_hash
+        or pool.record_hash != outcome.candidate_pool_record_hash
+    ):
+        _fail(
+            "outcome_pool_binding_mismatch",
+            "$.candidate_pool_id",
+            "the supplied pool must be the exact pool bound by the outcome",
+        )
+    if (
+        replacement.settled_outcome_id != outcome.outcome_id
+        or replacement.settled_outcome_hash != outcome.semantic_hash
+        or replacement.settled_outcome_record_hash != outcome.record_hash
+    ):
+        _fail(
+            "replacement_outcome_binding_mismatch",
+            "$.settled_outcome_id",
+            "replacement row must bind the exact supplied outcome record",
+        )
+    if (
+        replacement.candidate_pool_id != pool.candidate_pool_id
+        or replacement.candidate_pool_hash != pool.semantic_hash
+        or replacement.candidate_pool_record_hash != pool.record_hash
+    ):
+        _fail(
+            "replacement_pool_binding_mismatch",
+            "$.candidate_pool_id",
+            "replacement row must bind the supplied candidate pool",
+        )
+    comparators = {item.role: item for item in pool.comparators}
+    comparator = comparators[replacement.comparator_role]
+    if (
+        replacement.comparator_reference_id != comparator.reference_id
+        or replacement.comparator_reference_snapshot_sha256
+        != comparator.reference_snapshot_sha256
+    ):
+        _fail(
+            "replacement_comparator_binding_mismatch",
+            "$.comparator_reference_id",
+            "replacement row must bind the frozen pool comparator identity",
+        )
+    if (
+        replacement.comparison_rule_id != outcome.comparison_rule_id
+        or replacement.comparison_rule_version != outcome.comparison_rule_version
+        or replacement.comparison_rule_sha256 != outcome.comparison_rule_sha256
+    ):
+        _fail(
+            "comparison_rule_mismatch",
+            "$.comparison_rule_id",
+            "replacement comparison rule must match the frozen outcome rule",
+        )
+    expected_key = replacement_value_stable_key(
+        settled_outcome_stable_key=outcome.stable_key,
+        comparator_role=replacement.comparator_role,
+    )
+    if replacement.stable_key != expected_key:
+        _fail(
+            "replacement_stable_key_mismatch",
+            "$.stable_key",
+            f"expected {expected_key}, got {replacement.stable_key}",
+        )
+    if replacement.revision_number != outcome.revision_number:
+        _fail(
+            "replacement_revision_mismatch",
+            "$.revision_number",
+            "replacement revision must equal the bound outcome revision",
+        )
+    evidence_by_id, _ = _validated_evidence_registry(
+        comparator_evidence_records, source_contracts
+    )
+    missing = [
+        item
+        for item in replacement.comparator_evidence_record_ids
+        if item not in evidence_by_id
+    ]
+    if missing:
+        _fail(
+            "unresolved_comparator_evidence_id",
+            "$.comparator_evidence_record_ids",
+            f"unresolved ids: {', '.join(missing)}",
+        )
+    evidence = [
+        evidence_by_id[item] for item in replacement.comparator_evidence_record_ids
+    ]
+    expected_evidence_snapshot = settlement_evidence_snapshot_hash(evidence)
+    if replacement.comparator_evidence_snapshot_sha256 != expected_evidence_snapshot:
+        _fail(
+            "comparator_evidence_snapshot_mismatch",
+            "$.comparator_evidence_snapshot_sha256",
+            f"expected {expected_evidence_snapshot}, got "
+            f"{replacement.comparator_evidence_snapshot_sha256}",
+        )
+    _, outcome_recorded_dt = _instant(
+        outcome.recorded_at, path="$.outcome.recorded_at"
+    )
+    _, replacement_settled_dt = _instant(
+        replacement.settled_at, path="$.settled_at"
+    )
+    if outcome_recorded_dt > replacement_settled_dt:
+        _fail(
+            "replacement_before_outcome_recorded",
+            "$.settled_at",
+            "the outcome must be recorded before replacement measurement settles",
+        )
+    comparator_instrument_matched = False
+    for item in evidence:
+        if not {
+            "comparator_reference_id",
+            "comparator_reference_snapshot_sha256",
+        }.issubset(item.decision_content):
+            _fail(
+                "comparator_evidence_reference_binding_required",
+                "$.comparator_evidence_record_ids",
+                "comparator evidence must declare its frozen reference id and snapshot",
+            )
+        evidence_reference_id = _text(
+            item.decision_content["comparator_reference_id"],
+            path="$.evidence.decision_content.comparator_reference_id",
+        )
+        evidence_reference_snapshot = _sha256(
+            item.decision_content["comparator_reference_snapshot_sha256"],
+            path="$.evidence.decision_content.comparator_reference_snapshot_sha256",
+        )
+        if (
+            evidence_reference_id != comparator.reference_id
+            or evidence_reference_snapshot != comparator.reference_snapshot_sha256
+        ):
+            _fail(
+                "comparator_evidence_reference_mismatch",
+                "$.comparator_evidence_record_ids",
+                "comparator evidence must exactly bind the pool reference identity",
+            )
+        if replacement.comparator_role in {"cash", "v1"}:
+            if item.security_scope == "instrument":
+                _fail(
+                    "comparator_instrument_evidence_forbidden",
+                    "$.comparator_evidence_record_ids",
+                    "cash and V1 comparators cannot use instrument-scope evidence",
+                )
+        elif item.security_scope == "instrument":
+            mapping = item.security_mapping
+            if mapping is None or (
+                mapping.symbol != comparator.reference_id
+                or mapping.mapping_sha256
+                != comparator.reference_snapshot_sha256
+            ):
+                _fail(
+                    "comparator_evidence_security_mismatch",
+                    "$.comparator_evidence_record_ids",
+                    "SPY and QQQ instrument evidence must match the frozen symbol and mapping snapshot",
+                )
+            comparator_instrument_matched = True
+        _, evidence_known_dt = _instant(item.known_at, path="$.evidence.known_at")
+        _, evidence_recorded_dt = _instant(
+            item.recorded_at, path="$.evidence.recorded_at"
+        )
+        if (
+            evidence_known_dt > replacement_settled_dt
+            or evidence_recorded_dt > replacement_settled_dt
+        ):
+            _fail(
+                "comparator_evidence_after_settlement",
+                "$.settled_at",
+                "comparator evidence must be known and recorded by settled_at",
+            )
+    if (
+        replacement.status == "computed"
+        and replacement.comparator_role in {"spy", "qqq"}
+        and not comparator_instrument_matched
+    ):
+        _fail(
+            "comparator_instrument_evidence_required",
+            "$.comparator_evidence_record_ids",
+            "computed SPY and QQQ rows require matching instrument evidence",
+        )
+    if replacement.status == "computed":
+        if outcome.status != "settled" or comparator.availability_status != "available":
+            _fail(
+                "replacement_computation_unavailable",
+                "$.status",
+                "computed replacement requires settled strategy and available comparator",
+            )
+        if (
+            replacement.strategy_value_minor != outcome.net_pnl_minor
+            or replacement.basis_notional_minor != outcome.basis_notional_minor
+            or replacement.currency != outcome.currency
+        ):
+            _fail(
+                "strategy_measurement_mismatch",
+                "$.strategy_value_minor",
+                "strategy value, basis notional, and currency must match the settled outcome",
+            )
+    elif outcome.status == "unavailable" or comparator.availability_status == "unavailable":
+        pass
+    weakest = min(
+        [outcome.pit_tier, *(item.pit_tier for item in evidence)],
+        key=lambda item: _PIT_RANK[item],
+    )
+    leakage = outcome.known_future_leakage or any(
+        item.known_future_leakage for item in evidence
+    )
+    if (
+        replacement.pit_tier != weakest
+        or replacement.result_ceiling != _RESULT_CEILING_BY_PIT[weakest]
+        or replacement.known_future_leakage != leakage
+    ):
+        _fail(
+            "replacement_evidence_identity_mismatch",
+            "$.pit_tier",
+            "replacement must exactly propagate weakest PIT, ceiling, and leakage",
+        )
+    expected_snapshot = replacement_value_input_snapshot_hash(
+        settled_outcome=outcome,
+        candidate_pool=pool,
+        comparator=comparator,
+        comparator_evidence_records=evidence,
+        comparison_rule_id=replacement.comparison_rule_id,
+        comparison_rule_version=replacement.comparison_rule_version,
+        comparison_rule_sha256=replacement.comparison_rule_sha256,
+    )
+    if replacement.input_snapshot_sha256 != expected_snapshot:
+        _fail(
+            "input_snapshot_hash_mismatch",
+            "$.input_snapshot_sha256",
+            f"expected {expected_snapshot}, got {replacement.input_snapshot_sha256}",
+        )
+    if replacement.revision_number == 1:
+        if previous_replacement_value is not None:
+            _fail(
+                "unexpected_previous_replacement_value",
+                "$.previous_replacement_value_id",
+                "the first revision cannot have a supplied predecessor",
+            )
+    else:
+        if previous_replacement_value is None:
+            _fail(
+                "previous_replacement_value_required",
+                "$.previous_replacement_value_id",
+                "later revisions require the referenced previous replacement row",
+            )
+        previous = validate_replacement_value(previous_replacement_value)
+        if previous.status == "computed" and replacement.status != "computed":
+            _fail(
+                "computed_replacement_revision_regression",
+                "$.status",
+                "a computed replacement revision cannot regress to unavailable",
+            )
+        if (
+            replacement.previous_replacement_value_id
+            != previous.replacement_value_id
+            or replacement.previous_replacement_value_record_hash != previous.record_hash
+            or replacement.replacement_value_id == previous.replacement_value_id
+            or replacement.stable_key != previous.stable_key
+            or replacement.revision_number != previous.revision_number + 1
+            or replacement.comparator_role != previous.comparator_role
+            or replacement.candidate_pool_id != previous.candidate_pool_id
+            or replacement.candidate_pool_hash != previous.candidate_pool_hash
+            or replacement.candidate_pool_record_hash
+            != previous.candidate_pool_record_hash
+            or replacement.comparator_reference_id
+            != previous.comparator_reference_id
+            or replacement.comparator_reference_snapshot_sha256
+            != previous.comparator_reference_snapshot_sha256
+            or replacement.comparison_rule_id != previous.comparison_rule_id
+            or replacement.comparison_rule_version
+            != previous.comparison_rule_version
+            or replacement.comparison_rule_sha256
+            != previous.comparison_rule_sha256
+        ):
+            _fail(
+                "previous_replacement_binding_mismatch",
+                "$.previous_replacement_value_id",
+                "revision must bind the immediately prior row for the same comparator",
+            )
+        _, previous_recorded_dt = _instant(
+            previous.recorded_at, path="$.previous_replacement.recorded_at"
+        )
+        _, replacement_recorded_dt = _instant(
+            replacement.recorded_at, path="$.recorded_at"
+        )
+        if previous_recorded_dt > replacement_recorded_dt:
+            _fail(
+                "nonmonotonic_replacement_revision",
+                "$.recorded_at",
+                "a replacement revision cannot be recorded before its predecessor",
+            )
+    return replacement
+
+
+def validate_replacement_value_panel(
+    replacement_values: Sequence[Mapping[str, Any] | ReplacementValue],
+    settled_outcome: Mapping[str, Any] | SettledOutcome,
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    comparator_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    *,
+    previous_replacement_values: Sequence[
+        Mapping[str, Any] | ReplacementValue
+    ] = (),
+) -> tuple[ReplacementValue, ...]:
+    rows = [validate_replacement_value(item) for item in replacement_values]
+    roles = [item.comparator_role for item in rows]
+    if len(roles) != len(set(roles)) or set(roles) != _REQUIRED_COMPARATOR_ROLES:
+        _fail(
+            "replacement_panel_incomplete",
+            "$.replacement_values",
+            "must contain exactly one cash, SPY, QQQ, and V1 row",
+        )
+    ids = [item.replacement_value_id for item in rows]
+    if len(ids) != len(set(ids)):
+        _fail(
+            "duplicate_replacement_value_id",
+            "$.replacement_values",
+            "replacement value ids must be unique",
+        )
+    evidence_by_id, _ = _validated_evidence_registry(
+        comparator_evidence_records, source_contracts
+    )
+    referenced_ids = {
+        evidence_id
+        for row in rows
+        for evidence_id in row.comparator_evidence_record_ids
+    }
+    if referenced_ids != set(evidence_by_id):
+        _fail(
+            "comparator_evidence_panel_mismatch",
+            "$.comparator_evidence_records",
+            "supplied evidence must exactly cover the four replacement rows",
+        )
+    previous_rows = [
+        validate_replacement_value(item) for item in previous_replacement_values
+    ]
+    previous_by_key = {item.stable_key: item for item in previous_rows}
+    if len(previous_by_key) != len(previous_rows):
+        _fail(
+            "duplicate_previous_replacement_key",
+            "$.previous_replacement_values",
+            "previous replacement stable keys must be unique",
+        )
+    outcome = validate_settled_outcome(settled_outcome)
+    if outcome.revision_number == 1 and previous_rows:
+        _fail(
+            "unexpected_previous_replacement_panel",
+            "$.previous_replacement_values",
+            "the first outcome revision cannot have a previous panel",
+        )
+    if outcome.revision_number > 1:
+        previous_roles = [item.comparator_role for item in previous_rows]
+        if (
+            len(previous_roles) != len(set(previous_roles))
+            or set(previous_roles) != _REQUIRED_COMPARATOR_ROLES
+        ):
+            _fail(
+                "previous_replacement_panel_incomplete",
+                "$.previous_replacement_values",
+                "later outcome revisions require the complete previous comparator panel",
+            )
+    validated = [
+        validate_replacement_value_against_inputs(
+            row,
+            outcome,
+            candidate_pool,
+            comparator_evidence_records,
+            source_contracts,
+            previous_replacement_value=previous_by_key.get(row.stable_key),
+        )
+        for row in rows
+    ]
+    return tuple(sorted(validated, key=lambda item: item.comparator_role))
+
+
 __all__ = [
     "SCHEMA_VERSION",
     "PIT_TIERS",
@@ -2851,6 +5363,11 @@ __all__ = [
     "CandidatePoolEntry",
     "CandidatePoolComparator",
     "CandidatePool",
+    "DecisionItem",
+    "DecisionRecord",
+    "OrderIntent",
+    "SettledOutcome",
+    "ReplacementValue",
     "canonical_json",
     "canonical_hash",
     "validate_source_contract",
@@ -2876,4 +5393,24 @@ __all__ = [
     "candidate_entry_input_snapshot_hash",
     "candidate_pool_input_snapshot_hash",
     "validate_candidate_pool_against_inputs",
+    "validate_decision_record",
+    "normalize_decision_record",
+    "decision_input_snapshot_hash",
+    "validate_decision_record_against_candidate_pool",
+    "validate_order_intent",
+    "normalize_order_intent",
+    "order_intent_input_snapshot_hash",
+    "validate_order_intent_against_decision",
+    "validate_settled_outcome",
+    "normalize_settled_outcome",
+    "settlement_evidence_snapshot_hash",
+    "settled_outcome_stable_key",
+    "settled_outcome_input_snapshot_hash",
+    "validate_settled_outcome_against_inputs",
+    "validate_replacement_value",
+    "normalize_replacement_value",
+    "replacement_value_stable_key",
+    "replacement_value_input_snapshot_hash",
+    "validate_replacement_value_against_inputs",
+    "validate_replacement_value_panel",
 ]
