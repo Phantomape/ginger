@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T23:40Z（M2 explicit segmented-hot runtime wiring）
+> 最后更新：2026-08-21T23:48Z（M2 explicit segmented-hot runtime wiring）
 
 ## 里程碑
 

@@ -3,7 +3,7 @@
   "record_type": "v2_hourly_run_receipt",
   "run_started_at": "2026-08-21T23:00:44.120Z",
   "run_started_at_basis": "Inferred from the recorded 2026-08-21T22:00:44.120Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
-  "run_finished_at": "2026-08-21T23:40:20Z",
+  "run_finished_at": "2026-08-21T23:48:40Z",
   "milestone": "M2",
   "work_unit": "m2_explicit_segmented_hot_runtime_backend",
   "outcome": "completed",
@@ -30,6 +30,14 @@
     "stable_damage_boundary": "Non-string backend identities and non-string segmented storage capability markers now fail with stable V2 errors instead of leaking Python TypeError or KeyError.",
     "compatibility_boundary": "The required signature is an intentional pre-Engine-0 API break. Repository-wide Python call-site review found no unmigrated consumer outside the definitions, observation handoff, and updated tests."
   },
+  "reproduction": {
+    "platform": "Windows PowerShell",
+    "interpreter": ".venv\\Scripts\\python.exe (Python 3.11.1)",
+    "focused_sec_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant/test_v2_sec_8k_universe.py",
+    "invalid_head_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant/test_v2_universe_ledger_segments.py::test_invalid_head_storage_marker_fails_before_checkpoint_load",
+    "full_v2_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider (Get-ChildItem -File quant\\test_v2*.py | Select-Object -ExpandProperty FullName)",
+    "audit_command": ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  },
   "verification": [
     "49 focused SEC runtime, materialization, and observation tests passed in 37.19s.",
     "Two invalid segmented HEAD storage-capability tests passed in 3.55s.",
@@ -39,7 +47,7 @@
     "One-load hot-state, true daily/replay aliases, no cold traversal, no backend auto-detection, and no silent fallback regressions passed for full and compact segmented stores.",
     "Missing current checkpoints, unknown backend values, malformed backend identity, and non-string storage capability markers returned stable machine errors.",
     "Target modules imported successfully without bytecode writes.",
-    "scripts/experiment.py audit --lean-strict passed after implementation.",
+    "scripts/experiment.py audit --lean-strict passed before and after implementation.",
     "All 33 present V2 receipt JSON files and all 25 decision-log JSONL rows parsed; every receipt remained default-off, and git diff whitespace validation passed with line-ending warnings only.",
     "Independent code and contract reviews reported P0=0 and P1=0; final code review also reported P2=0."
   ],
@@ -66,7 +74,7 @@
     "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
     "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json"
   ],
-  "scientific_credibility_impact": "Positive but bounded: the same checked-in 111-member source frame now has machine-checked semantic identity across explicit legacy and segmented-hot readers, equivalent timezone representations, copied paths, daily/replay aliases, full and compact hot stores, and fail-closed damage. No alpha, outcome, strategy, market-scale coverage, or promotion evidence was created.",
+  "scientific_credibility_impact": "Positive but bounded: the checked-in 111-member source frame has machine-checked semantic identity across the explicit legacy reader and compact segmented-hot reader under equivalent timezone representations, copied paths, and daily/replay aliases. Deterministic synthetic fixtures separately cover full and compact hot stores plus fail-closed damage. No alpha, outcome, strategy, market-scale coverage, or promotion evidence was created.",
   "parity_impact": "Positive source-bounded research parity only. The runtime and observation consumers can explicitly use one validated segmented hot-tip state without cold or legacy fallback, but the immutable source and manifest remain contract_only_unwired; scheduler, Engine-0, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
   "production_impact": "none",
   "remaining_blockers": [
