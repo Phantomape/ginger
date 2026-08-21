@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T15:26Z（M2 pre-Engine-0 universe observation handoff）
+> 最后更新：2026-08-21T16:24Z（M2 universe event-prefix validation indexing）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例、显式身份 runtime adapter 与只读 pre-Engine-0 observation handoff 完成；市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例、显式身份 runtime adapter、只读 pre-Engine-0 observation handoff 与 event-prefix 索引校验完成；多 manifest checkpoint/segmentation、市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -145,10 +145,15 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   `external_universe_coverage_status` 固定为 `unverified`；manifest / snapshot 强制封顶
   `research_pit / observed_only`、`paper_live_eligible=false`、`parity_status=contract_only_unwired`、
   `authority=research_only` 与 `trade_enabled=false`，本轮没有创建生产 ledger 数据。
-- 30 项 ledger 对抗测试、105 项受影响合同测试和完整 218 项 V2 套件通过；独立终审无 P0/P1。
-  当前全历史人口校验为 O(n²)，且没有仓库外 append anchor；在全市场规模和任何 canonical 资格前必须优化并
-  引入外部可验证锚。首个 source-bounded SEC 8-K coverage/security surface 与 disposition 证据已由后续单元补齐；
-  更多动态来源、runtime adapter 与 production/replay parity 仍是 M2 后续工作；旧资产的 V1 bias findings 仅保留为复用限制。
+- 30 项初始 ledger 对抗测试、105 项受影响合同测试和当时完整 218 项 V2 套件通过；独立终审无 P0/P1。
+  后续 scale-containment 单元移除了 loader/writer 对每条新 `UniverseEvent` 反复调用通用 append-only 全前缀校验的
+  O(E²) 路径，并把 manifest id 与 clock identity 历史查重改成增量索引。已提交 111-event SEC ledger 的严格 load
+  `validate_universe_event` 调用从 6,437 降到 222；deterministic 3→6 event 测试同时覆盖 load 与 empty-ledger write，
+  保留 duplicate/conflict taxonomy、完整 manifest/population/chain、PIT 与 default-off 校验。
+- 这不表示长期 ledger 按逻辑事件数整体线性：每个 manifest 仍累计携带并验证完整 event IDs、registries 与 memberships，
+  writer 仍原子重写全文件。多 manifest checkpoint/segmentation 与仓库外 append anchor 仍分别是市场级扩展和任何
+  canonical 资格前的 blocker。首个 source-bounded SEC 8-K coverage/security surface、runtime adapter 与 observation
+  handoff 已由后续单元补齐；旧资产的 V1 bias findings 仅保留为复用限制。
 
 ## M1 已完成单元
 
@@ -265,8 +270,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-pre-Engine-0 membership handoff 已完成；在扩展到全市场前，下一干净单元优先给当前 O(n²) 全历史人口校验建立规模测试并
-优化验证路径。任何 canonical 候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟
-和共享 feature/policy/decision chain。若期间出现满足
+pre-Engine-0 membership handoff 与 event-prefix 索引校验已完成；在扩展到长期、多 manifest 的市场级 ledger 前，下一干净
+单元应为累计 manifest surface 设计最小 checkpoint/segmentation 合同与损坏恢复测试。任何 canonical 候选前仍需仓库外
+append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

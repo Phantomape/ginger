@@ -32,7 +32,8 @@
 - [x] 外部 coverage/security surface：首个真实 SEC 8-K source bundle、219/219 行 `mapped / unmapped / excluded` disposition、111 个有效期映射/active membership、coverage evidence 与不可变 ledger/manifest 已冻结；范围仍是 research-only source frame，不是市场级完备性（2026-08-21）
 - [x] SEC 8-K source-bounded runtime adapter v2：强制显式 manifest/as-of，验证同一 envelope/ledger/coverage graph，daily/replay 走唯一共享 reader，冻结规范化 input/snapshot hash 与独立 research-only adapter parity 状态；source ceiling 不升级（2026-08-21）
 - [x] 接入只读 pre-Engine-0/default-off universe observation boundary：同一显式 manifest/as-of 经一次 adapter 调用进入 daily/replay 真 alias，精确保留 membership/state/identity 并拒绝 ceiling、字段与语义 hash 漂移；不调用 Engine-0 policy、不建立 baseline 或市场决策时钟（2026-08-21）
-- [ ] 全市场使用前给当前 O(n²) 全历史人口校验建立规模基准并优化验证路径；任何 canonical 候选前建立仓库外 append anchor
+- [x] 给 event-row prefix 校验建立 deterministic 规模回归并用 event/manifest/clock identity 索引移除额外 O(E²)/O(M²) 历史重扫；保留完整 manifest/population/chain、PIT 与 default-off 校验（2026-08-21）
+- [ ] 全市场长期使用前为累计 multi-manifest event/registry/membership surface 与 whole-file atomic rewrite 建立 checkpoint/segmentation；任何 canonical 候选前建立仓库外 append anchor
 
 ## 注意事项
 

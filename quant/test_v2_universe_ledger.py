@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+import quant.v2_contracts as contracts_module
 import quant.v2_universe_ledger as ledger_module
 from quant.test_v2_contracts import _evidence, _mapping, _seal_event, _source
 from quant.test_v2_research_contracts import _event_for, _graph
@@ -363,6 +364,111 @@ def test_atomic_append_is_idempotent_and_daily_replay_are_true_aliases(
         daily["membership_snapshot_sha256"]
         == manifest["membership_snapshot_sha256"]
     )
+
+
+def test_event_prefix_validation_scales_linearly_for_load_and_write(
+    tmp_path, monkeypatch
+):
+    graph, bundle, clock, events = _bound_graph()
+    populations = (
+        [
+            event
+            for event in events
+            if event["security_mapping"]["security_id"] == "sec-aaa"
+        ],
+        events,
+    )
+    load_counts = []
+    write_counts = []
+
+    def count_event_validations(call):
+        validation_calls = 0
+        real_validate = ledger_module.validate_universe_event
+
+        def counted_validate(value):
+            nonlocal validation_calls
+            validation_calls += 1
+            return real_validate(value)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(ledger_module, "validate_universe_event", counted_validate)
+            patch.setattr(contracts_module, "validate_universe_event", counted_validate)
+            result = call()
+        return validation_calls, result
+
+    for index, population in enumerate(populations, start=1):
+        manifest = _manifest(
+            population,
+            clock,
+            suffix=f"scale-{index}",
+            graph=graph,
+            bundle=bundle,
+            event_batch_id=population[0]["event_batch_id"],
+        )
+        path = tmp_path / f"scale-{index}.jsonl"
+        path.write_text(
+            "".join(ledger_module.canonical_json(event) + "\n" for event in population)
+            + ledger_module.canonical_json(manifest)
+            + "\n",
+            encoding="utf-8",
+        )
+        load_calls, loaded = count_event_validations(
+            lambda: load_v2_universe_ledger(path)
+        )
+        write_calls, written = count_event_validations(
+            lambda: _append(
+                tmp_path / f"writer-scale-{index}.jsonl",
+                population,
+                manifest,
+                graph=graph,
+                bundle=bundle,
+                clock=clock,
+            )
+        )
+
+        assert len(loaded["events"]) == len(population)
+        assert len(loaded["manifests"]) == 1
+        assert written["status"] == "appended"
+        load_counts.append(load_calls)
+        write_counts.append(write_calls)
+
+    assert load_counts[1] <= 2 * load_counts[0]
+    assert write_counts[1] <= 2 * write_counts[0]
+
+
+def test_writer_rejects_event_id_with_changed_semantics(tmp_path):
+    graph, bundle, clock, events = _bound_graph()
+    path = tmp_path / "universe.jsonl"
+    first = _manifest(events, clock)
+    _append(path, events, first, graph=graph, bundle=bundle, clock=clock)
+    original = path.read_bytes()
+
+    changed = deepcopy(events[2])
+    changed["reason"] = "Same immutable event ID with changed semantics."
+    changed = _seal_event(changed)
+    changed_population = [*events[:2], changed, *events[3:]]
+    successor = _manifest(
+        changed_population,
+        clock,
+        previous=first,
+        suffix="event-conflict",
+        data_cutoff="2026-08-20T14:21:00Z",
+        frozen_at="2026-08-20T14:22:00Z",
+        recorded_at="2026-08-20T14:23:00Z",
+    )
+
+    _assert_code(
+        "universe_event_id_conflict",
+        lambda: _append(
+            path,
+            [changed],
+            successor,
+            graph=graph,
+            bundle=bundle,
+            clock=clock,
+        ),
+    )
+    assert path.read_bytes() == original
 
 
 def test_equivalent_utc_offsets_produce_identical_membership_snapshot(tmp_path):
@@ -1063,6 +1169,12 @@ def test_loader_rejects_orphan_tail_unknown_row_and_damaged_prefix(tmp_path):
 
     path.write_text(original + ledger_module.canonical_json(events[0]) + "\n", encoding="utf-8")
     _assert_code("duplicate_physical_universe_event", lambda: load_v2_universe_ledger(path))
+
+    changed = deepcopy(events[0])
+    changed["reason"] = "Same immutable event ID with changed semantics."
+    changed = _seal_event(changed)
+    path.write_text(original + ledger_module.canonical_json(changed) + "\n", encoding="utf-8")
+    _assert_code("immutable_key_conflict", lambda: load_v2_universe_ledger(path))
 
     path.write_text(original + '{"record_type":"unknown"}\n', encoding="utf-8")
     _assert_code("unsupported_ledger_record_type", lambda: load_v2_universe_ledger(path))

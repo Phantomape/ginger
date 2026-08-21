@@ -39,7 +39,6 @@ try:  # Support package imports and direct ``quant/`` execution.
         V2ContractValidationError,
         canonical_hash,
         canonical_json,
-        validate_append_only_append,
         validate_evidence_against_source,
         validate_evidence_record,
         validate_session_clock_against_calendar,
@@ -67,7 +66,6 @@ except ImportError:  # pragma: no cover - direct script fallback.
         V2ContractValidationError,
         canonical_hash,
         canonical_json,
-        validate_append_only_append,
         validate_evidence_against_source,
         validate_evidence_record,
         validate_session_clock_against_calendar,
@@ -1275,25 +1273,33 @@ def _load_ledger_text(
     events: list[dict[str, Any]] = []
     manifests: list[dict[str, Any]] = []
     uncommitted_ids: list[str] = []
+    event_semantic_by_id: dict[str, str] = {}
+    seen_manifest_ids: set[str] = set()
     seen_event_batch_ids: set[str] = set()
+    clock_bindings: dict[str, tuple[str, str, str, str]] = {}
     for row in raw_rows:
         record_type = row.get("record_type")
         if record_type == "v2_universe_event":
-            if events:
-                classification = _contract_call(validate_append_only_append, events, row)
-                if classification != "append":
-                    _fail(
-                        "duplicate_physical_universe_event",
-                        "a committed ledger cannot store a duplicate event row",
-                    )
             event = _contract_call(validate_universe_event, row)
+            previous_semantic = event_semantic_by_id.get(event.event_id)
+            if previous_semantic is not None:
+                if previous_semantic != event.semantic_hash:
+                    _fail(
+                        "immutable_key_conflict",
+                        f"event_id {event.event_id!r} already has different semantics",
+                    )
+                _fail(
+                    "duplicate_physical_universe_event",
+                    "a committed ledger cannot store a duplicate event row",
+                )
             events.append(event.to_dict())
+            event_semantic_by_id[event.event_id] = event.semantic_hash
             uncommitted_ids.append(event.event_id)
             continue
         if record_type != MANIFEST_RECORD_TYPE:
             _fail("unsupported_ledger_record_type", f"unsupported record_type {record_type!r}")
         manifest = _validate_manifest_shape(row)
-        if any(item["manifest_id"] == manifest["manifest_id"] for item in manifests):
+        if manifest["manifest_id"] in seen_manifest_ids:
             _fail("duplicate_physical_manifest", "manifest_id appears more than once")
         if manifest["event_batch_id"] in seen_event_batch_ids:
             _fail(
@@ -1301,7 +1307,7 @@ def _load_ledger_text(
                 "event_batch_id must be unique across committed manifests",
             )
         try:
-            _validate_clock_bindings_against_history(manifest, manifests)
+            _extend_clock_binding_registry(manifest, clock_bindings)
         except V2UniverseLedgerConflictError as exc:
             raise V2UniverseLedgerValidationError(
                 "damaged_session_clock_registry", exc.detail
@@ -1314,6 +1320,7 @@ def _load_ledger_text(
                 "physical event rows since the prior manifest must equal batch_event_ids",
             )
         manifests.append(manifest)
+        seen_manifest_ids.add(manifest["manifest_id"])
         seen_event_batch_ids.add(manifest["event_batch_id"])
         uncommitted_ids = []
     if uncommitted_ids or not manifests or raw_rows[-1].get("record_type") != MANIFEST_RECORD_TYPE:
@@ -1466,68 +1473,53 @@ def _validate_manifest_input_registry(
         )
 
 
-def _validate_clock_bindings_against_history(
+def _extend_clock_binding_registry(
     manifest: Mapping[str, Any],
-    existing_manifests: Sequence[Mapping[str, Any]],
+    registry: dict[str, tuple[str, str, str, str]],
 ) -> None:
-    current = (
+    bindings = (
         (
             manifest["session_clock_id"],
-            manifest["session_clock_hash"],
-            manifest["session_clock_record_hash"],
-            manifest["session_clock_calendar_evidence_id"],
-            manifest["session_clock_calendar_evidence_record_hash"],
+            (
+                manifest["session_clock_hash"],
+                manifest["session_clock_record_hash"],
+                manifest["session_clock_calendar_evidence_id"],
+                manifest["session_clock_calendar_evidence_record_hash"],
+            ),
         ),
         (
             manifest["effective_session_clock_id"],
-            manifest["effective_session_clock_hash"],
-            manifest["effective_session_clock_record_hash"],
-            manifest["effective_session_clock_calendar_evidence_id"],
-            manifest["effective_session_clock_calendar_evidence_record_hash"],
+            (
+                manifest["effective_session_clock_hash"],
+                manifest["effective_session_clock_record_hash"],
+                manifest["effective_session_clock_calendar_evidence_id"],
+                manifest["effective_session_clock_calendar_evidence_record_hash"],
+            ),
         ),
     )
-    prior: dict[str, tuple[str, str, str, str]] = {}
-
-    def remember(clock_id: str, binding: tuple[str, str, str, str]) -> None:
-        if clock_id in prior and prior[clock_id] != binding:
-            _fail(
-                "damaged_session_clock_registry",
-                "stored manifests disagree on one session_clock_id",
-            )
-        prior[clock_id] = binding
-
-    for item in existing_manifests:
-        remember(
-            item["session_clock_id"],
-            (
-                item["session_clock_hash"],
-                item["session_clock_record_hash"],
-                item["session_clock_calendar_evidence_id"],
-                item["session_clock_calendar_evidence_record_hash"],
-            ),
-        )
-        remember(
-            item["effective_session_clock_id"],
-            (
-                item["effective_session_clock_hash"],
-                item["effective_session_clock_record_hash"],
-                item["effective_session_clock_calendar_evidence_id"],
-                item["effective_session_clock_calendar_evidence_record_hash"],
-            ),
-        )
-    for clock_id, semantic_hash, record_hash, evidence_id, evidence_hash in current:
-        binding = (
-            semantic_hash,
-            record_hash,
-            evidence_id,
-            evidence_hash,
-        )
-        if clock_id in prior and prior[clock_id] != binding:
+    for clock_id, binding in bindings:
+        if clock_id in registry and registry[clock_id] != binding:
             raise V2UniverseLedgerConflictError(
                 "session_clock_id_conflict",
                 "session_clock_id is already bound to another clock record",
             )
-        prior[clock_id] = binding
+        registry[clock_id] = binding
+
+
+def _validate_clock_bindings_against_history(
+    manifest: Mapping[str, Any],
+    existing_manifests: Sequence[Mapping[str, Any]],
+) -> None:
+    registry: dict[str, tuple[str, str, str, str]] = {}
+    for item in existing_manifests:
+        try:
+            _extend_clock_binding_registry(item, registry)
+        except V2UniverseLedgerConflictError:
+            _fail(
+                "damaged_session_clock_registry",
+                "stored manifests disagree on one session_clock_id",
+            )
+    _extend_clock_binding_registry(manifest, registry)
 
 
 def append_v2_universe_batch(
@@ -1653,20 +1645,21 @@ def append_v2_universe_batch(
         )
         new_events: list[UniverseEvent] = []
         combined = list(existing_events)
+        event_semantic_by_id = {
+            event.event_id: event.semantic_hash for event in existing_events
+        }
         for event in sorted(proposed, key=lambda item: (item.effective_at, item.event_id)):
-            try:
-                classification = _contract_call(
-                    validate_append_only_append, combined, event
-                )
-            except V2UniverseLedgerValidationError as exc:
-                if exc.code == "immutable_key_conflict":
+            previous_semantic = event_semantic_by_id.get(event.event_id)
+            if previous_semantic is not None:
+                if previous_semantic != event.semantic_hash:
                     raise V2UniverseLedgerConflictError(
-                        "universe_event_id_conflict", exc.detail
-                    ) from exc
-                raise
-            if classification == "append":
-                combined.append(event)
-                new_events.append(event)
+                        "universe_event_id_conflict",
+                        f"event_id {event.event_id!r} already has different semantics",
+                    )
+                continue
+            event_semantic_by_id[event.event_id] = event.semantic_hash
+            combined.append(event)
+            new_events.append(event)
         if same_manifest is not None:
             if (
                 same_manifest["semantic_hash"] == proposed_manifest["semantic_hash"]
