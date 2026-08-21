@@ -1,9 +1,11 @@
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 import json
 from pathlib import Path
 
 import pytest
 
+import quant.v2_universe_ledger_segments as segments_module
 from quant.test_v2_contracts import _seal_event
 from quant.test_v2_session_clock_contracts import _clock
 from quant.test_v2_universe_ledger import (
@@ -14,14 +16,16 @@ from quant.test_v2_universe_ledger import (
 )
 from quant.v2_contracts import canonical_hash, canonical_json
 from quant.v2_universe_ledger import (
+    V2UniverseLedgerError,
     load_v2_universe_ledger,
     read_v2_daily_universe,
     read_v2_replay_universe,
     read_v2_universe_membership,
 )
 from quant.v2_universe_ledger_segments import (
-    V2UniverseSegmentError,
+    append_segmented_v2_universe_batch,
     audit_segmented_v2_universe_ledger_orphans,
+    bootstrap_segmented_v2_universe_ledger,
     build_segmented_ledger_contract,
     load_segmented_v2_universe_ledger,
     segmented_record_path,
@@ -32,7 +36,7 @@ from quant.v2_universe_ledger_segments import (
 
 
 def _assert_code(code, call):
-    with pytest.raises(V2UniverseSegmentError) as caught:
+    with pytest.raises(V2UniverseLedgerError) as caught:
         call()
     assert caught.value.code == code
 
@@ -125,6 +129,97 @@ def _three_manifest_ledger(tmp_path):
         clock=future_clock,
     )
     return path, transition
+
+
+def _segmented_writer_fixture(tmp_path):
+    legacy_path, _ = _three_manifest_ledger(tmp_path)
+    full = load_v2_universe_ledger(legacy_path)
+    graph, bundle, clock, _ = _bound_graph(quarantine_second=False)
+    future_clock = _clock(
+        bundle,
+        calendar_session_id="XNYS-2026-08-21",
+        assignment_cutoff="2026-08-20T14:20:00Z",
+        frozen_at="2026-08-20T14:21:00Z",
+        recorded_at="2026-08-20T14:22:00Z",
+    )
+    first_ids = set(full["manifests"][0]["universe_event_ids"])
+    first = {
+        "events": [item for item in full["events"] if item["event_id"] in first_ids],
+        "manifests": full["manifests"][:1],
+    }
+    transactions = []
+    for manifest in full["manifests"][1:]:
+        batch_ids = set(manifest["batch_event_ids"])
+        transactions.append(
+            (
+                [item for item in full["events"] if item["event_id"] in batch_ids],
+                manifest,
+            )
+        )
+    return {
+        "full": full,
+        "first": first,
+        "transactions": transactions,
+        "graph": graph,
+        "bundle": bundle,
+        "clock": clock,
+        "future_clock": future_clock,
+    }
+
+
+def _append_segmented(root, events, manifest, fixture, *, evidence_records=None):
+    run_clock = (
+        fixture["clock"]
+        if manifest["session_clock_id"] == fixture["clock"]["session_clock_id"]
+        else fixture["future_clock"]
+    )
+    effective_clock = (
+        fixture["clock"]
+        if manifest["effective_session_clock_id"]
+        == fixture["clock"]["session_clock_id"]
+        else fixture["future_clock"]
+    )
+    return append_segmented_v2_universe_batch(
+        root,
+        events,
+        manifest,
+        run_clock=run_clock,
+        effective_clock=effective_clock,
+        evidence_records=(
+            fixture["graph"]["evidence"]
+            if evidence_records is None
+            else evidence_records
+        ),
+        source_contracts=[fixture["graph"]["source"]],
+        run_calendar_sessions=fixture["bundle"]["sessions"],
+        run_calendar_evidence=fixture["bundle"]["evidence"],
+        run_calendar_source_contract=fixture["bundle"]["source"],
+        effective_calendar_sessions=fixture["bundle"]["sessions"],
+        effective_calendar_evidence=fixture["bundle"]["evidence"],
+        effective_calendar_source_contract=fixture["bundle"]["source"],
+    )
+
+
+def _bootstrap_segmented(root, fixture, *, evidence_records=None):
+    return bootstrap_segmented_v2_universe_ledger(
+        root,
+        fixture["first"]["events"],
+        fixture["first"]["manifests"][0],
+        run_clock=fixture["clock"],
+        effective_clock=fixture["clock"],
+        evidence_records=(
+            fixture["graph"]["evidence"]
+            if evidence_records is None
+            else evidence_records
+        ),
+        source_contracts=[fixture["graph"]["source"]],
+        run_calendar_sessions=fixture["bundle"]["sessions"],
+        run_calendar_evidence=fixture["bundle"]["evidence"],
+        run_calendar_source_contract=fixture["bundle"]["source"],
+        effective_calendar_sessions=fixture["bundle"]["sessions"],
+        effective_calendar_evidence=fixture["bundle"]["evidence"],
+        effective_calendar_source_contract=fixture["bundle"]["source"],
+    )
 
 
 def _reseal(row, hash_field):
@@ -476,3 +571,249 @@ def test_checked_in_sec_ledger_identity_is_unchanged(tmp_path):
     assert manifest["membership_snapshot_sha256"] == (
         "e8663c0049b74e19397a475026c3efdca193b5f2929e84ba78e2f75803c0dd38"
     )
+
+
+def test_writer_bootstraps_appends_zero_event_segment_and_retries_exactly(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "writer"
+
+    first = _bootstrap_segmented(root, fixture)
+    retry_bootstrap = _bootstrap_segmented(root, fixture)
+    assert first["status"] == "bootstrapped"
+    assert retry_bootstrap["status"] == "duplicate"
+    head_bytes = (root / "HEAD.json").read_bytes()
+    assert head_bytes.endswith(b"\n")
+    assert b"\r\n" not in head_bytes
+    checkpoint_path = segmented_record_path(
+        root, "checkpoint", first["checkpoint_hash"]
+    )
+    checkpoint_bytes = checkpoint_path.read_bytes()
+
+    second_events, second_manifest = fixture["transactions"][0]
+    second = _append_segmented(
+        root, second_events, second_manifest, fixture
+    )
+    second_retry = _append_segmented(
+        root, second_events, second_manifest, fixture
+    )
+    assert second["status"] == "appended"
+    assert second["event_rows_written"] == 1
+    assert second_retry["status"] == "duplicate"
+    assert second_retry["segment_hash"] is None
+    assert second_retry["head_hash"] == second["head_hash"]
+
+    third_events, third_manifest = fixture["transactions"][1]
+    third = _append_segmented(root, third_events, third_manifest, fixture)
+    assert third["status"] == "appended"
+    assert third["event_rows_written"] == 0
+    assert checkpoint_path.read_bytes() == checkpoint_bytes
+    assert len(list((root / "segments").glob("*.json"))) == 2
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def test_append_requires_head_and_reuses_legacy_m1_guards(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    events, manifest = fixture["transactions"][0]
+    rejected_bootstrap = tmp_path / "rejected-bootstrap"
+    _assert_code(
+        "unresolved_evidence_id",
+        lambda: _bootstrap_segmented(
+            rejected_bootstrap, fixture, evidence_records=[]
+        ),
+    )
+    assert not (rejected_bootstrap / "HEAD.json").exists()
+    assert not (rejected_bootstrap / "checkpoints").exists()
+
+    _assert_code(
+        "segmented_head_missing",
+        lambda: _append_segmented(
+            tmp_path / "missing-head", events, manifest, fixture
+        ),
+    )
+
+    root = tmp_path / "guarded"
+    _bootstrap_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    _assert_code(
+        "unresolved_evidence_id",
+        lambda: _append_segmented(
+            root, events, manifest, fixture, evidence_records=[]
+        ),
+    )
+    assert (root / "HEAD.json").read_bytes() == old_head
+    assert not (root / "segments").exists()
+
+
+def test_immutable_segment_collision_never_overwrites_or_moves_head(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "collision"
+    first = _bootstrap_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    planned = build_segmented_ledger_contract(
+        fixture["full"], checkpoint_manifest_count=1
+    )["segments"][0]
+    collision_path = segmented_record_path(root, "segment", planned["segment_hash"])
+    collision_path.parent.mkdir(parents=True, exist_ok=True)
+    collision_path.write_bytes(b"different immutable bytes\n")
+    events, manifest = fixture["transactions"][0]
+
+    _assert_code(
+        "segmented_segment_collision",
+        lambda: _append_segmented(root, events, manifest, fixture),
+    )
+    assert (root / "HEAD.json").read_bytes() == old_head
+    assert collision_path.read_bytes() == b"different immutable bytes\n"
+    assert load_segmented_v2_universe_ledger(root) == fixture["first"]
+    assert first["checkpoint_hash"] == json.loads(old_head)["checkpoint_hash"]
+
+
+def test_head_write_failure_leaves_orphan_and_exact_retry_adopts_only_it(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "head-failure"
+    _bootstrap_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    events, manifest = fixture["transactions"][0]
+    real_replace = segments_module._replace_with_retry
+
+    def fail_replace(_source, _target):
+        raise OSError("simulated HEAD replace failure")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", fail_replace)
+    _assert_code(
+        "segmented_head_write_failed",
+        lambda: _append_segmented(root, events, manifest, fixture),
+    )
+    assert (root / "HEAD.json").read_bytes() == old_head
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+    assert audit["orphan_count"] == 1
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    retry = _append_segmented(root, events, manifest, fixture)
+    assert retry["status"] == "appended"
+    assert retry["segment_reused"] is True
+    assert audit_segmented_v2_universe_ledger_orphans(root)["orphan_count"] == 0
+
+
+def test_bootstrap_head_failure_reuses_only_exact_checkpoint_orphan(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "bootstrap-head-failure"
+    real_replace = segments_module._replace_with_retry
+
+    def fail_replace(_source, _target):
+        raise OSError("simulated failure")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", fail_replace)
+    _assert_code("segmented_head_write_failed", lambda: _bootstrap_segmented(root, fixture))
+    assert not (root / "HEAD.json").exists()
+    assert len(list((root / "checkpoints").glob("*.json"))) == 1
+    assert not (root / "segments").exists()
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    retry = _bootstrap_segmented(root, fixture)
+    assert retry["status"] == "bootstrapped"
+    assert retry["checkpoint_reused"] is True
+    assert load_segmented_v2_universe_ledger(root) == fixture["first"]
+
+
+def test_retry_after_head_committed_then_error_is_duplicate(tmp_path, monkeypatch):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "post-head-error"
+    _bootstrap_segmented(root, fixture)
+    events, manifest = fixture["transactions"][0]
+    real_replace = segments_module._replace_with_retry
+
+    def commit_then_raise(source, target):
+        real_replace(source, target)
+        raise OSError("simulated error after commit point")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", commit_then_raise)
+    _assert_code(
+        "segmented_head_write_failed",
+        lambda: _append_segmented(root, events, manifest, fixture),
+    )
+    assert load_segmented_v2_universe_ledger(root)["manifests"] == fixture["full"][
+        "manifests"
+    ][:2]
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    retry = _append_segmented(root, events, manifest, fixture)
+    assert retry["status"] == "duplicate"
+    assert len(list((root / "segments").glob("*.json"))) == 1
+
+
+def test_changed_head_fails_predecessor_identity_check(tmp_path, monkeypatch):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "stale-head"
+    _bootstrap_segmented(root, fixture)
+    old_head_row = json.loads((root / "HEAD.json").read_bytes())
+    concurrent_head = deepcopy(old_head_row)
+    concurrent_head["head_manifest_id"] = "simulated-concurrent-head"
+    concurrent_head = _reseal(concurrent_head, "head_hash")
+    concurrent_bytes = (canonical_json(concurrent_head) + "\n").encode("utf-8")
+    real_publish = segments_module._publish_immutable_record
+
+    def publish_then_change_head(path, value, *, role):
+        reused = real_publish(path, value, role=role)
+        if role == "segment":
+            _write_json(root / "HEAD.json", concurrent_head)
+        return reused
+
+    monkeypatch.setattr(
+        segments_module, "_publish_immutable_record", publish_then_change_head
+    )
+    events, manifest = fixture["transactions"][0]
+    _assert_code(
+        "segmented_stale_head",
+        lambda: _append_segmented(root, events, manifest, fixture),
+    )
+    assert (root / "HEAD.json").read_bytes() == concurrent_bytes
+
+    _write_json(root / "HEAD.json", old_head_row)
+    assert audit_segmented_v2_universe_ledger_orphans(root)["orphan_count"] == 1
+
+
+def test_missing_head_cannot_roll_back_a_store_with_segments(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "missing-committed-head"
+    _bootstrap_segmented(root, fixture)
+    events, manifest = fixture["transactions"][0]
+    _append_segmented(root, events, manifest, fixture)
+    immutable_before = {
+        item.relative_to(root).as_posix(): item.read_bytes()
+        for directory in (root / "checkpoints", root / "segments")
+        for item in directory.glob("*.json")
+    }
+    (root / "HEAD.json").unlink()
+
+    _assert_code(
+        "segmented_bootstrap_orphan_conflict",
+        lambda: _bootstrap_segmented(root, fixture),
+    )
+    assert not (root / "HEAD.json").exists()
+    assert {
+        item.relative_to(root).as_posix(): item.read_bytes()
+        for directory in (root / "checkpoints", root / "segments")
+        for item in directory.glob("*.json")
+    } == immutable_before
+
+
+def test_cooperative_same_batch_writers_serialize_to_append_and_duplicate(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "concurrent"
+    _bootstrap_segmented(root, fixture)
+    events, manifest = fixture["transactions"][0]
+
+    def append_once(_):
+        return _append_segmented(root, events, manifest, fixture)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(append_once, range(2)))
+    assert sorted(item["status"] for item in results) == ["appended", "duplicate"]
+    assert len(list((root / "segments").glob("*.json"))) == 1
+    assert load_segmented_v2_universe_ledger(root)["manifests"] == fixture["full"][
+        "manifests"
+    ][:2]

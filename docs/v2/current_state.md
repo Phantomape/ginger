@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T17:44Z（M2 checkpoint/segment sidecar contract）
+> 最后更新：2026-08-21T18:38Z（M2 segmented publisher/writer）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引与只读 checkpoint/segment sidecar 合同完成；segmented writer、compact checkpoint、市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引及 checkpoint/segment sidecar publisher/writer 完成；compact checkpoint、市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -155,7 +155,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   canonical 资格前的 blocker。首个 source-bounded SEC 8-K coverage/security surface、runtime adapter 与 observation
   handoff 已由后续单元补齐；旧资产的 V1 bias findings 仅保留为复用限制。
 
-### Universe checkpoint/segment sidecar 合同核心
+### Universe checkpoint/segment sidecar 与 publisher/writer
 
 - `quant/v2_universe_ledger_segments.py` 新增 opt-in、只读的物理存储合同：常量大小的显式 `HEAD` 是唯一提交权威，
   绑定一个不可变 checkpoint 和可选的反向 hash-linked segment tail；每个 segment 只保存一笔原样 v1 event/manifest
@@ -168,9 +168,17 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - future-effective 事件在 checkpoint 中保留为 pending，后续零事件 manifest 推进 `membership_as_of` 后可得到与 legacy
   相同的激活结果。已提交 SEC 111-event fixture 的 manifest、event semantic/record 与 membership hashes 完全不变。
   15 项 focused 对抗测试、106 项 ledger/coverage/SEC/sidecar 测试和完整 294 项 V2 测试通过；独立终审 P0=0/P1=0。
-- 该 slice 是 `contract_only_unwired`：没有 publisher、segmented writer、checkpoint rotation/compaction、runtime/reader
-  接线或仓库外 append anchor。现有 writer 仍整文件 atomic rewrite，v1 manifest 仍支付累计 surface hashing；因此
-  market-scale blocker 尚未关闭，旧有效 `HEAD` 的恶意回滚也必须等待外部 anchor 才能检测。
+- 显式 bootstrap 与 segmented append 现在和 legacy writer 共用同一 request/M1 preparation 与 locked-history
+  classification；首笔及后续每笔都必须通过 source/evidence、calendar/clock、event/manifest/batch、PIT 与 default-off
+  校验，不能用结构合法的 legacy view 绕过输入合同。bootstrap 只在 virgin root 或“唯一 exact planned checkpoint、零
+  segment”的首笔崩溃恢复面上工作；`HEAD` 缺失且已有 segment 时 fail closed，不能回退已提交历史。
+- checkpoint/segment 以 exact canonical LF bytes 经 temp+fsync 和 create-only hard link 发布，路径碰撞绝不覆盖；合作
+  writer 在同一 OS advisory lock 下串行化，完整 immutable 对象先落盘，最后才以 atomic replace 更新固定 `HEAD`，并在替换前
+  复核 predecessor bytes。`HEAD` 前失败只留下不可达 orphan，精确重试复用；`HEAD` 已替换但调用方未收到成功时，重试返回
+  duplicate。零事件 manifest 仍恰好占一个 segment；58 项 focused 与完整 305 项 V2 测试通过，独立终审 P0=0/P1=0。
+- 该 slice 仍是 `contract_only_unwired`：没有 compact checkpoint rotation、runtime/reader 接线、仓库外 append anchor、
+  canonical/PIT 提升或生产权限。advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧
+  `HEAD` 回滚；v1 manifest 的累计 event/registry/membership surface 仍是下一 market-scale blocker。
 
 ## M1 已完成单元
 
@@ -287,8 +295,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-pre-Engine-0 membership handoff 与 event-prefix 索引校验已完成；在扩展到长期、多 manifest 的市场级 ledger 前，下一干净
-单元应为累计 manifest surface 设计最小 checkpoint/segmentation 合同与损坏恢复测试。任何 canonical 候选前仍需仓库外
-append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
+checkpoint/segment publisher/writer 与进程崩溃恢复语义已完成；在扩展到长期、多 manifest 的市场级 ledger 前，下一干净
+单元应实现 compact checkpoint rotation，实际移除累计 manifest event/registry/membership surface 的重建成本。任何 canonical
+候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

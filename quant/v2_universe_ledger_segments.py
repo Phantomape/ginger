@@ -1,4 +1,4 @@
-"""Read-only checkpoint/segment sidecar contract for the V2 universe ledger.
+"""Opt-in checkpoint/segment sidecar storage for the V2 universe ledger.
 
 The existing mixed JSONL ledger remains the logical truth and is not modified by
 this module.  A constant-size ``HEAD.json`` selects one immutable checkpoint and
@@ -6,30 +6,43 @@ an optional hash-linked tail of one-transaction segments.  Loading reconstructs
 the exact legacy ``events``/``manifests`` view and delegates final validation to
 the existing strict ledger parser.
 
-This is deliberately a contract-only storage slice.  It does not publish files,
-change the legacy writer or reader, establish an external append anchor, or
-upgrade any research/PIT/trading boundary.
+The publisher and writer remain opt-in and do not change the legacy writer or
+reader, establish an external append anchor, or upgrade any research/PIT/trading
+boundary.
 """
 
 from __future__ import annotations
 
 import json
 import math
+import os
+import tempfile
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
+from .data_paths import _replace_with_retry
 from .v2_contracts import (
+    CalendarSession,
+    EvidenceRecord,
+    SessionClock,
+    SourceContract,
+    UniverseEvent,
     V2ContractValidationError,
     canonical_hash,
     canonical_json,
     validate_universe_event,
 )
 from .v2_universe_ledger import (
+    _LOCK_TIMEOUT_SECONDS,
     V2UniverseLedgerError,
+    _classify_v2_universe_batch_append,
+    _exclusive_ledger_lock,
     _instant,
     _load_ledger_text,
     _membership_semantic_rows,
+    _prepare_v2_universe_batch_append,
+    _validated_lock_timeout,
     _validate_manifest_shape,
     validate_universe_event_population,
 )
@@ -603,6 +616,144 @@ def segmented_record_path(root: str | Path, kind: str, record_hash: str) -> Path
     _fail("segmented_record_kind_invalid", "kind must be checkpoint or segment")
 
 
+def _canonical_record_bytes(value: Mapping[str, Any]) -> bytes:
+    try:
+        return (canonical_json(value) + "\n").encode("utf-8")
+    except V2ContractValidationError as exc:
+        raise V2UniverseSegmentError(exc.code, exc.detail) from exc
+
+
+def _publish_immutable_record(
+    path: Path, value: Mapping[str, Any], *, role: str
+) -> bool:
+    """Create one content-addressed record without ever replacing its path."""
+
+    payload = _canonical_record_bytes(value)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "wb",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = handle.name
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        try:
+            os.link(temporary, path)
+            return False
+        except FileExistsError:
+            try:
+                existing = path.read_bytes()
+            except OSError as exc:
+                raise V2UniverseSegmentError(
+                    f"segmented_{role}_collision",
+                    f"cannot verify existing immutable {role} {path}: {exc}",
+                ) from exc
+            if path.is_symlink() or existing != payload:
+                _fail(
+                    f"segmented_{role}_collision",
+                    f"immutable {role} path already contains different bytes: {path}",
+                )
+            return True
+        except OSError as exc:
+            raise V2UniverseSegmentError(
+                f"segmented_{role}_publish_failed",
+                f"cannot publish immutable {role} {path}: {exc}",
+            ) from exc
+    finally:
+        if temporary is not None:
+            try:
+                Path(temporary).unlink()
+            except FileNotFoundError:
+                pass
+            except OSError:
+                pass
+
+
+def _validate_bootstrap_recovery_surface(
+    root: Path, checkpoint_path: Path, checkpoint: Mapping[str, Any]
+) -> None:
+    """Allow only a virgin root or the exact orphan from this first commit."""
+
+    checkpoints = sorted((root / "checkpoints").glob("*.json"))
+    segments = sorted((root / "segments").glob("*.json"))
+    if not checkpoints and not segments:
+        return
+    expected = _canonical_record_bytes(checkpoint)
+    try:
+        exact_orphan = (
+            not segments
+            and checkpoints == [checkpoint_path]
+            and not checkpoint_path.is_symlink()
+            and checkpoint_path.read_bytes() == expected
+        )
+    except OSError:
+        exact_orphan = False
+    if not exact_orphan:
+        _fail(
+            "segmented_bootstrap_orphan_conflict",
+            "missing HEAD is recoverable only with the one exact planned checkpoint and no segments",
+        )
+
+
+def _assert_head_identity(path: Path, expected_bytes: bytes | None) -> None:
+    try:
+        present = os.path.lexists(path)
+        actual = path.read_bytes() if present else None
+    except OSError as exc:
+        raise V2UniverseSegmentError(
+            "segmented_stale_head", f"cannot verify prior HEAD identity: {exc}"
+        ) from exc
+    if actual != expected_bytes:
+        _fail(
+            "segmented_stale_head",
+            "HEAD changed after this transaction read its predecessor",
+        )
+
+
+def _atomic_publish_head(
+    path: Path, value: Mapping[str, Any], *, expected_bytes: bytes | None
+) -> None:
+    """Publish exact LF bytes only after a last predecessor identity check."""
+
+    payload = _canonical_record_bytes(value)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "wb",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = handle.name
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        _assert_head_identity(path, expected_bytes)
+        try:
+            _replace_with_retry(temporary, path)
+        except OSError as exc:
+            raise V2UniverseSegmentError(
+                "segmented_head_write_failed", f"cannot publish HEAD {path}: {exc}"
+            ) from exc
+        temporary = None
+    finally:
+        if temporary is not None:
+            try:
+                Path(temporary).unlink()
+            except FileNotFoundError:
+                pass
+            except OSError:
+                pass
+
+
 def _read_json(path: Path, *, role: str) -> dict[str, Any]:
     if not path.is_file():
         _fail(f"segmented_{role}_missing", f"referenced {role} is missing: {path}")
@@ -741,6 +892,232 @@ def load_segmented_v2_universe_ledger(
     return loaded
 
 
+def bootstrap_segmented_v2_universe_ledger(
+    root: str | Path,
+    events: Iterable[Mapping[str, Any] | UniverseEvent],
+    manifest: Mapping[str, Any],
+    *,
+    run_clock: Mapping[str, Any] | SessionClock,
+    effective_clock: Mapping[str, Any] | SessionClock,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    run_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    run_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    run_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    effective_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    effective_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    effective_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    lock_timeout_seconds: float = _LOCK_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    """Guard and publish the first transaction as one full checkpoint."""
+
+    prepared = _prepare_v2_universe_batch_append(
+        events,
+        manifest,
+        run_clock=run_clock,
+        effective_clock=effective_clock,
+        evidence_records=evidence_records,
+        source_contracts=source_contracts,
+        run_calendar_sessions=run_calendar_sessions,
+        run_calendar_evidence=run_calendar_evidence,
+        run_calendar_source_contract=run_calendar_source_contract,
+        effective_calendar_sessions=effective_calendar_sessions,
+        effective_calendar_evidence=effective_calendar_evidence,
+        effective_calendar_source_contract=effective_calendar_source_contract,
+    )
+    timeout = _validated_lock_timeout(lock_timeout_seconds)
+    root_path = Path(root)
+    head_path = root_path / "HEAD.json"
+    lock_path = root_path / "HEAD.json.lock"
+    with _exclusive_ledger_lock(lock_path, timeout_seconds=timeout):
+        if os.path.lexists(head_path):
+            current_head = validate_segmented_head(_read_json(head_path, role="head"))
+            current_head_bytes = _canonical_record_bytes(current_head)
+            current, _ = _load_reachable_store(root_path, "HEAD.json")
+            _assert_head_identity(head_path, current_head_bytes)
+            plan = _classify_v2_universe_batch_append(current, prepared)
+            if plan["status"] == "duplicate":
+                _assert_head_identity(head_path, current_head_bytes)
+                return {
+                    "status": "duplicate",
+                    "rows_written": 0,
+                    "checkpoint_reused": True,
+                    "checkpoint_hash": current_head["checkpoint_hash"],
+                    "head_hash": current_head["head_hash"],
+                    "event_count": len(current["events"]),
+                    "manifest_count": len(current["manifests"]),
+                    "path": str(head_path),
+                }
+            _fail(
+                "segmented_bootstrap_conflict",
+                "segmented store is already initialized with another HEAD",
+            )
+
+        plan = _classify_v2_universe_batch_append(
+            {"events": [], "manifests": []}, prepared
+        )
+        if plan["status"] != "append":
+            _fail("segmented_bootstrap_invalid", "first transaction was not appendable")
+        expected_view = {"events": plan["events"], "manifests": plan["manifests"]}
+        contract = build_segmented_ledger_contract(expected_view)
+        checkpoint = validate_segmented_checkpoint(contract["checkpoint"])
+        head = validate_segmented_head(contract["head"])
+        checkpoint_path = segmented_record_path(
+            root_path, "checkpoint", checkpoint["checkpoint_hash"]
+        )
+        _validate_bootstrap_recovery_surface(root_path, checkpoint_path, checkpoint)
+        checkpoint_reused = _publish_immutable_record(
+            checkpoint_path, checkpoint, role="checkpoint"
+        )
+        if validate_segmented_checkpoint(
+            _read_json(checkpoint_path, role="checkpoint")
+        ) != checkpoint:
+            _fail(
+                "segmented_checkpoint_publish_mismatch",
+                "published checkpoint differs from the planned record",
+            )
+        _atomic_publish_head(head_path, head, expected_bytes=None)
+        committed = load_segmented_v2_universe_ledger(root_path)
+        if committed != expected_view:
+            _fail(
+                "segmented_publish_verification_failed",
+                "published bootstrap does not reconstruct the planned ledger",
+            )
+        return {
+            "status": "bootstrapped",
+            "rows_written": 1 if checkpoint_reused else 2,
+            "checkpoint_reused": checkpoint_reused,
+            "checkpoint_hash": checkpoint["checkpoint_hash"],
+            "head_hash": head["head_hash"],
+            "event_count": len(committed["events"]),
+            "manifest_count": len(committed["manifests"]),
+            "path": str(head_path),
+        }
+
+
+def append_segmented_v2_universe_batch(
+    root: str | Path,
+    events: Iterable[Mapping[str, Any] | UniverseEvent],
+    manifest: Mapping[str, Any],
+    *,
+    run_clock: Mapping[str, Any] | SessionClock,
+    effective_clock: Mapping[str, Any] | SessionClock,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    run_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    run_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    run_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    effective_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    effective_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    effective_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    lock_timeout_seconds: float = _LOCK_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    """Append one guarded legacy transaction as one immutable segment."""
+
+    prepared = _prepare_v2_universe_batch_append(
+        events,
+        manifest,
+        run_clock=run_clock,
+        effective_clock=effective_clock,
+        evidence_records=evidence_records,
+        source_contracts=source_contracts,
+        run_calendar_sessions=run_calendar_sessions,
+        run_calendar_evidence=run_calendar_evidence,
+        run_calendar_source_contract=run_calendar_source_contract,
+        effective_calendar_sessions=effective_calendar_sessions,
+        effective_calendar_evidence=effective_calendar_evidence,
+        effective_calendar_source_contract=effective_calendar_source_contract,
+    )
+    timeout = _validated_lock_timeout(lock_timeout_seconds)
+    root_path = Path(root)
+    head_path = root_path / "HEAD.json"
+    lock_path = root_path / "HEAD.json.lock"
+    with _exclusive_ledger_lock(lock_path, timeout_seconds=timeout):
+        old_head = validate_segmented_head(_read_json(head_path, role="head"))
+        old_head_bytes = _canonical_record_bytes(old_head)
+        _assert_head_identity(head_path, old_head_bytes)
+        loaded, _ = _load_reachable_store(root_path, "HEAD.json")
+        _assert_head_identity(head_path, old_head_bytes)
+        plan = _classify_v2_universe_batch_append(loaded, prepared)
+        if plan["status"] == "duplicate":
+            _assert_head_identity(head_path, old_head_bytes)
+            return {
+                "status": "duplicate",
+                "rows_written": 0,
+                "event_rows_written": 0,
+                "segment_reused": False,
+                "segment_hash": None,
+                "head_hash": old_head["head_hash"],
+                "manifest_id": plan["manifest"]["manifest_id"],
+                "manifest_hash": plan["manifest"]["manifest_hash"],
+                "event_count": len(plan["events"]),
+                "manifest_count": len(plan["manifests"]),
+                "path": str(head_path),
+            }
+
+        checkpoint_path = segmented_record_path(
+            root_path, "checkpoint", old_head["checkpoint_hash"]
+        )
+        checkpoint = validate_segmented_checkpoint(
+            _read_json(checkpoint_path, role="checkpoint")
+        )
+        segment = validate_segmented_segment(
+            _build_segment(
+                checkpoint_hash=checkpoint["checkpoint_hash"],
+                sequence=(
+                    old_head["manifest_count"] - checkpoint["manifest_count"] + 1
+                ),
+                previous_segment_hash=old_head["tail_segment_hash"],
+                events=plan["new_events"],
+                manifest=plan["manifest"],
+                before_event_count=old_head["event_count"],
+                before_manifest_count=old_head["manifest_count"],
+            )
+        )
+        segment_path = segmented_record_path(
+            root_path, "segment", segment["segment_hash"]
+        )
+        segment_reused = _publish_immutable_record(
+            segment_path, segment, role="segment"
+        )
+        if validate_segmented_segment(
+            _read_json(segment_path, role="segment")
+        ) != segment:
+            _fail(
+                "segmented_segment_publish_mismatch",
+                "published segment differs from the planned record",
+            )
+        new_head = validate_segmented_head(_build_head(checkpoint, [segment]))
+        _atomic_publish_head(
+            head_path,
+            new_head,
+            expected_bytes=old_head_bytes,
+        )
+        committed = load_segmented_v2_universe_ledger(root_path)
+        expected_view = {
+            "events": plan["events"],
+            "manifests": plan["manifests"],
+        }
+        if committed != expected_view:
+            _fail(
+                "segmented_publish_verification_failed",
+                "published segment does not reconstruct the planned ledger",
+            )
+        return {
+            "status": "appended",
+            "rows_written": len(plan["new_events"]) + 1,
+            "event_rows_written": len(plan["new_events"]),
+            "segment_reused": segment_reused,
+            "segment_hash": segment["segment_hash"],
+            "head_hash": new_head["head_hash"],
+            "manifest_id": plan["manifest"]["manifest_id"],
+            "manifest_hash": plan["manifest"]["manifest_hash"],
+            "event_count": len(committed["events"]),
+            "manifest_count": len(committed["manifests"]),
+            "path": str(head_path),
+        }
+
+
 def audit_segmented_v2_universe_ledger_orphans(
     root: str | Path, *, head_path: str | Path = "HEAD.json"
 ) -> dict[str, Any]:
@@ -778,5 +1155,7 @@ __all__ = [
     "validate_segmented_segment",
     "segmented_record_path",
     "load_segmented_v2_universe_ledger",
+    "bootstrap_segmented_v2_universe_ledger",
+    "append_segmented_v2_universe_batch",
     "audit_segmented_v2_universe_ledger_orphans",
 ]

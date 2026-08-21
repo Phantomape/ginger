@@ -1522,8 +1522,21 @@ def _validate_clock_bindings_against_history(
     _extend_clock_binding_registry(manifest, registry)
 
 
-def append_v2_universe_batch(
-    path: str | Path,
+def _validated_lock_timeout(value: Any) -> float:
+    try:
+        timeout = float(value)
+    except (TypeError, ValueError) as exc:
+        raise V2UniverseLedgerLockError(
+            "invalid_lock_timeout", "lock_timeout_seconds must be finite and non-negative"
+        ) from exc
+    if not math.isfinite(timeout) or timeout < 0:
+        raise V2UniverseLedgerLockError(
+            "invalid_lock_timeout", "lock_timeout_seconds must be finite and non-negative"
+        )
+    return timeout
+
+
+def _prepare_v2_universe_batch_append(
     events: Iterable[Mapping[str, Any] | UniverseEvent],
     manifest: Mapping[str, Any],
     *,
@@ -1537,9 +1550,8 @@ def append_v2_universe_batch(
     effective_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
     effective_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
     effective_calendar_source_contract: Mapping[str, Any] | SourceContract,
-    lock_timeout_seconds: float = _LOCK_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
-    """Atomically commit after mandatory M1 evidence and clock validation."""
+    """Validate and materialize one request before any writer I/O."""
 
     if isinstance(events, (str, bytes, bytearray, Mapping)):
         _fail("event_sequence_required", "events must be an iterable of objects")
@@ -1587,16 +1599,170 @@ def append_v2_universe_batch(
             effective_calendar_evidence=effective_calendar_evidence,
             effective_calendar_source_contract=effective_calendar_source_contract,
         )
-    try:
-        timeout = float(lock_timeout_seconds)
-    except (TypeError, ValueError) as exc:
-        raise V2UniverseLedgerLockError(
-            "invalid_lock_timeout", "lock_timeout_seconds must be finite and non-negative"
-        ) from exc
-    if not math.isfinite(timeout) or timeout < 0:
-        raise V2UniverseLedgerLockError(
-            "invalid_lock_timeout", "lock_timeout_seconds must be finite and non-negative"
+
+    return {
+        "proposed": proposed,
+        "manifest": proposed_manifest,
+        "current_sources": current_sources,
+        "current_evidence": current_evidence,
+        "verified_run": verified_run,
+        "verified_effective": verified_effective,
+    }
+
+
+def _classify_v2_universe_batch_append(
+    loaded: Mapping[str, Sequence[Mapping[str, Any]]],
+    prepared: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Classify a prepared request against one locked, strict logical view."""
+
+    proposed = prepared["proposed"]
+    proposed_manifest = prepared["manifest"]
+    current_sources = prepared["current_sources"]
+    current_evidence = prepared["current_evidence"]
+    verified_run = prepared["verified_run"]
+    verified_effective = prepared["verified_effective"]
+
+    existing_events = [
+        _contract_call(validate_universe_event, event) for event in loaded["events"]
+    ]
+    existing_manifests = list(loaded["manifests"])
+    _validate_clock_bindings_against_history(proposed_manifest, existing_manifests)
+
+    same_manifest = next(
+        (
+            item
+            for item in existing_manifests
+            if item["manifest_id"] == proposed_manifest["manifest_id"]
+        ),
+        None,
+    )
+    if same_manifest is None:
+        registry_previous = existing_manifests[-1] if existing_manifests else None
+    else:
+        same_index = existing_manifests.index(same_manifest)
+        registry_previous = (
+            existing_manifests[same_index - 1] if same_index > 0 else None
         )
+    _validate_manifest_input_registry(
+        proposed_manifest,
+        registry_previous,
+        current_sources,
+        current_evidence,
+    )
+    new_events: list[UniverseEvent] = []
+    combined = list(existing_events)
+    event_semantic_by_id = {
+        event.event_id: event.semantic_hash for event in existing_events
+    }
+    for event in sorted(proposed, key=lambda item: (item.effective_at, item.event_id)):
+        previous_semantic = event_semantic_by_id.get(event.event_id)
+        if previous_semantic is not None:
+            if previous_semantic != event.semantic_hash:
+                raise V2UniverseLedgerConflictError(
+                    "universe_event_id_conflict",
+                    f"event_id {event.event_id!r} already has different semantics",
+                )
+            continue
+        event_semantic_by_id[event.event_id] = event.semantic_hash
+        combined.append(event)
+        new_events.append(event)
+    if same_manifest is not None:
+        if same_manifest["semantic_hash"] == proposed_manifest["semantic_hash"] and not new_events:
+            same_index = existing_manifests.index(same_manifest)
+            same_previous = (
+                existing_manifests[same_index - 1] if same_index > 0 else None
+            )
+            same_event_ids = set(same_manifest["universe_event_ids"])
+            same_events = [
+                event for event in existing_events if event.event_id in same_event_ids
+            ]
+            validate_universe_membership_manifest(
+                same_manifest,
+                events=same_events,
+                run_clock=verified_run,
+                effective_clock=verified_effective,
+                previous_manifest=same_previous,
+            )
+            return {
+                "status": "duplicate",
+                "new_events": [],
+                "manifest": deepcopy(same_manifest),
+                "events": [event.to_dict() for event in existing_events],
+                "manifests": [deepcopy(item) for item in existing_manifests],
+            }
+        raise V2UniverseLedgerConflictError(
+            "manifest_id_conflict",
+            f"manifest_id {proposed_manifest['manifest_id']!r} changed semantics",
+        )
+    if proposed_manifest["event_batch_id"] in {
+        item["event_batch_id"] for item in existing_manifests
+    }:
+        raise V2UniverseLedgerConflictError(
+            "event_batch_id_conflict",
+            "event_batch_id is already committed by another manifest",
+        )
+    previous = existing_manifests[-1] if existing_manifests else None
+    validated_manifest = validate_universe_membership_manifest(
+        proposed_manifest,
+        events=combined,
+        run_clock=verified_run,
+        effective_clock=verified_effective,
+        previous_manifest=previous,
+    )
+    if validated_manifest["batch_event_ids"] != sorted(
+        event.event_id for event in new_events
+    ):
+        _fail(
+            "manifest_batch_membership_mismatch",
+            "manifest batch_event_ids must equal the rows newly written",
+        )
+    return {
+        "status": "append",
+        "new_events": [event.to_dict() for event in new_events],
+        "manifest": validated_manifest,
+        "events": [event.to_dict() for event in combined],
+        "manifests": [
+            *[deepcopy(item) for item in existing_manifests],
+            deepcopy(validated_manifest),
+        ],
+    }
+
+
+def append_v2_universe_batch(
+    path: str | Path,
+    events: Iterable[Mapping[str, Any] | UniverseEvent],
+    manifest: Mapping[str, Any],
+    *,
+    run_clock: Mapping[str, Any] | SessionClock,
+    effective_clock: Mapping[str, Any] | SessionClock,
+    evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    run_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    run_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    run_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    effective_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    effective_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    effective_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    lock_timeout_seconds: float = _LOCK_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    """Atomically commit after mandatory M1 evidence and clock validation."""
+
+    prepared = _prepare_v2_universe_batch_append(
+        events,
+        manifest,
+        run_clock=run_clock,
+        effective_clock=effective_clock,
+        evidence_records=evidence_records,
+        source_contracts=source_contracts,
+        run_calendar_sessions=run_calendar_sessions,
+        run_calendar_evidence=run_calendar_evidence,
+        run_calendar_source_contract=run_calendar_source_contract,
+        effective_calendar_sessions=effective_calendar_sessions,
+        effective_calendar_evidence=effective_calendar_evidence,
+        effective_calendar_source_contract=effective_calendar_source_contract,
+    )
+    timeout = _validated_lock_timeout(lock_timeout_seconds)
 
     ledger_path = Path(path)
     ledger_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1614,123 +1780,34 @@ def append_v2_universe_batch(
             source=str(ledger_path),
             allow_empty=not exists,
         )
-        existing_events = [
-            _contract_call(validate_universe_event, event) for event in loaded["events"]
-        ]
-        existing_manifests = loaded["manifests"]
-        _validate_clock_bindings_against_history(
-            proposed_manifest, existing_manifests
-        )
-
-        same_manifest = next(
-            (
-                item
-                for item in existing_manifests
-                if item["manifest_id"] == proposed_manifest["manifest_id"]
-            ),
-            None,
-        )
-        if same_manifest is None:
-            registry_previous = existing_manifests[-1] if existing_manifests else None
-        else:
-            same_index = existing_manifests.index(same_manifest)
-            registry_previous = (
-                existing_manifests[same_index - 1] if same_index > 0 else None
-            )
-        _validate_manifest_input_registry(
-            proposed_manifest,
-            registry_previous,
-            current_sources,
-            current_evidence,
-        )
-        new_events: list[UniverseEvent] = []
-        combined = list(existing_events)
-        event_semantic_by_id = {
-            event.event_id: event.semantic_hash for event in existing_events
-        }
-        for event in sorted(proposed, key=lambda item: (item.effective_at, item.event_id)):
-            previous_semantic = event_semantic_by_id.get(event.event_id)
-            if previous_semantic is not None:
-                if previous_semantic != event.semantic_hash:
-                    raise V2UniverseLedgerConflictError(
-                        "universe_event_id_conflict",
-                        f"event_id {event.event_id!r} already has different semantics",
-                    )
-                continue
-            event_semantic_by_id[event.event_id] = event.semantic_hash
-            combined.append(event)
-            new_events.append(event)
-        if same_manifest is not None:
-            if (
-                same_manifest["semantic_hash"] == proposed_manifest["semantic_hash"]
-                and not new_events
-            ):
-                same_index = existing_manifests.index(same_manifest)
-                same_previous = (
-                    existing_manifests[same_index - 1] if same_index > 0 else None
-                )
-                same_event_ids = set(same_manifest["universe_event_ids"])
-                same_events = [
-                    event for event in existing_events if event.event_id in same_event_ids
-                ]
-                validate_universe_membership_manifest(
-                    same_manifest,
-                    events=same_events,
-                    run_clock=verified_run,
-                    effective_clock=verified_effective,
-                    previous_manifest=same_previous,
-                )
-                return {
-                    "status": "duplicate",
-                    "rows_written": 0,
-                    "event_rows_written": 0,
-                    "manifest_id": same_manifest["manifest_id"],
-                    "manifest_hash": same_manifest["manifest_hash"],
-                    "event_count": len(existing_events),
-                    "manifest_count": len(existing_manifests),
-                    "path": str(ledger_path),
-                }
-            raise V2UniverseLedgerConflictError(
-                "manifest_id_conflict",
-                f"manifest_id {proposed_manifest['manifest_id']!r} changed semantics",
-            )
-        if proposed_manifest["event_batch_id"] in {
-            item["event_batch_id"] for item in existing_manifests
-        }:
-            raise V2UniverseLedgerConflictError(
-                "event_batch_id_conflict",
-                "event_batch_id is already committed by another manifest",
-            )
-        previous = existing_manifests[-1] if existing_manifests else None
-        validated_manifest = validate_universe_membership_manifest(
-            proposed_manifest,
-            events=combined,
-            run_clock=verified_run,
-            effective_clock=verified_effective,
-            previous_manifest=previous,
-        )
-        if validated_manifest["batch_event_ids"] != sorted(
-            event.event_id for event in new_events
-        ):
-            _fail(
-                "manifest_batch_membership_mismatch",
-                "manifest batch_event_ids must equal the rows newly written",
-            )
+        plan = _classify_v2_universe_batch_append(loaded, prepared)
+        if plan["status"] == "duplicate":
+            committed_manifest = plan["manifest"]
+            return {
+                "status": "duplicate",
+                "rows_written": 0,
+                "event_rows_written": 0,
+                "manifest_id": committed_manifest["manifest_id"],
+                "manifest_hash": committed_manifest["manifest_hash"],
+                "event_count": len(plan["events"]),
+                "manifest_count": len(plan["manifests"]),
+                "path": str(ledger_path),
+            }
 
         prefix = existing_text
         if prefix and not prefix.endswith("\n"):
             prefix += "\n"
-        suffix = "".join(canonical_json(event.to_dict()) + "\n" for event in new_events)
-        suffix += canonical_json(validated_manifest) + "\n"
+        suffix = "".join(canonical_json(event) + "\n" for event in plan["new_events"])
+        suffix += canonical_json(plan["manifest"]) + "\n"
         atomic_write_text(prefix + suffix, ledger_path)
         return {
             "status": "appended",
-            "rows_written": len(new_events) + 1,
-            "event_rows_written": len(new_events),
-            "manifest_id": validated_manifest["manifest_id"],
-            "manifest_hash": validated_manifest["manifest_hash"],
-            "event_count": len(combined),
-            "manifest_count": len(existing_manifests) + 1,
+            "rows_written": len(plan["new_events"]) + 1,
+            "event_rows_written": len(plan["new_events"]),
+            "manifest_id": plan["manifest"]["manifest_id"],
+            "manifest_hash": plan["manifest"]["manifest_hash"],
+            "event_count": len(plan["events"]),
+            "manifest_count": len(plan["manifests"]),
             "path": str(ledger_path),
         }
 

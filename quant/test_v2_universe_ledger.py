@@ -1264,3 +1264,25 @@ def test_manifest_default_off_and_completeness_fields_fail_closed(field, value, 
             effective_clock=clock,
         ),
     )
+
+
+@pytest.mark.parametrize("timeout", (-1, 1))
+def test_writer_request_validation_precedes_timeout_and_ledger_io(tmp_path, timeout):
+    graph, bundle, clock, events = _bound_graph()
+    manifest = _manifest(events, clock)
+    path = tmp_path / f"damaged-{timeout}.jsonl"
+    path.write_text("{", encoding="utf-8")
+
+    _assert_code(
+        "event_sequence_required",
+        lambda: _append(
+            path,
+            "not-an-event-sequence",
+            manifest,
+            graph=graph,
+            bundle=bundle,
+            clock=clock,
+            lock_timeout_seconds=timeout,
+        ),
+    )
+    assert path.read_text(encoding="utf-8") == "{"
