@@ -1,17 +1,17 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-20T17:00Z（M1 决策、订单意图与测量合同轮）
+> 最后更新：2026-08-21T04:20Z（M1 append-only 与幂等 schema 轮）
 
 ## 里程碑
 
-**M0 已完成，M1 进行中**。M1 前三个最小工作单元已完成：基础数据合同、
-研究候选合同，以及决策 / 订单意图 / 结果测量合同均已有初始 schema 和 fail-closed 跨记录校验。
+**M0 已完成，M1 进行中**。M1 前四个最小工作单元已完成：基础数据合同、
+研究候选合同、决策 / 订单意图 / 结果测量合同，以及 append-only / 幂等 schema 人口校验。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
-| M1 身份、时钟、数据合同 schema | 进行中：三组初始合同已完成；下一项为 append-only 与幂等 schema 层测试 |
+| M1 身份、时钟、数据合同 schema | 进行中：三组初始合同与 append-only / 幂等人口校验已完成；下一项为时钟合同 |
 | M2 动态 PIT 股票池 | 未开始 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -25,6 +25,19 @@
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
 
 ## M1 已完成单元
+
+### Append-only 与幂等 schema 人口校验
+
+- `validate_append_only_append` 是纯 schema 分类器，不做文件 I/O；新稳定身份返回 `append`，同 stable key 且
+  `semantic_hash` 相同的重试返回 `duplicate`，精确下一版 outcome / replacement 返回 `correction`。
+- 不可变 `DecisionRecord`、`OrderIntent` 分别明确以 `decision_id`、`order_intent_id` 为稳定键；
+  `SettledOutcome`、`ReplacementValue` 继续使用已绑定上游身份与期限 / comparator 的显式 `stable_key`。
+- `recorded_at` 改变但语义不变的重复运行不会追加；同键语义漂移、物理 ID 复用、修订缺口、旧前驱 fork、
+  非精确 previous id / record hash、冻结身份漂移、状态回退与非单调记录时钟均 fail closed。
+- 已有 outcome / replacement 前驱规则被抽成共享校验，跨输入 validator 与人口分类器不会维护两套修订语义；
+  15 项新增合成测试覆盖 append / duplicate / conflict / correction 与损坏的既有链，完整 V2 套件共 154 项通过。
+- 本单元不实现原子 JSONL/数据库写入、锁、runtime adapter 或 ledger 完备性；调用者仍须先通过对应跨输入校验。
+  因此它不关闭任何 V1 bias blocker，不提升 PIT / result ceiling，不建立 replay/daily/execution parity，也不占 experiment ID。
 
 ### 决策、订单意图与结果测量合同
 
@@ -74,7 +87,8 @@
 - 证据同时绑定原始 artifact SHA-256 和标准化决策内容 SHA-256；所有瞬时时钟必须带时区，禁止日期值、naive timestamp 和进程壁钟回退。
 - 跨合同校验强制 `SourceContract -> EvidenceRecord -> UniverseEvent` 完整链：字段和值一致、来源真实存在、等级不越权、映射在当时已知且覆盖生效时点、证据先落账再决策。
 - Universe 事件携带显式冻结 run date / calendar session、前后状态、规则 hash、证据语义快照和 previous-event 引用；当前名单/当前映射不能倒灌为 PIT。
-- 事件输入快照使用 evidence semantic hash，排除只改变 `recorded_at` 的操作噪声。append-only ledger、previous-event 链验证及写入幂等仍属于后续 M1 单元。
+- 事件输入快照使用 evidence semantic hash，排除只改变 `recorded_at` 的操作噪声。UniverseEvent 的权威
+  append-only ledger / manifest、全量 previous-event 链证明与原子写入仍属于后续 M2 / runtime 工作。
 - 本单元只建立 schema/校验，不接 daily、replay、运行时或下单路径，不占 alpha 实验 ID；`trade_enabled=false`。
 
 ## M0 交付物
@@ -91,7 +105,7 @@
 - 6 项 V1 bias blocker 全部仍为 open；本轮只提供解除 blocker 所需的合同原语，不代表任何 blocker 已关闭。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
-  初始 schema 和 139 项测试不等于 append-only、幂等、runtime 或 execution parity 已完成。
+  初始 schema、人口分类器和 154 项测试不等于原子 ledger、runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，V2 候选最高停在 research/shadow。
 - V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
@@ -103,5 +117,5 @@
 
 ## 下一步
 
-继续 M1 的下一项：append-only 与幂等 schema 层测试；为 stable key 建立 append / duplicate / conflict / correction
-行为，保持现有完整决策面、修订单调、research ceiling 与 default-off 边界，不接运行时，不占 alpha 实验 ID。
+继续 M1 的最后一项：建立交易日归属时钟合同，以数据日历 / 冻结 run date / broker session 为权威锚，
+显式拒绝进程壁钟回退；保持 research ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。

@@ -4703,6 +4703,71 @@ def validate_order_intent_against_decision(
     return intent
 
 
+def _validate_settled_outcome_predecessor(
+    outcome: SettledOutcome,
+    previous_outcome: Mapping[str, Any] | SettledOutcome | None,
+) -> None:
+    if outcome.revision_number == 1:
+        if previous_outcome is not None:
+            _fail(
+                "unexpected_previous_outcome",
+                "$.previous_outcome_id",
+                "the first revision cannot be validated against a previous outcome",
+            )
+        return
+    if previous_outcome is None:
+        _fail(
+            "previous_outcome_required",
+            "$.previous_outcome_id",
+            "later revisions require the referenced previous outcome",
+        )
+    previous = validate_settled_outcome(previous_outcome)
+    if previous.status == "settled" and outcome.status != "settled":
+        _fail(
+            "settled_outcome_revision_regression",
+            "$.status",
+            "a settled outcome revision cannot regress to unavailable",
+        )
+    if (
+        outcome.previous_outcome_id != previous.outcome_id
+        or outcome.previous_outcome_record_hash != previous.record_hash
+        or outcome.outcome_id == previous.outcome_id
+        or outcome.stable_key != previous.stable_key
+        or outcome.revision_number != previous.revision_number + 1
+        or outcome.decision_id != previous.decision_id
+        or outcome.decision_hash != previous.decision_hash
+        or outcome.decision_record_hash != previous.decision_record_hash
+        or outcome.order_intent_id != previous.order_intent_id
+        or outcome.order_intent_hash != previous.order_intent_hash
+        or outcome.order_intent_record_hash != previous.order_intent_record_hash
+        or outcome.candidate_pool_id != previous.candidate_pool_id
+        or outcome.candidate_pool_hash != previous.candidate_pool_hash
+        or outcome.candidate_pool_record_hash != previous.candidate_pool_record_hash
+        or outcome.horizon != previous.horizon
+        or outcome.cost_rule_id != previous.cost_rule_id
+        or outcome.cost_rule_version != previous.cost_rule_version
+        or outcome.cost_rule_sha256 != previous.cost_rule_sha256
+        or outcome.comparison_rule_id != previous.comparison_rule_id
+        or outcome.comparison_rule_version != previous.comparison_rule_version
+        or outcome.comparison_rule_sha256 != previous.comparison_rule_sha256
+    ):
+        _fail(
+            "previous_outcome_binding_mismatch",
+            "$.previous_outcome_id",
+            "revision must bind the immediately prior record in the same outcome chain",
+        )
+    _, previous_recorded_dt = _instant(
+        previous.recorded_at, path="$.previous_outcome.recorded_at"
+    )
+    _, outcome_recorded_dt = _instant(outcome.recorded_at, path="$.recorded_at")
+    if previous_recorded_dt > outcome_recorded_dt:
+        _fail(
+            "nonmonotonic_outcome_revision",
+            "$.recorded_at",
+            "a revision cannot be recorded before its predecessor",
+        )
+
+
 def validate_settled_outcome_against_inputs(
     settled_outcome: Mapping[str, Any] | SettledOutcome,
     decision_record: Mapping[str, Any] | DecisionRecord,
@@ -4900,70 +4965,69 @@ def validate_settled_outcome_against_inputs(
             "$.input_snapshot_sha256",
             f"expected {expected_snapshot}, got {outcome.input_snapshot_sha256}",
         )
-    if outcome.revision_number == 1:
-        if previous_outcome is not None:
-            _fail(
-                "unexpected_previous_outcome",
-                "$.previous_outcome_id",
-                "the first revision cannot be validated against a previous outcome",
-            )
-    else:
-        if previous_outcome is None:
-            _fail(
-                "previous_outcome_required",
-                "$.previous_outcome_id",
-                "later revisions require the referenced previous outcome",
-            )
-        previous = validate_settled_outcome(previous_outcome)
-        if previous.status == "settled" and outcome.status != "settled":
-            _fail(
-                "settled_outcome_revision_regression",
-                "$.status",
-                "a settled outcome revision cannot regress to unavailable",
-            )
-        if (
-            outcome.previous_outcome_id != previous.outcome_id
-            or outcome.previous_outcome_record_hash != previous.record_hash
-            or outcome.outcome_id == previous.outcome_id
-            or outcome.stable_key != previous.stable_key
-            or outcome.revision_number != previous.revision_number + 1
-            or outcome.decision_id != previous.decision_id
-            or outcome.decision_hash != previous.decision_hash
-            or outcome.decision_record_hash != previous.decision_record_hash
-            or outcome.order_intent_id != previous.order_intent_id
-            or outcome.order_intent_hash != previous.order_intent_hash
-            or outcome.order_intent_record_hash
-            != previous.order_intent_record_hash
-            or outcome.candidate_pool_id != previous.candidate_pool_id
-            or outcome.candidate_pool_hash != previous.candidate_pool_hash
-            or outcome.candidate_pool_record_hash
-            != previous.candidate_pool_record_hash
-            or outcome.horizon != previous.horizon
-            or outcome.cost_rule_id != previous.cost_rule_id
-            or outcome.cost_rule_version != previous.cost_rule_version
-            or outcome.cost_rule_sha256 != previous.cost_rule_sha256
-            or outcome.comparison_rule_id != previous.comparison_rule_id
-            or outcome.comparison_rule_version
-            != previous.comparison_rule_version
-            or outcome.comparison_rule_sha256
-            != previous.comparison_rule_sha256
-        ):
-            _fail(
-                "previous_outcome_binding_mismatch",
-                "$.previous_outcome_id",
-                "revision must bind the immediately prior record in the same outcome chain",
-            )
-        _, previous_recorded_dt = _instant(
-            previous.recorded_at, path="$.previous_outcome.recorded_at"
-        )
-        _, outcome_recorded_dt = _instant(outcome.recorded_at, path="$.recorded_at")
-        if previous_recorded_dt > outcome_recorded_dt:
-            _fail(
-                "nonmonotonic_outcome_revision",
-                "$.recorded_at",
-                "a revision cannot be recorded before its predecessor",
-            )
+    _validate_settled_outcome_predecessor(outcome, previous_outcome)
     return outcome
+
+
+def _validate_replacement_value_predecessor(
+    replacement: ReplacementValue,
+    previous_replacement_value: Mapping[str, Any] | ReplacementValue | None,
+) -> None:
+    if replacement.revision_number == 1:
+        if previous_replacement_value is not None:
+            _fail(
+                "unexpected_previous_replacement_value",
+                "$.previous_replacement_value_id",
+                "the first revision cannot have a supplied predecessor",
+            )
+        return
+    if previous_replacement_value is None:
+        _fail(
+            "previous_replacement_value_required",
+            "$.previous_replacement_value_id",
+            "later revisions require the referenced previous replacement row",
+        )
+    previous = validate_replacement_value(previous_replacement_value)
+    if previous.status == "computed" and replacement.status != "computed":
+        _fail(
+            "computed_replacement_revision_regression",
+            "$.status",
+            "a computed replacement revision cannot regress to unavailable",
+        )
+    if (
+        replacement.previous_replacement_value_id != previous.replacement_value_id
+        or replacement.previous_replacement_value_record_hash != previous.record_hash
+        or replacement.replacement_value_id == previous.replacement_value_id
+        or replacement.stable_key != previous.stable_key
+        or replacement.revision_number != previous.revision_number + 1
+        or replacement.comparator_role != previous.comparator_role
+        or replacement.candidate_pool_id != previous.candidate_pool_id
+        or replacement.candidate_pool_hash != previous.candidate_pool_hash
+        or replacement.candidate_pool_record_hash != previous.candidate_pool_record_hash
+        or replacement.comparator_reference_id != previous.comparator_reference_id
+        or replacement.comparator_reference_snapshot_sha256
+        != previous.comparator_reference_snapshot_sha256
+        or replacement.comparison_rule_id != previous.comparison_rule_id
+        or replacement.comparison_rule_version != previous.comparison_rule_version
+        or replacement.comparison_rule_sha256 != previous.comparison_rule_sha256
+    ):
+        _fail(
+            "previous_replacement_binding_mismatch",
+            "$.previous_replacement_value_id",
+            "revision must bind the immediately prior row for the same comparator",
+        )
+    _, previous_recorded_dt = _instant(
+        previous.recorded_at, path="$.previous_replacement.recorded_at"
+    )
+    _, replacement_recorded_dt = _instant(
+        replacement.recorded_at, path="$.recorded_at"
+    )
+    if previous_recorded_dt > replacement_recorded_dt:
+        _fail(
+            "nonmonotonic_replacement_revision",
+            "$.recorded_at",
+            "a replacement revision cannot be recorded before its predecessor",
+        )
 
 
 def validate_replacement_value_against_inputs(
@@ -5205,66 +5269,9 @@ def validate_replacement_value_against_inputs(
             "$.input_snapshot_sha256",
             f"expected {expected_snapshot}, got {replacement.input_snapshot_sha256}",
         )
-    if replacement.revision_number == 1:
-        if previous_replacement_value is not None:
-            _fail(
-                "unexpected_previous_replacement_value",
-                "$.previous_replacement_value_id",
-                "the first revision cannot have a supplied predecessor",
-            )
-    else:
-        if previous_replacement_value is None:
-            _fail(
-                "previous_replacement_value_required",
-                "$.previous_replacement_value_id",
-                "later revisions require the referenced previous replacement row",
-            )
-        previous = validate_replacement_value(previous_replacement_value)
-        if previous.status == "computed" and replacement.status != "computed":
-            _fail(
-                "computed_replacement_revision_regression",
-                "$.status",
-                "a computed replacement revision cannot regress to unavailable",
-            )
-        if (
-            replacement.previous_replacement_value_id
-            != previous.replacement_value_id
-            or replacement.previous_replacement_value_record_hash != previous.record_hash
-            or replacement.replacement_value_id == previous.replacement_value_id
-            or replacement.stable_key != previous.stable_key
-            or replacement.revision_number != previous.revision_number + 1
-            or replacement.comparator_role != previous.comparator_role
-            or replacement.candidate_pool_id != previous.candidate_pool_id
-            or replacement.candidate_pool_hash != previous.candidate_pool_hash
-            or replacement.candidate_pool_record_hash
-            != previous.candidate_pool_record_hash
-            or replacement.comparator_reference_id
-            != previous.comparator_reference_id
-            or replacement.comparator_reference_snapshot_sha256
-            != previous.comparator_reference_snapshot_sha256
-            or replacement.comparison_rule_id != previous.comparison_rule_id
-            or replacement.comparison_rule_version
-            != previous.comparison_rule_version
-            or replacement.comparison_rule_sha256
-            != previous.comparison_rule_sha256
-        ):
-            _fail(
-                "previous_replacement_binding_mismatch",
-                "$.previous_replacement_value_id",
-                "revision must bind the immediately prior row for the same comparator",
-            )
-        _, previous_recorded_dt = _instant(
-            previous.recorded_at, path="$.previous_replacement.recorded_at"
-        )
-        _, replacement_recorded_dt = _instant(
-            replacement.recorded_at, path="$.recorded_at"
-        )
-        if previous_recorded_dt > replacement_recorded_dt:
-            _fail(
-                "nonmonotonic_replacement_revision",
-                "$.recorded_at",
-                "a replacement revision cannot be recorded before its predecessor",
-            )
+    _validate_replacement_value_predecessor(
+        replacement, previous_replacement_value
+    )
     return replacement
 
 
@@ -5350,6 +5357,196 @@ def validate_replacement_value_panel(
     return tuple(sorted(validated, key=lambda item: item.comparator_role))
 
 
+_AppendOnlyRecord = DecisionRecord | OrderIntent | SettledOutcome | ReplacementValue
+
+
+def _validate_append_only_record(
+    value: Mapping[str, Any] | _AppendOnlyRecord,
+) -> _AppendOnlyRecord:
+    validators = {
+        "v2_decision_record": validate_decision_record,
+        "v2_order_intent": validate_order_intent,
+        "v2_settled_outcome": validate_settled_outcome,
+        "v2_replacement_value": validate_replacement_value,
+    }
+    raw = (
+        value.to_dict()
+        if isinstance(value, _AppendOnlyRecord)
+        else _mapping(value, path="$")
+    )
+    validator = validators.get(raw.get("record_type"))
+    if validator is None:
+        _fail(
+            "unsupported_append_only_record_type",
+            "$.record_type",
+            "expected a decision, intent, outcome, or replacement record",
+        )
+    return validator(raw)
+
+
+def _append_only_identity(
+    record: _AppendOnlyRecord,
+) -> tuple[str, str, str, int | None]:
+    if isinstance(record, DecisionRecord):
+        key = physical_id = record.decision_id
+        revision = None
+    elif isinstance(record, OrderIntent):
+        key = physical_id = record.order_intent_id
+        revision = None
+    else:
+        key = record.stable_key
+        physical_id = (
+            record.outcome_id
+            if isinstance(record, SettledOutcome)
+            else record.replacement_value_id
+        )
+        revision = record.revision_number
+    return record.record_type, key, physical_id, revision
+
+
+def _validate_append_only_population(records: Sequence[_AppendOnlyRecord]) -> None:
+    physical_ids: set[tuple[str, str]] = set()
+    revision_chains: dict[tuple[str, str], list[_AppendOnlyRecord]] = {}
+    for record in records:
+        record_type, key, physical_id, revision = _append_only_identity(record)
+        if (record_type, physical_id) in physical_ids:
+            _fail(
+                "existing_physical_id_reused",
+                "$.existing_records",
+                f"repeated physical id {physical_id!r}",
+            )
+        physical_ids.add((record_type, physical_id))
+        if revision is not None:
+            revision_chains.setdefault((record_type, key), []).append(record)
+
+    for (_, key), chain in revision_chains.items():
+        revisions = [_append_only_identity(record)[3] for record in chain]
+        if len(revisions) != len(set(revisions)):
+            _fail(
+                "existing_revision_fork",
+                "$.existing_records",
+                f"stable key {key!r} has duplicate revisions",
+            )
+        ordered = sorted(
+            chain, key=lambda record: _append_only_identity(record)[3] or 0
+        )
+        revisions = [_append_only_identity(record)[3] for record in ordered]
+        expected = list(range(1, len(ordered) + 1))
+        if revisions != expected:
+            _fail(
+                "existing_revision_gap",
+                "$.existing_records",
+                f"stable key {key!r} must contain contiguous revisions from 1",
+            )
+        for previous, current in zip(ordered, ordered[1:]):
+            if isinstance(current, SettledOutcome):
+                assert isinstance(previous, SettledOutcome)
+                _validate_settled_outcome_predecessor(current, previous)
+            else:
+                assert isinstance(current, ReplacementValue)
+                assert isinstance(previous, ReplacementValue)
+                _validate_replacement_value_predecessor(current, previous)
+
+
+def validate_append_only_append(
+    existing_records: Sequence[Mapping[str, Any] | _AppendOnlyRecord],
+    proposed_record: Mapping[str, Any] | _AppendOnlyRecord,
+) -> str:
+    """Classify a schema-valid append without performing persistence.
+
+    Returns ``append`` for a new immutable key or first revision, ``duplicate``
+    for an idempotent semantic retry, and ``correction`` for the exact next
+    outcome or replacement revision. Conflicts and malformed populations fail
+    closed with :class:`V2ContractValidationError`. Decision and intent IDs are
+    their immutable stable keys; outcome and replacement records use their
+    explicit ``stable_key`` fields. Callers must still run the applicable
+    cross-input validator before persistence.
+    """
+
+    if isinstance(existing_records, (str, bytes, bytearray, Mapping)):
+        _fail(
+            "record_sequence_required",
+            "$.existing_records",
+            "existing_records must be a sequence of record objects",
+        )
+    existing = [_validate_append_only_record(record) for record in existing_records]
+    proposed = _validate_append_only_record(proposed_record)
+    _validate_append_only_population(existing)
+
+    proposed_type, proposed_key, proposed_id, proposed_revision = (
+        _append_only_identity(proposed)
+    )
+    same_type = [
+        record
+        for record in existing
+        if _append_only_identity(record)[0] == proposed_type
+    ]
+    same_key = [
+        record
+        for record in same_type
+        if _append_only_identity(record)[1] == proposed_key
+    ]
+    if any(
+        record.semantic_hash == proposed.semantic_hash for record in same_key
+    ):
+        return "duplicate"
+    if proposed_revision is None and same_key:
+        _fail(
+            "immutable_key_conflict",
+            "$.proposed_record",
+            f"immutable key {proposed_key!r} already has different semantics",
+        )
+    if any(
+        _append_only_identity(record)[2] == proposed_id for record in same_type
+    ):
+        _fail(
+            "physical_id_reused",
+            "$.proposed_record",
+            f"physical id {proposed_id!r} already exists for {proposed_type}",
+        )
+
+    if proposed_revision is None:
+        return "append"
+
+    if not same_key:
+        if proposed_revision != 1:
+            _fail(
+                "initial_revision_required",
+                "$.proposed_record.revision_number",
+                "a new revision chain must start at revision 1",
+            )
+        if isinstance(proposed, SettledOutcome):
+            _validate_settled_outcome_predecessor(proposed, None)
+        else:
+            assert isinstance(proposed, ReplacementValue)
+            _validate_replacement_value_predecessor(proposed, None)
+        return "append"
+
+    latest = max(same_key, key=lambda record: _append_only_identity(record)[3] or 0)
+    latest_revision = _append_only_identity(latest)[3]
+    assert latest_revision is not None
+    if proposed_revision <= latest_revision:
+        _fail(
+            "stale_revision_fork",
+            "$.proposed_record.revision_number",
+            "a non-duplicate revision cannot branch from or precede the latest revision",
+        )
+    if proposed_revision != latest_revision + 1:
+        _fail(
+            "revision_gap",
+            "$.proposed_record.revision_number",
+            "a correction must be exactly the next revision",
+        )
+    if isinstance(proposed, SettledOutcome):
+        assert isinstance(latest, SettledOutcome)
+        _validate_settled_outcome_predecessor(proposed, latest)
+    else:
+        assert isinstance(proposed, ReplacementValue)
+        assert isinstance(latest, ReplacementValue)
+        _validate_replacement_value_predecessor(proposed, latest)
+    return "correction"
+
+
 __all__ = [
     "SCHEMA_VERSION",
     "PIT_TIERS",
@@ -5413,4 +5610,5 @@ __all__ = [
     "replacement_value_input_snapshot_hash",
     "validate_replacement_value_against_inputs",
     "validate_replacement_value_panel",
+    "validate_append_only_append",
 ]
