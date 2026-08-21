@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T08:02Z（V2 双通道 / scout-first 协议修订轮）
+> 最后更新：2026-08-21T08:10Z（V2 与 V1 运行关系解耦）
 
 ## 里程碑
 
@@ -57,7 +57,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 30 项 ledger 对抗测试、105 项受影响合同测试和完整 218 项 V2 套件通过；独立终审无 P0/P1。
   当前全历史人口校验为 O(n²)，且没有仓库外 append anchor；在全市场规模和任何 canonical 资格前必须优化并
   引入外部可验证锚。真实外部 coverage/security surface、mapped/unmapped/excluded disposition 证据、动态来源、
-  runtime adapter 与 production/replay parity 仍是 M2 后续工作，因此 6 项 V1 blocker 均未关闭。
+  runtime adapter 与 production/replay parity 仍是 M2 后续工作；旧资产的 V1 bias findings 仅保留为复用限制。
 
 ## M1 已完成单元
 
@@ -80,8 +80,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   同 ID 语义漂移为 conflict。29 项聚焦对抗测试与完整 183 项 V2 套件通过，独立终审无剩余 P0/P1/P2。
 - 目前只启用可验证的数据日历锚；`frozen_run_date` / broker-session 在有各自 typed evidence 合同前明确拒绝，
   不接受自证 hash。该 M1 单元当时未实现 ledger writer；当前 M2 仅补上研究 ledger 人口核心，仍没有
-  runtime adapter、daily/replay 运行接线、broker、fill/position 或 exit clock，不关闭 V1 时钟 bias blocker，
-  不提升 `research_pit / observed_only` ceiling，不占 experiment ID。
+  runtime adapter、daily/replay 运行接线、broker、fill/position 或 exit clock，不升级任何 legacy 时钟证据，
+  也不提升 `research_pit / observed_only` ceiling，不占 experiment ID。
 
 ### Append-only 与幂等 schema 人口校验
 
@@ -94,7 +94,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 已有 outcome / replacement 前驱规则被抽成共享校验，跨输入 validator 与人口分类器不会维护两套修订语义；
   15 项新增合成测试覆盖 append / duplicate / conflict / correction 与损坏的既有链，完整 V2 套件共 154 项通过。
 - 本单元不实现原子 JSONL/数据库写入、锁、runtime adapter 或 ledger 完备性；调用者仍须先通过对应跨输入校验。
-  因此它不关闭任何 V1 bias blocker，不提升 PIT / result ceiling，不建立 replay/daily/execution parity，也不占 experiment ID。
+  因此它不提升 PIT / result ceiling，不建立 replay/daily/execution parity，也不占 experiment ID。
 
 ### 决策、订单意图与结果测量合同
 
@@ -107,12 +107,13 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - `SettledOutcome` 将 decision / intent / candidate-pool record hash、期限、币种、整数资本基数、fill/position 快照、
   record-bound settlement evidence 与精确 cost/comparison rule 连成不可变测量记录。`settled` 强制 `net = gross - cost`；
   缺测量必须保留 `unavailable` 行。修订只能追加到同一 stable key，不能复用 record id、回退 settled 状态或改写冻结身份。
-- `ReplacementValue` 每条绑定一个 outcome 和一个冻结 comparator；四行 panel 必须精确覆盖 cash/SPY/QQQ/V1，
+- `ReplacementValue` 每条绑定一个 outcome 和一个冻结 comparator；当前 schema-v1 四行 panel 精确覆盖 cash/SPY/QQQ/V1，
   同资本基数、币种和 comparison rule，且 `replacement = strategy - comparator`。comparator evidence 同时绑定
-  reference id/hash；SPY/QQQ 还需 exact instrument mapping，cash/V1 禁止 instrument evidence，防止跨 comparator 串线。
+  reference id/hash；SPY/QQQ 还需 exact instrument mapping，cash/V1 禁止 instrument evidence，防止跨 comparator 串线；
+  没有同口径 V1 数据时，V1 行只是显式 `unavailable` 兼容占位，不读取、运行或等待 V1。
 - 新后链同时绑定 semantic hash 与 record hash；更改上游 `recorded_at`、跨证券重封、结果回灌、修订降级、
   事后换 execution/cost/comparison 口径均 fail closed。独立负向复验未发现剩余 P0/P1。
-- 决策 context 与 fill/position 当前仍只是 opaque snapshot，尚无自己的时钟/PIT schema；因此 V1 schema 的
+- 决策 context 与 fill/position 当前仍只是 opaque snapshot，尚无自己的时钟/PIT schema；因此 schema-v1 的
   `DecisionRecord`、`SettledOutcome` 和 `ReplacementValue` 最高只能是 `research_pit / observed_only`，不能据此声称
   canonical Gate 或 execution parity。此单元不接 replay、daily、runtime、broker、ledger 或订单，不占 experiment ID。
 
@@ -121,19 +122,19 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - `ResearchClaim` 只能表达由已验证 `EvidenceRecord` 支持的研究断言；冻结证据语义快照、证据 cutoff、
   生产者身份、PIT、置信度、反证、影响对象与下一步，自由文本没有 universe/ranking/risk/order 权限。
 - `HypothesisCandidate` 冻结单一可归因机制、baseline/treatment 全套 policy 版本、期限、
-  cash/SPY/QQQ/V1 替换对照、成功/失败/kill/promotion 条件、执行约束、novelty 轴和结果 ceiling；
+  cash/SPY/QQQ 替换对照及当前 schema-v1 所需的 V1 兼容占位、成功/失败/kill/promotion 条件、执行约束、novelty 轴和结果 ceiling；
   不绑定具体证券池，允许同一机制在不同 PIT 股票池上复用而不伪造新假设。
 - `CandidatePool` 表示 `RankedCandidate` 之前的完整证券候选面，只绑定一个 hypothesis；每项保留
   `admitted/parked/rejected` 及原因，并绑定当时最新 `candidate_eligible` UniverseEvent、security/listing
   映射和候选证据。完整的零候选池也是合法记录，避免只在有赢家时留痕。
 - 候选池冻结 generator/ranking 规则身份、完整 Evidence/Universe semantic snapshot、run date/session、
-  data cutoff，以及 comparison-only 的 cash/SPY/QQQ/V1 身份；不保存 rank、score、未来收益或结算结果。
+  data cutoff，以及 comparison-only 的 cash/SPY/QQQ 身份和 V1 兼容占位；不保存 rank、score、未来收益或结算结果。
 - 跨链为 `SourceContract -> EvidenceRecord -> ResearchClaim -> HypothesisCandidate -> CandidatePool`，
   并逐层传播 PIT ceiling、future-leakage 与 causal clocks；instrument evidence 必须匹配候选的
   security/listing，dataclass tamper、hash 重封串线和较旧 eligible 状态都 fail closed。
 - 本单元仅验证调用者提交的冻结 universe event snapshot；全量 membership 的外部完备性仍需后续
-  append-only ledger/manifest 证明。因此 V1 幸存者名单 blocker 仍 open，不能把 schema attestation
-  当成已关闭偏差。
+  append-only ledger/manifest 证明。V1 幸存者名单仍不具备复用资格，不能把 schema attestation
+  当成 V2 外部覆盖证明。
 - 三类合同固定 `outcome_blind=true`、`authority=research_only`、`results_accessed=false`（适用处）和
   `trade_enabled=false`；不接 daily/replay/runtime/order，不占 alpha experiment ID。
 
@@ -159,20 +160,17 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 ## 关键边界（当前生效）
 
 - `trade_enabled=false`；V2 不继承 V1 股票名单、alpha 结论、资格、权重、晋级状态。
+- V2 不管理、停止或等待 V1 自动化；V1 只在主动复用旧代码/证据时作为只读历史参考，V2 research、forward 和晋级只由 V2 条件决定。
+- 只对共享 experiment registry 的 ID、write-scope、locked-variable 和 exact-duplicate 冲突 fail closed；这保护 V2 试验记账，不代表 V1 能参与调度。
 - `reuse_directly` 只允许复用工程原语或不可变历史证据，不等于复用 V1 决策结论。
-- 6 项 V1 bias blocker 全部仍为 open；本轮只提供解除 blocker 所需的合同原语，不代表任何 blocker 已关闭。
+- 6 项 V1 bias finding 只限制相应旧资产能否复用，不是 V2 里程碑或 forward blocker。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
   初始 schema、M2 研究 ledger 人口核心和 218 项 V2 测试不等于外部 universe 完备、canonical provenance、
   runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，bounded scout 最高只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
-- V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
+- 若主动使用 V1 baseline，它只做兼容性回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
-
-## 待用户决定
-
-1. **V1 自动化关系**：V1 每小时 alpha 管线继续与 V2 建设并行，还是冻结为只结算 / 只读历史。
-   此决定不阻断 M1 合同建设，但在决定前不启动 V2 forward 竞赛。
 
 ## 下一步
 

@@ -32,15 +32,12 @@
 - [ ] 外部 coverage/security surface：冻结真实输入证券全集，对每项留下 `mapped / unmapped / excluded` disposition、有效期映射与 coverage evidence，支持可证明的完整或已知为空结论
 - [ ] 接入实际动态来源和共享 runtime adapter，验证 daily/replay deterministic parity；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
 
-## 待用户决定（不阻断 M1）
-
-- [ ] V1 每小时 alpha 管线继续并行，或冻结为只结算 / 只读历史；决定前不启动 V2 forward 竞赛。
-
 ## 注意事项
 
 - T0 真相源：`data/v2/t0.json`。T0 只是项目 / 前瞻分区边界，不授予 canonical PIT、策略资格或交易权限。
 - 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
 - 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
+- V2 不管理或等待 V1 自动化；V1 仅是可选只读历史参考，不阻塞 scout、forward 或晋级。
 - M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
 - 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
 - Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。

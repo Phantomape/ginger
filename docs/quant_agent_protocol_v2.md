@@ -20,8 +20,8 @@ V2 可以复用 V1 的代码、数据和失败教训，
 但不能继承 V1 的股票名单、alpha 结论、策略资格、组合权重或晋级状态。
 ```
 
-V1 是历史档案、代码仓库和回归对照，不是 V2 的无偏基准。V1 赢家进入 V2 时也只能是零权重、
-`trade_enabled=false` 的挑战者。V2 先与 V1 并行，经过独立审核后才讨论切换。
+V1 只是一份可选的只读历史/兼容性参考，不是 V2 的无偏基准。V2 不管理 V1 自动化，不等待 V1 停止，
+也不需要迁移任何 V1 策略才能研究、forward 或晋级；所有 V2 决策只看 V2 自己的证据与门槛。
 
 ## 2. 每轮从哪里开始
 
@@ -47,7 +47,7 @@ append-only ledger，高于任何摘要和报告。派生 snapshot、dashboard �
 
 1. **不能事后挑名单。** `core` 是资金和风险政策，不是一张永久股票表。
 2. **不能倒填资格。** 数据、股票、映射、策略、模型和 Skill 结论只能在 `known_at`、`eligible_as_of` 之后参与决策。
-3. **不能只记赢家。** 结果出来前就冻结完整股票池、所有候选、入选和落选原因、被挤掉的替代项，以及 cash、SPY、QQQ 和 V1 对照。
+3. **不能只记赢家。** 结果出来前就冻结完整股票池、所有候选、入选和落选原因、被挤掉的替代项，以及 cash、SPY、QQQ 对照。V1 数据和结果不是前置；当前 schema 仍保留 V1 角色时，只需写明 `availability_status=unavailable` 的兼容占位，不读取、运行或等待 V1。
 4. **选候选时不能看答案。** 未来收益、PnL、MFE/MAE、结算结果和赢家标签不能进入候选生成或选择。
 5. **不能一边考试一边改答案。** discovery、锁定 validation 和干净 forward 要分开；用过的评估窗口不能再修改同一个候选。
 6. **数据接得上，不等于数据能用。** adapter、Skill 或官方来源都不能替代授权、时钟、修订和 PIT 审核。
@@ -144,7 +144,8 @@ AI Berkshire 负责找机会、做研究、提出反证和持续跟踪，不负�
 | paper / promotion / production review | 上述全部，加 daily/runtime parity、完整执行/容量/风险、forward 与 activation checklist；本地 observer 还需仓库外 append anchor | `shadow` 或相应更高晋级标签；仍不自动交易 | 无 |
 
 research scout 仍须冻结完整 outcome-blind candidate/selection panel，在结果前声明 baseline、一个 treatment、primary horizon、保守成本、
-cash/SPY/QQQ/V1/被替代项对照、成功阈值和 falsifier/negative control；缺失对照要留 `unavailable`，不能静默删除。
+cash/SPY/QQQ/被替代项对照、成功阈值和 falsifier/negative control。V1 数据/结果仅为可选兼容性对照；在当前机器合同里保留
+`availability_status=unavailable` 占位即可，不需要读取或运行 V1，也不阻塞 scout。声明过但缺失的其他对照同样不能静默删除。
 它不运行尚无 V2 Engine-0 的 canonical Gate 1-4；已有 Gate 输出只能作为诊断，不能写成 Gate 通过或晋级。
 
 以下完整评估要求适用于 promotion-bearing validation：按时间分 discovery、validation 和未使用的 forward；计算完整成本、
@@ -169,7 +170,8 @@ PIT 股票池和共享决策链上建立独立 Engine-0 baseline；在此之前�
 
 ## 5. 怎么选工作、怎么做实验
 
-先处理与 V2 当前范围重叠的未完成实验、失败或冲突；不重叠的 V1 legacy open ticket 不会自动阻塞 V2。下面的依赖链
+先处理 V2 自己的未完成实验、失败或冲突；V1 ticket 的存在和状态不参与 V2 调度。共享 experiment registry 自动发现的
+ID、write-scope、locked-variable 或 exact-duplicate 冲突仍须 fail closed；这是共享命名空间完整性，不是 V1 运行依赖。下面的依赖链
 约束的是**可以声称的结论和晋级资格**，不是所有研究工作的全局串行队列：
 
 ```text
@@ -249,9 +251,9 @@ Gate 3 查生成数、存活数和存活率；Gate 4 用相同输入和窗口做
 单元测试通过不等于 alpha 成立。每个实验的
 `experiments/logs/<id>.json` 是真相源；`docs/experiment_log.jsonl` 是可重建派生视图，不能直接写。
 
-## 6. V1 迁移和 V2 建设顺序
+## 6. V2 建设顺序和可选历史复用
 
-先做机器可读的 V1 资产清单，每项只能进一类：
+只有主动复用旧资产时才查既有 V1 资产清单并遵守下面的隔离分类；V2 前进不以迁移 V1 为前提：
 
 | 分类 | 处理方式 |
 |---|---|
@@ -261,10 +263,10 @@ Gate 3 查生成数、存活数和存活率；Gate 4 用相同输入和窗口做
 | `legacy_diagnostic_only` | 静态股票池、事后权重、不完整 PIT 和只记赢家的结果只做诊断 |
 | `retire` | 重复、失效、无法复现或不再支持的路径停止使用 |
 
-迁移顺序看机制覆盖、合同完整度、授权、可回放性和工程依赖，不能按 V1 历史收益排名。
+可选复用顺序看机制覆盖、合同完整度、授权、可回放性和工程依赖，不能按 V1 历史收益排名。
 
 M0-M9 是 promotion-readiness 路线，不是排他的小时工作队列：M0 定规则/T0；M1 scout safety kernel 与基础合同；
-M2 动态 PIT 股票池；M3 共享 SDK 和干净基线；M4 AI 研究系统；M5 科学实验框架；M6 零权重迁移 V1；M7 forward 竞赛；
+M2 动态 PIT 股票池；M3 共享 SDK 和干净基线；M4 AI 研究系统；M5 科学实验框架；M6 可选 legacy challenger 导入（不阻塞 M7）；M7 forward 竞赛；
 M8 组合分配器；M9 提交 pilot 审核材料。M1 kernel 就绪后，bounded research scouts 与 M2-M5 并行；M6-M9 和任何
 promotion-bearing validation 仍必须满足各自前置。完成 M9 也不自动交易。
 
