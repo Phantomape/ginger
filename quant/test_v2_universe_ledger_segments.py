@@ -25,6 +25,8 @@ from quant.v2_universe_ledger import (
     read_v2_universe_membership,
 )
 from quant.v2_universe_ledger_segments import (
+    COMPACT_HEAD_STORAGE_CONTRACT,
+    STORAGE_CONTRACT,
     append_segmented_v2_universe_batch,
     audit_segmented_v2_universe_ledger_orphans,
     bootstrap_segmented_v2_universe_ledger,
@@ -262,6 +264,15 @@ def test_segmented_load_round_trips_future_event_and_zero_event_activation(tmp_p
     root = tmp_path / "segmented"
     _write_contract(root, contract)
 
+    assert contract["head"]["storage_contract"] == STORAGE_CONTRACT
+    assert contract["checkpoint"]["storage_contract"] == STORAGE_CONTRACT
+    assert all(
+        segment["storage_contract"] == STORAGE_CONTRACT
+        for segment in contract["segments"]
+    )
+    legacy_state = load_segmented_v2_universe_state(root)
+    assert legacy_state["storage_contract"] == STORAGE_CONTRACT
+    assert legacy_state["legacy_full_reader_compatible"] is True
     assert contract["head"]["tail_segment_hash"] == contract["segments"][0][
         "segment_hash"
     ]
@@ -914,10 +925,13 @@ def test_rotation_compacts_three_manifest_history_without_logical_drift(tmp_path
     assert new_head["head_hash"] == rotated["head_hash"]
     assert new_head["checkpoint_hash"] == rotated["new_checkpoint_hash"]
     assert new_head["tail_segment_hash"] is None
+    assert old_head["storage_contract"] == STORAGE_CONTRACT
+    assert new_head["storage_contract"] == COMPACT_HEAD_STORAGE_CONTRACT
     compact_path = segmented_record_path(
         root, "checkpoint", rotated["new_checkpoint_hash"]
     )
     compact = json.loads(compact_path.read_bytes())
+    assert compact["storage_contract"] == STORAGE_CONTRACT
     assert compact["head_manifest"] == before["manifests"][-1]
     assert "manifests" not in compact
 
@@ -927,6 +941,48 @@ def test_rotation_compacts_three_manifest_history_without_logical_drift(tmp_path
     assert audit["superseded_count"] == len(old_files)
     assert set(audit["superseded_files"]) == old_files
     assert all((root / relative).is_file() for relative in old_files)
+
+
+@pytest.mark.parametrize("compact", (False, True))
+def test_head_storage_marker_must_match_checkpoint_format(tmp_path, compact):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / f"marker-mismatch-{compact}"
+    _write_three_manifest_segmented(root, fixture)
+    if compact:
+        rotate_segmented_v2_universe_checkpoint(root)
+
+    head = json.loads((root / "HEAD.json").read_bytes())
+    head["storage_contract"] = (
+        STORAGE_CONTRACT if compact else COMPACT_HEAD_STORAGE_CONTRACT
+    )
+    _write_json(root / "HEAD.json", _reseal(head, "head_hash"))
+
+    _assert_code(
+        "segmented_head_storage_contract_mismatch",
+        lambda: load_segmented_v2_universe_state(root),
+    )
+
+
+def test_unknown_head_storage_marker_fails_before_checkpoint_load(tmp_path, monkeypatch):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "unknown-head-marker"
+    _write_three_manifest_segmented(root, fixture)
+    head = json.loads((root / "HEAD.json").read_bytes())
+    head["storage_contract"] = "v2_universe_checkpoint_segment_sidecar_future"
+    _write_json(root / "HEAD.json", _reseal(head, "head_hash"))
+
+    real_read_json = segments_module._read_json
+
+    def reject_checkpoint_load(path, *, role):
+        if role == "checkpoint":
+            raise AssertionError("unknown HEAD capability opened a checkpoint")
+        return real_read_json(path, role=role)
+
+    monkeypatch.setattr(segments_module, "_read_json", reject_checkpoint_load)
+    _assert_code(
+        "segmented_storage_contract_invalid",
+        lambda: load_segmented_v2_universe_state(root),
+    )
 
 
 def test_audit_reports_symlink_entries_as_invalid_without_following_them(
@@ -1065,6 +1121,7 @@ def test_append_after_rotation_restarts_segment_sequence_and_keeps_logical_count
     )
     assert segment["checkpoint_hash"] == rotated["new_checkpoint_hash"]
     assert segment["sequence"] == 1
+    assert segment["storage_contract"] == STORAGE_CONTRACT
     assert segment["previous_segment_hash"] is None
     assert segment["before_manifest_count"] == 3
     assert segment["after_manifest_count"] == 4
@@ -1072,6 +1129,8 @@ def test_append_after_rotation_restarts_segment_sequence_and_keeps_logical_count
     assert state["manifest_count"] == 4
     assert state["current_generation_manifest_count"] == 2
     assert state["head_manifest"] == fourth_manifest
+    assert state["storage_contract"] == COMPACT_HEAD_STORAGE_CONTRACT
+    assert state["legacy_full_reader_compatible"] is False
 
 
 def test_pending_future_event_activates_through_zero_event_append_after_rotation(
@@ -1382,6 +1441,7 @@ def test_second_rotation_preserves_iterative_archival_history(tmp_path):
     state = load_segmented_v2_universe_state(root)
     assert state["manifest_count"] == 4
     assert state["current_generation_manifest_count"] == 1
+    assert state["storage_contract"] == COMPACT_HEAD_STORAGE_CONTRACT
     audit = audit_segmented_v2_universe_ledger_orphans(root)
     assert audit["orphan_count"] == 0
     assert audit["superseded_count"] == 5
@@ -1404,6 +1464,9 @@ def test_rotation_head_failure_leaves_reusable_checkpoint_orphan(
         "segmented_head_write_failed",
         lambda: rotate_segmented_v2_universe_checkpoint(root),
     )
+    assert json.loads((root / "HEAD.json").read_bytes())[
+        "storage_contract"
+    ] == STORAGE_CONTRACT
     assert (root / "HEAD.json").read_bytes() == old_head
     failed_audit = audit_segmented_v2_universe_ledger_orphans(root)
     assert failed_audit["orphan_count"] == 1
@@ -1471,6 +1534,9 @@ def test_rotation_retry_after_committed_head_is_already_compact(
         lambda: rotate_segmented_v2_universe_checkpoint(root),
     )
     committed_head = (root / "HEAD.json").read_bytes()
+    assert json.loads(committed_head)[
+        "storage_contract"
+    ] == COMPACT_HEAD_STORAGE_CONTRACT
     assert load_segmented_v2_universe_ledger(root) == fixture["full"]
 
     monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
@@ -1792,5 +1858,7 @@ def test_fast_state_load_does_not_reconstruct_archived_manifests(
     assert state["checkpoint_hash"] == rotated["new_checkpoint_hash"]
     assert state["tail_segment_hash"] is None
     assert state["current_generation_manifest_count"] == 1
+    assert state["storage_contract"] == COMPACT_HEAD_STORAGE_CONTRACT
+    assert state["legacy_full_reader_compatible"] is False
     assert state["authority"] == "research_only"
     assert state["trade_enabled"] is False

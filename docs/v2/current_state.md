@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T20:18Z（M2 compact checkpoint rotation）
+> 最后更新：2026-08-21T21:24Z（M2 segmented storage capability marker）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer 及 compact rotation 完成；segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation 及 storage capability/rollback 合同完成；cold-scale 回归、segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -184,10 +184,19 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   谱系，逐代对账完整 events、物理顺序、全部 manifests、身份胶囊与 clocks。成功轮换不删除旧 checkpoint/segment；它们标为
   superseded 而非 orphan，引用损坏、重封身份漂移、谱系断裂/循环均 fail closed。轮换与 append 并发串行，`HEAD` 前失败只留下
   不可达 orphan，commit 后不确定重试返回 `already_compact`；audit 与 rotation 共用锁，symlink 条目单独标为 invalid。
+- `HEAD.storage_contract` 现在是 HEAD 内 self-hash-bound 的 aggregate format marker：full-checkpoint head 保留
+  `v2_universe_checkpoint_segment_sidecar_v1`，compact head 使用
+  `v2_universe_checkpoint_segment_sidecar_compact_v1`。checkpoint、compact checkpoint 与 segment 的 immutable record contract
+  不变；loader 强制 marker 与 checkpoint 类型一致，并在打开 compact checkpoint 前拒绝未知 marker。hot state 同时暴露
+  `legacy_full_reader_compatible`。仓库没有持久化 segmented `HEAD.json`，因此没有 tracked migration。
+- 部署合同固定为 reader-first：旧进程全部 quiesce/restart 并部署支持 compact marker 的 reader 后，才允许显式 rotation；marker
+  切换后禁止在同一 root 原地恢复旧 `HEAD`，应用回滚也只能回到支持 compact lineage 的 binary。更旧 reader 的 cutback 目前
+  不受支持；若将来需要，只能停写后由新 reader exact-load，在**新 root**做离线 full-v1 export 与 event/manifest/membership
+  identity 校验后切换，绝不能原地 rewind。self-hash 不提供认证或仓库外 rollback 检测；rotation 仍无自动 cadence，本合同
+  不是仓库外 append anchor。
 - compact 消除了热 checkpoint 的累计 manifest payload，但**没有**让整个 store 只物理保存一次 events：每代不可变 checkpoint
   都保留当时完整事件人口及 O(history) 身份胶囊，exact/rotation 仍按归档总量工作。因此只声称 hot-generation containment，
-  不声称 cold maintenance 已达到市场规模；接线前仍需制定 cadence/规模界限。新 reader 向后读取旧 full-v1 store，但旧二进制
-  不能前向读取新增 compact record type；需要 runtime 部署/回滚策略，而不是只改一个 schema 数字。
+  不声称 cold maintenance 已达到市场规模；下一独立单元仍需建立参数化 cold-scale regression，再决定 cadence/规模界限。
 - 该 slice 仍是 `contract_only_unwired`：没有 runtime reader 切换、仓库外 append anchor、canonical/PIT 提升或生产权限。
   advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、
   market decision clock 与适用的 production/backtest parity 仍是后续 blocker。
@@ -307,8 +316,9 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-checkpoint/segment publisher/writer 与进程崩溃恢复语义已完成；在扩展到长期、多 manifest 的市场级 ledger 前，下一干净
-单元应实现 compact checkpoint rotation，实际移除累计 manifest event/registry/membership surface 的重建成本。任何 canonical
+compact rotation 与 aggregate capability/rollback 合同已完成。下一干净单元应建立参数化 cold rotation/deep-lineage regression，
+冻结结构性 record-visit/bytes/peak-memory 边界；有实测 workload/SLO 后再定 cadence。之后以显式 segmented-hot backend、hot-tip
+manifest 和单次 state load 接入 source-bounded runtime，保持 rotation unscheduled 与 research-only ceiling。任何 canonical
 候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

@@ -14,6 +14,13 @@ clock, orders, or paper/live policy. The immutable source manifest keeps
 `parity_status=contract_only_unwired`; adapter and observation alias parity are
 recorded separately and cannot upgrade PIT or authority.
 
+The opt-in segmented sidecar is still not a runtime backend. Full-checkpoint
+HEADs retain the legacy storage marker, while compact HEADs carry a distinct
+self-hash-bound capability marker that an older reader rejects before checkpoint
+access. Deployment is reader-first and one-way within a root; rotation remains
+explicit and unscheduled. This capability contract changes no adapter identity,
+membership, daily/replay result, PIT tier, authority, or default-off boundary.
+
 | Decision point | Shared source | Replay use | Daily use | Allowed difference |
 | --- | --- | --- | --- | --- |
 | Exact SEC 8-K materialization membership | `v2_sec_8k_runtime_adapter.py`, `v2_sec_8k_universe.py`, `v2_universe_ledger.py` | caller must supply the exact committed `manifest_id` and timezone-aware `as_of`; the full source/envelope/ledger/coverage graph is validated before the sole shared membership reader runs | same callable, same mandatory identity tuple, same normalized snapshot and canonical hashes; there is no implicit latest manifest or process-clock fallback | none in membership, ordering, clocks, identity, hashes, or default-off boundary; Engine-0, production/backtest, canonical, and execution parity remain unclaimed |

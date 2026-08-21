@@ -7,9 +7,12 @@ retains the exact current event population, one tip manifest, and O(manifest
 history) identity facts in the hot generation while preserving old immutable
 generations for explicit exact replay.
 
-The publisher, writer, state reader, and rotation remain opt-in and do not
-change the legacy runtime reader, establish an external append anchor, or
-upgrade any research/PIT/trading boundary.
+Full-checkpoint stores retain the original ``storage_contract`` marker.  A
+compact rotation changes only the HEAD self-hash-bound marker so an older reader
+fails before opening a compact checkpoint; immutable checkpoint and segment
+record contracts remain unchanged.  The publisher, writer, state reader, and
+rotation remain opt-in and do not change the legacy runtime reader, establish
+an external append anchor, or upgrade any research/PIT/trading boundary.
 """
 
 from __future__ import annotations
@@ -61,6 +64,14 @@ CHECKPOINT_RECORD_TYPE = "v2_universe_ledger_checkpoint"
 COMPACT_CHECKPOINT_RECORD_TYPE = "v2_universe_ledger_compact_checkpoint"
 SEGMENT_RECORD_TYPE = "v2_universe_ledger_segment"
 STORAGE_CONTRACT = "v2_universe_checkpoint_segment_sidecar_v1"
+COMPACT_HEAD_STORAGE_CONTRACT = (
+    "v2_universe_checkpoint_segment_sidecar_compact_v1"
+)
+
+_HEAD_STORAGE_CONTRACTS = frozenset(
+    {STORAGE_CONTRACT, COMPACT_HEAD_STORAGE_CONTRACT}
+)
+_RECORD_STORAGE_CONTRACTS = frozenset({STORAGE_CONTRACT})
 
 _BOUNDARY = {
     "external_universe_coverage_status": "unverified",
@@ -472,6 +483,14 @@ def _checkpoint_head_manifest(checkpoint: Mapping[str, Any]) -> Mapping[str, Any
     return checkpoint["manifests"][-1]
 
 
+def _head_storage_contract(checkpoint: Mapping[str, Any]) -> str:
+    return (
+        COMPACT_HEAD_STORAGE_CONTRACT
+        if checkpoint["record_type"] == COMPACT_CHECKPOINT_RECORD_TYPE
+        else STORAGE_CONTRACT
+    )
+
+
 def _build_segment(
     *,
     checkpoint_hash: str,
@@ -515,6 +534,7 @@ def _build_head(
     )
     row = {
         **_base_record(HEAD_RECORD_TYPE),
+        "storage_contract": _head_storage_contract(checkpoint),
         "checkpoint_hash": checkpoint["checkpoint_hash"],
         "tail_segment_hash": None if not segments else segments[-1]["segment_hash"],
         "event_count": tip.get("after_event_count", checkpoint["event_count"]),
@@ -581,7 +601,12 @@ def build_segmented_ledger_contract(
 
 
 def _validate_record(
-    value: Mapping[str, Any], *, fields: frozenset[str], record_type: str, hash_field: str
+    value: Mapping[str, Any],
+    *,
+    fields: frozenset[str],
+    record_type: str,
+    hash_field: str,
+    storage_contracts: frozenset[str] = _RECORD_STORAGE_CONTRACTS,
 ) -> dict[str, Any]:
     if not isinstance(value, Mapping) or set(value) != fields:
         _fail("segmented_record_shape_invalid", f"{record_type} has an invalid shape")
@@ -592,7 +617,7 @@ def _validate_record(
         or row["record_type"] != record_type
     ):
         _fail("segmented_record_version_invalid", f"unsupported {record_type} record")
-    if row["storage_contract"] != STORAGE_CONTRACT:
+    if row["storage_contract"] not in storage_contracts:
         _fail("segmented_storage_contract_invalid", "unexpected storage contract")
     _validate_boundary(row)
     supplied = _require_hash(row[hash_field], field=hash_field)
@@ -603,7 +628,11 @@ def _validate_record(
 
 def validate_segmented_head(value: Mapping[str, Any]) -> dict[str, Any]:
     row = _validate_record(
-        value, fields=_HEAD_FIELDS, record_type=HEAD_RECORD_TYPE, hash_field="head_hash"
+        value,
+        fields=_HEAD_FIELDS,
+        record_type=HEAD_RECORD_TYPE,
+        hash_field="head_hash",
+        storage_contracts=_HEAD_STORAGE_CONTRACTS,
     )
     _require_hash(row["checkpoint_hash"], field="checkpoint_hash")
     _require_hash(row["tail_segment_hash"], field="tail_segment_hash", optional=True)
@@ -1287,6 +1316,12 @@ def _load_generation(
     )
     if checkpoint["checkpoint_hash"] != head["checkpoint_hash"]:
         _fail("segmented_checkpoint_binding_mismatch", "HEAD binds another checkpoint")
+    expected_head_storage_contract = _head_storage_contract(checkpoint)
+    if head["storage_contract"] != expected_head_storage_contract:
+        _fail(
+            "segmented_head_storage_contract_mismatch",
+            "HEAD storage contract does not match the checkpoint format",
+        )
 
     reachable = {checkpoint_path.resolve()}
     if head_target is not None:
@@ -1571,6 +1606,8 @@ def load_segmented_v2_universe_state(
         "checkpoint_hash": head["checkpoint_hash"],
         "tail_segment_hash": head["tail_segment_hash"],
         "current_generation_manifest_count": len(loaded["manifests"]),
+        "storage_contract": head["storage_contract"],
+        "legacy_full_reader_compatible": head["storage_contract"] == STORAGE_CONTRACT,
         "authority": "research_only",
         "trade_enabled": False,
     }
@@ -2101,6 +2138,7 @@ __all__ = [
     "COMPACT_CHECKPOINT_RECORD_TYPE",
     "SEGMENT_RECORD_TYPE",
     "STORAGE_CONTRACT",
+    "COMPACT_HEAD_STORAGE_CONTRACT",
     "V2UniverseSegmentError",
     "build_segmented_ledger_contract",
     "validate_segmented_head",
