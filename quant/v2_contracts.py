@@ -4559,6 +4559,7 @@ def universe_input_snapshot_hash(
                 {
                     "evidence_id": record.evidence_id,
                     "semantic_hash": record.semantic_hash,
+                    "record_hash": record.record_hash,
                 }
                 for record in sorted(records, key=lambda item: item.evidence_id)
             ],
@@ -4653,6 +4654,7 @@ def validate_universe_event_against_evidence(
         )
     _, event_known_dt = _instant(record.known_at, path="$.known_at")
     _, event_decided_dt = _instant(record.decided_at, path="$.decided_at")
+    exact_mapping_bound = False
     for item in referenced:
         _, evidence_known_dt = _instant(item.known_at, path="$.evidence.known_at")
         if evidence_known_dt > event_known_dt:
@@ -4670,15 +4672,27 @@ def validate_universe_event_against_evidence(
                 "$.evidence.recorded_at",
                 "referenced evidence must be recorded before the universe decision",
             )
-        if (
-            item.security_mapping is not None
-            and item.security_mapping.security_id != record.security_mapping.security_id
-        ):
-            _fail(
-                "evidence_security_mismatch",
-                "$.security_mapping.security_id",
-                "instrument evidence refers to a different security",
-            )
+        if item.security_mapping is not None:
+            evidence_mapping = item.security_mapping
+            event_mapping = record.security_mapping
+            if (
+                evidence_mapping.mapping_id != event_mapping.mapping_id
+                or evidence_mapping.security_id != event_mapping.security_id
+                or evidence_mapping.listing_id != event_mapping.listing_id
+                or evidence_mapping.mapping_sha256 != event_mapping.mapping_sha256
+            ):
+                _fail(
+                    "evidence_security_mapping_mismatch",
+                    "$.security_mapping",
+                    "instrument evidence must bind the event's exact effective-dated mapping",
+                )
+            exact_mapping_bound = True
+    if not exact_mapping_bound:
+        _fail(
+            "event_mapping_evidence_required",
+            "$.evidence_record_ids",
+            "a universe event requires exact effective-dated mapping evidence",
+        )
     expected_snapshot = universe_input_snapshot_hash(
         referenced,
         rule_sha256=record.rule_sha256,
@@ -6423,7 +6437,12 @@ def validate_replacement_value_panel(
 
 
 _AppendOnlyRecord = (
-    SessionClock | DecisionRecord | OrderIntent | SettledOutcome | ReplacementValue
+    SessionClock
+    | UniverseEvent
+    | DecisionRecord
+    | OrderIntent
+    | SettledOutcome
+    | ReplacementValue
 )
 
 
@@ -6432,6 +6451,7 @@ def _validate_append_only_record(
 ) -> _AppendOnlyRecord:
     validators = {
         "v2_session_clock": validate_session_clock,
+        "v2_universe_event": validate_universe_event,
         "v2_decision_record": validate_decision_record,
         "v2_order_intent": validate_order_intent,
         "v2_settled_outcome": validate_settled_outcome,
@@ -6447,7 +6467,7 @@ def _validate_append_only_record(
         _fail(
             "unsupported_append_only_record_type",
             "$.record_type",
-            "expected a clock, decision, intent, outcome, or replacement record",
+            "expected a clock, universe event, decision, intent, outcome, or replacement record",
         )
     return validator(raw)
 
@@ -6457,6 +6477,9 @@ def _append_only_identity(
 ) -> tuple[str, str, str, int | None]:
     if isinstance(record, SessionClock):
         key = physical_id = record.session_clock_id
+        revision = None
+    elif isinstance(record, UniverseEvent):
+        key = physical_id = record.event_id
         revision = None
     elif isinstance(record, DecisionRecord):
         key = physical_id = record.decision_id
@@ -6529,9 +6552,10 @@ def validate_append_only_append(
     for an idempotent semantic retry, and ``correction`` for the exact next
     outcome or replacement revision. Conflicts and malformed populations fail
     closed with :class:`V2ContractValidationError`. Clock, decision, and intent
-    IDs are their immutable stable keys; outcome and replacement records use
-    their explicit ``stable_key`` fields. Callers must still run the applicable
-    cross-input validator before persistence.
+    IDs are their immutable stable keys; universe events use ``event_id``;
+    outcome and replacement records use their explicit ``stable_key`` fields.
+    Callers must still run the applicable cross-input and full-population
+    validator before persistence.
     """
 
     if isinstance(existing_records, (str, bytes, bytearray, Mapping)):

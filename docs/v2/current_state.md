@@ -1,19 +1,19 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T05:55Z（M1 证据绑定交易日时钟合同轮）
+> 最后更新：2026-08-21T07:25Z（M2 universe ledger 人口核心轮）
 
 ## 里程碑
 
-**M0、M1 已完成，下一里程碑为 M2**。M1 五个最小工作单元已完成：基础数据合同、
-研究候选合同、决策 / 订单意图 / 结果测量合同、append-only / 幂等 schema 人口校验，
-以及证据绑定的交易日时钟合同。
+**M0、M1 已完成，M2 进行中**。M2 的第一个最小工作单元已落地研究级 universe
+ledger 人口核心；外部 universe 覆盖完备性、真实动态来源、runtime 接线与 deterministic
+daily/replay parity 尚未完成。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 未开始 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心完成；外部覆盖与 runtime parity 待完成 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
 
@@ -24,6 +24,29 @@
 - 用户确认前及合同落地前的产物最高仍为 `research_pit`，不能追溯升级为 canonical forward 证据；历史数据仍可在明确记录时钟与来源后用于 `research_pit` 私有回放。
 - `canonical_forward_eligibility_started_at` 仍为 `null`；具体来源和记录必须分别通过授权、时钟、映射、schema 与冻结 Gate。
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
+
+## M2 进行中单元
+
+### Universe ledger 人口核心
+
+- `quant/v2_universe_ledger.py` 建立严格 mixed-JSONL 研究 ledger：每批先校验完整既有前缀和新
+  `UniverseEvent`，再在 OS advisory lock 内以同目录临时文件 + atomic replace 提交事件与一个 manifest；
+  精确重试幂等，身份或语义冲突 fail closed，损坏、截断、尾随垃圾和跨 manifest 漂移均拒绝读取。
+- manifest 冻结 universe 定义、run/effective 双时钟、data cutoff、membership projection、完整事件 / membership
+  snapshot，以及累计 append-only 的 source-contract、evidence-record、clock、rule 和 mapping 身份绑定。
+  Evidence 同时绑定 semantic hash 与 exact record hash；同一稳定 ID 的内容、记录时钟或规则 / 映射 hash 漂移
+  不能通过本地重封绕过。
+- 读取必须显式给出已提交 `manifest_id` 和带时区 `as_of`；daily 与 replay 暴露为同一函数的真实 alias，
+  不能各自分叉 membership 逻辑。已知但未来生效的事件可先提交，只有 `effective_at <= as_of` 才进入投影；
+  后续零事件 manifest 可推进 projection。UTC 等价 offset 得到同一 snapshot。
+- `ledger_population_complete=true` **只表示该 ledger 已声明的人口前缀完整且通过校验**，不表示外部市场证券面完整。
+  `external_universe_coverage_status` 固定为 `unverified`；manifest / snapshot 强制封顶
+  `research_pit / observed_only`、`paper_live_eligible=false`、`parity_status=contract_only_unwired`、
+  `authority=research_only` 与 `trade_enabled=false`，本轮没有创建生产 ledger 数据。
+- 30 项 ledger 对抗测试、105 项受影响合同测试和完整 218 项 V2 套件通过；独立终审无 P0/P1。
+  当前全历史人口校验为 O(n²)，且没有仓库外 append anchor；在全市场规模和任何 canonical 资格前必须优化并
+  引入外部可验证锚。真实外部 coverage/security surface、mapped/unmapped/excluded disposition 证据、动态来源、
+  runtime adapter 与 production/replay parity 仍是 M2 后续工作，因此 6 项 V1 blocker 均未关闭。
 
 ## M1 已完成单元
 
@@ -45,8 +68,9 @@
   OrderIntent 的输入快照；clock 自身也纳入 append-only 人口校验，同语义的 `recorded_at` 重试为 duplicate，
   同 ID 语义漂移为 conflict。29 项聚焦对抗测试与完整 183 项 V2 套件通过，独立终审无剩余 P0/P1/P2。
 - 目前只启用可验证的数据日历锚；`frozen_run_date` / broker-session 在有各自 typed evidence 合同前明确拒绝，
-  不接受自证 hash。本单元仍不实现 ledger writer、runtime adapter、daily/replay 接线、broker、fill/position 或 exit clock；
-  不关闭 V1 时钟 bias blocker，不提升 `research_pit / observed_only` ceiling，不占 experiment ID。
+  不接受自证 hash。该 M1 单元当时未实现 ledger writer；当前 M2 仅补上研究 ledger 人口核心，仍没有
+  runtime adapter、daily/replay 运行接线、broker、fill/position 或 exit clock，不关闭 V1 时钟 bias blocker，
+  不提升 `research_pit / observed_only` ceiling，不占 experiment ID。
 
 ### Append-only 与幂等 schema 人口校验
 
@@ -109,8 +133,9 @@
 - 证据同时绑定原始 artifact SHA-256 和标准化决策内容 SHA-256；所有瞬时时钟必须带时区，禁止日期值、naive timestamp 和进程壁钟回退。
 - 跨合同校验强制 `SourceContract -> EvidenceRecord -> UniverseEvent` 完整链：字段和值一致、来源真实存在、等级不越权、映射在当时已知且覆盖生效时点、证据先落账再决策。
 - Universe 事件携带显式冻结 run date / calendar session、前后状态、规则 hash、证据语义快照和 previous-event 引用；当前名单/当前映射不能倒灌为 PIT。
-- 事件输入快照使用 evidence semantic hash，排除只改变 `recorded_at` 的操作噪声。UniverseEvent 的权威
-  append-only ledger / manifest、全量 previous-event 链证明与原子写入仍属于后续 M2 / runtime 工作。
+- 事件输入快照现在同时使用 evidence semantic hash 与 exact record hash，使真实落账时钟成为因果输入，
+  不能通过只改 `recorded_at` 重封证据而维持同一快照。M2 已补上研究级 append-only ledger / manifest、
+  全量 previous-event 链证明与原子写入；外部覆盖证明、仓库外 append anchor 和 runtime 接线仍待完成。
 - 本单元只建立 schema/校验，不接 daily、replay、运行时或下单路径，不占 alpha 实验 ID；`trade_enabled=false`。
 
 ## M0 交付物
@@ -127,7 +152,8 @@
 - 6 项 V1 bias blocker 全部仍为 open；本轮只提供解除 blocker 所需的合同原语，不代表任何 blocker 已关闭。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
-  初始 schema、人口分类器、时钟合同和 183 项测试不等于原子 ledger、runtime 或 execution parity 已完成。
+  初始 schema、M2 研究 ledger 人口核心和 218 项 V2 测试不等于外部 universe 完备、canonical provenance、
+  runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，V2 候选最高停在 research/shadow。
 - V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
@@ -139,6 +165,7 @@
 
 ## 下一步
 
-进入 M2 的第一个垂直切片：把动态 PIT universe 的完整 membership、append-only event chain 与 manifest
-落到一个共享 daily/replay 可读的研究 ledger；先证明完备性、因果时钟和 deterministic replay，继续保持
-research ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。
+继续 M2：先建立真实外部 security surface 和 coverage evidence，对每个证券留下
+`mapped / unmapped / excluded` 的可审计 disposition，证明“外部输入面”而不只是 ledger 内部人口前缀完整；
+再接入实际动态来源与共享 runtime adapter，做独立 daily/replay deterministic parity 验证。继续保持 research
+ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。

@@ -547,7 +547,7 @@ def test_universe_event_round_trip_binds_frozen_clock_mapping_and_evidence():
     assert event.trade_enabled is False
 
 
-def test_universe_input_snapshot_ignores_operational_recorded_at_only():
+def test_universe_input_snapshot_binds_evidence_recorded_at_for_causality():
     evidence = _evidence()
     later_record = deepcopy(evidence)
     later_record["recorded_at"] = "2026-08-20T14:04:00Z"
@@ -564,7 +564,7 @@ def test_universe_input_snapshot_ignores_operational_recorded_at_only():
         effective_session_clock_id="clock-v2-run-20260820",
         effective_session_clock_hash="f" * 64,
         effective_session_clock_record_hash="e" * 64,
-    ) == universe_input_snapshot_hash(
+    ) != universe_input_snapshot_hash(
         [later_record],
         rule_sha256="d" * 64,
         security_mapping_sha256=later_record["security_mapping"]["mapping_sha256"],
@@ -574,6 +574,28 @@ def test_universe_input_snapshot_ignores_operational_recorded_at_only():
         effective_session_clock_id="clock-v2-run-20260820",
         effective_session_clock_hash="f" * 64,
         effective_session_clock_record_hash="e" * 64,
+    )
+
+
+def test_evidence_recorded_at_cannot_be_backdated_without_rebinding_event():
+    source = _source()
+    late = _evidence(source=source, recorded_at="2026-08-20T14:05:00Z")
+    event = _event(evidence=late)
+    _assert_code(
+        "evidence_recorded_after_decision",
+        lambda: validate_universe_event_against_evidence(event, [late], [source]),
+    )
+
+    backdated = deepcopy(late)
+    backdated["recorded_at"] = "2026-08-20T14:03:00Z"
+    backdated = _seal_evidence(backdated)
+    assert backdated["semantic_hash"] == late["semantic_hash"]
+    assert backdated["record_hash"] != late["record_hash"]
+    _assert_code(
+        "input_snapshot_hash_mismatch",
+        lambda: validate_universe_event_against_evidence(
+            event, [backdated], [source]
+        ),
     )
 
 
@@ -686,7 +708,40 @@ def test_universe_evidence_security_identity_cannot_use_symbol_only():
     )
     event = _event(evidence=evidence)
     _assert_code(
-        "evidence_security_mismatch",
+        "evidence_security_mapping_mismatch",
+        lambda: validate_universe_event_against_evidence(event, [evidence], [source]),
+    )
+
+
+def test_universe_evidence_must_bind_exact_listing_mapping_for_same_security():
+    source = _source()
+    evidence = _evidence(
+        source=source,
+        security_mapping=_mapping(
+            mapping_id="map-sec-aaa-xnys-v2",
+            listing_id="listing-aaa-xnys",
+            symbol="AAA.B",
+            mic="XNYS",
+        ),
+    )
+    event = _event(evidence=evidence)
+    _assert_code(
+        "evidence_security_mapping_mismatch",
+        lambda: validate_universe_event_against_evidence(event, [evidence], [source]),
+    )
+
+
+def test_universe_event_rejects_global_evidence_without_mapping_evidence():
+    source = _source(security_mapping_policy="not_applicable")
+    evidence = _evidence(
+        source=source,
+        security_scope="not_applicable",
+        security_mapping_kind="not_applicable",
+        security_mapping=None,
+    )
+    event = _event(evidence=evidence)
+    _assert_code(
+        "event_mapping_evidence_required",
         lambda: validate_universe_event_against_evidence(event, [evidence], [source]),
     )
 

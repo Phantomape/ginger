@@ -19,9 +19,11 @@
 - [x] append-only 与幂等测试（schema 层；2026-08-20 本地）
 - [x] 时钟合同：以完整、证据绑定的数据日历冻结 run date / session，禁止进程壁钟；其余未建 typed evidence 的锚 fail closed（2026-08-20 本地）
 
-## M2（下一里程碑）
+## M2（进行中）
 
-- [ ] 动态 PIT universe 垂直切片：完整 membership、append-only event chain 与 manifest 写入共享研究 ledger，daily / replay 共读并做 deterministic parity 验证
+- [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
+- [ ] 外部 coverage/security surface：冻结真实输入证券全集，对每项留下 `mapped / unmapped / excluded` disposition、有效期映射与 coverage evidence，支持可证明的完整或已知为空结论
+- [ ] 接入实际动态来源和共享 runtime adapter，验证 daily/replay deterministic parity；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
 
 ## 待用户决定（不阻断 M1）
 

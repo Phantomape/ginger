@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 
-from quant.test_v2_contracts import _assert_code
+from quant.test_v2_contracts import _assert_code, _event, _seal_event
 from quant.test_v2_decision_outcome_contracts import (
     _chain,
     _outcome,
@@ -10,6 +10,32 @@ from quant.test_v2_decision_outcome_contracts import (
     _seal,
 )
 from quant.v2_contracts import validate_append_only_append
+
+
+def test_universe_event_append_and_recorded_at_retry_are_idempotent():
+    event = _event()
+
+    assert validate_append_only_append([], event) == "append"
+    assert validate_append_only_append([event], event) == "duplicate"
+
+    retry = deepcopy(event)
+    retry["recorded_at"] = "2026-08-20T14:05:30Z"
+    retry = _seal_event(retry)
+    assert retry["semantic_hash"] == event["semantic_hash"]
+    assert retry["event_hash"] != event["event_hash"]
+    assert validate_append_only_append([event], retry) == "duplicate"
+
+
+def test_universe_event_id_semantic_drift_fails_closed():
+    event = _event()
+    conflict = deepcopy(event)
+    conflict["reason"] = "Changed after the universe event was frozen."
+    conflict = _seal_event(conflict)
+
+    _assert_code(
+        "immutable_key_conflict",
+        lambda: validate_append_only_append([event], conflict),
+    )
 
 
 @pytest.mark.parametrize("kind", ("decision", "intent"))
