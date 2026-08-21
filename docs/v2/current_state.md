@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T14:05Z（M2 SEC 8-K runtime adapter parity fixture）
+> 最后更新：2026-08-21T14:23Z（M2 SEC 8-K runtime adapter contract hardening）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例与 source-bounded runtime adapter 完成；市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例与显式身份 source-bounded runtime adapter 完成；Engine-0 接线、市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -63,15 +63,17 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 ### SEC 8-K runtime adapter parity fixture
 
 - `quant/v2_sec_8k_runtime_adapter.py` 新增只读 runtime adapter：每次读取前先重建并验证已提交 SEC source bundle、
-  materialization envelope、universe ledger 与 coverage/manifest 绑定，再用同一个 `manifest_id + as_of` 调用
-  `read_v2_daily_universe` 和 `read_v2_replay_universe`。两个 consumer 是同一 reader 的真 alias；若 snapshot
-  不完全相同则 fail closed。
-- adapter 输出只包含 source/envelope/coverage/manifest 身份、membership snapshot hash、daily/replay snapshot hash
-  和 research-only 边界；不生成 CandidatePool、Hypothesis、DecisionRecord、收益测量、策略排名、订单或生产状态。
-  tamper、manifest/hash drift、boundary escalation、`trade_enabled=true` 和 paper/live 提升均拒绝。
-- 当前结论只关闭这个 SEC 8-K source-bounded graph 的 runtime consumer drift 风险；`parity_status` 仍保持
-  `contract_only_unwired`，因为尚未接入 Engine-0、全市场 universe、daily scheduler 或 production policy。15 项
-  SEC 专项测试和完整 251 项 V2 测试通过。
+  materialization envelope、universe ledger 与 coverage/manifest 绑定。v2 adapter 强制调用者显式提供已提交
+  `manifest_id` 和 timezone-aware `as_of`，禁止 latest-manifest、manifest 自选和进程时钟回退；daily/replay 导出是
+  同一 adapter 的真 alias，底层只执行一次共享 membership reader，不重复做两次全历史验证。
+- adapter 在 graph validator 前读取并本地校验 envelope canonical hash，随后要求 validator 返回同一 envelope、manifest
+  与 coverage 身份，避免验证后再次消费未校验副本。输出冻结 bundle/envelope/coverage/manifest/universe/as-of/reader
+  完整 identity hash、共享 reader snapshot hash 与 adapter snapshot hash；路径和 consumer 标签不进入身份。
+- `adapter_parity_status=daily_replay_verified_research_only` 只描述这个 source-bounded membership adapter；不可变 source/
+  manifest 的 `parity_status=contract_only_unwired` 保持不变，因为尚未接入 Engine-0、全市场 universe、daily scheduler
+  或 production policy。tamper、错 manifest、naive/越界 as-of、boundary escalation、`trade_enabled=true` 和 paper/live
+  提升与非有限 JSON（含数值溢出）均以稳定错误拒绝；22 项 SEC 专项测试、完整 258 项 V2 测试与真实 111-membership graph 的
+  offset-equivalent parity 检查通过。
 
 ### 外部 coverage 逐行因果时钟
 

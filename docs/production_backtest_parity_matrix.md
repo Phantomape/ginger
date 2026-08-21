@@ -5,6 +5,17 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## V2 SEC 8-K Research Universe Runtime
+
+The V2 SEC 8-K adapter is a source-bounded, research-only membership consumer.
+It does not feed the legacy production runner, Engine-0, orders, or paper/live
+policy.  The immutable source manifest keeps `parity_status=contract_only_unwired`;
+adapter parity is recorded separately and cannot upgrade PIT or authority.
+
+| Decision point | Shared source | Replay use | Daily use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Exact SEC 8-K materialization membership | `v2_sec_8k_runtime_adapter.py`, `v2_sec_8k_universe.py`, `v2_universe_ledger.py` | caller must supply the exact committed `manifest_id` and timezone-aware `as_of`; the full source/envelope/ledger/coverage graph is validated before the sole shared membership reader runs | same callable, same mandatory identity tuple, same normalized snapshot and canonical hashes; there is no implicit latest manifest or process-clock fallback | none in membership, ordering, clocks, identity, hashes, or default-off boundary; Engine-0, production/backtest, canonical, and execution parity remain unclaimed |
+
 ## ORTEX Cost-to-Borrow-New Observer
 
 `exp-20260718-003` adds a shared, default-off ORTEX borrow-economics
