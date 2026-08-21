@@ -49,6 +49,12 @@ try:  # Support package imports and direct ``quant/`` execution.
         validate_universe_event_against_evidence,
         validate_universe_event_against_session_clocks,
     )
+    from .v2_universe_coverage import (
+        ExternalUniverseCoverageSnapshot,
+        V2UniverseCoverageError,
+        validate_external_universe_coverage_against_inputs,
+        validate_external_universe_coverage_snapshot,
+    )
 except ImportError:  # pragma: no cover - direct script fallback.
     from data_paths import atomic_write_text  # type: ignore
     from v2_contracts import (  # type: ignore
@@ -70,6 +76,12 @@ except ImportError:  # pragma: no cover - direct script fallback.
         validate_universe_event,
         validate_universe_event_against_evidence,
         validate_universe_event_against_session_clocks,
+    )
+    from v2_universe_coverage import (  # type: ignore
+        ExternalUniverseCoverageSnapshot,
+        V2UniverseCoverageError,
+        validate_external_universe_coverage_against_inputs,
+        validate_external_universe_coverage_snapshot,
     )
 
 
@@ -1813,6 +1825,118 @@ def read_v2_universe_membership(
     return result
 
 
+def validate_external_universe_coverage_against_manifest(
+    coverage_snapshot: Mapping[str, Any] | ExternalUniverseCoverageSnapshot,
+    manifest: Mapping[str, Any],
+    events: Iterable[Mapping[str, Any] | UniverseEvent],
+    *,
+    coverage_evidence: Mapping[str, Any] | EvidenceRecord,
+    coverage_source_contract: Mapping[str, Any] | SourceContract,
+    mapping_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord] = (),
+    mapping_source_contracts: Sequence[Mapping[str, Any] | SourceContract] = (),
+) -> dict[str, Any]:
+    """Reconcile promotion-only coverage with one immutable ledger commit.
+
+    This is deliberately a read-only cross-check.  It does not upgrade the
+    manifest's unverified external-market status or participate in scout
+    admission, CandidatePool construction, persistence, or runtime reads.
+    """
+
+    try:
+        coverage = validate_external_universe_coverage_snapshot(coverage_snapshot)
+        input_binding = validate_external_universe_coverage_against_inputs(
+            coverage,
+            coverage_evidence=coverage_evidence,
+            coverage_source_contract=coverage_source_contract,
+            mapping_evidence_records=mapping_evidence_records,
+            mapping_source_contracts=mapping_source_contracts,
+        )
+    except V2UniverseCoverageError as exc:
+        raise V2UniverseLedgerValidationError(exc.code, exc.detail) from exc
+    committed = _validate_manifest_shape(manifest)
+    if (
+        coverage.universe_manifest_id != committed["manifest_id"]
+        or coverage.universe_manifest_hash != committed["manifest_hash"]
+    ):
+        _fail("coverage_manifest_binding_mismatch", "coverage does not bind this manifest")
+    for field in (
+        "universe_id",
+        "universe_definition_id",
+        "universe_definition_version",
+        "universe_definition_sha256",
+        "membership_as_of",
+        "data_cutoff",
+    ):
+        if getattr(coverage, field) != committed[field]:
+            _fail(
+                "coverage_manifest_identity_mismatch",
+                f"coverage {field} does not match the committed manifest",
+            )
+    _, coverage_frozen_dt = _instant(coverage.frozen_at, field="coverage.frozen_at")
+    _, manifest_recorded_dt = _instant(committed["recorded_at"], field="manifest.recorded_at")
+    if coverage_frozen_dt < manifest_recorded_dt:
+        _fail(
+            "coverage_frozen_before_manifest",
+            "coverage cannot bind a manifest that was not yet recorded",
+        )
+
+    event_records, memberships = validate_universe_event_population(
+        events,
+        universe_id=committed["universe_id"],
+        data_cutoff=committed["data_cutoff"],
+        frozen_at=committed["frozen_at"],
+        membership_as_of=committed["membership_as_of"],
+    )
+    if sorted(item.event_id for item in event_records) != committed["universe_event_ids"]:
+        _fail(
+            "coverage_manifest_event_population_mismatch",
+            "supplied events do not equal the manifest event population",
+        )
+    if memberships != committed["memberships"]:
+        _fail(
+            "coverage_manifest_membership_mismatch",
+            "manifest memberships do not match the supplied event population",
+        )
+
+    coverage_mappings = {
+        (
+            row.security_mapping.security_id,
+            row.security_mapping.listing_id,
+            row.security_mapping.mapping_sha256,
+        )
+        for row in coverage.rows
+        if row.disposition == "mapped" and row.security_mapping is not None
+    }
+    active_manifest_mappings = {
+        (row["security_id"], row["listing_id"], row["mapping_sha256"])
+        for row in memberships
+        if row["state"] != "retired"
+    }
+    if coverage_mappings != active_manifest_mappings:
+        _fail(
+            "coverage_active_mapping_set_mismatch",
+            "mapped coverage rows must exactly equal active manifest mappings",
+        )
+    if coverage.coverage_status == "verified_known_empty" and active_manifest_mappings:
+        _fail(
+            "known_empty_active_membership_mismatch",
+            "known-empty coverage requires an empty active manifest membership",
+        )
+    binding = {
+        "coverage_snapshot_id": coverage.coverage_snapshot_id,
+        "coverage_snapshot_record_hash": coverage.record_hash,
+        "coverage_input_binding_sha256": input_binding["input_binding_sha256"],
+        "universe_manifest_id": committed["manifest_id"],
+        "universe_manifest_hash": committed["manifest_hash"],
+        "active_mapping_count": len(active_manifest_mappings),
+        "external_universe_coverage_status": "unverified",
+        "paper_live_eligible": False,
+        "trade_enabled": False,
+    }
+    binding["coverage_manifest_binding_sha256"] = canonical_hash(binding)
+    return binding
+
+
 # These are true aliases: adapters cannot fork membership logic by consumer.
 read_v2_daily_universe = read_v2_universe_membership
 read_v2_replay_universe = read_v2_universe_membership
@@ -1836,4 +1960,5 @@ __all__ = [
     "read_v2_universe_membership",
     "read_v2_daily_universe",
     "read_v2_replay_universe",
+    "validate_external_universe_coverage_against_manifest",
 ]

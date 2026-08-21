@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T08:10Z（V2 与 V1 运行关系解耦）
+> 最后更新：2026-08-21T10:31Z（M2 外部 coverage 合同核心）
 
 ## 里程碑
 
@@ -13,8 +13,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心完成；外部覆盖与 runtime parity 待完成 |
-| Research scout lane | 已开放：首个 bounded V2 scout preflight 是当前最高优先级 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心与 promotion-only 外部 coverage 合同核心完成；真实来源实例与 runtime parity 待完成 |
+| Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
 
@@ -37,6 +37,32 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   非阻断建设单元时重跑完整 preflight；失败且无安全有价值的直接修复时回 promotion backlog/no-op。
 
 ## M2 进行中单元
+
+### 外部 coverage 合同核心
+
+- `quant/v2_universe_coverage.py` 新增仅服务 promotion-construction 的 source-population coverage 合同；它冻结
+  scope、完整稳定 row id/hash 面、`mapped / unmapped / excluded` 处置、exact coverage evidence、有效期 mapping evidence、
+  universe definition 与目标 manifest 身份。coverage evidence 必须机器绑定 `enumeration_complete=true`、源报告行数和
+  完整 row id/hash 集合，不能由 snapshot 自报零行或完整性。
+- 每个 mapped row 必须绑定通过既有 `SourceContract -> EvidenceRecord` 校验的 effective-dated mapping；mapping 与其
+  evidence 都必须在 `data_cutoff` 前 known、在 freeze 前 recorded，并覆盖 `membership_as_of`。稳定 mapping id 分叉、晚到/过期
+  mapping、丢行、重复 row id/hash、count 不守恒和 default-on 均 fail closed。
+- `validate_external_universe_coverage_against_manifest` 强制先组合执行上述输入校验，再把 mapped rows 归一去重后的
+  `(security_id, listing_id, mapping_sha256)` 集合与目标 manifest 中全部非 retired membership 精确对齐；known-empty 只能绑定
+  空 active membership。输出同时绑定 coverage input、snapshot 和 manifest hash，不能绕过 source/evidence 验证。
+- 该合同不接 CandidatePool、Hypothesis、promotion request、scout admission、persistence 或 runtime；现有 ledger manifest 与
+  daily/replay reader 继续固定 `external_universe_coverage_status=unverified`、`research_pit / observed_only`、
+  `paper_live_eligible=false`、`trade_enabled=false`。14 项新对抗测试、44 项 coverage+ledger 聚焦测试和完整 232 项 V2
+  测试通过；独立复核确认两个初版 P1（cross-validator 可绕过输入验证、mapping evidence 可晚于 cutoff）已关闭，最终 P0/P1=0。
+
+### 首个 scout preflight 结果
+
+- 2026-08-21 09:05Z 对 SEC contract-relation source frame 的 zero-ID preflight 在 reserve 前拒绝：虽有 294 行、30 个
+  ticker 和非零 source-native reach，但缺 V2 Source/Evidence 实例、294/294 timezone-aware `accepted_at`、effective mapping，
+  且没有满足既有 contract-relation reopen 条件。未读取 outcome、未占实验 ID。
+- 本轮 outcome-blind 复核未发现其他 admission-ready committed source：Moomoo capital-flow 缺可靠 historical known-at、授权与
+  frame provenance，FINRA weekly 缺 timezone/session-bound publication clock、授权、effective mapping 和新 novelty axis。
+  SEC contract-relation 只有在上轮 receipt 的定量 reopen 条件满足后才可重试。
 
 ### Universe ledger 人口核心
 
@@ -174,7 +200,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-执行首个 V2 bounded research scout：对一个授权、非零触达、`research_pit` 的 source-native frame 做 zero-ID
-readiness/D0-D3；通过则冻结完整 disposition manifest、mapped-only CandidatePool、必要的 DecisionRecord 和 promotion，reserve/claim 一个
-`private_replay_scout`，用一个 treatment、一个 primary horizon 和预注册反证运行并关闭为 `observed_only` 或 reject。
-M2 外部 coverage/security surface 与 runtime parity 保留为并行 promotion backlog，不再抢占这个 scout。
+在不抽取首个 scout 通用 disposition guard 的前提下，为一个真实、授权且具有 row-level clock 的动态来源物化首份
+source-bound coverage snapshot、coverage EvidenceRecord 和 forward-only effective mapping，并与实际 universe manifest 交叉验证；
+随后再接共享 runtime adapter 与 daily/replay parity。若期间出现满足 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，
+立即回到 bounded scout lane 做 experiment-local preflight/freeze/reserve；不要无条件重试 SEC contract-relation。
