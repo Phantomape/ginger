@@ -1458,86 +1458,80 @@ def _load_exact_generations(
 ) -> tuple[dict[str, list[dict[str, Any]]], set[Path], dict[str, Any]]:
     """Iteratively rebuild exact history across compact generations."""
 
-    generation_heads: list[dict[str, Any]] = []
+    compact_generations: list[dict[str, Any]] = []
     cursor = validate_segmented_head(head)
-    seen: set[str] = set()
-    while True:
-        checkpoint_hash = cursor["checkpoint_hash"]
-        if checkpoint_hash in seen:
-            _fail(
-                "segmented_compact_lineage_cycle",
-                "checkpoint lineage contains a cycle",
-            )
-        seen.add(checkpoint_hash)
-        checkpoint_path = segmented_record_path(
-            root, "checkpoint", checkpoint_hash
-        )
-        checkpoint = _validate_checkpoint_record(
-            _read_json(checkpoint_path, role="checkpoint")
-        )
-        if checkpoint["checkpoint_hash"] != checkpoint_hash:
-            _fail(
-                "segmented_checkpoint_binding_mismatch",
-                "archival HEAD binds another checkpoint",
-            )
-        generation_heads.append(cursor)
-        if checkpoint["record_type"] != COMPACT_CHECKPOINT_RECORD_TYPE:
-            break
-        cursor = validate_segmented_head(checkpoint["compacted_from_head"])
-
-    exact: dict[str, list[dict[str, Any]]] | None = None
+    seen_checkpoints: set[str] = set()
     reachable: set[Path] = set()
     current_reachable: set[Path] = set()
     current_metadata: dict[str, Any] | None = None
-    for generation_index, generation_head in enumerate(
-        reversed(generation_heads)
-    ):
-        is_current = generation_index == len(generation_heads) - 1
+    exact: dict[str, list[dict[str, Any]]] | None = None
+    is_current = True
+    while True:
         view, generation_reachable, metadata = _load_generation(
             root,
-            generation_head,
+            cursor,
             head_target=head_target if is_current else None,
-            seen_checkpoints=set(),
+            seen_checkpoints=seen_checkpoints,
         )
         reachable.update(generation_reachable)
-        if exact is None:
-            if metadata["compact"]:
-                _fail(
-                    "segmented_compact_lineage_missing",
-                    "compact lineage must terminate at a full checkpoint",
-                )
-            exact = view
-        else:
-            checkpoint = metadata["checkpoint"]
-            if (
-                not metadata["compact"]
-                or checkpoint["events"] != exact["events"]
-                or checkpoint["manifest_count"] != len(exact["manifests"])
-                or checkpoint["head_manifest"] != exact["manifests"][-1]
-                or checkpoint["identity_state"] != _compact_identity_state(exact)
-            ):
-                _fail(
-                    "segmented_compact_lineage_mismatch",
-                    "archived generation does not reconstruct the compact base",
-                )
-            for segment in metadata["segments"]:
-                exact["events"].extend(deepcopy(segment["events"]))
-                exact["manifests"].append(deepcopy(segment["manifest"]))
-            if (
-                exact["events"] != view["events"]
-                or exact["manifests"][-1] != view["manifests"][-1]
-                or len(exact["manifests"]) != metadata["head"]["manifest_count"]
-            ):
-                _fail(
-                    "segmented_compact_lineage_mismatch",
-                    "compact generation tail does not extend archived history exactly",
-                )
         if is_current:
             current_reachable = generation_reachable
             current_metadata = metadata
+            is_current = False
+
+        checkpoint = metadata["checkpoint"]
+        if not metadata["compact"]:
+            exact = view
+            break
+        compact_generations.append(
+            {
+                "base_events_sha256": canonical_hash(checkpoint["events"]),
+                "base_manifest_count": checkpoint["manifest_count"],
+                "base_head_manifest_sha256": canonical_hash(
+                    checkpoint["head_manifest"]
+                ),
+                "base_identity_state_sha256": canonical_hash(
+                    checkpoint["identity_state"]
+                ),
+                "segments": metadata["segments"],
+                "head_event_count": metadata["head"]["event_count"],
+                "head_manifest_count": metadata["head"]["manifest_count"],
+                "head_manifest_id": metadata["head"]["head_manifest_id"],
+                "head_manifest_hash": metadata["head"]["head_manifest_hash"],
+            }
+        )
+        cursor = validate_segmented_head(checkpoint["compacted_from_head"])
 
     if exact is None or current_metadata is None:
         _fail("segmented_compact_lineage_missing", "no committed generation exists")
+    for generation in reversed(compact_generations):
+        if (
+            generation["base_events_sha256"] != canonical_hash(exact["events"])
+            or generation["base_manifest_count"] != len(exact["manifests"])
+            or generation["base_head_manifest_sha256"]
+            != canonical_hash(exact["manifests"][-1])
+            or generation["base_identity_state_sha256"]
+            != canonical_hash(_compact_identity_state(exact))
+        ):
+            _fail(
+                "segmented_compact_lineage_mismatch",
+                "archived generation does not reconstruct the compact base",
+            )
+        for segment in generation["segments"]:
+            exact["events"].extend(segment["events"])
+            exact["manifests"].append(segment["manifest"])
+        if (
+            len(exact["events"]) != generation["head_event_count"]
+            or len(exact["manifests"]) != generation["head_manifest_count"]
+            or exact["manifests"][-1]["manifest_id"]
+            != generation["head_manifest_id"]
+            or exact["manifests"][-1]["manifest_hash"]
+            != generation["head_manifest_hash"]
+        ):
+            _fail(
+                "segmented_compact_lineage_mismatch",
+                "compact generation tail does not extend archived history exactly",
+            )
     reconstructed = _canonical_legacy_view(exact)
     current_metadata["archived_reachable"] = reachable - current_reachable
     return reconstructed, reachable, current_metadata

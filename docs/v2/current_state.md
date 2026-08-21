@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T21:24Z（M2 segmented storage capability marker）
+> 最后更新：2026-08-21T22:28Z（M2 cold-lineage structural regression）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation 及 storage capability/rollback 合同完成；cold-scale 回归、segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback 及 cold-lineage 结构回归完成；segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -196,7 +196,14 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   不是仓库外 append anchor。
 - compact 消除了热 checkpoint 的累计 manifest payload，但**没有**让整个 store 只物理保存一次 events：每代不可变 checkpoint
   都保留当时完整事件人口及 O(history) 身份胶囊，exact/rotation 仍按归档总量工作。因此只声称 hot-generation containment，
-  不声称 cold maintenance 已达到市场规模；下一独立单元仍需建立参数化 cold-scale regression，再决定 cadence/规模界限。
+  不声称 cold maintenance 已达到市场规模。
+- exact lineage loader 现在从当前代向前逐代读取一次，只保留 compact 基线 hash 摘要和最终 exact 输出需要的 tail rows，再按
+  oldest-to-newest 重建并通过完整 canonical legacy validator；不会把所有 decoded checkpoint 缓存在内存。配对回归把同一
+  5-manifest 逻辑 tip 按 1/2/4 个 rotation generation 持久化：hot load 始终只读 `HEAD + current checkpoint` 两个文件，exact
+  load 对全部 7/8/10 个可达 JSON 各读一次，读取字节分别为 81,933/111,086/169,530，且 exact logical view 完全相同。
+- `tracemalloc` 仅提供平台诊断：本轮 hot peak 约 0.284 MB，exact peak 约 0.690-0.724 MB，并由基于读取与输出字节的保守 affine
+  envelope 防止明显的非线性回归；elapsed 不设门槛。该小型结构 fixture 不证明真实市场规模、RSS、cadence 或 SLO，整次 rotation
+  仍包含独立的提交前/后验证阶段并保持显式、unscheduled，绝不能把 standalone exact pass 的单读事实扩写成整个 rotation 单遍。
 - 该 slice 仍是 `contract_only_unwired`：没有 runtime reader 切换、仓库外 append anchor、canonical/PIT 提升或生产权限。
   advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、
   market decision clock 与适用的 production/backtest parity 仍是后续 blocker。
@@ -316,9 +323,9 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-compact rotation 与 aggregate capability/rollback 合同已完成。下一干净单元应建立参数化 cold rotation/deep-lineage regression，
-冻结结构性 record-visit/bytes/peak-memory 边界；有实测 workload/SLO 后再定 cadence。之后以显式 segmented-hot backend、hot-tip
-manifest 和单次 state load 接入 source-bounded runtime，保持 rotation unscheduled 与 research-only ceiling。任何 canonical
+compact rotation、aggregate capability/rollback 与 cold-lineage 结构回归已完成。下一干净单元应以显式 segmented-hot backend、
+hot-tip manifest 和单次 state load 接入 source-bounded runtime，禁止 backend 自动探测、cold traversal 或 silent legacy fallback，
+并保持 rotation unscheduled 与 research-only ceiling；只有拿到真实 population/churn/retention/SLO 才能另定 cadence。任何 canonical
 候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

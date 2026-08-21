@@ -1,8 +1,11 @@
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 import json
 from pathlib import Path
 from threading import Event
+from time import perf_counter
+import tracemalloc
 
 import pytest
 
@@ -245,6 +248,46 @@ def _write_three_manifest_segmented(root, fixture):
     for events, manifest in fixture["transactions"]:
         _append_segmented(root, events, manifest, fixture)
     assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def _cold_scale_history(fixture):
+    manifests = list(fixture["full"]["manifests"])
+    for suffix, membership_as_of, frozen_at, recorded_at in (
+        (
+            "4-cold-scale",
+            "2026-08-21T14:03:00Z",
+            "2026-08-21T14:04:00Z",
+            "2026-08-21T14:05:00Z",
+        ),
+        (
+            "5-cold-scale",
+            "2026-08-21T14:06:00Z",
+            "2026-08-21T14:07:00Z",
+            "2026-08-21T14:08:00Z",
+        ),
+    ):
+        manifests.append(
+            _manifest(
+                fixture["full"]["events"],
+                fixture["future_clock"],
+                previous=manifests[-1],
+                suffix=suffix,
+                graph=fixture["graph"],
+                bundle=fixture["bundle"],
+                membership_as_of=membership_as_of,
+                data_cutoff=membership_as_of,
+                frozen_at=frozen_at,
+                recorded_at=recorded_at,
+            )
+        )
+    return {
+        "events": fixture["full"]["events"],
+        "manifests": manifests,
+    }, [
+        *fixture["transactions"],
+        ([], manifests[-2]),
+        ([], manifests[-1]),
+    ]
 
 
 def _reseal(row, hash_field):
@@ -1862,3 +1905,150 @@ def test_fast_state_load_does_not_reconstruct_archived_manifests(
     assert state["legacy_full_reader_compatible"] is False
     assert state["authority"] == "research_only"
     assert state["trade_enabled"] is False
+
+
+@pytest.mark.parametrize(
+    ("lineage_depth", "rotation_manifest_counts"),
+    (
+        (1, (5,)),
+        (2, (3, 5)),
+        (4, (2, 3, 4, 5)),
+    ),
+    ids=("depth-1", "depth-2", "depth-4"),
+)
+def test_cold_scale_hot_and_exact_load_structural_bounds(
+    tmp_path,
+    monkeypatch,
+    lineage_depth,
+    rotation_manifest_counts,
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    expected, transactions = _cold_scale_history(fixture)
+    root = tmp_path / f"cold-scale-{lineage_depth}"
+    _bootstrap_segmented(root, fixture)
+    rotations = []
+    for manifest_count, (events, manifest) in enumerate(
+        transactions, start=2
+    ):
+        _append_segmented(root, events, manifest, fixture)
+        if manifest_count in rotation_manifest_counts:
+            rotations.append(rotate_segmented_v2_universe_checkpoint(root))
+
+    assert len(rotations) == lineage_depth
+    assert all(item["status"] == "rotated" for item in rotations)
+    final_rotation = rotations[-1]
+    head_path = root / "HEAD.json"
+    checkpoint_paths = {
+        item for item in (root / "checkpoints").glob("*.json")
+    }
+    segment_paths = {
+        item for item in (root / "segments").glob("*.json")
+    }
+    current_checkpoint_path = segmented_record_path(
+        root, "checkpoint", final_rotation["new_checkpoint_hash"]
+    )
+    assert len(checkpoint_paths) == lineage_depth + 1
+    assert len(segment_paths) == len(transactions)
+    assert current_checkpoint_path in checkpoint_paths
+    path_sizes = {
+        path: path.stat().st_size
+        for path in {head_path, *checkpoint_paths, *segment_paths}
+    }
+
+    visits = []
+    real_read_json = segments_module._read_json
+
+    def measured_read_json(path, *, role):
+        visits.append((Path(path), role))
+        return real_read_json(path, role=role)
+
+    monkeypatch.setattr(segments_module, "_read_json", measured_read_json)
+
+    def measure(call):
+        visits.clear()
+        tracer_was_running = tracemalloc.is_tracing()
+        if not tracer_was_running:
+            tracemalloc.start()
+        started_at = perf_counter()
+        try:
+            output = call()
+        finally:
+            elapsed_seconds = perf_counter() - started_at
+            peak_bytes = None
+            if not tracer_was_running:
+                _, peak_bytes = tracemalloc.get_traced_memory()
+                tracemalloc.stop()
+        return output, list(visits), peak_bytes, elapsed_seconds
+
+    hot, hot_visits, hot_peak_bytes, hot_elapsed_seconds = measure(
+        lambda: load_segmented_v2_universe_state(root)
+    )
+    assert hot == {
+        "events": expected["events"],
+        "head_manifest": expected["manifests"][-1],
+        "event_count": len(expected["events"]),
+        "manifest_count": len(expected["manifests"]),
+        "checkpoint_hash": final_rotation["new_checkpoint_hash"],
+        "tail_segment_hash": None,
+        "current_generation_manifest_count": 1,
+        "storage_contract": COMPACT_HEAD_STORAGE_CONTRACT,
+        "legacy_full_reader_compatible": False,
+        "authority": "research_only",
+        "trade_enabled": False,
+    }
+    expected_hot_visits = [
+        (head_path, "head"),
+        (current_checkpoint_path, "checkpoint"),
+    ]
+    assert Counter(hot_visits) == Counter(expected_hot_visits)
+
+    exact, exact_visits, exact_peak_bytes, exact_elapsed_seconds = measure(
+        lambda: load_segmented_v2_universe_ledger(root)
+    )
+    assert exact == expected
+    assert exact["manifests"][-1]["trade_enabled"] is False
+    expected_exact_visits = [
+        (head_path, "head"),
+        *((path, "checkpoint") for path in checkpoint_paths),
+        *((path, "segment") for path in segment_paths),
+    ]
+    assert Counter(exact_visits) == Counter(expected_exact_visits)
+
+    fixed_interpreter_allowance_bytes = 4 * 1024 * 1024
+    linear_memory_multiplier = 32
+    def summarize(output, measured_visits, peak_bytes, elapsed_seconds):
+        read_bytes = sum(path_sizes[path] for path, _ in measured_visits)
+        output_bytes = len((canonical_json(output) + "\n").encode("utf-8"))
+        peak_limit_bytes = fixed_interpreter_allowance_bytes + (
+            linear_memory_multiplier
+            * (read_bytes + output_bytes)
+        )
+        if peak_bytes is not None:
+            assert peak_bytes <= peak_limit_bytes
+        return {
+            "read_count": len(measured_visits),
+            "roles": dict(
+                sorted(
+                    Counter(role for _, role in measured_visits).items()
+                )
+            ),
+            "read_bytes": read_bytes,
+            "output_bytes": output_bytes,
+            "peak_bytes": peak_bytes,
+            "peak_limit_bytes": peak_limit_bytes,
+            # Diagnostic only; cadence and SLO remain intentionally unset.
+            "elapsed_ms": round(elapsed_seconds * 1000, 3),
+        }
+    telemetry = {
+        "lineage_depth": lineage_depth,
+        "hot": summarize(
+            hot, hot_visits, hot_peak_bytes, hot_elapsed_seconds
+        ),
+        "exact": summarize(
+            exact, exact_visits, exact_peak_bytes, exact_elapsed_seconds
+        ),
+    }
+    print(
+        "V2_SEGMENT_SCALE "
+        + json.dumps(telemetry, sort_keys=True, separators=(",", ":"))
+    )
