@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T14:23Z（M2 SEC 8-K runtime adapter contract hardening）
+> 最后更新：2026-08-21T15:26Z（M2 pre-Engine-0 universe observation handoff）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例与显式身份 source-bounded runtime adapter 完成；Engine-0 接线、市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例、显式身份 runtime adapter 与只读 pre-Engine-0 observation handoff 完成；市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -70,10 +70,22 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   与 coverage 身份，避免验证后再次消费未校验副本。输出冻结 bundle/envelope/coverage/manifest/universe/as-of/reader
   完整 identity hash、共享 reader snapshot hash 与 adapter snapshot hash；路径和 consumer 标签不进入身份。
 - `adapter_parity_status=daily_replay_verified_research_only` 只描述这个 source-bounded membership adapter；不可变 source/
-  manifest 的 `parity_status=contract_only_unwired` 保持不变，因为尚未接入 Engine-0、全市场 universe、daily scheduler
+  manifest 的 `parity_status=contract_only_unwired` 保持不变，因为尚未建立 Engine-0 policy/baseline、全市场 universe、daily scheduler
   或 production policy。tamper、错 manifest、naive/越界 as-of、boundary escalation、`trade_enabled=true` 和 paper/live
   提升与非有限 JSON（含数值溢出）均以稳定错误拒绝；22 项 SEC 专项测试、完整 258 项 V2 测试与真实 111-membership graph 的
   offset-equivalent parity 检查通过。
+
+### Pre-Engine-0 universe observation handoff
+
+- `quant/v2_universe_observation.py` 只用调用者显式提供的 `manifest_id + as_of` 调用一次 SEC adapter，并把已验证的
+  membership rows 交给同一个 daily/replay 真 alias；路径和 consumer 标签不进入观察身份。输出绑定 adapter/input/reader/
+  manifest/universe/membership hash，逐行精确保留 mapping、state、event 与 effective clock，不读取或产生 outcome。
+- consumer 再次校验 adapter、input identity、shared-reader snapshot、ledger-equivalent membership semantic hash、精确 row schema、
+  canonical order、security/listing 唯一性及完整 research-only ceiling；重封后的 ceiling 提升、矛盾身份、额外 rank/signal/outcome
+  字段、非法 hash/state/clock、行值漂移、乱序与重复身份均 fail closed。
+- `observation_parity_status=daily_replay_alias_verified_research_only` 只证明这一个 source frame 的 membership/state/identity/default-off
+  handoff。`engine0_policy_invoked=false`、`engine0_baseline_established=false`、`market_decision_clock_status=unwired`；M3 仍未开始，
+  source/manifest 仍为 `contract_only_unwired`，不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
 
 ### 外部 coverage 逐行因果时钟
 
@@ -253,8 +265,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-把 SEC 8-K adapter 接到下一层 Engine-0 / default-off observation harness，仍用同一 manifest/as-of 输入验证 deterministic
-behavior；在扩展到全市场或任何 canonical 候选前，优化当前 O(n²) 全历史人口校验并建立仓库外 append anchor。
-若期间出现满足
+pre-Engine-0 membership handoff 已完成；在扩展到全市场前，下一干净单元优先给当前 O(n²) 全历史人口校验建立规模测试并
+优化验证路径。任何 canonical 候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟
+和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

@@ -31,7 +31,8 @@
 - [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
 - [x] 外部 coverage/security surface：首个真实 SEC 8-K source bundle、219/219 行 `mapped / unmapped / excluded` disposition、111 个有效期映射/active membership、coverage evidence 与不可变 ledger/manifest 已冻结；范围仍是 research-only source frame，不是市场级完备性（2026-08-21）
 - [x] SEC 8-K source-bounded runtime adapter v2：强制显式 manifest/as-of，验证同一 envelope/ledger/coverage graph，daily/replay 走唯一共享 reader，冻结规范化 input/snapshot hash 与独立 research-only adapter parity 状态；source ceiling 不升级（2026-08-21）
-- [ ] 接入下一层 Engine-0 / default-off observation harness，继续验证 shared runtime deterministic behavior；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
+- [x] 接入只读 pre-Engine-0/default-off universe observation boundary：同一显式 manifest/as-of 经一次 adapter 调用进入 daily/replay 真 alias，精确保留 membership/state/identity 并拒绝 ceiling、字段与语义 hash 漂移；不调用 Engine-0 policy、不建立 baseline 或市场决策时钟（2026-08-21）
+- [ ] 全市场使用前给当前 O(n²) 全历史人口校验建立规模基准并优化验证路径；任何 canonical 候选前建立仓库外 append anchor
 
 ## 注意事项
 
@@ -39,6 +40,7 @@
 - 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
 - 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
 - V2 不管理或等待 V1 自动化；V1 仅是可选只读历史参考，不阻塞 scout、forward 或晋级。
+- pre-Engine-0 observation handoff 不等于 M3：动态 PIT 市场 universe、market decision clock 与共享 feature/policy/decision baseline 均未建立。
 - M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
 - 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
 - Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。

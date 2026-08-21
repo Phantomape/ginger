@@ -9,9 +9,16 @@ from threading import Barrier
 
 import pytest
 
+import quant.v2_universe_observation as universe_observation_module
 import quant.v2_sec_8k_runtime_adapter as runtime_adapter_module
 import quant.v2_sec_8k_universe as sec_8k_module
 from quant.v2_contracts import canonical_hash
+from quant.v2_universe_observation import (
+    V2UniverseObservationError,
+    observe_sec_8k_daily_universe,
+    observe_sec_8k_replay_universe,
+    observe_sec_8k_universe,
+)
 from quant.v2_sec_8k_universe import (
     V2SEC8KUniverseError,
     build_sec_8k_materialization,
@@ -215,6 +222,85 @@ def _replace_mapping_surface(source_dir: Path, rows: list[list[object]]) -> None
         FROZEN_AT,
         retrieval_metadata_by_artifact=RETRIEVAL_METADATA,
     )
+
+
+def _published_runtime_fixture(tmp_path):
+    source_dir = _source_bundle(tmp_path)
+    ledger_path = tmp_path / "runtime" / "universe.jsonl"
+    envelope_path = tmp_path / "runtime" / "materialization.json"
+    publish_sec_8k_materialization(source_dir, ledger_path, envelope_path)
+    envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    return (
+        source_dir,
+        ledger_path,
+        envelope_path,
+        envelope["universe_manifest"]["manifest_id"],
+        envelope["universe_manifest"]["membership_as_of"],
+    )
+
+
+def _read_runtime_fixture(source_dir, ledger_path, envelope_path, manifest_id, as_of):
+    return read_sec_8k_runtime_universe(
+        source_dir,
+        ledger_path,
+        envelope_path,
+        manifest_id=manifest_id,
+        as_of=as_of,
+    )
+
+
+def _reseal_runtime_snapshot(runtime, *, refresh_membership_semantics):
+    membership = runtime["membership_snapshot"]
+    if refresh_membership_semantics:
+        semantic_rows = [
+            {key: value for key, value in row.items() if key != "latest_event_hash"}
+            for row in membership["memberships"]
+        ]
+        semantic_hash = canonical_hash(semantic_rows)
+        membership["membership_snapshot_sha256"] = semantic_hash
+        runtime["membership_snapshot_sha256"] = semantic_hash
+    membership_payload = dict(membership)
+    membership_payload.pop("snapshot_hash")
+    membership["snapshot_hash"] = canonical_hash(membership_payload)
+    runtime["shared_reader_snapshot_hash"] = membership["snapshot_hash"]
+    runtime_payload = dict(runtime)
+    runtime_payload.pop("adapter_snapshot_hash")
+    runtime["adapter_snapshot_hash"] = canonical_hash(runtime_payload)
+
+
+def _assert_resealed_observation_rejected(
+    tmp_path,
+    monkeypatch,
+    mutate,
+    *,
+    code,
+    refresh_membership_semantics,
+):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+    runtime = _read_runtime_fixture(
+        source_dir, ledger_path, envelope_path, manifest_id, as_of
+    )
+    mutate(runtime)
+    _reseal_runtime_snapshot(
+        runtime,
+        refresh_membership_semantics=refresh_membership_semantics,
+    )
+    monkeypatch.setattr(
+        universe_observation_module,
+        "read_sec_8k_runtime_universe",
+        lambda *args, **kwargs: runtime,
+    )
+    with pytest.raises(V2UniverseObservationError) as caught:
+        observe_sec_8k_universe(
+            source_dir,
+            ledger_path,
+            envelope_path,
+            manifest_id=manifest_id,
+            as_of=as_of,
+        )
+    assert caught.value.code == code
 
 
 def test_build_strictly_enumerates_dispositions_and_deduplicates_active_identity(
@@ -624,6 +710,255 @@ def test_runtime_adapter_rejects_boundary_escalation(tmp_path, monkeypatch):
             as_of=envelope["universe_manifest"]["membership_as_of"],
         )
     assert caught.value.code == "runtime_boundary_escalation_forbidden"
+
+
+def test_pre_engine0_observation_uses_one_explicit_adapter_and_true_aliases(
+    tmp_path, monkeypatch
+):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+    real_adapter = universe_observation_module.read_sec_8k_runtime_universe
+    expected_runtime = _read_runtime_fixture(
+        source_dir, ledger_path, envelope_path, manifest_id, as_of
+    )
+    calls = []
+
+    def counted_adapter(*args, **kwargs):
+        calls.append((args, kwargs))
+        return real_adapter(*args, **kwargs)
+
+    monkeypatch.setattr(
+        universe_observation_module,
+        "read_sec_8k_runtime_universe",
+        counted_adapter,
+    )
+    observation = observe_sec_8k_universe(
+        source_dir,
+        ledger_path,
+        envelope_path,
+        manifest_id=manifest_id,
+        as_of=as_of,
+    )
+
+    assert len(calls) == 1
+    assert calls[0][1] == {"manifest_id": manifest_id, "as_of": as_of}
+    assert observe_sec_8k_daily_universe is observe_sec_8k_universe
+    assert observe_sec_8k_replay_universe is observe_sec_8k_universe
+    assert observation["consumer_stage"] == "pre_engine0_universe_observation"
+    assert observation["observation_scope"] == "source_bound_universe_membership_only"
+    assert observation["engine0_policy_invoked"] is False
+    assert observation["engine0_baseline_established"] is False
+    assert observation["market_decision_clock_status"] == "unwired"
+    assert observation["membership_count"] == 1
+    assert observation["memberships"][0]["security_id"] == "sec-association-0000001001-aaa"
+    assert (
+        observation["memberships"]
+        == expected_runtime["membership_snapshot"]["memberships"]
+    )
+    assert observation["memberships"][0]["state"] == "discovered"
+    assert observation["input_identity"]["manifest_id"] == manifest_id
+    assert observation["input_identity"]["as_of"] == "2026-08-21T12:30:00Z"
+    assert observation["input_identity_sha256"] == canonical_hash(
+        observation["input_identity"]
+    )
+    payload = dict(observation)
+    supplied_hash = payload.pop("observation_snapshot_hash")
+    assert supplied_hash == canonical_hash(payload)
+    assert observation["outcome_blind"] is True
+    assert observation["results_accessed"] is False
+    assert observation["trade_enabled"] is False
+    assert observation["boundary"]["paper_live_eligible"] is False
+    assert observation["boundary"]["parity_status"] == "contract_only_unwired"
+    forbidden_fields = {
+        "candidate",
+        "signal",
+        "score",
+        "rank",
+        "decision",
+        "order",
+        "fill",
+        "position",
+    }
+    assert forbidden_fields.isdisjoint(observation)
+    assert all(forbidden_fields.isdisjoint(row) for row in observation["memberships"])
+
+
+def test_pre_engine0_observation_is_path_and_offset_invariant(tmp_path):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+
+    daily = observe_sec_8k_daily_universe(
+        source_dir,
+        ledger_path,
+        envelope_path,
+        manifest_id=manifest_id,
+        as_of=as_of,
+    )
+    copied_source = tmp_path / "copied-source"
+    copied_runtime = tmp_path / "copied-runtime"
+    shutil.copytree(source_dir, copied_source)
+    shutil.copytree(ledger_path.parent, copied_runtime)
+    replay = observe_sec_8k_replay_universe(
+        copied_source,
+        copied_runtime / ledger_path.name,
+        copied_runtime / envelope_path.name,
+        manifest_id=manifest_id,
+        as_of="2026-08-21T05:30:00-07:00",
+    )
+
+    assert daily == replay
+    assert (
+        daily["observation_parity_status"]
+        == "daily_replay_alias_verified_research_only"
+    )
+
+
+@pytest.mark.parametrize(
+    ("mutation", "code"),
+    [
+        ("results_accessed", "observation_boundary_escalation_forbidden"),
+        ("membership_count", "observation_membership_count_mismatch"),
+        ("membership_trade_enabled", "observation_boundary_escalation_forbidden"),
+        ("membership_pit_tier", "observation_boundary_escalation_forbidden"),
+        ("membership_result_ceiling", "observation_boundary_escalation_forbidden"),
+        ("membership_coverage", "observation_boundary_escalation_forbidden"),
+        ("membership_parity", "observation_boundary_escalation_forbidden"),
+        ("membership_paper_live", "observation_boundary_escalation_forbidden"),
+        ("membership_authority", "observation_boundary_escalation_forbidden"),
+    ],
+)
+def test_pre_engine0_observation_rejects_resealed_runtime_escalation(
+    tmp_path, monkeypatch, mutation, code
+):
+    def mutate(runtime):
+        if mutation == "results_accessed":
+            runtime["results_accessed"] = True
+        elif mutation == "membership_count":
+            runtime["membership_count"] += 1
+        else:
+            field, value = {
+                "membership_trade_enabled": ("trade_enabled", True),
+                "membership_pit_tier": ("pit_tier", "canonical_pit"),
+                "membership_result_ceiling": ("result_ceiling", "gate_eligible"),
+                "membership_coverage": (
+                    "external_universe_coverage_status",
+                    "verified",
+                ),
+                "membership_parity": ("parity_status", "production_verified"),
+                "membership_paper_live": ("paper_live_eligible", True),
+                "membership_authority": ("authority", "paper"),
+            }[mutation]
+            runtime["membership_snapshot"][field] = value
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code=code,
+        refresh_membership_semantics=True,
+    )
+
+
+def test_pre_engine0_observation_rejects_contradictory_runtime_identity(
+    tmp_path, monkeypatch
+):
+    def mutate(runtime):
+        runtime["input_identity"]["as_of"] = "2026-08-21T12:29:59Z"
+        runtime["input_identity_sha256"] = canonical_hash(runtime["input_identity"])
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_runtime_identity_mismatch",
+        refresh_membership_semantics=True,
+    )
+
+
+def test_pre_engine0_observation_rejects_injected_membership_fields(
+    tmp_path, monkeypatch
+):
+    def mutate(runtime):
+        runtime["membership_snapshot"]["memberships"][0]["rank"] = 1
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_membership_shape_invalid",
+        refresh_membership_semantics=False,
+    )
+
+
+def test_pre_engine0_observation_rejects_resealed_membership_value_drift(
+    tmp_path, monkeypatch
+):
+    def mutate(runtime):
+        runtime["membership_snapshot"]["memberships"][0]["symbol"] = "TAMPERED"
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_membership_identity_mismatch",
+        refresh_membership_semantics=False,
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("mapping_sha256", "x" * 64),
+        ("state", "scored"),
+        ("effective_at", "2026-08-21T12:30:00"),
+    ],
+)
+def test_pre_engine0_observation_rejects_resealed_membership_scalar_drift(
+    tmp_path, monkeypatch, field, value
+):
+    def mutate(runtime):
+        runtime["membership_snapshot"]["memberships"][0][field] = value
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_membership_shape_invalid",
+        refresh_membership_semantics=True,
+    )
+
+
+@pytest.mark.parametrize(
+    ("mutation", "code"),
+    [
+        ("out_of_order", "observation_membership_order_invalid"),
+        ("duplicate", "observation_membership_identity_duplicate"),
+    ],
+)
+def test_pre_engine0_observation_rejects_resealed_membership_population_drift(
+    tmp_path, monkeypatch, mutation, code
+):
+    def mutate(runtime):
+        membership = runtime["membership_snapshot"]
+        original = membership["memberships"][0]
+        if mutation == "out_of_order":
+            later_identity = dict(original)
+            later_identity["security_id"] = "zz-security"
+            later_identity["listing_id"] = "zz-listing"
+            membership["memberships"] = [later_identity, original]
+        else:
+            membership["memberships"].append(dict(original))
+        runtime["membership_count"] = 2
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code=code,
+        refresh_membership_semantics=True,
+    )
 
 
 def test_publish_refuses_to_overwrite_an_existing_envelope(tmp_path):
