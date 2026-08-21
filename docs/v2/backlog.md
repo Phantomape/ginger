@@ -11,13 +11,17 @@
 - [x] 偏差登记表：6 类 V1 偏差已绑定证据、对策、严重度、阻断范围与定量解除条件（2026-08-19）
 - [x] T0 用户确认：`2026-08-18`，不追溯升级既有证据（2026-08-19 本地；见 `d-0005`）
 
-## M1（下一里程碑）
+## M1（完成）
 
 - [x] `SourceContract`、`EvidenceRecord`、`UniverseEvent` 初始 schema + 校验（2026-08-19 本地）
 - [x] `ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema（2026-08-19 本地）
 - [x] `DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema（2026-08-20 本地）
 - [x] append-only 与幂等测试（schema 层；2026-08-20 本地）
-- [ ] 时钟合同：交易日归属锚定数据日历 / 冻结 run date，禁止进程壁钟
+- [x] 时钟合同：以完整、证据绑定的数据日历冻结 run date / session，禁止进程壁钟；其余未建 typed evidence 的锚 fail closed（2026-08-20 本地）
+
+## M2（下一里程碑）
+
+- [ ] 动态 PIT universe 垂直切片：完整 membership、append-only event chain 与 manifest 写入共享研究 ledger，daily / replay 共读并做 deterministic parity 验证
 
 ## 待用户决定（不阻断 M1）
 

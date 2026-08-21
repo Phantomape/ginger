@@ -3,10 +3,11 @@
 The records in this module describe source authority, point-in-time evidence,
 replayable universe state transitions, evidence-backed research claims,
 outcome-blind hypotheses, frozen security candidate pools, deterministic
-research decisions, non-submitted order intents, and immutable measurement
-records.  They deliberately perform no file I/O and have no runtime or
-order-routing integration.  Every public validator is fail-closed, every
-instant requires an explicit timezone, and trading is always disabled.
+research decisions, explicit session clocks, non-submitted order intents, and
+immutable measurement records.  They deliberately perform no file I/O and
+have no runtime or order-routing integration.  Every public validator is
+fail-closed, every instant requires an explicit timezone, and trading is
+always disabled.
 """
 
 from __future__ import annotations
@@ -23,6 +24,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 SCHEMA_VERSION = 1
+# Selective supersession for records whose semantic snapshots now bind clocks.
+CLOCK_BOUND_SCHEMA_VERSION = 2
 
 PIT_TIERS = frozenset({"not_pit", "research_pit", "canonical_pit"})
 _PIT_RANK = {"not_pit": 0, "research_pit": 1, "canonical_pit": 2}
@@ -76,6 +79,8 @@ _ORDER_TYPES = frozenset({"market", "limit", "stop", "stop_limit"})
 _TIME_IN_FORCE_VALUES = frozenset({"day", "gtc", "ioc", "fok"})
 _OUTCOME_STATUSES = frozenset({"settled", "unavailable"})
 _REPLACEMENT_STATUSES = frozenset({"computed", "unavailable"})
+_SESSION_ANCHOR_KINDS = frozenset({"data_calendar"})
+_SESSION_KINDS = frozenset({"regular", "early_close", "special_open"})
 _ALLOWED_TRANSITIONS = {
     "discovered": frozenset({"research_eligible", "quarantine", "retired"}),
     "research_eligible": frozenset(
@@ -204,11 +209,13 @@ def _boolean(value: Any, *, path: str) -> bool:
     return value
 
 
-def _schema_version(value: Any, *, path: str) -> int:
+def _schema_version(
+    value: Any, *, path: str, expected: int = SCHEMA_VERSION
+) -> int:
     if not isinstance(value, int) or isinstance(value, bool):
         _fail("integer_required", path, "must be an integer")
-    if value != SCHEMA_VERSION:
-        _fail("unsupported_schema_version", path, f"must equal {SCHEMA_VERSION}")
+    if value != expected:
+        _fail("unsupported_schema_version", path, f"must equal {expected}")
     return value
 
 
@@ -411,6 +418,578 @@ def _check_self_hash(
     expected = canonical_hash(payload)
     if supplied != expected:
         _fail("hash_mismatch", path, f"expected {expected}, got {supplied}")
+
+
+@dataclass(frozen=True, slots=True)
+class CalendarSession:
+    """One explicit open session from an authoritative calendar snapshot."""
+
+    calendar_session_id: str
+    session_date: str
+    open_at: str
+    close_at: str
+    session_kind: str
+
+    @classmethod
+    def from_dict(
+        cls,
+        value: Mapping[str, Any],
+        *,
+        calendar_timezone: str,
+        path: str = "$.calendar_sessions[]",
+    ) -> "CalendarSession":
+        raw = _mapping(value, path=path)
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path=path)
+        timezone_name = _timezone_name(
+            calendar_timezone, path="$.calendar_timezone"
+        )
+        session_date = _calendar_date(
+            raw["session_date"], path=f"{path}.session_date"
+        )
+        open_at, open_dt = _instant(raw["open_at"], path=f"{path}.open_at")
+        close_at, close_dt = _instant(raw["close_at"], path=f"{path}.close_at")
+        if open_dt >= close_dt:
+            _fail(
+                "invalid_session_interval",
+                f"{path}.close_at",
+                "must be later than open_at",
+            )
+        zone = ZoneInfo(timezone_name)
+        if (
+            open_dt.astimezone(zone).date().isoformat() != session_date
+            or close_dt.astimezone(zone).date().isoformat() != session_date
+        ):
+            _fail(
+                "session_local_date_mismatch",
+                f"{path}.session_date",
+                "open_at and close_at must fall on session_date in calendar_timezone",
+            )
+        return cls(
+            calendar_session_id=_text(
+                raw["calendar_session_id"], path=f"{path}.calendar_session_id"
+            ),
+            session_date=session_date,
+            open_at=open_at,
+            close_at=close_at,
+            session_kind=_enum(
+                raw["session_kind"],
+                allowed=_SESSION_KINDS,
+                path=f"{path}.session_kind",
+            ),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            field: _plain(getattr(self, field))
+            for field in self.__dataclass_fields__
+        }
+
+
+def _validated_calendar_sessions(
+    sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    *,
+    calendar_timezone: str,
+) -> tuple[CalendarSession, ...]:
+    if not isinstance(sessions, Sequence) or isinstance(
+        sessions, (str, bytes, bytearray)
+    ):
+        _fail("list_required", "$.calendar_sessions", "must be a list")
+    records = tuple(
+        CalendarSession.from_dict(
+            item.to_dict() if isinstance(item, CalendarSession) else item,
+            calendar_timezone=calendar_timezone,
+            path=f"$.calendar_sessions[{index}]",
+        )
+        for index, item in enumerate(sessions)
+    )
+    if not records:
+        _fail(
+            "nonempty_list_required",
+            "$.calendar_sessions",
+            "must contain at least one open session",
+        )
+    session_ids = [item.calendar_session_id for item in records]
+    session_dates = [item.session_date for item in records]
+    if len(session_ids) != len(set(session_ids)):
+        _fail(
+            "duplicate_calendar_session_id",
+            "$.calendar_sessions",
+            "calendar session ids must be unique",
+        )
+    if len(session_dates) != len(set(session_dates)):
+        _fail(
+            "duplicate_calendar_session_date",
+            "$.calendar_sessions",
+            "calendar session dates must be unique",
+        )
+    return tuple(
+        sorted(records, key=lambda item: (item.session_date, item.calendar_session_id))
+    )
+
+
+def calendar_session_snapshot_payload(
+    sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    *,
+    calendar_id: str,
+    calendar_version: str,
+    calendar_timezone: str,
+    coverage_start: str,
+    coverage_end: str,
+    coverage_complete: bool,
+) -> dict[str, Any]:
+    """Normalize a bounded calendar artifact without consulting process time."""
+
+    timezone_name = _timezone_name(
+        calendar_timezone, path="$.calendar_timezone"
+    )
+    records = _validated_calendar_sessions(
+        sessions, calendar_timezone=timezone_name
+    )
+    start = _calendar_date(coverage_start, path="$.coverage_start")
+    end = _calendar_date(coverage_end, path="$.coverage_end")
+    if end < start:
+        _fail(
+            "invalid_calendar_coverage",
+            "$.coverage_end",
+            "must be on or after coverage_start",
+        )
+    for session in records:
+        if session.session_date < start or session.session_date > end:
+            _fail(
+                "calendar_session_outside_coverage",
+                "$.calendar_sessions",
+                "every open session must fall inside the declared coverage",
+            )
+    return {
+        "calendar_id": _text(calendar_id, path="$.calendar_id"),
+        "calendar_version": _text(
+            calendar_version, path="$.calendar_version"
+        ),
+        "calendar_timezone": timezone_name,
+        "coverage_start": start,
+        "coverage_end": end,
+        "coverage_complete": _boolean(
+            coverage_complete, path="$.coverage_complete"
+        ),
+        "sessions": [item.to_dict() for item in records],
+    }
+
+
+def calendar_session_snapshot_hash(
+    sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    *,
+    calendar_id: str,
+    calendar_version: str,
+    calendar_timezone: str,
+    coverage_start: str,
+    coverage_end: str,
+    coverage_complete: bool,
+) -> str:
+    """Hash a complete, bounded open-session surface."""
+
+    return canonical_hash(
+        calendar_session_snapshot_payload(
+            sessions,
+            calendar_id=calendar_id,
+            calendar_version=calendar_version,
+            calendar_timezone=calendar_timezone,
+            coverage_start=coverage_start,
+            coverage_end=coverage_end,
+            coverage_complete=coverage_complete,
+        )
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class SessionClock:
+    """Frozen run/session ownership with no process-wall-clock fallback."""
+
+    schema_version: int
+    record_type: str
+    session_clock_id: str
+    run_id: str
+    run_date: str
+    calendar_id: str
+    calendar_version: str
+    calendar_timezone: str
+    calendar_snapshot_sha256: str
+    calendar_snapshot_known_at: str
+    calendar_coverage_start: str
+    calendar_coverage_end: str
+    calendar_snapshot_complete: bool
+    calendar_evidence_id: str
+    calendar_evidence_record_hash: str
+    calendar_session_id: str
+    session_open_at: str
+    session_close_at: str
+    anchor_kind: str
+    anchor_id: str
+    anchor_snapshot_sha256: str
+    anchor_run_date: str
+    anchor_session_id: str
+    anchor_known_at: str
+    assignment_cutoff: str
+    frozen_at: str
+    recorded_at: str
+    process_wall_clock_fallback_used: bool
+    pit_tier: str
+    authority: str
+    trade_enabled: bool
+    semantic_hash: str
+    record_hash: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "SessionClock":
+        raw = _mapping(value, path="$")
+        _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
+        run_date = _calendar_date(raw["run_date"], path="$.run_date")
+        coverage_start = _calendar_date(
+            raw["calendar_coverage_start"], path="$.calendar_coverage_start"
+        )
+        coverage_end = _calendar_date(
+            raw["calendar_coverage_end"], path="$.calendar_coverage_end"
+        )
+        if coverage_end < coverage_start:
+            _fail(
+                "invalid_calendar_coverage",
+                "$.calendar_coverage_end",
+                "must be on or after calendar_coverage_start",
+            )
+        if run_date < coverage_start or run_date > coverage_end:
+            _fail(
+                "run_date_outside_calendar_coverage",
+                "$.run_date",
+                "must fall inside the complete calendar snapshot coverage",
+            )
+        anchor_run_date = _calendar_date(
+            raw["anchor_run_date"], path="$.anchor_run_date"
+        )
+        if anchor_run_date != run_date:
+            _fail(
+                "anchor_run_date_mismatch",
+                "$.anchor_run_date",
+                "must equal the frozen run_date",
+            )
+        calendar_session_id = _text(
+            raw["calendar_session_id"], path="$.calendar_session_id"
+        )
+        anchor_session_id = _text(
+            raw["anchor_session_id"], path="$.anchor_session_id"
+        )
+        if anchor_session_id != calendar_session_id:
+            _fail(
+                "anchor_session_id_mismatch",
+                "$.anchor_session_id",
+                "must equal the selected calendar session",
+            )
+        timezone_name = _timezone_name(
+            raw["calendar_timezone"], path="$.calendar_timezone"
+        )
+        session_open_at, session_open_dt = _instant(
+            raw["session_open_at"], path="$.session_open_at"
+        )
+        session_close_at, session_close_dt = _instant(
+            raw["session_close_at"], path="$.session_close_at"
+        )
+        if session_open_dt >= session_close_dt:
+            _fail(
+                "invalid_session_interval",
+                "$.session_close_at",
+                "must be later than session_open_at",
+            )
+        zone = ZoneInfo(timezone_name)
+        if (
+            session_open_dt.astimezone(zone).date().isoformat() != run_date
+            or session_close_dt.astimezone(zone).date().isoformat() != run_date
+        ):
+            _fail(
+                "session_local_date_mismatch",
+                "$.run_date",
+                "session bounds must fall on run_date in calendar_timezone",
+            )
+        calendar_known_at, calendar_known_dt = _instant(
+            raw["calendar_snapshot_known_at"],
+            path="$.calendar_snapshot_known_at",
+        )
+        anchor_known_at, anchor_known_dt = _instant(
+            raw["anchor_known_at"], path="$.anchor_known_at"
+        )
+        assignment_cutoff, assignment_cutoff_dt = _instant(
+            raw["assignment_cutoff"], path="$.assignment_cutoff"
+        )
+        frozen_at, frozen_dt = _instant(raw["frozen_at"], path="$.frozen_at")
+        recorded_at, recorded_dt = _instant(
+            raw["recorded_at"], path="$.recorded_at"
+        )
+        if not (
+            max(calendar_known_dt, anchor_known_dt)
+            <= assignment_cutoff_dt
+            <= frozen_dt
+            <= recorded_dt
+        ):
+            _fail(
+                "invalid_session_clock_chronology",
+                "$.assignment_cutoff",
+                "calendar and anchor must be known by cutoff, then cutoff <= frozen_at <= recorded_at",
+            )
+        calendar_snapshot_hash = _sha256(
+            raw["calendar_snapshot_sha256"],
+            path="$.calendar_snapshot_sha256",
+        )
+        calendar_evidence_id = _text(
+            raw["calendar_evidence_id"], path="$.calendar_evidence_id"
+        )
+        calendar_evidence_record_hash = _sha256(
+            raw["calendar_evidence_record_hash"],
+            path="$.calendar_evidence_record_hash",
+        )
+        anchor_kind = _enum(
+            raw["anchor_kind"],
+            allowed=_SESSION_ANCHOR_KINDS,
+            path="$.anchor_kind",
+        )
+        anchor_snapshot_hash = _sha256(
+            raw["anchor_snapshot_sha256"], path="$.anchor_snapshot_sha256"
+        )
+        if (
+            anchor_kind == "data_calendar"
+            and (
+                _text(raw["anchor_id"], path="$.anchor_id")
+                != calendar_evidence_id
+                or anchor_snapshot_hash != calendar_snapshot_hash
+            )
+        ):
+            _fail(
+                "calendar_anchor_evidence_mismatch",
+                "$.anchor_snapshot_sha256",
+                "data_calendar anchor must bind its evidence id and content snapshot",
+            )
+        obj = cls(
+            schema_version=_schema_version(
+                raw["schema_version"], path="$.schema_version"
+            ),
+            record_type=_record_type(
+                raw["record_type"],
+                expected="v2_session_clock",
+                path="$.record_type",
+            ),
+            session_clock_id=_text(
+                raw["session_clock_id"], path="$.session_clock_id"
+            ),
+            run_id=_text(raw["run_id"], path="$.run_id"),
+            run_date=run_date,
+            calendar_id=_text(raw["calendar_id"], path="$.calendar_id"),
+            calendar_version=_text(
+                raw["calendar_version"], path="$.calendar_version"
+            ),
+            calendar_timezone=timezone_name,
+            calendar_snapshot_sha256=calendar_snapshot_hash,
+            calendar_snapshot_known_at=calendar_known_at,
+            calendar_coverage_start=coverage_start,
+            calendar_coverage_end=coverage_end,
+            calendar_snapshot_complete=_require_true(
+                raw["calendar_snapshot_complete"],
+                path="$.calendar_snapshot_complete",
+                code="complete_calendar_snapshot_required",
+            ),
+            calendar_evidence_id=calendar_evidence_id,
+            calendar_evidence_record_hash=calendar_evidence_record_hash,
+            calendar_session_id=calendar_session_id,
+            session_open_at=session_open_at,
+            session_close_at=session_close_at,
+            anchor_kind=anchor_kind,
+            anchor_id=_text(raw["anchor_id"], path="$.anchor_id"),
+            anchor_snapshot_sha256=anchor_snapshot_hash,
+            anchor_run_date=anchor_run_date,
+            anchor_session_id=anchor_session_id,
+            anchor_known_at=anchor_known_at,
+            assignment_cutoff=assignment_cutoff,
+            frozen_at=frozen_at,
+            recorded_at=recorded_at,
+            process_wall_clock_fallback_used=_require_false(
+                raw["process_wall_clock_fallback_used"],
+                path="$.process_wall_clock_fallback_used",
+                code="process_wall_clock_fallback_forbidden",
+            ),
+            pit_tier=_enum(raw["pit_tier"], allowed=PIT_TIERS, path="$.pit_tier"),
+            authority=_research_authority(raw["authority"], path="$.authority"),
+            trade_enabled=_require_default_off(
+                raw["trade_enabled"], path="$.trade_enabled"
+            ),
+            semantic_hash=_sha256(raw["semantic_hash"], path="$.semantic_hash"),
+            record_hash=_sha256(raw["record_hash"], path="$.record_hash"),
+        )
+        semantic_payload = obj.to_dict()
+        semantic_payload.pop("semantic_hash")
+        semantic_payload.pop("record_hash")
+        semantic_payload.pop("recorded_at")
+        expected_semantic_hash = canonical_hash(semantic_payload)
+        if obj.semantic_hash != expected_semantic_hash:
+            _fail(
+                "semantic_hash_mismatch",
+                "$.semantic_hash",
+                f"expected {expected_semantic_hash}, got {obj.semantic_hash}",
+            )
+        _check_self_hash(
+            obj.to_dict(),
+            hash_field="record_hash",
+            supplied=obj.record_hash,
+            path="$.record_hash",
+        )
+        return obj
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            field: _plain(getattr(self, field))
+            for field in self.__dataclass_fields__
+        }
+
+    @property
+    def canonical_hash(self) -> str:
+        return canonical_hash(self.to_dict())
+
+
+def validate_session_clock_against_calendar(
+    clock: Mapping[str, Any] | SessionClock,
+    calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    calendar_source_contract: Mapping[str, Any] | SourceContract,
+) -> SessionClock:
+    """Bind a clock to one complete, authorized calendar evidence record."""
+
+    record = SessionClock.from_dict(
+        clock.to_dict() if isinstance(clock, SessionClock) else clock
+    )
+    source = validate_source_contract(calendar_source_contract)
+    evidence = validate_evidence_against_source(calendar_evidence, source)
+    if source.decision_calendar != record.calendar_id:
+        _fail(
+            "calendar_source_identity_mismatch",
+            "$.calendar_id",
+            "calendar id must equal the source contract decision calendar",
+        )
+    if evidence.security_scope != "not_applicable":
+        _fail(
+            "calendar_instrument_scope_forbidden",
+            "$.calendar_evidence.security_scope",
+            "calendar evidence must not be scoped to one instrument",
+        )
+    if evidence.pit_tier == "not_pit" or evidence.known_future_leakage:
+        _fail(
+            "calendar_evidence_not_pit",
+            "$.calendar_evidence.pit_tier",
+            "clock assignment requires non-leaking research or canonical evidence",
+        )
+    if record.pit_tier != evidence.pit_tier:
+        _fail(
+            "calendar_pit_tier_mismatch",
+            "$.pit_tier",
+            "session clock PIT tier must equal its calendar evidence tier",
+        )
+    if (
+        evidence.evidence_id != record.calendar_evidence_id
+        or evidence.record_hash != record.calendar_evidence_record_hash
+        or evidence.evidence_id != record.anchor_id
+        or evidence.decision_content_sha256 != record.anchor_snapshot_sha256
+    ):
+        _fail(
+            "calendar_evidence_binding_mismatch",
+            "$.calendar_evidence_id",
+            "clock and data-calendar anchor must bind the exact evidence record",
+        )
+    if (
+        evidence.known_at != record.calendar_snapshot_known_at
+        or evidence.known_at != record.anchor_known_at
+    ):
+        _fail(
+            "calendar_evidence_clock_mismatch",
+            "$.calendar_snapshot_known_at",
+            "calendar and anchor known_at must equal the evidence known_at",
+        )
+    sessions = _validated_calendar_sessions(
+        calendar_sessions, calendar_timezone=record.calendar_timezone
+    )
+    expected_payload = calendar_session_snapshot_payload(
+        sessions,
+        calendar_id=record.calendar_id,
+        calendar_version=record.calendar_version,
+        calendar_timezone=record.calendar_timezone,
+        coverage_start=record.calendar_coverage_start,
+        coverage_end=record.calendar_coverage_end,
+        coverage_complete=record.calendar_snapshot_complete,
+    )
+    expected_hash = canonical_hash(expected_payload)
+    if (
+        record.calendar_snapshot_sha256 != expected_hash
+        or evidence.decision_content_sha256 != expected_hash
+        or canonical_hash(evidence.decision_content) != expected_hash
+    ):
+        _fail(
+            "calendar_snapshot_hash_mismatch",
+            "$.calendar_snapshot_sha256",
+            "clock, normalized sessions, and evidence content must have one hash",
+        )
+    _, evidence_recorded_dt = _instant(
+        evidence.recorded_at, path="$.calendar_evidence.recorded_at"
+    )
+    _, assignment_cutoff_dt = _instant(
+        record.assignment_cutoff, path="$.assignment_cutoff"
+    )
+    if evidence_recorded_dt > assignment_cutoff_dt:
+        _fail(
+            "calendar_evidence_recorded_after_cutoff",
+            "$.calendar_evidence.recorded_at",
+            "calendar evidence must be recorded by the assignment cutoff",
+        )
+    by_id = {item.calendar_session_id: item for item in sessions}
+    selected = by_id.get(record.calendar_session_id)
+    if selected is None:
+        _fail(
+            "unresolved_calendar_session",
+            "$.calendar_session_id",
+            "selected session is absent from the frozen open-session surface",
+        )
+    if selected.session_date != record.run_date:
+        _fail(
+            "calendar_session_date_mismatch",
+            "$.run_date",
+            "must equal the selected calendar session date",
+        )
+    if (
+        selected.open_at != record.session_open_at
+        or selected.close_at != record.session_close_at
+    ):
+        _fail(
+            "calendar_session_bounds_mismatch",
+            "$.session_open_at",
+            "session bounds must equal the selected calendar row",
+        )
+    _, selected_open_dt = _instant(
+        selected.open_at, path="$.calendar_session.open_at"
+    )
+    _, evidence_effective_from_dt = _instant(
+        evidence.effective_from, path="$.calendar_evidence.effective_from"
+    )
+    _, evidence_effective_to_dt = _optional_instant(
+        evidence.effective_to, path="$.calendar_evidence.effective_to"
+    )
+    if (
+        selected_open_dt < evidence_effective_from_dt
+        or assignment_cutoff_dt < evidence_effective_from_dt
+        or (
+            evidence_effective_to_dt is not None
+            and (
+                selected_open_dt >= evidence_effective_to_dt
+                or assignment_cutoff_dt >= evidence_effective_to_dt
+            )
+        )
+    ):
+        _fail(
+            "calendar_evidence_interval_miss",
+            "$.calendar_evidence.effective_from",
+            "assignment cutoff and selected session open must fall inside the evidence effective interval",
+        )
+    return record
 
 
 @dataclass(frozen=True, slots=True)
@@ -1009,6 +1588,9 @@ class UniverseEvent:
     pit_tier: str
     known_future_leakage: bool
     run_id: str
+    session_clock_id: str
+    session_clock_hash: str
+    session_clock_record_hash: str
     run_date: str
     calendar_session_id: str
     known_at: str
@@ -1016,6 +1598,9 @@ class UniverseEvent:
     recorded_at: str
     effective_at: str
     effective_session_id: str
+    effective_session_clock_id: str
+    effective_session_clock_hash: str
+    effective_session_clock_record_hash: str
     previous_event_id: str | None
     previous_event_hash: str | None
     trade_enabled: bool
@@ -1026,6 +1611,11 @@ class UniverseEvent:
     def from_dict(cls, value: Mapping[str, Any]) -> "UniverseEvent":
         path = "$"
         raw = _mapping(value, path=path)
+        _schema_version(
+            raw.get("schema_version"),
+            path="$.schema_version",
+            expected=CLOCK_BOUND_SCHEMA_VERSION,
+        )
         _check_fields(raw, required=set(cls.__dataclass_fields__), path=path)
         event_type = _enum(
             raw["event_type"], allowed=_UNIVERSE_EVENT_TYPES, path="$.event_type"
@@ -1109,7 +1699,11 @@ class UniverseEvent:
                 "known future leakage is only valid with not_pit",
             )
         obj = cls(
-            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            schema_version=_schema_version(
+                raw["schema_version"],
+                path="$.schema_version",
+                expected=CLOCK_BOUND_SCHEMA_VERSION,
+            ),
             record_type=_record_type(
                 raw["record_type"], expected="v2_universe_event", path="$.record_type"
             ),
@@ -1134,6 +1728,16 @@ class UniverseEvent:
             pit_tier=pit_tier,
             known_future_leakage=leakage,
             run_id=_text(raw["run_id"], path="$.run_id"),
+            session_clock_id=_text(
+                raw["session_clock_id"], path="$.session_clock_id"
+            ),
+            session_clock_hash=_sha256(
+                raw["session_clock_hash"], path="$.session_clock_hash"
+            ),
+            session_clock_record_hash=_sha256(
+                raw["session_clock_record_hash"],
+                path="$.session_clock_record_hash",
+            ),
             run_date=_calendar_date(raw["run_date"], path="$.run_date"),
             calendar_session_id=_text(
                 raw["calendar_session_id"], path="$.calendar_session_id"
@@ -1144,6 +1748,18 @@ class UniverseEvent:
             effective_at=effective_at,
             effective_session_id=_text(
                 raw["effective_session_id"], path="$.effective_session_id"
+            ),
+            effective_session_clock_id=_text(
+                raw["effective_session_clock_id"],
+                path="$.effective_session_clock_id",
+            ),
+            effective_session_clock_hash=_sha256(
+                raw["effective_session_clock_hash"],
+                path="$.effective_session_clock_hash",
+            ),
+            effective_session_clock_record_hash=_sha256(
+                raw["effective_session_clock_record_hash"],
+                path="$.effective_session_clock_record_hash",
             ),
             previous_event_id=previous_event_id,
             previous_event_hash=previous_event_hash,
@@ -1677,6 +2293,9 @@ class CandidatePool:
     ranking_rule_version: str
     ranking_rule_sha256: str
     run_id: str
+    session_clock_id: str
+    session_clock_hash: str
+    session_clock_record_hash: str
     run_date: str
     calendar_session_id: str
     data_cutoff: str
@@ -1699,6 +2318,11 @@ class CandidatePool:
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "CandidatePool":
         raw = _mapping(value, path="$")
+        _schema_version(
+            raw.get("schema_version"),
+            path="$.schema_version",
+            expected=CLOCK_BOUND_SCHEMA_VERSION,
+        )
         _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
         entries_raw = raw["entries"]
         if not isinstance(entries_raw, Sequence) or isinstance(
@@ -1773,7 +2397,11 @@ class CandidatePool:
                 f"must equal {expected_ceiling} for {pit_tier}",
             )
         obj = cls(
-            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            schema_version=_schema_version(
+                raw["schema_version"],
+                path="$.schema_version",
+                expected=CLOCK_BOUND_SCHEMA_VERSION,
+            ),
             record_type=_record_type(
                 raw["record_type"], expected="v2_candidate_pool", path="$.record_type"
             ),
@@ -1815,6 +2443,16 @@ class CandidatePool:
                 raw["ranking_rule_sha256"], path="$.ranking_rule_sha256"
             ),
             run_id=_text(raw["run_id"], path="$.run_id"),
+            session_clock_id=_text(
+                raw["session_clock_id"], path="$.session_clock_id"
+            ),
+            session_clock_hash=_sha256(
+                raw["session_clock_hash"], path="$.session_clock_hash"
+            ),
+            session_clock_record_hash=_sha256(
+                raw["session_clock_record_hash"],
+                path="$.session_clock_record_hash",
+            ),
             run_date=_calendar_date(raw["run_date"], path="$.run_date"),
             calendar_session_id=_text(
                 raw["calendar_session_id"], path="$.calendar_session_id"
@@ -2044,6 +2682,9 @@ class DecisionRecord:
     expected_item_count: int
     decision_complete: bool
     run_id: str
+    session_clock_id: str
+    session_clock_hash: str
+    session_clock_record_hash: str
     run_date: str
     calendar_session_id: str
     data_cutoff: str
@@ -2064,6 +2705,11 @@ class DecisionRecord:
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "DecisionRecord":
         raw = _mapping(value, path="$")
+        _schema_version(
+            raw.get("schema_version"),
+            path="$.schema_version",
+            expected=CLOCK_BOUND_SCHEMA_VERSION,
+        )
         _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
         items_raw = raw["items"]
         if not isinstance(items_raw, Sequence) or isinstance(
@@ -2144,7 +2790,11 @@ class DecisionRecord:
                 f"must equal {expected_ceiling} for {pit_tier}",
             )
         obj = cls(
-            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            schema_version=_schema_version(
+                raw["schema_version"],
+                path="$.schema_version",
+                expected=CLOCK_BOUND_SCHEMA_VERSION,
+            ),
             record_type=_record_type(
                 raw["record_type"], expected="v2_decision_record", path="$.record_type"
             ),
@@ -2213,6 +2863,16 @@ class DecisionRecord:
                 code="decision_incomplete",
             ),
             run_id=_text(raw["run_id"], path="$.run_id"),
+            session_clock_id=_text(
+                raw["session_clock_id"], path="$.session_clock_id"
+            ),
+            session_clock_hash=_sha256(
+                raw["session_clock_hash"], path="$.session_clock_hash"
+            ),
+            session_clock_record_hash=_sha256(
+                raw["session_clock_record_hash"],
+                path="$.session_clock_record_hash",
+            ),
             run_date=_calendar_date(raw["run_date"], path="$.run_date"),
             calendar_session_id=_text(
                 raw["calendar_session_id"], path="$.calendar_session_id"
@@ -2309,6 +2969,9 @@ class OrderIntent:
     not_before: str
     expires_at: str
     calendar_session_id: str
+    session_clock_id: str
+    session_clock_hash: str
+    session_clock_record_hash: str
     execution_rule_id: str
     execution_rule_version: str
     execution_rule_sha256: str
@@ -2324,6 +2987,11 @@ class OrderIntent:
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "OrderIntent":
         raw = _mapping(value, path="$")
+        _schema_version(
+            raw.get("schema_version"),
+            path="$.schema_version",
+            expected=CLOCK_BOUND_SCHEMA_VERSION,
+        )
         _check_fields(raw, required=set(cls.__dataclass_fields__), path="$")
         quantity = _optional_integer(
             raw["quantity_micros"], path="$.quantity_micros", minimum=1
@@ -2370,7 +3038,11 @@ class OrderIntent:
                 "must satisfy created_at <= recorded_at <= not_before < expires_at",
             )
         obj = cls(
-            schema_version=_schema_version(raw["schema_version"], path="$.schema_version"),
+            schema_version=_schema_version(
+                raw["schema_version"],
+                path="$.schema_version",
+                expected=CLOCK_BOUND_SCHEMA_VERSION,
+            ),
             record_type=_record_type(
                 raw["record_type"], expected="v2_order_intent", path="$.record_type"
             ),
@@ -2407,6 +3079,16 @@ class OrderIntent:
             expires_at=expires_at,
             calendar_session_id=_text(
                 raw["calendar_session_id"], path="$.calendar_session_id"
+            ),
+            session_clock_id=_text(
+                raw["session_clock_id"], path="$.session_clock_id"
+            ),
+            session_clock_hash=_sha256(
+                raw["session_clock_hash"], path="$.session_clock_hash"
+            ),
+            session_clock_record_hash=_sha256(
+                raw["session_clock_record_hash"],
+                path="$.session_clock_record_hash",
             ),
             execution_rule_id=_text(
                 raw["execution_rule_id"], path="$.execution_rule_id"
@@ -2994,6 +3676,20 @@ class ReplacementValue:
         return canonical_hash(self.to_dict())
 
 
+def validate_session_clock(
+    value: Mapping[str, Any] | SessionClock,
+) -> SessionClock:
+    return SessionClock.from_dict(
+        value.to_dict() if isinstance(value, SessionClock) else value
+    )
+
+
+def normalize_session_clock(
+    value: Mapping[str, Any] | SessionClock,
+) -> dict[str, Any]:
+    return validate_session_clock(value).to_dict()
+
+
 def validate_source_contract(value: Mapping[str, Any] | SourceContract) -> SourceContract:
     return SourceContract.from_dict(value.to_dict() if isinstance(value, SourceContract) else value)
 
@@ -3369,6 +4065,9 @@ def candidate_pool_input_snapshot_hash(
     generator_rule_sha256: str,
     ranking_rule_sha256: str,
     universe_id: str,
+    session_clock_id: str,
+    session_clock_hash: str,
+    session_clock_record_hash: str,
     run_date: str,
     calendar_session_id: str,
     data_cutoff: str,
@@ -3415,6 +4114,16 @@ def candidate_pool_input_snapshot_hash(
                 ranking_rule_sha256, path="$.ranking_rule_sha256"
             ),
             "universe_id": _text(universe_id, path="$.universe_id"),
+            "session_clock": {
+                "id": _text(session_clock_id, path="$.session_clock_id"),
+                "semantic_hash": _sha256(
+                    session_clock_hash, path="$.session_clock_hash"
+                ),
+                "record_hash": _sha256(
+                    session_clock_record_hash,
+                    path="$.session_clock_record_hash",
+                ),
+            },
             "run_date": _calendar_date(run_date, path="$.run_date"),
             "calendar_session_id": _text(
                 calendar_session_id, path="$.calendar_session_id"
@@ -3445,6 +4154,9 @@ def decision_input_snapshot_hash(
     comparison_rule_sha256: str,
     items: Sequence[Mapping[str, Any] | DecisionItem],
     run_id: str,
+    session_clock_id: str,
+    session_clock_hash: str,
+    session_clock_record_hash: str,
     run_date: str,
     calendar_session_id: str,
     data_cutoff: str,
@@ -3519,6 +4231,16 @@ def decision_input_snapshot_hash(
                 )
             ],
             "run_id": _text(run_id, path="$.run_id"),
+            "session_clock": {
+                "id": _text(session_clock_id, path="$.session_clock_id"),
+                "semantic_hash": _sha256(
+                    session_clock_hash, path="$.session_clock_hash"
+                ),
+                "record_hash": _sha256(
+                    session_clock_record_hash,
+                    path="$.session_clock_record_hash",
+                ),
+            },
             "run_date": _calendar_date(run_date, path="$.run_date"),
             "calendar_session_id": _text(
                 calendar_session_id, path="$.calendar_session_id"
@@ -3546,6 +4268,9 @@ def order_intent_input_snapshot_hash(
     not_before: str,
     expires_at: str,
     calendar_session_id: str,
+    session_clock_id: str,
+    session_clock_hash: str,
+    session_clock_record_hash: str,
     execution_rule_id: str,
     execution_rule_version: str,
     execution_rule_sha256: str,
@@ -3610,6 +4335,16 @@ def order_intent_input_snapshot_hash(
             "calendar_session_id": _text(
                 calendar_session_id, path="$.calendar_session_id"
             ),
+            "session_clock": {
+                "id": _text(session_clock_id, path="$.session_clock_id"),
+                "semantic_hash": _sha256(
+                    session_clock_hash, path="$.session_clock_hash"
+                ),
+                "record_hash": _sha256(
+                    session_clock_record_hash,
+                    path="$.session_clock_record_hash",
+                ),
+            },
             "execution_rule": {
                 "id": _text(execution_rule_id, path="$.execution_rule_id"),
                 "version": _text(
@@ -3807,6 +4542,12 @@ def universe_input_snapshot_hash(
     *,
     rule_sha256: str,
     security_mapping_sha256: str,
+    session_clock_id: str,
+    session_clock_hash: str,
+    session_clock_record_hash: str,
+    effective_session_clock_id: str,
+    effective_session_clock_hash: str,
+    effective_session_clock_record_hash: str,
 ) -> str:
     records = [validate_evidence_record(record) for record in evidence_records]
     ids = [record.evidence_id for record in records]
@@ -3825,6 +4566,30 @@ def universe_input_snapshot_hash(
             "security_mapping_sha256": _sha256(
                 security_mapping_sha256, path="$.security_mapping_sha256"
             ),
+            "session_clock": {
+                "id": _text(session_clock_id, path="$.session_clock_id"),
+                "semantic_hash": _sha256(
+                    session_clock_hash, path="$.session_clock_hash"
+                ),
+                "record_hash": _sha256(
+                    session_clock_record_hash,
+                    path="$.session_clock_record_hash",
+                ),
+            },
+            "effective_session_clock": {
+                "id": _text(
+                    effective_session_clock_id,
+                    path="$.effective_session_clock_id",
+                ),
+                "semantic_hash": _sha256(
+                    effective_session_clock_hash,
+                    path="$.effective_session_clock_hash",
+                ),
+                "record_hash": _sha256(
+                    effective_session_clock_record_hash,
+                    path="$.effective_session_clock_record_hash",
+                ),
+            },
         }
     )
 
@@ -3918,6 +4683,14 @@ def validate_universe_event_against_evidence(
         referenced,
         rule_sha256=record.rule_sha256,
         security_mapping_sha256=record.security_mapping.mapping_sha256,
+        session_clock_id=record.session_clock_id,
+        session_clock_hash=record.session_clock_hash,
+        session_clock_record_hash=record.session_clock_record_hash,
+        effective_session_clock_id=record.effective_session_clock_id,
+        effective_session_clock_hash=record.effective_session_clock_hash,
+        effective_session_clock_record_hash=(
+            record.effective_session_clock_record_hash
+        ),
     )
     if record.input_snapshot_sha256 != expected_snapshot:
         _fail(
@@ -4414,6 +5187,9 @@ def validate_candidate_pool_against_inputs(
         generator_rule_sha256=record.generator_rule_sha256,
         ranking_rule_sha256=record.ranking_rule_sha256,
         universe_id=record.universe_id,
+        session_clock_id=record.session_clock_id,
+        session_clock_hash=record.session_clock_hash,
+        session_clock_record_hash=record.session_clock_record_hash,
         run_date=record.run_date,
         calendar_session_id=record.calendar_session_id,
         data_cutoff=record.data_cutoff,
@@ -4481,6 +5257,9 @@ def validate_decision_record_against_candidate_pool(
         )
     if (
         record.run_id != pool.run_id
+        or record.session_clock_id != pool.session_clock_id
+        or record.session_clock_hash != pool.session_clock_hash
+        or record.session_clock_record_hash != pool.session_clock_record_hash
         or record.run_date != pool.run_date
         or record.calendar_session_id != pool.calendar_session_id
         or record.data_cutoff != pool.data_cutoff
@@ -4488,7 +5267,7 @@ def validate_decision_record_against_candidate_pool(
         _fail(
             "decision_clock_identity_mismatch",
             "$.run_id",
-            "run, session, and cutoff must exactly match the candidate pool",
+            "run, clock, session, and cutoff must exactly match the candidate pool",
         )
     _, pool_recorded_dt = _instant(pool.recorded_at, path="$.pool.recorded_at")
     _, decided_dt = _instant(record.decided_at, path="$.decided_at")
@@ -4576,6 +5355,9 @@ def validate_decision_record_against_candidate_pool(
         comparison_rule_sha256=record.comparison_rule_sha256,
         items=record.items,
         run_id=record.run_id,
+        session_clock_id=record.session_clock_id,
+        session_clock_hash=record.session_clock_hash,
+        session_clock_record_hash=record.session_clock_record_hash,
         run_date=record.run_date,
         calendar_session_id=record.calendar_session_id,
         data_cutoff=record.data_cutoff,
@@ -4689,6 +5471,9 @@ def validate_order_intent_against_decision(
         not_before=intent.not_before,
         expires_at=intent.expires_at,
         calendar_session_id=intent.calendar_session_id,
+        session_clock_id=intent.session_clock_id,
+        session_clock_hash=intent.session_clock_hash,
+        session_clock_record_hash=intent.session_clock_record_hash,
         execution_rule_id=intent.execution_rule_id,
         execution_rule_version=intent.execution_rule_version,
         execution_rule_sha256=intent.execution_rule_sha256,
@@ -4701,6 +5486,286 @@ def validate_order_intent_against_decision(
             f"expected {expected_snapshot}, got {intent.input_snapshot_sha256}",
         )
     return intent
+
+
+def _validate_session_clock_use(
+    clock: SessionClock,
+    use_at: str,
+    *,
+    require_run_date: bool,
+) -> None:
+    _, use_dt = _instant(use_at, path="$.clock_bound_instant")
+    _, clock_recorded_dt = _instant(
+        clock.recorded_at, path="$.session_clock.recorded_at"
+    )
+    if clock_recorded_dt > use_dt:
+        _fail(
+            "session_clock_recorded_after_use",
+            "$.session_clock.recorded_at",
+            "session clock must be recorded before the record uses it",
+        )
+    if (
+        require_run_date
+        and use_dt.astimezone(ZoneInfo(clock.calendar_timezone)).date().isoformat()
+        != clock.run_date
+    ):
+        _fail(
+            "run_clock_use_date_mismatch",
+            "$.clock_bound_instant",
+            "run-bearing record use time must fall on the clock run date",
+        )
+
+
+def _validate_session_clock_pit_ceiling(
+    record_pit_tier: str,
+    clock: SessionClock,
+) -> None:
+    if _PIT_RANK[record_pit_tier] > _PIT_RANK[clock.pit_tier]:
+        _fail(
+            "pit_tier_exceeds_session_clock",
+            "$.pit_tier",
+            "record PIT tier cannot exceed its calendar-backed session clock",
+        )
+
+
+def validate_record_against_session_clock(
+    value: (
+        Mapping[str, Any]
+        | UniverseEvent
+        | CandidatePool
+        | DecisionRecord
+        | OrderIntent
+    ),
+    clock: Mapping[str, Any] | SessionClock,
+    calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    calendar_source_contract: Mapping[str, Any] | SourceContract,
+    *,
+    role: str | None = None,
+) -> UniverseEvent | CandidatePool | DecisionRecord | OrderIntent:
+    """Bind one decision-bearing record to a verified explicit session clock."""
+
+    session_clock = validate_session_clock_against_calendar(
+        clock,
+        calendar_sessions,
+        calendar_evidence,
+        calendar_source_contract,
+    )
+    if isinstance(value, UniverseEvent):
+        record_type = "v2_universe_event"
+    elif isinstance(value, CandidatePool):
+        record_type = "v2_candidate_pool"
+    elif isinstance(value, DecisionRecord):
+        record_type = "v2_decision_record"
+    elif isinstance(value, OrderIntent):
+        record_type = "v2_order_intent"
+    else:
+        raw = _mapping(value, path="$")
+        record_type = _text(raw.get("record_type"), path="$.record_type")
+
+    if record_type == "v2_universe_event":
+        event = validate_universe_event(value)
+        if role is None:
+            _fail(
+                "session_clock_role_required",
+                "$.role",
+                "universe events require explicit run/effective role validation",
+            )
+        selected_role = _text(role, path="$.role")
+        _validate_session_clock_pit_ceiling(event.pit_tier, session_clock)
+        if selected_role == "run":
+            bound_id = event.session_clock_id
+            bound_hash = event.session_clock_hash
+            bound_record_hash = event.session_clock_record_hash
+            session_id = event.calendar_session_id
+            instant = event.decided_at
+            if (
+                event.run_id != session_clock.run_id
+                or event.run_date != session_clock.run_date
+            ):
+                _fail(
+                    "session_clock_binding_mismatch",
+                    "$.run_id",
+                    "universe run identity must equal the supplied session clock",
+                )
+        elif selected_role == "effective":
+            bound_id = event.effective_session_clock_id
+            bound_hash = event.effective_session_clock_hash
+            bound_record_hash = event.effective_session_clock_record_hash
+            session_id = event.effective_session_id
+            instant = event.decided_at
+            if session_clock.run_date < event.run_date:
+                _fail(
+                    "effective_session_precedes_run_date",
+                    "$.effective_session_id",
+                    "effective session cannot precede the event run date",
+                )
+        else:
+            _fail(
+                "invalid_session_clock_role",
+                "$.role",
+                "universe event role must be run or effective",
+            )
+        if (
+            bound_id != session_clock.session_clock_id
+            or bound_hash != session_clock.semantic_hash
+            or bound_record_hash != session_clock.record_hash
+            or session_id != session_clock.calendar_session_id
+        ):
+            _fail(
+                "session_clock_binding_mismatch",
+                "$.session_clock_id",
+                "universe event does not bind the supplied clock identity and session",
+            )
+        if selected_role == "effective":
+            _, effective_dt = _instant(event.effective_at, path="$.effective_at")
+            _, session_open_dt = _instant(
+                session_clock.session_open_at,
+                path="$.session_clock.session_open_at",
+            )
+            _, session_close_dt = _instant(
+                session_clock.session_close_at,
+                path="$.session_clock.session_close_at",
+            )
+            if not (session_open_dt <= effective_dt <= session_close_dt):
+                _fail(
+                    "effective_at_outside_session",
+                    "$.effective_at",
+                    "must fall inside the bound effective session",
+                )
+        _validate_session_clock_use(
+            session_clock,
+            instant,
+            require_run_date=selected_role == "run",
+        )
+        return event
+
+    if role is not None:
+        _fail(
+            "invalid_session_clock_role",
+            "$.role",
+            "role is only supported for universe events",
+        )
+    if record_type == "v2_candidate_pool":
+        pool = validate_candidate_pool(value)
+        _validate_session_clock_pit_ceiling(pool.pit_tier, session_clock)
+        if (
+            pool.session_clock_id != session_clock.session_clock_id
+            or pool.session_clock_hash != session_clock.semantic_hash
+            or pool.session_clock_record_hash != session_clock.record_hash
+            or pool.run_id != session_clock.run_id
+            or pool.run_date != session_clock.run_date
+            or pool.calendar_session_id != session_clock.calendar_session_id
+        ):
+            _fail(
+                "session_clock_binding_mismatch",
+                "$.session_clock_id",
+                "candidate pool does not bind the supplied run/session clock",
+            )
+        use_at = pool.frozen_at
+        result: CandidatePool | DecisionRecord | OrderIntent = pool
+    elif record_type == "v2_decision_record":
+        decision = validate_decision_record(value)
+        _validate_session_clock_pit_ceiling(decision.pit_tier, session_clock)
+        if (
+            decision.session_clock_id != session_clock.session_clock_id
+            or decision.session_clock_hash != session_clock.semantic_hash
+            or decision.session_clock_record_hash != session_clock.record_hash
+            or decision.run_id != session_clock.run_id
+            or decision.run_date != session_clock.run_date
+            or decision.calendar_session_id != session_clock.calendar_session_id
+        ):
+            _fail(
+                "session_clock_binding_mismatch",
+                "$.session_clock_id",
+                "decision does not bind the supplied run/session clock",
+            )
+        use_at = decision.decided_at
+        result = decision
+    elif record_type == "v2_order_intent":
+        intent = validate_order_intent(value)
+        if (
+            intent.session_clock_id != session_clock.session_clock_id
+            or intent.session_clock_hash != session_clock.semantic_hash
+            or intent.session_clock_record_hash != session_clock.record_hash
+            or intent.calendar_session_id != session_clock.calendar_session_id
+        ):
+            _fail(
+                "session_clock_binding_mismatch",
+                "$.session_clock_id",
+                "order intent does not bind the supplied execution-session clock",
+            )
+        if intent.time_in_force == "gtc":
+            _fail(
+                "multisession_intent_clock_unsupported",
+                "$.time_in_force",
+                "GTC requires explicit start and expiry session clocks",
+            )
+        _, not_before_dt = _instant(intent.not_before, path="$.not_before")
+        _, expires_dt = _instant(intent.expires_at, path="$.expires_at")
+        _, session_open_dt = _instant(
+            session_clock.session_open_at, path="$.session_clock.session_open_at"
+        )
+        _, session_close_dt = _instant(
+            session_clock.session_close_at, path="$.session_clock.session_close_at"
+        )
+        if not_before_dt < session_open_dt or expires_dt > session_close_dt:
+            _fail(
+                "order_window_outside_session",
+                "$.not_before",
+                "intent validity window must stay inside the bound execution session",
+            )
+        use_at = intent.created_at
+        result = intent
+    else:
+        _fail(
+            "unsupported_clock_bound_record",
+            "$.record_type",
+            "clock binding supports universe events, candidate pools, decisions, and intents",
+        )
+    _validate_session_clock_use(
+        session_clock,
+        use_at,
+        require_run_date=record_type
+        in {"v2_candidate_pool", "v2_decision_record"},
+    )
+    return result
+
+
+def validate_universe_event_against_session_clocks(
+    value: Mapping[str, Any] | UniverseEvent,
+    *,
+    run_clock: Mapping[str, Any] | SessionClock,
+    run_calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    run_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    run_calendar_source_contract: Mapping[str, Any] | SourceContract,
+    effective_clock: Mapping[str, Any] | SessionClock,
+    effective_calendar_sessions: Sequence[
+        Mapping[str, Any] | CalendarSession
+    ],
+    effective_calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    effective_calendar_source_contract: Mapping[str, Any] | SourceContract,
+) -> UniverseEvent:
+    """Validate both mandatory clock roles for one universe event."""
+
+    event = validate_record_against_session_clock(
+        value,
+        run_clock,
+        run_calendar_sessions,
+        run_calendar_evidence,
+        run_calendar_source_contract,
+        role="run",
+    )
+    validated = validate_record_against_session_clock(
+        event,
+        effective_clock,
+        effective_calendar_sessions,
+        effective_calendar_evidence,
+        effective_calendar_source_contract,
+        role="effective",
+    )
+    assert isinstance(validated, UniverseEvent)
+    return validated
 
 
 def _validate_settled_outcome_predecessor(
@@ -5357,13 +6422,16 @@ def validate_replacement_value_panel(
     return tuple(sorted(validated, key=lambda item: item.comparator_role))
 
 
-_AppendOnlyRecord = DecisionRecord | OrderIntent | SettledOutcome | ReplacementValue
+_AppendOnlyRecord = (
+    SessionClock | DecisionRecord | OrderIntent | SettledOutcome | ReplacementValue
+)
 
 
 def _validate_append_only_record(
     value: Mapping[str, Any] | _AppendOnlyRecord,
 ) -> _AppendOnlyRecord:
     validators = {
+        "v2_session_clock": validate_session_clock,
         "v2_decision_record": validate_decision_record,
         "v2_order_intent": validate_order_intent,
         "v2_settled_outcome": validate_settled_outcome,
@@ -5379,7 +6447,7 @@ def _validate_append_only_record(
         _fail(
             "unsupported_append_only_record_type",
             "$.record_type",
-            "expected a decision, intent, outcome, or replacement record",
+            "expected a clock, decision, intent, outcome, or replacement record",
         )
     return validator(raw)
 
@@ -5387,7 +6455,10 @@ def _validate_append_only_record(
 def _append_only_identity(
     record: _AppendOnlyRecord,
 ) -> tuple[str, str, str, int | None]:
-    if isinstance(record, DecisionRecord):
+    if isinstance(record, SessionClock):
+        key = physical_id = record.session_clock_id
+        revision = None
+    elif isinstance(record, DecisionRecord):
         key = physical_id = record.decision_id
         revision = None
     elif isinstance(record, OrderIntent):
@@ -5457,9 +6528,9 @@ def validate_append_only_append(
     Returns ``append`` for a new immutable key or first revision, ``duplicate``
     for an idempotent semantic retry, and ``correction`` for the exact next
     outcome or replacement revision. Conflicts and malformed populations fail
-    closed with :class:`V2ContractValidationError`. Decision and intent IDs are
-    their immutable stable keys; outcome and replacement records use their
-    explicit ``stable_key`` fields. Callers must still run the applicable
+    closed with :class:`V2ContractValidationError`. Clock, decision, and intent
+    IDs are their immutable stable keys; outcome and replacement records use
+    their explicit ``stable_key`` fields. Callers must still run the applicable
     cross-input validator before persistence.
     """
 

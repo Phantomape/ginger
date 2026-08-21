@@ -172,6 +172,14 @@ def _event_for(*, evidence, mapping, **overrides):
         [evidence],
         rule_sha256=rule_sha256,
         security_mapping_sha256=mapping["mapping_sha256"],
+        session_clock_id=row["session_clock_id"],
+        session_clock_hash=row["session_clock_hash"],
+        session_clock_record_hash=row["session_clock_record_hash"],
+        effective_session_clock_id=row["effective_session_clock_id"],
+        effective_session_clock_hash=row["effective_session_clock_hash"],
+        effective_session_clock_record_hash=row[
+            "effective_session_clock_record_hash"
+        ],
     )
     return _seal_event(row)
 
@@ -299,7 +307,7 @@ def _pool(*, hypothesis, evidence_records, events, entries=None, **overrides):
     ranking_rule_sha256 = "a" * 64
     data_cutoff = overrides.get("data_cutoff", "2026-08-20T14:12:00Z")
     row = {
-        "schema_version": 1,
+        "schema_version": 2,
         "record_type": "v2_candidate_pool",
         "candidate_pool_id": "candidate-pool-20260820-v1",
         "hypothesis_candidate_id": hypothesis["candidate_id"],
@@ -318,6 +326,9 @@ def _pool(*, hypothesis, evidence_records, events, entries=None, **overrides):
         "ranking_rule_version": "1",
         "ranking_rule_sha256": ranking_rule_sha256,
         "run_id": "candidate-pool-run-20260820-v1",
+        "session_clock_id": "clock-v2-run-20260820",
+        "session_clock_hash": "f" * 64,
+        "session_clock_record_hash": "e" * 64,
         "run_date": "2026-08-20",
         "calendar_session_id": "XNYS-2026-08-20",
         "data_cutoff": data_cutoff,
@@ -335,6 +346,9 @@ def _pool(*, hypothesis, evidence_records, events, entries=None, **overrides):
             generator_rule_sha256=generator_rule_sha256,
             ranking_rule_sha256=ranking_rule_sha256,
             universe_id="v2-research-universe",
+            session_clock_id="clock-v2-run-20260820",
+            session_clock_hash="f" * 64,
+            session_clock_record_hash="e" * 64,
             run_date="2026-08-20",
             calendar_session_id="XNYS-2026-08-20",
             data_cutoff=data_cutoff,

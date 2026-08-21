@@ -1,17 +1,18 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T04:20Z（M1 append-only 与幂等 schema 轮）
+> 最后更新：2026-08-21T05:55Z（M1 证据绑定交易日时钟合同轮）
 
 ## 里程碑
 
-**M0 已完成，M1 进行中**。M1 前四个最小工作单元已完成：基础数据合同、
-研究候选合同、决策 / 订单意图 / 结果测量合同，以及 append-only / 幂等 schema 人口校验。
+**M0、M1 已完成，下一里程碑为 M2**。M1 五个最小工作单元已完成：基础数据合同、
+研究候选合同、决策 / 订单意图 / 结果测量合同、append-only / 幂等 schema 人口校验，
+以及证据绑定的交易日时钟合同。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
-| M1 身份、时钟、数据合同 schema | 进行中：三组初始合同与 append-only / 幂等人口校验已完成；下一项为时钟合同 |
+| M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 未开始 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -25,6 +26,27 @@
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
 
 ## M1 已完成单元
+
+### 证据绑定交易日时钟合同
+
+- `SessionClock` 只接受有授权 `SourceContract -> EvidenceRecord` 链的数据日历锚：日历内容必须是带版本、时区、
+  覆盖起止和 `coverage_complete=true` 的完整开放 session 面；clock 同时绑定 evidence id、内容 hash 和 record hash。
+  日历证据的有效区间必须同时覆盖 assignment cutoff 与所选 session open，且证据必须在 cutoff 前已记录。
+- `run_date`、session id、开收盘边界和显式日历行必须一致；周末 / 休市日不会被推断为开放日，early close、
+  special closure 与 DST 只服从冻结证据。进程壁钟回退、`trade_enabled=true`、交易 authority 和不完整日历均 fail closed。
+- clock 冻结日历证据的 PIT tier；`UniverseEvent`、`CandidatePool`、`DecisionRecord` 不得超过它，
+  research-PIT 日历不能为下游制造 canonical / gate-eligible 结论。受时钟约束的这四类记录已显式升为
+  `CLOCK_BOUND_SCHEMA_VERSION=2`；仓库中未发现需迁移的持久化 v1 实例。
+- Universe run / effective 时钟由联合 validator 强制同时校验：run 使用时刻必须落在日历本地 `run_date`，
+  effective session 不能早于 run 且 `effective_at` 必须在其开收盘内，两只 clock 都必须在 event 决定前落账。
+  CandidatePool / Decision 同样限制在本地 run date；OrderIntent 可绑定后续 execution session，但有效窗口必须完全在该
+  session 内。多 session GTC 尚未建模，因此 fail closed。
+- `session_clock_id`、semantic hash 与 exact record hash 已进入 Universe run/effective、CandidatePool、Decision 和
+  OrderIntent 的输入快照；clock 自身也纳入 append-only 人口校验，同语义的 `recorded_at` 重试为 duplicate，
+  同 ID 语义漂移为 conflict。29 项聚焦对抗测试与完整 183 项 V2 套件通过，独立终审无剩余 P0/P1/P2。
+- 目前只启用可验证的数据日历锚；`frozen_run_date` / broker-session 在有各自 typed evidence 合同前明确拒绝，
+  不接受自证 hash。本单元仍不实现 ledger writer、runtime adapter、daily/replay 接线、broker、fill/position 或 exit clock；
+  不关闭 V1 时钟 bias blocker，不提升 `research_pit / observed_only` ceiling，不占 experiment ID。
 
 ### Append-only 与幂等 schema 人口校验
 
@@ -105,7 +127,7 @@
 - 6 项 V1 bias blocker 全部仍为 open；本轮只提供解除 blocker 所需的合同原语，不代表任何 blocker 已关闭。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
-  初始 schema、人口分类器和 154 项测试不等于原子 ledger、runtime 或 execution parity 已完成。
+  初始 schema、人口分类器、时钟合同和 183 项测试不等于原子 ledger、runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，V2 候选最高停在 research/shadow。
 - V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
@@ -117,5 +139,6 @@
 
 ## 下一步
 
-继续 M1 的最后一项：建立交易日归属时钟合同，以数据日历 / 冻结 run date / broker session 为权威锚，
-显式拒绝进程壁钟回退；保持 research ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。
+进入 M2 的第一个垂直切片：把动态 PIT universe 的完整 membership、append-only event chain 与 manifest
+落到一个共享 daily/replay 可读的研究 ledger；先证明完备性、因果时钟和 deterministic replay，继续保持
+research ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。
