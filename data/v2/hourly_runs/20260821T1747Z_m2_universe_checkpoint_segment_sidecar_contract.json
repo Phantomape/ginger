@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T17:01:37.441Z",
+  "run_started_at_basis": "Hourly wake inferred from the recorded 2026-08-21T16:01:37.441Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T17:47:07Z",
+  "milestone": "M2",
+  "work_unit": "m2_universe_checkpoint_segment_sidecar_contract",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "088aa9a9b0a569a10de43bfb7349a5adb8b14e0e",
+  "selection_rationale": {
+    "priority": "The prior committed handoff identified checkpoint and segmentation semantics as the earliest clean M2 blocker after event-prefix indexing, before any truthful market-scale universe claim.",
+    "scout_lane": "No committed candidate-source input changed after the prior outcome-blind readiness audit, so its no-admission-ready-axis conclusion was reused. No outcome was read and no experiment ID was reserved.",
+    "chosen_unit": "Specify and implement an opt-in read-only checkpoint/segment storage contract with exact legacy reconstruction, bounded HEAD publication authority, and adversarial damage recovery checks.",
+    "scope_boundary": "Research-only physical-storage validation. No existing universe event, manifest, membership, source, SEC materialization, runtime, observation, feature, candidate, signal, outcome, policy, scheduler, broker, order, allocation, evidence tier, parity status, or trading authority changed."
+  },
+  "implementation": {
+    "head_authority": "A constant-size explicit HEAD record is the sole commit authority. It binds exactly one immutable checkpoint and an optional reverse hash-linked segment tail without carrying a growing segment list.",
+    "checkpoint_identity": "The checkpoint freezes the exact strict legacy prefix plus event, manifest/batch, source/evidence, clock, rule, mapping, chain-head, effective-membership, and pending-future-event identity state.",
+    "segment_identity": "Each immutable segment carries exactly one unchanged v1 transaction: its event rows, exact v1 manifest, predecessor hash, and before/after event and manifest counts.",
+    "strict_loading": "The loader follows only the HEAD-reachable chain, requires strict canonical UTF-8 bytes and finite JSON scalars, verifies content-addressed paths and reverse links, conserves every physical event exactly once, binds segment event IDs to the manifest batch and local universe/run/effective clocks, validates checkpoint derived state, rebuilds the exact legacy events/manifests view, and delegates final semantics to the existing strict parser.",
+    "damage_model": "Referenced missing, truncated, tampered, malformed, reordered, forked, boundary-escalated, or identity-drifting records fail closed without legacy fallback. Valid content-addressed orphan records not reachable from HEAD remain invisible and audit-only.",
+    "claim_boundary": "This is contract_only_unwired. No publisher, segmented writer, compact checkpoint rotation, runtime reader switch, repository-external append anchor, or production path exists; the current v1 writer still atomically rewrites the whole cumulative ledger."
+  },
+  "identity_regression": {
+    "sec_ledger_fixture_sha256": "b6d77be6c748d20491c40001950f6bbe3930d2a4dd4c3f7522952c88a20411da",
+    "manifest_sha256": "852f1eae21701bd52d3fe3519f4b9d5fc6909fff0266f2d1c958ac39e4bb0fac",
+    "event_semantic_sha256": "437e640b39fdaf4da0db20ba91efbf434f8bc9906b40c52c973002073665ba6d",
+    "event_record_sha256": "427ebbbc70625fbaa648619619a49a02ce3c1c321305796d1c3978e4b99de466",
+    "membership_semantic_sha256": "e8663c0049b74e19397a475026c3efdca193b5f2929e84ba78e2f75803c0dd38",
+    "observation_sha256": "aa6c8de67a8b2af052ad5c5eaee493932fa48990df768046aa9b40a0334342ae"
+  },
+  "verification": [
+    "15 focused checkpoint/segment adversarial tests passed in 17.83s.",
+    "106 ledger, external-coverage, SEC materialization/runtime/observation, and sidecar tests passed in 48.58s.",
+    "294 complete quant/test_v2*.py tests passed in 55.70s.",
+    "The checked-in SEC manifest, event, membership, and observation identities remained unchanged.",
+    "Target sidecar and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "Hourly receipt JSON and durable decision JSONL parsed; decision IDs remained unique.",
+    "Production V2 default-off scan found zero trade_enabled=True assignments.",
+    "Staged diff whitespace validation passed with line-ending warnings only.",
+    "Independent final re-review reported P0=0 and P1=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger_segments.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1747Z_m2_universe_checkpoint_segment_sidecar_contract.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: checkpoint and segment corruption, identity drift, physical-event loss/duplication, malformed canonical bytes, and future-effective reconstruction now have a bounded fail-closed contract while exact source-bounded v1 semantics are preserved. This produces no alpha or canonical evidence.",
+  "parity_impact": "None in status or runtime behavior. The sidecar reconstructs the exact legacy view but is deliberately unwired; existing daily/replay and pre-Engine-0 identities remain stable, while Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Implement a segmented publisher/writer with atomic HEAD publication and deterministic crash-window/orphan handling.",
+    "Implement compact checkpoint rotation so cumulative v1 multi-manifest event, registry, membership, and whole-file rewrite costs are actually removed.",
+    "Establish a repository-external append anchor before any canonical eligibility claim; a valid historical HEAD rollback cannot be detected by repository-local hashes alone.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline.",
+    "Add a richer authorized SEC item/text semantic axis or another registered source axis before reserving a scout beyond coarse exact-8-K occurrence."
+  ],
+  "next_step": "Implement the opt-in segmented publisher/writer with atomic HEAD publication and adversarial crash-window recovery, then add compact checkpoint rotation; if a genuinely new admission-ready source axis appears first, run bounded outcome-blind zero-ID preflight.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}
