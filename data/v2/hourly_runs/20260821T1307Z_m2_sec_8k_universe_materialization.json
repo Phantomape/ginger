@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T12:30:43Z",
+  "run_finished_at": "2026-08-21T13:11:59Z",
+  "milestone": "M2",
+  "work_unit": "m2_sec_8k_universe_materialization",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "8691e7212630ee2558a4d688afb6e28602f381b6",
+  "selection_rationale": {
+    "scout_lane": "The committed-source audit still contained no admission-ready scout and no experiment ID was reserved. The previous outcome-blind SEC readiness preflight exposed a safe, nonzero, directly actionable M2 blocker.",
+    "chosen_unit": "The earliest incomplete M2 task was the first real external coverage/security surface. This unit froze the already scoped official SEC 8-K source frame and completed its immutable writer, evidence graph, universe ledger, and target manifest.",
+    "scope_boundary": "One bounded research-only SEC 8-K source frame; no outcome access, CandidatePool, hypothesis, experiment, production runtime, broker, order, allocation, paper/live permission, or market-wide coverage claim."
+  },
+  "source_bundle": {
+    "path": "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z",
+    "bundle_id": "sec-edgar-8k-20260820-15fe989450624e02",
+    "bundle_sha256": "5d94cc360a607d2824ddf523340a6b8f94dd5d560f1216644296db7cb7146613",
+    "form_date": "20260820",
+    "frozen_at": "2026-08-21T12:56:35.571910Z",
+    "request_policy": {
+      "user_agent": "ginger-research phantomape93@gmail.com",
+      "accept_encoding": "identity",
+      "response_metadata_persisted": true
+    },
+    "artifacts": [
+      {
+        "role": "daily_form_index",
+        "filename": "form.20260820.idx",
+        "sha256": "c8239dac18c7db462df2eb41a6f89fa9746a29a47c4821f828b621193c6cefd3",
+        "bytes": 814980,
+        "reported_rows": 4183,
+        "exact_8_k_rows": 219
+      },
+      {
+        "role": "security_mapping",
+        "filename": "company_tickers_exchange.json",
+        "sha256": "dc94346047679508512cc7384caa89b5a5309d7aa80309e8bb1eb22e82c6bedd",
+        "bytes": 520956,
+        "rows": 10387
+      },
+      {
+        "role": "authorization_access",
+        "filename": "sec_access.html",
+        "sha256": "8d6378b888c1de4708d36b0b808a053fe2cfe2fa6c43d3b9f1c7be5eb87278d8"
+      },
+      {
+        "role": "calendar",
+        "filename": "sec_edgar_calendar.html",
+        "sha256": "9d9f06644f1b2aea3526a2316fb8a09213a96b0eea7dc2a79af806def5855da6"
+      },
+      {
+        "role": "authorization_reuse",
+        "filename": "sec_webmaster_faq.html",
+        "sha256": "79c32471e238fb22742c25693d875703570724eadd2adf45e5557123926da6b4"
+      }
+    ],
+    "completion_guard": "The daily-index date must strictly precede the bundle freeze date in America/New_York; strict header, Last Data Received, separator, reported-row count, and exact case-sensitive 8-K parsing fail closed.",
+    "dispositions": {
+      "mapped": 116,
+      "unmapped": 91,
+      "missing_mapping": 42,
+      "ambiguous_mapping": 49,
+      "excluded": 12,
+      "unsupported_exchange": 12,
+      "conserved_total": 219,
+      "unique_active_mappings": 111
+    }
+  },
+  "materialization": {
+    "path": "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z",
+    "coverage_snapshot_id": "coverage-sec-8k-5d94cc360a607d28",
+    "coverage_snapshot_hash": "b86035a59111f2df27740a2202440617c143b635163cb93d4e882b1e0dac2503",
+    "manifest_id": "manifest-sec-8k-5d94cc360a607d28",
+    "manifest_hash": "852f1eae21701bd52d3fe3519f4b9d5fc6909fff0266f2d1c958ac39e4bb0fac",
+    "envelope_hash": "96b1f1a8ae82d6fbcb7cf2145aa05217ee0f0fffc9373249ba01f0c99aa02660",
+    "events": 111,
+    "active_memberships": 111,
+    "mapping_evidence_records": 111,
+    "external_universe_coverage_status": "unverified",
+    "pit_tier": "research_pit",
+    "result_ceiling": "observed_only",
+    "parity_status": "contract_only_unwired",
+    "paper_live_eligible": false,
+    "authority": "research_only",
+    "trade_enabled": false
+  },
+  "implementation": {
+    "physical_evidence": "Every bundle logical locator resolves portably to a persisted member whose physical byte SHA-256 matches its EvidenceRecord; raw-byte tampering is rejected.",
+    "stable_rows": "Source-row hashes bind the parsed SEC row and original line number, excluding retrieval and mapping metadata so harmless refetches cannot create false longitudinal identity changes.",
+    "forward_mapping": "Research security/listing identities derive deterministically from CIK, ticker, and MIC; mappings become effective at the association artifact retrieval time and explicitly retain the issuer-versus-security limitation.",
+    "calendar": "The evidence-bound EDGAR clock uses America/New_York, the official 06:00-22:00 filing window, and the complete 2026 closure table frozen from the SEC calendar.",
+    "publication": "Source members publish before an immutable bundle manifest. The universe ledger is lock-protected and atomically replaced, then strictly reloaded and cross-validated before an immutable envelope publishes. Ledger and envelope form a recoverable staged publication and do not claim cross-file atomicity.",
+    "idempotency": "Source-path, ledger, and envelope locks serialize conflict checks; exact completed retries return duplicate, while concurrency, path collision, semantic conflict, and crash recovery fail closed or resume safely."
+  },
+  "review": {
+    "final_verdict": "Independent final review reported P0=0 and P1=0 after all fixes.",
+    "reviewed_guards": [
+      "request identity and response metadata binding",
+      "portable physical evidence locators",
+      "source and envelope publication concurrency",
+      "known-empty input registration",
+      "raw-byte hash validation",
+      "stable row identity",
+      "causal ledger start",
+      "strict prior-day completeness",
+      "ledger/envelope path separation",
+      "retry and crash recovery"
+    ],
+    "residual_risks": [
+      "This is one research-only snapshot, not a longitudinal runtime or market-wide universe.",
+      "A genuinely zero-row exact 8-K daily source fails closed rather than publishing known-empty coverage.",
+      "The full-history ledger validation remains O(n^2) and the repository has no external append anchor."
+    ]
+  },
+  "verification": [
+    "12 SEC materializer adversarial tests passed in 2.67s.",
+    "248 complete quant/test_v2*.py tests passed in 19.52s.",
+    "Persisted-graph CLI verification passed with the exact coverage, manifest, and envelope hashes.",
+    "Exact materialization retry returned duplicate for both ledger and envelope.",
+    "Target production, CLI, and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed with lean_strict_passed=true.",
+    "Production V2 default-on scan passed; trade_enabled remains false.",
+    "Independent final review reconciled all 219 rows, all 111 mappings/events/memberships, and all 113 physical evidence locators."
+  ],
+  "changed_files": [
+    ".gitattributes",
+    "quant/v2_sec_8k_universe.py",
+    "quant/test_v2_sec_8k_universe.py",
+    "scripts/materialize_v2_sec_8k_universe.py",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/bundle.json",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/company_tickers_exchange.json",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/form.20260820.idx",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/sec_access.html",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/sec_edgar_calendar.html",
+    "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/sec_webmaster_faq.html",
+    "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z/materialization.json",
+    "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z/universe_ledger.jsonl",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1307Z_m2_sec_8k_universe_materialization.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: the first real source-bounded universe surface preserves every SEC 8-K row, exact raw bytes, causal retrieval/mapping/session clocks, explicit conservative dispositions, stable longitudinal row identity, and a cross-validated immutable evidence graph. Missing, ambiguous, unsupported, late, same-day-partial, or tampered inputs cannot silently become eligible securities.",
+  "parity_impact": "Positive materialized foundation: daily and replay can now consume one exact manifest/as-of identity, but no shared runtime adapter invokes it yet. Deterministic daily/replay or production/backtest parity therefore remains explicitly unwired and unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Wire the shared runtime adapter and prove deterministic daily/replay behavior against the same manifest and as-of clock.",
+    "Optimize O(n^2) full-history population validation before market-scale use.",
+    "Establish a repository-external append anchor before any canonical eligibility claim.",
+    "Add longitudinal source transitions and additional independently authorized market-coverage surfaces before claiming broader completeness."
+  ],
+  "next_step": "Connect this immutable SEC coverage instance to the shared runtime adapter and run an exact daily/replay parity fixture; retain research-only ceilings. In parallel, specify the O(n^2) optimization and external append-anchor acceptance test before any market-scale or canonical use.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

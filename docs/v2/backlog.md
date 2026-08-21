@@ -29,7 +29,7 @@
 ## M2（并行 Promotion Construction）
 
 - [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
-- [ ] 外部 coverage/security surface：合同核心与 row causal clock schema-v2 已完成；仍须冻结首个真实输入证券全集，对每项留下 `mapped / unmapped / excluded` disposition、有效期映射与 coverage evidence，并通过不可变 writer 生成真实 snapshot/manifest，才能支持可证明的完整或已知为空结论
+- [x] 外部 coverage/security surface：首个真实 SEC 8-K source bundle、219/219 行 `mapped / unmapped / excluded` disposition、111 个有效期映射/active membership、coverage evidence 与不可变 ledger/manifest 已冻结；范围仍是 research-only source frame，不是市场级完备性（2026-08-21）
 - [ ] 接入实际动态来源和共享 runtime adapter，验证 daily/replay deterministic parity；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
 
 ## 注意事项

@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T11:21Z（M2 外部 coverage 逐行因果时钟）
+> 最后更新：2026-08-21T13:04Z（M2 首个真实 SEC 8-K coverage 实例）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心、promotion-only 外部 coverage 合同核心与逐行因果时钟完成；真实来源实例与 runtime parity 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟与首个真实 SEC 8-K 来源实例完成；共享 runtime adapter 与 daily/replay parity 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -38,6 +38,28 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## M2 进行中单元
 
+### 首个真实 SEC 8-K coverage 实例
+
+- `data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/` 冻结首个仅前向、不可变的
+  source-bounded 输入：SEC 官方 access/复用说明、2026 EDGAR 日历、完整 2026-08-20 daily form index 和
+  同次抓取的 company/exchange association。五个物理 artifact 的请求 User-Agent、identity encoding、HTTP 状态、
+  响应元数据、字节数与 SHA-256 均进入 `bundle.json`；bundle semantic hash 为
+  `5d94cc360a607d2824ddf523340a6b8f94dd5d560f1216644296db7cb7146613`。
+- 严格 header/count 校验得到 4,183 个 index row 和 219 个 exact-case `8-K` row；冻结日必须严格晚于 index date，
+  防止同日 partial index 冒充完整人口。10,387 行 association 经过 exactly-one CIK 与 NYSE/Nasdaq allowlist 后，
+  219 行守恒为 116 mapped、91 unmapped（42 missing + 49 ambiguous）和 12 excluded；去重后形成 111 个
+  research-only security/listing mapping、UniverseEvent 与 active membership。
+- 每个 Evidence locator 使用可移植的 `bundle:<bundle_id>/<member>` 逻辑地址，并解析到真实 member bytes 的 SHA-256；
+  row hash 只绑定解析后的 source row 与原始行号，不受重新抓取时刻或 mapping 元数据变化污染。mapping 从 association
+  artifact 的抓取时刻起仅前向生效；EDGAR session clock 绑定官方 06:00-22:00 ET 窗口和 2026 年 11 个关闭日。
+- source bundle 以 member-first/manifest-last 发布；ledger 先以锁与 atomic replace 提交完整验证前缀，再严格重载并
+  交叉校验 coverage snapshot/manifest，最后写不可变 envelope。ledger 与 envelope 是可恢复的 staged publication，
+  不声称跨文件原子性；冲突、并发、崩溃后重试、路径碰撞和 raw-byte tamper 均 fail closed，精确重试返回 duplicate。
+- 真实实例仍固定 `external_universe_coverage_status=unverified`、`research_pit / observed_only`、
+  `paper_live_eligible=false`、`parity_status=contract_only_unwired`、`authority=research_only` 与
+  `trade_enabled=false`。它证明这一个 SEC 8-K source frame 的处置完整性，不证明市场级股票池覆盖；12 项专项对抗测试、
+  完整 248 项 V2 测试与 persisted-graph CLI 校验通过，独立终审 P0=0/P1=0。
+
 ### 外部 coverage 逐行因果时钟
 
 - coverage row / snapshot schema 升为 v2；每个 source row 必须携带 timezone-aware `known_at`。完整人口的
@@ -46,10 +68,10 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 每个 row 必须在 `data_cutoff` 前已知，且不晚于完整 coverage evidence 的 `known_at`；带 mapping 的 row 还要求
   mapping 与 mapping evidence 在该 row 的因果处置时钟前已知。原有 mapping cutoff、freeze、effective interval、
   exact evidence/hash 与 manifest reconciliation 约束继续生效。
-- outcome-blind 临时 SEC 官方源 preflight 验证了下一真实输入具有非零触达：前一完整日 `8-K` index 为 219 行、208 个
+- outcome-blind 临时 SEC 官方源 preflight 曾验证下一真实输入具有非零触达：前一完整日 `8-K` index 为 219 行、208 个
   CIK；同次冻结的 10,387 行 company/exchange association 中，保守规则得到 116 mapped、42 missing、49 ambiguous、
-  12 unsupported-exchange dispositions。此次只验证 source readiness；临时下载未写入仓库，也未创建 SourceContract、
-  EvidenceRecord、coverage snapshot、manifest 或 experiment ID。
+  12 unsupported-exchange dispositions。它本身只验证 source readiness；后续上述独立 materialization 单元才冻结新的
+  官方 artifact、SourceContract、EvidenceRecord、coverage snapshot、ledger 与 manifest，仍未创建 experiment ID。
 - 仓库不存在 coverage v1 持久化实例，因此本次 schema 升级不需要迁移。18 项 coverage 对抗测试、48 项
   coverage+ledger 聚焦测试和完整 236 项 V2 测试通过；独立终审为 P0=0/P1=0。所有 ceiling 保持
   `research_pit / observed_only`、`paper_live_eligible=false`、`trade_enabled=false`，runtime parity 未改变。
@@ -98,8 +120,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   `authority=research_only` 与 `trade_enabled=false`，本轮没有创建生产 ledger 数据。
 - 30 项 ledger 对抗测试、105 项受影响合同测试和完整 218 项 V2 套件通过；独立终审无 P0/P1。
   当前全历史人口校验为 O(n²)，且没有仓库外 append anchor；在全市场规模和任何 canonical 资格前必须优化并
-  引入外部可验证锚。真实外部 coverage/security surface、mapped/unmapped/excluded disposition 证据、动态来源、
-  runtime adapter 与 production/replay parity 仍是 M2 后续工作；旧资产的 V1 bias findings 仅保留为复用限制。
+  引入外部可验证锚。首个 source-bounded SEC 8-K coverage/security surface 与 disposition 证据已由后续单元补齐；
+  更多动态来源、runtime adapter 与 production/replay parity 仍是 M2 后续工作；旧资产的 V1 bias findings 仅保留为复用限制。
 
 ## M1 已完成单元
 
@@ -208,7 +230,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 6 项 V1 bias finding 只限制相应旧资产能否复用，不是 V2 里程碑或 forward blocker。
 - `canonical_forward_eligibility_started_at=null`；schema 允许表达 canonical 条件不等于当前记录已获 canonical 资格。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
-  初始 schema、M2 研究 ledger 人口核心和 218 项 V2 测试不等于外部 universe 完备、canonical provenance、
+  初始 schema、M2 研究 ledger 与首个 SEC source-bounded coverage 实例不等于市场级 universe 完备、canonical provenance、
   runtime 或 execution parity 已完成。
 - M3 Engine-0 建立前，bounded scout 最高只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
 - 若主动使用 V1 baseline，它只做兼容性回归与机会成本对照，不是 V2 Gate-1 锚。
@@ -216,8 +238,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-把本轮临时 SEC preflight 收敛为首个不可变、hash-bound、仅前向的 source input bundle：冻结官方授权证据、完整日 index、
-逐行 `known_at`、company/exchange mapping 与全部 disposition，再通过 production writer 生成 coverage EvidenceRecord / snapshot
-和实际 universe manifest；未完成前不得宣称真实 coverage。随后再接共享 runtime adapter 与 daily/replay parity。若期间出现满足
+把首个真实 SEC 8-K coverage materialization 接入共享 runtime adapter，并用同一 manifest/as-of 输入验证 daily/replay
+deterministic parity；在扩展到全市场或任何 canonical 候选前，优化当前 O(n²) 全历史人口校验并建立仓库外 append anchor。
+若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。
