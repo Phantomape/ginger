@@ -29,12 +29,21 @@ def _assert_code(code, function, error=V2UniverseCoverageError):
     assert caught.value.code == code
 
 
-def _row(row_id, row_hash, *, disposition, evidence=None, mapping=None):
+def _row(
+    row_id,
+    row_hash,
+    *,
+    disposition,
+    evidence=None,
+    mapping=None,
+    known_at="2026-08-20T14:02:00Z",
+):
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "record_type": "v2_external_universe_coverage_row",
         "source_row_id": row_id,
         "source_row_sha256": row_hash,
+        "known_at": known_at,
         "disposition": disposition,
         "reason_code": f"synthetic_{disposition}",
         "reason": f"Synthetic {disposition} row for coverage contract tests.",
@@ -60,6 +69,7 @@ def _seal_snapshot(row):
             {
                 "source_row_id": item["source_row_id"],
                 "source_row_sha256": item["source_row_sha256"],
+                "known_at": item["known_at"],
             }
             for item in row["rows"]
         ]
@@ -102,6 +112,7 @@ def _coverage_source_and_evidence(snapshot):
         {
             "source_row_id": item["source_row_id"],
             "source_row_sha256": item["source_row_sha256"],
+            "known_at": item["known_at"],
         }
         for item in snapshot["rows"]
     ]
@@ -175,7 +186,7 @@ def _fixture(*, include_unmapped=True, include_excluded=True, empty=False):
             )
     snapshot = _seal_snapshot(
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "record_type": "v2_external_universe_coverage_snapshot",
             "coverage_snapshot_id": "coverage-snapshot-20260820-1",
             "universe_id": manifest["universe_id"],
@@ -312,6 +323,24 @@ def test_rows_must_be_sorted_and_have_unique_ids_and_hashes():
     )
 
 
+def test_row_known_at_must_be_timezone_aware_and_not_after_cutoff():
+    *_, snapshot, _, _ = _fixture()
+    naive = deepcopy(snapshot)
+    naive["rows"][0]["known_at"] = "2026-08-20T14:02:00"
+    _assert_code(
+        "timezone_aware_instant_required",
+        lambda: normalize_external_universe_coverage_snapshot(naive),
+    )
+
+    late = deepcopy(snapshot)
+    late["rows"][0]["known_at"] = "2026-08-20T14:20:01Z"
+    late = _seal_snapshot(late)
+    _assert_code(
+        "coverage_row_after_cutoff",
+        lambda: normalize_external_universe_coverage_snapshot(late),
+    )
+
+
 def test_disposition_mapping_bundles_are_mutually_exclusive():
     *_, snapshot, _, _ = _fixture()
     mapped = next(item for item in snapshot["rows"] if item["disposition"] == "mapped")
@@ -356,6 +385,97 @@ def test_coverage_evidence_must_bind_complete_population(field):
     _assert_code(
         "coverage_evidence_population_mismatch",
         lambda: _validate_inputs(rebound, source, damaged, graph),
+    )
+
+
+def test_row_clock_is_bound_by_snapshot_and_coverage_evidence_population():
+    graph, _, _, _, _, snapshot, source, evidence = _fixture()
+    tampered = deepcopy(snapshot)
+    tampered["rows"][0]["known_at"] = "2026-08-20T14:01:00Z"
+    _assert_code(
+        "coverage_row_snapshot_mismatch",
+        lambda: normalize_external_universe_coverage_snapshot(tampered),
+    )
+
+    resealed = _seal_snapshot(tampered)
+    _assert_code(
+        "coverage_evidence_population_mismatch",
+        lambda: _validate_inputs(resealed, source, evidence, graph),
+    )
+
+
+def test_row_cannot_be_known_after_coverage_evidence():
+    graph, _, _, _, _, snapshot, _, _ = _fixture()
+    late = deepcopy(snapshot)
+    late["rows"][0]["known_at"] = "2026-08-20T14:03:00Z"
+    late = _seal_snapshot(late)
+    late, source, evidence = _bind_coverage_evidence(late)
+    _assert_code(
+        "coverage_row_after_evidence",
+        lambda: _validate_inputs(late, source, evidence, graph),
+    )
+
+
+def test_mapping_and_mapping_evidence_must_be_known_by_row_clock():
+    graph, _, _, _, _, snapshot, source, evidence = _fixture()
+
+    late_mapping_graph = deepcopy(graph)
+    late_mapping_evidence = late_mapping_graph["evidence"][0]
+    late_mapping = deepcopy(late_mapping_evidence["security_mapping"])
+    late_mapping["known_at"] = "2026-08-20T14:02:30Z"
+    late_mapping = _seal_mapping(late_mapping)
+    late_mapping_evidence.update(
+        observed_at="2026-08-20T14:03:00Z",
+        known_at="2026-08-20T14:03:00Z",
+        recorded_at="2026-08-20T14:04:00Z",
+        security_mapping=late_mapping,
+    )
+    late_mapping_evidence = _seal_evidence(late_mapping_evidence)
+    late_mapping_graph["evidence"][0] = late_mapping_evidence
+    late_mapping_snapshot = deepcopy(snapshot)
+    late_mapping_row = next(
+        item
+        for item in late_mapping_snapshot["rows"]
+        if item["mapping_evidence_id"] == late_mapping_evidence["evidence_id"]
+    )
+    late_mapping_row.update(
+        security_mapping=late_mapping,
+        mapping_evidence_semantic_hash=late_mapping_evidence["semantic_hash"],
+        mapping_evidence_record_hash=late_mapping_evidence["record_hash"],
+    )
+    late_mapping_snapshot = _seal_snapshot(late_mapping_snapshot)
+    _assert_code(
+        "mapping_after_row",
+        lambda: _validate_inputs(
+            late_mapping_snapshot, source, evidence, late_mapping_graph
+        ),
+    )
+
+    late_evidence_graph = deepcopy(graph)
+    late_evidence = late_evidence_graph["evidence"][0]
+    late_evidence.update(
+        observed_at="2026-08-20T14:03:00Z",
+        known_at="2026-08-20T14:03:00Z",
+        recorded_at="2026-08-20T14:04:00Z",
+    )
+    late_evidence = _seal_evidence(late_evidence)
+    late_evidence_graph["evidence"][0] = late_evidence
+    late_evidence_snapshot = deepcopy(snapshot)
+    late_evidence_row = next(
+        item
+        for item in late_evidence_snapshot["rows"]
+        if item["mapping_evidence_id"] == late_evidence["evidence_id"]
+    )
+    late_evidence_row.update(
+        mapping_evidence_semantic_hash=late_evidence["semantic_hash"],
+        mapping_evidence_record_hash=late_evidence["record_hash"],
+    )
+    late_evidence_snapshot = _seal_snapshot(late_evidence_snapshot)
+    _assert_code(
+        "mapping_evidence_after_row",
+        lambda: _validate_inputs(
+            late_evidence_snapshot, source, evidence, late_evidence_graph
+        ),
     )
 
 

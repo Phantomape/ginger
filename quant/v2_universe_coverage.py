@@ -39,7 +39,7 @@ except ImportError:  # pragma: no cover - direct script fallback.
     )
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 ROW_RECORD_TYPE = "v2_external_universe_coverage_row"
 SNAPSHOT_RECORD_TYPE = "v2_external_universe_coverage_snapshot"
 DISPOSITIONS = frozenset({"mapped", "unmapped", "excluded"})
@@ -118,6 +118,7 @@ class ExternalUniverseCoverageRow:
     record_type: str
     source_row_id: str
     source_row_sha256: str
+    known_at: str
     disposition: str
     reason_code: str
     reason: str
@@ -131,9 +132,9 @@ class ExternalUniverseCoverageRow:
         raw = _plain_mapping(value, field="coverage row")
         expected = set(cls.__dataclass_fields__)
         if set(raw) != expected:
-            _fail("invalid_coverage_row_shape", "coverage row must have the exact v1 fields")
+            _fail("invalid_coverage_row_shape", "coverage row must have the exact v2 fields")
         if raw["schema_version"] != SCHEMA_VERSION:
-            _fail("unsupported_schema_version", "coverage row schema_version must be 1")
+            _fail("unsupported_schema_version", "coverage row schema_version must be 2")
         if raw["record_type"] != ROW_RECORD_TYPE:
             _fail("invalid_record_type", f"coverage row record_type must be {ROW_RECORD_TYPE!r}")
         disposition = raw["disposition"]
@@ -168,6 +169,7 @@ class ExternalUniverseCoverageRow:
             record_type=ROW_RECORD_TYPE,
             source_row_id=_text(raw["source_row_id"], field="source_row_id"),
             source_row_sha256=_sha256(raw["source_row_sha256"], field="source_row_sha256"),
+            known_at=_instant(raw["known_at"], field="known_at")[0],
             disposition=disposition,
             reason_code=_text(raw["reason_code"], field="reason_code"),
             reason=_text(raw["reason"], field="reason"),
@@ -183,6 +185,7 @@ class ExternalUniverseCoverageRow:
             "record_type": self.record_type,
             "source_row_id": self.source_row_id,
             "source_row_sha256": self.source_row_sha256,
+            "known_at": self.known_at,
             "disposition": self.disposition,
             "reason_code": self.reason_code,
             "reason": self.reason,
@@ -242,9 +245,9 @@ class ExternalUniverseCoverageSnapshot:
         raw = _plain_mapping(value, field="coverage snapshot")
         expected = set(cls.__dataclass_fields__)
         if set(raw) != expected:
-            _fail("invalid_coverage_snapshot_shape", "coverage snapshot must have the exact v1 fields")
+            _fail("invalid_coverage_snapshot_shape", "coverage snapshot must have the exact v2 fields")
         if raw["schema_version"] != SCHEMA_VERSION:
-            _fail("unsupported_schema_version", "coverage snapshot schema_version must be 1")
+            _fail("unsupported_schema_version", "coverage snapshot schema_version must be 2")
         if raw["record_type"] != SNAPSHOT_RECORD_TYPE:
             _fail("invalid_record_type", f"record_type must be {SNAPSHOT_RECORD_TYPE!r}")
         rows_raw = raw["rows"]
@@ -285,7 +288,11 @@ class ExternalUniverseCoverageSnapshot:
             _fail("coverage_disposition_count_mismatch", "disposition counts must conserve the source population")
         expected_row_snapshot = canonical_hash(
             [
-                {"source_row_id": item.source_row_id, "source_row_sha256": item.source_row_sha256}
+                {
+                    "source_row_id": item.source_row_id,
+                    "source_row_sha256": item.source_row_sha256,
+                    "known_at": item.known_at,
+                }
                 for item in rows
             ]
         )
@@ -304,6 +311,10 @@ class ExternalUniverseCoverageSnapshot:
                 "invalid_coverage_chronology",
                 "must satisfy membership_as_of <= data_cutoff <= frozen_at <= recorded_at",
             )
+        for item in rows:
+            _, row_known_dt = _instant(item.known_at, field=f"rows[{item.source_row_id!r}].known_at")
+            if row_known_dt > cutoff_dt:
+                _fail("coverage_row_after_cutoff", "every source row must be known by data_cutoff")
         fixed_values = {
             "pit_tier": "research_pit",
             "external_universe_coverage_status": "unverified",
@@ -500,7 +511,11 @@ def validate_external_universe_coverage_against_inputs(
         "enumeration_complete": True,
         "source_reported_row_count": record.source_reported_row_count,
         "source_rows": [
-            {"source_row_id": item.source_row_id, "source_row_sha256": item.source_row_sha256}
+            {
+                "source_row_id": item.source_row_id,
+                "source_row_sha256": item.source_row_sha256,
+                "known_at": item.known_at,
+            }
             for item in record.rows
         ],
     }
@@ -514,6 +529,12 @@ def validate_external_universe_coverage_against_inputs(
     mapping_evidence = _unique_evidence(mapping_evidence_records)
     used_evidence_ids: set[str] = set()
     for row in record.rows:
+        _, row_known_dt = _instant(row.known_at, field=f"rows[{row.source_row_id!r}].known_at")
+        if row_known_dt > evidence_known_dt:
+            _fail(
+                "coverage_row_after_evidence",
+                "every source row must be known by the coverage evidence known_at",
+            )
         if row.security_mapping is None:
             continue
         evidence_id = row.mapping_evidence_id
@@ -540,6 +561,13 @@ def validate_external_universe_coverage_against_inputs(
         _, item_recorded_dt = _instant(item.recorded_at, field="mapping_evidence.recorded_at")
         if mapping_known_dt > cutoff_dt or item_known_dt > cutoff_dt:
             _fail("mapping_after_cutoff", "mapping and its evidence must be known by data_cutoff")
+        if mapping_known_dt > row_known_dt:
+            _fail("mapping_after_row", "mapping must be known by the source row known_at")
+        if item_known_dt > row_known_dt:
+            _fail(
+                "mapping_evidence_after_row",
+                "mapping evidence must be known by the source row known_at",
+            )
         if item_recorded_dt > frozen_dt:
             _fail("mapping_after_freeze", "mapping evidence must be recorded before freeze")
         if not row.security_mapping.covers(record.membership_as_of):

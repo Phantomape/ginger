@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T10:31Z（M2 外部 coverage 合同核心）
+> 最后更新：2026-08-21T11:21Z（M2 外部 coverage 逐行因果时钟）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心与 promotion-only 外部 coverage 合同核心完成；真实来源实例与 runtime parity 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心、promotion-only 外部 coverage 合同核心与逐行因果时钟完成；真实来源实例与 runtime parity 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -37,6 +37,22 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   非阻断建设单元时重跑完整 preflight；失败且无安全有价值的直接修复时回 promotion backlog/no-op。
 
 ## M2 进行中单元
+
+### 外部 coverage 逐行因果时钟
+
+- coverage row / snapshot schema 升为 v2；每个 source row 必须携带 timezone-aware `known_at`。完整人口的
+  `row_snapshot_sha256` 与 coverage EvidenceRecord 的 `decision_content.source_rows` 都精确绑定
+  `(source_row_id, source_row_sha256, known_at)`，所以改写逐行可用时刻不能只靠重封 snapshot 绕过证据。
+- 每个 row 必须在 `data_cutoff` 前已知，且不晚于完整 coverage evidence 的 `known_at`；带 mapping 的 row 还要求
+  mapping 与 mapping evidence 在该 row 的因果处置时钟前已知。原有 mapping cutoff、freeze、effective interval、
+  exact evidence/hash 与 manifest reconciliation 约束继续生效。
+- outcome-blind 临时 SEC 官方源 preflight 验证了下一真实输入具有非零触达：前一完整日 `8-K` index 为 219 行、208 个
+  CIK；同次冻结的 10,387 行 company/exchange association 中，保守规则得到 116 mapped、42 missing、49 ambiguous、
+  12 unsupported-exchange dispositions。此次只验证 source readiness；临时下载未写入仓库，也未创建 SourceContract、
+  EvidenceRecord、coverage snapshot、manifest 或 experiment ID。
+- 仓库不存在 coverage v1 持久化实例，因此本次 schema 升级不需要迁移。18 项 coverage 对抗测试、48 项
+  coverage+ledger 聚焦测试和完整 236 项 V2 测试通过；独立终审为 P0=0/P1=0。所有 ceiling 保持
+  `research_pit / observed_only`、`paper_live_eligible=false`、`trade_enabled=false`，runtime parity 未改变。
 
 ### 外部 coverage 合同核心
 
@@ -200,7 +216,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-在不抽取首个 scout 通用 disposition guard 的前提下，为一个真实、授权且具有 row-level clock 的动态来源物化首份
-source-bound coverage snapshot、coverage EvidenceRecord 和 forward-only effective mapping，并与实际 universe manifest 交叉验证；
-随后再接共享 runtime adapter 与 daily/replay parity。若期间出现满足 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，
-立即回到 bounded scout lane 做 experiment-local preflight/freeze/reserve；不要无条件重试 SEC contract-relation。
+把本轮临时 SEC preflight 收敛为首个不可变、hash-bound、仅前向的 source input bundle：冻结官方授权证据、完整日 index、
+逐行 `known_at`、company/exchange mapping 与全部 disposition，再通过 production writer 生成 coverage EvidenceRecord / snapshot
+和实际 universe manifest；未完成前不得宣称真实 coverage。随后再接共享 runtime adapter 与 daily/replay parity。若期间出现满足
+novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
+preflight/freeze/reserve；不要无条件重试 SEC contract-relation。
