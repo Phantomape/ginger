@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T13:04Z（M2 首个真实 SEC 8-K coverage 实例）
+> 最后更新：2026-08-21T14:05Z（M2 SEC 8-K runtime adapter parity fixture）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟与首个真实 SEC 8-K 来源实例完成；共享 runtime adapter 与 daily/replay parity 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage 合同/逐行时钟、首个真实 SEC 8-K 来源实例与 source-bounded runtime adapter 完成；市场级扩展、O(n²) 优化与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -59,6 +59,19 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   `paper_live_eligible=false`、`parity_status=contract_only_unwired`、`authority=research_only` 与
   `trade_enabled=false`。它证明这一个 SEC 8-K source frame 的处置完整性，不证明市场级股票池覆盖；12 项专项对抗测试、
   完整 248 项 V2 测试与 persisted-graph CLI 校验通过，独立终审 P0=0/P1=0。
+
+### SEC 8-K runtime adapter parity fixture
+
+- `quant/v2_sec_8k_runtime_adapter.py` 新增只读 runtime adapter：每次读取前先重建并验证已提交 SEC source bundle、
+  materialization envelope、universe ledger 与 coverage/manifest 绑定，再用同一个 `manifest_id + as_of` 调用
+  `read_v2_daily_universe` 和 `read_v2_replay_universe`。两个 consumer 是同一 reader 的真 alias；若 snapshot
+  不完全相同则 fail closed。
+- adapter 输出只包含 source/envelope/coverage/manifest 身份、membership snapshot hash、daily/replay snapshot hash
+  和 research-only 边界；不生成 CandidatePool、Hypothesis、DecisionRecord、收益测量、策略排名、订单或生产状态。
+  tamper、manifest/hash drift、boundary escalation、`trade_enabled=true` 和 paper/live 提升均拒绝。
+- 当前结论只关闭这个 SEC 8-K source-bounded graph 的 runtime consumer drift 风险；`parity_status` 仍保持
+  `contract_only_unwired`，因为尚未接入 Engine-0、全市场 universe、daily scheduler 或 production policy。15 项
+  SEC 专项测试和完整 251 项 V2 测试通过。
 
 ### 外部 coverage 逐行因果时钟
 
@@ -238,8 +251,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-把首个真实 SEC 8-K coverage materialization 接入共享 runtime adapter，并用同一 manifest/as-of 输入验证 daily/replay
-deterministic parity；在扩展到全市场或任何 canonical 候选前，优化当前 O(n²) 全历史人口校验并建立仓库外 append anchor。
+把 SEC 8-K adapter 接到下一层 Engine-0 / default-off observation harness，仍用同一 manifest/as-of 输入验证 deterministic
+behavior；在扩展到全市场或任何 canonical 候选前，优化当前 O(n²) 全历史人口校验并建立仓库外 append anchor。
 若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

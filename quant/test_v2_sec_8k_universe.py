@@ -18,6 +18,12 @@ from quant.v2_sec_8k_universe import (
     publish_sec_8k_materialization,
     validate_persisted_sec_8k_materialization,
 )
+from quant.v2_sec_8k_runtime_adapter import (
+    V2SEC8KRuntimeAdapterError,
+    read_sec_8k_daily_runtime_universe,
+    read_sec_8k_replay_runtime_universe,
+    read_sec_8k_runtime_universe,
+)
 
 
 FORM_DATE = "20260820"
@@ -409,6 +415,84 @@ def test_publish_is_idempotent_and_persisted_graph_revalidates(tmp_path):
     assert second["envelope_status"] == "duplicate"
     assert second["envelope_hash"] == first["envelope_hash"]
     assert verified["envelope_hash"] == first["envelope_hash"]
+
+
+def test_runtime_adapter_verifies_materialization_and_uses_one_daily_replay_reader(
+    tmp_path,
+):
+    source_dir = _source_bundle(tmp_path)
+    ledger_path = tmp_path / "runtime" / "universe.jsonl"
+    envelope_path = tmp_path / "runtime" / "materialization.json"
+    publish_sec_8k_materialization(source_dir, ledger_path, envelope_path)
+
+    runtime = read_sec_8k_runtime_universe(source_dir, ledger_path, envelope_path)
+    daily = read_sec_8k_daily_runtime_universe(source_dir, ledger_path, envelope_path)
+    replay = read_sec_8k_replay_runtime_universe(source_dir, ledger_path, envelope_path)
+
+    assert read_sec_8k_daily_runtime_universe is read_sec_8k_runtime_universe
+    assert read_sec_8k_replay_runtime_universe is read_sec_8k_runtime_universe
+    assert runtime == daily == replay
+    assert runtime["daily_replay_identical"] is True
+    assert runtime["membership_count"] == 1
+    assert (
+        runtime["membership_snapshot"]["memberships"][0]["security_id"]
+        == "sec-association-0000001001-aaa"
+    )
+    assert runtime["membership_snapshot"]["trade_enabled"] is False
+    assert runtime["membership_snapshot"]["paper_live_eligible"] is False
+    assert runtime["membership_snapshot"]["parity_status"] == "contract_only_unwired"
+    assert runtime["boundary"] == {
+        "external_universe_coverage_status": "unverified",
+        "pit_tier": "research_pit",
+        "result_ceiling": "observed_only",
+        "paper_live_eligible": False,
+        "parity_status": "contract_only_unwired",
+        "authority": "research_only",
+        "trade_enabled": False,
+    }
+
+
+def test_runtime_adapter_rejects_materialization_tamper(tmp_path):
+    source_dir = _source_bundle(tmp_path)
+    ledger_path = tmp_path / "runtime" / "universe.jsonl"
+    envelope_path = tmp_path / "runtime" / "materialization.json"
+    publish_sec_8k_materialization(source_dir, ledger_path, envelope_path)
+    envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    envelope["universe_manifest"]["manifest_hash"] = "0" * 64
+    envelope_path.write_text(json.dumps(envelope, sort_keys=True), encoding="utf-8")
+
+    with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
+        read_sec_8k_runtime_universe(source_dir, ledger_path, envelope_path)
+    assert "mismatch" in caught.value.code
+
+
+def test_runtime_adapter_rejects_boundary_escalation(tmp_path, monkeypatch):
+    source_dir = _source_bundle(tmp_path)
+    ledger_path = tmp_path / "runtime" / "universe.jsonl"
+    envelope_path = tmp_path / "runtime" / "materialization.json"
+    publish_sec_8k_materialization(source_dir, ledger_path, envelope_path)
+    envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    envelope["boundary"]["paper_live_eligible"] = True
+
+    def verified_without_rebuild(*args, **kwargs):
+        return {
+            "status": "verified",
+            "manifest_id": envelope["universe_manifest"]["manifest_id"],
+            "manifest_hash": envelope["universe_manifest"]["manifest_hash"],
+            "coverage_snapshot_id": envelope["coverage_snapshot"]["coverage_snapshot_id"],
+            "coverage_snapshot_hash": envelope["coverage_snapshot"]["record_hash"],
+            "envelope_hash": envelope["envelope_hash"],
+        }
+
+    monkeypatch.setattr(
+        "quant.v2_sec_8k_runtime_adapter.validate_persisted_sec_8k_materialization",
+        verified_without_rebuild,
+    )
+    envelope_path.write_text(json.dumps(envelope, sort_keys=True), encoding="utf-8")
+
+    with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
+        read_sec_8k_runtime_universe(source_dir, ledger_path, envelope_path)
+    assert caught.value.code == "runtime_boundary_escalation_forbidden"
 
 
 def test_publish_refuses_to_overwrite_an_existing_envelope(tmp_path):

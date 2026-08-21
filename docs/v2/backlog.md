@@ -30,7 +30,8 @@
 
 - [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
 - [x] 外部 coverage/security surface：首个真实 SEC 8-K source bundle、219/219 行 `mapped / unmapped / excluded` disposition、111 个有效期映射/active membership、coverage evidence 与不可变 ledger/manifest 已冻结；范围仍是 research-only source frame，不是市场级完备性（2026-08-21）
-- [ ] 接入实际动态来源和共享 runtime adapter，验证 daily/replay deterministic parity；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
+- [x] SEC 8-K source-bounded runtime adapter：读取前验证 source bundle / materialization / ledger / coverage-manifest graph，daily 与 replay 走同一 manifest/as-of reader 且 snapshot 必须完全一致；research-only 边界不升级（2026-08-21）
+- [ ] 接入下一层 Engine-0 / default-off observation harness，继续验证 shared runtime deterministic behavior；全市场使用前优化当前 O(n²) 人口校验，并为 canonical 候选建立仓库外 append anchor
 
 ## 注意事项
 
