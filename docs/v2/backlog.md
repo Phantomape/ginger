@@ -1,7 +1,8 @@
 # V2 Backlog
 
-> 依赖顺序：identity -> clock -> source contract -> universe -> shared policy -> validation -> forward wiring -> allocator -> activation review。
-> 每轮取最靠前的一项可完成单元。完成后移入 current_state 或 decision log。
+> Promotion 依赖顺序：identity -> clock -> source contract -> universe -> shared policy -> validation -> forward wiring -> allocator -> activation review。
+> 这不是排他的小时队列；M1 scout kernel 就绪后，bounded research scout 与 M2-M5 并行。工作排序遵守
+> `P0/P1 containment -> unaffected active experiment -> admission-ready scout -> direct scout blocker -> promotion construction`。
 
 ## M0（完成）
 
@@ -19,7 +20,13 @@
 - [x] append-only 与幂等测试（schema 层；2026-08-20 本地）
 - [x] 时钟合同：以完整、证据绑定的数据日历冻结 run date / session，禁止进程壁钟；其余未建 typed evidence 的锚 fail closed（2026-08-20 本地）
 
-## M2（进行中）
+## Research Scout Lane（当前最高优先级）
+
+- [x] 协议解除 M0-M5 串行闸门：bounded `research_pit / private_replay_scout` 在 M1 kernel 后可运行，结论硬封顶 `observed_only`（2026-08-21）
+- [ ] 首个 V2 scout zero-ID preflight：立即选择一个授权、row-level 时钟可用、effective mapping、非零 source-native 触达且 novelty/reopen 通过的 evidence axis；20 分钟内通过则冻结 experiment-local disposition manifest、mapped-only CandidatePool 和必要的 DecisionRecord，仅机器校验 row-count 守恒、row-hash 唯一/互斥和 mapped-set 一致性，不先建共享 schema；失败则记录 exact predicate/hash/reopen 而不烧 ID
+- [ ] 首个 V2 scout reserve/run/close：用现有 hash-bound promotion / claim / experiment closeout 原语绑定 V2 admission 与结果身份；一个 hypothesis、一个 treatment、一个 primary horizon；registry 只允许正向完整 lead=`observed_only`，其余=`rejected`，最多跨两个小时单元
+
+## M2（并行 Promotion Construction）
 
 - [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
 - [ ] 外部 coverage/security surface：冻结真实输入证券全集，对每项留下 `mapped / unmapped / excluded` disposition、有效期映射与 coverage evidence，支持可证明的完整或已知为空结论
@@ -34,5 +41,6 @@
 - T0 真相源：`data/v2/t0.json`。T0 只是项目 / 前瞻分区边界，不授予 canonical PIT、策略资格或交易权限。
 - 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
 - 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
-- 建设期只有直接阻断可信评估、forward 产出或 parity 的 measurement_repair 可以插队。
-- 无安全有价值工作时以 no-op audit 收尾，不硬开实验。
+- M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
+- 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
+- Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。

@@ -47,9 +47,19 @@ are frozen are evaluation outputs, not decision-time leakage.
 
 ## Research replay admission
 
-A research replay still requires the normal complete candidate pool and an
-outcome-blind D0-D3 pass. Multi-model debate is optional and carries no
-admission authority. The hash-bound request records:
+A research replay still requires a complete outcome-blind candidate/selection
+panel and D0-D3 pass. Multi-model debate is optional and carries no admission
+authority. The hash-bound request records:
+
+Before external-market universe coverage is proven, “complete candidate pool”
+means complete for one source-bounded scope that was defined deterministically
+and frozen before outcomes were read. A separate source disposition manifest
+must retain every returned, mapped, excluded, and unmapped row plus its reason;
+the CandidatePool contains mapped securities only. The scope may not be built
+from V1 winners, a current survivor roster, settled returns, or post-hoc ticker
+selection. Such a replay must state
+`external_universe_coverage_status=unverified` and may claim only a result for
+that frozen source scope, never a complete-market search.
 
 ```yaml
 admission_class: research_replay
@@ -63,6 +73,10 @@ The experiment registry revalidates that request at reserve, claim, audit, and
 close. A research replay cannot close as `accepted` (including any
 `accepted_*` variant), cannot emit `accepted_paper_pending_forward`, and cannot
 become `live_eligible`, even when its historical Gate metrics are positive.
+
+Ginger V2 scouts also follow the source-bounded provenance and decision binding
+defined in `docs/quant_agent_protocol_v2.md`; this policy does not create a
+second V2 evidence label.
 
 ## Canonical upgrade
 

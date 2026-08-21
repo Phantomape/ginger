@@ -1,19 +1,20 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T07:25Z（M2 universe ledger 人口核心轮）
+> 最后更新：2026-08-21T08:02Z（V2 双通道 / scout-first 协议修订轮）
 
 ## 里程碑
 
-**M0、M1 已完成，M2 进行中**。M2 的第一个最小工作单元已落地研究级 universe
-ledger 人口核心；外部 universe 覆盖完备性、真实动态来源、runtime 接线与 deterministic
-daily/replay parity 尚未完成。
+**M0、M1 已完成，M2 进行中；bounded research scout lane 现在开放**。M0-M9 改为
+promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外部覆盖、M3 Engine-0 和 runtime parity
+继续阻止 canonical/paper/promotion，但不再阻止 source-bounded、`research_pit / observed_only` 的 private replay。
 
 | 里程碑 | 状态 |
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger 人口核心完成；外部覆盖与 runtime parity 待完成 |
+| Research scout lane | 已开放：首个 bounded V2 scout preflight 是当前最高优先级 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
 
@@ -24,6 +25,16 @@ daily/replay parity 尚未完成。
 - 用户确认前及合同落地前的产物最高仍为 `research_pit`，不能追溯升级为 canonical forward 证据；历史数据仍可在明确记录时钟与来源后用于 `research_pit` 私有回放。
 - `canonical_forward_eligibility_started_at` 仍为 `null`；具体来源和记录必须分别通过授权、时钟、映射、schema 与冻结 Gate。
 - T0 确认不授予任何策略资格，不改变真钱权限，`trade_enabled=false`。
+
+## Scout-first 协议修订
+
+- 13 份 observed V2 hourly receipt、11 条 durable decision、0 个 experiment ID，证明旧问题是 M0-M5 串行调度，
+  不是 PIT/default-off 底线。现在 research scout 与 promotion construction 并行；scout 只做 source-bounded、
+  `research_pit / observed_only` 测量，仍保留完整 disposition、登记、反泄漏和 `trade_enabled=false`。
+- 继续复用现有 promotion/claim/closeout，不新增 bridge 或证据标签；receipt/state/backlog/decision、测试和审阅按事实与结论风险缩放。
+- 首次 cadence 条件已经满足。下一轮立即做一次最多 20 分钟 zero-ID preflight；通过即冻结 experiment-local disposition、
+  CandidatePool/必要 DecisionRecord 和 promotion，并 reserve 首个 scout。以后只在输入变化、出现可信新轴或再次连续完成两个
+  非阻断建设单元时重跑完整 preflight；失败且无安全有价值的直接修复时回 promotion backlog/no-op。
 
 ## M2 进行中单元
 
@@ -154,7 +165,7 @@ daily/replay parity 尚未完成。
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
   初始 schema、M2 研究 ledger 人口核心和 218 项 V2 测试不等于外部 universe 完备、canonical provenance、
   runtime 或 execution parity 已完成。
-- M3 Engine-0 建立前，V2 候选最高停在 research/shadow。
+- M3 Engine-0 建立前，bounded scout 最高只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
 - V1 baseline 只做回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
 
@@ -165,7 +176,7 @@ daily/replay parity 尚未完成。
 
 ## 下一步
 
-继续 M2：先建立真实外部 security surface 和 coverage evidence，对每个证券留下
-`mapped / unmapped / excluded` 的可审计 disposition，证明“外部输入面”而不只是 ledger 内部人口前缀完整；
-再接入实际动态来源与共享 runtime adapter，做独立 daily/replay deterministic parity 验证。继续保持 research
-ceiling 与 default-off，不接真钱路径，不占 alpha 实验 ID。
+执行首个 V2 bounded research scout：对一个授权、非零触达、`research_pit` 的 source-native frame 做 zero-ID
+readiness/D0-D3；通过则冻结完整 disposition manifest、mapped-only CandidatePool、必要的 DecisionRecord 和 promotion，reserve/claim 一个
+`private_replay_scout`，用一个 treatment、一个 primary horizon 和预注册反证运行并关闭为 `observed_only` 或 reject。
+M2 外部 coverage/security surface 与 runtime parity 保留为并行 promotion backlog，不再抢占这个 scout。
