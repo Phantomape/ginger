@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T22:28Z（M2 cold-lineage structural regression）
+> 最后更新：2026-08-21T23:40Z（M2 explicit segmented-hot runtime wiring）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback 及 cold-lineage 结构回归完成；segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback 及 cold-lineage 结构回归完成；市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -62,24 +62,29 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ### SEC 8-K runtime adapter parity fixture
 
-- `quant/v2_sec_8k_runtime_adapter.py` 新增只读 runtime adapter：每次读取前先重建并验证已提交 SEC source bundle、
-  materialization envelope、universe ledger 与 coverage/manifest 绑定。v2 adapter 强制调用者显式提供已提交
-  `manifest_id` 和 timezone-aware `as_of`，禁止 latest-manifest、manifest 自选和进程时钟回退；daily/replay 导出是
-  同一 adapter 的真 alias，底层只执行一次共享 membership reader，不重复做两次全历史验证。
+- `quant/v2_sec_8k_runtime_adapter.py` 的只读 v3 adapter 要求调用者同时显式提供 backend、storage location、已提交
+  `manifest_id` 和 timezone-aware `as_of`；只接受 `legacy_jsonl_v1` 或 `segmented_hot_v1`，没有默认 backend、路径探测、
+  hot-to-exact 降级或 silent legacy fallback。daily/replay 导出仍是同一函数对象，禁止 latest-manifest、manifest 自选和
+  进程时钟回退。
+- segmented 路径每次 adapter 调用只执行一次 `load_segmented_v2_universe_state`，把同一份已验证 hot state 同时交给
+  materialization graph validator 与共享 membership resolver；只允许当前 tip manifest，不遍历 superseded lineage。
+  legacy path wrapper 保留显式兼容，但不会被 segmented 失败触发。
 - adapter 在 graph validator 前读取并本地校验 envelope canonical hash，随后要求 validator 返回同一 envelope、manifest
   与 coverage 身份，避免验证后再次消费未校验副本。输出冻结 bundle/envelope/coverage/manifest/universe/as-of/reader
-  完整 identity hash、共享 reader snapshot hash 与 adapter snapshot hash；路径和 consumer 标签不进入身份。
+  完整 identity hash、共享 reader snapshot hash 与 adapter snapshot hash；v3 另绑定 backend 及 segmented checkpoint/tail/tip
+  身份，绝对路径和 consumer 标签不进入身份。membership semantic snapshot 在 legacy/segmented 间保持相同。
 - `adapter_parity_status=daily_replay_verified_research_only` 只描述这个 source-bounded membership adapter；不可变 source/
   manifest 的 `parity_status=contract_only_unwired` 保持不变，因为尚未建立 Engine-0 policy/baseline、全市场 universe、daily scheduler
   或 production policy。tamper、错 manifest、naive/越界 as-of、boundary escalation、`trade_enabled=true` 和 paper/live
-  提升与非有限 JSON（含数值溢出）均以稳定错误拒绝；22 项 SEC 专项测试、完整 258 项 V2 测试与真实 111-membership graph 的
+  提升与非有限 JSON（含数值溢出）均以稳定错误拒绝；49 项 SEC 专项测试、完整 347 项 V2 测试与真实 111-membership graph 的
   offset-equivalent parity 检查通过。
 
 ### Pre-Engine-0 universe observation handoff
 
-- `quant/v2_universe_observation.py` 只用调用者显式提供的 `manifest_id + as_of` 调用一次 SEC adapter，并把已验证的
+- `quant/v2_universe_observation.py` 的 v2 observation 用调用者显式提供的 backend/storage location/`manifest_id + as_of`
+  调用一次 SEC adapter，并把已验证的
   membership rows 交给同一个 daily/replay 真 alias；路径和 consumer 标签不进入观察身份。输出绑定 adapter/input/reader/
-  manifest/universe/membership hash，逐行精确保留 mapping、state、event 与 effective clock，不读取或产生 outcome。
+  backend/hot-state/manifest/universe/membership hash，逐行精确保留 mapping、state、event 与 effective clock，不读取或产生 outcome。
 - consumer 再次校验 adapter、input identity、shared-reader snapshot、ledger-equivalent membership semantic hash、精确 row schema、
   canonical order、security/listing 唯一性及完整 research-only ceiling；重封后的 ceiling 提升、矛盾身份、额外 rank/signal/outcome
   字段、非法 hash/state/clock、行值漂移、乱序与重复身份均 fail closed。
@@ -204,9 +209,10 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - `tracemalloc` 仅提供平台诊断：本轮 hot peak 约 0.284 MB，exact peak 约 0.690-0.724 MB，并由基于读取与输出字节的保守 affine
   envelope 防止明显的非线性回归；elapsed 不设门槛。该小型结构 fixture 不证明真实市场规模、RSS、cadence 或 SLO，整次 rotation
   仍包含独立的提交前/后验证阶段并保持显式、unscheduled，绝不能把 standalone exact pass 的单读事实扩写成整个 rotation 单遍。
-- 该 slice 仍是 `contract_only_unwired`：没有 runtime reader 切换、仓库外 append anchor、canonical/PIT 提升或生产权限。
-  advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、
-  market decision clock 与适用的 production/backtest parity 仍是后续 blocker。
+- source-bounded runtime 现已能显式选择 segmented-hot reader，但 source/manifest ceiling 仍是 `contract_only_unwired`：没有 scheduler、
+  Engine-0 policy/baseline、仓库外 append anchor、canonical/PIT 提升或生产权限。advisory lock 只约束合作 writer，不声称抵抗绕锁
+  写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、market decision clock 与适用的
+  production/backtest parity 仍是后续 blocker。
 
 ## M1 已完成单元
 
@@ -296,7 +302,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - Universe 事件携带显式冻结 run date / calendar session、前后状态、规则 hash、证据语义快照和 previous-event 引用；当前名单/当前映射不能倒灌为 PIT。
 - 事件输入快照现在同时使用 evidence semantic hash 与 exact record hash，使真实落账时钟成为因果输入，
   不能通过只改 `recorded_at` 重封证据而维持同一快照。M2 已补上研究级 append-only ledger / manifest、
-  全量 previous-event 链证明与原子写入；外部覆盖证明、仓库外 append anchor 和 runtime 接线仍待完成。
+  全量 previous-event 链证明与原子写入；市场级外部覆盖、仓库外 append anchor 和 Engine-0/production runtime 接线仍待完成。
 - 本单元只建立 schema/校验，不接 daily、replay、运行时或下单路径，不占 alpha 实验 ID；`trade_enabled=false`。
 
 ## M0 交付物
@@ -323,9 +329,9 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-compact rotation、aggregate capability/rollback 与 cold-lineage 结构回归已完成。下一干净单元应以显式 segmented-hot backend、
-hot-tip manifest 和单次 state load 接入 source-bounded runtime，禁止 backend 自动探测、cold traversal 或 silent legacy fallback，
-并保持 rotation unscheduled 与 research-only ceiling；只有拿到真实 population/churn/retention/SLO 才能另定 cadence。任何 canonical
-候选前仍需仓库外 append anchor；真正的 M3 Engine-0 还需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
+显式 segmented-hot runtime 接线已完成，rotation 继续 unscheduled 且 source ceiling 仍为 research-only。下一干净 M2 单元应先形成
+仓库外 append anchor 的可验证 contract/部署选择；若没有明确的外部不可变目标和权限，只做 decision packet/no-op，不用本地自哈希冒充。
+真实 population/churn/retention/SLO 仍是任何自动 cadence 或绝对 scale limit 的前提；真正的 M3 Engine-0 还需动态 PIT 市场 universe、
+市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
 preflight/freeze/reserve；不要无条件重试 SEC contract-relation。

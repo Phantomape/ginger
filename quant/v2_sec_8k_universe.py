@@ -22,7 +22,7 @@ from copy import deepcopy
 from datetime import datetime, time as datetime_time, timezone
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 from zoneinfo import ZoneInfo
 
 from .data_paths import atomic_write_json
@@ -1553,6 +1553,55 @@ def _envelope_graph(envelope: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _validated_persisted_sec_8k_envelope(
+    source_dir: str | Path,
+    envelope_path: str | Path,
+) -> tuple[Path, dict[str, Any]]:
+    target = Path(envelope_path).resolve()
+    expected = build_sec_8k_materialization(source_dir)
+    if not target.is_file():
+        _fail("materialization_envelope_missing", f"materialization envelope is missing: {target}")
+    persisted = _json_bytes(target)
+    _validate_envelope_hash(persisted)
+    if persisted != expected:
+        _fail("materialization_envelope_mismatch", "persisted envelope differs from rebuilt evidence")
+    return target, persisted
+
+
+def _validate_persisted_sec_8k_graph(
+    persisted: Mapping[str, Any],
+    manifest: Mapping[str, Any] | None,
+    events: Iterable[Mapping[str, Any]],
+) -> dict[str, Any]:
+    if manifest is None or manifest != persisted["universe_manifest"]:
+        _fail("persisted_manifest_mismatch", "ledger does not contain the exact bound manifest")
+    event_ids = set(manifest["universe_event_ids"])
+    committed_events = [item for item in events if item["event_id"] in event_ids]
+    if sorted(committed_events, key=lambda item: item["event_id"]) != sorted(
+        persisted["universe_events"], key=lambda item: item["event_id"]
+    ):
+        _fail("persisted_event_population_mismatch", "ledger event population changed")
+    graph = _envelope_graph(persisted)
+    _call(
+        validate_external_universe_coverage_against_manifest,
+        persisted["coverage_snapshot"],
+        manifest,
+        committed_events,
+        coverage_evidence=graph["coverage_evidence"],
+        coverage_source_contract=graph["coverage_source"],
+        mapping_evidence_records=graph["mapping_evidence"],
+        mapping_source_contracts=graph["mapping_sources"],
+    )
+    return {
+        "status": "verified",
+        "manifest_id": manifest["manifest_id"],
+        "manifest_hash": manifest["manifest_hash"],
+        "coverage_snapshot_id": persisted["coverage_snapshot"]["coverage_snapshot_id"],
+        "coverage_snapshot_hash": persisted["coverage_snapshot"]["record_hash"],
+        "envelope_hash": persisted["envelope_hash"],
+    }
+
+
 def validate_persisted_sec_8k_materialization(
     source_dir: str | Path,
     ledger_path: str | Path,
@@ -1564,47 +1613,59 @@ def validate_persisted_sec_8k_materialization(
     target = Path(envelope_path).resolve()
     if ledger_target == target:
         _fail("persistence_path_collision", "ledger and envelope paths must be distinct")
-    expected = build_sec_8k_materialization(source_dir)
-    if not target.is_file():
-        _fail("materialization_envelope_missing", f"materialization envelope is missing: {target}")
-    persisted = _json_bytes(target)
-    _validate_envelope_hash(persisted)
-    if persisted != expected:
-        _fail("materialization_envelope_mismatch", "persisted envelope differs from rebuilt evidence")
+    target, persisted = _validated_persisted_sec_8k_envelope(source_dir, target)
     loaded = _call(load_v2_universe_ledger, ledger_target)
     manifest_id = persisted["universe_manifest"]["manifest_id"]
     manifest = next(
         (item for item in loaded["manifests"] if item["manifest_id"] == manifest_id), None
     )
-    if manifest is None or manifest != persisted["universe_manifest"]:
-        _fail("persisted_manifest_mismatch", "ledger does not contain the exact bound manifest")
-    event_ids = set(manifest["universe_event_ids"])
-    events = [item for item in loaded["events"] if item["event_id"] in event_ids]
-    if sorted(events, key=lambda item: item["event_id"]) != sorted(
-        persisted["universe_events"], key=lambda item: item["event_id"]
-    ):
-        _fail("persisted_event_population_mismatch", "ledger event population changed")
-    graph = _envelope_graph(persisted)
-    _call(
-        validate_external_universe_coverage_against_manifest,
-        persisted["coverage_snapshot"],
+    verified = _validate_persisted_sec_8k_graph(
+        persisted,
         manifest,
-        events,
-        coverage_evidence=graph["coverage_evidence"],
-        coverage_source_contract=graph["coverage_source"],
-        mapping_evidence_records=graph["mapping_evidence"],
-        mapping_source_contracts=graph["mapping_sources"],
+        loaded["events"],
     )
-    return {
-        "status": "verified",
-        "ledger_path": str(ledger_target),
-        "envelope_path": str(target),
-        "manifest_id": manifest["manifest_id"],
-        "manifest_hash": manifest["manifest_hash"],
-        "coverage_snapshot_id": persisted["coverage_snapshot"]["coverage_snapshot_id"],
-        "coverage_snapshot_hash": persisted["coverage_snapshot"]["record_hash"],
-        "envelope_hash": persisted["envelope_hash"],
-    }
+    verified["ledger_path"] = str(ledger_target)
+    verified["envelope_path"] = str(target)
+    return verified
+
+
+def validate_persisted_sec_8k_materialization_against_state(
+    source_dir: str | Path,
+    state: Mapping[str, Any],
+    envelope_path: str | Path,
+) -> dict[str, Any]:
+    """Validate one already-strict hot state against the persisted source graph."""
+
+    events = state.get("events")
+    manifest = state.get("head_manifest")
+    event_count = state.get("event_count")
+    manifest_count = state.get("manifest_count")
+    current_generation_manifest_count = state.get("current_generation_manifest_count")
+    if (
+        not isinstance(events, list)
+        or not isinstance(manifest, Mapping)
+        or not isinstance(event_count, int)
+        or isinstance(event_count, bool)
+        or event_count != len(events)
+        or not isinstance(manifest_count, int)
+        or isinstance(manifest_count, bool)
+        or manifest_count < 1
+        or not isinstance(current_generation_manifest_count, int)
+        or isinstance(current_generation_manifest_count, bool)
+        or not 1 <= current_generation_manifest_count <= manifest_count
+        or state.get("authority") != "research_only"
+        or state.get("trade_enabled") is not False
+    ):
+        _fail(
+            "segmented_runtime_state_invalid",
+            "segmented hot state is malformed or crossed the research-only boundary",
+        )
+    target, persisted = _validated_persisted_sec_8k_envelope(
+        source_dir, envelope_path
+    )
+    verified = _validate_persisted_sec_8k_graph(persisted, manifest, events)
+    verified["envelope_path"] = str(target)
+    return verified
 
 
 def _publish_sec_8k_materialization_locked(
@@ -1713,4 +1774,5 @@ __all__ = [
     "freeze_sec_8k_source_bundle",
     "publish_sec_8k_materialization",
     "validate_persisted_sec_8k_materialization",
+    "validate_persisted_sec_8k_materialization_against_state",
 ]

@@ -617,7 +617,8 @@ def _validate_record(
         or row["record_type"] != record_type
     ):
         _fail("segmented_record_version_invalid", f"unsupported {record_type} record")
-    if row["storage_contract"] not in storage_contracts:
+    storage_contract = row["storage_contract"]
+    if not isinstance(storage_contract, str) or storage_contract not in storage_contracts:
         _fail("segmented_storage_contract_invalid", "unexpected storage contract")
     _validate_boundary(row)
     supplied = _require_hash(row[hash_field], field=hash_field)

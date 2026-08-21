@@ -1006,12 +1006,19 @@ def test_head_storage_marker_must_match_checkpoint_format(tmp_path, compact):
     )
 
 
-def test_unknown_head_storage_marker_fails_before_checkpoint_load(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "invalid_marker",
+    ("v2_universe_checkpoint_segment_sidecar_future", []),
+    ids=("unknown-string", "non-string"),
+)
+def test_invalid_head_storage_marker_fails_before_checkpoint_load(
+    tmp_path, monkeypatch, invalid_marker
+):
     fixture = _segmented_writer_fixture(tmp_path)
     root = tmp_path / "unknown-head-marker"
     _write_three_manifest_segmented(root, fixture)
     head = json.loads((root / "HEAD.json").read_bytes())
-    head["storage_contract"] = "v2_universe_checkpoint_segment_sidecar_future"
+    head["storage_contract"] = invalid_marker
     _write_json(root / "HEAD.json", _reseal(head, "head_hash"))
 
     real_read_json = segments_module._read_json

@@ -18,13 +18,15 @@ from .v2_contracts import canonical_hash
 from .v2_sec_8k_runtime_adapter import (
     ADAPTER_CONTRACT,
     ADAPTER_RECORD_TYPE,
+    LEDGER_BACKEND_LEGACY_JSONL_V1,
+    LEDGER_BACKEND_SEGMENTED_HOT_V1,
     read_sec_8k_runtime_universe,
 )
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 OBSERVATION_RECORD_TYPE = "v2_pre_engine0_universe_observation_snapshot"
-OBSERVATION_CONTRACT = "v2_pre_engine0_default_off_universe_observation_v1"
+OBSERVATION_CONTRACT = "v2_pre_engine0_default_off_universe_observation_v2"
 
 _RESEARCH_ONLY_BOUNDARY = {
     "external_universe_coverage_status": "unverified",
@@ -105,6 +107,38 @@ def _validated_runtime_snapshot(
         _fail(
             "observation_runtime_identity_hash_mismatch",
             "runtime input identity hash is invalid",
+        )
+    ledger_backend = runtime.get("ledger_backend")
+    hot_state_identity = runtime.get("segmented_hot_state_identity")
+    hot_state_identity_sha256 = runtime_identity.get(
+        "segmented_hot_state_identity_sha256"
+    )
+    if (
+        "ledger_backend" not in runtime
+        or "segmented_hot_state_identity" not in runtime
+        or "ledger_backend" not in runtime_identity
+        or "segmented_hot_state_identity_sha256" not in runtime_identity
+        or not isinstance(ledger_backend, str)
+        or ledger_backend not in {
+            LEDGER_BACKEND_LEGACY_JSONL_V1,
+            LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        }
+        or runtime_identity.get("ledger_backend") != ledger_backend
+        or (
+            ledger_backend == LEDGER_BACKEND_LEGACY_JSONL_V1
+            and (hot_state_identity is not None or hot_state_identity_sha256 is not None)
+        )
+        or (
+            ledger_backend == LEDGER_BACKEND_SEGMENTED_HOT_V1
+            and (
+                not isinstance(hot_state_identity, Mapping)
+                or hot_state_identity_sha256 != canonical_hash(hot_state_identity)
+            )
+        )
+    ):
+        _fail(
+            "observation_runtime_backend_identity_mismatch",
+            "runtime backend identity is missing or contradictory",
         )
 
     boundary = _mapping(runtime.get("boundary"), field="runtime.boundary")
@@ -251,14 +285,24 @@ def _validated_runtime_snapshot(
             "observation_runtime_identity_mismatch",
             "runtime identity contradicts the membership snapshot",
         )
+    if ledger_backend == LEDGER_BACKEND_SEGMENTED_HOT_V1 and (
+        hot_state_identity.get("head_manifest_id") != membership.get("manifest_id")
+        or hot_state_identity.get("head_manifest_hash")
+        != membership.get("manifest_hash")
+    ):
+        _fail(
+            "observation_runtime_backend_identity_mismatch",
+            "segmented hot state does not bind the observed manifest tip",
+        )
     return membership, observed_memberships
 
 
 def observe_sec_8k_universe(
     source_dir: str | Path,
-    ledger_path: str | Path,
     envelope_path: str | Path,
     *,
+    backend: str,
+    storage_location: str | Path,
     manifest_id: str,
     as_of: str,
 ) -> dict[str, Any]:
@@ -266,8 +310,9 @@ def observe_sec_8k_universe(
 
     runtime = read_sec_8k_runtime_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=backend,
+        storage_location=storage_location,
         manifest_id=manifest_id,
         as_of=as_of,
     )
@@ -285,6 +330,10 @@ def observe_sec_8k_universe(
         "as_of": membership["as_of"],
         "membership_snapshot_sha256": membership["membership_snapshot_sha256"],
         "shared_reader_snapshot_hash": membership["snapshot_hash"],
+        "ledger_backend": runtime["ledger_backend"],
+        "segmented_hot_state_identity_sha256": runtime["input_identity"][
+            "segmented_hot_state_identity_sha256"
+        ],
     }
     observation = {
         "schema_version": SCHEMA_VERSION,
@@ -292,6 +341,7 @@ def observe_sec_8k_universe(
         "observation_contract": OBSERVATION_CONTRACT,
         "consumer_stage": "pre_engine0_universe_observation",
         "source_frame": "sec_edgar_8k",
+        "ledger_backend": runtime["ledger_backend"],
         "input_identity": input_identity,
         "input_identity_sha256": canonical_hash(input_identity),
         "membership_count": len(memberships),

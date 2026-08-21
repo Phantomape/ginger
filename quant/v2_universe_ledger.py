@@ -1848,16 +1848,13 @@ def append_v2_universe_batch(
         }
 
 
-def read_v2_universe_membership(
-    path: str | Path,
+def _read_v2_universe_membership_from_loaded(
+    loaded: Mapping[str, Sequence[Mapping[str, Any]]],
     *,
     manifest_id: str,
     as_of: str,
     universe_id: str | None = None,
 ) -> dict[str, Any]:
-    """Resolve one explicit manifest through the sole daily/replay code path."""
-
-    loaded = load_v2_universe_ledger(path)
     requested_id = _text(manifest_id, field="manifest_id")
     manifest = next(
         (item for item in loaded["manifests"] if item["manifest_id"] == requested_id),
@@ -1929,6 +1926,47 @@ def read_v2_universe_membership(
     }
     result["snapshot_hash"] = canonical_hash(result)
     return result
+
+
+def read_v2_universe_membership(
+    path: str | Path,
+    *,
+    manifest_id: str,
+    as_of: str,
+    universe_id: str | None = None,
+) -> dict[str, Any]:
+    """Resolve one explicit manifest through the sole daily/replay code path."""
+
+    return _read_v2_universe_membership_from_loaded(
+        load_v2_universe_ledger(path),
+        manifest_id=manifest_id,
+        as_of=as_of,
+        universe_id=universe_id,
+    )
+
+
+def _read_v2_universe_membership_from_validated_state(
+    state: Mapping[str, Any],
+    *,
+    manifest_id: str,
+    as_of: str,
+    universe_id: str | None = None,
+) -> dict[str, Any]:
+    """Resolve the explicit hot-tip manifest from an already validated state."""
+
+    events = state.get("events")
+    head_manifest = state.get("head_manifest")
+    if not isinstance(events, list) or not isinstance(head_manifest, Mapping):
+        _fail(
+            "universe_state_invalid",
+            "validated state must contain event rows and one head manifest",
+        )
+    return _read_v2_universe_membership_from_loaded(
+        {"events": events, "manifests": [head_manifest]},
+        manifest_id=manifest_id,
+        as_of=as_of,
+        universe_id=universe_id,
+    )
 
 
 def validate_external_universe_coverage_against_manifest(

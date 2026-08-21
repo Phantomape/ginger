@@ -1,18 +1,21 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
 import shutil
 from threading import Barrier
+from zoneinfo import ZoneInfo
 
 import pytest
 
 import quant.v2_universe_observation as universe_observation_module
 import quant.v2_sec_8k_runtime_adapter as runtime_adapter_module
 import quant.v2_sec_8k_universe as sec_8k_module
-from quant.v2_contracts import canonical_hash
+import quant.v2_universe_ledger_segments as segments_module
+from quant.v2_contracts import canonical_hash, canonical_json
 from quant.v2_universe_observation import (
     V2UniverseObservationError,
     observe_sec_8k_daily_universe,
@@ -28,10 +31,20 @@ from quant.v2_sec_8k_universe import (
     validate_persisted_sec_8k_materialization,
 )
 from quant.v2_sec_8k_runtime_adapter import (
+    LEDGER_BACKEND_LEGACY_JSONL_V1,
+    LEDGER_BACKEND_SEGMENTED_HOT_V1,
     V2SEC8KRuntimeAdapterError,
     read_sec_8k_daily_runtime_universe,
     read_sec_8k_replay_runtime_universe,
     read_sec_8k_runtime_universe,
+)
+from quant.v2_universe_ledger import load_v2_universe_ledger
+from quant.v2_universe_ledger_segments import (
+    COMPACT_HEAD_STORAGE_CONTRACT,
+    STORAGE_CONTRACT,
+    build_segmented_ledger_contract,
+    rotate_segmented_v2_universe_checkpoint,
+    segmented_record_path,
 )
 
 
@@ -242,11 +255,32 @@ def _published_runtime_fixture(tmp_path):
 def _read_runtime_fixture(source_dir, ledger_path, envelope_path, manifest_id, as_of):
     return read_sec_8k_runtime_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=manifest_id,
         as_of=as_of,
     )
+
+
+def _write_segmented_runtime_store(root, ledger_path):
+    contract = build_segmented_ledger_contract(load_v2_universe_ledger(ledger_path))
+    checkpoint = contract["checkpoint"]
+    checkpoint_path = segmented_record_path(
+        root, "checkpoint", checkpoint["checkpoint_hash"]
+    )
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+    checkpoint_path.write_bytes((canonical_json(checkpoint) + "\n").encode("utf-8"))
+    for segment in contract["segments"]:
+        segment_path = segmented_record_path(
+            root, "segment", segment["segment_hash"]
+        )
+        segment_path.parent.mkdir(parents=True, exist_ok=True)
+        segment_path.write_bytes((canonical_json(segment) + "\n").encode("utf-8"))
+    (root / "HEAD.json").write_bytes(
+        (canonical_json(contract["head"]) + "\n").encode("utf-8")
+    )
+    return root
 
 
 def _reseal_runtime_snapshot(runtime, *, refresh_membership_semantics):
@@ -295,8 +329,9 @@ def _assert_resealed_observation_rejected(
     with pytest.raises(V2UniverseObservationError) as caught:
         observe_sec_8k_universe(
             source_dir,
-            ledger_path,
             envelope_path,
+            backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+            storage_location=ledger_path,
             manifest_id=manifest_id,
             as_of=as_of,
         )
@@ -518,15 +553,17 @@ def test_runtime_adapter_verifies_materialization_and_uses_one_daily_replay_read
 
     runtime = read_sec_8k_runtime_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=manifest_id,
         as_of=as_of,
     )
     daily = read_sec_8k_daily_runtime_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=manifest_id,
         as_of=as_of,
     )
@@ -536,8 +573,9 @@ def test_runtime_adapter_verifies_materialization_and_uses_one_daily_replay_read
     shutil.copytree(ledger_path.parent, copied_runtime)
     replay = read_sec_8k_replay_runtime_universe(
         copied_source,
-        copied_runtime / ledger_path.name,
         copied_runtime / envelope_path.name,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=copied_runtime / ledger_path.name,
         manifest_id=manifest_id,
         as_of="2026-08-21T05:30:00-07:00",
     )
@@ -545,8 +583,12 @@ def test_runtime_adapter_verifies_materialization_and_uses_one_daily_replay_read
     assert read_sec_8k_daily_runtime_universe is read_sec_8k_runtime_universe
     assert read_sec_8k_replay_runtime_universe is read_sec_8k_runtime_universe
     assert runtime == daily == replay
-    assert runtime["schema_version"] == 2
-    assert runtime["adapter_contract"] == "v2_sec_8k_runtime_universe_adapter_v2"
+    assert runtime["schema_version"] == 3
+    assert runtime["adapter_contract"] == "v2_sec_8k_runtime_universe_adapter_v3"
+    assert runtime["ledger_backend"] == LEDGER_BACKEND_LEGACY_JSONL_V1
+    assert runtime["segmented_hot_state_identity"] is None
+    assert runtime["input_identity"]["ledger_backend"] == LEDGER_BACKEND_LEGACY_JSONL_V1
+    assert runtime["input_identity"]["segmented_hot_state_identity_sha256"] is None
     assert runtime["adapter_parity_status"] == "daily_replay_verified_research_only"
     assert runtime["input_identity"]["as_of"] == "2026-08-21T12:30:00Z"
     assert runtime["input_identity_sha256"] == canonical_hash(runtime["input_identity"])
@@ -576,6 +618,225 @@ def test_runtime_adapter_verifies_materialization_and_uses_one_daily_replay_read
     }
 
 
+@pytest.mark.parametrize(
+    ("compact", "expected_contract", "legacy_compatible"),
+    (
+        (False, STORAGE_CONTRACT, True),
+        (True, COMPACT_HEAD_STORAGE_CONTRACT, False),
+    ),
+    ids=("full-checkpoint", "compact-checkpoint"),
+)
+def test_segmented_hot_runtime_uses_one_state_load_without_archive_or_legacy_fallback(
+    tmp_path, monkeypatch, compact, expected_contract, legacy_compatible
+):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+    legacy = _read_runtime_fixture(
+        source_dir, ledger_path, envelope_path, manifest_id, as_of
+    )
+    segmented_root = _write_segmented_runtime_store(
+        tmp_path / "segmented-runtime", ledger_path
+    )
+    if compact:
+        rotate_segmented_v2_universe_checkpoint(segmented_root)
+    copied_source = tmp_path / "copied-segmented-source"
+    copied_envelope = tmp_path / "copied-segmented-materialization.json"
+    copied_segmented_root = tmp_path / "copied-segmented-runtime"
+    shutil.copytree(source_dir, copied_source)
+    shutil.copy2(envelope_path, copied_envelope)
+    shutil.copytree(segmented_root, copied_segmented_root)
+
+    real_hot_load = runtime_adapter_module.load_segmented_v2_universe_state
+    hot_loads = []
+
+    def counted_hot_load(storage_location):
+        hot_loads.append(Path(storage_location))
+        return real_hot_load(storage_location)
+
+    def forbidden_path(*args, **kwargs):
+        raise AssertionError("segmented-hot runtime used a legacy or exact path")
+
+    monkeypatch.setattr(
+        runtime_adapter_module,
+        "load_segmented_v2_universe_state",
+        counted_hot_load,
+    )
+    monkeypatch.setattr(
+        runtime_adapter_module,
+        "validate_persisted_sec_8k_materialization",
+        forbidden_path,
+    )
+    monkeypatch.setattr(
+        runtime_adapter_module,
+        "read_v2_universe_membership",
+        forbidden_path,
+    )
+    monkeypatch.setattr(segments_module, "_load_exact_generations", forbidden_path)
+
+    runtime = read_sec_8k_daily_runtime_universe(
+        source_dir,
+        envelope_path,
+        backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        storage_location=segmented_root,
+        manifest_id=manifest_id,
+        as_of=as_of,
+    )
+    replay = read_sec_8k_replay_runtime_universe(
+        copied_source,
+        copied_envelope,
+        backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        storage_location=copied_segmented_root,
+        manifest_id=manifest_id,
+        as_of="2026-08-21T05:30:00-07:00",
+    )
+
+    assert hot_loads == [segmented_root, copied_segmented_root]
+    assert read_sec_8k_daily_runtime_universe is read_sec_8k_runtime_universe
+    assert read_sec_8k_replay_runtime_universe is read_sec_8k_runtime_universe
+    assert runtime == replay
+    assert runtime["membership_snapshot"] == legacy["membership_snapshot"]
+    assert runtime["ledger_backend"] == LEDGER_BACKEND_SEGMENTED_HOT_V1
+    hot_identity = runtime["segmented_hot_state_identity"]
+    assert hot_identity["storage_contract"] == expected_contract
+    assert hot_identity["legacy_full_reader_compatible"] is legacy_compatible
+    assert hot_identity["head_manifest_id"] == manifest_id
+    assert hot_identity["head_manifest_hash"] == runtime["input_identity"][
+        "manifest_hash"
+    ]
+    assert runtime["input_identity"][
+        "segmented_hot_state_identity_sha256"
+    ] == canonical_hash(hot_identity)
+    assert runtime["trade_enabled"] is False
+    assert runtime["membership_snapshot"]["trade_enabled"] is False
+
+
+def test_checked_in_sec_graph_segmented_hot_matches_legacy_runtime(tmp_path):
+    repository = Path(__file__).resolve().parents[1]
+    source_dir = (
+        repository
+        / "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z"
+    )
+    ledger_path = (
+        repository
+        / "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z"
+        / "universe_ledger.jsonl"
+    )
+    envelope_path = ledger_path.with_name("materialization.json")
+    envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    segmented_root = _write_segmented_runtime_store(
+        tmp_path / "checked-in-segmented-runtime", ledger_path
+    )
+    rotate_segmented_v2_universe_checkpoint(segmented_root)
+    copied_source = tmp_path / "checked-in-copied-source"
+    copied_envelope = tmp_path / "checked-in-copied-materialization.json"
+    copied_segmented_root = tmp_path / "checked-in-copied-segmented-runtime"
+    shutil.copytree(source_dir, copied_source)
+    shutil.copy2(envelope_path, copied_envelope)
+    shutil.copytree(segmented_root, copied_segmented_root)
+    offset_as_of = (
+        datetime.fromisoformat(
+            envelope["universe_manifest"]["membership_as_of"].replace("Z", "+00:00")
+        )
+        .astimezone(ZoneInfo("America/Los_Angeles"))
+        .isoformat()
+    )
+    request = {
+        "manifest_id": envelope["universe_manifest"]["manifest_id"],
+        "as_of": envelope["universe_manifest"]["membership_as_of"],
+    }
+
+    legacy = read_sec_8k_daily_runtime_universe(
+        source_dir,
+        envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
+        **request,
+    )
+    segmented = read_sec_8k_replay_runtime_universe(
+        copied_source,
+        copied_envelope,
+        backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        storage_location=copied_segmented_root,
+        manifest_id=request["manifest_id"],
+        as_of=offset_as_of,
+    )
+
+    assert segmented["membership_count"] == 111
+    assert segmented["membership_snapshot"] == legacy["membership_snapshot"]
+    assert segmented["membership_snapshot_sha256"] == legacy[
+        "membership_snapshot_sha256"
+    ]
+    assert segmented["shared_reader_snapshot_hash"] == legacy[
+        "shared_reader_snapshot_hash"
+    ]
+    assert segmented["trade_enabled"] is False
+
+
+def test_runtime_adapter_rejects_unknown_backend_before_any_storage_read(
+    tmp_path, monkeypatch
+):
+    def forbidden_read(*args, **kwargs):
+        raise AssertionError("unsupported backend touched storage")
+
+    monkeypatch.setattr(runtime_adapter_module, "_read_json", forbidden_read)
+    with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
+        read_sec_8k_runtime_universe(
+            tmp_path / "source",
+            tmp_path / "envelope.json",
+            backend="auto",
+            storage_location=tmp_path / "ledger",
+            manifest_id="manifest-id",
+            as_of=FROZEN_AT,
+        )
+    assert caught.value.code == "runtime_ledger_backend_unsupported"
+
+
+def test_segmented_hot_runtime_propagates_checkpoint_damage_without_fallback(
+    tmp_path, monkeypatch
+):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+    segmented_root = _write_segmented_runtime_store(
+        tmp_path / "damaged-segmented-runtime", ledger_path
+    )
+    rotate_segmented_v2_universe_checkpoint(segmented_root)
+    head = json.loads((segmented_root / "HEAD.json").read_text(encoding="utf-8"))
+    segmented_record_path(
+        segmented_root, "checkpoint", head["checkpoint_hash"]
+    ).unlink()
+
+    def forbidden_legacy(*args, **kwargs):
+        raise AssertionError("segmented-hot damage fell back to legacy")
+
+    monkeypatch.setattr(
+        runtime_adapter_module,
+        "validate_persisted_sec_8k_materialization",
+        forbidden_legacy,
+    )
+    monkeypatch.setattr(
+        runtime_adapter_module,
+        "read_v2_universe_membership",
+        forbidden_legacy,
+    )
+    monkeypatch.setattr(
+        segments_module,
+        "_load_exact_generations",
+        forbidden_legacy,
+    )
+    with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
+        read_sec_8k_runtime_universe(
+            source_dir,
+            envelope_path,
+            backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+            storage_location=segmented_root,
+            manifest_id=manifest_id,
+            as_of=as_of,
+        )
+    assert caught.value.code == "segmented_checkpoint_missing"
+
+
 def test_runtime_adapter_rejects_materialization_tamper(tmp_path):
     source_dir = _source_bundle(tmp_path)
     ledger_path = tmp_path / "runtime" / "universe.jsonl"
@@ -590,8 +851,9 @@ def test_runtime_adapter_rejects_materialization_tamper(tmp_path):
     with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
         read_sec_8k_runtime_universe(
             source_dir,
-            ledger_path,
             envelope_path,
+            backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+            storage_location=ledger_path,
             manifest_id=manifest_id,
             as_of=as_of,
         )
@@ -606,8 +868,9 @@ def test_runtime_adapter_rejects_nonfinite_json_with_stable_error(tmp_path, payl
     with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
         read_sec_8k_runtime_universe(
             tmp_path / "source",
-            tmp_path / "universe.jsonl",
             envelope_path,
+            backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+            storage_location=tmp_path / "universe.jsonl",
             manifest_id="manifest-id",
             as_of=FROZEN_AT,
         )
@@ -635,8 +898,9 @@ def test_runtime_adapter_requires_exact_manifest_and_causal_as_of(
     with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
         read_sec_8k_runtime_universe(
             source_dir,
-            ledger_path,
             envelope_path,
+            backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+            storage_location=ledger_path,
             manifest_id=manifest_id or envelope["universe_manifest"]["manifest_id"],
             as_of=as_of,
         )
@@ -665,8 +929,9 @@ def test_runtime_adapter_consumes_the_envelope_identity_it_validated(
     )
     runtime = read_sec_8k_runtime_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=envelope["universe_manifest"]["manifest_id"],
         as_of=envelope["universe_manifest"]["membership_as_of"],
     )
@@ -704,8 +969,9 @@ def test_runtime_adapter_rejects_boundary_escalation(tmp_path, monkeypatch):
     with pytest.raises(V2SEC8KRuntimeAdapterError) as caught:
         read_sec_8k_runtime_universe(
             source_dir,
-            ledger_path,
             envelope_path,
+            backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+            storage_location=ledger_path,
             manifest_id=envelope["universe_manifest"]["manifest_id"],
             as_of=envelope["universe_manifest"]["membership_as_of"],
         )
@@ -735,14 +1001,20 @@ def test_pre_engine0_observation_uses_one_explicit_adapter_and_true_aliases(
     )
     observation = observe_sec_8k_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=manifest_id,
         as_of=as_of,
     )
 
     assert len(calls) == 1
-    assert calls[0][1] == {"manifest_id": manifest_id, "as_of": as_of}
+    assert calls[0][1] == {
+        "backend": LEDGER_BACKEND_LEGACY_JSONL_V1,
+        "storage_location": ledger_path,
+        "manifest_id": manifest_id,
+        "as_of": as_of,
+    }
     assert observe_sec_8k_daily_universe is observe_sec_8k_universe
     assert observe_sec_8k_replay_universe is observe_sec_8k_universe
     assert observation["consumer_stage"] == "pre_engine0_universe_observation"
@@ -784,6 +1056,96 @@ def test_pre_engine0_observation_uses_one_explicit_adapter_and_true_aliases(
     assert all(forbidden_fields.isdisjoint(row) for row in observation["memberships"])
 
 
+def test_pre_engine0_observation_forwards_segmented_hot_backend_once_per_alias(
+    tmp_path, monkeypatch
+):
+    source_dir, ledger_path, envelope_path, manifest_id, as_of = (
+        _published_runtime_fixture(tmp_path)
+    )
+    segmented_root = _write_segmented_runtime_store(
+        tmp_path / "segmented-observation", ledger_path
+    )
+    rotate_segmented_v2_universe_checkpoint(segmented_root)
+    copied_source = tmp_path / "copied-segmented-observation-source"
+    copied_envelope = tmp_path / "copied-segmented-observation.json"
+    copied_segmented_root = tmp_path / "copied-segmented-observation"
+    shutil.copytree(source_dir, copied_source)
+    shutil.copy2(envelope_path, copied_envelope)
+    shutil.copytree(segmented_root, copied_segmented_root)
+    real_adapter = universe_observation_module.read_sec_8k_runtime_universe
+    calls = []
+    runtime_snapshots = []
+
+    def counted_adapter(*args, **kwargs):
+        calls.append((args, kwargs))
+        runtime = real_adapter(*args, **kwargs)
+        runtime_snapshots.append(runtime)
+        return runtime
+
+    monkeypatch.setattr(
+        universe_observation_module,
+        "read_sec_8k_runtime_universe",
+        counted_adapter,
+    )
+    observation = observe_sec_8k_daily_universe(
+        source_dir,
+        envelope_path,
+        backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        storage_location=segmented_root,
+        manifest_id=manifest_id,
+        as_of=as_of,
+    )
+    replay = observe_sec_8k_replay_universe(
+        copied_source,
+        copied_envelope,
+        backend=LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        storage_location=copied_segmented_root,
+        manifest_id=manifest_id,
+        as_of="2026-08-21T05:30:00-07:00",
+    )
+
+    assert len(calls) == 2
+    assert calls[0][0] == (source_dir, envelope_path)
+    assert calls[0][1] == {
+        "backend": LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        "storage_location": segmented_root,
+        "manifest_id": manifest_id,
+        "as_of": as_of,
+    }
+    assert calls[1][0] == (copied_source, copied_envelope)
+    assert calls[1][1] == {
+        "backend": LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        "storage_location": copied_segmented_root,
+        "manifest_id": manifest_id,
+        "as_of": "2026-08-21T05:30:00-07:00",
+    }
+    assert observe_sec_8k_daily_universe is observe_sec_8k_universe
+    assert observe_sec_8k_replay_universe is observe_sec_8k_universe
+    assert observation == replay
+    assert observation["schema_version"] == 2
+    assert (
+        observation["observation_contract"]
+        == "v2_pre_engine0_default_off_universe_observation_v2"
+    )
+    assert observation["ledger_backend"] == LEDGER_BACKEND_SEGMENTED_HOT_V1
+    assert observation["input_identity"][
+        "segmented_hot_state_identity_sha256"
+    ] == runtime_snapshots[0]["input_identity"][
+        "segmented_hot_state_identity_sha256"
+    ]
+    assert observation["input_identity"][
+        "runtime_adapter_snapshot_hash"
+    ] == runtime_snapshots[0]["adapter_snapshot_hash"]
+    assert observation["input_identity"][
+        "runtime_input_identity_sha256"
+    ] == runtime_snapshots[0]["input_identity_sha256"]
+    assert observation["memberships"] == runtime_snapshots[0]["membership_snapshot"][
+        "memberships"
+    ]
+    assert observation["engine0_policy_invoked"] is False
+    assert observation["trade_enabled"] is False
+
+
 def test_pre_engine0_observation_is_path_and_offset_invariant(tmp_path):
     source_dir, ledger_path, envelope_path, manifest_id, as_of = (
         _published_runtime_fixture(tmp_path)
@@ -791,8 +1153,9 @@ def test_pre_engine0_observation_is_path_and_offset_invariant(tmp_path):
 
     daily = observe_sec_8k_daily_universe(
         source_dir,
-        ledger_path,
         envelope_path,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=ledger_path,
         manifest_id=manifest_id,
         as_of=as_of,
     )
@@ -802,8 +1165,9 @@ def test_pre_engine0_observation_is_path_and_offset_invariant(tmp_path):
     shutil.copytree(ledger_path.parent, copied_runtime)
     replay = observe_sec_8k_replay_universe(
         copied_source,
-        copied_runtime / ledger_path.name,
         copied_runtime / envelope_path.name,
+        backend=LEDGER_BACKEND_LEGACY_JSONL_V1,
+        storage_location=copied_runtime / ledger_path.name,
         manifest_id=manifest_id,
         as_of="2026-08-21T05:30:00-07:00",
     )
@@ -874,6 +1238,39 @@ def test_pre_engine0_observation_rejects_contradictory_runtime_identity(
         mutate,
         code="observation_runtime_identity_mismatch",
         refresh_membership_semantics=True,
+    )
+
+
+def test_pre_engine0_observation_rejects_missing_legacy_backend_identity_field(
+    tmp_path, monkeypatch
+):
+    def mutate(runtime):
+        del runtime["input_identity"]["segmented_hot_state_identity_sha256"]
+        runtime["input_identity_sha256"] = canonical_hash(runtime["input_identity"])
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_runtime_backend_identity_mismatch",
+        refresh_membership_semantics=False,
+    )
+
+
+def test_pre_engine0_observation_rejects_unhashable_backend_identity(
+    tmp_path, monkeypatch
+):
+    def mutate(runtime):
+        runtime["ledger_backend"] = []
+        runtime["input_identity"]["ledger_backend"] = []
+        runtime["input_identity_sha256"] = canonical_hash(runtime["input_identity"])
+
+    _assert_resealed_observation_rejected(
+        tmp_path,
+        monkeypatch,
+        mutate,
+        code="observation_runtime_backend_identity_mismatch",
+        refresh_membership_semantics=False,
     )
 
 
