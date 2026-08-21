@@ -853,11 +853,12 @@ def _validate_manifest_shape(value: Mapping[str, Any]) -> dict[str, Any]:
     return row
 
 
-def _validate_manifest_event_bindings(
+def _validate_manifest_population_bindings(
     row: Mapping[str, Any],
     events: Sequence[Mapping[str, Any] | UniverseEvent],
-    previous_manifest: Mapping[str, Any] | None,
 ) -> tuple[tuple[UniverseEvent, ...], list[dict[str, Any]]]:
+    """Validate one manifest's complete current event and membership state."""
+
     records, memberships = validate_universe_event_population(
         events,
         universe_id=row["universe_id"],
@@ -894,6 +895,32 @@ def _validate_manifest_event_bindings(
             "manifest_membership_mismatch",
             "memberships must exactly equal the derived latest chain heads",
         )
+
+    return records, memberships
+
+
+def _validate_manifest_research_pit(
+    row: Mapping[str, Any], records: Sequence[UniverseEvent]
+) -> None:
+    weakest = min(
+        [row["session_clock_pit_tier"], row["effective_session_clock_pit_tier"]]
+        + [event.pit_tier for event in records],
+        key=lambda item: _PIT_RANK[item],
+    )
+    if weakest == "not_pit":
+        _fail(
+            "research_pit_inputs_required",
+            "ledger inputs must all satisfy at least research_pit",
+        )
+
+
+def _validate_manifest_event_bindings(
+    row: Mapping[str, Any],
+    events: Sequence[Mapping[str, Any] | UniverseEvent],
+    previous_manifest: Mapping[str, Any] | None,
+) -> tuple[tuple[UniverseEvent, ...], list[dict[str, Any]]]:
+    records, memberships = _validate_manifest_population_bindings(row, events)
+    event_ids = sorted(event.event_id for event in records)
 
     previous_ids: set[str] = set()
     if previous_manifest is None:
@@ -1009,30 +1036,18 @@ def _validate_manifest_event_bindings(
                     "effective after the prior membership projection",
                 )
 
-    weakest = min(
-        [row["session_clock_pit_tier"], row["effective_session_clock_pit_tier"]]
-        + [event.pit_tier for event in records],
-        key=lambda item: _PIT_RANK[item],
-    )
-    if weakest == "not_pit":
-        _fail(
-            "research_pit_inputs_required",
-            "ledger inputs must all satisfy at least research_pit",
-        )
+    _validate_manifest_research_pit(row, records)
     return records, memberships
 
 
-def validate_universe_membership_manifest(
-    manifest: Mapping[str, Any],
+def _validate_manifest_clock_bindings(
+    row: Mapping[str, Any],
     *,
-    events: Sequence[Mapping[str, Any] | UniverseEvent],
     run_clock: Mapping[str, Any] | SessionClock,
     effective_clock: Mapping[str, Any] | SessionClock,
-    previous_manifest: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Validate one manifest against its full event population and clocks."""
+) -> tuple[SessionClock, SessionClock]:
+    """Validate a shaped manifest against its supplied clock records."""
 
-    row = _validate_manifest_shape(manifest)
     run = _contract_call(validate_session_clock, run_clock)
     effective = _contract_call(validate_session_clock, effective_clock)
     _validate_clock_identity_pair(run, effective)
@@ -1085,6 +1100,25 @@ def validate_universe_membership_manifest(
         _fail("run_clock_use_date_mismatch", "data_cutoff must fall on run_clock run_date")
     if frozen.astimezone(run_zone).date().isoformat() != run.run_date:
         _fail("run_clock_use_date_mismatch", "frozen_at must fall on run_clock run_date")
+    return run, effective
+
+
+def validate_universe_membership_manifest(
+    manifest: Mapping[str, Any],
+    *,
+    events: Sequence[Mapping[str, Any] | UniverseEvent],
+    run_clock: Mapping[str, Any] | SessionClock,
+    effective_clock: Mapping[str, Any] | SessionClock,
+    previous_manifest: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Validate one manifest against its full event population and clocks."""
+
+    row = _validate_manifest_shape(manifest)
+    run, effective = _validate_manifest_clock_bindings(
+        row,
+        run_clock=run_clock,
+        effective_clock=effective_clock,
+    )
     weakest = min(
         [run.pit_tier, effective.pit_tier]
         + [
@@ -1613,6 +1647,8 @@ def _prepare_v2_universe_batch_append(
 def _classify_v2_universe_batch_append(
     loaded: Mapping[str, Sequence[Mapping[str, Any]]],
     prepared: Mapping[str, Any],
+    *,
+    additional_committed_event_batch_ids: Iterable[str] = (),
 ) -> dict[str, Any]:
     """Classify a prepared request against one locked, strict logical view."""
 
@@ -1697,7 +1733,7 @@ def _classify_v2_universe_batch_append(
         )
     if proposed_manifest["event_batch_id"] in {
         item["event_batch_id"] for item in existing_manifests
-    }:
+    }.union(additional_committed_event_batch_ids):
         raise V2UniverseLedgerConflictError(
             "event_batch_id_conflict",
             "event_batch_id is already committed by another manifest",

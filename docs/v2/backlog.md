@@ -35,7 +35,9 @@
 - [x] 给 event-row prefix 校验建立 deterministic 规模回归并用 event/manifest/clock identity 索引移除额外 O(E²)/O(M²) 历史重扫；保留完整 manifest/population/chain、PIT 与 default-off 校验（2026-08-21）
 - [x] 建立只读 checkpoint/segment sidecar 合同核心：常量 `HEAD` + 不可变 checkpoint + 单事务 hash-linked segments，严格重建 exact legacy view，referenced damage fail closed、orphan audit-only，future-effective/零事件 projection 与已提交 SEC 身份保持一致；明确保持 contract-only/unwired（2026-08-21）
 - [x] 接入显式 bootstrap 与 segmented writer：复用 legacy M1 transaction planner、create-only immutable checkpoint/segment、合作 writer 锁定串行、`HEAD`-last atomic replace、predecessor identity check、crash orphan 精确重试与 missing-HEAD 防回退；保持 contract-only/unwired（2026-08-21）
-- [ ] 全市场长期使用前建立 compact checkpoint/rotation，移除累计 multi-manifest event/registry/membership surface 的重建成本；任何 canonical 候选前建立仓库外 append anchor
+- [x] 建立 compact checkpoint/rotation：热代只保留一份当前 events、一个 tip manifest、O(history) 身份胶囊和当前 generation tail；精确历史沿不可变 superseded 谱系冷回放，轮换与 audit 共用 writer 锁且不删除旧对象（2026-08-21）
+- [ ] 将 segmented hot-state reader 接入 source-bounded runtime，并证明显式 manifest/as-of 的 daily/replay 等价；接线前确定旧二进制无法前向读取 compact-v1 store 时的部署/回滚策略，并给 cold rotation cadence 建立市场规模回归
+- [ ] 任何 canonical 候选前建立仓库外 append anchor；本地有效旧 `HEAD` 回滚仍无法由仓库内 sidecar 检出
 
 ## 注意事项
 

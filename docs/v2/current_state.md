@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T18:38Z（M2 segmented publisher/writer）
+> 最后更新：2026-08-21T20:18Z（M2 compact checkpoint rotation）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引及 checkpoint/segment sidecar publisher/writer 完成；compact checkpoint、市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer 及 compact rotation 完成；segmented runtime 接线、市场级扩展与外部 append anchor 待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -176,9 +176,21 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   writer 在同一 OS advisory lock 下串行化，完整 immutable 对象先落盘，最后才以 atomic replace 更新固定 `HEAD`，并在替换前
   复核 predecessor bytes。`HEAD` 前失败只留下不可达 orphan，精确重试复用；`HEAD` 已替换但调用方未收到成功时，重试返回
   duplicate。零事件 manifest 仍恰好占一个 segment；58 项 focused 与完整 305 项 V2 测试通过，独立终审 P0=0/P1=0。
-- 该 slice 仍是 `contract_only_unwired`：没有 compact checkpoint rotation、runtime/reader 接线、仓库外 append anchor、
-  canonical/PIT 提升或生产权限。advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧
-  `HEAD` 回滚；v1 manifest 的累计 event/registry/membership surface 仍是下一 market-scale blocker。
+- compact rotation 在同一 `HEAD.json.lock` 下先严格重建 exact 历史，再发布只含一份当前 events、一个 exact tip manifest、
+  O(history) manifest/clock/input 身份胶囊和 predecessor `HEAD` 的新 checkpoint，最后原子切换 `HEAD`。当前 generation 的
+  state load、fresh append、历史精确/recorded-at-noise 幂等重试和语义冲突判定都不读取 superseded 代；checkpoint head 与
+  tail 的历史 manifest/batch 身份重复会在热加载时拒绝。
+- 显式 exact legacy load、rotation 和 snapshot-consistent orphan/superseded audit 是低频冷路径：它们迭代追随不可变 predecessor
+  谱系，逐代对账完整 events、物理顺序、全部 manifests、身份胶囊与 clocks。成功轮换不删除旧 checkpoint/segment；它们标为
+  superseded 而非 orphan，引用损坏、重封身份漂移、谱系断裂/循环均 fail closed。轮换与 append 并发串行，`HEAD` 前失败只留下
+  不可达 orphan，commit 后不确定重试返回 `already_compact`；audit 与 rotation 共用锁，symlink 条目单独标为 invalid。
+- compact 消除了热 checkpoint 的累计 manifest payload，但**没有**让整个 store 只物理保存一次 events：每代不可变 checkpoint
+  都保留当时完整事件人口及 O(history) 身份胶囊，exact/rotation 仍按归档总量工作。因此只声称 hot-generation containment，
+  不声称 cold maintenance 已达到市场规模；接线前仍需制定 cadence/规模界限。新 reader 向后读取旧 full-v1 store，但旧二进制
+  不能前向读取新增 compact record type；需要 runtime 部署/回滚策略，而不是只改一个 schema 数字。
+- 该 slice 仍是 `contract_only_unwired`：没有 runtime reader 切换、仓库外 append anchor、canonical/PIT 提升或生产权限。
+  advisory lock 只约束合作 writer，不声称抵抗绕锁写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、
+  market decision clock 与适用的 production/backtest parity 仍是后续 blocker。
 
 ## M1 已完成单元
 

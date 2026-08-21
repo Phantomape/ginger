@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 import json
 from pathlib import Path
+from threading import Event
 
 import pytest
 
@@ -12,6 +13,7 @@ from quant.test_v2_universe_ledger import (
     _append,
     _bound_graph,
     _manifest,
+    _reseal_manifest,
     _transition_event,
 )
 from quant.v2_contracts import canonical_hash, canonical_json
@@ -27,7 +29,9 @@ from quant.v2_universe_ledger_segments import (
     audit_segmented_v2_universe_ledger_orphans,
     bootstrap_segmented_v2_universe_ledger,
     build_segmented_ledger_contract,
+    load_segmented_v2_universe_state,
     load_segmented_v2_universe_ledger,
+    rotate_segmented_v2_universe_checkpoint,
     segmented_record_path,
     validate_segmented_checkpoint,
     validate_segmented_head,
@@ -167,18 +171,30 @@ def _segmented_writer_fixture(tmp_path):
     }
 
 
-def _append_segmented(root, events, manifest, fixture, *, evidence_records=None):
-    run_clock = (
-        fixture["clock"]
-        if manifest["session_clock_id"] == fixture["clock"]["session_clock_id"]
-        else fixture["future_clock"]
-    )
-    effective_clock = (
-        fixture["clock"]
-        if manifest["effective_session_clock_id"]
-        == fixture["clock"]["session_clock_id"]
-        else fixture["future_clock"]
-    )
+def _append_segmented(
+    root,
+    events,
+    manifest,
+    fixture,
+    *,
+    evidence_records=None,
+    run_clock=None,
+    effective_clock=None,
+):
+    if run_clock is None:
+        run_clock = (
+            fixture["clock"]
+            if manifest["session_clock_id"]
+            == fixture["clock"]["session_clock_id"]
+            else fixture["future_clock"]
+        )
+    if effective_clock is None:
+        effective_clock = (
+            fixture["clock"]
+            if manifest["effective_session_clock_id"]
+            == fixture["clock"]["session_clock_id"]
+            else fixture["future_clock"]
+        )
     return append_segmented_v2_universe_batch(
         root,
         events,
@@ -220,6 +236,13 @@ def _bootstrap_segmented(root, fixture, *, evidence_records=None):
         effective_calendar_evidence=fixture["bundle"]["evidence"],
         effective_calendar_source_contract=fixture["bundle"]["source"],
     )
+
+
+def _write_three_manifest_segmented(root, fixture):
+    _bootstrap_segmented(root, fixture)
+    for events, manifest in fixture["transactions"]:
+        _append_segmented(root, events, manifest, fixture)
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
 
 
 def _reseal(row, hash_field):
@@ -572,6 +595,13 @@ def test_checked_in_sec_ledger_identity_is_unchanged(tmp_path):
         "e8663c0049b74e19397a475026c3efdca193b5f2929e84ba78e2f75803c0dd38"
     )
 
+    rotate_segmented_v2_universe_checkpoint(root)
+    assert load_segmented_v2_universe_ledger(root) == legacy
+    compact_state = load_segmented_v2_universe_state(root)
+    assert compact_state["head_manifest"] == manifest
+    assert compact_state["event_count"] == 111
+    assert compact_state["manifest_count"] == 1
+
 
 def test_writer_bootstraps_appends_zero_event_segment_and_retries_exactly(tmp_path):
     fixture = _segmented_writer_fixture(tmp_path)
@@ -665,6 +695,44 @@ def test_immutable_segment_collision_never_overwrites_or_moves_head(tmp_path):
     assert collision_path.read_bytes() == b"different immutable bytes\n"
     assert load_segmented_v2_universe_ledger(root) == fixture["first"]
     assert first["checkpoint_hash"] == json.loads(old_head)["checkpoint_hash"]
+
+
+def test_immutable_collision_rejects_symlink_before_reading_target(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "collision-symlink"
+    _bootstrap_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    planned = build_segmented_ledger_contract(
+        fixture["full"], checkpoint_manifest_count=1
+    )["segments"][0]
+    collision_path = segmented_record_path(
+        root, "segment", planned["segment_hash"]
+    )
+    collision_path.parent.mkdir(parents=True, exist_ok=True)
+    external = tmp_path / "external-collision-target.json"
+    external.write_bytes(b"external bytes must not be read or changed\n")
+    try:
+        collision_path.symlink_to(external)
+    except OSError as exc:
+        pytest.skip(f"file symlinks unavailable: {exc}")
+    real_read_bytes = Path.read_bytes
+
+    def reject_collision_read(path):
+        if path == collision_path:
+            raise AssertionError("immutable collision followed a symlink")
+        return real_read_bytes(path)
+
+    monkeypatch.setattr(Path, "read_bytes", reject_collision_read)
+    events, manifest = fixture["transactions"][0]
+
+    _assert_code(
+        "segmented_segment_collision",
+        lambda: _append_segmented(root, events, manifest, fixture),
+    )
+    assert external.read_bytes() == b"external bytes must not be read or changed\n"
+    assert (root / "HEAD.json").read_bytes() == old_head
 
 
 def test_head_write_failure_leaves_orphan_and_exact_retry_adopts_only_it(
@@ -817,3 +885,912 @@ def test_cooperative_same_batch_writers_serialize_to_append_and_duplicate(tmp_pa
     assert load_segmented_v2_universe_ledger(root)["manifests"] == fixture["full"][
         "manifests"
     ][:2]
+
+
+def test_rotation_compacts_three_manifest_history_without_logical_drift(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotated"
+    _write_three_manifest_segmented(root, fixture)
+    before = load_segmented_v2_universe_ledger(root)
+    old_head = json.loads((root / "HEAD.json").read_bytes())
+    old_files = {
+        segmented_record_path(root, "checkpoint", old_head["checkpoint_hash"])
+        .relative_to(root)
+        .as_posix(),
+        *(
+            item.relative_to(root).as_posix()
+            for item in (root / "segments").glob("*.json")
+        ),
+    }
+
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+
+    assert rotated["status"] == "rotated"
+    assert rotated["old_checkpoint_hash"] == old_head["checkpoint_hash"]
+    assert rotated["event_count"] == len(before["events"])
+    assert rotated["manifest_count"] == len(before["manifests"])
+    assert load_segmented_v2_universe_ledger(root) == before == fixture["full"]
+    new_head = json.loads((root / "HEAD.json").read_bytes())
+    assert new_head["head_hash"] == rotated["head_hash"]
+    assert new_head["checkpoint_hash"] == rotated["new_checkpoint_hash"]
+    assert new_head["tail_segment_hash"] is None
+    compact_path = segmented_record_path(
+        root, "checkpoint", rotated["new_checkpoint_hash"]
+    )
+    compact = json.loads(compact_path.read_bytes())
+    assert compact["head_manifest"] == before["manifests"][-1]
+    assert "manifests" not in compact
+
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+    assert audit["orphan_count"] == 0
+    assert audit["orphan_files"] == []
+    assert audit["superseded_count"] == len(old_files)
+    assert set(audit["superseded_files"]) == old_files
+    assert all((root / relative).is_file() for relative in old_files)
+
+
+def test_audit_reports_symlink_entries_as_invalid_without_following_them(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "audit-symlink"
+    bootstrapped = _bootstrap_segmented(root, fixture)
+    checkpoint_path = segmented_record_path(
+        root, "checkpoint", bootstrapped["checkpoint_hash"]
+    )
+    link_path = checkpoint_path.with_name("unreferenced-link.json")
+    external_segments = tmp_path / "external-segments"
+    external_segments.mkdir()
+    segment_directory_link = root / "segments"
+    try:
+        link_path.symlink_to(checkpoint_path.name)
+        segment_directory_link.symlink_to(
+            external_segments, target_is_directory=True
+        )
+    except OSError as exc:
+        pytest.skip(f"symlinks unavailable: {exc}")
+    real_is_symlink = Path.is_symlink
+
+    def junction_like_is_symlink(path):
+        if path == segment_directory_link:
+            return False
+        return real_is_symlink(path)
+
+    monkeypatch.setattr(Path, "is_symlink", junction_like_is_symlink)
+
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+
+    assert audit["invalid_files"] == [
+        "checkpoints/unreferenced-link.json",
+        "segments",
+    ]
+    assert audit["invalid_count"] == 2
+    assert audit["orphan_count"] == 0
+    assert audit["superseded_count"] == 0
+
+
+def test_audit_reports_non_directory_storage_entry_as_invalid(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "audit-storage-file"
+    _bootstrap_segmented(root, fixture)
+    (root / "segments").write_bytes(b"not a directory\n")
+
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+
+    assert audit["invalid_files"] == ["segments"]
+    assert audit["invalid_count"] == 1
+
+
+def test_rotation_rejects_storage_directory_link_without_external_write(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-directory-link"
+    _write_three_manifest_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    checkpoint_directory = root / "checkpoints"
+    external_directory = tmp_path / "outside-checkpoints"
+    checkpoint_directory.rename(external_directory)
+    try:
+        checkpoint_directory.symlink_to(
+            external_directory, target_is_directory=True
+        )
+    except OSError as exc:
+        pytest.skip(f"directory symlinks unavailable: {exc}")
+    external_files = sorted(external_directory.glob("*.json"))
+
+    _assert_code(
+        "segmented_storage_directory_invalid",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+
+    assert sorted(external_directory.glob("*.json")) == external_files
+    assert (root / "HEAD.json").read_bytes() == old_head
+
+
+def test_rotation_rejects_lock_symlink_without_touching_external_target(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-lock-link"
+    _write_three_manifest_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    lock_path = root / "HEAD.json.lock"
+    lock_path.unlink()
+    external_lock = tmp_path / "external-lock-target"
+    external_lock.write_bytes(b"")
+    try:
+        lock_path.symlink_to(external_lock)
+    except OSError as exc:
+        pytest.skip(f"file symlinks unavailable: {exc}")
+
+    _assert_code(
+        "segmented_lock_path_invalid",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+
+    assert external_lock.read_bytes() == b""
+    assert (root / "HEAD.json").read_bytes() == old_head
+
+
+def test_append_after_rotation_restarts_segment_sequence_and_keeps_logical_count(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotated-append"
+    _write_three_manifest_segmented(root, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+    fourth_manifest = _manifest(
+        fixture["full"]["events"],
+        fixture["future_clock"],
+        previous=fixture["full"]["manifests"][-1],
+        suffix="4",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-21T14:03:00Z",
+        data_cutoff="2026-08-21T14:03:00Z",
+        frozen_at="2026-08-21T14:04:00Z",
+        recorded_at="2026-08-21T14:05:00Z",
+    )
+
+    def reject_archive_load(*_args, **_kwargs):
+        raise AssertionError("fresh append traversed archived generations")
+
+    monkeypatch.setattr(
+        segments_module, "_load_reachable_store", reject_archive_load
+    )
+
+    appended = _append_segmented(root, [], fourth_manifest, fixture)
+
+    assert appended["status"] == "appended"
+    assert appended["manifest_count"] == 4
+    segment = json.loads(
+        segmented_record_path(root, "segment", appended["segment_hash"]).read_bytes()
+    )
+    assert segment["checkpoint_hash"] == rotated["new_checkpoint_hash"]
+    assert segment["sequence"] == 1
+    assert segment["previous_segment_hash"] is None
+    assert segment["before_manifest_count"] == 3
+    assert segment["after_manifest_count"] == 4
+    state = load_segmented_v2_universe_state(root)
+    assert state["manifest_count"] == 4
+    assert state["current_generation_manifest_count"] == 2
+    assert state["head_manifest"] == fourth_manifest
+
+
+def test_pending_future_event_activates_through_zero_event_append_after_rotation(
+    tmp_path,
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotated-pending"
+    _bootstrap_segmented(root, fixture)
+    scheduled_events, scheduled_manifest = fixture["transactions"][0]
+    _append_segmented(
+        root, scheduled_events, scheduled_manifest, fixture
+    )
+    pending = load_segmented_v2_universe_ledger(root)
+
+    rotate_segmented_v2_universe_checkpoint(root)
+    activated_events, activated_manifest = fixture["transactions"][1]
+    appended = _append_segmented(
+        root, activated_events, activated_manifest, fixture
+    )
+
+    assert activated_events == []
+    assert appended["status"] == "appended"
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+    assert pending["manifests"][-1]["membership_snapshot_sha256"] != (
+        activated_manifest["membership_snapshot_sha256"]
+    )
+
+
+def test_historical_retry_recognizes_events_committed_in_compact_tail(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotated-tail-event-retry"
+    _bootstrap_segmented(root, fixture)
+    rotate_segmented_v2_universe_checkpoint(root)
+    previous = max(
+        (
+            item
+            for item in fixture["first"]["events"]
+            if item["security_mapping"]["security_id"] == "sec-bbb"
+        ),
+        key=lambda item: item["effective_at"],
+    )
+    bbb_evidence = next(
+        item
+        for item in fixture["graph"]["evidence"]
+        if item["security_mapping"]["security_id"] == "sec-bbb"
+    )
+    tail_event = _transition_event(
+        {**fixture["graph"], "evidence": [bbb_evidence]},
+        fixture["clock"],
+        previous,
+        suffix="tail-retry",
+    )
+    tail_manifest = _manifest(
+        [*fixture["first"]["events"], tail_event],
+        fixture["clock"],
+        previous=fixture["first"]["manifests"][0],
+        suffix="tail-retry",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-20T14:26:00Z",
+        data_cutoff="2026-08-20T14:26:00Z",
+        frozen_at="2026-08-20T14:27:00Z",
+        recorded_at="2026-08-20T14:28:00Z",
+    )
+    _append_segmented(root, [tail_event], tail_manifest, fixture)
+
+    def reject_archive_load(*_args, **_kwargs):
+        raise AssertionError("historical retry traversed archived generations")
+
+    monkeypatch.setattr(
+        segments_module, "_load_reachable_store", reject_archive_load
+    )
+    retried = _append_segmented(
+        root,
+        [tail_event],
+        fixture["first"]["manifests"][0],
+        fixture,
+    )
+
+    assert retried["status"] == "duplicate"
+    changed_tail_event = deepcopy(tail_event)
+    changed_tail_event["reason"] = "Changed semantics for the same tail event ID."
+    changed_tail_event = _seal_event(changed_tail_event)
+    _assert_code(
+        "universe_event_id_conflict",
+        lambda: _append_segmented(
+            root,
+            [changed_tail_event],
+            fixture["first"]["manifests"][0],
+            fixture,
+        ),
+    )
+
+    unseen_event = deepcopy(tail_event)
+    unseen_event["event_id"] = "sec-bbb-unseen-request-duplicate"
+    unseen_event = _seal_event(unseen_event)
+    changed_unseen_event = deepcopy(unseen_event)
+    changed_unseen_event["reason"] = "Conflicting duplicate inside one request."
+    changed_unseen_event = _seal_event(changed_unseen_event)
+    _assert_code(
+        "universe_event_id_conflict",
+        lambda: _append_segmented(
+            root,
+            [unseen_event, changed_unseen_event],
+            fixture["first"]["manifests"][0],
+            fixture,
+        ),
+    )
+
+
+def test_fresh_manifest_input_error_precedes_historical_batch_conflict(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotated-error-order"
+    _write_three_manifest_segmented(root, fixture)
+    rotate_segmented_v2_universe_checkpoint(root)
+    proposed = _manifest(
+        fixture["full"]["events"],
+        fixture["future_clock"],
+        previous=fixture["full"]["manifests"][-1],
+        suffix="fresh-error-order",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-21T14:03:00Z",
+        data_cutoff="2026-08-21T14:03:00Z",
+        frozen_at="2026-08-21T14:04:00Z",
+        recorded_at="2026-08-21T14:05:00Z",
+    )
+    proposed["event_batch_id"] = fixture["full"]["manifests"][0][
+        "event_batch_id"
+    ]
+    proposed["source_contract_registry"]["uncommitted-source"] = "a" * 64
+    proposed = _reseal_manifest(proposed)
+
+    _assert_code(
+        "manifest_input_registry_mismatch",
+        lambda: _append_segmented(root, [], proposed, fixture),
+    )
+
+
+def test_rotation_preserves_valid_cross_batch_physical_event_order(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "cross-batch-event-order"
+    _bootstrap_segmented(root, fixture)
+    future_events, future_manifest = fixture["transactions"][0]
+    _append_segmented(root, future_events, future_manifest, fixture)
+    current = load_segmented_v2_universe_ledger(root)
+    previous = max(
+        (
+            item
+            for item in current["events"]
+            if item["security_mapping"]["security_id"] == "sec-bbb"
+        ),
+        key=lambda item: item["effective_at"],
+    )
+    bbb_evidence = next(
+        item
+        for item in fixture["graph"]["evidence"]
+        if item["security_mapping"]["security_id"] == "sec-bbb"
+    )
+    earlier_effective_event = _transition_event(
+        {**fixture["graph"], "evidence": [bbb_evidence]},
+        fixture["clock"],
+        previous,
+        suffix="cross-batch-order",
+        decided_at="2026-08-20T14:27:00Z",
+        recorded_at="2026-08-20T14:28:00Z",
+        effective_at="2026-08-20T14:30:00Z",
+    )
+    reordered_manifest = _manifest(
+        [*current["events"], earlier_effective_event],
+        fixture["clock"],
+        previous=future_manifest,
+        suffix="cross-batch-order",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-20T14:31:00Z",
+        data_cutoff="2026-08-20T14:31:00Z",
+        frozen_at="2026-08-20T14:32:00Z",
+        recorded_at="2026-08-20T14:33:00Z",
+    )
+    _append_segmented(
+        root, [earlier_effective_event], reordered_manifest, fixture
+    )
+    before = load_segmented_v2_universe_ledger(root)
+    assert before["events"][-2]["effective_at"] > before["events"][-1][
+        "effective_at"
+    ]
+
+    assert rotate_segmented_v2_universe_checkpoint(root)["status"] == "rotated"
+    assert load_segmented_v2_universe_ledger(root) == before
+
+
+def test_rotation_and_append_share_one_serial_commit_order(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotate-append-concurrent"
+    _bootstrap_segmented(root, fixture)
+    scheduled_events, scheduled_manifest = fixture["transactions"][0]
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        rotate_future = pool.submit(
+            rotate_segmented_v2_universe_checkpoint, root
+        )
+        append_future = pool.submit(
+            _append_segmented,
+            root,
+            scheduled_events,
+            scheduled_manifest,
+            fixture,
+        )
+        rotated = rotate_future.result()
+        appended = append_future.result()
+
+    assert rotated["status"] == "rotated"
+    assert appended["status"] == "appended"
+    assert load_segmented_v2_universe_ledger(root) == {
+        "events": fixture["full"]["events"],
+        "manifests": fixture["full"]["manifests"][:2],
+    }
+
+
+def test_rotation_waits_for_one_snapshot_consistent_audit(tmp_path, monkeypatch):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "audit-rotation-concurrent"
+    _write_three_manifest_segmented(root, fixture)
+    audit_started = Event()
+    release_audit = Event()
+    real_hot_load = segments_module._load_hot_store
+
+    def pause_hot_load(*args, **kwargs):
+        loaded = real_hot_load(*args, **kwargs)
+        audit_started.set()
+        assert release_audit.wait(timeout=5)
+        return loaded
+
+    monkeypatch.setattr(segments_module, "_load_hot_store", pause_hot_load)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        audit_future = pool.submit(
+            audit_segmented_v2_universe_ledger_orphans, root
+        )
+        assert audit_started.wait(timeout=5)
+        rotation_future = pool.submit(
+            rotate_segmented_v2_universe_checkpoint, root
+        )
+        assert not rotation_future.done()
+        release_audit.set()
+        audit = audit_future.result()
+        rotated = rotation_future.result()
+
+    assert audit["orphan_count"] == 0
+    assert audit["superseded_count"] == 0
+    assert audit["invalid_count"] == 0
+    assert rotated["status"] == "rotated"
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def test_cooperative_rotations_commit_once(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "concurrent-rotation"
+    _write_three_manifest_segmented(root, fixture)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(
+            pool.map(
+                lambda _: rotate_segmented_v2_universe_checkpoint(root),
+                range(2),
+            )
+        )
+
+    assert sorted(item["status"] for item in results) == [
+        "already_compact",
+        "rotated",
+    ]
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def test_second_rotation_preserves_iterative_archival_history(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "second-rotation"
+    _write_three_manifest_segmented(root, fixture)
+    first_rotation = rotate_segmented_v2_universe_checkpoint(root)
+    fourth_manifest = _manifest(
+        fixture["full"]["events"],
+        fixture["future_clock"],
+        previous=fixture["full"]["manifests"][-1],
+        suffix="4-second-rotation",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-21T14:03:00Z",
+        data_cutoff="2026-08-21T14:03:00Z",
+        frozen_at="2026-08-21T14:04:00Z",
+        recorded_at="2026-08-21T14:05:00Z",
+    )
+    _append_segmented(root, [], fourth_manifest, fixture)
+    expected = {
+        "events": fixture["full"]["events"],
+        "manifests": [*fixture["full"]["manifests"], fourth_manifest],
+    }
+
+    second_rotation = rotate_segmented_v2_universe_checkpoint(root)
+
+    assert second_rotation["status"] == "rotated"
+    assert second_rotation["new_checkpoint_hash"] != first_rotation[
+        "new_checkpoint_hash"
+    ]
+    assert load_segmented_v2_universe_ledger(root) == expected
+    state = load_segmented_v2_universe_state(root)
+    assert state["manifest_count"] == 4
+    assert state["current_generation_manifest_count"] == 1
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+    assert audit["orphan_count"] == 0
+    assert audit["superseded_count"] == 5
+
+
+def test_rotation_head_failure_leaves_reusable_checkpoint_orphan(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-head-failure"
+    _write_three_manifest_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    real_replace = segments_module._replace_with_retry
+
+    def fail_replace(_source, _target):
+        raise OSError("simulated rotation HEAD replace failure")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", fail_replace)
+    _assert_code(
+        "segmented_head_write_failed",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+    assert (root / "HEAD.json").read_bytes() == old_head
+    failed_audit = audit_segmented_v2_universe_ledger_orphans(root)
+    assert failed_audit["orphan_count"] == 1
+    assert failed_audit["superseded_count"] == 0
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    retry = rotate_segmented_v2_universe_checkpoint(root)
+    assert retry["status"] == "rotated"
+    assert retry["checkpoint_reused"] is True
+    assert audit_segmented_v2_universe_ledger_orphans(root)["orphan_count"] == 0
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def test_stale_rotation_orphan_is_not_adopted_after_an_append(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "stale-rotation-orphan"
+    _bootstrap_segmented(root, fixture)
+    real_replace = segments_module._replace_with_retry
+
+    def fail_replace(_source, _target):
+        raise OSError("simulated stale rotation orphan")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", fail_replace)
+    _assert_code(
+        "segmented_head_write_failed",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+    stale_orphan = audit_segmented_v2_universe_ledger_orphans(root)[
+        "orphan_files"
+    ]
+    assert len(stale_orphan) == 1
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    events, manifest = fixture["transactions"][0]
+    _append_segmented(root, events, manifest, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+
+    assert rotated["status"] == "rotated"
+    assert rotated["new_checkpoint_hash"] not in stale_orphan[0]
+    audit = audit_segmented_v2_universe_ledger_orphans(root)
+    assert audit["orphan_files"] == stale_orphan
+    assert load_segmented_v2_universe_ledger(root) == {
+        "events": fixture["full"]["events"],
+        "manifests": fixture["full"]["manifests"][:2],
+    }
+
+
+def test_rotation_retry_after_committed_head_is_already_compact(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-post-head-error"
+    _write_three_manifest_segmented(root, fixture)
+    real_replace = segments_module._replace_with_retry
+
+    def commit_then_raise(source, target):
+        real_replace(source, target)
+        raise OSError("simulated rotation error after commit point")
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", commit_then_raise)
+    _assert_code(
+        "segmented_head_write_failed",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+    committed_head = (root / "HEAD.json").read_bytes()
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+    monkeypatch.setattr(segments_module, "_replace_with_retry", real_replace)
+    retry = rotate_segmented_v2_universe_checkpoint(root)
+    assert retry["status"] == "already_compact"
+    assert (root / "HEAD.json").read_bytes() == committed_head
+
+
+def test_compact_checkpoint_collision_never_overwrites_or_moves_head(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-collision"
+    _write_three_manifest_segmented(root, fixture)
+    old_head = (root / "HEAD.json").read_bytes()
+    real_publish = segments_module._publish_immutable_record
+    collision = {}
+
+    def publish_collision(path, value, *, role):
+        if value.get("record_type") == "v2_universe_ledger_compact_checkpoint":
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b"different immutable compact checkpoint bytes\n")
+            collision["path"] = path
+        return real_publish(path, value, role=role)
+
+    monkeypatch.setattr(
+        segments_module, "_publish_immutable_record", publish_collision
+    )
+    _assert_code(
+        "segmented_checkpoint_collision",
+        lambda: rotate_segmented_v2_universe_checkpoint(root),
+    )
+    assert collision["path"].read_bytes() == (
+        b"different immutable compact checkpoint bytes\n"
+    )
+    assert (root / "HEAD.json").read_bytes() == old_head
+    assert load_segmented_v2_universe_ledger(root) == fixture["full"]
+
+
+def test_referenced_compact_checkpoint_damage_never_falls_back_to_archive(
+    tmp_path,
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-damage"
+    _write_three_manifest_segmented(root, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+    compact_path = segmented_record_path(
+        root, "checkpoint", rotated["new_checkpoint_hash"]
+    )
+    compact_path.write_bytes(b'{"schema_version":1')
+
+    _assert_code(
+        "segmented_checkpoint_invalid",
+        lambda: load_segmented_v2_universe_state(root),
+    )
+    _assert_code(
+        "segmented_checkpoint_invalid",
+        lambda: load_segmented_v2_universe_ledger(root),
+    )
+
+
+def test_rotated_history_preserves_exact_retry_and_conflict_taxonomy(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-history"
+    _write_three_manifest_segmented(root, fixture)
+    rotate_segmented_v2_universe_checkpoint(root)
+    historical_events, historical_manifest = fixture["transactions"][0]
+    committed_head = (root / "HEAD.json").read_bytes()
+
+    def reject_archive_load(*_args, **_kwargs):
+        raise AssertionError("historical retry traversed archived generations")
+
+    monkeypatch.setattr(
+        segments_module, "_load_reachable_store", reject_archive_load
+    )
+
+    _assert_code(
+        "manifest_run_clock_mismatch",
+        lambda: _append_segmented(
+            root,
+            [],
+            historical_manifest,
+            fixture,
+            run_clock=fixture["future_clock"],
+            effective_clock=fixture["future_clock"],
+        ),
+    )
+
+    missing_inherited_registry = deepcopy(historical_manifest)
+    inherited_evidence_id = fixture["graph"]["evidence"][0]["evidence_id"]
+    del missing_inherited_registry["evidence_record_registry"][
+        inherited_evidence_id
+    ]
+    missing_inherited_registry = _reseal_manifest(
+        missing_inherited_registry
+    )
+    _assert_code(
+        "manifest_input_registry_mismatch",
+        lambda: _append_segmented(
+            root,
+            [],
+            missing_inherited_registry,
+            fixture,
+            evidence_records=[],
+        ),
+    )
+
+    exact_retry = _append_segmented(
+        root, historical_events, historical_manifest, fixture
+    )
+    assert exact_retry["status"] == "duplicate"
+    assert (root / "HEAD.json").read_bytes() == committed_head
+
+    compact_head_manifest = fixture["full"]["manifests"][-1]
+    assert _append_segmented(
+        root, [], compact_head_manifest, fixture
+    )["status"] == "duplicate"
+    noisy_head_retry = deepcopy(compact_head_manifest)
+    noisy_head_retry["recorded_at"] = "2026-08-21T14:02:30Z"
+    noisy_head_retry = _reseal_manifest(noisy_head_retry)
+    assert _append_segmented(
+        root, [], noisy_head_retry, fixture
+    )["status"] == "duplicate"
+    assert (root / "HEAD.json").read_bytes() == committed_head
+
+    noisy_retry = deepcopy(historical_manifest)
+    noisy_retry["recorded_at"] = "2026-08-20T14:26:30Z"
+    noisy_retry = _reseal_manifest(noisy_retry)
+    assert noisy_retry["semantic_hash"] == historical_manifest["semantic_hash"]
+    assert noisy_retry["manifest_hash"] != historical_manifest["manifest_hash"]
+    assert _append_segmented(
+        root, historical_events, noisy_retry, fixture
+    )["status"] == "duplicate"
+
+    changed_manifest = deepcopy(historical_manifest)
+    changed_manifest["frozen_at"] = "2026-08-20T14:25:30Z"
+    changed_manifest = _reseal_manifest(changed_manifest)
+    assert changed_manifest["semantic_hash"] != historical_manifest["semantic_hash"]
+    _assert_code(
+        "manifest_id_conflict",
+        lambda: _append_segmented(
+            root, historical_events, changed_manifest, fixture
+        ),
+    )
+    assert (root / "HEAD.json").read_bytes() == committed_head
+
+
+def test_exact_load_binds_compact_identity_index_to_archived_history(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-identity-lineage"
+    _write_three_manifest_segmented(root, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+    compact_path = segmented_record_path(
+        root, "checkpoint", rotated["new_checkpoint_hash"]
+    )
+    compact = json.loads(compact_path.read_bytes())
+    compact["identity_state"]["manifest_identities"][0]["manifest_id"] = (
+        "tampered-archived-manifest-id"
+    )
+    compact["identity_state"]["manifest_identities"][0]["event_batch_id"] = (
+        "tampered-archived-event-batch-id"
+    )
+    compact = _reseal(compact, "checkpoint_hash")
+    _write_json(
+        segmented_record_path(root, "checkpoint", compact["checkpoint_hash"]),
+        compact,
+    )
+    head = json.loads((root / "HEAD.json").read_bytes())
+    head["checkpoint_hash"] = compact["checkpoint_hash"]
+    head = _reseal(head, "head_hash")
+    _write_json(root / "HEAD.json", head)
+
+    _assert_code(
+        "segmented_compact_lineage_mismatch",
+        lambda: load_segmented_v2_universe_ledger(root),
+    )
+
+
+def test_compact_identity_registry_shape_fails_with_stable_error(tmp_path):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-registry-shape"
+    _write_three_manifest_segmented(root, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+    compact_path = segmented_record_path(
+        root, "checkpoint", rotated["new_checkpoint_hash"]
+    )
+    compact = json.loads(compact_path.read_bytes())
+    compact["identity_state"]["source_contract_registry"] = None
+    compact = _reseal(compact, "checkpoint_hash")
+    _write_json(
+        segmented_record_path(root, "checkpoint", compact["checkpoint_hash"]),
+        compact,
+    )
+    head = json.loads((root / "HEAD.json").read_bytes())
+    head["checkpoint_hash"] = compact["checkpoint_hash"]
+    head = _reseal(head, "head_hash")
+    _write_json(root / "HEAD.json", head)
+
+    _assert_code(
+        "segmented_compact_identity_state_invalid",
+        lambda: load_segmented_v2_universe_state(root),
+    )
+
+
+@pytest.mark.parametrize(
+    ("identity_field", "error_code"),
+    (
+        ("manifest_id", "duplicate_physical_manifest"),
+        ("event_batch_id", "duplicate_event_batch_id"),
+    ),
+)
+def test_hot_load_rejects_tail_identity_reused_from_compact_history(
+    tmp_path, identity_field, error_code
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / f"rotation-tail-{identity_field}"
+    _write_three_manifest_segmented(root, fixture)
+    rotate_segmented_v2_universe_checkpoint(root)
+    fourth_manifest = _manifest(
+        fixture["full"]["events"],
+        fixture["future_clock"],
+        previous=fixture["full"]["manifests"][-1],
+        suffix=f"4-tail-{identity_field}",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-21T14:03:00Z",
+        data_cutoff="2026-08-21T14:03:00Z",
+        frozen_at="2026-08-21T14:04:00Z",
+        recorded_at="2026-08-21T14:05:00Z",
+    )
+    appended = _append_segmented(root, [], fourth_manifest, fixture)
+    segment_path = segmented_record_path(root, "segment", appended["segment_hash"])
+    segment = json.loads(segment_path.read_bytes())
+    segment["manifest"][identity_field] = fixture["full"]["manifests"][0][
+        identity_field
+    ]
+    segment["manifest"] = _reseal_manifest(segment["manifest"])
+    segment["head_manifest_id"] = segment["manifest"]["manifest_id"]
+    segment["head_manifest_hash"] = segment["manifest"]["manifest_hash"]
+    segment = _reseal(segment, "segment_hash")
+    _write_json(
+        segmented_record_path(root, "segment", segment["segment_hash"]),
+        segment,
+    )
+    head = json.loads((root / "HEAD.json").read_bytes())
+    head["tail_segment_hash"] = segment["segment_hash"]
+    head["head_manifest_id"] = segment["manifest"]["manifest_id"]
+    head["head_manifest_hash"] = segment["manifest"]["manifest_hash"]
+    head = _reseal(head, "head_hash")
+    _write_json(root / "HEAD.json", head)
+
+    _assert_code(error_code, lambda: load_segmented_v2_universe_state(root))
+
+
+def test_compact_tail_retry_checks_clocks_against_archived_capsule(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-tail-clock-history"
+    _write_three_manifest_segmented(root, fixture)
+    rotate_segmented_v2_universe_checkpoint(root)
+    fourth_manifest = _manifest(
+        fixture["full"]["events"],
+        fixture["future_clock"],
+        previous=fixture["full"]["manifests"][-1],
+        suffix="4-tail-clock-history",
+        graph=fixture["graph"],
+        bundle=fixture["bundle"],
+        membership_as_of="2026-08-21T14:03:00Z",
+        data_cutoff="2026-08-21T14:03:00Z",
+        frozen_at="2026-08-21T14:04:00Z",
+        recorded_at="2026-08-21T14:05:00Z",
+    )
+    _append_segmented(root, [], fourth_manifest, fixture)
+
+    def reject_archive_load(*_args, **_kwargs):
+        raise AssertionError("tail retry traversed archived generations")
+
+    monkeypatch.setattr(
+        segments_module, "_load_reachable_store", reject_archive_load
+    )
+    conflicting_clock_retry = deepcopy(fourth_manifest)
+    conflicting_clock_retry["session_clock_id"] = fixture["clock"][
+        "session_clock_id"
+    ]
+    conflicting_clock_retry = _reseal_manifest(conflicting_clock_retry)
+
+    _assert_code(
+        "session_clock_id_conflict",
+        lambda: _append_segmented(
+            root, [], conflicting_clock_retry, fixture
+        ),
+    )
+
+
+def test_fast_state_load_does_not_reconstruct_archived_manifests(
+    tmp_path, monkeypatch
+):
+    fixture = _segmented_writer_fixture(tmp_path)
+    root = tmp_path / "rotation-fast-state"
+    _write_three_manifest_segmented(root, fixture)
+    rotated = rotate_segmented_v2_universe_checkpoint(root)
+
+    real_load_generation = segments_module._load_generation
+
+    def reject_archive_load(*args, **kwargs):
+        if kwargs["head_target"] is None:
+            raise AssertionError("fast state load traversed archived generation")
+        return real_load_generation(*args, **kwargs)
+
+    monkeypatch.setattr(segments_module, "_load_generation", reject_archive_load)
+    state = load_segmented_v2_universe_state(root)
+    assert state["events"] == fixture["full"]["events"]
+    assert state["head_manifest"] == fixture["full"]["manifests"][-1]
+    assert state["event_count"] == len(fixture["full"]["events"])
+    assert state["manifest_count"] == len(fixture["full"]["manifests"])
+    assert state["checkpoint_hash"] == rotated["new_checkpoint_hash"]
+    assert state["tail_segment_hash"] is None
+    assert state["current_generation_manifest_count"] == 1
+    assert state["authority"] == "research_only"
+    assert state["trade_enabled"] is False
