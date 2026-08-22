@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-22T00:18Z（M2 repository-external append-anchor decision contract）
+> 最后更新：2026-08-22T02:07Z（首个 bounded research scout 完成并拒绝）
 
 ## 里程碑
 
@@ -14,7 +14,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
-| Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
+| Research scout lane | 已运行：`exp-20260822-001` 完成首个 SEC exact-8-K complete-frame H1 scout；111/111 可用，但广度判据失败，结果为 `rejected` |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
 
@@ -28,12 +28,12 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## Scout-first 协议修订
 
-- 13 份 observed V2 hourly receipt、11 条 durable decision、0 个 experiment ID，证明旧问题是 M0-M5 串行调度，
-  不是 PIT/default-off 底线。现在 research scout 与 promotion construction 并行；scout 只做 source-bounded、
+- 先前连续建设而无 experiment ID 证明旧问题是 M0-M5 串行调度，不是 PIT/default-off 底线。现在 research scout
+  与 promotion construction 并行；首个 scout 已以 `exp-20260822-001` 完成；scout 只做 source-bounded、
   `research_pit / observed_only` 测量，仍保留完整 disposition、登记、反泄漏和 `trade_enabled=false`。
 - 继续复用现有 promotion/claim/closeout，不新增 bridge 或证据标签；receipt/state/backlog/decision、测试和审阅按事实与结论风险缩放。
-- 首次 cadence 条件已经满足。下一轮立即做一次最多 20 分钟 zero-ID preflight；通过即冻结 experiment-local disposition、
-  CandidatePool/必要 DecisionRecord 和 promotion，并 reserve 首个 scout。以后只在输入变化、出现可信新轴或再次连续完成两个
+- 首次 cadence 已执行：官方 SEC 2026-08-20 exact-8-K complete frame 通过 zero-ID preflight，冻结 experiment-local disposition、
+  CandidatePool、DecisionRecord 和 promotion 后 reserve/run/close `exp-20260822-001`。以后只在输入变化、出现可信新轴或再次连续完成两个
   非阻断建设单元时重跑完整 preflight；失败且无安全有价值的直接修复时回 promotion backlog/no-op。
 
 ## M2 进行中单元
@@ -133,6 +133,20 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 本轮 outcome-blind 复核未发现其他 admission-ready committed source：Moomoo capital-flow 缺可靠 historical known-at、授权与
   frame provenance，FINRA weekly 缺 timezone/session-bound publication clock、授权、effective mapping 和新 novelty axis。
   SEC contract-relation 只有在上轮 receipt 的定量 reopen 条件满足后才可重试。
+
+### 首个 bounded scout 运行结果
+
+- 用户明确要求优先做实验并临时放松 scout 标准；本次只放宽单横截面、弱 fixed-zero-excess prior 以及不要求 Engine-0/
+  市场级 coverage，不放宽 outcome-blind freeze、完整 source disposition、hash-bound promotion/claim、预先冻结验收规则或
+  `trade_enabled=false`。这不是全局协议降级。
+- `exp-20260822-001` 使用已冻结的 2026-08-20 SEC exact-8-K complete frame：219 个 source row 守恒处置后得到
+  111 个去重 mapped issuer，全部等权在 2026-08-21 RTH open-to-close 测量，成本固定 10 bps，对照 cash/SPY/QQQ；
+  outcome 只在 promotion freeze 和 claim 完成后读取。
+- 111/111 个证券行情可用。after-cost mean `+0.3061%`，相对 SPY excess `+0.3492%`、相对 QQQ excess
+  `+0.5564%`，但 median `-0.1925%`、正收益占比仅 `42.34%`；预先冻结的六项受理条件有两项失败，因此 registry
+  与 ticket 以 `rejected` 关闭，不产生 observed-only lead，不晋级、不改共享 policy/order/paper/live。
+- 该结果说明正均值由少数赢家驱动，不能据此宣称广泛的 8-K 次日盘中 underreaction。禁止在同一 frame 上事后扫成本、
+  持有分钟、item code、子集或 event-sign 阈值；下一次同类尝试需要独立冻结的更晚 complete frame，或结果前可用的独立事件符号源。
 
 ### Universe ledger 人口核心
 
@@ -347,11 +361,8 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-仓库外 append anchor 的 target-independent contract 已冻结，但实际 target 仍未选择，状态继续为 absent。下一步需要用户明确
-provider/product、account/namespace、writer topology、locked retention、ordered/latest/receipt 能力、三类 principal ID/owner、
-non-secret secret-store reference、deployment owner、threat model、网络/成本许可和 implementation authorization；之后才能实现
-connector、跑 A1-A14、shadow 演练 outage/rollback，并另做 canonical review。未获授权时不要重复实现或用本地 self-hash 冒充。
-真实 population/churn/retention/SLO 仍是任何自动 cadence 或绝对 scale limit 的前提；真正的 M3 Engine-0 还需动态 PIT 市场 universe、
-市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
-novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local
-preflight/freeze/reserve；不要无条件重试 SEC contract-relation。
+首个 scout 已关闭为 rejected；不要在同一 2026-08-20 frame 上做近邻参数搜索。下一个实验优先等待独立冻结的更晚 complete SEC
+frame 或结果前可用的独立 event-sign source，再做 outcome-blind preflight。并行的仓库外 append anchor 仍为 absent；其 connector、
+A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret
+reference、deployment owner、threat model、网络/成本与 cutover。真实 population/churn/retention/SLO 仍是自动 cadence 前提；
+M3 Engine-0 仍需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。
